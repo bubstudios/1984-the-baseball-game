@@ -17,8 +17,7 @@ export default function ActionPanel({ isPitching, onPitch, onSwing, disabled }) 
               onClick={() => onPitch(i)}
               className="h-12 flex flex-col items-center justify-center gap-0.5 border-border/60 hover:border-primary hover:bg-primary/10 transition-all"
             >
-              <span className="text-base">{pitch.icon}</span>
-              <span className="text-[10px] font-heading font-semibold">{pitch.name}</span>
+              <span className="font-heading font-bold text-sm text-foreground">{pitch.name}</span>
             </Button>
           ))}
         </div>
@@ -39,8 +38,7 @@ export default function ActionPanel({ isPitching, onPitch, onSwing, disabled }) 
             onClick={() => onSwing(i)}
             className="h-14 flex flex-col items-center justify-center gap-0.5 border-border/60 hover:border-primary hover:bg-primary/10 transition-all"
           >
-            <span className="text-base">{swing.icon}</span>
-            <span className="text-[10px] font-heading font-semibold">{swing.name}</span>
+            <span className="font-heading font-bold text-sm text-foreground">{swing.name.replace(' Swing', '')}</span>
           </Button>
         ))}
       </div>
@@ -54,9 +52,7 @@ export default function ActionPanel({ isPitching, onPitch, onSwing, disabled }) 
             onClick={() => onSwing(i + 3)}
             className="h-12 flex flex-col items-center justify-center gap-0.5 border-border/60 hover:border-primary hover:bg-primary/10 transition-all"
           >
-            <span className="text-base">{swing.icon}</span>
-            <span className="text-[10px] font-heading font-semibold">{swing.name}</span>
-            <span className="text-[8px] text-muted-foreground">{swing.desc}</span>
+            <span className="font-heading font-bold text-sm text-foreground">{swing.name}</span>
           </Button>
         ))}
       </div>

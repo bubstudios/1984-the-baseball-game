@@ -15,21 +15,27 @@ import { RotateCcw, Trophy } from 'lucide-react';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
+  const [homeTeam, setHomeTeam] = useState(null);
+  const [awayTeam, setAwayTeam] = useState(null);
   const [userTeam, setUserTeam] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [tab, setTab] = useState('game');
 
-  const startGame = useCallback((team) => {
-    setUserTeam(team);
-    const state = createGameState(team);
-    state.log.push({ type: 'info', text: `⚾ Play ball! ${TEAMS.away.name} at ${TEAMS.home.name}` });
-    state.log.push({ type: 'info', text: `Top of inning 1 — ${TEAMS.away.name} batting` });
+  const startGame = useCallback((home, away) => {
+    setHomeTeam(home);
+    setAwayTeam(away);
+    setUserTeam(home); // user controls home team
+    const state = createGameState(home, away);
+    const homeName = TEAMS[home].name;
+    const awayName = TEAMS[away].name;
+    state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
+    state.log.push({ type: 'info', text: `Top of inning 1 — ${awayName} batting` });
     setGameState(state);
   }, []);
 
   const isUserBatting = gameState && (
-    (gameState.halfInning === 'top' && userTeam === 'away') ||
-    (gameState.halfInning === 'bottom' && userTeam === 'home')
+    (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
+    (gameState.halfInning === 'bottom' && userTeam === gameState.homeTeam)
   );
 
   const isUserPitching = gameState && !isUserBatting;
@@ -37,8 +43,6 @@ export default function Home() {
   const handlePitch = useCallback((pitchIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
-
-    // User is pitching, CPU swings
     const cpuSwing = cpuSelectSwing(gameState);
     const newState = processAtBat(gameState, PITCH_TYPES[pitchIndex], SWING_TYPES[cpuSwing]);
     setGameState(newState);
@@ -48,8 +52,6 @@ export default function Home() {
   const handleSwing = useCallback((swingIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
-
-    // CPU pitches, user swings
     const cpuPitch = cpuSelectPitch(gameState);
     const newState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
     setGameState(newState);
@@ -58,6 +60,8 @@ export default function Home() {
 
   const handleNewGame = () => {
     setGameState(null);
+    setHomeTeam(null);
+    setAwayTeam(null);
     setUserTeam(null);
     setTab('game');
   };
@@ -68,8 +72,11 @@ export default function Home() {
 
   const batter = getCurrentBatter(gameState);
   const pitcher = getCurrentPitcher(gameState);
-  const battingTeamName = getBattingTeam(gameState) === 'home' ? TEAMS.home.name : TEAMS.away.name;
+  const battingTeamKey = getBattingTeam(gameState) === 'home' ? homeTeam : awayTeam;
+  const battingTeamName = TEAMS[battingTeamKey]?.name || '';
   const inningLabel = `${gameState.halfInning === 'top' ? '▲' : '▼'} ${gameState.inning}`;
+  const home = TEAMS[homeTeam];
+  const away = TEAMS[awayTeam];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -79,7 +86,7 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <span className="text-lg">⚾</span>
             <div>
-              <div className="font-display text-[10px] text-primary tracking-wider">BASEBALL SIM</div>
+              <div className="font-display text-[10px] text-primary tracking-wider">1984 BASEBALL SIM</div>
               <div className="font-heading text-xs text-muted-foreground">{inningLabel} · {battingTeamName} batting</div>
             </div>
           </div>
@@ -91,9 +98,9 @@ export default function Home() {
                 {gameState.score.home}
               </div>
               <div className="flex items-center gap-2 text-[10px] font-heading text-muted-foreground">
-                <span>{TEAMS.away.abbr}</span>
+                <span>{away?.abbr}</span>
                 <span>·</span>
-                <span>{TEAMS.home.abbr}</span>
+                <span>{home?.abbr}</span>
               </div>
             </div>
           </div>
@@ -117,6 +124,8 @@ export default function Home() {
                 score={gameState.score}
                 currentInning={gameState.inning}
                 halfInning={gameState.halfInning}
+                awayAbbr={away?.abbr}
+                homeAbbr={home?.abbr}
               />
             </div>
 
@@ -151,7 +160,13 @@ export default function Home() {
 
             {/* Matchup */}
             <div className="bg-card border border-border rounded-xl p-3">
-              <MatchupCard batter={batter} pitcher={pitcher} halfInning={gameState.halfInning} />
+              <MatchupCard
+                batter={batter}
+                pitcher={pitcher}
+                halfInning={gameState.halfInning}
+                homeTeam={homeTeam}
+                awayTeam={awayTeam}
+              />
             </div>
 
             {/* Actions or Game Over */}
@@ -161,10 +176,10 @@ export default function Home() {
                 <div>
                   <h2 className="font-heading text-lg font-bold text-foreground">Game Over!</h2>
                   <p className="font-body text-sm text-muted-foreground mt-1">
-                    Final Score: {TEAMS.away.name} {gameState.score.away} — {TEAMS.home.name} {gameState.score.home}
+                    Final: {away?.name} {gameState.score.away} — {home?.name} {gameState.score.home}
                   </p>
                   <p className="font-heading text-primary font-bold mt-2">
-                    {gameState.score.home > gameState.score.away ? TEAMS.home.name : TEAMS.away.name} Win!
+                    {gameState.score.home > gameState.score.away ? home?.name : away?.name} Win!
                   </p>
                 </div>
                 <Button onClick={handleNewGame} className="gap-2">
@@ -203,7 +218,7 @@ export default function Home() {
       {/* Footer */}
       <div className="border-t border-border mt-8">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <span className="text-[10px] text-muted-foreground/40 font-body">Baseball Simulation Game</span>
+          <span className="text-[10px] text-muted-foreground/40 font-body">1984 Baseball Simulation</span>
           <Button variant="ghost" size="sm" onClick={handleNewGame} className="text-[10px] text-muted-foreground hover:text-foreground gap-1">
             <RotateCcw className="w-3 h-3" />
             New Game

@@ -1,7 +1,6 @@
 import React from 'react';
-import { TEAMS } from '@/lib/gameData';
 
-export default function Scoreboard({ innings, score, currentInning, halfInning }) {
+export default function Scoreboard({ innings, score, currentInning, halfInning, awayAbbr, homeAbbr }) {
   return (
     <div className="w-full overflow-x-auto">
       <table className="w-full text-xs font-heading">
@@ -23,9 +22,8 @@ export default function Scoreboard({ innings, score, currentInning, halfInning }
           </tr>
         </thead>
         <tbody>
-          {/* Away team */}
           <tr className={`border-b border-border/50 ${halfInning === 'top' ? 'bg-muted/30' : ''}`}>
-            <td className="py-1.5 px-2 font-bold text-foreground">{TEAMS.away.abbr}</td>
+            <td className="py-1.5 px-2 font-bold text-foreground">{awayAbbr}</td>
             {innings.map((inn, i) => (
               <td key={i} className={`text-center py-1.5 px-1.5 ${i + 1 === currentInning && halfInning === 'top' ? 'text-primary font-bold' : 'text-foreground/70'}`}>
                 {inn.away !== null ? inn.away : '-'}
@@ -34,9 +32,8 @@ export default function Scoreboard({ innings, score, currentInning, halfInning }
             <td className="text-center py-1.5 px-2 font-bold text-primary border-l border-border">{score.away}</td>
             <td className="text-center py-1.5 px-2 text-muted-foreground">-</td>
           </tr>
-          {/* Home team */}
           <tr className={`${halfInning === 'bottom' ? 'bg-muted/30' : ''}`}>
-            <td className="py-1.5 px-2 font-bold text-foreground">{TEAMS.home.abbr}</td>
+            <td className="py-1.5 px-2 font-bold text-foreground">{homeAbbr}</td>
             {innings.map((inn, i) => (
               <td key={i} className={`text-center py-1.5 px-1.5 ${i + 1 === currentInning && halfInning === 'bottom' ? 'text-primary font-bold' : 'text-foreground/70'}`}>
                 {inn.home !== null ? inn.home : '-'}

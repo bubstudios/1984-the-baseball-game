@@ -46,7 +46,7 @@ function TeamBox({ team, lineup, pitcher, label }) {
         <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-1">Pitcher</div>
         <div className="flex items-center gap-3 text-[11px] font-body">
           <span className="text-foreground font-medium">{pitcher.name}</span>
-          <span className="text-muted-foreground">{pitcher.gameStats.pitches} pitches</span>
+          <span className="text-muted-foreground">{pitcher.gameStats.pitches} P</span>
           <span className="text-muted-foreground">{pitcher.gameStats.so} K</span>
           <span className="text-muted-foreground">{pitcher.gameStats.bb} BB</span>
           <span className="text-muted-foreground">{pitcher.gameStats.h} H</span>
@@ -58,21 +58,14 @@ function TeamBox({ team, lineup, pitcher, label }) {
 }
 
 export default function BoxScore({ state }) {
+  const away = TEAMS[state.awayTeam];
+  const home = TEAMS[state.homeTeam];
+
   return (
     <ScrollArea className="h-[400px]">
       <div className="space-y-6 p-1">
-        <TeamBox
-          team={TEAMS.away}
-          lineup={state.awayLineup}
-          pitcher={state.awayPitcher}
-          label="Away"
-        />
-        <TeamBox
-          team={TEAMS.home}
-          lineup={state.homeLineup}
-          pitcher={state.homePitcher}
-          label="Home"
-        />
+        <TeamBox team={away} lineup={state.awayLineup} pitcher={state.awayPitcher} label="Away" />
+        <TeamBox team={home} lineup={state.homeLineup} pitcher={state.homePitcher} label="Home" />
       </div>
     </ScrollArea>
   );

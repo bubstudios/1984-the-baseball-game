@@ -1,24 +1,32 @@
-import { TEAMS } from './gameData';
+import { TEAMS, PITCH_TYPES, SWING_TYPES, TEAM_IDS } from './gameData';
 
-// Create initial game state
-export function createGameState(userTeam = 'home') {
-  const homeLineup = TEAMS.home.players.map((p, i) => ({ ...p, order: i + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0 } }));
-  const awayLineup = TEAMS.away.players.map((p, i) => ({ ...p, order: i + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0 } }));
+// Create initial game state with two selected teams
+export function createGameState(homeTeam, awayTeam) {
+  const home = TEAMS[homeTeam];
+  const away = TEAMS[awayTeam];
+
+  const homeLineup = home.lineup.map((p, i) => ({ ...p, order: i + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0 } }));
+  const awayLineup = away.lineup.map((p, i) => ({ ...p, order: i + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0 } }));
 
   return {
-    userTeam,
+    homeTeam,
+    awayTeam,
     inning: 1,
-    halfInning: 'top', // top = away batting, bottom = home batting
+    halfInning: 'top',
     outs: 0,
     balls: 0,
     strikes: 0,
-    bases: [null, null, null], // 1st, 2nd, 3rd
+    bases: [null, null, null],
     score: { home: 0, away: 0 },
     innings: Array(9).fill(null).map(() => ({ home: null, away: null })),
     homeLineup,
     awayLineup,
-    homePitcher: { ...TEAMS.home.pitchers[0], pitchCount: 0, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } },
-    awayPitcher: { ...TEAMS.away.pitchers[0], pitchCount: 0, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } },
+    homeRotation: [...home.rotation],
+    awayRotation: [...away.rotation],
+    homeBullpen: [...home.bullpen],
+    awayBullpen: [...away.bullpen],
+    homePitcher: createPitcherState(home.rotation[0]),
+    awayPitcher: createPitcherState(away.rotation[0]),
     homeBatterIndex: 0,
     awayBatterIndex: 0,
     log: [],
@@ -28,6 +36,12 @@ export function createGameState(userTeam = 'home') {
     pitchResult: null,
   };
 }
+
+function createPitcherState(p) {
+  return { ...p, pitchCount: 0, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
+}
+
+export { TEAM_IDS };
 
 function getCurrentBatter(state) {
   if (state.halfInning === 'top') {
@@ -62,8 +76,8 @@ function scoreRun(state) {
   }
 }
 
-function advanceRunnersFixed(state, bases, batter) {
-  let runnersScored = 0;
+function advanceRunners(state, bases, batter) {
+  let runsScored = 0;
   const pitcher = getCurrentPitcher(state);
 
   if (bases === 4) {
@@ -71,16 +85,16 @@ function advanceRunnersFixed(state, bases, batter) {
       if (state.bases[i]) {
         state.bases[i].gameStats.runs++;
         scoreRun(state);
-        runnersScored++;
+        runsScored++;
         state.bases[i] = null;
       }
     }
     batter.gameStats.runs++;
-    batter.gameStats.rbi += runnersScored + 1;
+    batter.gameStats.rbi += runsScored + 1;
     scoreRun(state);
-    pitcher.gameStats.r += runnersScored + 1;
-    pitcher.gameStats.er += runnersScored + 1;
-    return runnersScored + 1;
+    pitcher.gameStats.r += runsScored + 1;
+    pitcher.gameStats.er += runsScored + 1;
+    return runsScored + 1;
   }
 
   let rbi = 0;
@@ -93,19 +107,8 @@ function advanceRunnersFixed(state, bases, batter) {
         rbi++;
         state.bases[i] = null;
       } else {
-        if (state.bases[newBase] && newBase < 2) {
-          // force advance
-          const pushedBase = newBase + 1;
-          if (pushedBase >= 3) {
-            state.bases[newBase].gameStats.runs++;
-            scoreRun(state);
-            rbi++;
-          } else {
-            state.bases[pushedBase] = state.bases[newBase];
-          }
-        }
         state.bases[newBase] = state.bases[i];
-        if (i !== newBase) state.bases[i] = null;
+        state.bases[i] = null;
       }
     }
   }
@@ -131,6 +134,8 @@ function recordOut(state) {
 }
 
 function endHalfInning(state) {
+  const home = TEAMS[state.homeTeam];
+  const away = TEAMS[state.awayTeam];
   const half = state.halfInning === 'top' ? 'away' : 'home';
   if (state.innings[state.inning - 1][half] === null) {
     state.innings[state.inning - 1][half] = 0;
@@ -143,19 +148,17 @@ function endHalfInning(state) {
 
   if (state.halfInning === 'top') {
     state.halfInning = 'bottom';
-    // Check walk-off situation: bottom of 9+ and home is ahead
     if (state.inning >= 9 && state.score.home > state.score.away) {
       state.gameOver = true;
       state.waitingForInput = false;
-      state.log.push({ type: 'info', text: `Game Over! ${TEAMS.home.name} win ${state.score.home}-${state.score.away}!` });
+      state.log.push({ type: 'info', text: `Game Over! ${home.name} win ${state.score.home}-${state.score.away}!` });
       return;
     }
   } else {
-    // End of full inning
     if (state.inning >= 9 && state.score.home !== state.score.away) {
       state.gameOver = true;
       state.waitingForInput = false;
-      const winner = state.score.home > state.score.away ? TEAMS.home.name : TEAMS.away.name;
+      const winner = state.score.home > state.score.away ? home.name : away.name;
       const winScore = Math.max(state.score.home, state.score.away);
       const loseScore = Math.min(state.score.home, state.score.away);
       state.log.push({ type: 'info', text: `Game Over! ${winner} win ${winScore}-${loseScore}!` });
@@ -163,24 +166,29 @@ function endHalfInning(state) {
     }
     state.halfInning = 'top';
     state.inning++;
-    // Add extra innings
     if (state.inning > state.innings.length) {
       state.innings.push({ home: null, away: null });
     }
   }
 
-  const battingTeam = state.halfInning === 'top' ? TEAMS.away.name : TEAMS.home.name;
+  const battingTeam = state.halfInning === 'top' ? away.name : home.name;
   state.log.push({ type: 'info', text: `${state.halfInning === 'top' ? 'Top' : 'Bottom'} of inning ${state.inning} — ${battingTeam} batting` });
 }
 
-// Determine pitch outcome
+// Resolve pitch outcome using new pitcher ratings (1-10 scale)
 function resolvePitch(state, pitchType) {
   const pitcher = getCurrentPitcher(state);
   pitcher.gameStats.pitches++;
-  pitcher.pitchCount++;
 
-  const controlFactor = pitcher.control / 100;
-  const isStrike = Math.random() < (0.45 + controlFactor * 0.2);
+  // Control rating (1-10) determines strike zone accuracy
+  const controlFactor = pitcher.control / 10;
+  const baseStrikeChance = 0.35 + controlFactor * 0.28;
+
+  // Pitch type affects accuracy
+  const controlBonus = pitchType.controlBonus || 0;
+  const strikeChance = baseStrikeChance + (controlBonus * 0.04);
+
+  const isStrike = Math.random() < Math.min(strikeChance, 0.82);
 
   return {
     pitchType: pitchType.name,
@@ -191,20 +199,21 @@ function resolvePitch(state, pitchType) {
   };
 }
 
-// Determine swing outcome
+// Resolve swing outcome using new batter ratings (1-10 scale)
 function resolveSwing(state, swingType, pitch) {
   const batter = getCurrentBatter(state);
   const pitcher = getCurrentPitcher(state);
+  const home = TEAMS[state.homeTeam];
+  const away = TEAMS[state.awayTeam];
 
-  // Taking the pitch
-  if (swingType.name === 'Take') {
+  // Take pitch
+  if (swingType.name === 'Take Pitch') {
     if (pitch.isStrike) {
       state.strikes++;
       if (state.strikes >= 3) {
         batter.gameStats.ab++;
         batter.gameStats.so++;
         pitcher.gameStats.so++;
-        pitcher.gameStats.h += 0; // no hit
         const msg = `${batter.name} called out on strikes!`;
         state.log.push({ type: 'strikeout', text: msg });
         state.lastPlay = { type: 'strikeout', text: msg };
@@ -214,16 +223,14 @@ function resolveSwing(state, swingType, pitch) {
         recordOut(state);
         return;
       }
-      const msg = `Strike ${state.strikes} — ${batter.name} takes a ${pitch.location} ${pitch.pitchType}`;
-      state.log.push({ type: 'strike', text: msg });
-      state.lastPlay = { type: 'strike', text: msg };
+      state.log.push({ type: 'strike', text: `Strike ${state.strikes} — ${batter.name} takes a ${pitch.location} ${pitch.pitchType}` });
+      state.lastPlay = { type: 'strike', text: `Strike ${state.strikes} — ${batter.name} takes it` };
       return;
     } else {
       state.balls++;
       if (state.balls >= 4) {
         batter.gameStats.bb++;
         pitcher.gameStats.bb++;
-        // Walk — advance runners if forced
         const msg = `${batter.name} draws a walk!`;
         state.log.push({ type: 'walk', text: msg });
         state.lastPlay = { type: 'walk', text: msg };
@@ -233,16 +240,15 @@ function resolveSwing(state, swingType, pitch) {
         advanceBatter(state);
         return;
       }
-      const msg = `Ball ${state.balls} — ${pitch.pitchType} ${pitch.location}`;
-      state.log.push({ type: 'ball', text: msg });
-      state.lastPlay = { type: 'ball', text: msg };
+      state.log.push({ type: 'ball', text: `Ball ${state.balls} — ${pitch.pitchType} ${pitch.location}` });
+      state.lastPlay = { type: 'ball', text: `Ball ${state.balls}` };
       return;
     }
   }
 
-  // Bunt attempt
+  // Bunt
   if (swingType.name === 'Bunt') {
-    if (!pitch.isStrike && Math.random() < 0.6) {
+    if (!pitch.isStrike && Math.random() < 0.55) {
       state.balls++;
       if (state.balls >= 4) {
         batter.gameStats.bb++;
@@ -256,20 +262,22 @@ function resolveSwing(state, swingType, pitch) {
         advanceBatter(state);
         return;
       }
-      const msg = `Ball ${state.balls} — ${batter.name} pulls back the bunt`;
-      state.log.push({ type: 'ball', text: msg });
-      state.lastPlay = { type: 'ball', text: msg };
+      state.log.push({ type: 'ball', text: `Ball ${state.balls} — ${batter.name} pulls back the bunt` });
+      state.lastPlay = { type: 'ball', text: `Ball ${state.balls}` };
       return;
     }
 
-    const buntSuccess = Math.random() < (0.45 + batter.speed / 300);
+    // Bunt success based on bunting skill (1-10) and speed
+    const buntSkill = batter.bunting / 10;
+    const speedFactor = batter.speed / 10;
+    const buntSuccess = Math.random() < (0.3 + buntSkill * 0.30 + speedFactor * 0.10);
+
     if (buntSuccess) {
       batter.gameStats.ab++;
       batter.gameStats.hits++;
       pitcher.gameStats.h++;
-      // Advance runners 1 base
-      const rbi = advanceRunnersFixed(state, 1, batter);
-      const msg = `${batter.name} lays down a sacrifice bunt!${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
+      const rbi = advanceRunners(state, 1, batter);
+      const msg = `${batter.name} lays down a bunt single!${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'single', text: msg });
       state.lastPlay = { type: 'single', text: msg };
       state.balls = 0;
@@ -291,56 +299,40 @@ function resolveSwing(state, swingType, pitch) {
         recordOut(state);
         return;
       }
-      const msg = `${batter.name} fouls off the bunt attempt — Strike ${state.strikes}`;
-      state.log.push({ type: 'foul', text: msg });
-      state.lastPlay = { type: 'foul', text: msg };
+      state.log.push({ type: 'foul', text: `${batter.name} fouls off the bunt — Strike ${state.strikes}` });
+      state.lastPlay = { type: 'foul', text: `Foul bunt — Strike ${state.strikes}` };
       return;
     }
   }
 
-  // Swing or Power or Contact
-  const isPower = swingType.name === 'Power';
-  const isContact = swingType.name === 'Contact';
+  // Swing (Normal, Contact, or Power)
+  const isPower = swingType.name === 'Power Swing';
+  const isContact = swingType.name === 'Contact Swing';
 
-  // Chance to make contact
-  let contactChance = (batter.avg * 2.5);
-  if (isPower) contactChance *= 0.72;
-  if (isContact) contactChance *= 1.25;
-  if (!pitch.isStrike) contactChance *= 0.55;
+  // Contact chance: based on contact rating (1-10)
+  const contactRating = batter.contact / 10;
+  let contactChance = 0.25 + contactRating * 0.35;
 
-  // Pitcher stuff reduces contact
-  contactChance *= (1 - pitcher.stuff / 350);
+  if (isPower) contactChance -= 0.10;
+  if (isContact) contactChance += 0.12;
+  if (!pitch.isStrike) contactChance -= 0.20;
+
+  // Pitcher's off-speed and pitch speed affect contact
+  const pitcherDifficulty = (pitcher.offSpeed / 10) * 0.07 + (pitcher.pitchSpeed / 10) * 0.05;
+  contactChance -= pitcherDifficulty;
+  contactChance = Math.max(0.05, Math.min(contactChance, 0.85));
 
   const madeContact = Math.random() < contactChance;
 
   if (!madeContact) {
-    if (!pitch.isStrike) {
-      // Swung and missed at a ball
-      state.strikes++;
-      if (state.strikes >= 3) {
-        batter.gameStats.ab++;
-        batter.gameStats.so++;
-        pitcher.gameStats.so++;
-        const msg = `${batter.name} swings and misses — Struck out!`;
-        state.log.push({ type: 'strikeout', text: msg });
-        state.lastPlay = { type: 'strikeout', text: msg };
-        state.balls = 0;
-        state.strikes = 0;
-        advanceBatter(state);
-        recordOut(state);
-        return;
-      }
-      const msg = `${batter.name} swings and misses — Strike ${state.strikes}`;
-      state.log.push({ type: 'strike', text: msg });
-      state.lastPlay = { type: 'strike', text: msg };
-      return;
-    }
     state.strikes++;
     if (state.strikes >= 3) {
       batter.gameStats.ab++;
       batter.gameStats.so++;
       pitcher.gameStats.so++;
-      const msg = `${batter.name} goes down swinging!`;
+      const msg = pitch.isStrike
+        ? `${batter.name} goes down swinging!`
+        : `${batter.name} swings and misses — Struck out!`;
       state.log.push({ type: 'strikeout', text: msg });
       state.lastPlay = { type: 'strikeout', text: msg };
       state.balls = 0;
@@ -349,74 +341,69 @@ function resolveSwing(state, swingType, pitch) {
       recordOut(state);
       return;
     }
-    const msg = `Swing and a miss! Strike ${state.strikes}`;
-    state.log.push({ type: 'strike', text: msg });
-    state.lastPlay = { type: 'strike', text: msg };
+    state.log.push({ type: 'strike', text: `Swing and a miss! Strike ${state.strikes}` });
+    state.lastPlay = { type: 'strike', text: `Swinging strike ${state.strikes}` };
     return;
   }
 
-  // Made contact — determine result
+  // Made contact
   batter.gameStats.ab++;
 
-  // Foul ball check
-  if (Math.random() < 0.28) {
-    if (state.strikes < 2) {
-      state.strikes++;
-    }
-    const msg = `${batter.name} fouls it off — ${state.balls}-${state.strikes} count`;
-    state.log.push({ type: 'foul', text: msg });
-    state.lastPlay = { type: 'foul', text: msg };
-    batter.gameStats.ab--; // fouls don't count as AB
+  // Foul ball
+  if (Math.random() < 0.25) {
+    if (state.strikes < 2) state.strikes++;
+    state.log.push({ type: 'foul', text: `${batter.name} fouls it off — ${state.balls}-${state.strikes}` });
+    state.lastPlay = { type: 'foul', text: `Foul ball` };
+    batter.gameStats.ab--;
     return;
   }
 
-  // Ball in play
-  let hitChance = batter.avg;
-  if (isPower) hitChance *= 0.85;
-  if (isContact) hitChance *= 1.12;
+  // Ball in play — determine hit vs out
+  const powerRating = batter.power / 10;
+  let hitChance = 0.20 + contactRating * 0.28;
+  if (isPower) hitChance -= 0.04;
+  if (isContact) hitChance += 0.08;
+
+  // Pitcher control reduces hard contact
+  hitChance -= (pitcher.control / 10) * 0.03;
+  hitChance = Math.max(0.08, Math.min(hitChance, 0.65));
 
   const rand = Math.random();
 
-  if (rand < hitChance * 0.95) {
-    // It's a hit!
+  if (rand < hitChance) {
+    // HIT!
     pitcher.gameStats.h++;
     batter.gameStats.hits++;
 
-    // Determine hit type
-    let powerFactor = batter.power / 100;
-    if (isPower) powerFactor *= 1.5;
-    if (isContact) powerFactor *= 0.6;
-
+    let powerMod = isPower ? 1.6 : (isContact ? 0.5 : 1.0);
+    const effectivePower = powerRating * powerMod;
     const hitRoll = Math.random();
 
-    if (hitRoll < powerFactor * 0.08) {
+    if (hitRoll < effectivePower * 0.065) {
       // HOME RUN
       batter.gameStats.hr++;
       const runnersOn = state.bases.filter(b => b !== null).length;
-      const rbi = advanceRunnersFixed(state, 4, batter);
+      const rbi = advanceRunners(state, 4, batter);
       const grandSlam = runnersOn === 3;
       const msg = grandSlam
-        ? `💥 GRAND SLAM! ${batter.name} clears the bases! ${rbi} RBIs!`
+        ? `💥 GRAND SLAM! ${batter.name} clears the bases!`
         : rbi > 1
         ? `💥 ${batter.name} hits a ${rbi}-run HOME RUN!`
         : `💥 ${batter.name} hits a solo HOME RUN!`;
       state.log.push({ type: 'homerun', text: msg });
       state.lastPlay = { type: 'homerun', text: msg };
-    } else if (hitRoll < powerFactor * 0.15) {
-      // Triple
-      const rbi = advanceRunnersFixed(state, 3, batter);
-      const msg = `${batter.name} rips a triple to the gap!${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
+    } else if (hitRoll < effectivePower * 0.15) {
+      const rbi = advanceRunners(state, 3, batter);
+      const msg = `${batter.name} rips a triple!${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'triple', text: msg });
       state.lastPlay = { type: 'triple', text: msg };
-    } else if (hitRoll < powerFactor * 0.35) {
-      // Double
-      const rbi = advanceRunnersFixed(state, 2, batter);
+    } else if (hitRoll < effectivePower * 0.32) {
+      const rbi = advanceRunners(state, 2, batter);
       const msg = `${batter.name} doubles off the wall!${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'double', text: msg });
       state.lastPlay = { type: 'double', text: msg };
     } else {
-      // Single
-      const rbi = advanceRunnersFixed(state, 1, batter);
+      const rbi = advanceRunners(state, 1, batter);
       const singles = [
         `${batter.name} lines a single to left!`,
         `${batter.name} grounds a single through the hole!`,
@@ -431,20 +418,9 @@ function resolveSwing(state, swingType, pitch) {
     state.strikes = 0;
     advanceBatter(state);
   } else {
-    // Out
-    const outTypes = [
-      { text: `${batter.name} grounds out to short`, type: 'groundout' },
-      { text: `${batter.name} flies out to center`, type: 'flyout' },
-      { text: `${batter.name} pops up to second`, type: 'flyout' },
-      { text: `${batter.name} lines out to third`, type: 'lineout' },
-      { text: `${batter.name} grounds out to the pitcher`, type: 'groundout' },
-      { text: `${batter.name} flies out to right`, type: 'flyout' },
-      { text: `${batter.name} flies out to left`, type: 'flyout' },
-    ];
-
+    // OUT
     // Double play chance
     if (state.outs < 2 && state.bases[0] && Math.random() < 0.18) {
-      const dpRunner = state.bases[0];
       state.bases[0] = null;
       const msg = `${batter.name} grounds into a double play!`;
       state.log.push({ type: 'doubleplay', text: msg });
@@ -469,7 +445,7 @@ function resolveSwing(state, swingType, pitch) {
       const msg = `${batter.name} hits a sacrifice fly — runner scores from third!`;
       state.log.push({ type: 'sacfly', text: msg });
       state.lastPlay = { type: 'sacfly', text: msg };
-      batter.gameStats.ab--; // sac fly doesn't count as AB
+      batter.gameStats.ab--;
       state.balls = 0;
       state.strikes = 0;
       advanceBatter(state);
@@ -477,6 +453,15 @@ function resolveSwing(state, swingType, pitch) {
       return;
     }
 
+    const outTypes = [
+      { text: `${batter.name} grounds out to short`, type: 'groundout' },
+      { text: `${batter.name} flies out to center`, type: 'flyout' },
+      { text: `${batter.name} pops up to second`, type: 'flyout' },
+      { text: `${batter.name} lines out to third`, type: 'lineout' },
+      { text: `${batter.name} grounds out to the pitcher`, type: 'groundout' },
+      { text: `${batter.name} flies out to right`, type: 'flyout' },
+      { text: `${batter.name} grounds out to first`, type: 'groundout' },
+    ];
     const out = outTypes[Math.floor(Math.random() * outTypes.length)];
     state.log.push({ type: out.type, text: out.text });
     state.lastPlay = { type: out.type, text: out.text };
@@ -488,11 +473,9 @@ function resolveSwing(state, swingType, pitch) {
 }
 
 function handleWalk(state, batter) {
-  // Force runners forward if needed
   if (state.bases[0]) {
     if (state.bases[1]) {
       if (state.bases[2]) {
-        // Bases loaded walk
         state.bases[2].gameStats.runs++;
         scoreRun(state);
         batter.gameStats.rbi++;
@@ -508,63 +491,57 @@ function handleWalk(state, batter) {
 
 // Main game step
 export function processAtBat(state, pitchType, swingType) {
+  const home = TEAMS[state.homeTeam];
+  const away = TEAMS[state.awayTeam];
   const newState = JSON.parse(JSON.stringify(state));
 
-  // Restore object references for bases
-  const homeLineup = newState.homeLineup;
-  const awayLineup = newState.awayLineup;
+  resolvePitch(newState, pitchType);
+  resolveSwing(newState, swingType, newState.pitchResult);
 
-  // Resolve the pitch
-  const pitch = resolvePitch(newState, pitchType);
-  newState.pitchResult = pitch;
-
-  // Resolve the swing
-  resolveSwing(newState, swingType, pitch);
-
-  // Check walk-off
+  // Walk-off check
   if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) {
     newState.gameOver = true;
     newState.waitingForInput = false;
-    newState.log.push({ type: 'info', text: `🎉 Walk-off! ${TEAMS.home.name} win ${newState.score.home}-${newState.score.away}!` });
+    newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
   }
 
   return newState;
 }
 
-// CPU picks a pitch
+// CPU pitch selection based on pitcher strengths
 export function cpuSelectPitch(state) {
   const pitcher = getCurrentPitcher(state);
   const rand = Math.random();
-  // Weight toward fastball but vary
-  if (rand < 0.38) return 0; // fastball
-  if (rand < 0.58) return 2; // slider
-  if (rand < 0.78) return 1; // curveball
-  return 3; // changeup
+
+  // Favor pitch types that match pitcher's strengths
+  if (pitcher.pitchSpeed >= 8 && rand < 0.40) return 0; // Fastball
+  if (pitcher.offSpeed >= 8 && rand < 0.55) return 1; // Curveball
+  if (rand < 0.70) return 2; // Slider
+  if (rand < 0.88) return 3; // Changeup
+  return 0; // Default fastball
 }
 
-// CPU picks a swing
+// CPU swing selection based on batter strengths and count
 export function cpuSelectSwing(state) {
   const batter = getCurrentBatter(state);
   const rand = Math.random();
 
-  // Smart AI — considers count
+  // Count-aware decisions
   if (state.strikes === 2) {
-    // Protect the plate
-    if (rand < 0.7) return 1; // Contact
-    return 0; // Swing
+    return rand < 0.75 ? 1 : 0; // Contact or Normal
   }
   if (state.balls === 3) {
-    if (rand < 0.5) return 3; // Take
-    return 1; // Contact
+    return rand < 0.45 ? 3 : 1; // Take or Contact
   }
   if (state.balls >= 2 && state.strikes === 0) {
-    if (rand < 0.4) return 3; // Take
+    if (rand < 0.35) return 3; // Take
   }
 
-  // Mix based on power
-  if (batter.power > 80 && rand < 0.3) return 2; // Power
-  if (rand < 0.5) return 0; // Swing
-  if (rand < 0.75) return 1; // Contact
+  // Based on batter type
+  if (batter.power >= 8 && rand < 0.30) return 2; // Power swing
+  if (batter.contact >= 8 && rand < 0.45) return 1; // Contact swing
+  if (rand < 0.45) return 0; // Normal swing
+  if (rand < 0.70) return 1; // Contact
   return 0;
 }
 
