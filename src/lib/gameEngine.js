@@ -1067,9 +1067,12 @@ function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
       state.lastPlay = { type: 'double', text: msg };
     } else {
       advanceRunners(state, 1, batter, false);
-      // On hit-and-run single, runners on base auto-advance one extra
-      advanceHitAndRunRunners(state, batter);
-      const msg = `${batter.name} slaps a single — hit-and-run works!`;
+      // Hit-and-run: existing baserunners get one extra base (they were going on the pitch)
+      // The batter stays at 1st — they just hit a single
+      const runnerNames = advanceHitAndRunRunners(state, batter);
+      const msg = runnerNames
+        ? `${batter.name} slaps a single — hit-and-run! ${runnerNames}`
+        : `${batter.name} slaps a single — hit-and-run works!`;
       state.log.push({ type: 'single', text: msg });
       state.lastPlay = { type: 'single', text: msg };
     }
@@ -1094,22 +1097,30 @@ function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
 
 function advanceHitAndRunRunners(state, batter) {
   let extraRuns = 0;
+  const advances = [];
+  // Only advance runners already on base BEFORE the hit — skip the batter
   for (let i = 2; i >= 0; i--) {
     const runner = state.bases[i];
     if (!runner) continue;
+    // Don't advance the batter — they stay at the base they earned
+    if (runner.name === batter.name) continue;
     if (i + 1 >= 3) {
       runner.gameStats.runs++;
       scoreRun(state);
       extraRuns++;
       state.bases[i] = null;
+      advances.push(`${runner.name.split(' ').pop()} scores`);
     } else if (!state.bases[i + 1]) {
       state.bases[i + 1] = runner;
       state.bases[i] = null;
+      const baseName = i + 1 === 2 ? 'third' : 'second';
+      advances.push(`${runner.name.split(' ').pop()} to ${baseName}`);
     }
   }
   if (extraRuns > 0) {
     batter.gameStats.rbi += extraRuns;
   }
+  return advances.length > 0 ? advances.join(', ') : null;
 }
 
 function handleHitAndRunCaught(state) {
