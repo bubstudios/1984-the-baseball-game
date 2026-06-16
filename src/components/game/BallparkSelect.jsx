@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
-import { Play, MapPin, Users } from 'lucide-react';
+import { generateWeather } from '@/lib/weather';
+import { Play, MapPin, Users, RefreshCw, Sun, Moon, Thermometer, Wind, Cloud, CloudRain, CloudSnow } from 'lucide-react';
 
 export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack }) {
   const [selectedPark, setSelectedPark] = useState(null);
   const [selectedParkTeam, setSelectedParkTeam] = useState(null);
+  const [weather, setWeather] = useState(null);
 
   const userTeamData = TEAMS[userTeam];
   const cpuTeamData = TEAMS[cpuTeam];
@@ -13,12 +15,21 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
   const handleSelect = (park, teamKey) => {
     setSelectedPark(park);
     setSelectedParkTeam(teamKey);
+    // Generate weather for this park
+    const w = generateWeather(TEAMS[teamKey].city);
+    setWeather(w);
+  };
+
+  const handleRegenerate = () => {
+    if (selectedParkTeam) {
+      setWeather(generateWeather(TEAMS[selectedParkTeam].city));
+    }
   };
 
   const handleConfirm = () => {
-    if (selectedParkTeam) {
+    if (selectedParkTeam && weather) {
       const useDH = TEAMS[selectedParkTeam].league === 'AL';
-      onConfirm(selectedParkTeam, useDH);
+      onConfirm(selectedParkTeam, useDH, weather);
     }
   };
 
@@ -84,11 +95,20 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
     );
   };
 
+  const WeatherIcon = ({ condition }) => {
+    switch (condition) {
+      case 'rain': return <CloudRain className="w-4 h-4 text-blue-400" />;
+      case 'snow': return <CloudSnow className="w-4 h-4 text-blue-200" />;
+      case 'overcast': return <Cloud className="w-4 h-4 text-muted-foreground" />;
+      default: return <Sun className="w-4 h-4 text-amber-400" />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-background text-foreground p-4 flex items-start justify-center pt-6">
       <div className="max-w-lg w-full space-y-5">
         {/* Header */}
-        <div className="text-center space-y-1.5 pt-4">
+        <div className="text-center space-y-1.5">
           <div className="flex items-center justify-center gap-2.5">
             <span className="text-2xl">🏟️</span>
             <h1 className="font-display text-[11px] text-primary tracking-wider">1984: THE BASEBALL SEASON</h1>
@@ -114,6 +134,71 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
           <ParkCard teamKey={cpuTeam} isUser={false} />
         </div>
 
+        {/* Weather Panel */}
+        {weather && (
+          <div className="bg-card border border-border rounded-xl p-4 space-y-3 animate-in fade-in">
+            <div className="flex items-center justify-between">
+              <h3 className="font-heading text-sm font-bold text-foreground">Game Conditions</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRegenerate}
+                className="h-7 px-2 text-[10px] text-muted-foreground hover:text-foreground gap-1"
+              >
+                <RefreshCw className="w-3 h-3" />
+                Re-roll
+              </Button>
+            </div>
+
+            <div className="bg-muted/30 rounded-lg p-3 space-y-2">
+              {/* Date & Time */}
+              <div className="flex items-center gap-2">
+                {weather.isDay ? (
+                  <Sun className="w-4 h-4 text-amber-400" />
+                ) : (
+                  <Moon className="w-4 h-4 text-blue-300" />
+                )}
+                <span className="font-heading text-sm font-bold text-foreground">{weather.date}</span>
+                <span className="text-[10px] text-muted-foreground">·</span>
+                <span className="text-[10px] font-heading text-muted-foreground">
+                  {weather.isDay ? 'Day Game' : 'Night Game'}
+                </span>
+              </div>
+
+              {/* Temp + Conditions */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <Thermometer className="w-3.5 h-3.5 text-red-400" />
+                  <span className="font-heading text-sm font-bold text-foreground">{weather.temperature}°F</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <WeatherIcon condition={weather.condition} />
+                  <span className="text-xs font-body text-foreground/80 capitalize">{weather.condition}</span>
+                </div>
+                {weather.windLabel && weather.windLabel !== 'Calm' && (
+                  <div className="flex items-center gap-1.5">
+                    <Wind className="w-3.5 h-3.5 text-cyan-400" />
+                    <span className="text-xs font-body text-foreground/80">{weather.windLabel}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Effects */}
+            {weather.effects.length > 0 && (
+              <div className="space-y-1">
+                <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground">Weather Effects</div>
+                {weather.effects.map((e, i) => (
+                  <div key={i} className="text-[10px] text-muted-foreground flex items-start gap-1.5">
+                    <span className="text-primary mt-0.5">•</span>
+                    <span>{e}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex gap-2">
           <Button variant="outline" onClick={onBack} className="flex-shrink-0 font-heading text-sm">
@@ -121,12 +206,14 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={!selectedPark}
+            disabled={!selectedPark || !weather}
             className="flex-1 gap-2 font-heading text-sm py-5"
             size="lg"
           >
             <Play className="w-5 h-5" />
-            {selectedPark ? `Play at ${TEAMS[selectedParkTeam]?.stadium}` : 'Select a ballpark'}
+            {selectedPark && weather
+              ? `Play Ball at ${TEAMS[selectedParkTeam]?.stadium}`
+              : 'Select a ballpark'}
           </Button>
         </div>
       </div>

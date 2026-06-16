@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TEAMS, PITCH_TYPES, SWING_TYPES } from '@/lib/gameData';
 import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, attemptSteal, setHitAndRun, cpuDecideSteal, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher } from '@/lib/gameEngine';
+import { applyWeatherEffects } from '@/lib/weather';
 import TeamSelect from '@/components/game/TeamSelect';
 import BallparkSelect from '@/components/game/BallparkSelect';
 import LineupManager from '@/components/game/LineupManager';
@@ -27,18 +28,26 @@ export default function Home() {
   const [lineupPhase, setLineupPhase] = useState(null); // { home, away, useDH, parkTeam }
   const [gameStadium, setGameStadium] = useState(null);
   const [useDH, setUseDH] = useState(false);
+  const [gameWeather, setGameWeather] = useState(null);
   const [showSubs, setShowSubs] = useState(false);
 
-  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag) => {
+  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather) => {
     setHomeTeam(home);
     setAwayTeam(away);
     setUserTeam(home); // user controls home team
     setUseDH(useDHFlag);
     setGameStadium(lineupPhase?.parkTeam ? TEAMS[lineupPhase.parkTeam]?.stadium : null);
-    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag);
+    setGameWeather(weather || null);
+    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather);
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
+    if (weather) {
+      state.log.push({ type: 'info', text: `🌤 ${weather.summary} — ${weather.date}` });
+      if (weather.effects.length > 0) {
+        weather.effects.forEach(e => state.log.push({ type: 'info', text: `   ${e}` }));
+      }
+    }
     state.log.push({ type: 'info', text: `Top of inning 1 — ${awayName} batting` });
     setGameState(state);
     setLineupPhase(null);
@@ -48,13 +57,13 @@ export default function Home() {
     setBallparkPhase({ home, away });
   }, []);
 
-  const handleBallparkConfirm = useCallback((parkTeam, useDHFlag) => {
-    setLineupPhase({ home: ballparkPhase.home, away: ballparkPhase.away, useDH: useDHFlag, parkTeam });
+  const handleBallparkConfirm = useCallback((parkTeam, useDHFlag, weather) => {
+    setLineupPhase({ home: ballparkPhase.home, away: ballparkPhase.away, useDH: useDHFlag, parkTeam, weather });
     setBallparkPhase(null);
   }, [ballparkPhase]);
 
   const handleLineupConfirm = useCallback((customLineup) => {
-    startGame(lineupPhase.home, lineupPhase.away, customLineup, null, lineupPhase.useDH);
+    startGame(lineupPhase.home, lineupPhase.away, customLineup, null, lineupPhase.useDH, lineupPhase.weather);
   }, [lineupPhase, startGame]);
 
   const isUserBatting = gameState && (
@@ -142,6 +151,7 @@ export default function Home() {
     setLineupPhase(null);
     setGameStadium(null);
     setUseDH(false);
+    setGameWeather(null);
     setShowSubs(false);
     setHomeTeam(null);
     setAwayTeam(null);
@@ -195,11 +205,18 @@ export default function Home() {
             <div>
               <div className="font-display text-[10px] text-primary tracking-wider">1984: THE BASEBALL SEASON</div>
               <div className="font-heading text-xs text-muted-foreground">
-                {inningLabel} · {battingTeamName} batting
-                {gameStadium && <span className="mx-1.5 text-primary/50">|</span>}
-                {gameStadium && <span className="text-primary/60">{gameStadium}</span>}
-                {useDH !== null && <span className="text-[9px] text-muted-foreground/50 ml-1">({useDH ? 'DH' : 'No DH'})</span>}
-              </div>
+                                {inningLabel} · {battingTeamName} batting
+                                {gameStadium && <span className="mx-1.5 text-primary/50">|</span>}
+                                {gameStadium && <span className="text-primary/60">{gameStadium}</span>}
+                                {useDH !== null && <span className="text-[9px] text-muted-foreground/50 ml-1">({useDH ? 'DH' : 'No DH'})</span>}
+                              </div>
+                              {gameWeather && (
+                                <div className="font-heading text-[10px] text-muted-foreground/70 mt-0.5">
+                                  {gameWeather.date} · {gameWeather.temperature}°F · {gameWeather.condition === 'clear' ? 'Clear' : gameWeather.condition === 'overcast' ? 'Overcast' : gameWeather.condition === 'rain' ? 'Rain' : 'Snow'}
+                                  {gameWeather.windSpeed !== 'calm' && gameWeather.windLabel && <> · {gameWeather.windLabel}</>}
+                                  {gameWeather.isDay ? ' · Day' : ' · Night'}
+                                </div>
+                              )}
             </div>
           </div>
           <div className="flex items-center gap-4">

@@ -1,7 +1,8 @@
 import { TEAMS, PITCH_TYPES, SWING_TYPES, TEAM_IDS, PLAYER_ERRORS, DEFAULT_PITCHES } from './gameData';
+import { applyWeatherEffects } from './weather';
 
 // Create initial game state with two selected teams
-export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false) {
+export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null) {
   const home = TEAMS[homeTeam];
   const away = TEAMS[awayTeam];
 
@@ -74,6 +75,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     pitchResult: null,
     hitAndRun: false,
     pendingSteal: null,
+    weather: weather || null,
   };
 }
 
@@ -692,9 +694,16 @@ function resolveSwing(state, swingType, pitch) {
     return;
   }
 
+  // Weather effects on this swing
+  const wx = applyWeatherEffects(state.weather, {});
+  const hrMod = wx.hrMod || 1;
+  const doubleMod = wx.doubleMod || 1;
+  const errorWx = wx.errorMult || 1;
+  const contactWx = wx.contactMod || 0;
+
   // Ball in play — determine hit vs out
   const powerRating = adjBatter.power / 10;
-  let hitChance = 0.20 + contactRating * 0.28;
+  let hitChance = 0.20 + (contactRating + contactWx / 10) * 0.28;
   if (isPower) hitChance -= 0.04;
   if (isContact) hitChance += 0.08;
 
@@ -729,7 +738,7 @@ function resolveSwing(state, swingType, pitch) {
     const speedFactor = adjBatter.speed / 10;
     const hitRoll = Math.random();
 
-    if (hitRoll < effectivePower * 0.065) {
+    if (hitRoll < effectivePower * 0.065 * hrMod) {
       // HOME RUN
       batter.gameStats.hr++;
       const runnersOn = state.bases.filter(b => b !== null).length;
@@ -742,13 +751,13 @@ function resolveSwing(state, swingType, pitch) {
         : `💥 ${batter.name} hits a solo HOME RUN!`;
       state.log.push({ type: 'homerun', text: msg });
       state.lastPlay = { type: 'homerun', text: msg };
-    } else if (hitRoll < effectivePower * 0.10 + speedFactor * 0.08) {
+    } else if (hitRoll < (effectivePower * 0.10 + speedFactor * 0.08) * doubleMod) {
       // TRIPLE — based on Contact, Power, and Speed
       const rbi = advanceRunners(state, 3, batter, true);
       const msg = `${batter.name} rips a triple into the gap!${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'triple', text: msg });
       state.lastPlay = { type: 'triple', text: msg };
-    } else if (hitRoll < effectivePower * 0.32) {
+    } else if (hitRoll < effectivePower * 0.32 * doubleMod) {
       const rbi = advanceRunners(state, 2, batter, true);
       const msg = `${batter.name} doubles off the wall!${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'double', text: msg });
@@ -803,7 +812,7 @@ function resolveSwing(state, swingType, pitch) {
       const fielder = defenders[out.pos];
       if (fielder) {
         const adjFielder = getAdjustedPlayer(fielder);
-        const errorChance = getErrorChance(fielder.name) * adjFielder.errorMult;
+        const errorChance = getErrorChance(fielder.name) * adjFielder.errorMult * errorWx;
         if (Math.random() < errorChance) {
           // Error! Batter reaches (not a hit), runners advance one base
           batter.gameStats.ab++;
