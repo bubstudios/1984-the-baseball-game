@@ -100,18 +100,13 @@ export default function LineupManager({ teamKey, teamData, useDH, parkTeam, onCo
   const allPositionPlayers = useMemo(() => {
     const players = [...teamData.lineup];
     if (teamData.bench) players.push(...teamData.bench);
-    // Without DH, pitchers are available to hit (with their batting stats)
+    // Without DH, pitchers are available to hit — preserve full pitcher object for pitching stats
     if (!useDH) {
       const allPitchers = [...teamData.rotation, ...teamData.bullpen];
       allPitchers.forEach(p => {
         players.push({
-          name: p.name,
-          pos: 'SP',
-          bats: p.bats || 'R',
-          contact: p.contact || 2,
-          power: p.power || 1,
-          bunting: p.bunting || 3,
-          speed: p.speed || 2,
+          ...p,
+          pos: p.pos || 'SP',
           defense: 0,
           arm: 0,
         });
