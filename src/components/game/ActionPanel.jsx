@@ -58,7 +58,7 @@ export default function ActionPanel({
 
     return (
       <div className="space-y-2">
-        <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground text-center mb-2">Select Pitch</div>
+        <div className="text-[10px] font-heading uppercase tracking-widest text-slate-400 text-center mb-2">Select Pitch</div>
         <div className="flex items-center justify-center gap-3">
           {pitches.map((pitchName) => (
             <button
@@ -97,7 +97,7 @@ export default function ActionPanel({
                   {pitchShortNames[pitchName] || pitchName.slice(0, 2)}
                 </span>
               </div>
-              <span className="text-[9px] font-heading text-muted-foreground mt-1 text-center leading-tight">
+              <span className="text-[9px] font-heading text-slate-300 mt-1 text-center leading-tight">
                 {pitchName}
               </span>
             </button>

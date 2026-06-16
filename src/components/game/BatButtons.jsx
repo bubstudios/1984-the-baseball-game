@@ -20,7 +20,7 @@ export default function BatButtons({ onSwing, disabled }) {
 
   return (
     <div className="space-y-2">
-      <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground text-center mb-2">Choose Swing</div>
+      <div className="text-[10px] font-heading uppercase tracking-widest text-slate-400 text-center mb-2">Choose Swing</div>
       <div className="flex items-end justify-center gap-4 sm:gap-6">
         {BAT_ACTIONS.map((action) => {
           const isActive = swinging === action.swingIndex;
@@ -54,50 +54,49 @@ export default function BatButtons({ onSwing, disabled }) {
                     </linearGradient>
                   </defs>
 
-                  {/* Barrel — left side, tapers down */}
-                  <ellipse cx="14" cy="22.5" rx="5" ry="11" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
-                  {/* Barrel body */}
-                  <path d="M19,11.5 Q36,13 44,18 L44,27 Q36,32 19,33.5 Z" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
+                  {/* Barrel — gradually tapers from wide left to narrow right */}
+                  <polygon points="52,18 52,27 5,13 5,32" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
+                  {/* Barrel rounded cap on left end */}
+                  <path d="M5,13 C2,13 2,32 5,32" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
                   {/* Barrel highlight — top edge glow */}
-                  <path d="M20,13 Q35,14.5 43,19" fill="none" stroke="#FFFDF5" strokeWidth="2.5" opacity="0.6" strokeLinecap="round" />
+                  <path d="M7,16 Q28,19 48,20" fill="none" stroke="#FFFDF5" strokeWidth="1.8" opacity="0.5" strokeLinecap="round" />
                   {/* Bottom shadow on barrel */}
-                  <path d="M20,32 Q35,30.5 43,26" fill="none" stroke="#A07040" strokeWidth="1.5" opacity="0.4" strokeLinecap="round" />
+                  <path d="M7,30 Q28,27 48,25" fill="none" stroke="#A07040" strokeWidth="1.5" opacity="0.4" strokeLinecap="round" />
 
                   {/* Transition zone — barrel to handle */}
-                  <path d="M44,18 L44,27 L58,22 L58,23 Z" fill="#6B4226" stroke="#3B1E08" strokeWidth="1" />
+                  <polygon points="52,18 52,27 64,24.5 64,20.5" fill="#6B4226" stroke="#3B1E08" strokeWidth="0.8" />
 
                   {/* Handle — darker wood */}
-                  <rect x="58" y="19.5" width="60" height="6" rx="2.5" fill="url(#handleGrad)" stroke="#3B1E08" strokeWidth="1" />
+                  <rect x="64" y="19.5" width="55" height="6" rx="2.5" fill="url(#handleGrad)" stroke="#3B1E08" strokeWidth="1" />
 
                   {/* Grip tape — white with black hash marks */}
-                  <rect x="80" y="18.5" width="35" height="8" rx="1" fill="#F0ECE0" stroke="#3B1E08" strokeWidth="0.8" />
+                  <rect x="83" y="18.5" width="33" height="8" rx="1" fill="#F0ECE0" stroke="#3B1E08" strokeWidth="0.8" />
                   {/* Diagonal hash marks on the grip tape */}
                   {[
-                    [83, 18.5, 87, 26.5],
-                    [87, 18.5, 91, 26.5],
-                    [91, 18.5, 95, 26.5],
-                    [95, 18.5, 99, 26.5],
-                    [99, 18.5, 103, 26.5],
-                    [103, 18.5, 107, 26.5],
-                    [107, 18.5, 111, 26.5],
+                    [86, 18.5, 90, 26.5],
+                    [90, 18.5, 94, 26.5],
+                    [94, 18.5, 98, 26.5],
+                    [98, 18.5, 102, 26.5],
+                    [102, 18.5, 106, 26.5],
+                    [106, 18.5, 110, 26.5],
                   ].map(([x1, y1, x2, y2], i) => (
                     <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#222" strokeWidth="1" opacity="0.7" />
                   ))}
 
                   {/* Tapered neck between grip and knob */}
-                  <rect x="118" y="20.5" width="12" height="4" rx="1" fill="#3B1E08" stroke="#2A1405" strokeWidth="0.6" />
+                  <rect x="119" y="20.5" width="13" height="4" rx="1" fill="#3B1E08" stroke="#2A1405" strokeWidth="0.6" />
 
                   {/* Knob — flared base on the right */}
-                  <rect x="130" y="17" width="12" height="11" rx="4" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
+                  <rect x="132" y="17" width="12" height="11" rx="4" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
                   {/* Knob highlight */}
-                  <rect x="132" y="18" width="8" height="2" rx="1" fill="#FFFDF5" opacity="0.35" />
+                  <rect x="134" y="18" width="8" height="2" rx="1" fill="#FFFDF5" opacity="0.35" />
 
                   {/* Brand logo placeholder — oval on barrel */}
-                  <ellipse cx="30" cy="22.5" rx="8" ry="5" fill="none" stroke="#3B1E08" strokeWidth="0.6" opacity="0.3" />
+                  <ellipse cx="28" cy="22.5" rx="7" ry="4.5" fill="none" stroke="#3B1E08" strokeWidth="0.6" opacity="0.25" />
                 </svg>
               </div>
               <span className="font-heading font-bold text-xs text-foreground">{action.label}</span>
-              <span className="text-[9px] text-muted-foreground/60 -mt-1">{action.desc}</span>
+              <span className="text-[9px] text-slate-300 -mt-1">{action.desc}</span>
             </button>
           );
         })}
