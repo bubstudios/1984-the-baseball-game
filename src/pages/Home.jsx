@@ -166,7 +166,7 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <span className="text-lg">⚾</span>
             <div>
-              <div className="font-display text-[10px] text-primary tracking-wider">1984 BASEBALL SIM</div>
+              <div className="font-display text-[10px] text-primary tracking-wider">1984: THE BASEBALL SEASON</div>
               <div className="font-heading text-xs text-muted-foreground">{inningLabel} · {battingTeamName} batting</div>
             </div>
           </div>
@@ -314,7 +314,7 @@ export default function Home() {
       {/* Footer */}
       <div className="border-t border-border mt-8">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <span className="text-[10px] text-muted-foreground/40 font-body">1984 Baseball Simulation</span>
+          <span className="text-[10px] text-muted-foreground/40 font-body">1984: The Baseball Season</span>
           <Button variant="ghost" size="sm" onClick={handleNewGame} className="text-[10px] text-muted-foreground hover:text-foreground gap-1">
             <RotateCcw className="w-3 h-3" />
             New Game
