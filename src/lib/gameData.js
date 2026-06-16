@@ -285,7 +285,7 @@ export const TEAMS = {
         splits: estSplits(.249, 2, 168, 46, "R") },
     ],
     rotation: [
-      { name: "Phil Niekro", pos: "SP", throws: "R", stamina: 9, pitchSpeed: 4, offSpeed: 10, control: 8 },
+      { name: "Phil Niekro", pos: "SP", throws: "R", stamina: 9, pitchSpeed: 4, offSpeed: 10, control: 8, pitches: ["Fastball", "Knuckleball", "Changeup"] },
       { name: "Ron Guidry", pos: "SP", throws: "L", stamina: 8, pitchSpeed: 8, offSpeed: 8, control: 7 },
       { name: "Ray Fontenot", pos: "SP", throws: "L", stamina: 7, pitchSpeed: 5, offSpeed: 6, control: 6 },
       { name: "Dennis Rasmussen", pos: "SP", throws: "L", stamina: 6, pitchSpeed: 6, offSpeed: 6, control: 6 },
@@ -385,7 +385,7 @@ export const TEAMS = {
     rotation: [
       { name: "Alejandro Pena", pos: "SP", throws: "R", stamina: 7, pitchSpeed: 7, offSpeed: 8, control: 8 },
       { name: "Orel Hershiser", pos: "SP", throws: "R", stamina: 9, pitchSpeed: 7, offSpeed: 9, control: 7 },
-      { name: "Fernando Valenzuela", pos: "SP", throws: "L", stamina: 9, pitchSpeed: 6, offSpeed: 9, control: 6 },
+      { name: "Fernando Valenzuela", pos: "SP", throws: "L", stamina: 9, pitchSpeed: 6, offSpeed: 9, control: 6, pitches: ["Fastball", "Breaking Ball", "Changeup", "Screwball"] },
       { name: "Bob Welch", pos: "SP", throws: "R", stamina: 7, pitchSpeed: 7, offSpeed: 7, control: 7 },
     ],
     bullpen: [
@@ -464,12 +464,16 @@ function estSplits(totalBA, totalHR, totalAB, vsSameAB, bats) {
   };
 }
 
-export const PITCH_TYPES = [
-  { name: "Fastball", speed: "fast", break: 0, controlBonus: 2 },
-  { name: "Curveball", speed: "slow", break: 3, controlBonus: 0 },
-  { name: "Slider", speed: "medium", break: 2, controlBonus: 1 },
-  { name: "Changeup", speed: "slow", break: 1, controlBonus: 1 },
-];
+export const PITCH_TYPES = {
+  "Fastball":     { name: "Fastball",     speed: "fast",   break: 0, controlBonus: 2 },
+  "Breaking Ball":{ name: "Breaking Ball",speed: "slow",   break: 3, controlBonus: 0 },
+  "Changeup":     { name: "Changeup",     speed: "slow",   break: 1, controlBonus: 1 },
+  "Knuckleball":  { name: "Knuckleball",  speed: "slow",   break: 4, controlBonus: -2 },
+  "Screwball":    { name: "Screwball",    speed: "medium", break: 3, controlBonus: 0 },
+  "Split-Finger": { name: "Split-Finger", speed: "medium", break: 2, controlBonus: 0 },
+};
+
+export const DEFAULT_PITCHES = ["Fastball", "Breaking Ball", "Changeup"];
 
 export const SWING_TYPES = [
   { name: "Normal Swing", powerMod: 0, contactMod: 0, outcomeMod: 0 },

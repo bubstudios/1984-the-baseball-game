@@ -1,4 +1,4 @@
-import { TEAMS, PITCH_TYPES, SWING_TYPES, TEAM_IDS, PLAYER_ERRORS } from './gameData';
+import { TEAMS, PITCH_TYPES, SWING_TYPES, TEAM_IDS, PLAYER_ERRORS, DEFAULT_PITCHES } from './gameData';
 
 // Create initial game state with two selected teams
 export function createGameState(homeTeam, awayTeam) {
@@ -40,7 +40,7 @@ export function createGameState(homeTeam, awayTeam) {
 }
 
 function createPitcherState(p) {
-  return { ...p, pitchCount: 0, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
+  return { ...p, pitchCount: 0, pitches: p.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
 }
 
 export { TEAM_IDS };
@@ -283,8 +283,9 @@ export function attemptSteal(state, baseIndex) {
   const defenders = getDefensivePlayers(newState);
   const catcherArm = getCatcherArm(defenders);
 
-  // Success based on speed + catcher arm + pitcher control
-  let successChance = 0.20 + speedFactor * 0.55 - (catcherArm / 10) * 0.12 - (pitcher.control / 10) * 0.03;
+  // Success based on speed + catcher arm + pitcher control + pitch speed (faster delivery = harder to steal)
+  const pitchSpeedFactor = (pitcher.pitchSpeed / 10) * 0.13;
+  let successChance = 0.20 + speedFactor * 0.55 - (catcherArm / 10) * 0.12 - (pitcher.control / 10) * 0.03 - pitchSpeedFactor;
   successChance = Math.max(0.08, Math.min(successChance, 0.80));
   const success = Math.random() < successChance;
 
@@ -335,14 +336,16 @@ export function setHitAndRun(state, active) {
 export function cpuDecideSteal(state) {
   const defenders = getDefensivePlayers(state);
   const catcherArm = getCatcherArm(defenders);
+  const pitcher = getCurrentPitcher(state);
   const armFactor = (catcherArm / 10) * 0.30; // strong arm deters steals
+  const pitchFactor = (pitcher.pitchSpeed / 10) * 0.12; // fast delivery deters steals
 
   for (let i = 0; i < 3; i++) {
     const runner = state.bases[i];
     if (!runner) continue;
     const speedFactor = runner.speed / 10;
-    // CPU steals ~10-35% of opportunities based on speed, reduced by catcher arm
-    if (Math.random() < Math.max(0.05, 0.10 + speedFactor * 0.30 - armFactor)) {
+    // CPU steals ~10-35% of opportunities based on speed, reduced by catcher arm + pitch speed
+    if (Math.random() < Math.max(0.04, 0.10 + speedFactor * 0.30 - armFactor - pitchFactor)) {
       return i;
     }
   }
@@ -355,6 +358,37 @@ function resolvePitch(state, pitchType) {
   pitcher.gameStats.pitches++;
 
   const controlFactor = pitcher.control / 10;
+
+  // Wild pitch — low control pitchers lose it, runners advance
+  const wpChance = Math.max(0.008, (10 - pitcher.control) * 0.008);
+  if (Math.random() < wpChance) {
+    const hasRunners = state.bases.some(b => b !== null);
+    if (hasRunners) {
+      for (let i = 2; i >= 0; i--) {
+        if (state.bases[i]) {
+          if (i + 1 >= 3) {
+            state.bases[i].gameStats.runs++;
+            scoreRun(state);
+            state.bases[i] = null;
+          } else if (!state.bases[i + 1]) {
+            state.bases[i + 1] = state.bases[i];
+            state.bases[i] = null;
+          }
+        }
+      }
+      state.log.push({ type: 'error', text: `Wild pitch! Runners advance!` });
+      state.lastPlay = { type: 'error', text: `Wild pitch!` };
+    }
+    state.balls++;
+    return { pitchType: pitchType.name, isStrike: false, location: 'wild pitch', isWildPitch: true };
+  }
+
+  // HBP — hit by pitch
+  const hbpChance = Math.max(0.005, (10 - pitcher.control) * 0.004);
+  if (Math.random() < hbpChance) {
+    return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true };
+  }
+
   const baseStrikeChance = 0.35 + controlFactor * 0.28;
   const controlBonus = pitchType.controlBonus || 0;
   const strikeChance = baseStrikeChance + (controlBonus * 0.04);
@@ -885,7 +919,50 @@ export function processAtBat(state, pitchType, swingType) {
     if (newState.gameOver) return newState;
   }
 
+  // Walk trigger — pitcher loses command, instant walk regardless of count
+  const pitcher = getCurrentPitcher(newState);
+  const batter = getCurrentBatter(newState);
+  const walkChance = Math.max(0.02, (10 - pitcher.control) * 0.014);
+  if (Math.random() < walkChance) {
+    batter.gameStats.bb++;
+    pitcher.gameStats.bb++;
+    const msg = `${batter.name} draws a walk!`;
+    newState.log.push({ type: 'walk', text: msg });
+    newState.lastPlay = { type: 'walk', text: msg };
+    handleWalk(newState, batter);
+    newState.balls = 0;
+    newState.strikes = 0;
+    advanceBatter(newState);
+    if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) {
+      newState.gameOver = true;
+      newState.waitingForInput = false;
+      newState.log.push({ type: 'info', text: `🎉 Walk-off walk! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
+    }
+    return newState;
+  }
+
   newState.pitchResult = resolvePitch(newState, pitchType);
+
+  // HBP bypasses swing entirely
+  if (newState.pitchResult.isHBP) {
+    const hbpBatter = getCurrentBatter(newState);
+    hbpBatter.gameStats.bb++;
+    getCurrentPitcher(newState).gameStats.bb++;
+    const msg = `${hbpBatter.name} is hit by the pitch!`;
+    newState.log.push({ type: 'walk', text: msg });
+    newState.lastPlay = { type: 'walk', text: msg + ' — takes first' };
+    handleWalk(newState, hbpBatter);
+    newState.balls = 0;
+    newState.strikes = 0;
+    advanceBatter(newState);
+    if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) {
+      newState.gameOver = true;
+      newState.waitingForInput = false;
+      newState.log.push({ type: 'info', text: `🎉 Walk-off HBP! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
+    }
+    return newState;
+  }
+
   resolveSwing(newState, swingType, newState.pitchResult);
 
   // Walk-off check
@@ -898,16 +975,26 @@ export function processAtBat(state, pitchType, swingType) {
   return newState;
 }
 
-// CPU pitch selection based on pitcher strengths
+// CPU pitch selection based on pitcher strengths and arsenal
 export function cpuSelectPitch(state) {
   const pitcher = getCurrentPitcher(state);
+  const pitches = pitcher.pitches || DEFAULT_PITCHES;
   const rand = Math.random();
 
-  if (pitcher.pitchSpeed >= 8 && rand < 0.40) return 0; // Fastball
-  if (pitcher.offSpeed >= 8 && rand < 0.55) return 1; // Curveball
-  if (rand < 0.70) return 2; // Slider
-  if (rand < 0.88) return 3; // Changeup
-  return 0; // Default fastball
+  // Fastball preference for power pitchers
+  if (pitcher.pitchSpeed >= 7 && rand < 0.35 && pitches.includes("Fastball")) return "Fastball";
+
+  // Breaking ball preference for offspeed specialists
+  const breakingPitches = pitches.filter(p => ["Breaking Ball", "Knuckleball", "Screwball", "Split-Finger"].includes(p));
+  if (pitcher.offSpeed >= 7 && rand < 0.50 && breakingPitches.length > 0) {
+    return breakingPitches[Math.floor(Math.random() * breakingPitches.length)];
+  }
+
+  // Changeup preference
+  if (pitcher.offSpeed >= 6 && rand < 0.55 && pitches.includes("Changeup")) return "Changeup";
+
+  // Random pick from available
+  return pitches[Math.floor(Math.random() * pitches.length)] || "Fastball";
 }
 
 // CPU swing selection based on batter strengths and count

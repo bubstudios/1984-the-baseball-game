@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { PITCH_TYPES } from '@/lib/gameData';
 
 const BAT_ACTIONS = [
   { label: 'Swing', swingIndex: 0, desc: 'Standard swing' },
@@ -19,22 +18,25 @@ export default function ActionPanel({
   disabled,
   bases,
   hitAndRun,
+  pitcherPitches,
 }) {
   if (isPitching) {
+    const pitches = pitcherPitches || ["Fastball", "Breaking Ball", "Changeup"];
+    const gridCols = pitches.length <= 3 ? "grid-cols-3" : "grid-cols-4";
     return (
       <div className="space-y-2">
         <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-2">Select Pitch</div>
-        <div className="grid grid-cols-2 gap-2">
-          {PITCH_TYPES.map((pitch, i) => (
+        <div className={`grid ${gridCols} gap-2`}>
+          {pitches.map((pitchName) => (
             <Button
-              key={i}
+              key={pitchName}
               variant="outline"
               size="sm"
               disabled={disabled}
-              onClick={() => onPitch(i)}
+              onClick={() => onPitch(pitchName)}
               className="h-12 flex flex-col items-center justify-center gap-0.5 border-border/60 hover:border-primary hover:bg-primary/10 transition-all"
             >
-              <span className="font-heading font-bold text-sm text-foreground">{pitch.name}</span>
+              <span className="font-heading font-bold text-xs text-foreground leading-tight">{pitchName}</span>
             </Button>
           ))}
         </div>

@@ -40,7 +40,7 @@ export default function Home() {
 
   const isUserPitching = gameState && !isUserBatting;
 
-  const handlePitch = useCallback((pitchIndex) => {
+  const handlePitch = useCallback((pitchName) => {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
 
@@ -52,7 +52,8 @@ export default function Home() {
     }
 
     const cpuSwing = cpuSelectSwing(updatedState);
-    const newState = processAtBat(updatedState, PITCH_TYPES[pitchIndex], SWING_TYPES[cpuSwing]);
+    const pitchObj = PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"];
+    const newState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
     setGameState(newState);
     setProcessing(false);
   }, [gameState, processing]);
@@ -223,6 +224,7 @@ export default function Home() {
                   disabled={processing}
                   bases={gameState.bases}
                   hitAndRun={gameState.hitAndRun}
+                  pitcherPitches={pitcher.pitches}
                 />
               </div>
             )}
