@@ -9,7 +9,7 @@ import BallparkSelect from '@/components/game/BallparkSelect';
 import LineupManager from '@/components/game/LineupManager';
 import DiamondView from '@/components/game/DiamondView';
 import Scoreboard from '@/components/game/Scoreboard';
-import CountDisplay from '@/components/game/CountDisplay';
+import CommentaryBanner from '@/components/game/CommentaryBanner';
 import MatchupCard from '@/components/game/MatchupCard';
 import ActionPanel from '@/components/game/ActionPanel';
 import PlayLog from '@/components/game/PlayLog';
@@ -269,33 +269,16 @@ export default function Home() {
               />
             </div>
 
-            {/* Diamond + Count */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-card border border-border rounded-xl p-3 flex flex-col items-center justify-center">
-                <DiamondView bases={gameState.bases} lastPlay={gameState.lastPlay} />
-              </div>
-              <div className="bg-card border border-border rounded-xl p-3 flex flex-col justify-between">
-                <div>
-                  <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-2">Count</div>
-                  <CountDisplay balls={gameState.balls} strikes={gameState.strikes} outs={gameState.outs} />
-                </div>
-                <div className="mt-3">
-                  <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-1.5">Last Play</div>
-                  {gameState.lastPlay ? (
-                    <p className="text-xs font-body text-foreground/80 leading-relaxed">{gameState.lastPlay.text}</p>
-                  ) : (
-                    <p className="text-xs font-body text-muted-foreground/50 italic">Waiting for first pitch...</p>
-                  )}
-                </div>
-                <div className="mt-3 pt-2 border-t border-border/50">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-muted-foreground font-heading">YOU:</span>
-                    <span className="text-[10px] text-primary font-heading font-semibold">
-                      {isUserBatting ? '🏏 Batting' : '⚾ Pitching'}
-                    </span>
-                  </div>
-                </div>
-              </div>
+            {/* Commentary Banner */}
+            <CommentaryBanner batter={batter} pitcher={pitcher} gameState={gameState} />
+
+            {/* Diamond — big centerpiece */}
+            <div className="bg-card/50 border border-border rounded-xl p-4 flex flex-col items-center justify-center">
+              <DiamondView
+                bases={gameState.bases}
+                lastPlay={gameState.lastPlay}
+                isDay={gameWeather?.isDay}
+              />
             </div>
 
             {/* Matchup */}
@@ -328,7 +311,13 @@ export default function Home() {
                 </Button>
               </div>
             ) : (
-              <div className="bg-card border border-border rounded-xl p-3">
+              <div className="bg-card border border-border rounded-xl p-3 space-y-3">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-[10px] text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
+                  <span className="text-[11px] text-primary font-heading font-bold">
+                    {isUserBatting ? '🏏 Batting' : '⚾ Pitching'}
+                  </span>
+                </div>
                 <ActionPanel
                   isPitching={isUserPitching}
                   onPitch={handlePitch}
@@ -376,6 +365,7 @@ export default function Home() {
         <SubstitutionsPanel
           gameState={gameState}
           teams={TEAMS}
+          userTeam={userTeam}
           onClose={() => setShowSubs(false)}
           onPinchHit={handlePinchHit}
           onPinchRun={handlePinchRun}

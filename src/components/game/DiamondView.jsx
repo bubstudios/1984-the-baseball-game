@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function DiamondView({ bases, lastPlay }) {
+export default function DiamondView({ bases, lastPlay, isDay = false }) {
   const getPlayTypeColor = (type) => {
     if (!type) return '';
     const colors = {
@@ -19,11 +19,25 @@ export default function DiamondView({ bases, lastPlay }) {
     return colors[type] || '';
   };
 
+  const skyBg = isDay
+    ? 'bg-gradient-to-b from-[#e8f0fe] via-[#dce8f8] to-[#f5f0e0]'
+    : 'bg-card';
+
+  const grassColor = isDay ? 'bg-emerald-600/40' : 'bg-secondary/30';
+  const grassBorder = isDay ? 'border-emerald-600/50' : 'border-secondary/40';
+  const dirtFill = isDay ? '#c4a462' : 'hsl(30, 40%, 25%)';
+  const dirtStroke = isDay ? '#b8943c' : 'hsl(30, 40%, 35%)';
+  const moundFill = isDay ? '#d4b46c' : 'hsl(30, 35%, 30%)';
+  const moundStroke = isDay ? '#c4a462' : 'hsl(45, 30%, 55%)';
+
   return (
-    <div className="relative w-full aspect-square max-w-[280px] mx-auto">
+    <div className={`relative w-full aspect-square max-w-[340px] mx-auto rounded-xl overflow-hidden ${skyBg} transition-colors duration-500`}>
       {/* Outfield grass */}
       <div className="absolute inset-0 rounded-t-full overflow-hidden">
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[140%] aspect-square rounded-full bg-secondary/30 border-2 border-secondary/40" style={{ bottom: '-35%' }} />
+        <div
+          className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-[140%] aspect-square rounded-full ${grassColor} border-2 ${grassBorder}`}
+          style={{ bottom: '-35%' }}
+        />
       </div>
 
       {/* Infield diamond */}
@@ -31,19 +45,19 @@ export default function DiamondView({ bases, lastPlay }) {
         {/* Infield dirt */}
         <polygon
           points="100,40 160,100 100,160 40,100"
-          fill="hsl(30, 40%, 25%)"
-          stroke="hsl(30, 40%, 35%)"
+          fill={dirtFill}
+          stroke={dirtStroke}
           strokeWidth="1"
         />
 
         {/* Base paths */}
-        <line x1="100" y1="40" x2="160" y2="100" stroke="hsl(45, 30%, 60%)" strokeWidth="1.5" opacity="0.5" />
-        <line x1="160" y1="100" x2="100" y2="160" stroke="hsl(45, 30%, 60%)" strokeWidth="1.5" opacity="0.5" />
-        <line x1="100" y1="160" x2="40" y2="100" stroke="hsl(45, 30%, 60%)" strokeWidth="1.5" opacity="0.5" />
-        <line x1="40" y1="100" x2="100" y2="40" stroke="hsl(45, 30%, 60%)" strokeWidth="1.5" opacity="0.5" />
+        <line x1="100" y1="40" x2="160" y2="100" stroke={isDay ? '#d4b46c' : "hsl(45, 30%, 60%)"} strokeWidth="1.5" opacity="0.5" />
+        <line x1="160" y1="100" x2="100" y2="160" stroke={isDay ? '#d4b46c' : "hsl(45, 30%, 60%)"} strokeWidth="1.5" opacity="0.5" />
+        <line x1="100" y1="160" x2="40" y2="100" stroke={isDay ? '#d4b46c' : "hsl(45, 30%, 60%)"} strokeWidth="1.5" opacity="0.5" />
+        <line x1="40" y1="100" x2="100" y2="40" stroke={isDay ? '#d4b46c' : "hsl(45, 30%, 60%)"} strokeWidth="1.5" opacity="0.5" />
 
         {/* Pitcher's mound */}
-        <circle cx="100" cy="105" r="6" fill="hsl(30, 35%, 30%)" stroke="hsl(45, 30%, 55%)" strokeWidth="1" />
+        <circle cx="100" cy="105" r="6" fill={moundFill} stroke={moundStroke} strokeWidth="1" />
         <rect x="97" y="103" width="6" height="1.5" fill="white" rx="0.5" />
 
         {/* Home plate */}
@@ -98,8 +112,8 @@ export default function DiamondView({ bases, lastPlay }) {
 
       {/* Last play banner */}
       {lastPlay && (
-        <div className={`absolute bottom-0 left-0 right-0 text-center text-xs font-heading font-semibold px-2 py-1 bg-card/90 rounded ${getPlayTypeColor(lastPlay.type)}`}>
-          {lastPlay.text.length > 50 ? lastPlay.text.slice(0, 50) + '…' : lastPlay.text}
+        <div className={`absolute bottom-1 left-1 right-1 text-center text-xs font-heading font-semibold px-2 py-1 bg-card/90 rounded ${getPlayTypeColor(lastPlay.type)}`}>
+          {lastPlay.text}
         </div>
       )}
     </div>
