@@ -106,11 +106,11 @@ function getCommentary(batter, pitcher, gameState) {
   return options[Math.floor(Math.random() * options.length)];
 }
 
-export default function CommentaryBanner({ batter, pitcher, gameState }) {
+export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay }) {
   if (!batter || !gameState) {
     return (
-      <div className="bg-card border border-border rounded-lg px-3 py-1.5 text-center">
-        <span className="text-[10px] text-muted-foreground font-heading italic">...and we're underway!</span>
+      <div className="bg-card border border-border rounded-xl px-4 py-3 text-center">
+        <span className="text-sm text-muted-foreground font-heading italic">...and we're underway!</span>
       </div>
     );
   }
@@ -119,15 +119,25 @@ export default function CommentaryBanner({ batter, pitcher, gameState }) {
 
   return (
     <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">
+      {/* ON AIR banner */}
       <div className="flex items-center justify-center gap-3">
         <span className="text-xs text-red-400 font-display animate-pulse">●</span>
         <span className="text-xs text-muted-foreground/60 font-heading uppercase tracking-[0.25em]">ON AIR</span>
         <span className="text-xs text-red-400 font-display animate-pulse">●</span>
       </div>
+      {/* Main call */}
       <p className="text-base sm:text-lg font-heading font-semibold text-foreground/95 mt-1.5 leading-snug italic">
         "{text}"
       </p>
-      {/* Count indicators inline */}
+
+      {/* Last play flash — shows steals, key results */}
+      {lastPlay && lastPlay.text && (
+        <div className="mt-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-1.5 inline-block">
+          <span className="text-sm font-heading font-bold text-primary">{lastPlay.text}</span>
+        </div>
+      )}
+
+      {/* Count indicators */}
       <div className="flex items-center justify-center gap-6 mt-2.5">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-bold text-muted-foreground">B</span>

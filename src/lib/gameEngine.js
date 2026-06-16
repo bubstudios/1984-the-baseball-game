@@ -790,21 +790,42 @@ function resolveSwing(state, swingType, pitch) {
       { text: `${batter.name} grounds out to the pitcher`, pos: 'SP' },
       { text: `${batter.name} grounds out to first`, pos: '1B' },
     ];
+    const batterLast = batter.name.split(' ').pop();
+    const flyFields = { CF: ['center', 'center field'], RF: ['right', 'right field'], LF: ['left', 'left field'] };
+    const depths = ['shallow ', '', 'deep ', 'to the warning track in ', 'back at the wall in '];
+    const actions = [
+      'tracks it down', 'makes the catch', 'hauls it in', 'runs it down',
+      'drifts over and makes the grab', 'has room and makes the catch',
+      'goes back and makes the over-the-shoulder catch', 'makes a running grab',
+      'dives and makes the catch!', 'lays out for it — what a play!',
+    ];
+    const flyPosKeys = ['CF', 'RF', 'LF'];
+    const fPos = flyPosKeys[Math.floor(Math.random() * flyPosKeys.length)];
+    const fField = flyFields[fPos];
+    const depth = depths[Math.floor(Math.random() * depths.length)];
+    const action = actions[Math.floor(Math.random() * actions.length)];
+
     const flyOutTypes = [
-      { text: `${batter.name} flies out to center`, pos: 'CF' },
-      { text: `${batter.name} flies out to right`, pos: 'RF' },
-      { text: `${batter.name} flies out to left`, pos: 'LF' },
+      { text: `${batter.name} flies out to ${depth}${fField[0]} — ${batterLast} is retired`, pos: fPos },
+      { text: `${batterLast} lifts one to ${depth}${fField[1]} — ${defenders[fPos]?.name || fField[0]} ${action}`, pos: fPos },
+      { text: `High fly ball to ${depth}${fField[1]} — ${defenders[fPos]?.name || fField[0]} ${action}`, pos: fPos },
+      { text: `${batterLast} sends it to ${depth}${fField[1]} — caught for the out`, pos: fPos },
+      { text: `Routine fly to ${depth}${fField[0]} — ${defenders[fPos]?.name || 'the fielder'} settles under it`, pos: fPos },
     ];
     const otherOuts = [
-      { text: `${batter.name} pops up to second`, pos: '2B', type: 'flyout' },
-      { text: `${batter.name} lines out to third`, pos: '3B', type: 'lineout' },
+      { text: `${batter.name} pops it up behind the plate — ${defenders['C']?.name || 'the catcher'} makes the grab`, pos: '2B', type: 'popout' },
+      { text: `Infield pop-up — ${defenders['2B']?.name || 'the second baseman'} calls for it and makes the catch`, pos: '2B', type: 'popout' },
+      { text: `${batterLast} pops one up in foul territory — ${defenders['3B']?.name || 'the third baseman'} makes the play`, pos: '3B', type: 'popout' },
+      { text: `${batter.name} lines it right at ${defenders['3B']?.name || 'the third baseman'} — snagged!`, pos: '3B', type: 'lineout' },
+      { text: `Sharp line drive — speared by ${defenders['SS']?.name || 'the shortstop'}!`, pos: 'SS', type: 'lineout' },
+      { text: `${batterLast} ropes one to ${defenders['1B']?.name || 'first'} — picked out of the air!`, pos: '1B', type: 'lineout' },
     ];
 
     const allOuts = [...groundOutTypes, ...flyOutTypes, ...otherOuts];
     const out = allOuts[Math.floor(Math.random() * allOuts.length)];
 
     // Determine if it's a fly ball (CF/RF/LF positions) or ground ball
-    const isFlyBall = ['CF', 'RF', 'LF'].includes(out.pos);
+    const isFlyBall = ['CF', 'RF', 'LF'].includes(out.pos) || out.type === 'popout';
     const outType = out.type || (isFlyBall ? 'flyout' : 'groundout');
 
     // ---- ERROR CHECK on ground balls ----

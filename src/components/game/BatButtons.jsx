@@ -34,28 +34,37 @@ export default function BatButtons({ onSwing, disabled }) {
               {/* Bat — horizontal, arcs upward on swing */}
               <div
                 className={`
-                  relative w-24 h-10
+                  relative w-28 h-8
                   ${isActive ? 'animate-bat-swing' : 'hover:scale-110 transition-transform'}
                   ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
                 `}
               >
-                <svg viewBox="0 0 120 40" className="w-full h-full">
-                  {/* Bat barrel — left side */}
-                  <path d="M0,20 Q10,10 30,15 L30,25 Q10,30 0,20 Z" fill="#C4903C" stroke="#A07028" strokeWidth="1" />
-                  {/* Sweet spot */}
-                  <ellipse cx="12" cy="20" rx="6" ry="5" fill="#D4A44C" opacity="0.5" />
-                  {/* Grain lines */}
-                  <line x1="5" y1="17" x2="10" y2="17" stroke="#A07028" strokeWidth="0.5" opacity="0.6" />
-                  <line x1="5" y1="23" x2="10" y2="23" stroke="#A07028" strokeWidth="0.5" opacity="0.6" />
-                  {/* Handle — right side */}
-                  <rect x="30" y="16" width="85" height="8" rx="3" fill="#8B6914" />
-                  {/* Grip lines */}
-                  <line x1="35" y1="16" x2="35" y2="24" stroke="#6B4F12" strokeWidth="1" />
-                  <line x1="45" y1="16" x2="45" y2="24" stroke="#6B4F12" strokeWidth="1" />
-                  <line x1="55" y1="16" x2="55" y2="24" stroke="#6B4F12" strokeWidth="1" />
-                  <line x1="65" y1="16" x2="65" y2="24" stroke="#6B4F12" strokeWidth="1" />
-                  {/* Knob — rightmost */}
-                  <rect x="112" y="14" width="8" height="12" rx="2" fill="#6B4F12" />
+                <svg viewBox="0 0 140 40" className="w-full h-full">
+                  {/* Barrel — tapered thick end on the left */}
+                  <ellipse cx="12" cy="20" rx="4" ry="9" fill="#D4A44C" />
+                  <path d="M16,11 Q30,12 38,16 L38,24 Q30,28 16,29 Z" fill="#C4903C" stroke="#A07028" strokeWidth="0.8" />
+                  {/* Sweet spot grain oval */}
+                  <ellipse cx="22" cy="20" rx="7" ry="6" fill="#D4A44C" opacity="0.3" />
+                  {/* Grain lines along barrel */}
+                  <line x1="18" y1="16" x2="34" y2="16" stroke="#A07028" strokeWidth="0.4" opacity="0.5" />
+                  <line x1="18" y1="20" x2="38" y2="20" stroke="#A07028" strokeWidth="0.4" opacity="0.5" />
+                  <line x1="18" y1="24" x2="34" y2="24" stroke="#A07028" strokeWidth="0.4" opacity="0.5" />
+                  {/* Handle — tapers from barrel */}
+                  <rect x="38" y="17" width="92" height="6" rx="3" fill="#8B6914" />
+                  {/* Handle tape wrapping lines */}
+                  <line x1="42" y1="17" x2="42" y2="23" stroke="#6B4F12" strokeWidth="0.8" />
+                  <line x1="50" y1="17" x2="50" y2="23" stroke="#6B4F12" strokeWidth="0.8" />
+                  <line x1="58" y1="17" x2="58" y2="23" stroke="#6B4F12" strokeWidth="0.8" />
+                  <line x1="66" y1="17" x2="66" y2="23" stroke="#6B4F12" strokeWidth="0.8" />
+                  <line x1="74" y1="17" x2="74" y2="23" stroke="#6B4F12" strokeWidth="0.8" />
+                  <line x1="82" y1="17" x2="82" y2="23" stroke="#6B4F12" strokeWidth="0.8" />
+                  <line x1="90" y1="17" x2="90" y2="23" stroke="#6B4F12" strokeWidth="0.8" />
+                  <line x1="98" y1="17" x2="98" y2="23" stroke="#6B4F12" strokeWidth="0.8" />
+                  <line x1="106" y1="17" x2="106" y2="23" stroke="#6B4F12" strokeWidth="0.8" />
+                  {/* Knob — flared end on the right */}
+                  <rect x="130" y="14" width="10" height="12" rx="3" fill="#6B4F12" stroke="#4A3610" strokeWidth="0.5" />
+                  {/* Highlight on barrel */}
+                  <path d="M20,14 Q30,13 37,16" fill="none" stroke="#E8C878" strokeWidth="1" opacity="0.4" />
                 </svg>
               </div>
               <span className="font-heading font-bold text-xs text-foreground">{action.label}</span>
@@ -68,10 +77,10 @@ export default function BatButtons({ onSwing, disabled }) {
       <style>{`
         @keyframes batSwing {
           0% { transform: rotate(0deg) translateY(0px); }
-          15% { transform: rotate(-8deg) translateY(-2px); }
-          35% { transform: rotate(-60deg) translateY(-18px); }
-          60% { transform: rotate(-70deg) translateY(-8px); }
-          80% { transform: rotate(-25deg) translateY(4px); }
+          15% { transform: rotate(-5deg) translateY(-2px); }
+          35% { transform: rotate(-55deg) translateY(-16px); }
+          60% { transform: rotate(-65deg) translateY(-6px); }
+          80% { transform: rotate(-20deg) translateY(4px); }
           100% { transform: rotate(0deg) translateY(0px); }
         }
         .animate-bat-swing {

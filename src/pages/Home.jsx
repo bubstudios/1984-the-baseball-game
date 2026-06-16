@@ -269,7 +269,7 @@ export default function Home() {
             </div>
 
             {/* Commentary Banner */}
-            <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} />
+            <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} />
 
             {/* Diamond */}
             <div className="bg-card/50 border border-border rounded-xl p-4 flex flex-col items-center justify-center">
