@@ -77,7 +77,7 @@ export default function TeamSelect({ onSelect }) {
       >
         <div className="flex items-center gap-2.5 mb-2">
           {/* Logo */}
-          <div className="w-10 h-10 rounded-full bg-muted/80 flex items-center justify-center overflow-hidden flex-shrink-0">
+          <div className="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center overflow-hidden flex-shrink-0">
             <img
               src={TEAM_LOGOS[teamKey]}
               alt={team.abbr}
