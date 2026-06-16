@@ -364,6 +364,10 @@ function endHalfInning(state) {
   const home = TEAMS[state.homeTeam];
   const away = TEAMS[state.awayTeam];
   const half = state.halfInning === 'top' ? 'away' : 'home';
+  // Safety: ensure innings array has this slot
+  if (!state.innings[state.inning - 1]) {
+    state.innings[state.inning - 1] = { home: null, away: null };
+  }
   if (state.innings[state.inning - 1][half] === null) {
     state.innings[state.inning - 1][half] = 0;
   }
@@ -910,14 +914,13 @@ function resolveSwing(state, swingType, pitch) {
     }
 
     // ---- GROUND BALL FORCE PLAY / DOUBLE PLAY RESOLUTION ----
-    if (state.outs < 2 && isGrounder) {
+    if (isGrounder) {
       const runnerOn1st = state.bases[0];
       const runnerOn2nd = state.bases[1];
-      const hasForceAt2nd = !!runnerOn1st;  // runner on 1st = force at 2nd
-      const hasForceAt3rd = runnerOn1st && runnerOn2nd; // runners on 1st+2nd = forces at 3rd and 2nd
-      const forceAvailable = hasForceAt2nd || hasForceAt3rd;
+      const hasForceAt2nd = !!runnerOn1st;
+      const hasForceAt3rd = runnerOn1st && runnerOn2nd;
 
-      if (forceAvailable) {
+      if (hasForceAt2nd && state.outs < 2) {
         const middleInfield = getMiddleInfieldRating(defenders);
         const dpFactor = (middleInfield / 10) * 0.15;
         const runnerSpeed = (runnerOn1st ? runnerOn1st.speed : 5) / 10;
@@ -927,83 +930,56 @@ function resolveSwing(state, swingType, pitch) {
         const roll = Math.random();
 
         if (roll < dpChance) {
-          // DOUBLE PLAY — retire the lead runner + batter
           if (hasForceAt3rd) {
-            // Force at 3rd AND 2nd — retire runner at 3rd + batter, runner on 1st moves to 2nd
             const runner3rd = state.bases[2];
-            const runnerName = state.bases[1] ? state.bases[1].name : runnerOn1st.name;
-            if (runner3rd) state.bases[2] = null; // force at 3rd retires the runner who was forced there
+            if (runner3rd) state.bases[2] = null;
             state.bases[1] = null;
             state.bases[0] = runner3rd || null;
             const msg = `${batter.name} grounds into a double play — force at 3rd and 1st!`;
             state.log.push({ type: 'doubleplay', text: msg });
             state.lastPlay = { type: 'doubleplay', text: msg };
-            state.balls = 0;
-            state.strikes = 0;
-            advanceBatter(state);
-            recordOut(state);
-            if (!state.gameOver && state.outs < 3) recordOut(state);
-            return;
           } else {
-            // Force at 2nd only — retire runner on 1st + batter
             state.bases[0] = null;
             const msg = `${batter.name} grounds into a double play!`;
             state.log.push({ type: 'doubleplay', text: msg });
             state.lastPlay = { type: 'doubleplay', text: msg };
-            state.balls = 0;
-            state.strikes = 0;
-            advanceBatter(state);
-            recordOut(state);
-            if (!state.gameOver && state.outs < 3) recordOut(state);
-            return;
           }
+          state.balls = 0; state.strikes = 0;
+          advanceBatter(state);
+          recordOut(state);
+          if (!state.gameOver && state.outs < 3) recordOut(state);
+          return;
         } else if (roll < dpChance + 0.30) {
-          // FIELDER'S CHOICE — force out at a base, batter reaches
           if (hasForceAt3rd && Math.random() < 0.55) {
-            // Force out at 3rd — runner from 2nd retired, others advance
-            const forcedRunner = state.bases[1]; // runner on 2nd forced to 3rd
-            state.bases[1] = state.bases[0]; // runner on 1st moves to 2nd
-            state.bases[0] = batter;          // batter reaches 1st
+            const forcedRunner = state.bases[1];
+            state.bases[1] = state.bases[0];
+            state.bases[0] = batter;
             batter.gameStats.ab++;
             const msg = `${batter.name} grounds to ${out.pos} — force out at 3rd! ${forcedRunner ? forcedRunner.name + ' retired' : ''} — batter reaches on fielder's choice.`;
             state.log.push({ type: 'fc', text: msg });
             state.lastPlay = { type: 'fc', text: msg };
-          } else if (hasForceAt2nd) {
-            // Force out at 2nd — runner from 1st retired, batter reaches
+          } else {
             state.bases[0] = batter;
             batter.gameStats.ab++;
-            const forcedRunner = runnerOn1st;
-            const msg = `${batter.name} grounds to ${out.pos} — force out at 2nd! ${forcedRunner ? forcedRunner.name + ' retired' : ''} — batter reaches on fielder's choice.`;
+            const msg = `${batter.name} grounds to ${out.pos} — force out at 2nd! ${runnerOn1st ? runnerOn1st.name + ' retired' : ''} — batter reaches on fielder's choice.`;
             state.log.push({ type: 'fc', text: msg });
             state.lastPlay = { type: 'fc', text: msg };
-          } else {
-            // Just batter out at 1st
-            state.log.push({ type: 'groundout', text: out.text });
-            state.lastPlay = { type: 'groundout', text: out.text };
-            advanceBatter(state);
-            recordOut(state);
-            state.balls = 0;
-            state.strikes = 0;
-            return;
           }
-          state.balls = 0;
-          state.strikes = 0;
+          state.balls = 0; state.strikes = 0;
           advanceBatter(state);
           recordOut(state);
           return;
         }
-        // Else: fall through to regular out (batter out at 1st, force runners advance)
-        if (hasForceAt2nd) {
-          const forcedRunner = state.bases[0]; // runner on 1st who advances
-          if (state.bases[1]) {
-            if (!state.bases[2]) state.bases[2] = state.bases[1];
-            state.bases[1] = null;
-          }
-          state.bases[1] = forcedRunner;
-          state.bases[0] = null;
-          // Augment out text with runner advancement context
-          const runnerName = forcedRunner ? forcedRunner.name.split(' ').pop() : '';
-          out.text = `${out.text} — ${runnerName} advances to second`;
+      }
+
+      // Regular groundout: advance runner on 1st to 2nd (batter out, force removed)
+      if (hasForceAt2nd) {
+        const r1 = state.bases[0];
+        if (state.bases[1]) { if (!state.bases[2]) state.bases[2] = state.bases[1]; state.bases[1] = null; }
+        state.bases[1] = r1;
+        state.bases[0] = null;
+        if (!out.text.includes('advances')) {
+          out.text = `${out.text} — ${r1.name.split(' ').pop()} advances to second`;
         }
       }
     }

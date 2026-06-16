@@ -281,7 +281,7 @@ export default function Home() {
 
               {/* Right Column: Commentary, Matchup, Actions */}
               <div className="space-y-4">
-                <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} />
+                <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} stadium={gameStadium} homeTeamKey={homeTeam} />
 
                 <div className="bg-card border border-border rounded-xl p-3">
                   <MatchupCard
