@@ -104,10 +104,8 @@ export default function Home() {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
     const stealState = attemptSteal(gameState, baseIndex);
-    // After steal, continue with pitch
-    const cpuPitch = cpuSelectPitch(stealState);
-    const newState = processAtBat(stealState, PITCH_TYPES[cpuPitch], SWING_TYPES[0]); // CPU takes pitch
-    setGameState(newState);
+    // Only process the steal — don't auto-pitch. Batter keeps their turn.
+    setGameState(stealState);
     setProcessing(false);
   }, [gameState, processing]);
 

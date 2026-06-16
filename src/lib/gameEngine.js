@@ -420,9 +420,10 @@ export function attemptSteal(state, baseIndex) {
     runner.gameStats.cs = (runner.gameStats.cs || 0) + 1;
     newState.bases[baseIndex] = null;
     recordOut(newState);
-    const baseName = ['second', 'third', 'home'][Math.min(baseIndex + 1, 2)];
+    const stealTo = baseIndex + 1;
+    const baseName = stealTo === 1 ? 'second' : stealTo === 2 ? 'third' : 'home';
     newState.log.push({ type: 'info', text: `❌ ${runner.name} caught stealing ${baseName}!` });
-    newState.lastPlay = { type: 'caughtstealing', text: `${runner.name} caught stealing!` };
+    newState.lastPlay = { type: 'caughtstealing', text: `${runner.name} caught stealing at ${baseName}!` };
   }
 
   newState.pendingSteal = null;
@@ -855,27 +856,102 @@ function resolveSwing(state, swingType, pitch) {
       }
     }
 
-    // ---- DOUBLE PLAY (enhanced with defense + runner speed) ----
-    if (state.outs < 2 && state.bases[0] && isGrounder) {
-      const runner = state.bases[0];
-      const runnerSpeed = runner.speed / 10;
-      const middleInfield = getMiddleInfieldRating(defenders);
-      // Out-of-position middle infielders are less likely to turn two
-      const dpFactor = (middleInfield / 10) * 0.15;
-      let dpChance = 0.10 + dpFactor - (runnerSpeed * 0.12);
-      dpChance = Math.max(0.02, Math.min(dpChance, 0.30));
+    // ---- GROUND BALL FORCE PLAY / DOUBLE PLAY RESOLUTION ----
+    if (state.outs < 2 && isGrounder) {
+      const runnerOn1st = state.bases[0];
+      const runnerOn2nd = state.bases[1];
+      const hasForceAt2nd = !!runnerOn1st;  // runner on 1st = force at 2nd
+      const hasForceAt3rd = runnerOn1st && runnerOn2nd; // runners on 1st+2nd = forces at 3rd and 2nd
+      const forceAvailable = hasForceAt2nd || hasForceAt3rd;
 
-      if (Math.random() < dpChance) {
-        state.bases[0] = null;
-        const msg = `${batter.name} grounds into a double play!`;
-        state.log.push({ type: 'doubleplay', text: msg });
-        state.lastPlay = { type: 'doubleplay', text: msg };
-        state.balls = 0;
-        state.strikes = 0;
-        advanceBatter(state);
-        recordOut(state);
-        if (!state.gameOver && state.outs < 3) recordOut(state);
-        return;
+      if (forceAvailable) {
+        const middleInfield = getMiddleInfieldRating(defenders);
+        const dpFactor = (middleInfield / 10) * 0.15;
+        const runnerSpeed = (runnerOn1st ? runnerOn1st.speed : 5) / 10;
+        let dpChance = 0.10 + dpFactor - (runnerSpeed * 0.12);
+        dpChance = Math.max(0.02, Math.min(dpChance, 0.35));
+
+        const roll = Math.random();
+
+        if (roll < dpChance) {
+          // DOUBLE PLAY — retire the lead runner + batter
+          if (hasForceAt3rd) {
+            // Force at 3rd AND 2nd — retire runner at 3rd + batter, runner on 1st moves to 2nd
+            const runner3rd = state.bases[2];
+            const runnerName = state.bases[1] ? state.bases[1].name : runnerOn1st.name;
+            if (runner3rd) state.bases[2] = null; // force at 3rd retires the runner who was forced there
+            state.bases[1] = null;
+            state.bases[0] = runner3rd || null;
+            const msg = `${batter.name} grounds into a double play — force at 3rd and 1st!`;
+            state.log.push({ type: 'doubleplay', text: msg });
+            state.lastPlay = { type: 'doubleplay', text: msg };
+            state.balls = 0;
+            state.strikes = 0;
+            advanceBatter(state);
+            recordOut(state);
+            if (!state.gameOver && state.outs < 3) recordOut(state);
+            return;
+          } else {
+            // Force at 2nd only — retire runner on 1st + batter
+            state.bases[0] = null;
+            const msg = `${batter.name} grounds into a double play!`;
+            state.log.push({ type: 'doubleplay', text: msg });
+            state.lastPlay = { type: 'doubleplay', text: msg };
+            state.balls = 0;
+            state.strikes = 0;
+            advanceBatter(state);
+            recordOut(state);
+            if (!state.gameOver && state.outs < 3) recordOut(state);
+            return;
+          }
+        } else if (roll < dpChance + 0.30) {
+          // FIELDER'S CHOICE — force out at a base, batter reaches
+          if (hasForceAt3rd && Math.random() < 0.55) {
+            // Force out at 3rd — runner from 2nd retired, others advance
+            const forcedRunner = state.bases[1]; // runner on 2nd forced to 3rd
+            state.bases[1] = state.bases[0]; // runner on 1st moves to 2nd
+            state.bases[0] = batter;          // batter reaches 1st
+            batter.gameStats.ab++;
+            const msg = `${batter.name} grounds to ${out.pos} — force out at 3rd! ${forcedRunner ? forcedRunner.name + ' retired' : ''} — batter reaches on fielder's choice.`;
+            state.log.push({ type: 'fc', text: msg });
+            state.lastPlay = { type: 'fc', text: msg };
+          } else if (hasForceAt2nd) {
+            // Force out at 2nd — runner from 1st retired, batter reaches
+            state.bases[0] = batter;
+            batter.gameStats.ab++;
+            const forcedRunner = runnerOn1st;
+            const msg = `${batter.name} grounds to ${out.pos} — force out at 2nd! ${forcedRunner ? forcedRunner.name + ' retired' : ''} — batter reaches on fielder's choice.`;
+            state.log.push({ type: 'fc', text: msg });
+            state.lastPlay = { type: 'fc', text: msg };
+          } else {
+            // Just batter out at 1st
+            state.log.push({ type: 'groundout', text: out.text });
+            state.lastPlay = { type: 'groundout', text: out.text };
+            advanceBatter(state);
+            recordOut(state);
+            state.balls = 0;
+            state.strikes = 0;
+            return;
+          }
+          state.balls = 0;
+          state.strikes = 0;
+          advanceBatter(state);
+          recordOut(state);
+          return;
+        }
+        // Else: fall through to regular out (batter out at 1st, force runners advance)
+        // Force runners advance: runner on 1st → 2nd, runner on 2nd → 3rd (if 1st occupied)
+        if (hasForceAt2nd) {
+          // Runner on 1st is forced to 2nd — he's out, not safe. 
+          // Actually in a "fielder's choice, batter out at 1st", force runners advance.
+          // Runner on 1st → 2nd, runner on 2nd → 3rd (if 1st was occupied)
+          if (state.bases[1]) {
+            if (!state.bases[2]) state.bases[2] = state.bases[1];
+            state.bases[1] = null;
+          }
+          state.bases[1] = state.bases[0];
+          state.bases[0] = null;
+        }
       }
     }
 
@@ -1021,7 +1097,8 @@ function handleHitAndRunCaught(state) {
       runner.gameStats.cs = (runner.gameStats.cs || 0) + 1;
       state.bases[i] = null;
       recordOut(state);
-      const baseName = ['second', 'third', 'home'][Math.min(i + 1, 2)];
+      const toBase = i + 1;
+      const baseName = toBase === 1 ? 'second' : toBase === 2 ? 'third' : 'home';
       state.log.push({ type: 'info', text: `❌ ${runner.name} caught stealing ${baseName} on the hit-and-run!` });
       break;
     } else {
