@@ -266,15 +266,8 @@ function advanceRunners(state, bases, batter, isHit = false) {
     }
   }
 
-  if (bases <= 3) {
-    state.bases[bases - 1] = batter;
-  }
-
-  batter.gameStats.rbi += rbi;
-  pitcher.gameStats.r += rbi;
-  pitcher.gameStats.er += rbi;
-
-  // --- Speed-based extra base advancement on hits (with OF arm + positioning) ---
+  // --- Speed-based extra base advancement on EXISTING runners (before placing batter) ---
+  // Only applies to runners already on base, NOT the batter who just hit
   if (isHit && bases <= 2) {
     const defenders = getDefensivePlayers(state);
     const ofArm = getOutfieldArm(defenders);
@@ -324,7 +317,14 @@ function advanceRunners(state, bases, batter, isHit = false) {
     }
   }
 
+  // Now place the batter on their hit base (after speed logic, so batter isn't mistaken for a runner)
+  if (bases <= 3) {
+    state.bases[bases - 1] = batter;
+  }
+
   batter.gameStats.rbi += rbi;
+  pitcher.gameStats.r += rbi;
+  pitcher.gameStats.er += rbi;
   return runsScored + rbi;
 }
 

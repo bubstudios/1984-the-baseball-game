@@ -273,16 +273,59 @@ export default function Home() {
             {/* Commentary Banner */}
             <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} />
 
-            {/* Diamond — big centerpiece */}
-            <div className="bg-card/50 border border-border rounded-xl p-4 flex flex-col items-center justify-center">
-              <DiamondView
-                bases={gameState.bases}
-                lastPlay={gameState.lastPlay}
-                isDay={gameWeather?.isDay}
-              />
+            {/* Diamond + flanking player cards */}
+            <div className="flex items-stretch gap-1.5">
+              {/* Batter mini card — left flank */}
+              <div className="w-[68px] sm:w-36 shrink-0 bg-muted/40 rounded-lg p-1 sm:p-2 flex flex-col items-center justify-center">
+                <div className="text-[8px] sm:text-[9px] font-heading uppercase tracking-wider text-primary/70">At Bat</div>
+                <div className="font-heading text-[10px] sm:text-xs font-bold text-foreground truncate max-w-full" title={batter.name}>
+                  {batter.name.split(' ').pop()}
+                </div>
+                <div className="text-[8px] sm:text-[9px] text-muted-foreground">{batter.bats}</div>
+                <div className="flex flex-col gap-0 mt-0.5 sm:mt-1">
+                  {situationalBatter.contact !== batter.contact ? (
+                    <span className={`text-[8px] sm:text-[9px] font-semibold ${situationalBatter.contact > batter.contact ? 'text-green-400' : 'text-red-400'}`}>
+                      CON {situationalBatter.contact}
+                    </span>
+                  ) : (
+                    <span className="text-[8px] sm:text-[9px] text-primary font-semibold">CON {situationalBatter.contact}</span>
+                  )}
+                  {situationalBatter.power !== batter.power ? (
+                    <span className={`text-[8px] sm:text-[9px] font-semibold ${situationalBatter.power > batter.power ? 'text-green-400' : 'text-red-400'}`}>
+                      PWR {situationalBatter.power}
+                    </span>
+                  ) : (
+                    <span className="text-[8px] sm:text-[9px] text-amber-400 font-semibold">PWR {situationalBatter.power}</span>
+                  )}
+                  <span className="text-[8px] sm:text-[9px] text-cyan-400 font-semibold">SPD {situationalBatter.speed}</span>
+                </div>
+              </div>
+
+              {/* Diamond center */}
+              <div className="flex-1 bg-card/50 border border-border rounded-xl p-2 sm:p-4 flex items-center justify-center min-h-0">
+                <DiamondView
+                  bases={gameState.bases}
+                  lastPlay={gameState.lastPlay}
+                  isDay={gameWeather?.isDay}
+                />
+              </div>
+
+              {/* Pitcher mini card — right flank */}
+              <div className="w-[68px] sm:w-36 shrink-0 bg-muted/40 rounded-lg p-1 sm:p-2 flex flex-col items-center justify-center">
+                <div className="text-[8px] sm:text-[9px] font-heading uppercase tracking-wider text-secondary/70">Pitching</div>
+                <div className="font-heading text-[10px] sm:text-xs font-bold text-foreground truncate max-w-full" title={pitcher.name}>
+                  {pitcher.name.split(' ').pop()}
+                </div>
+                <div className="text-[8px] sm:text-[9px] text-muted-foreground">{pitcher.throws}HP</div>
+                <div className="flex flex-col gap-0 mt-0.5 sm:mt-1">
+                  <span className="text-[8px] sm:text-[9px] text-emerald-400 font-semibold">SPD {pitcher.pitchSpeed}</span>
+                  <span className="text-[8px] sm:text-[9px] text-purple-400 font-semibold">OFF {pitcher.offSpeed}</span>
+                  <span className="text-[8px] sm:text-[9px] text-blue-400 font-semibold">CTL {pitcher.control}</span>
+                </div>
+              </div>
             </div>
 
-            {/* Matchup */}
+            {/* Matchup card — detailed view below diamond */}
             <div className="bg-card border border-border rounded-xl p-3">
               <MatchupCard
                 batter={batter}

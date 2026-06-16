@@ -50,6 +50,7 @@ export default function ActionPanel({
     };
 
     const spinDuration = (name) => {
+      if (name === "Fastball") return 'duration-350';
       if (name === "Changeup") return 'duration-700';
       if (name === "Knuckleball") return 'duration-300';
       return 'duration-500';
@@ -85,10 +86,12 @@ export default function ActionPanel({
                   background: 'radial-gradient(circle at 30% 30%, #fff, #e8e0d0 40%, #d4c8b0 80%, #c0b498 100%)',
                 }}
               >
-                {/* Seams */}
+                {/* Seams — red baseball stitching */}
                 <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full pointer-events-none">
-                  <path d="M10,50 Q30,20 50,50 Q70,80 90,50" fill="none" stroke="#d4c8b0" strokeWidth="1.5" />
-                  <path d="M10,50 Q30,80 50,50 Q70,20 90,50" fill="none" stroke="#d4c8b0" strokeWidth="1.5" />
+                  <path d="M10,50 Q30,20 50,50 Q70,80 90,50" fill="none" stroke="#c41e3a" strokeWidth="1.8" />
+                  <path d="M10,50 Q30,80 50,50 Q70,20 90,50" fill="none" stroke="#c41e3a" strokeWidth="1.8" />
+                  <path d="M30,15 Q20,30 30,50 Q40,70 30,85" fill="none" stroke="#c41e3a" strokeWidth="1.2" opacity="0.5" />
+                  <path d="M70,15 Q80,30 70,50 Q60,70 70,85" fill="none" stroke="#c41e3a" strokeWidth="1.2" opacity="0.5" />
                 </svg>
                 <span className="relative font-display text-[14px] font-bold text-gray-700 tracking-tight leading-none z-10">
                   {pitchShortNames[pitchName] || pitchName.slice(0, 2)}
@@ -114,6 +117,7 @@ export default function ActionPanel({
           }
           .animate-spin-vertical { animation: spinVertical 0.5s ease-in-out; }
           .animate-spin-horizontal { animation: spinHorizontal 0.5s ease-in-out; }
+          .duration-350 { animation-duration: 0.35s; }
           .duration-700 { animation-duration: 0.7s; }
           .duration-300 { animation-duration: 0.3s; }
         `}</style>
