@@ -4,52 +4,40 @@ import { X, AlertTriangle, Users } from 'lucide-react';
 
 const ALL_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
 
-export default function SubstitutionsPanel({ gameState, teams, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher }) {
+export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher }) {
   const [tab, setTab] = useState('pinchhit');
 
-  const isUserBatting = gameState && (
-    (gameState.halfInning === 'top' && gameState.awayTeam === gameState.homeTeam) ||
-    (gameState.halfInning === 'bottom' && gameState.homeTeam === gameState.homeTeam)
-  );
+  // Determine which side the user's team is on
+  const userIsHome = userTeam === gameState.homeTeam;
+  const userIsBatting = (gameState.halfInning === 'top' && !userIsHome) || (gameState.halfInning === 'bottom' && userIsHome);
 
-  // What the user controls: batting team when they're batting, fielding/pitching team otherwise
-  const userBattingTeamKey = gameState.halfInning === 'top' ? gameState.awayTeam : gameState.homeTeam;
-  const userFieldingTeamKey = gameState.halfInning === 'top' ? gameState.homeTeam : gameState.awayTeam;
+  // Get rosters for the user's team
+  const myTeam = teams[userTeam];
+  const myBattingLineup = userIsHome ? gameState.homeLineup : gameState.awayLineup;
+  const myFieldingLineup = userIsHome ? gameState.homeLineup : gameState.awayLineup;
 
-  // Get full rosters for both teams
-  const battingTeam = teams[userBattingTeamKey];
-  const fieldingTeam = teams[userFieldingTeamKey];
-  const battingLineup = gameState.halfInning === 'top' ? gameState.awayLineup : gameState.homeLineup;
-  const fieldingLineup = gameState.halfInning === 'top' ? gameState.homeLineup : gameState.awayLineup;
-
-  const batter = gameState.halfInning === 'top'
-    ? gameState.awayLineup[gameState.awayBatterIndex % gameState.awayLineup.length]
-    : gameState.homeLineup[gameState.homeBatterIndex % gameState.homeLineup.length];
+  // Current batter (user's team when they're batting, opponent's when user is pitching)
+  const currentBattingLineup = gameState.halfInning === 'top' ? gameState.awayLineup : gameState.homeLineup;
+  const currentBattingIndex = gameState.halfInning === 'top' ? gameState.awayBatterIndex : gameState.homeBatterIndex;
+  const batter = currentBattingLineup[currentBattingIndex % currentBattingLineup.length];
 
   const runners = gameState.bases.map((b, i) => b ? { ...b, baseIndex: i } : null).filter(Boolean);
 
-  // Available bench players (not in either lineup)
+  // Available bench players for the user's team
   const usedNames = useMemo(() => {
     const names = new Set();
-    battingLineup.forEach(p => names.add(p.name));
-    fieldingLineup.forEach(p => names.add(p.name));
+    const allLineup = [...gameState.homeLineup, ...gameState.awayLineup];
+    allLineup.forEach(p => names.add(p.name));
     return names;
-  }, [battingLineup, fieldingLineup]);
+  }, [gameState.homeLineup, gameState.awayLineup]);
 
-  const battingBench = useMemo(() => {
-    if (!battingTeam?.bench) return [];
-    return battingTeam.bench.filter(p => !usedNames.has(p.name));
-  }, [battingTeam, usedNames]);
+  const myBench = useMemo(() => {
+    if (!myTeam?.bench) return [];
+    return myTeam.bench.filter(p => !usedNames.has(p.name));
+  }, [myTeam, usedNames]);
 
-  const fieldingBench = useMemo(() => {
-    if (!fieldingTeam?.bench) return [];
-    return fieldingTeam.bench.filter(p => !usedNames.has(p.name));
-  }, [fieldingTeam, usedNames]);
-
-  const allBench = useMemo(() => [...battingBench, ...fieldingBench], [battingBench, fieldingBench]);
-
-  const bullpen = fieldingTeam?.bullpen || [];
-  const currentPitcher = gameState.halfInning === 'top' ? gameState.homePitcher : gameState.awayPitcher;
+  const bullpen = myTeam?.bullpen || [];
+  const currentPitcher = userIsHome ? gameState.homePitcher : gameState.awayPitcher;
 
   const tabs = [
     { id: 'pinchhit', label: 'Pinch Hit' },
@@ -106,14 +94,14 @@ export default function SubstitutionsPanel({ gameState, teams, onClose, onPinchH
               </div>
 
               <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground">
-                Available Bench ({battingBench.length}) — {battingTeam?.name}
+                Available Bench ({myBench.length}) — {myTeam?.name}
               </div>
 
-              {battingBench.length === 0 ? (
-                <p className="text-xs text-muted-foreground italic">No bench players available for {battingTeam?.name}</p>
+              {myBench.length === 0 ? (
+                <p className="text-xs text-muted-foreground italic">No bench players available for {myTeam?.name}</p>
               ) : (
                 <div className="space-y-1.5">
-                  {battingBench.map((p, i) => (
+                  {myBench.map((p, i) => (
                     <button
                       key={i}
                       onClick={() => onPinchHit(p)}
@@ -149,11 +137,11 @@ export default function SubstitutionsPanel({ gameState, teams, onClose, onPinchH
 
                   <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-1">Replace with</div>
                   <div className="space-y-1">
-                    {battingBench.filter(p => p.speed > runner.speed).length === 0 && battingBench.length === 0 && (
+                    {myBench.filter(p => p.speed > runner.speed).length === 0 && myBench.length === 0 && (
                       <p className="text-xs text-muted-foreground italic">No bench players available</p>
                     )}
                     {/* Show faster bench players first */}
-                    {[...battingBench].sort((a, b) => b.speed - a.speed).map((p, i) => (
+                    {[...myBench].sort((a, b) => b.speed - a.speed).map((p, i) => (
                       <button
                         key={i}
                         onClick={() => onPinchRun(runner.baseIndex, p)}
@@ -188,11 +176,11 @@ export default function SubstitutionsPanel({ gameState, teams, onClose, onPinchH
           {tab === 'defense' && (
             <div className="space-y-3">
               <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-2">
-                Defensive Alignment — {fieldingTeam?.name}
+                Defensive Alignment — {myTeam?.name}
               </div>
 
-              {fieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH').map((player, idx) => {
-                const actualIdx = fieldingLineup.indexOf(player);
+              {myFieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH' && p.pos !== 'SP').map((player, idx) => {
+                const actualIdx = myFieldingLineup.indexOf(player);
                 const currentPos = player.assignedPos || player.pos;
                 return (
                   <div key={idx} className="flex items-center gap-2 bg-muted/30 rounded-lg p-2">
@@ -214,13 +202,13 @@ export default function SubstitutionsPanel({ gameState, teams, onClose, onPinchH
               })}
 
               {/* Replace fielder with bench player */}
-              {fieldingBench.length > 0 && (
+              {myBench.length > 0 && (
                 <div className="mt-4 pt-3 border-t border-border">
                   <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-2">
-                    Replace Fielder with Bench Player — {fieldingTeam?.name}
+                    Replace Fielder with Bench Player — {myTeam?.name}
                   </div>
-                  {fieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH').map((player, fieldIdx) => {
-                    const actualIdx = fieldingLineup.indexOf(player);
+                  {myFieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH' && p.pos !== 'SP').map((player, fieldIdx) => {
+                    const actualIdx = myFieldingLineup.indexOf(player);
                     const currentPos = player.assignedPos || player.pos;
                     return (
                       <div key={fieldIdx} className="mb-2">
@@ -231,14 +219,14 @@ export default function SubstitutionsPanel({ gameState, teams, onClose, onPinchH
                           value=""
                           onChange={(e) => {
                             if (e.target.value) {
-                              const benchPlayer = fieldingBench.find(p => p.name === e.target.value);
+                              const benchPlayer = myBench.find(p => p.name === e.target.value);
                               if (benchPlayer) onDefensiveSwitch(actualIdx, currentPos, benchPlayer);
                             }
                           }}
                           className="w-full bg-input border border-border rounded-md px-2 py-1 text-[10px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                         >
                           <option value="">-- Select bench player --</option>
-                          {fieldingBench.map((p, i) => (
+                          {myBench.map((p, i) => (
                             <option key={i} value={p.name}>{p.name} ({p.pos}, CON {p.contact})</option>
                           ))}
                         </select>

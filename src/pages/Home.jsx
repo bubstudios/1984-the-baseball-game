@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TEAMS, PITCH_TYPES, SWING_TYPES } from '@/lib/gameData';
 import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, attemptSteal, setHitAndRun, cpuDecideSteal, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher } from '@/lib/gameEngine';
 import TeamSelect from '@/components/game/TeamSelect';
+import BallparkSelect from '@/components/game/BallparkSelect';
 import LineupManager from '@/components/game/LineupManager';
 import DiamondView from '@/components/game/DiamondView';
 import Scoreboard from '@/components/game/Scoreboard';
@@ -22,14 +23,15 @@ export default function Home() {
   const [userTeam, setUserTeam] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [tab, setTab] = useState('game');
-  const [lineupPhase, setLineupPhase] = useState(null); // { home, away } — show lineup manager
+  const [ballparkPhase, setBallparkPhase] = useState(null); // { home, away }
+  const [lineupPhase, setLineupPhase] = useState(null); // { home, away, useDH, parkTeam }
   const [showSubs, setShowSubs] = useState(false);
 
-  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup) => {
+  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDH) => {
     setHomeTeam(home);
     setAwayTeam(away);
     setUserTeam(home); // user controls home team
-    const state = createGameState(home, away, customHomeLineup, customAwayLineup);
+    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDH);
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
@@ -39,11 +41,16 @@ export default function Home() {
   }, []);
 
   const handleTeamSelect = useCallback((home, away) => {
-    setLineupPhase({ home, away });
+    setBallparkPhase({ home, away });
   }, []);
 
+  const handleBallparkConfirm = useCallback((parkTeam, useDHFlag) => {
+    setLineupPhase({ home: ballparkPhase.home, away: ballparkPhase.away, useDH: useDHFlag, parkTeam });
+    setBallparkPhase(null);
+  }, [ballparkPhase]);
+
   const handleLineupConfirm = useCallback((customLineup) => {
-    startGame(lineupPhase.home, lineupPhase.away, customLineup, null);
+    startGame(lineupPhase.home, lineupPhase.away, customLineup, null, lineupPhase.useDH);
   }, [lineupPhase, startGame]);
 
   const isUserBatting = gameState && (
@@ -127,6 +134,7 @@ export default function Home() {
 
   const handleNewGame = () => {
     setGameState(null);
+    setBallparkPhase(null);
     setLineupPhase(null);
     setShowSubs(false);
     setHomeTeam(null);
@@ -135,13 +143,26 @@ export default function Home() {
     setTab('game');
   };
 
+  if (ballparkPhase) {
+    return (
+      <BallparkSelect
+        userTeam={ballparkPhase.home}
+        cpuTeam={ballparkPhase.away}
+        onConfirm={handleBallparkConfirm}
+        onBack={() => setBallparkPhase(null)}
+      />
+    );
+  }
+
   if (lineupPhase) {
     return (
       <LineupManager
         teamKey={lineupPhase.home}
         teamData={TEAMS[lineupPhase.home]}
+        useDH={lineupPhase.useDH}
+        parkTeam={lineupPhase.parkTeam}
         onConfirm={handleLineupConfirm}
-        onBack={() => setLineupPhase(null)}
+        onBack={() => { setLineupPhase(null); setBallparkPhase({ home: lineupPhase.home, away: lineupPhase.away }); }}
       />
     );
   }

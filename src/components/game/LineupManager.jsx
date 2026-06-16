@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
+import { TEAMS } from '@/lib/gameData';
 import { ArrowUp, ArrowDown, X, AlertTriangle } from 'lucide-react';
 
 const ALL_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
@@ -29,7 +30,7 @@ function getPositionPenalty(naturalPos, assignedPos) {
   return { label: 'Major penalty', defenseMod: -3, errorMult: 3.0, severity: 'high' };
 }
 
-function PlayerSlot({ slot, index, total, allPlayers, usedIds, onPlayerChange, onPositionChange, onMoveUp, onMoveDown, onRemove }) {
+function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePositions, onPlayerChange, onPositionChange, onMoveUp, onMoveDown, onRemove }) {
   const penalty = getPositionPenalty(slot.naturalPos, slot.assignedPos);
   const availablePlayers = allPlayers.filter(p => !usedIds.has(p.name) || p.name === slot.name);
 
@@ -54,7 +55,7 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, onPlayerChange, o
         onChange={(e) => onPositionChange(index, e.target.value)}
         className="w-16 bg-input border border-border rounded-md px-1.5 py-1.5 text-xs font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary text-center"
       >
-        {ALL_POSITIONS.map(pos => (
+        {availablePositions.map(pos => (
           <option key={pos} value={pos}>{pos}</option>
         ))}
       </select>
@@ -95,20 +96,56 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, onPlayerChange, o
   );
 }
 
-export default function LineupManager({ teamKey, teamData, onConfirm, onBack }) {
+export default function LineupManager({ teamKey, teamData, useDH, parkTeam, onConfirm, onBack }) {
   const allPositionPlayers = useMemo(() => {
     const players = [...teamData.lineup];
     if (teamData.bench) players.push(...teamData.bench);
+    // Without DH, pitchers are available to hit (with their batting stats)
+    if (!useDH) {
+      const allPitchers = [...teamData.rotation, ...teamData.bullpen];
+      allPitchers.forEach(p => {
+        players.push({
+          name: p.name,
+          pos: 'SP',
+          bats: p.bats || 'R',
+          contact: p.contact || 2,
+          power: p.power || 1,
+          bunting: p.bunting || 3,
+          speed: p.speed || 2,
+          defense: 0,
+          arm: 0,
+        });
+      });
+    }
     return players;
-  }, [teamData]);
+  }, [teamData, useDH]);
+
+  const availablePositions = useMemo(() => {
+    return useDH ? ALL_POSITIONS : [...ALL_POSITIONS.filter(p => p !== 'DH'), 'SP'];
+  }, [useDH]);
 
   const defaultLineup = useMemo(() => {
-    return teamData.lineup.slice(0, 9).map(p => ({
+    if (useDH) {
+      return teamData.lineup.slice(0, 9).map(p => ({
+        name: p.name,
+        naturalPos: p.pos,
+        assignedPos: p.pos,
+      }));
+    }
+    // No DH: 8 position players + starting pitcher in 9th spot
+    const slots = teamData.lineup.slice(0, 8).map(p => ({
       name: p.name,
       naturalPos: p.pos,
       assignedPos: p.pos,
     }));
-  }, [teamData]);
+    const sp = teamData.rotation[0];
+    slots.push({
+      name: sp.name,
+      naturalPos: 'SP',
+      assignedPos: 'SP',
+    });
+    return slots;
+  }, [teamData, useDH]);
 
   const [lineup, setLineup] = useState(defaultLineup);
 
@@ -122,7 +159,7 @@ export default function LineupManager({ teamKey, teamData, onConfirm, onBack }) 
   const positionCounts = useMemo(() => {
     const counts = {};
     lineup.forEach(s => {
-      if (s.assignedPos !== 'DH') {
+      if (s.assignedPos !== 'DH' && s.assignedPos !== 'SP') {
         counts[s.assignedPos] = (counts[s.assignedPos] || 0) + 1;
       }
     });
@@ -205,8 +242,21 @@ export default function LineupManager({ teamKey, teamData, onConfirm, onBack }) 
           <h1 className="font-display text-[10px] text-primary tracking-wider mt-1">LINEUP MANAGER</h1>
           <h2 className="font-heading text-xl font-bold text-foreground mt-1">{teamData.city} {teamData.name}</h2>
           <p className="text-xs text-muted-foreground font-body mt-1">
-            Set your starting lineup, positions, and batting order
+            {useDH
+              ? `DH rules — pitchers do not bat. Set your 9 hitters at ${TEAMS[parkTeam]?.stadium || ''}.`
+              : `No DH — pitchers hit for themselves. ${teamData.rotation[0]?.name} will bat 9th.`}
           </p>
+        </div>
+
+        {/* DH/No DH notice */}
+        <div className={`rounded-lg p-3 mb-4 text-center ${
+          useDH ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-emerald-500/5 border border-emerald-500/20'
+        }`}>
+          <span className={`text-[10px] font-heading font-bold uppercase tracking-wider ${
+            useDH ? 'text-amber-400' : 'text-emerald-400'
+          }`}>
+            {useDH ? '🏏 DH RULE — Designated hitter bats for the pitcher' : '⚾ PITCHER HITS — Pitcher bats in the 9th spot'}
+          </span>
         </div>
 
         {/* Position penalty legend */}
@@ -260,6 +310,7 @@ export default function LineupManager({ teamKey, teamData, onConfirm, onBack }) 
                 total={lineup.length}
                 allPlayers={allPositionPlayers}
                 usedIds={usedPlayerIds}
+                availablePositions={availablePositions}
                 onPlayerChange={handlePlayerChange}
                 onPositionChange={handlePositionChange}
                 onMoveUp={handleMoveUp}

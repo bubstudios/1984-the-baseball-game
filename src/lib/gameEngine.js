@@ -1,11 +1,11 @@
 import { TEAMS, PITCH_TYPES, SWING_TYPES, TEAM_IDS, PLAYER_ERRORS, DEFAULT_PITCHES } from './gameData';
 
 // Create initial game state with two selected teams
-export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup) {
+export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false) {
   const home = TEAMS[homeTeam];
   const away = TEAMS[awayTeam];
 
-  const buildLineup = (lineupData, defaultLineup) => {
+  const buildLineup = (lineupData, defaultLineup, teamData) => {
     if (lineupData && lineupData.length >= 9) {
       return lineupData.slice(0, 9).map((p, i) => ({
         ...p,
@@ -14,16 +14,37 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
         gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
       }));
     }
-    return defaultLineup.map((p, i) => ({
+    let lineup = defaultLineup.map((p, i) => ({
       ...p,
       order: i + 1,
       assignedPos: p.pos,
       gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
     }));
+    // If DH and lineup has fewer than 9 (NL team in AL park), fill with bench player as DH
+    if (useDH && lineup.length < 9 && teamData?.bench?.length > 0) {
+      const benchDH = { ...teamData.bench[0], pos: 'DH', assignedPos: 'DH', defense: 0, arm: 0,
+        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+        order: lineup.length + 1,
+      };
+      lineup.push(benchDH);
+    }
+    // No DH: ensure pitcher is in the 9th spot if not already in lineup
+    if (!useDH && teamData?.rotation?.length > 0) {
+      const spName = teamData.rotation[0].name;
+      if (!lineup.find(p => p.name === spName)) {
+        const sp = teamData.rotation[0];
+        lineup.push({
+          ...sp, assignedPos: 'SP',
+          gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+          order: lineup.length + 1,
+        });
+      }
+    }
+    return lineup;
   };
 
-  const homeLineup = buildLineup(customHomeLineup, home.lineup);
-  const awayLineup = buildLineup(customAwayLineup, away.lineup);
+  const homeLineup = buildLineup(customHomeLineup, home.lineup, home);
+  const awayLineup = buildLineup(customAwayLineup, away.lineup, away);
 
   return {
     homeTeam,
