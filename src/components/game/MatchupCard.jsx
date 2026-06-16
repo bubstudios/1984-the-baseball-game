@@ -15,7 +15,10 @@ export default function MatchupCard({ batter, pitcher, halfInning, homeTeam, awa
           <span className="text-[10px] font-heading uppercase tracking-wider text-primary font-semibold">At Bat</span>
           <span className="text-[10px] text-muted-foreground">{battingTeam?.abbr || ''}</span>
         </div>
-        <div className="font-heading font-bold text-sm text-foreground truncate">{batter.name}</div>
+        <div className="font-heading font-bold text-sm text-foreground truncate">
+          {batter.name}
+          {batter.bats && <span className="text-[10px] text-muted-foreground ml-1">({batter.bats})</span>}
+        </div>
         <div className="flex items-center gap-3 mt-1.5">
           <span className="text-[10px] text-muted-foreground">{batter.pos}</span>
           <span className="text-[10px] text-primary font-semibold">CON {batter.contact}</span>
@@ -41,7 +44,10 @@ export default function MatchupCard({ batter, pitcher, halfInning, homeTeam, awa
           <span className="text-[10px] font-heading uppercase tracking-wider text-secondary font-semibold">Pitching</span>
           <span className="text-[10px] text-muted-foreground">{pitchingTeam?.abbr || ''}</span>
         </div>
-        <div className="font-heading font-bold text-sm text-foreground truncate">{pitcher.name}</div>
+        <div className="font-heading font-bold text-sm text-foreground truncate">
+          {pitcher.name}
+          {pitcher.throws && <span className="text-[10px] text-muted-foreground ml-1">({pitcher.throws}HP)</span>}
+        </div>
         <div className="flex items-center gap-3 mt-1.5">
           <span className="text-[10px] text-muted-foreground">{pitcher.pos}</span>
           <span className="text-[10px] text-emerald-400 font-semibold">SPD {pitcher.pitchSpeed}</span>

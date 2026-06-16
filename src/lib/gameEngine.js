@@ -309,8 +309,11 @@ function resolveSwing(state, swingType, pitch) {
   const isPower = swingType.name === 'Power Swing';
   const isContact = swingType.name === 'Contact Swing';
 
-  // Contact chance: based on contact rating (1-10)
-  const contactRating = batter.contact / 10;
+  // Apply split-adjusted ratings based on pitcher handedness
+  const adjBatter = getSplitAdjustedPlayer(batter, pitcher.throws);
+
+  // Contact chance: based on split-adjusted contact rating (1-10)
+  const contactRating = adjBatter.contact / 10;
   let contactChance = 0.25 + contactRating * 0.35;
 
   if (isPower) contactChance -= 0.10;
@@ -359,7 +362,7 @@ function resolveSwing(state, swingType, pitch) {
   }
 
   // Ball in play — determine hit vs out
-  const powerRating = batter.power / 10;
+  const powerRating = adjBatter.power / 10;
   let hitChance = 0.20 + contactRating * 0.28;
   if (isPower) hitChance -= 0.04;
   if (isContact) hitChance += 0.08;
@@ -524,6 +527,8 @@ export function cpuSelectPitch(state) {
 // CPU swing selection based on batter strengths and count
 export function cpuSelectSwing(state) {
   const batter = getCurrentBatter(state);
+  const pitcher = getCurrentPitcher(state);
+  const adjBatter = getSplitAdjustedPlayer(batter, pitcher.throws);
   const rand = Math.random();
 
   // Count-aware decisions
@@ -537,12 +542,41 @@ export function cpuSelectSwing(state) {
     if (rand < 0.35) return 3; // Take
   }
 
-  // Based on batter type
-  if (batter.power >= 8 && rand < 0.30) return 2; // Power swing
-  if (batter.contact >= 8 && rand < 0.45) return 1; // Contact swing
+  // Based on split-adjusted batter type
+  if (adjBatter.power >= 8 && rand < 0.30) return 2; // Power swing
+  if (adjBatter.contact >= 8 && rand < 0.45) return 1; // Contact swing
   if (rand < 0.45) return 0; // Normal swing
   if (rand < 0.70) return 1; // Contact
   return 0;
+}
+
+// Split-adjusted ratings based on 1984 real platoon splits
+// Adjusts Contact (via BA) and Power (via HR rate) based on pitcher handedness
+function getSplitAdjustedPlayer(player, pitcherHand) {
+  if (!player.splits || !pitcherHand) return player;
+
+  const split = pitcherHand === 'L' ? player.splits.vsLHP : player.splits.vsRHP;
+  if (!split || split.ab < 20) return player; // small sample — no adjustment
+
+  // Calculate overall BA and HR rate from splits
+  const vsL = player.splits.vsLHP;
+  const vsR = player.splits.vsRHP;
+  const totalAB = vsL.ab + vsR.ab;
+  const totalH = vsL.ba * vsL.ab + vsR.ba * vsR.ab;
+  const overallBA = totalAB > 0 ? totalH / totalAB : 0.250;
+  const totalHR = vsL.hr + vsR.hr;
+  const overallHRRate = totalAB > 0 ? totalHR / totalAB : 0.020;
+
+  // Contact adjustment (batting average ratio)
+  const baRatio = overallBA > 0 ? split.ba / overallBA : 1;
+  const adjustedContact = Math.max(1, Math.min(10, Math.round(player.contact * baRatio)));
+
+  // Power adjustment (HR rate ratio)
+  const splitHRRate = split.ab > 0 ? split.hr / split.ab : 0;
+  const hrRatio = overallHRRate > 0 ? splitHRRate / overallHRRate : 1;
+  const adjustedPower = Math.max(1, Math.min(10, Math.round(player.power * hrRatio)));
+
+  return { ...player, contact: adjustedContact, power: adjustedPower };
 }
 
 export { getCurrentBatter, getCurrentPitcher, getBattingTeam };
