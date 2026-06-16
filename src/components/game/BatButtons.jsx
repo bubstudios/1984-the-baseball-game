@@ -20,7 +20,7 @@ export default function BatButtons({ onSwing, disabled }) {
 
   return (
     <div className="space-y-2">
-      <div className="text-[10px] font-heading uppercase tracking-widest text-slate-400 text-center mb-2">Choose Swing</div>
+      <div className="text-[10px] font-heading uppercase tracking-widest text-foreground/60 text-center mb-2">Choose Swing</div>
       <div className="flex items-end justify-center gap-4 sm:gap-6">
         {BAT_ACTIONS.map((action) => {
           const isActive = swinging === action.swingIndex;
@@ -34,69 +34,80 @@ export default function BatButtons({ onSwing, disabled }) {
               {/* Bat — horizontal, arcs upward on swing */}
               <div
                 className={`
-                  relative w-32 h-9
+                  relative w-36 h-10
                   ${isActive ? 'animate-bat-swing' : 'hover:scale-110 transition-transform'}
                   ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
                 `}
               >
-                <svg viewBox="0 0 160 45" className="w-full h-full">
+                <svg viewBox="0 0 180 50" className="w-full h-full">
                   <defs>
                     <linearGradient id="barrelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                       <stop offset="0%" stopColor="#FDF4DC" />
-                      <stop offset="30%" stopColor="#F7D49D" />
-                      <stop offset="60%" stopColor="#E8C078" />
+                      <stop offset="25%" stopColor="#F9DEB0" />
+                      <stop offset="55%" stopColor="#E8C078" />
                       <stop offset="100%" stopColor="#C99850" />
                     </linearGradient>
                     <linearGradient id="handleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#5A3518" />
-                      <stop offset="50%" stopColor="#4A2810" />
+                      <stop offset="0%" stopColor="#6B4226" />
+                      <stop offset="40%" stopColor="#4A2810" />
                       <stop offset="100%" stopColor="#3B1E08" />
+                    </linearGradient>
+                    <linearGradient id="knobGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#5A3518" />
+                      <stop offset="100%" stopColor="#2A1405" />
                     </linearGradient>
                   </defs>
 
-                  {/* Barrel — gradually tapers from wide left to narrow right */}
-                  <polygon points="55,19 55,26 4,12 4,33" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
-                  {/* Barrel rounded cap on left end */}
-                  <path d="M4,12 C1,12 1,33 4,33" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
-                  {/* Barrel highlight — top edge glow */}
-                  <path d="M7,16 Q28,19 48,20" fill="none" stroke="#FFFDF5" strokeWidth="1.8" opacity="0.5" strokeLinecap="round" />
-                  {/* Bottom shadow on barrel */}
-                  <path d="M7,30 Q28,27 48,25" fill="none" stroke="#A07040" strokeWidth="1.5" opacity="0.4" strokeLinecap="round" />
+                  {/* Barrel — smooth gradual taper from thick barrel end to thin handle */}
+                  <path d="M6,13
+                    C6,10 10,8 14,8
+                    L68,17.5
+                    L68,32.5
+                    L14,42
+                    C10,42 6,40 6,37
+                    Z"
+                    fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.5"
+                  />
 
-                  {/* Transition zone — barrel to handle */}
-                  <polygon points="52,18 52,27 64,24.5 64,20.5" fill="#6B4226" stroke="#3B1E08" strokeWidth="0.8" />
+                  {/* Barrel end grain — rounded cap */}
+                  <ellipse cx="10" cy="25" rx="5" ry="16" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
 
-                  {/* Handle — darker wood */}
-                  <rect x="64" y="19.5" width="55" height="6" rx="2.5" fill="url(#handleGrad)" stroke="#3B1E08" strokeWidth="1" />
+                  {/* Barrel top highlight */}
+                  <path d="M14,12 Q40,17 64,18" fill="none" stroke="#FFFDF5" strokeWidth="2.2" opacity="0.45" strokeLinecap="round" />
+                  {/* Barrel bottom shadow */}
+                  <path d="M14,39 Q40,34 64,31" fill="none" stroke="#8B6040" strokeWidth="1.8" opacity="0.35" strokeLinecap="round" />
 
-                  {/* Grip tape — white with black hash marks */}
-                  <rect x="83" y="18.5" width="33" height="8" rx="1" fill="#F0ECE0" stroke="#3B1E08" strokeWidth="0.8" />
-                  {/* Diagonal hash marks on the grip tape */}
+                  {/* Handle — thin uniform wood */}
+                  <rect x="68" y="21" width="72" height="8" rx="1" fill="url(#handleGrad)" stroke="#3B1E08" strokeWidth="1" />
+
+                  {/* Grip tape */}
+                  <rect x="88" y="20" width="38" height="10" rx="1.5" fill="#F0ECE0" stroke="#3B1E08" strokeWidth="0.8" />
                   {[
-                    [86, 18.5, 90, 26.5],
-                    [90, 18.5, 94, 26.5],
-                    [94, 18.5, 98, 26.5],
-                    [98, 18.5, 102, 26.5],
-                    [102, 18.5, 106, 26.5],
-                    [106, 18.5, 110, 26.5],
-                  ].map(([x1, y1, x2, y2], i) => (
-                    <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#222" strokeWidth="1" opacity="0.7" />
+                    [91,20,95,30],
+                    [95,20,99,30],
+                    [99,20,103,30],
+                    [103,20,107,30],
+                    [107,20,111,30],
+                    [111,20,115,30],
+                    [115,20,119,30],
+                    [119,20,123,30],
+                  ].map(([x1,y1,x2,y2], i) => (
+                    <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#333" strokeWidth="0.9" opacity="0.6" />
                   ))}
 
-                  {/* Tapered neck between grip and knob */}
-                  <rect x="119" y="20.5" width="13" height="4" rx="1" fill="#3B1E08" stroke="#2A1405" strokeWidth="0.6" />
+                  {/* Knob — rounded pill-shaped button */}
+                  <rect x="140" y="17" width="16" height="16" rx="8" fill="url(#knobGrad)" stroke="#3B1E08" strokeWidth="1.3" />
+                  <ellipse cx="148" cy="21" rx="5" ry="2.5" fill="#8B6040" opacity="0.4" />
 
-                  {/* Knob — rounded button at the end */}
-                  <rect x="132" y="17" width="12" height="11" rx="5.5" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
-                  {/* Knob highlight */}
-                  <ellipse cx="138" cy="20" rx="4" ry="1.5" fill="#FFFDF5" opacity="0.35" />
-
-                  {/* Brand logo placeholder — oval on barrel */}
-                  <ellipse cx="28" cy="22.5" rx="7" ry="4.5" fill="none" stroke="#3B1E08" strokeWidth="0.6" opacity="0.25" />
+                  {/* Grain lines on barrel */}
+                  <path d="M12,18 Q40,22 64,20" fill="none" stroke="#D0A060" strokeWidth="0.7" opacity="0.4" />
+                  <path d="M12,22 Q40,25 64,23" fill="none" stroke="#D0A060" strokeWidth="0.5" opacity="0.3" />
+                  <path d="M12,30 Q40,29 64,27" fill="none" stroke="#C89840" strokeWidth="0.6" opacity="0.3" />
+                  <path d="M12,34 Q40,32 64,29" fill="none" stroke="#C89840" strokeWidth="0.5" opacity="0.25" />
                 </svg>
               </div>
               <span className="font-heading font-bold text-xs text-foreground">{action.label}</span>
-              <span className="text-[9px] text-slate-300 -mt-1">{action.desc}</span>
+              <span className="text-[9px] text-foreground/50 -mt-1">{action.desc}</span>
             </button>
           );
         })}
