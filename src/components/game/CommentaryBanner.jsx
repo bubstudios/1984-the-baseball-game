@@ -185,16 +185,16 @@ const STADIUM_FLAVOR = {
   },
 };
 
-// Team key to flavor key mapping
+// Team key to flavor key mapping (matches TEAMS keys from gameData.js)
 const TEAM_TO_FLAVOR = {
-  chicagoCubs: "chicagoCubs",
-  bostonRedSox: "bostonRedSox",
-  detroitTigers: "detroitTigers",
-  sanDiegoPadres: "sanDiegoPadres",
-  newYorkYankees: "newYorkYankees",
-  baltimoreOrioles: "baltimoreOrioles",
-  losAngelesDodgers: "losAngelesDodgers",
-  newYorkMets: "newYorkMets",
+  cubs: "chicagoCubs",
+  redsox: "bostonRedSox",
+  tigers: "detroitTigers",
+  padres: "sanDiegoPadres",
+  yankees: "newYorkYankees",
+  orioles: "baltimoreOrioles",
+  dodgers: "losAngelesDodgers",
+  mets: "newYorkMets",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
