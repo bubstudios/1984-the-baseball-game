@@ -1030,7 +1030,7 @@ function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
   const powerRating = adjBatter.power / 10;
 
   // On hit-and-run contact: higher ground ball tendency, runners advance
-  // Determine hit quality based on contact
+  // Determine hit quality based on contact — NO speed-based extra advancement
   const hitRoll = Math.random();
   const hitChance = 0.25 + contactSkill * 0.30;
 
@@ -1040,14 +1040,14 @@ function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
     pitcher.gameStats.h++;
 
     if (hitRoll < powerRating * 0.06) {
-      advanceRunners(state, 2, batter, true);
+      advanceRunners(state, 2, batter, false);
       const msg = `${batter.name} rips a double on the hit-and-run!`;
       state.log.push({ type: 'double', text: msg });
       state.lastPlay = { type: 'double', text: msg };
     } else {
-      advanceRunners(state, 1, batter, true);
+      advanceRunners(state, 1, batter, false);
       // On hit-and-run single, runners on base auto-advance one extra
-      advanceHitAndRunRunners(state);
+      advanceHitAndRunRunners(state, batter);
       const msg = `${batter.name} slaps a single — hit-and-run works!`;
       state.log.push({ type: 'single', text: msg });
       state.lastPlay = { type: 'single', text: msg };
@@ -1071,18 +1071,23 @@ function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
   advanceBatter(state);
 }
 
-function advanceHitAndRunRunners(state) {
-  for (let i = 0; i < 3; i++) {
+function advanceHitAndRunRunners(state, batter) {
+  let extraRuns = 0;
+  for (let i = 2; i >= 0; i--) {
     const runner = state.bases[i];
     if (!runner) continue;
     if (i + 1 >= 3) {
       runner.gameStats.runs++;
       scoreRun(state);
+      extraRuns++;
       state.bases[i] = null;
     } else if (!state.bases[i + 1]) {
       state.bases[i + 1] = runner;
       state.bases[i] = null;
     }
+  }
+  if (extraRuns > 0) {
+    batter.gameStats.rbi += extraRuns;
   }
 }
 

@@ -118,33 +118,33 @@ export default function CommentaryBanner({ batter, pitcher, gameState }) {
   const text = getCommentary(batter, pitcher, gameState);
 
   return (
-    <div className="bg-card/80 border border-border rounded-lg px-3 py-2 text-center overflow-hidden">
-      <div className="flex items-center justify-center gap-2">
-        <span className="text-[9px] text-red-400 font-display animate-pulse">●</span>
-        <span className="text-[10px] text-muted-foreground/60 font-heading uppercase tracking-widest">ON AIR</span>
-        <span className="text-[9px] text-red-400 font-display animate-pulse">●</span>
+    <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">
+      <div className="flex items-center justify-center gap-3">
+        <span className="text-xs text-red-400 font-display animate-pulse">●</span>
+        <span className="text-xs text-muted-foreground/60 font-heading uppercase tracking-[0.25em]">ON AIR</span>
+        <span className="text-xs text-red-400 font-display animate-pulse">●</span>
       </div>
-      <p className="text-xs font-heading font-semibold text-foreground/90 mt-0.5 leading-snug">
+      <p className="text-base sm:text-lg font-heading font-semibold text-foreground/95 mt-1.5 leading-snug italic">
         "{text}"
       </p>
       {/* Count indicators inline */}
-      <div className="flex items-center justify-center gap-4 mt-1.5">
-        <div className="flex items-center gap-1">
-          <span className="text-[9px] text-muted-foreground">B</span>
+      <div className="flex items-center justify-center gap-6 mt-2.5">
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-bold text-muted-foreground">B</span>
           {[0, 1, 2, 3].map(i => (
-            <div key={i} className={`w-2 h-2 rounded-full ${i < gameState.balls ? 'bg-green-500' : 'bg-muted/40'}`} />
+            <div key={i} className={`w-3 h-3 rounded-full ${i < gameState.balls ? 'bg-green-500' : 'bg-muted/40'}`} />
           ))}
         </div>
-        <div className="flex items-center gap-1">
-          <span className="text-[9px] text-muted-foreground">S</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-bold text-muted-foreground">S</span>
           {[0, 1, 2].map(i => (
-            <div key={i} className={`w-2 h-2 rounded-full ${i < gameState.strikes ? 'bg-primary' : 'bg-muted/40'}`} />
+            <div key={i} className={`w-3 h-3 rounded-full ${i < gameState.strikes ? 'bg-primary' : 'bg-muted/40'}`} />
           ))}
         </div>
-        <div className="flex items-center gap-1">
-          <span className="text-[9px] text-muted-foreground">O</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-bold text-muted-foreground">O</span>
           {[0, 1, 2].map(i => (
-            <div key={i} className={`w-2 h-2 rounded-full ${i < gameState.outs ? 'bg-destructive' : 'bg-muted/40'}`} />
+            <div key={i} className={`w-3 h-3 rounded-full ${i < gameState.outs ? 'bg-destructive' : 'bg-muted/40'}`} />
           ))}
         </div>
       </div>
