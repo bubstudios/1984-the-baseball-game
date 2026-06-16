@@ -1,11 +1,15 @@
 import React from 'react';
 import { TEAMS } from '@/lib/gameData';
+import { AlertTriangle } from 'lucide-react';
 
 export default function MatchupCard({ batter, pitcher, halfInning, homeTeam, awayTeam }) {
   const battingTeamKey = halfInning === 'top' ? awayTeam : homeTeam;
   const pitchingTeamKey = halfInning === 'top' ? homeTeam : awayTeam;
   const battingTeam = TEAMS[battingTeamKey];
   const pitchingTeam = TEAMS[pitchingTeamKey];
+
+  const displayPos = batter.assignedPos || batter.pos;
+  const isOutOfPosition = batter.assignedPos && batter.assignedPos !== batter.pos;
 
   return (
     <div className="flex items-center justify-between gap-3">
@@ -20,11 +24,14 @@ export default function MatchupCard({ batter, pitcher, halfInning, homeTeam, awa
           {batter.bats && <span className="text-[10px] text-muted-foreground ml-1">({batter.bats})</span>}
         </div>
         <div className="flex items-center gap-3 mt-1.5">
-          <span className="text-[10px] text-muted-foreground">{batter.pos}</span>
+          <span className={`text-[10px] ${isOutOfPosition ? 'text-orange-400' : 'text-muted-foreground'} flex items-center gap-0.5`}>
+            {displayPos}
+            {isOutOfPosition && <AlertTriangle className="w-3 h-3" />}
+          </span>
           <span className="text-[10px] text-primary font-semibold">CON {batter.contact}</span>
           <span className="text-[10px] text-amber-400 font-semibold">PWR {batter.power}</span>
           <span className="text-[10px] text-cyan-400 font-semibold">SPD {batter.speed}</span>
-          <span className="text-[10px] text-muted-foreground">DEF {batter.defense}</span>
+          <span className={`text-[10px] ${isOutOfPosition ? 'text-orange-400' : 'text-muted-foreground'}`}>DEF {batter.defense}</span>
         </div>
         {batter.gameStats && (
           <div className="flex gap-2 mt-1 text-[10px] text-muted-foreground/70">

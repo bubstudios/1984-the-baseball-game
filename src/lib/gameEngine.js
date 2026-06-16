@@ -1,12 +1,29 @@
 import { TEAMS, PITCH_TYPES, SWING_TYPES, TEAM_IDS, PLAYER_ERRORS, DEFAULT_PITCHES } from './gameData';
 
 // Create initial game state with two selected teams
-export function createGameState(homeTeam, awayTeam) {
+export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup) {
   const home = TEAMS[homeTeam];
   const away = TEAMS[awayTeam];
 
-  const homeLineup = home.lineup.map((p, i) => ({ ...p, order: i + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } }));
-  const awayLineup = away.lineup.map((p, i) => ({ ...p, order: i + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } }));
+  const buildLineup = (lineupData, defaultLineup) => {
+    if (lineupData && lineupData.length >= 9) {
+      return lineupData.slice(0, 9).map((p, i) => ({
+        ...p,
+        order: i + 1,
+        assignedPos: p.assignedPos || p.pos,
+        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+      }));
+    }
+    return defaultLineup.map((p, i) => ({
+      ...p,
+      order: i + 1,
+      assignedPos: p.pos,
+      gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+    }));
+  };
+
+  const homeLineup = buildLineup(customHomeLineup, home.lineup);
+  const awayLineup = buildLineup(customAwayLineup, away.lineup);
 
   return {
     homeTeam,
@@ -45,38 +62,108 @@ function createPitcherState(p) {
 
 export { TEAM_IDS };
 
+// Position group lookup
+const POSITION_GROUPS = {
+  C: 'C', '1B': 'IF', '2B': 'IF', '3B': 'IF', 'SS': 'IF',
+  LF: 'OF', CF: 'OF', RF: 'OF', DH: 'DH',
+  OF: 'OF', INF: 'IF', // generic positions for bench players
+};
+
+// Normalize position for group lookup (handles "C/3B", "OF", etc.)
+function normalizePosGroup(pos) {
+  if (!pos) return null;
+  if (POSITION_GROUPS[pos]) return POSITION_GROUPS[pos];
+  // Handle combined positions like "C/3B" — use the first one
+  const parts = pos.split('/');
+  for (const p of parts) {
+    const trimmed = p.trim();
+    if (POSITION_GROUPS[trimmed]) return POSITION_GROUPS[trimmed];
+  }
+  return null;
+}
+
+// Get adjusted player ratings based on position penalty
+function getAdjustedPlayer(player) {
+  const assignedPos = player.assignedPos || player.pos;
+  const naturalPos = player.pos;
+
+  if (assignedPos === 'DH' || naturalPos === assignedPos) {
+    return { ...player, defenseAdj: player.defense, errorMult: 1.0 };
+  }
+
+  // Check if assigned position matches any part of a combo position (e.g., "C/3B" can play 3B without penalty)
+  const naturalParts = naturalPos.split('/').map(p => p.trim());
+  if (naturalParts.includes(assignedPos)) {
+    return { ...player, defenseAdj: player.defense, errorMult: 1.0 };
+  }
+
+  const naturalGroup = normalizePosGroup(naturalPos);
+  const assignedGroup = normalizePosGroup(assignedPos);
+
+  if (!naturalGroup || !assignedGroup) {
+    return { ...player, defenseAdj: player.defense, errorMult: 1.0 };
+  }
+
+  if (naturalGroup === assignedGroup) {
+    // Same group: minor penalty
+    return {
+      ...player,
+      defenseAdj: Math.max(1, player.defense - 1),
+      errorMult: 1.5,
+    };
+  }
+
+  // Cross-group: major penalty
+  return {
+    ...player,
+    defenseAdj: Math.max(1, player.defense - 3),
+    errorMult: 3.0,
+  };
+}
+
 // Get the defensive team's position players and team data
 function getDefensivePlayers(state) {
   const fieldingLineup = state.halfInning === 'top' ? state.homeLineup : state.awayLineup;
   const defenders = {};
   fieldingLineup.forEach(p => {
-    if (p.defense > 0) defenders[p.pos] = p;
+    const pos = p.assignedPos || p.pos;
+    if (pos !== 'DH') defenders[pos] = p;
   });
   return defenders;
 }
 
-// Get best outfield arm among the defensive outfielders
+// Get best outfield arm among the defensive outfielders (with position penalty)
 function getOutfieldArm(defenders) {
   const of = ['LF', 'CF', 'RF'];
   let bestArm = 5;
   of.forEach(pos => {
-    if (defenders[pos] && defenders[pos].arm > bestArm) bestArm = defenders[pos].arm;
+    if (defenders[pos]) {
+      const adj = getAdjustedPlayer(defenders[pos]);
+      const naturalGroup = normalizePosGroup(adj.pos);
+      const arm = adj.assignedPos && adj.assignedPos !== adj.pos && naturalGroup !== 'OF' ? Math.max(1, adj.arm - 2) : adj.arm;
+      if (arm > bestArm) bestArm = arm;
+    }
   });
   return bestArm;
 }
 
-// Get middle infield defense + arm rating (for double plays)
+// Get middle infield defense + arm rating (for double plays) with position penalty
 function getMiddleInfieldRating(defenders) {
   const ss = defenders['SS'];
   const b2 = defenders['2B'];
-  const ssDef = ss ? (ss.defense + ss.arm) / 2 : 5;
-  const b2Def = b2 ? (b2.defense + b2.arm) / 2 : 5;
+  const adjSS = ss ? getAdjustedPlayer(ss) : null;
+  const adjB2 = b2 ? getAdjustedPlayer(b2) : null;
+  const ssDef = adjSS ? (adjSS.defenseAdj + (adjSS.pos === 'SS' ? adjSS.arm : Math.max(1, adjSS.arm - 2))) / 2 : 5;
+  const b2Def = adjB2 ? (adjB2.defenseAdj + (adjB2.pos === '2B' ? adjB2.arm : Math.max(1, adjB2.arm - 2))) / 2 : 5;
   return (ssDef + b2Def) / 2;
 }
 
-// Get catcher arm rating
+// Get catcher arm rating (with position penalty)
 function getCatcherArm(defenders) {
-  return defenders['C'] ? defenders['C'].arm : 5;
+  if (!defenders['C']) return 5;
+  const adj = getAdjustedPlayer(defenders['C']);
+  if (adj.pos !== 'C') return Math.max(1, adj.arm - 3);
+  return adj.arm;
 }
 
 // Error probability for a given fielder on a ground ball (~1 chance per 600 total chances)
@@ -596,7 +683,18 @@ function resolveSwing(state, swingType, pitch) {
   const ofPositioningBonus = (adjBatter.power / 10) * 0.05;
   hitChance += ofPositioningBonus;
 
-  hitChance = Math.max(0.08, Math.min(hitChance, 0.65));
+  // Range penalty: out-of-position defenders allow more hits
+  const defenders = getDefensivePlayers(state);
+  let rangePenalty = 0;
+  Object.values(defenders).forEach(d => {
+    const adj = getAdjustedPlayer(d);
+    if (adj.pos !== (adj.assignedPos || adj.pos)) {
+      rangePenalty += 0.015; // each out-of-position defender slightly increases hit chance
+    }
+  });
+  hitChance += rangePenalty;
+
+  hitChance = Math.max(0.08, Math.min(hitChance, 0.72));
 
   const rand = Math.random();
 
@@ -651,7 +749,7 @@ function resolveSwing(state, swingType, pitch) {
     advanceBatter(state);
   } else {
     // OUT — determine out type first, then apply defense logic
-    const defenders = getDefensivePlayers(state);
+    // (defenders already computed above for range penalty)
 
     // Pick an out type with position mapping
     const groundOutTypes = [
@@ -683,7 +781,8 @@ function resolveSwing(state, swingType, pitch) {
     if (isGrounder) {
       const fielder = defenders[out.pos];
       if (fielder) {
-        const errorChance = getErrorChance(fielder.name);
+        const adjFielder = getAdjustedPlayer(fielder);
+        const errorChance = getErrorChance(fielder.name) * adjFielder.errorMult;
         if (Math.random() < errorChance) {
           // Error! Batter reaches (not a hit), runners advance one base
           batter.gameStats.ab++;
@@ -704,10 +803,12 @@ function resolveSwing(state, swingType, pitch) {
     if (isGrounder) {
       const fielder = defenders[out.pos];
       if (fielder) {
-        const fielderArm = fielder.arm / 10;
+        const adjFielder = getAdjustedPlayer(fielder);
+        const fielderArm = adjFielder.arm / 10;
         const runnerSpeed = batter.speed / 10;
-        // Weak arm (SS/3B) + fast runner = infield hit chance
-        const infieldHitChance = Math.max(0, (runnerSpeed * 0.30) - (fielderArm * 0.15) - (fielder.defense / 10) * 0.05);
+        // Weak arm (SS/3B) + fast runner = infield hit chance — out-of-position defenders give it up more
+        const rangePenalty = adjFielder.pos !== (adjFielder.assignedPos || adjFielder.pos) ? 0.06 : 0;
+        const infieldHitChance = Math.max(0, (runnerSpeed * 0.30) - (fielderArm * 0.15) - (adjFielder.defenseAdj / 10) * 0.05 + rangePenalty);
         if (Math.random() < infieldHitChance) {
           batter.gameStats.ab++;
           batter.gameStats.hits++;
@@ -729,10 +830,10 @@ function resolveSwing(state, swingType, pitch) {
       const runner = state.bases[0];
       const runnerSpeed = runner.speed / 10;
       const middleInfield = getMiddleInfieldRating(defenders);
+      // Out-of-position middle infielders are less likely to turn two
       const dpFactor = (middleInfield / 10) * 0.15;
-      // Better infield → more DPs; fast runner → fewer DPs
       let dpChance = 0.10 + dpFactor - (runnerSpeed * 0.12);
-      dpChance = Math.max(0.03, Math.min(dpChance, 0.30));
+      dpChance = Math.max(0.02, Math.min(dpChance, 0.30));
 
       if (Math.random() < dpChance) {
         state.bases[0] = null;

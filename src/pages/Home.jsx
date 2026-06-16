@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TEAMS, PITCH_TYPES, SWING_TYPES } from '@/lib/gameData';
 import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, attemptSteal, setHitAndRun, cpuDecideSteal, hasRunnersOnBase } from '@/lib/gameEngine';
 import TeamSelect from '@/components/game/TeamSelect';
+import LineupManager from '@/components/game/LineupManager';
 import DiamondView from '@/components/game/DiamondView';
 import Scoreboard from '@/components/game/Scoreboard';
 import CountDisplay from '@/components/game/CountDisplay';
@@ -20,18 +21,28 @@ export default function Home() {
   const [userTeam, setUserTeam] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [tab, setTab] = useState('game');
+  const [lineupPhase, setLineupPhase] = useState(null); // { home, away } — show lineup manager
 
-  const startGame = useCallback((home, away) => {
+  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup) => {
     setHomeTeam(home);
     setAwayTeam(away);
     setUserTeam(home); // user controls home team
-    const state = createGameState(home, away);
+    const state = createGameState(home, away, customHomeLineup, customAwayLineup);
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
     state.log.push({ type: 'info', text: `Top of inning 1 — ${awayName} batting` });
     setGameState(state);
+    setLineupPhase(null);
   }, []);
+
+  const handleTeamSelect = useCallback((home, away) => {
+    setLineupPhase({ home, away });
+  }, []);
+
+  const handleLineupConfirm = useCallback((customLineup) => {
+    startGame(lineupPhase.home, lineupPhase.away, customLineup, null);
+  }, [lineupPhase, startGame]);
 
   const isUserBatting = gameState && (
     (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
@@ -86,14 +97,26 @@ export default function Home() {
 
   const handleNewGame = () => {
     setGameState(null);
+    setLineupPhase(null);
     setHomeTeam(null);
     setAwayTeam(null);
     setUserTeam(null);
     setTab('game');
   };
 
+  if (lineupPhase) {
+    return (
+      <LineupManager
+        teamKey={lineupPhase.home}
+        teamData={TEAMS[lineupPhase.home]}
+        onConfirm={handleLineupConfirm}
+        onBack={() => setLineupPhase(null)}
+      />
+    );
+  }
+
   if (!gameState) {
-    return <TeamSelect onSelect={startGame} />;
+    return <TeamSelect onSelect={handleTeamSelect} />;
   }
 
   const batter = getCurrentBatter(gameState);

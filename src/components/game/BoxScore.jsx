@@ -29,7 +29,7 @@ function TeamBox({ team, lineup, pitcher, label }) {
             {lineup.map((p, i) => (
               <tr key={i} className="border-b border-border/30">
                 <td className="py-1 px-1.5 text-foreground font-medium truncate max-w-[120px]">{p.name}</td>
-                <td className="text-center py-1 px-1 text-muted-foreground">{p.pos}</td>
+                <td className="text-center py-1 px-1 text-muted-foreground">{p.assignedPos || p.pos}</td>
                 <td className="text-center py-1 px-1">{p.gameStats.ab}</td>
                 <td className="text-center py-1 px-1">{p.gameStats.hits}</td>
                 <td className="text-center py-1 px-1">{p.gameStats.runs}</td>
