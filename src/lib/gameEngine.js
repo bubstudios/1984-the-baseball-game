@@ -1120,6 +1120,25 @@ function advanceHitAndRunRunners(state, batter) {
   if (extraRuns > 0) {
     batter.gameStats.rbi += extraRuns;
   }
+
+  // Batter can sneak to 2nd if the defense throws to 3rd trying to nail the lead runner
+  // Chance depends on lead runner speed (draws the throw) + batter speed (takes advantage)
+  const leadRunner = state.bases[2] || state.bases[1];
+  const batterOn1st = state.bases[0];
+  if (batterOn1st && batterOn1st.name === batter.name && leadRunner && leadRunner.name !== batter.name) {
+    const defenders = getDefensivePlayers(state);
+    const ofArm = getOutfieldArm(defenders);
+    const leadSpeed = leadRunner.speed / 10;
+    const batterSpeed = batter.speed / 10;
+    // Fast lead runner → more likely to draw throw → batter scoots to 2nd
+    const sneakChance = 0.10 + leadSpeed * 0.35 - (ofArm / 10) * 0.08 + batterSpeed * 0.12;
+    if (Math.random() < Math.max(0.03, Math.min(sneakChance, 0.45))) {
+      state.bases[1] = batter;
+      state.bases[0] = null;
+      advances.push(`${batter.name.split(' ').pop()} takes second on the throw`);
+    }
+  }
+
   return advances.length > 0 ? advances.join(', ') : null;
 }
 
