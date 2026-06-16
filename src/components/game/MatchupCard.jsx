@@ -31,6 +31,7 @@ export default function MatchupCard({ batter, pitcher, halfInning, homeTeam, awa
             <span>{batter.gameStats.hits}-{batter.gameStats.ab}</span>
             {batter.gameStats.hr > 0 && <span className="text-primary">{batter.gameStats.hr} HR</span>}
             {batter.gameStats.rbi > 0 && <span>{batter.gameStats.rbi} RBI</span>}
+            {batter.gameStats.sb > 0 && <span className="text-amber-400">{batter.gameStats.sb} SB</span>}
           </div>
         )}
       </div>

@@ -21,6 +21,8 @@ function TeamBox({ team, lineup, pitcher, label }) {
               <th className="text-center py-1 px-1 font-medium">BB</th>
               <th className="text-center py-1 px-1 font-medium">SO</th>
               <th className="text-center py-1 px-1 font-medium">HR</th>
+              <th className="text-center py-1 px-1 font-medium">SB</th>
+              <th className="text-center py-1 px-1 font-medium">CS</th>
             </tr>
           </thead>
           <tbody>
@@ -35,6 +37,8 @@ function TeamBox({ team, lineup, pitcher, label }) {
                 <td className="text-center py-1 px-1">{p.gameStats.bb}</td>
                 <td className="text-center py-1 px-1">{p.gameStats.so}</td>
                 <td className="text-center py-1 px-1 text-primary font-semibold">{p.gameStats.hr || '-'}</td>
+                <td className="text-center py-1 px-1">{p.gameStats.sb || '-'}</td>
+                <td className="text-center py-1 px-1">{p.gameStats.cs || '-'}</td>
               </tr>
             ))}
           </tbody>

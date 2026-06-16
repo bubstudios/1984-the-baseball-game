@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TEAMS, PITCH_TYPES, SWING_TYPES } from '@/lib/gameData';
-import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam } from '@/lib/gameEngine';
+import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, attemptSteal, setHitAndRun, cpuDecideSteal, hasRunnersOnBase } from '@/lib/gameEngine';
 import TeamSelect from '@/components/game/TeamSelect';
 import DiamondView from '@/components/game/DiamondView';
 import Scoreboard from '@/components/game/Scoreboard';
@@ -43,8 +43,16 @@ export default function Home() {
   const handlePitch = useCallback((pitchIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
-    const cpuSwing = cpuSelectSwing(gameState);
-    const newState = processAtBat(gameState, PITCH_TYPES[pitchIndex], SWING_TYPES[cpuSwing]);
+
+    // CPU may attempt steal when user is pitching
+    let updatedState = gameState;
+    const cpuSteal = cpuDecideSteal(gameState);
+    if (cpuSteal >= 0) {
+      updatedState = { ...gameState, pendingSteal: cpuSteal };
+    }
+
+    const cpuSwing = cpuSelectSwing(updatedState);
+    const newState = processAtBat(updatedState, PITCH_TYPES[pitchIndex], SWING_TYPES[cpuSwing]);
     setGameState(newState);
     setProcessing(false);
   }, [gameState, processing]);
@@ -56,6 +64,23 @@ export default function Home() {
     const newState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
     setGameState(newState);
     setProcessing(false);
+  }, [gameState, processing]);
+
+  const handleSteal = useCallback((baseIndex) => {
+    if (!gameState || gameState.gameOver || processing) return;
+    setProcessing(true);
+    const stealState = attemptSteal(gameState, baseIndex);
+    // After steal, continue with pitch
+    const cpuPitch = cpuSelectPitch(stealState);
+    const newState = processAtBat(stealState, PITCH_TYPES[cpuPitch], SWING_TYPES[0]); // CPU takes pitch
+    setGameState(newState);
+    setProcessing(false);
+  }, [gameState, processing]);
+
+  const handleHitAndRun = useCallback(() => {
+    if (!gameState || gameState.gameOver || processing) return;
+    const newState = setHitAndRun(gameState, !gameState.hitAndRun);
+    setGameState(newState);
   }, [gameState, processing]);
 
   const handleNewGame = () => {
@@ -193,7 +218,11 @@ export default function Home() {
                   isPitching={isUserPitching}
                   onPitch={handlePitch}
                   onSwing={handleSwing}
+                  onSteal={handleSteal}
+                  onHitAndRun={handleHitAndRun}
                   disabled={processing}
+                  bases={gameState.bases}
+                  hitAndRun={gameState.hitAndRun}
                 />
               </div>
             )}

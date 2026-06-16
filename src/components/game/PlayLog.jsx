@@ -15,6 +15,8 @@ const typeStyles = {
   lineout: 'text-muted-foreground',
   doubleplay: 'text-red-400',
   sacfly: 'text-amber-400',
+  steal: 'text-amber-400 font-semibold',
+  caughtstealing: 'text-red-400',
   info: 'text-primary font-semibold',
 };
 
