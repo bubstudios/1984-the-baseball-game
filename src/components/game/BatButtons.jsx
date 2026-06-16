@@ -55,9 +55,9 @@ export default function BatButtons({ onSwing, disabled }) {
                   </defs>
 
                   {/* Barrel — gradually tapers from wide left to narrow right */}
-                  <polygon points="52,18 52,27 5,13 5,32" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
+                  <polygon points="55,19 55,26 4,12 4,33" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
                   {/* Barrel rounded cap on left end */}
-                  <path d="M5,13 C2,13 2,32 5,32" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
+                  <path d="M4,12 C1,12 1,33 4,33" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
                   {/* Barrel highlight — top edge glow */}
                   <path d="M7,16 Q28,19 48,20" fill="none" stroke="#FFFDF5" strokeWidth="1.8" opacity="0.5" strokeLinecap="round" />
                   {/* Bottom shadow on barrel */}

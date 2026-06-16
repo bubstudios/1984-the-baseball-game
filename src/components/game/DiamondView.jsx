@@ -110,12 +110,7 @@ export default function DiamondView({ bases, lastPlay, isDay = false }) {
         </div>
       )}
 
-      {/* Last play banner */}
-      {lastPlay && (
-        <div className={`absolute bottom-1 left-1 right-1 text-center text-xs font-heading font-semibold px-2 py-1 bg-card/90 rounded ${getPlayTypeColor(lastPlay.type)}`}>
-          {lastPlay.text}
-        </div>
-      )}
+
     </div>
   );
 }

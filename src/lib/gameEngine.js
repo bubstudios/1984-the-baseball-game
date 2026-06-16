@@ -497,20 +497,30 @@ function resolvePitch(state, pitchType) {
   if (Math.random() < wpChance) {
     const hasRunners = state.bases.some(b => b !== null);
     if (hasRunners) {
+      let scored = null;
+      const moved = [];
       for (let i = 2; i >= 0; i--) {
         if (state.bases[i]) {
           if (i + 1 >= 3) {
             state.bases[i].gameStats.runs++;
             scoreRun(state);
+            scored = state.bases[i];
             state.bases[i] = null;
           } else if (!state.bases[i + 1]) {
             state.bases[i + 1] = state.bases[i];
             state.bases[i] = null;
+            moved.push(state.bases[i + 1]);
           }
         }
       }
-      state.log.push({ type: 'error', text: `Wild pitch! Runners advance!` });
-      state.lastPlay = { type: 'error', text: `Wild pitch!` };
+      const logMsg = scored
+        ? `Wild pitch! ${scored.name.split(' ').pop()} scores!${moved.length > 0 ? ' Runners advance.' : ''}`
+        : `Wild pitch! Runners advance!`;
+      const playMsg = scored
+        ? `Wild pitch — ${scored.name.split(' ').pop()} scores!`
+        : `Wild pitch!`;
+      state.log.push({ type: 'error', text: logMsg });
+      state.lastPlay = { type: 'error', text: playMsg };
     }
     state.balls++;
     return { pitchType: pitchType.name, isStrike: false, location: 'wild pitch', isWildPitch: true };
