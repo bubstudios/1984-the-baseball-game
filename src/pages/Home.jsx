@@ -25,13 +25,17 @@ export default function Home() {
   const [tab, setTab] = useState('game');
   const [ballparkPhase, setBallparkPhase] = useState(null); // { home, away }
   const [lineupPhase, setLineupPhase] = useState(null); // { home, away, useDH, parkTeam }
+  const [gameStadium, setGameStadium] = useState(null);
+  const [useDH, setUseDH] = useState(false);
   const [showSubs, setShowSubs] = useState(false);
 
-  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDH) => {
+  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag) => {
     setHomeTeam(home);
     setAwayTeam(away);
     setUserTeam(home); // user controls home team
-    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDH);
+    setUseDH(useDHFlag);
+    setGameStadium(lineupPhase?.parkTeam ? TEAMS[lineupPhase.parkTeam]?.stadium : null);
+    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag);
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
@@ -136,6 +140,8 @@ export default function Home() {
     setGameState(null);
     setBallparkPhase(null);
     setLineupPhase(null);
+    setGameStadium(null);
+    setUseDH(false);
     setShowSubs(false);
     setHomeTeam(null);
     setAwayTeam(null);
@@ -188,7 +194,12 @@ export default function Home() {
             <span className="text-lg">⚾</span>
             <div>
               <div className="font-display text-[10px] text-primary tracking-wider">1984: THE BASEBALL SEASON</div>
-              <div className="font-heading text-xs text-muted-foreground">{inningLabel} · {battingTeamName} batting</div>
+              <div className="font-heading text-xs text-muted-foreground">
+                {inningLabel} · {battingTeamName} batting
+                {gameStadium && <span className="mx-1.5 text-primary/50">|</span>}
+                {gameStadium && <span className="text-primary/60">{gameStadium}</span>}
+                {useDH !== null && <span className="text-[9px] text-muted-foreground/50 ml-1">({useDH ? 'DH' : 'No DH'})</span>}
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-4">
