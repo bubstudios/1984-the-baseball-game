@@ -47,6 +47,10 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
   const homeLineup = buildLineup(customHomeLineup, home.lineup, home);
   const awayLineup = buildLineup(customAwayLineup, away.lineup, away);
 
+  // Find the starting pitcher from the lineup (SP position), fall back to rotation[0]
+  const homeSP = homeLineup.find(p => p.assignedPos === 'SP') || home.rotation[0];
+  const awaySP = awayLineup.find(p => p.assignedPos === 'SP') || away.rotation[0];
+
   return {
     homeTeam,
     awayTeam,
@@ -64,8 +68,8 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     awayRotation: [...away.rotation],
     homeBullpen: [...home.bullpen],
     awayBullpen: [...away.bullpen],
-    homePitcher: createPitcherState(home.rotation[0]),
-    awayPitcher: createPitcherState(away.rotation[0]),
+    homePitcher: createPitcherState(homeSP),
+    awayPitcher: createPitcherState(awaySP),
     homeBatterIndex: 0,
     awayBatterIndex: 0,
     log: [],

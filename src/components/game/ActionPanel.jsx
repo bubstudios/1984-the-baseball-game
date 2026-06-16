@@ -58,50 +58,46 @@ export default function ActionPanel({
 
     return (
       <div className="space-y-2">
-        <div className="text-[10px] font-heading uppercase tracking-widest text-slate-400 text-center mb-2">Select Pitch</div>
+        <div className="text-[10px] font-heading uppercase tracking-widest text-foreground/60 text-center mb-2">Select Pitch</div>
         <div className="flex items-center justify-center gap-3">
-          {pitches.map((pitchName) => (
-            <button
-              key={pitchName}
-              disabled={disabled || !!animatingPitch}
-              onClick={() => handlePitch(pitchName)}
-              onMouseEnter={() => setActivePitch(pitchName)}
-              onMouseLeave={() => setActivePitch(null)}
-              className="relative flex flex-col items-center justify-center"
-            >
-              {/* Baseball circle */}
-              <div
-                className={`
-                  w-16 h-16 rounded-full 
-                  bg-gradient-to-br from-white via-gray-50 to-gray-200
-                  border-2 border-gray-300 shadow-md
-                  flex items-center justify-center
-                  transition-all duration-200
-                  ${spinClass(pitchName)} ${spinDuration(pitchName)}
-                  ${activePitch === pitchName ? 'scale-110 shadow-lg ring-2 ring-primary/40' : ''}
-                  ${animatingPitch === pitchName ? 'scale-110 ring-2 ring-primary/60' : ''}
-                  ${disabled ? 'opacity-40' : 'hover:scale-105 cursor-pointer'}
-                `}
-                style={{
-                  background: 'radial-gradient(circle at 30% 30%, #fff, #e8e0d0 40%, #d4c8b0 80%, #c0b498 100%)',
-                }}
+          {pitches.map((pitchName) => {
+            const isFB = pitchName === "Fastball";
+            const isCU = pitchName === "Changeup";
+            const color = isFB ? 'bg-white/90 border-white/20' : isCU ? 'bg-amber-100/80 border-amber-200/30' : 'bg-red-100/70 border-red-200/30';
+            const textColor = isFB ? 'text-slate-700' : isCU ? 'text-amber-800' : 'text-red-800';
+            const ringColor = isFB ? 'ring-white/40' : isCU ? 'ring-amber-400/40' : 'ring-red-400/40';
+
+            return (
+              <button
+                key={pitchName}
+                disabled={disabled || !!animatingPitch}
+                onClick={() => handlePitch(pitchName)}
+                onMouseEnter={() => setActivePitch(pitchName)}
+                onMouseLeave={() => setActivePitch(null)}
+                className="relative flex flex-col items-center justify-center"
               >
-                {/* Seams — red baseball stitching */}
-                <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full pointer-events-none">
-                  <path d="M10,50 Q30,20 50,50 Q70,80 90,50" fill="none" stroke="#c41e3a" strokeWidth="1.8" />
-                  <path d="M10,50 Q30,80 50,50 Q70,20 90,50" fill="none" stroke="#c41e3a" strokeWidth="1.8" />
-                  <path d="M30,15 Q20,30 30,50 Q40,70 30,85" fill="none" stroke="#c41e3a" strokeWidth="1.2" opacity="0.5" />
-                  <path d="M70,15 Q80,30 70,50 Q60,70 70,85" fill="none" stroke="#c41e3a" strokeWidth="1.2" opacity="0.5" />
-                </svg>
-                <span className="relative font-display text-[14px] font-bold text-gray-700 tracking-tight leading-none z-10">
-                  {pitchShortNames[pitchName] || pitchName.slice(0, 2)}
+                <div
+                  className={`
+                    w-14 h-14 rounded-full ${color}
+                    border shadow-lg
+                    flex items-center justify-center
+                    transition-all duration-200
+                    ${spinClass(pitchName)} ${spinDuration(pitchName)}
+                    ${activePitch === pitchName ? `scale-110 shadow-xl ${ringColor} ring-2` : ''}
+                    ${animatingPitch === pitchName ? `scale-110 ${ringColor} ring-2` : ''}
+                    ${disabled ? 'opacity-40' : 'hover:scale-105 cursor-pointer'}
+                  `}
+                >
+                  <span className={`font-display text-[15px] font-bold ${textColor} tracking-tight leading-none`}>
+                    {pitchShortNames[pitchName] || pitchName.slice(0, 2)}
+                  </span>
+                </div>
+                <span className="text-[9px] font-heading text-foreground/70 mt-1 text-center leading-tight">
+                  {pitchName}
                 </span>
-              </div>
-              <span className="text-[9px] font-heading text-slate-300 mt-1 text-center leading-tight">
-                {pitchName}
-              </span>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
 
         <style>{`
