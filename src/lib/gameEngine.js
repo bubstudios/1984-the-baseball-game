@@ -1147,4 +1147,97 @@ function getSplitAdjustedPlayer(player, pitcherHand) {
   return { ...player, contact: adjustedContact, power: adjustedPower };
 }
 
+// --- SUBSTITUTIONS ---
+
+// Pinch hit: replace the current batter with a bench player
+export function pinchHit(state, newPlayer) {
+  const newState = JSON.parse(JSON.stringify(state));
+  const isAway = newState.halfInning === 'top';
+  const lineup = isAway ? newState.awayLineup : newState.homeLineup;
+  const batterIdx = isAway ? newState.awayBatterIndex : newState.homeBatterIndex;
+  const idx = batterIdx % lineup.length;
+  const oldBatter = lineup[idx];
+
+  const benchPlayer = {
+    ...newPlayer,
+    order: oldBatter.order,
+    assignedPos: newPlayer.pos,
+    gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+  };
+  lineup[idx] = benchPlayer;
+
+  newState.log.push({ type: 'info', text: `🔄 ${newPlayer.name} pinch-hits for ${oldBatter.name}` });
+  return newState;
+}
+
+// Pinch run: replace a runner on base with a bench player
+export function pinchRun(state, baseIndex, newPlayer) {
+  const newState = JSON.parse(JSON.stringify(state));
+  const runner = newState.bases[baseIndex];
+  if (!runner) return state;
+
+  const isAway = newState.halfInning === 'top';
+  const lineup = isAway ? newState.awayLineup : newState.homeLineup;
+  const slotIdx = lineup.findIndex(p => p.name === runner.name);
+
+  const benchPlayer = {
+    ...newPlayer,
+    order: runner.order,
+    assignedPos: runner.assignedPos || runner.pos,
+    gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+  };
+
+  if (slotIdx >= 0) {
+    lineup[slotIdx] = benchPlayer;
+  }
+  newState.bases[baseIndex] = benchPlayer;
+
+  newState.log.push({ type: 'info', text: `🔄 ${newPlayer.name} pinch-runs for ${runner.name}` });
+  return newState;
+}
+
+// Defensive switch: change position or replace a fielder
+export function defensiveSwitch(state, slotIndex, newPos, newPlayer) {
+  const newState = JSON.parse(JSON.stringify(state));
+  const isAway = newState.halfInning === 'bottom'; // bottom = away pitching/fielding
+  const lineup = isAway ? newState.awayLineup : newState.homeLineup;
+  const oldPlayer = lineup[slotIndex];
+
+  if (newPlayer) {
+    // Replace fielder with bench player
+    const benchPlayer = {
+      ...newPlayer,
+      order: oldPlayer.order,
+      assignedPos: newPos,
+      gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+    };
+    lineup[slotIndex] = benchPlayer;
+    newState.log.push({ type: 'info', text: `🔄 ${newPlayer.name} replaces ${oldPlayer.name} at ${newPos}` });
+  } else {
+    // Just change position
+    lineup[slotIndex] = { ...oldPlayer, assignedPos: newPos };
+    newState.log.push({ type: 'info', text: `🔄 ${oldPlayer.name} moves to ${newPos}` });
+  }
+
+  return newState;
+}
+
+// Pitching change: replace current pitcher with a reliever
+export function changePitcher(state, newPitcher) {
+  const newState = JSON.parse(JSON.stringify(state));
+  const isAway = newState.halfInning === 'top'; // top of inning = home team pitching
+  const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
+
+  const oldPitcher = isAway ? newState.homePitcher : newState.awayPitcher;
+  if (isAway) {
+    newState.homePitcher = newP;
+    newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound` });
+  } else {
+    newState.awayPitcher = newP;
+    newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound` });
+  }
+
+  return newState;
+}
+
 export { getCurrentBatter, getCurrentPitcher, getBattingTeam };

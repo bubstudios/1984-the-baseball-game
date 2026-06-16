@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TEAMS, PITCH_TYPES, SWING_TYPES } from '@/lib/gameData';
-import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, attemptSteal, setHitAndRun, cpuDecideSteal, hasRunnersOnBase } from '@/lib/gameEngine';
+import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, attemptSteal, setHitAndRun, cpuDecideSteal, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher } from '@/lib/gameEngine';
 import TeamSelect from '@/components/game/TeamSelect';
 import LineupManager from '@/components/game/LineupManager';
 import DiamondView from '@/components/game/DiamondView';
@@ -12,7 +12,8 @@ import MatchupCard from '@/components/game/MatchupCard';
 import ActionPanel from '@/components/game/ActionPanel';
 import PlayLog from '@/components/game/PlayLog';
 import BoxScore from '@/components/game/BoxScore';
-import { RotateCcw, Trophy } from 'lucide-react';
+import SubstitutionsPanel from '@/components/game/SubstitutionsPanel';
+import { RotateCcw, Trophy, Users } from 'lucide-react';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -22,6 +23,7 @@ export default function Home() {
   const [processing, setProcessing] = useState(false);
   const [tab, setTab] = useState('game');
   const [lineupPhase, setLineupPhase] = useState(null); // { home, away } — show lineup manager
+  const [showSubs, setShowSubs] = useState(false);
 
   const startGame = useCallback((home, away, customHomeLineup, customAwayLineup) => {
     setHomeTeam(home);
@@ -95,9 +97,38 @@ export default function Home() {
     setGameState(newState);
   }, [gameState, processing]);
 
+  const handlePinchHit = useCallback((player) => {
+    if (!gameState || gameState.gameOver) return;
+    const newState = pinchHit(gameState, player);
+    setGameState(newState);
+    setShowSubs(false);
+  }, [gameState]);
+
+  const handlePinchRun = useCallback((baseIndex, player) => {
+    if (!gameState || gameState.gameOver) return;
+    const newState = pinchRun(gameState, baseIndex, player);
+    setGameState(newState);
+    setShowSubs(false);
+  }, [gameState]);
+
+  const handleDefensiveSwitch = useCallback((slotIndex, newPos, newPlayer) => {
+    if (!gameState || gameState.gameOver) return;
+    const newState = defensiveSwitch(gameState, slotIndex, newPos, newPlayer);
+    setGameState(newState);
+    if (newPlayer) setShowSubs(false);
+  }, [gameState]);
+
+  const handlePitchingChange = useCallback((newPitcher) => {
+    if (!gameState || gameState.gameOver) return;
+    const newState = changePitcher(gameState, newPitcher);
+    setGameState(newState);
+    setShowSubs(false);
+  }, [gameState]);
+
   const handleNewGame = () => {
     setGameState(null);
     setLineupPhase(null);
+    setShowSubs(false);
     setHomeTeam(null);
     setAwayTeam(null);
     setUserTeam(null);
@@ -140,6 +171,17 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            {!gameState.gameOver && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowSubs(true)}
+                className="h-7 px-2 text-[10px] font-heading gap-1"
+              >
+                <Users className="w-3 h-3" />
+                Subs
+              </Button>
+            )}
             <div className="text-center">
               <div className="font-heading text-2xl font-bold text-foreground">
                 {gameState.score.away}
@@ -279,6 +321,19 @@ export default function Home() {
           </Button>
         </div>
       </div>
+
+      {/* Substitutions Panel */}
+      {showSubs && (
+        <SubstitutionsPanel
+          gameState={gameState}
+          teams={TEAMS}
+          onClose={() => setShowSubs(false)}
+          onPinchHit={handlePinchHit}
+          onPinchRun={handlePinchRun}
+          onDefensiveSwitch={handleDefensiveSwitch}
+          onChangePitcher={handlePitchingChange}
+        />
+      )}
     </div>
   );
 }
