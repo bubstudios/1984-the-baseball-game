@@ -198,7 +198,7 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <div className="border-b border-border bg-card/50">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="text-lg">⚾</span>
             <div>
@@ -247,101 +247,104 @@ export default function Home() {
       </div>
 
       {/* Main */}
-      <div className="max-w-2xl mx-auto px-4 py-4">
+      <div className="max-w-6xl mx-auto px-4 py-4">
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="w-full grid grid-cols-3 mb-4">
+          <TabsList className="w-full max-w-md mx-auto grid grid-cols-3 mb-4">
             <TabsTrigger value="game" className="font-heading text-xs">Game</TabsTrigger>
             <TabsTrigger value="log" className="font-heading text-xs">Play Log</TabsTrigger>
             <TabsTrigger value="box" className="font-heading text-xs">Box Score</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="game" className="space-y-4">
-            {/* Scoreboard */}
-            <div className="bg-card border border-border rounded-xl p-3">
-              <Scoreboard
-                innings={gameState.innings}
-                score={gameState.score}
-                currentInning={gameState.inning}
-                halfInning={gameState.halfInning}
-                awayAbbr={away?.abbr}
-                homeAbbr={home?.abbr}
-              />
-            </div>
-
-            {/* Commentary Banner */}
-            <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} />
-
-            {/* Diamond */}
-            <div className="bg-card/50 border border-border rounded-xl p-4 flex flex-col items-center justify-center">
-              <DiamondView
-                bases={gameState.bases}
-                lastPlay={gameState.lastPlay}
-                isDay={gameWeather?.isDay}
-              />
-            </div>
-
-            {/* Matchup */}
-            <div className="bg-card border border-border rounded-xl p-3">
-              <MatchupCard
-                batter={batter}
-                adjustedBatter={situationalBatter}
-                pitcher={pitcher}
-                halfInning={gameState.halfInning}
-                homeTeam={homeTeam}
-                awayTeam={awayTeam}
-              />
-            </div>
-
-            {/* Actions or Game Over */}
-            {gameState.gameOver ? (
-              <div className="bg-card border border-primary/30 rounded-xl p-6 text-center space-y-4">
-                <Trophy className="w-10 h-10 text-primary mx-auto" />
-                <div>
-                  <h2 className="font-heading text-lg font-bold text-foreground">Game Over!</h2>
-                  <p className="font-body text-sm text-muted-foreground mt-1">
-                    Final: {away?.name} {gameState.score.away} — {home?.name} {gameState.score.home}
-                  </p>
-                  <p className="font-heading text-primary font-bold mt-2">
-                    {gameState.score.home > gameState.score.away ? home?.name : away?.name} Win!
-                  </p>
+          <TabsContent value="game" className="mt-0">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Left Column: Scoreboard + Diamond */}
+              <div className="space-y-4">
+                <div className="bg-card border border-border rounded-xl p-3">
+                  <Scoreboard
+                    innings={gameState.innings}
+                    score={gameState.score}
+                    currentInning={gameState.inning}
+                    halfInning={gameState.halfInning}
+                    awayAbbr={away?.abbr}
+                    homeAbbr={home?.abbr}
+                  />
                 </div>
-                <Button onClick={handleNewGame} className="gap-2">
-                  <RotateCcw className="w-4 h-4" />
-                  <span className="font-heading">New Game</span>
-                </Button>
-              </div>
-            ) : (
-              <div className="bg-card border border-border rounded-xl p-3 space-y-3">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-[10px] text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
-                  <span className="text-[11px] text-primary font-heading font-bold">
-                    {isUserBatting ? '🏏 Batting' : '⚾ Pitching'}
-                  </span>
+
+                <div className="bg-card/50 border border-border rounded-xl p-4 flex flex-col items-center justify-center">
+                  <DiamondView
+                    bases={gameState.bases}
+                    lastPlay={gameState.lastPlay}
+                    isDay={gameWeather?.isDay}
+                  />
                 </div>
-                <ActionPanel
-                  isPitching={isUserPitching}
-                  onPitch={handlePitch}
-                  onSwing={handleSwing}
-                  onSteal={handleSteal}
-                  onHitAndRun={handleHitAndRun}
-                  disabled={processing}
-                  bases={gameState.bases}
-                  hitAndRun={gameState.hitAndRun}
-                  pitcherPitches={pitcher.pitches}
-                />
               </div>
-            )}
+
+              {/* Right Column: Commentary, Matchup, Actions */}
+              <div className="space-y-4">
+                <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} />
+
+                <div className="bg-card border border-border rounded-xl p-3">
+                  <MatchupCard
+                    batter={batter}
+                    adjustedBatter={situationalBatter}
+                    pitcher={pitcher}
+                    halfInning={gameState.halfInning}
+                    homeTeam={homeTeam}
+                    awayTeam={awayTeam}
+                  />
+                </div>
+
+                {gameState.gameOver ? (
+                  <div className="bg-card border border-primary/30 rounded-xl p-6 text-center space-y-4">
+                    <Trophy className="w-10 h-10 text-primary mx-auto" />
+                    <div>
+                      <h2 className="font-heading text-lg font-bold text-foreground">Game Over!</h2>
+                      <p className="font-body text-sm text-muted-foreground mt-1">
+                        Final: {away?.name} {gameState.score.away} — {home?.name} {gameState.score.home}
+                      </p>
+                      <p className="font-heading text-primary font-bold mt-2">
+                        {gameState.score.home > gameState.score.away ? home?.name : away?.name} Win!
+                      </p>
+                    </div>
+                    <Button onClick={handleNewGame} className="gap-2">
+                      <RotateCcw className="w-4 h-4" />
+                      <span className="font-heading">New Game</span>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="bg-card border border-border rounded-xl p-3 space-y-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-[10px] text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
+                      <span className="text-[11px] text-primary font-heading font-bold">
+                        {isUserBatting ? '🏏 Batting' : '⚾ Pitching'}
+                      </span>
+                    </div>
+                    <ActionPanel
+                      isPitching={isUserPitching}
+                      onPitch={handlePitch}
+                      onSwing={handleSwing}
+                      onSteal={handleSteal}
+                      onHitAndRun={handleHitAndRun}
+                      disabled={processing}
+                      bases={gameState.bases}
+                      hitAndRun={gameState.hitAndRun}
+                      pitcherPitches={pitcher.pitches}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="log">
-            <div className="bg-card border border-border rounded-xl p-4">
+            <div className="bg-card border border-border rounded-xl p-4 max-w-2xl mx-auto">
               <h3 className="font-heading text-sm font-bold text-foreground mb-3">Play-by-Play</h3>
               <PlayLog log={gameState.log} />
             </div>
           </TabsContent>
 
           <TabsContent value="box">
-            <div className="bg-card border border-border rounded-xl p-4">
+            <div className="bg-card border border-border rounded-xl p-4 max-w-2xl mx-auto">
               <h3 className="font-heading text-sm font-bold text-foreground mb-3">Box Score</h3>
               <BoxScore state={gameState} />
             </div>
@@ -351,7 +354,7 @@ export default function Home() {
 
       {/* Footer */}
       <div className="border-t border-border mt-8">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <span className="text-[10px] text-muted-foreground/40 font-body">1984: The Baseball Season</span>
           <Button variant="ghost" size="sm" onClick={handleNewGame} className="text-[10px] text-muted-foreground hover:text-foreground gap-1">
             <RotateCcw className="w-3 h-3" />
