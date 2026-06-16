@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-
-const BAT_ACTIONS = [
-  { label: 'Swing', swingIndex: 0, desc: 'Standard swing' },
-  { label: 'Power', swingIndex: 2, desc: 'Swing for the fences' },
-  { label: 'Bunt', swingIndex: 4, desc: 'Lay one down' },
-];
+import BatButtons from '@/components/game/BatButtons';
 
 export default function ActionPanel({
   isPitching,
@@ -175,25 +170,8 @@ export default function ActionPanel({
         </div>
       )}
 
-      {/* Swing buttons */}
-      <div>
-        <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground text-center mb-2">Choose Swing</div>
-        <div className="grid grid-cols-3 gap-2">
-          {BAT_ACTIONS.map((action, i) => (
-            <Button
-              key={i}
-              variant="outline"
-              size="sm"
-              disabled={disabled}
-              onClick={() => onSwing(action.swingIndex)}
-              className="h-14 flex flex-col items-center justify-center gap-0.5 border-border/60 hover:border-primary hover:bg-primary/10 transition-all"
-            >
-              <span className="font-heading font-bold text-sm text-foreground">{action.label}</span>
-              <span className="text-[9px] text-muted-foreground/60">{action.desc}</span>
-            </Button>
-          ))}
-        </div>
-      </div>
+      {/* Swing buttons — bats */}
+      <BatButtons onSwing={onSwing} disabled={disabled} />
     </div>
   );
 }

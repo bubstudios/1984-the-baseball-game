@@ -622,8 +622,8 @@ function resolveSwing(state, swingType, pitch) {
   const isPower = swingType.name === 'Power Swing';
   const isContact = swingType.name === 'Contact Swing';
 
-  // Apply split-adjusted ratings based on pitcher handedness
-  const adjBatter = getSplitAdjustedPlayer(batter, pitcher.throws);
+  // Apply situational ratings: platoon split + home/away + day/night
+  const adjBatter = getSituationalBatter(state);
 
   // Contact chance
   const contactRating = adjBatter.contact / 10;
@@ -1132,7 +1132,7 @@ export function cpuSelectPitch(state) {
 export function cpuSelectSwing(state) {
   const batter = getCurrentBatter(state);
   const pitcher = getCurrentPitcher(state);
-  const adjBatter = getSplitAdjustedPlayer(batter, pitcher.throws);
+  const adjBatter = getSituationalBatter(state);
   const rand = Math.random();
 
   if (state.strikes === 2) {
@@ -1150,6 +1150,30 @@ export function cpuSelectSwing(state) {
   if (rand < 0.45) return 0; // Normal swing
   if (rand < 0.70) return 1; // Contact
   return 0;
+}
+
+// Situational ratings: platoon splits + home/away + day/night
+// Based on 1980s MLB research: home BA +0.010, HR +6%; day games +0.005 BA
+export function getSituationalBatter(state) {
+  const batter = getCurrentBatter(state);
+  const pitcher = getCurrentPitcher(state);
+  const adj = getSplitAdjustedPlayer(batter, pitcher.throws);
+
+  const isHome = getBattingTeam(state) === 'home';
+  const isDay = state.weather?.isDay ?? true;
+
+  // Home field advantage: +3% contact, +3% power (1980s MLB: ~.010 BA, ~6% HR at home)
+  const homeContactMod = isHome ? 1.03 : 0.98;
+  const homePowerMod = isHome ? 1.03 : 0.97;
+
+  // Day game: better ball visibility, slightly higher contact (~.005 BA)
+  const dayContactMod = isDay ? 1.02 : 0.99;
+  const dayPowerMod = isDay ? 1.01 : 1.00;
+
+  const adjustedContact = Math.max(1, Math.min(10, Math.round(adj.contact * homeContactMod * dayContactMod)));
+  const adjustedPower = Math.max(1, Math.min(10, Math.round(adj.power * homePowerMod * dayPowerMod)));
+
+  return { ...adj, contact: adjustedContact, power: adjustedPower };
 }
 
 // Split-adjusted ratings based on 1984 real platoon splits

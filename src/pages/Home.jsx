@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TEAMS, PITCH_TYPES, SWING_TYPES } from '@/lib/gameData';
-import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, attemptSteal, setHitAndRun, cpuDecideSteal, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher } from '@/lib/gameEngine';
+import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher } from '@/lib/gameEngine';
 import { applyWeatherEffects } from '@/lib/weather';
 import TeamSelect from '@/components/game/TeamSelect';
 import BallparkSelect from '@/components/game/BallparkSelect';
@@ -189,6 +189,7 @@ export default function Home() {
 
   const batter = getCurrentBatter(gameState);
   const pitcher = getCurrentPitcher(gameState);
+  const situationalBatter = getSituationalBatter(gameState);
   const battingTeamKey = getBattingTeam(gameState) === 'home' ? homeTeam : awayTeam;
   const battingTeamName = TEAMS[battingTeamKey]?.name || '';
   const inningLabel = `${gameState.halfInning === 'top' ? '▲' : '▼'} ${gameState.inning}`;
@@ -270,7 +271,7 @@ export default function Home() {
             </div>
 
             {/* Commentary Banner */}
-            <CommentaryBanner batter={batter} pitcher={pitcher} gameState={gameState} />
+            <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} />
 
             {/* Diamond — big centerpiece */}
             <div className="bg-card/50 border border-border rounded-xl p-4 flex flex-col items-center justify-center">
@@ -285,6 +286,7 @@ export default function Home() {
             <div className="bg-card border border-border rounded-xl p-3">
               <MatchupCard
                 batter={batter}
+                adjustedBatter={situationalBatter}
                 pitcher={pitcher}
                 halfInning={gameState.halfInning}
                 homeTeam={homeTeam}
