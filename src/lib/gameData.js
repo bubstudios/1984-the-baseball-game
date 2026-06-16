@@ -396,6 +396,42 @@ export const TEAMS = {
   },
 };
 
+// 1984 Error counts (estimated from real stats) — used for fielding error probability
+export const PLAYER_ERRORS = {
+  // Tigers
+  "Lou Whitaker": 11, "Alan Trammell": 10, "Kirk Gibson": 8, "Lance Parrish": 5,
+  "Darrell Evans": 11, "Chet Lemon": 2, "Larry Herndon": 10, "Howard Johnson": 24, "Barbaro Garbey": 0,
+  "Johnny Grubb": 2, "Dave Bergman": 2, "Rusty Kuntz": 1, "Marty Castillo": 5, "Tom Brookens": 16,
+  // Padres
+  "Alan Wiggins": 30, "Tony Gwynn": 4, "Steve Garvey": 5, "Graig Nettles": 13,
+  "Terry Kennedy": 10, "Kevin McReynolds": 5, "Carmelo Martinez": 7, "Garry Templeton": 29,
+  "Kurt Bevacqua": 4, "Bobby Brown": 3, "Bruce Bochy": 4, "Tim Flannery": 7, "Luis Salazar": 14,
+  // Cubs
+  "Bob Dernier": 3, "Ryne Sandberg": 6, "Gary Matthews": 13, "Leon Durham": 11,
+  "Keith Moreland": 8, "Jody Davis": 13, "Ron Cey": 18, "Larry Bowa": 12,
+  "Thad Bosley": 2, "Richie Hebner": 8, "Henry Cotto": 2, "Steve Lake": 3, "Dave Owen": 5,
+  // Mets
+  "Wally Backman": 13, "Mookie Wilson": 7, "Keith Hernandez": 4, "Darryl Strawberry": 8,
+  "George Foster": 7, "Hubie Brooks": 29, "Mike Fitzgerald": 8, "Jose Oquendo": 12,
+  "Ron Gardenhire": 5, "Kelvin Chapman": 4, "John Gibbons": 3, "Danny Heep": 3, "Rusty Staub": 0,
+  // Red Sox
+  "Wade Boggs": 20, "Dwight Evans": 2, "Jim Rice": 6, "Tony Armas": 11, "Mike Easler": 0,
+  "Bill Buckner": 12, "Rich Gedman": 9, "Marty Barrett": 11, "Jackie Gutierrez": 24,
+  "Reid Nichols": 2, "Ed Jurak": 4, "Jeff Newman": 3, "Rick Miller": 2, "Glenn Hoffman": 8,
+  // Yankees
+  "Willie Randolph": 9, "Don Mattingly": 6, "Dave Winfield": 2, "Don Baylor": 0,
+  "Steve Kemp": 7, "Ken Griffey Sr.": 9, "Butch Wynegar": 5, "Mike Pagliarulo": 24, "Bobby Meacham": 24,
+  "Oscar Gamble": 1, "Roy Smalley": 12, "Rick Cerone": 3, "Brian Dayett": 2, "Tim Foli": 7,
+  // Orioles
+  "Al Bumbry": 4, "Cal Ripken Jr.": 26, "Eddie Murray": 18, "Gary Roenicke": 1,
+  "Wayne Gross": 17, "Ken Singleton": 0, "Mike Young": 8, "Rich Dauer": 7, "Rick Dempsey": 3,
+  "John Shelby": 5, "Jim Dwyer": 1, "Floyd Rayford": 6, "Lenn Sakata": 5, "Joe Nolan": 3,
+  // Dodgers
+  "Steve Sax": 22, "Ken Landreaux": 5, "Pedro Guerrero": 27, "Mike Marshall": 7,
+  "Mike Scioscia": 13, "Greg Brock": 9, "Franklin Stubbs": 4, "Dave Anderson": 14,
+  "Bill Russell": 10, "Candy Maldonado": 3, "Bob Bailor": 4, "Steve Yeager": 4, "R.J. Reynolds": 2,
+};
+
 // Estimate splits for bench players based on overall stats + handedness
 // Same side: BA ~8% worse, HR rate ~20% worse; Opposite side: BA ~5% better, HR rate ~20% better
 function estSplits(totalBA, totalHR, totalAB, vsSameAB, bats) {

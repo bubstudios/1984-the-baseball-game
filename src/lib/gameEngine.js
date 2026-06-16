@@ -1,4 +1,4 @@
-import { TEAMS, PITCH_TYPES, SWING_TYPES, TEAM_IDS } from './gameData';
+import { TEAMS, PITCH_TYPES, SWING_TYPES, TEAM_IDS, PLAYER_ERRORS } from './gameData';
 
 // Create initial game state with two selected teams
 export function createGameState(homeTeam, awayTeam) {
@@ -44,6 +44,46 @@ function createPitcherState(p) {
 }
 
 export { TEAM_IDS };
+
+// Get the defensive team's position players and team data
+function getDefensivePlayers(state) {
+  const fieldingLineup = state.halfInning === 'top' ? state.homeLineup : state.awayLineup;
+  const defenders = {};
+  fieldingLineup.forEach(p => {
+    if (p.defense > 0) defenders[p.pos] = p;
+  });
+  return defenders;
+}
+
+// Get best outfield arm among the defensive outfielders
+function getOutfieldArm(defenders) {
+  const of = ['LF', 'CF', 'RF'];
+  let bestArm = 5;
+  of.forEach(pos => {
+    if (defenders[pos] && defenders[pos].arm > bestArm) bestArm = defenders[pos].arm;
+  });
+  return bestArm;
+}
+
+// Get middle infield defense + arm rating (for double plays)
+function getMiddleInfieldRating(defenders) {
+  const ss = defenders['SS'];
+  const b2 = defenders['2B'];
+  const ssDef = ss ? (ss.defense + ss.arm) / 2 : 5;
+  const b2Def = b2 ? (b2.defense + b2.arm) / 2 : 5;
+  return (ssDef + b2Def) / 2;
+}
+
+// Get catcher arm rating
+function getCatcherArm(defenders) {
+  return defenders['C'] ? defenders['C'].arm : 5;
+}
+
+// Error probability for a given fielder on a ground ball (~1 chance per 600 total chances)
+function getErrorChance(playerName) {
+  const errors = PLAYER_ERRORS[playerName] || 10;
+  return Math.min(0.05, errors / 500);
+}
 
 function getCurrentBatter(state) {
   if (state.halfInning === 'top') {
@@ -124,8 +164,16 @@ function advanceRunners(state, bases, batter, isHit = false) {
   pitcher.gameStats.r += rbi;
   pitcher.gameStats.er += rbi;
 
-  // --- Speed-based extra base advancement on hits ---
+  // --- Speed-based extra base advancement on hits (with OF arm + positioning) ---
   if (isHit && bases <= 2) {
+    const defenders = getDefensivePlayers(state);
+    const ofArm = getOutfieldArm(defenders);
+    const armPenalty = (ofArm / 10) * 0.18; // strong OF arm reduces extra-base success
+
+    // Outfield positioning: deeper vs power hitters = harder to take extra bases
+    const batterPower = batter.power / 10;
+    const positioningPenalty = batterPower * 0.10; // power hitters → deeper OF → harder extra bases
+
     for (let i = 0; i < 3; i++) {
       const runner = state.bases[i];
       if (!runner) continue;
@@ -134,8 +182,8 @@ function advanceRunners(state, bases, batter, isHit = false) {
       if (i === 0) {
         // Runner on 1st: on a single, try for 3rd; on a double, try for home
         if (bases === 2) {
-          const homeChance = 0.15 + speedFactor * 0.50;
-          if (Math.random() < homeChance) {
+          const homeChance = 0.15 + speedFactor * 0.50 - armPenalty - positioningPenalty;
+          if (Math.random() < Math.max(0.02, homeChance)) {
             runner.gameStats.runs++;
             scoreRun(state);
             rbi++;
@@ -143,8 +191,8 @@ function advanceRunners(state, bases, batter, isHit = false) {
             state.log.push({ type: 'info', text: `${runner.name} hustles all the way home from first!` });
           }
         } else if (bases === 1) {
-          const thirdChance = 0.05 + speedFactor * 0.40;
-          if (Math.random() < thirdChance) {
+          const thirdChance = 0.05 + speedFactor * 0.40 - armPenalty * 0.6 - positioningPenalty * 0.4;
+          if (Math.random() < Math.max(0.02, thirdChance)) {
             state.bases[2] = runner;
             state.bases[0] = null;
             state.log.push({ type: 'info', text: `${runner.name} wheels to third on the single!` });
@@ -153,8 +201,8 @@ function advanceRunners(state, bases, batter, isHit = false) {
       } else if (i === 1) {
         // Runner on 2nd: on a single, try for home
         if (bases === 1) {
-          const homeChance = 0.20 + speedFactor * 0.55;
-          if (Math.random() < homeChance) {
+          const homeChance = 0.20 + speedFactor * 0.55 - armPenalty - positioningPenalty;
+          if (Math.random() < Math.max(0.03, homeChance)) {
             runner.gameStats.runs++;
             scoreRun(state);
             rbi++;
@@ -232,10 +280,13 @@ export function attemptSteal(state, baseIndex) {
   const newState = JSON.parse(JSON.stringify(state));
   const speedFactor = runner.speed / 10;
   const pitcher = getCurrentPitcher(newState);
+  const defenders = getDefensivePlayers(newState);
+  const catcherArm = getCatcherArm(defenders);
 
-  // Success based on speed, pitcher's control reduces success slightly
-  const successChance = 0.20 + speedFactor * 0.55 - (pitcher.control / 10) * 0.05;
-  const success = Math.random() < Math.max(0.10, Math.min(successChance, 0.80));
+  // Success based on speed + catcher arm + pitcher control
+  let successChance = 0.20 + speedFactor * 0.55 - (catcherArm / 10) * 0.12 - (pitcher.control / 10) * 0.03;
+  successChance = Math.max(0.08, Math.min(successChance, 0.80));
+  const success = Math.random() < successChance;
 
   if (success) {
     runner.gameStats.sb = (runner.gameStats.sb || 0) + 1;
@@ -282,12 +333,16 @@ export function setHitAndRun(state, active) {
 
 // CPU decides whether to attempt a steal
 export function cpuDecideSteal(state) {
+  const defenders = getDefensivePlayers(state);
+  const catcherArm = getCatcherArm(defenders);
+  const armFactor = (catcherArm / 10) * 0.30; // strong arm deters steals
+
   for (let i = 0; i < 3; i++) {
     const runner = state.bases[i];
     if (!runner) continue;
     const speedFactor = runner.speed / 10;
-    // CPU steals ~15-40% of opportunities based on speed
-    if (Math.random() < 0.10 + speedFactor * 0.30) {
+    // CPU steals ~10-35% of opportunities based on speed, reduced by catcher arm
+    if (Math.random() < Math.max(0.05, 0.10 + speedFactor * 0.30 - armFactor)) {
       return i;
     }
   }
@@ -502,6 +557,11 @@ function resolveSwing(state, swingType, pitch) {
   if (isContact) hitChance += 0.08;
 
   hitChance -= (pitcher.control / 10) * 0.03;
+
+  // Outfield positioning: power hitters → deeper OF → more singles drop in
+  const ofPositioningBonus = (adjBatter.power / 10) * 0.05;
+  hitChance += ofPositioningBonus;
+
   hitChance = Math.max(0.08, Math.min(hitChance, 0.65));
 
   const rand = Math.random();
@@ -556,26 +616,109 @@ function resolveSwing(state, swingType, pitch) {
     state.strikes = 0;
     advanceBatter(state);
   } else {
-    // OUT
-    // Double play chance
-    if (state.outs < 2 && state.bases[0] && Math.random() < 0.18) {
-      state.bases[0] = null;
-      const msg = `${batter.name} grounds into a double play!`;
-      state.log.push({ type: 'doubleplay', text: msg });
-      state.lastPlay = { type: 'doubleplay', text: msg };
-      state.balls = 0;
-      state.strikes = 0;
-      advanceBatter(state);
-      recordOut(state);
-      if (!state.gameOver && state.outs < 3) recordOut(state);
-      return;
+    // OUT — determine out type first, then apply defense logic
+    const defenders = getDefensivePlayers(state);
+
+    // Pick an out type with position mapping
+    const groundOutTypes = [
+      { text: `${batter.name} grounds out to short`, pos: 'SS' },
+      { text: `${batter.name} grounds out to second`, pos: '2B' },
+      { text: `${batter.name} grounds out to third`, pos: '3B' },
+      { text: `${batter.name} grounds out to the pitcher`, pos: 'SP' },
+      { text: `${batter.name} grounds out to first`, pos: '1B' },
+    ];
+    const flyOutTypes = [
+      { text: `${batter.name} flies out to center`, pos: 'CF' },
+      { text: `${batter.name} flies out to right`, pos: 'RF' },
+      { text: `${batter.name} flies out to left`, pos: 'LF' },
+    ];
+    const otherOuts = [
+      { text: `${batter.name} pops up to second`, pos: '2B', type: 'flyout' },
+      { text: `${batter.name} lines out to third`, pos: '3B', type: 'lineout' },
+    ];
+
+    const allOuts = [...groundOutTypes, ...flyOutTypes, ...otherOuts];
+    const out = allOuts[Math.floor(Math.random() * allOuts.length)];
+
+    // Determine if it's a fly ball (CF/RF/LF positions) or ground ball
+    const isFlyBall = ['CF', 'RF', 'LF'].includes(out.pos);
+    const outType = out.type || (isFlyBall ? 'flyout' : 'groundout');
+
+    // ---- ERROR CHECK on ground balls ----
+    const isGrounder = !isFlyBall && out.pos !== 'SP';
+    if (isGrounder) {
+      const fielder = defenders[out.pos];
+      if (fielder) {
+        const errorChance = getErrorChance(fielder.name);
+        if (Math.random() < errorChance) {
+          // Error! Batter reaches (not a hit), runners advance one base
+          batter.gameStats.ab++;
+          pitcher.gameStats.er++; // unearned, but simplified
+          advanceRunners(state, 1, batter, false);
+          const msg = `❌ ${fielder.name} boots it! ${batter.name} reaches on an error!`;
+          state.log.push({ type: 'error', text: msg });
+          state.lastPlay = { type: 'error', text: msg };
+          state.balls = 0;
+          state.strikes = 0;
+          advanceBatter(state);
+          return;
+        }
+      }
     }
 
-    // Sacrifice fly — based on runner's speed for success
+    // ---- INFIELD HIT CHECK on ground balls ----
+    if (isGrounder) {
+      const fielder = defenders[out.pos];
+      if (fielder) {
+        const fielderArm = fielder.arm / 10;
+        const runnerSpeed = batter.speed / 10;
+        // Weak arm (SS/3B) + fast runner = infield hit chance
+        const infieldHitChance = Math.max(0, (runnerSpeed * 0.30) - (fielderArm * 0.15) - (fielder.defense / 10) * 0.05);
+        if (Math.random() < infieldHitChance) {
+          batter.gameStats.ab++;
+          batter.gameStats.hits++;
+          pitcher.gameStats.h++;
+          advanceRunners(state, 1, batter, true);
+          const msg = `${batter.name} beats it out — infield single past ${fielder.name}!`;
+          state.log.push({ type: 'single', text: msg });
+          state.lastPlay = { type: 'single', text: msg };
+          state.balls = 0;
+          state.strikes = 0;
+          advanceBatter(state);
+          return;
+        }
+      }
+    }
+
+    // ---- DOUBLE PLAY (enhanced with defense + runner speed) ----
+    if (state.outs < 2 && state.bases[0] && isGrounder) {
+      const runner = state.bases[0];
+      const runnerSpeed = runner.speed / 10;
+      const middleInfield = getMiddleInfieldRating(defenders);
+      const dpFactor = (middleInfield / 10) * 0.15;
+      // Better infield → more DPs; fast runner → fewer DPs
+      let dpChance = 0.10 + dpFactor - (runnerSpeed * 0.12);
+      dpChance = Math.max(0.03, Math.min(dpChance, 0.30));
+
+      if (Math.random() < dpChance) {
+        state.bases[0] = null;
+        const msg = `${batter.name} grounds into a double play!`;
+        state.log.push({ type: 'doubleplay', text: msg });
+        state.lastPlay = { type: 'doubleplay', text: msg };
+        state.balls = 0;
+        state.strikes = 0;
+        advanceBatter(state);
+        recordOut(state);
+        if (!state.gameOver && state.outs < 3) recordOut(state);
+        return;
+      }
+    }
+
+    // ---- SACRIFICE FLY ----
     if (state.bases[2] && state.outs < 2) {
       const runner = state.bases[2];
       const runnerSpeed = runner.speed / 10;
-      const sacFlyChance = 0.15 + runnerSpeed * 0.45; // 15-60% based on speed
+      const sacFlyChance = 0.15 + runnerSpeed * 0.45;
       if (Math.random() < sacFlyChance) {
         runner.gameStats.runs++;
         scoreRun(state);
@@ -595,28 +738,16 @@ function resolveSwing(state, swingType, pitch) {
       }
     }
 
-    // On fly outs, check if runners can advance (speed-based tag-up)
-    const outTypes = [
-      { text: `${batter.name} grounds out to short`, type: 'groundout' },
-      { text: `${batter.name} flies out to center`, type: 'flyout' },
-      { text: `${batter.name} pops up to second`, type: 'flyout' },
-      { text: `${batter.name} lines out to third`, type: 'lineout' },
-      { text: `${batter.name} grounds out to the pitcher`, type: 'groundout' },
-      { text: `${batter.name} flies out to right`, type: 'flyout' },
-      { text: `${batter.name} grounds out to first`, type: 'groundout' },
-    ];
-    const out = outTypes[Math.floor(Math.random() * outTypes.length)];
-
-    // Speed-based tag-up on fly outs
-    if (out.type === 'flyout') {
+    // ---- TAG-UP on fly outs ----
+    if (isFlyBall) {
       for (let i = 0; i < 2; i++) {
         const runner = state.bases[i];
         if (!runner) continue;
         const speedFactor = runner.speed / 10;
-        // Runner on 2nd tagging to 3rd on fly out
+        const ofArm = defenders[out.pos] ? defenders[out.pos].arm / 10 : 0.5;
         if (i === 1 && state.outs < 2) {
-          const tagChance = 0.10 + speedFactor * 0.40;
-          if (Math.random() < tagChance) {
+          const tagChance = 0.08 + speedFactor * 0.40 - ofArm * 0.12;
+          if (Math.random() < Math.max(0.02, tagChance)) {
             state.bases[2] = runner;
             state.bases[1] = null;
             state.log.push({ type: 'info', text: `${runner.name} tags up and advances to third!` });
@@ -625,8 +756,8 @@ function resolveSwing(state, swingType, pitch) {
       }
     }
 
-    state.log.push({ type: out.type, text: out.text });
-    state.lastPlay = { type: out.type, text: out.text };
+    state.log.push({ type: outType, text: out.text });
+    state.lastPlay = { type: outType, text: out.text };
     state.balls = 0;
     state.strikes = 0;
     advanceBatter(state);

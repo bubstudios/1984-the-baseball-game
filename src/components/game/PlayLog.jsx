@@ -17,6 +17,7 @@ const typeStyles = {
   sacfly: 'text-amber-400',
   steal: 'text-amber-400 font-semibold',
   caughtstealing: 'text-red-400',
+  error: 'text-orange-400 font-semibold',
   info: 'text-primary font-semibold',
 };
 
