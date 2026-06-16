@@ -495,7 +495,7 @@ export function processAtBat(state, pitchType, swingType) {
   const away = TEAMS[state.awayTeam];
   const newState = JSON.parse(JSON.stringify(state));
 
-  resolvePitch(newState, pitchType);
+  newState.pitchResult = resolvePitch(newState, pitchType);
   resolveSwing(newState, swingType, newState.pitchResult);
 
   // Walk-off check
