@@ -993,17 +993,17 @@ function resolveSwing(state, swingType, pitch) {
           return;
         }
         // Else: fall through to regular out (batter out at 1st, force runners advance)
-        // Force runners advance: runner on 1st → 2nd, runner on 2nd → 3rd (if 1st occupied)
         if (hasForceAt2nd) {
-          // Runner on 1st is forced to 2nd — he's out, not safe. 
-          // Actually in a "fielder's choice, batter out at 1st", force runners advance.
-          // Runner on 1st → 2nd, runner on 2nd → 3rd (if 1st was occupied)
+          const forcedRunner = state.bases[0]; // runner on 1st who advances
           if (state.bases[1]) {
             if (!state.bases[2]) state.bases[2] = state.bases[1];
             state.bases[1] = null;
           }
-          state.bases[1] = state.bases[0];
+          state.bases[1] = forcedRunner;
           state.bases[0] = null;
+          // Augment out text with runner advancement context
+          const runnerName = forcedRunner ? forcedRunner.name.split(' ').pop() : '';
+          out.text = `${out.text} — ${runnerName} advances to second`;
         }
       }
     }
@@ -1213,6 +1213,8 @@ export function processAtBat(state, pitchType, swingType) {
     const stealResult = attemptSteal(newState, newState.pendingSteal);
     Object.assign(newState, stealResult);
     if (newState.gameOver) return newState;
+    // Caught stealing ends the play — don't process pitch/swing
+    if (stealResult.lastPlay?.type === 'caughtstealing') return newState;
   }
 
   // Walk trigger — pitcher loses command, instant walk regardless of count

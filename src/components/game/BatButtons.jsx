@@ -86,10 +86,10 @@ export default function BatButtons({ onSwing, disabled }) {
                   {/* Tapered neck between grip and knob */}
                   <rect x="119" y="20.5" width="13" height="4" rx="1" fill="#3B1E08" stroke="#2A1405" strokeWidth="0.6" />
 
-                  {/* Knob — flared base on the right */}
-                  <rect x="132" y="17" width="12" height="11" rx="4" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
+                  {/* Knob — rounded button at the end */}
+                  <rect x="132" y="17" width="12" height="11" rx="5.5" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
                   {/* Knob highlight */}
-                  <rect x="134" y="18" width="8" height="2" rx="1" fill="#FFFDF5" opacity="0.35" />
+                  <ellipse cx="138" cy="20" rx="4" ry="1.5" fill="#FFFDF5" opacity="0.35" />
 
                   {/* Brand logo placeholder — oval on barrel */}
                   <ellipse cx="28" cy="22.5" rx="7" ry="4.5" fill="none" stroke="#3B1E08" strokeWidth="0.6" opacity="0.25" />
