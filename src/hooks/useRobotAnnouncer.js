@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { TEAMS } from '@/lib/gameData';
 
 // 1984 blowout promo lines — injected when one team leads by 6+ in 7th+
 const BLOWOUT_PROMOS = [
@@ -13,6 +14,15 @@ const BLOWOUT_PROMOS = [
   "CALL... 1-800... COLLECT... TO... PLACE... YOUR... SEASON... TICKET... ORDER... TODAY.",
   "TRY... NEW... COKE... THE... OFFICIAL... SOFT... DRINK... OF... MAJOR... LEAGUE... BASEBALL.",
 ];
+
+// Build player name set from all rosters
+const PLAYER_NAMES = new Set();
+Object.values(TEAMS).forEach(team => {
+  team.lineup.forEach(p => PLAYER_NAMES.add(p.name));
+  team.rotation.forEach(p => PLAYER_NAMES.add(p.name));
+  team.bullpen.forEach(p => PLAYER_NAMES.add(p.name));
+  team.bench?.forEach(p => PLAYER_NAMES.add(p.name));
+});
 
 // Voice profiles for each announcer — different pitch, rate, and modulation
 const ANNOUNCER_PROFILES = {
@@ -39,116 +49,111 @@ const HIT_PLAY_TYPES = ['single', 'double', 'triple', 'homerun', 'groundout', 'f
   'doubleplay', 'error', 'sacfly', 'popout', 'lineout', 'fc',
   'offMonster', 'ivyStuck', 'basketHR', 'shortPorch', 'peskyPole', 'triangle'];
 
-// Player names from rosters — detect these for slow, robotic enunciation
-const PLAYER_NAMES = new Set();
-
-// Speak text with a retro robot voice using Web Speech API + AudioContext filter
-// delayMs: intentional micro-pause (retro processing delay) before speaking
+// Speak text with a retro robot voice: player names get slow robotic treatment
+// Uses onend chaining instead of setTimeout delays for reliable sequencing
 function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
   if (!('speechSynthesis' in window)) return;
 
   // Strip emojis — speech synth reads them literally (e.g. 💥 = "collision")
   const cleanedText = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B50}\u{2B55}\u{2702}-\u{27B0}\u{1F900}-\u{1F9FF}\u{200D}\u{FE0F}]/gu, '').trim();
+  if (!cleanedText) return;
 
   const doSpeak = () => {
     window.speechSynthesis.cancel();
 
     const profile = ANNOUNCER_PROFILES[announcerName] || ANNOUNCER_PROFILES['default'];
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(v => v.name.includes('Daniel') || v.name.includes('Fred')) ||
+                  voices.find(v => v.lang.startsWith('en') && v.name.includes('Male')) ||
+                  voices.find(v => v.lang.startsWith('en'));
 
-    // Split text into chunks: player names get slow robot treatment, rest is normal speed
-    // Player names are capitalized multi-word names — slow them down for retro game feel
+    // Split text into chunks by detecting player names via the roster set
+    // We scan for 2-word and 3-word name sequences from the roster
     const words = cleanedText.split(' ');
     const chunks = [];
-    let currentChunk = '';
-    let currentIsName = false;
+    let i = 0;
 
-    for (let i = 0; i < words.length; i++) {
-      const word = words[i];
-      const isCapitalized = /^[A-Z][a-z]+$/.test(word) && word.length > 1;
-      const isRetired = word === 'retired';
-      const nextWord = words[i + 1];
-      const nextIsCapitalized = nextWord ? /^[A-Z][a-z]+$/.test(nextWord) && nextWord.length > 1 : false;
-      const nextIsJr = nextWord === 'Jr.';
-
-      // Detect multi-word names (e.g. "Tony Gwynn", "Cal Ripken Jr.")
-      const isNameWord = isCapitalized && !isRetired;
-      const isNameContinuation = currentIsName && (isCapitalized || (word === 'Jr.' || word === 'Sr.'));
-
-      if (isNameWord || isNameContinuation) {
-        if (!currentIsName && currentChunk) {
-          chunks.push({ text: currentChunk.trim(), slow: false });
-          currentChunk = '';
+    while (i < words.length) {
+      // Try to match a 3-word name first (e.g. "Cal Ripken Jr.")
+      if (i + 2 < words.length) {
+        const threeWord = `${words[i]} ${words[i+1]} ${words[i+2]}`;
+        if (PLAYER_NAMES.has(threeWord)) {
+          chunks.push({ text: threeWord, slow: true });
+          i += 3;
+          continue;
         }
-        currentIsName = true;
-        currentChunk += word + ' ';
-      } else {
-        if (currentIsName && currentChunk) {
-          chunks.push({ text: currentChunk.trim(), slow: true });
-          currentChunk = '';
-          currentIsName = false;
-        }
-        currentChunk += word + ' ';
       }
-    }
-    if (currentChunk.trim()) {
-      chunks.push({ text: currentChunk.trim(), slow: currentIsName });
-    }
-
-    // Play chunks sequentially
-    let delay = 0;
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(v => v.name.includes('Daniel') || v.name.includes('Fred')) ||
-                           voices.find(v => v.lang.startsWith('en') && v.name.includes('Male')) ||
-                           voices.find(v => v.lang.startsWith('en'));
-
-    chunks.forEach((chunk) => {
-      setTimeout(() => {
-        const utterance = new SpeechSynthesisUtterance(chunk.text);
-        if (preferredVoice) utterance.voice = preferredVoice;
-
-        if (chunk.slow) {
-          // Robot voice for names: slower rate, lower pitch, more robotic
-          utterance.pitch = Math.max(0.1, profile.pitch - 0.25);
-          utterance.rate = Math.max(0.25, profile.rate * 0.35);
-        } else {
-          utterance.pitch = profile.pitch;
-          utterance.rate = profile.rate;
+      // Try 2-word name (e.g. "Tony Gwynn")
+      if (i + 1 < words.length) {
+        const twoWord = `${words[i]} ${words[i+1]}`;
+        if (PLAYER_NAMES.has(twoWord)) {
+          chunks.push({ text: twoWord, slow: true });
+          i += 2;
+          continue;
         }
-        utterance.volume = 0.85;
+      }
+      // Single word — collect in a normal chunk
+      { let normalWords = [];
+      while (i < words.length) {
+        // Peek ahead — if next words form a name, stop collecting
+        let isNextName = false;
+        if (i + 2 < words.length && PLAYER_NAMES.has(`${words[i]} ${words[i+1]} ${words[i+2]}`)) isNextName = true;
+        else if (i + 1 < words.length && PLAYER_NAMES.has(`${words[i]} ${words[i+1]}`)) isNextName = true;
+        if (isNextName) break;
+        normalWords.push(words[i]);
+        i++;
+      }
+      if (normalWords.length > 0) {
+        chunks.push({ text: normalWords.join(' '), slow: false });
+      } }
+    }
 
-        if (audioCtx) {
-          const oscillator = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          const analyser = audioCtx.createAnalyser();
+    // Play chunks sequentially using onend for reliable chaining
+    let idx = 0;
+    function playNext() {
+      if (idx >= chunks.length) return;
+      const chunk = chunks[idx];
+      idx++;
 
-          oscillator.type = 'sine';
-          oscillator.frequency.value = chunk.slow ? profile.modFreq * 0.7 : profile.modFreq;
-          gain.gain.value = chunk.slow ? profile.modGain * 1.4 : profile.modGain;
+      const utterance = new SpeechSynthesisUtterance(chunk.text);
+      if (voice) utterance.voice = voice;
+      utterance.volume = 0.85;
 
-          oscillator.connect(gain);
-          gain.connect(analyser);
-          analyser.connect(audioCtx.destination);
+      if (chunk.slow) {
+        utterance.pitch = Math.max(0.1, profile.pitch - 0.25);
+        utterance.rate = Math.max(0.25, profile.rate * 0.35);
+      } else {
+        utterance.pitch = profile.pitch;
+        utterance.rate = profile.rate;
+      }
 
-          oscillator.start();
-          utterance.onend = () => {
-            oscillator.stop();
-            oscillator.disconnect();
-            gain.disconnect();
-            analyser.disconnect();
-          };
-          utterance.onerror = () => {
-            oscillator.stop();
-            oscillator.disconnect();
-            gain.disconnect();
-            analyser.disconnect();
-          };
-        }
+      let osc = null, gain = null, analyser = null;
+      if (audioCtx) {
+        osc = audioCtx.createOscillator();
+        gain = audioCtx.createGain();
+        analyser = audioCtx.createAnalyser();
+        osc.type = 'sine';
+        osc.frequency.value = chunk.slow ? profile.modFreq * 0.7 : profile.modFreq;
+        gain.gain.value = chunk.slow ? profile.modGain * 1.4 : profile.modGain;
+        osc.connect(gain);
+        gain.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        osc.start();
+      }
 
-        window.speechSynthesis.speak(utterance);
-      }, delay);
-      // Estimate chunk duration: slow names ~500ms per word, normal ~300ms per word
-      delay += chunk.slow ? chunk.text.split(' ').length * 500 : chunk.text.split(' ').length * 300;
-    });
+      utterance.onend = () => {
+        if (osc) { osc.stop(); osc.disconnect(); gain.disconnect(); analyser.disconnect(); }
+        playNext();
+      };
+      utterance.onerror = () => {
+        if (osc) { osc.stop(); osc.disconnect(); gain.disconnect(); analyser.disconnect(); }
+        playNext();
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    playNext();
   };
 
   if (delayMs > 0) {
