@@ -269,6 +269,93 @@ export function playRunScore() {
   });
 }
 
+// ─── Half-Inning Break Jingle ────────────────────────────────────────
+// 3-second descending arpeggio (C → G → C low) — signals side change
+
+export function playHalfInningBreak() {
+  ensureResumed();
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const notes = [523, 659, 784, 1047, 784, 523, 392]; // C5-E5-G5-C6-G5-C5-G4
+  const durations = [0.30, 0.25, 0.30, 0.50, 0.30, 0.40, 0.55];
+
+  let t = 0;
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.value = freq;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.07, now + t);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + t + durations[i] * 0.9);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + t);
+    osc.stop(now + t + durations[i]);
+    t += durations[i];
+  });
+}
+
+// ─── 7th Inning Stretch — "Take Me Out to the Ballgame" ──────────────
+// ~13 seconds of the classic tune using square-wave melody
+
+export function playStretchMusic() {
+  ensureResumed();
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+
+  // Note frequencies (C4=262 to C5=523)
+  const C = 262, D = 294, E = 330, F = 349, G = 392, A = 440;
+  const L = 524; // high C
+
+  // Melody: [freq, duration_sec, gap_sec]
+  const melody = [
+    // "Take me out to the ball game"
+    [L, 0.28, 0.05], [L, 0.28, 0.05], [D, 0.28, 0.05], [D, 0.28, 0.05],
+    [E, 0.28, 0.05], [E, 0.28, 0.25],
+    // "Take me out with the crowd"
+    [L, 0.28, 0.05], [L, 0.28, 0.05], [D, 0.28, 0.05], [D, 0.28, 0.05],
+    [E, 0.28, 0.05], [E, 0.28, 0.25],
+    // "Buy me some peanuts and Cracker Jack"
+    [E, 0.22, 0.03], [F, 0.22, 0.03], [G, 0.28, 0.05],
+    [G, 0.22, 0.03], [G, 0.22, 0.03], [G, 0.22, 0.03],
+    [F, 0.22, 0.03], [E, 0.22, 0.03], [D, 0.30, 0.20],
+    // "I don't care if I never get back"
+    [L, 0.35, 0.05], [A, 0.35, 0.05], [G, 0.40, 0.25],
+    // "Let me root, root, root for the home team"
+    [E, 0.22, 0.03], [D, 0.22, 0.03], [C, 0.22, 0.03],
+    [D, 0.22, 0.03], [E, 0.22, 0.03], [F, 0.22, 0.03],
+    [E, 0.35, 0.25],
+    // "If they don't win it's a shame"
+    [D, 0.22, 0.03], [C, 0.22, 0.03], [C, 0.22, 0.03],
+    [D, 0.22, 0.03], [E, 0.22, 0.03], [F, 0.22, 0.03],
+    [D, 0.40, 0.25],
+    // "For it's one, two, three strikes you're out"
+    [L, 0.22, 0.03], [A, 0.22, 0.03], [G, 0.22, 0.03],
+    [L, 0.22, 0.03], [L, 0.22, 0.03], [L, 0.22, 0.03],
+    [L, 0.22, 0.03], [D, 0.22, 0.03],
+    [E, 0.22, 0.03], [L, 0.22, 0.03],
+    [E, 0.22, 0.03], [F, 0.22, 0.03],
+    [G, 0.50, 0.10],
+    // "At the old ball game"
+    [L, 0.35, 0.05], [A, 0.35, 0.05], [G, 0.35, 0.10], [L, 0.55, 0],
+  ];
+
+  let t = 0;
+  melody.forEach(([freq, dur, gap]) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.value = freq;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.08, now + t);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + t + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + t);
+    osc.stop(now + t + dur + 0.02);
+    t += dur + gap;
+  });
+}
+
 // ─── Disk Drive Clack ───────────────────────────────────────────────
 // Rhythmic low-frequency clack simulating 1541 disk drive
 
@@ -351,6 +438,9 @@ export default function useRetroAudio(gameState, enabled) {
       'basketHR', 'shortPorch', 'peskyPole', 'triangle',
     ]);
 
+    // Home runs (any type that scores via HR)
+    const hrTypes = new Set(['homerun', 'basketHR', 'shortPorch', 'peskyPole']);
+
     // Any kind of out
     const outTypes = new Set([
       'strikeout', 'groundout', 'flyout', 'doubleplay',
@@ -367,8 +457,13 @@ export default function useRetroAudio(gameState, enabled) {
         } else if (batContactTypes.has(t)) {
           playBatCrack();
           if (outTypes.has(t)) {
-            // Delay out tone slightly so both are heard
             setTimeout(playOutTone, 180);
+          }
+          // Run scored: always on HRs, otherwise check text for RBI/run mention
+          if (hrTypes.has(t)) {
+            setTimeout(playRunScore, 200);
+          } else if (entry.text && /(\d+\s*(run|RBI)|scores)/i.test(entry.text)) {
+            setTimeout(playRunScore, 120);
           }
         } else if (t === 'strikeout') {
           playOutTone();
@@ -380,13 +475,19 @@ export default function useRetroAudio(gameState, enabled) {
           playOutTone();
         }
 
-        // Check for runs scored in the commentary text
-        if (entry.text && /\d+\s*(run|RBI)/i.test(entry.text) && batContactTypes.has(t)) {
-          setTimeout(playRunScore, 120);
+        // ── Half-inning transitions & 7th inning stretch ──
+        if (t === 'info') {
+          if (entry.text && entry.text.includes('🎶')) {
+            // 7th inning stretch — play after a short delay for the text announcement
+            setTimeout(playStretchMusic, 1500);
+          } else if (entry.text && /^(Top|Bottom) of inning/.test(entry.text)) {
+            // Half-inning change jingle
+            setTimeout(playHalfInningBreak, 600);
+          }
         }
 
         // ── Crowd reactions ──
-        if (t === 'homerun' || t === 'basketHR' || t === 'shortPorch' || t === 'peskyPole') {
+        if (hrTypes.has(t)) {
           crowdReact('hr');
         } else if (t === 'strikeout' || t === 'doubleplay') {
           crowdReact('strikeout');
