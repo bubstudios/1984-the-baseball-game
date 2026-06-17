@@ -1,6 +1,15 @@
 import { TEAMS, PITCH_TYPES, SWING_TYPES, TEAM_IDS, PLAYER_ERRORS, DEFAULT_PITCHES } from './gameData';
 import { applyWeatherEffects } from './weather';
 import { BALLPARKS, getBallparkEffect, getHitDirection, checkBallparkQuirk } from './ballparks';
+import {
+  pickLine, STRIKEOUT_LINES, WALK_LINES, INTENTIONAL_WALK_LINES,
+  SINGLE_LINES, DOUBLE_LINES, TRIPLE_LINES, HOME_RUN_LINES,
+  WILD_PITCH_LINES, GROUNDOUT_LINES, FLYOUT_LINES,
+  DOUBLE_PLAY_LINES, END_INNING_LINES, LINEOUT_LINES,
+  POPOUT_LINES, STRIKEOUT_SWINGING_LINES, STRIKEOUT_CALLED_LINES,
+  BUNT_SINGLE_LINES, SACRIFICE_BUNT_LINES, SAC_FLY_LINES,
+  STEAL_LINES, ERROR_LINES, FC_LINES,
+} from './commentaryLines';
 
 // Create initial game state with two selected teams
 export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null) {
@@ -427,7 +436,8 @@ function endHalfInning(state) {
   }
 
   const battingTeam = state.halfInning === 'top' ? away.name : home.name;
-  state.log.push({ type: 'info', text: `${state.halfInning === 'top' ? 'Top' : 'Bottom'} of inning ${state.inning} — ${battingTeam} batting` });
+  const inningEnd = pickLine(END_INNING_LINES);
+  state.log.push({ type: 'info', text: `${inningEnd} ${state.halfInning === 'top' ? 'Bottom' : 'Top'} of inning ${state.inning} — ${battingTeam} batting` });
 }
 
 // --- STOLEN BASE ---
@@ -449,20 +459,24 @@ export function attemptSteal(state, baseIndex) {
 
   if (success) {
     runner.gameStats.sb = (runner.gameStats.sb || 0) + 1;
+    const stealBaseNames = ['second', 'third', 'home'];
+    const stealLine = pickLine(STEAL_LINES.success);
     // Move runner to next base
     if (baseIndex + 1 >= 3) {
       // Stealing home
       runner.gameStats.runs++;
       scoreRun(newState);
       newState.bases[baseIndex] = null;
-      newState.log.push({ type: 'info', text: `🏃 ${runner.name} steals home!` });
-      newState.lastPlay = { type: 'steal', text: `${runner.name} steals home!` };
+      const stealMsg = `🏃 ${runner.name} ${stealLine.replace(/second|third|home/, 'home')}`;
+      newState.log.push({ type: 'info', text: stealMsg });
+      newState.lastPlay = { type: 'steal', text: stealMsg.replace('🏃 ', '') };
     } else {
       newState.bases[baseIndex + 1] = runner;
       newState.bases[baseIndex] = null;
-      const baseName = ['second', 'third', 'home'][baseIndex];
-      newState.log.push({ type: 'info', text: `🏃 ${runner.name} steals ${baseName}!` });
-      newState.lastPlay = { type: 'steal', text: `${runner.name} steals ${baseName}!` };
+      const baseName = stealBaseNames[baseIndex];
+      const stealMsg = `🏃 ${runner.name} ${stealLine.replace(/second|third|home/, baseName)}`;
+      newState.log.push({ type: 'info', text: stealMsg });
+      newState.lastPlay = { type: 'steal', text: stealMsg.replace('🏃 ', '') };
     }
   } else {
     runner.gameStats.cs = (runner.gameStats.cs || 0) + 1;
@@ -470,8 +484,10 @@ export function attemptSteal(state, baseIndex) {
     recordOut(newState);
     const stealTo = baseIndex + 1;
     const baseName = stealTo === 1 ? 'second' : stealTo === 2 ? 'third' : 'home';
-    newState.log.push({ type: 'info', text: `❌ ${runner.name} caught stealing ${baseName}!` });
-    newState.lastPlay = { type: 'caughtstealing', text: `${runner.name} caught stealing at ${baseName}!` };
+    const caughtLine = pickLine(STEAL_LINES.caught);
+    const caughtMsg = `❌ ${runner.name} ${caughtLine.replace(/second|third|home/, baseName)}`;
+    newState.log.push({ type: 'info', text: caughtMsg });
+    newState.lastPlay = { type: 'caughtstealing', text: caughtMsg.replace('❌ ', '') };
   }
 
   newState.pendingSteal = null;
@@ -546,12 +562,13 @@ function resolvePitch(state, pitchType) {
           }
         }
       }
+      const wpBase = pickLine(WILD_PITCH_LINES);
       const logMsg = scored
-        ? `Wild pitch! ${scored.name.split(' ').pop()} scores!${moved.length > 0 ? ' Runners advance.' : ''}`
-        : `Wild pitch! Runners advance!`;
+        ? `${wpBase} ${scored.name.split(' ').pop()} scores!${moved.length > 0 ? ' Runners advance.' : ''}`
+        : `${wpBase} Runners advance!`;
       const playMsg = scored
-        ? `Wild pitch — ${scored.name.split(' ').pop()} scores!`
-        : `Wild pitch!`;
+        ? `${wpBase} — ${scored.name.split(' ').pop()} scores!`
+        : wpBase;
       state.log.push({ type: 'error', text: logMsg });
       state.lastPlay = { type: 'error', text: playMsg };
     }
@@ -593,7 +610,7 @@ function resolveSwing(state, swingType, pitch) {
         batter.gameStats.ab++;
         batter.gameStats.so++;
         pitcher.gameStats.so++;
-        const msg = `${batter.name} called out on strikes!`;
+        const msg = `${batter.name} ${pickLine(STRIKEOUT_CALLED_LINES)}`;
         state.log.push({ type: 'strikeout', text: msg });
         state.lastPlay = { type: 'strikeout', text: msg };
         state.balls = 0;
@@ -610,9 +627,9 @@ function resolveSwing(state, swingType, pitch) {
       if (state.balls >= 4) {
         batter.gameStats.bb++;
         pitcher.gameStats.bb++;
-        const msg = `${batter.name} draws a walk!`;
-        state.log.push({ type: 'walk', text: msg });
-        state.lastPlay = { type: 'walk', text: msg };
+        const walkMsg = `${batter.name} ${pickLine(WALK_LINES)}`;
+        state.log.push({ type: 'walk', text: walkMsg });
+        state.lastPlay = { type: 'walk', text: walkMsg };
         handleWalk(state, batter);
         state.balls = 0;
         state.strikes = 0;
@@ -632,9 +649,9 @@ function resolveSwing(state, swingType, pitch) {
       if (state.balls >= 4) {
         batter.gameStats.bb++;
         pitcher.gameStats.bb++;
-        const msg = `${batter.name} draws a walk!`;
-        state.log.push({ type: 'walk', text: msg });
-        state.lastPlay = { type: 'walk', text: msg };
+        const walkMsg = `${batter.name} ${pickLine(WALK_LINES)}`;
+        state.log.push({ type: 'walk', text: walkMsg });
+        state.lastPlay = { type: 'walk', text: walkMsg };
         handleWalk(state, batter);
         state.balls = 0;
         state.strikes = 0;
@@ -661,7 +678,8 @@ function resolveSwing(state, swingType, pitch) {
       }
       batter.gameStats.ab++;
       pitcher.gameStats.so++;
-      const msg = `${batter.name} lays down the sacrifice — ${r1?.name?.split(' ').pop()} moves to second`;
+      const sacBuntLine = pickLine(SACRIFICE_BUNT_LINES);
+      const msg = `${batter.name} ${sacBuntLine} ${r1?.name?.split(' ').pop()} moves to second`;
       state.log.push({ type: 'groundout', text: msg });
       state.lastPlay = { type: 'groundout', text: `Sacrifice bunt by ${batter.name}` };
       state.balls = 0;
@@ -681,7 +699,8 @@ function resolveSwing(state, swingType, pitch) {
       batter.gameStats.hits++;
       pitcher.gameStats.h++;
       const rbi = advanceRunners(state, 1, batter, true);
-      const msg = `${batter.name} lays down a bunt single!${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
+      const buntLine = pickLine(BUNT_SINGLE_LINES);
+      const msg = `${batter.name} ${buntLine}${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'single', text: msg });
       state.lastPlay = { type: 'single', text: msg };
       state.balls = 0;
@@ -743,19 +762,8 @@ function resolveSwing(state, swingType, pitch) {
       batter.gameStats.ab++;
       batter.gameStats.so++;
       pitcher.gameStats.so++;
-      const strikeoutMsgs = pitch.isStrike ? [
-        `${batter.name} goes down swinging!`,
-        `${batter.name} can't catch up — strike three!`,
-        `${batter.name} whiffs on strike three!`,
-        `${batter.name} fans on a wicked ${pitch.pitchType}!`,
-        `${batter.name} swings right through it — out!`,
-      ] : [
-        `${batter.name} chases one out of the zone — Struck out!`,
-        `${batter.name} swings and misses — Struck out!`,
-        `${batter.name} flails and misses — strike three!`,
-        `${batter.name} flails at one in the dirt — strikeout!`,
-      ];
-      const msg = strikeoutMsgs[Math.floor(Math.random() * strikeoutMsgs.length)];
+      const strikeoutLine = pickLine(STRIKEOUT_SWINGING_LINES);
+      const msg = strikeoutLine.includes('fans on a wicked') ? `${batter.name} fans on a wicked ${pitch.pitchType}!` : `${batter.name} ${strikeoutLine}`;
       state.log.push({ type: 'strikeout', text: msg });
       state.lastPlay = { type: 'strikeout', text: msg };
       state.balls = 0;
@@ -878,23 +886,20 @@ function resolveSwing(state, swingType, pitch) {
     } else if (hitRoll < (effectivePower * 0.10 + speedFactor * 0.08) * doubleMod) {
       // TRIPLE — based on Contact, Power, and Speed
       const rbi = advanceRunners(state, 3, batter, true);
-      const msg = `${batter.name} rips a triple into the gap!${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
+      const tripleLine = pickLine(TRIPLE_LINES);
+      const msg = tripleLine.startsWith('rips a triple') ? `${batter.name} ${tripleLine}${rbi > 0 ? ` ${rbi} RBI!` : ''}` : `${tripleLine}${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'triple', text: msg });
       state.lastPlay = { type: 'triple', text: msg };
     } else if (hitRoll < effectivePower * 0.32 * doubleMod) {
       const rbi = advanceRunners(state, 2, batter, true);
-      const msg = `${batter.name} doubles off the wall!${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
+      const doubleLine = pickLine(DOUBLE_LINES);
+      const msg = `${batter.name} ${doubleLine}${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'double', text: msg });
       state.lastPlay = { type: 'double', text: msg };
     } else {
       const rbi = advanceRunners(state, 1, batter, true);
-      const singles = [
-        `${batter.name} lines a single to left!`,
-        `${batter.name} grounds a single through the hole!`,
-        `${batter.name} bloops a single into shallow right!`,
-        `${batter.name} singles sharply up the middle!`,
-      ];
-      const msg = singles[Math.floor(Math.random() * singles.length)] + (rbi > 0 ? ` ${rbi} RBI!` : '');
+      const singleLine = pickLine(SINGLE_LINES);
+      const msg = `${batter.name} ${singleLine}${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'single', text: msg });
       state.lastPlay = { type: 'single', text: msg };
     }
@@ -908,45 +913,48 @@ function resolveSwing(state, swingType, pitch) {
     // Pick an out type with position mapping
     // Position names for commentary — avoid "1B" / "2B" abbreviations in spoken text
     const posNames = { '1B': 'first base', '2B': 'second base', '3B': 'third base', 'SS': 'shortstop', 'SP': 'the pitcher', 'C': 'the catcher', 'LF': 'left field', 'CF': 'center field', 'RF': 'right field' };
-    const groundOutTypes = [
-      { text: `${batter.name} grounds out to short`, pos: 'SS', posName: 'shortstop' },
-      { text: `${batter.name} grounds out to second`, pos: '2B', posName: 'second' },
-      { text: `${batter.name} grounds out to third`, pos: '3B', posName: 'third' },
-      { text: `${batter.name} grounds out to the pitcher`, pos: 'SP', posName: 'the pitcher' },
-      { text: `${batter.name} grounds out to first`, pos: '1B', posName: 'first' },
-    ];
     const batterLast = batter.name.split(' ').pop();
+
+    // Groundout — pick position + use pool
+    const groundPositions = [
+      { pos: 'SS', posName: 'shortstop', text: `${batter.name} grounds out to short` },
+      { pos: '2B', posName: 'second', text: `${batter.name} grounds out to second` },
+      { pos: '3B', posName: 'third', text: `${batter.name} grounds out to third` },
+      { pos: 'SP', posName: 'the pitcher', text: `${batter.name} grounds out to the pitcher` },
+      { pos: '1B', posName: 'first', text: `${batter.name} grounds out to first` },
+    ];
+    const groundPos = groundPositions[Math.floor(Math.random() * groundPositions.length)];
+    const groundOutText = `${batter.name} ${pickLine(GROUNDOUT_LINES)}`.replace(/grounds out to (short|second|third|the pitcher|first)/, `grounds out to ${groundPos.posName}`);
+    const groundOutTypes = [
+      { text: groundOutText, pos: groundPos.pos, posName: groundPos.posName, type: 'groundout' },
+    ];
+
+    // Flyout — pick position + depth + action from flyout pool
     const flyFields = { CF: ['center', 'center field'], RF: ['right', 'right field'], LF: ['left', 'left field'] };
     const depths = ['shallow ', '', 'deep ', 'the warning track in ', 'back at the wall in '];
-    const actions = [
-      'tracks it down', 'makes the catch', 'hauls it in', 'runs it down',
-      'drifts over and makes the grab', 'has room and makes the catch',
-      'goes back and makes the over-the-shoulder catch', 'makes a running grab',
-      'dives and makes the catch!', 'lays out for it — what a play!',
-    ];
     const flyPosKeys = ['CF', 'RF', 'LF'];
     const fPos = flyPosKeys[Math.floor(Math.random() * flyPosKeys.length)];
     const fField = flyFields[fPos];
     const depth = depths[Math.floor(Math.random() * depths.length)];
-    const action = actions[Math.floor(Math.random() * actions.length)];
-
+    const flyLine = pickLine(FLYOUT_LINES);
+    const flyOutText = flyLine.includes('flies out to') ? `${batter.name} ${flyLine} ${depth}${fField[0]}` : `${batter.name} ${flyLine} ${depth}${fField[0]} — caught`;
     const flyOutTypes = [
-      { text: `${batter.name} flies out to ${depth}${fField[0]} — ${batterLast} is retired`, pos: fPos },
-      { text: `${batterLast} lifts one to ${depth}${fField[1]} — ${defenders[fPos]?.name || fField[0]} ${action}`, pos: fPos },
-      { text: `High fly ball to ${depth}${fField[1]} — ${defenders[fPos]?.name || fField[0]} ${action}`, pos: fPos },
-      { text: `${batterLast} sends it to ${depth}${fField[1]} — caught for the out`, pos: fPos },
-      { text: `Routine fly to ${depth}${fField[0]} — ${defenders[fPos]?.name || 'the fielder'} settles under it`, pos: fPos },
+      { text: flyOutText, pos: fPos, type: 'flyout' },
     ];
+
+    // Lineouts and popouts from pools
+    const lineoutPositions = ['3B', 'SS', '1B', '2B'];
+    const loPos = lineoutPositions[Math.floor(Math.random() * lineoutPositions.length)];
+    const lineoutText = `${batter.name} ${pickLine(LINEOUT_LINES)} ${defenders[loPos]?.name || posNames[loPos]}`;
+    const popPositions = ['C', '2B', '3B'];
+    const poPos = popPositions[Math.floor(Math.random() * popPositions.length)];
+    const popoutText = pickLine(POPOUT_LINES);
+    const popoutFull = popoutText.includes('pops it up') || popoutText.includes('pops one')
+      ? `${batter.name} ${popoutText} ${defenders[poPos]?.name || posNames[poPos]} makes the catch`
+      : `Infield pop-up — ${defenders[poPos]?.name || posNames[poPos]} ${popoutText}`;
     const otherOuts = [
-      { text: `${batter.name} pops it up behind the plate — ${defenders['C']?.name || 'the catcher'} makes the grab`, pos: '2B', type: 'popout' },
-      { text: `Infield pop-up — ${defenders['2B']?.name || 'the second baseman'} calls for it and makes the catch`, pos: '2B', type: 'popout' },
-      { text: `${batterLast} pops one up in foul territory — ${defenders['3B']?.name || 'the third baseman'} makes the play`, pos: '3B', type: 'popout' },
-      { text: `${batter.name} lines it right at ${defenders['3B']?.name || 'the third baseman'} — caught!`, pos: '3B', type: 'lineout' },
-      { text: `${batterLast} smokes one toward ${defenders['SS']?.name || 'the shortstop'} — snared on a hop!`, pos: 'SS', type: 'lineout' },
-      { text: `${batter.name} rips a liner — ${defenders['SS']?.name || 'the shortstop'} leaps and grabs it!`, pos: 'SS', type: 'lineout' },
-      { text: `Hard liner to ${defenders['1B']?.name || 'first'} — stabbed and caught!`, pos: '1B', type: 'lineout' },
-      { text: `${batterLast} lines one — ${defenders['2B']?.name || 'the second baseman'} dives and makes the stop!`, pos: '2B', type: 'lineout' },
-      { text: `Laser shot right at ${defenders['3B']?.name || 'third'} — picks it clean!`, pos: '3B', type: 'lineout' },
+      { text: popoutFull, pos: poPos, type: 'popout' },
+      { text: lineoutText, pos: loPos, type: 'lineout' },
     ];
 
     const allOuts = [...groundOutTypes, ...flyOutTypes, ...otherOuts];
@@ -1000,7 +1008,8 @@ function resolveSwing(state, swingType, pitch) {
           batter.gameStats.ab++;
           pitcher.gameStats.er++; // unearned, but simplified
           advanceRunners(state, 1, batter, false);
-          const msg = `❌ ${fielder.name} boots it! ${batter.name} reaches on an error!`;
+          const errLine = pickLine(ERROR_LINES);
+          const msg = `❌ ${fielder.name} ${errLine} ${batter.name} reaches on an error!`;
           state.log.push({ type: 'error', text: msg });
           state.lastPlay = { type: 'error', text: msg };
           state.balls = 0;
@@ -1026,9 +1035,9 @@ function resolveSwing(state, swingType, pitch) {
           batter.gameStats.hits++;
           pitcher.gameStats.h++;
           advanceRunners(state, 1, batter, true);
-          const msg = `${batter.name} beats it out — infield single past ${fielder.name}!`;
-          state.log.push({ type: 'single', text: msg });
-          state.lastPlay = { type: 'single', text: msg };
+          const infieldSingle = `${batter.name} beats it out — infield single past ${fielder.name}!`;
+          state.log.push({ type: 'single', text: infieldSingle });
+          state.lastPlay = { type: 'single', text: infieldSingle };
           state.balls = 0;
           state.strikes = 0;
           advanceBatter(state);
@@ -1083,14 +1092,12 @@ function resolveSwing(state, swingType, pitch) {
               state.bases[1] = null;
             }
             state.bases[0] = null;
-            const dpMsgs = [
-              `${batter.name} grounds to short — toss to ${defenders['2B']?.name?.split(' ').pop() || 'second'} for one, relay to first — double play!`,
-              `${batterLast} bounces it to ${defenders['2B']?.name?.split(' ').pop() || 'second'} — flips to ${defenders['SS']?.name?.split(' ').pop() || 'short'} for the force, over to first — two!`,
-              `${batter.name} taps it to the mound — ${defenders['SP']?.name?.split(' ').pop() || 'the pitcher'} goes to second, on to first — inning-ending double play!`,
-              `${batterLast} grounds sharply to third — ${defenders['3B']?.name?.split(' ').pop() || 'third'} steps on the bag, fires across — twin killing!`,
-              `${batter.name} rolls one to short — underhand flip to ${defenders['2B']?.name?.split(' ').pop() || 'second'}, the turn and throw — double play!`,
-            ];
-            const msg = dpMsgs[Math.floor(Math.random() * dpMsgs.length)];
+            const dpLine = pickLine(DOUBLE_PLAY_LINES);
+            const dpPos = ['short', 'second', 'third', 'the pitcher'][Math.floor(Math.random() * 4)];
+            const dpPartner = defenders['2B']?.name?.split(' ').pop() || 'second';
+            const msg = dpLine.includes('grounds into')
+              ? `${batter.name} ${dpLine}`
+              : `${batter.name} grounds to ${dpPos} — flip to ${dpPartner}, relay to first — ${dpLine}`;
             state.log.push({ type: 'doubleplay', text: msg });
             state.lastPlay = { type: 'doubleplay', text: msg };
           }
@@ -1124,8 +1131,9 @@ function resolveSwing(state, swingType, pitch) {
             state.bases[0] = batter;
             batter.gameStats.ab++;
             const scoreText = runner3rd ? ` ${runner3rd.name.split(' ').pop()} scores` : '';
+            const fcLine = pickLine(FC_LINES);
             const forcePosName = posNames[out.pos] || out.pos;
-            const msg = `${batter.name} grounds to ${forcePosName} — force out at 3rd! ${forcedRunner ? forcedRunner.name + ' retired' : ''}${scoreText} — batter reaches on fielder's choice.`;
+            const msg = `${batter.name} ${fcLine} ${forcePosName} — force out at 3rd! ${forcedRunner ? forcedRunner.name + ' retired' : ''}${scoreText} — batter reaches on fielder's choice.`;
             state.log.push({ type: 'fc', text: msg });
             state.lastPlay = { type: 'fc', text: msg };
           } else {
@@ -1143,8 +1151,9 @@ function resolveSwing(state, swingType, pitch) {
             state.bases[0] = batter;
             batter.gameStats.ab++;
             const scoreText = runner3rd ? ` ${runner3rd.name.split(' ').pop()} scores` : '';
+            const fcLine2 = pickLine(FC_LINES);
             const force2PosName = posNames[out.pos] || out.pos;
-            const msg = `${batter.name} grounds to ${force2PosName} — force out at 2nd! ${runnerOn1st ? runnerOn1st.name + ' retired' : ''}${scoreText} — batter reaches on fielder's choice.`;
+            const msg = `${batter.name} ${fcLine2} ${force2PosName} — force out at 2nd! ${runnerOn1st ? runnerOn1st.name + ' retired' : ''}${scoreText} — batter reaches on fielder's choice.`;
             state.log.push({ type: 'fc', text: msg });
             state.lastPlay = { type: 'fc', text: msg };
           }
@@ -1203,7 +1212,8 @@ function resolveSwing(state, swingType, pitch) {
         batter.gameStats.rbi++;
         getCurrentPitcher(state).gameStats.r++;
         getCurrentPitcher(state).gameStats.er++;
-        const msg = `${batter.name} hits a sacrifice fly — ${runner.name} tags and scores!`;
+        const sacFlyLine = pickLine(SAC_FLY_LINES);
+        const msg = `${batter.name} ${sacFlyLine} ${runner.name} tags and scores!`;
         state.log.push({ type: 'sacfly', text: msg });
         state.lastPlay = { type: 'sacfly', text: msg };
         batter.gameStats.ab--;
@@ -1368,7 +1378,8 @@ function handleHitAndRunCaught(state) {
       recordOut(state);
       const toBase = i + 1;
       const baseName = toBase === 1 ? 'second' : toBase === 2 ? 'third' : 'home';
-      state.log.push({ type: 'info', text: `❌ ${runner.name} caught stealing ${baseName} on the hit-and-run!` });
+      const hrCaughtLine = pickLine(STEAL_LINES.caught).replace(/second|third|home/, baseName);
+      state.log.push({ type: 'info', text: `❌ ${runner.name} ${hrCaughtLine} on the hit-and-run!` });
       break;
     } else {
       // Runner advances despite strikeout
@@ -1376,7 +1387,8 @@ function handleHitAndRunCaught(state) {
         state.bases[i + 1] = runner;
         state.bases[i] = null;
         const baseName = ['second', 'third'][i];
-        state.log.push({ type: 'info', text: `${runner.name} swipes ${baseName} on the hit-and-run!` });
+        const hrStealLine = pickLine(STEAL_LINES.success).replace(/second|third|home/, baseName);
+        state.log.push({ type: 'info', text: `${runner.name} ${hrStealLine} on the hit-and-run!` });
       }
     }
   }
@@ -1408,9 +1420,9 @@ export function processAtBat(state, pitchType, swingType) {
     batter.gameStats.bb++;
     pitcher.gameStats.bb++;
     pitcher.gameStats.pitches += 4; // jump pitch count for full at-bat
-    const msg = `${batter.name} draws a walk!`;
-    newState.log.push({ type: 'walk', text: msg });
-    newState.lastPlay = { type: 'walk', text: msg };
+    const walkMsg = `${batter.name} ${pickLine(WALK_LINES)}`;
+    newState.log.push({ type: 'walk', text: walkMsg });
+    newState.lastPlay = { type: 'walk', text: walkMsg };
     handleWalk(newState, batter);
     newState.balls = 0;
     newState.strikes = 0;
@@ -1431,9 +1443,9 @@ export function processAtBat(state, pitchType, swingType) {
       const walkBatter = getCurrentBatter(newState);
       walkBatter.gameStats.bb++;
       getCurrentPitcher(newState).gameStats.bb++;
-      const msg = `${walkBatter.name} walks on a wild pitch!`;
-      newState.log.push({ type: 'walk', text: msg });
-      newState.lastPlay = { type: 'walk', text: msg };
+      const wpWalkMsg = `${walkBatter.name} walks on a wild pitch!`;
+      newState.log.push({ type: 'walk', text: wpWalkMsg });
+      newState.lastPlay = { type: 'walk', text: wpWalkMsg };
       handleWalk(newState, walkBatter);
       newState.balls = 0; newState.strikes = 0;
       advanceBatter(newState);
@@ -1446,9 +1458,9 @@ export function processAtBat(state, pitchType, swingType) {
     const hbpBatter = getCurrentBatter(newState);
     hbpBatter.gameStats.bb++;
     getCurrentPitcher(newState).gameStats.bb++;
-    const msg = `${hbpBatter.name} is hit by the pitch!`;
-    newState.log.push({ type: 'walk', text: msg });
-    newState.lastPlay = { type: 'walk', text: msg + ' — takes first' };
+    const hbpMsg = `${hbpBatter.name} is hit by the pitch!`;
+    newState.log.push({ type: 'walk', text: hbpMsg });
+    newState.lastPlay = { type: 'walk', text: hbpMsg + ' — takes first' };
     handleWalk(newState, hbpBatter);
     newState.balls = 0;
     newState.strikes = 0;
@@ -1726,9 +1738,9 @@ export function intentionalWalk(state) {
   batter.gameStats.bb++;
   pitcher.gameStats.bb++;
   pitcher.gameStats.pitches += 4; // jump pitch count for full at-bat
-  const msg = `${batter.name} is intentionally walked!`;
-  newState.log.push({ type: 'walk', text: msg });
-  newState.lastPlay = { type: 'walk', text: msg };
+  const ibbMsg = `${batter.name} — ${pickLine(INTENTIONAL_WALK_LINES)}`;
+  newState.log.push({ type: 'walk', text: ibbMsg });
+  newState.lastPlay = { type: 'walk', text: ibbMsg };
   handleWalk(newState, batter);
   newState.balls = 0;
   newState.strikes = 0;
