@@ -80,6 +80,8 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     hitAndRun: false,
     pendingSteal: null,
     weather: weather || null,
+    homePlayerHistory: [],
+    awayPlayerHistory: [],
   };
 }
 
@@ -1405,6 +1407,12 @@ export function pinchHit(state, newPlayer) {
   };
   lineup[idx] = benchPlayer;
 
+  // Save old batter to player history so box score retains their stats
+  const historyKey = isAway ? 'awayPlayerHistory' : 'homePlayerHistory';
+  if (!newState[historyKey].find(p => p.name === oldBatter.name)) {
+    newState[historyKey].push({ ...oldBatter });
+  }
+
   newState.log.push({ type: 'info', text: `🔄 ${newPlayer.name} pinch-hits for ${oldBatter.name}` });
   return newState;
 }
@@ -1431,6 +1439,12 @@ export function pinchRun(state, baseIndex, newPlayer) {
   }
   newState.bases[baseIndex] = benchPlayer;
 
+  // Save old runner to player history
+  const historyKey = isAway ? 'awayPlayerHistory' : 'homePlayerHistory';
+  if (!newState[historyKey].find(p => p.name === runner.name)) {
+    newState[historyKey].push({ ...runner });
+  }
+
   newState.log.push({ type: 'info', text: `🔄 ${newPlayer.name} pinch-runs for ${runner.name}` });
   return newState;
 }
@@ -1452,6 +1466,13 @@ export function defensiveSwitch(state, slotIndex, newPos, newPlayer) {
       gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
     };
     lineup[slotIndex] = benchPlayer;
+
+    // Save old fielder to player history
+    const historyKey = isAwayFielding ? 'awayPlayerHistory' : 'homePlayerHistory';
+    if (!newState[historyKey].find(p => p.name === oldPlayer.name)) {
+      newState[historyKey].push({ ...oldPlayer });
+    }
+
     newState.log.push({ type: 'info', text: `🔄 ${newPlayer.name} replaces ${oldPlayer.name} at ${newPos}` });
   } else {
     // Just change position
@@ -1475,6 +1496,27 @@ export function changePitcher(state, newPitcher) {
   } else {
     newState.awayPitcher = newP;
   }
+
+  // Save old pitcher to player history so box score retains their stats
+  const historyKey = isHomePitching ? 'homePlayerHistory' : 'awayPlayerHistory';
+  const existing = newState[historyKey].find(p => p.name === oldPitcher.name);
+  if (existing) {
+    // Merge pitching stats into existing entry (player was already saved via pinch-hit etc.)
+    existing.gameStats = {
+      ...existing.gameStats,
+      pitches: oldPitcher.gameStats.pitches,
+      ip: oldPitcher.gameStats.ip,
+      // Preserve batting SO separate; pitcher SO for K display
+      pitcherSo: oldPitcher.gameStats.so,
+      pitcherBB: oldPitcher.gameStats.bb,
+      pitcherH: oldPitcher.gameStats.h,
+      pitcherR: oldPitcher.gameStats.r,
+      pitcherER: oldPitcher.gameStats.er,
+    };
+  } else {
+    newState[historyKey].push({ ...oldPitcher });
+  }
+
   newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound` });
 
   return newState;

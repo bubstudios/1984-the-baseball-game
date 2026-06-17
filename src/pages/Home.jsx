@@ -33,6 +33,7 @@ export default function Home() {
   const [useDH, setUseDH] = useState(false);
   const [gameWeather, setGameWeather] = useState(null);
   const [showSubs, setShowSubs] = useState(false);
+  const [subsTab, setSubsTab] = useState('pinchhit');
   const [hrTrigger, setHrTrigger] = useState(0);
   const [winTrigger, setWinTrigger] = useState(0);
   const [robotVoice, setRobotVoice] = useState(false);
@@ -294,7 +295,7 @@ export default function Home() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowSubs(true)}
+                onClick={() => { setSubsTab('pinchhit'); setShowSubs(true); }}
                 className="h-7 px-2 text-[10px] font-heading gap-1"
               >
                 <Users className="w-3 h-3" />
@@ -401,7 +402,7 @@ export default function Home() {
                       hitAndRun={gameState.hitAndRun}
                       pitcherPitches={pitcher.pitches}
                       pitcherNeedsReplacement={pitcherNeedsReplacement}
-                      onNeedReliever={() => setShowSubs(true)}
+                      onNeedReliever={() => { setSubsTab('pitching'); setShowSubs(true); }}
                     />
                   </div>
                 )}
@@ -446,11 +447,12 @@ export default function Home() {
           gameState={gameState}
           teams={TEAMS}
           userTeam={userTeam}
-          onClose={() => setShowSubs(false)}
+          onClose={() => { setShowSubs(false); setSubsTab('pinchhit'); }}
           onPinchHit={handlePinchHit}
           onPinchRun={handlePinchRun}
           onDefensiveSwitch={handleDefensiveSwitch}
           onChangePitcher={handlePitchingChange}
+          initialTab={subsTab}
         />
       )}
     </div>

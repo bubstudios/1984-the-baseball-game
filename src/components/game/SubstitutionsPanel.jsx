@@ -4,8 +4,8 @@ import { X, AlertTriangle, Users } from 'lucide-react';
 
 const ALL_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
 
-export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher }) {
-  const [tab, setTab] = useState('pinchhit');
+export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher, initialTab = 'pinchhit' }) {
+  const [tab, setTab] = useState(initialTab);
 
   // Determine which side the user's team is on
   const userIsHome = userTeam === gameState.homeTeam;
