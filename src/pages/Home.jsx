@@ -19,7 +19,7 @@ import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
 import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
-import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount } from '@/lib/achievements';
+import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements } from '@/lib/achievements';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 
 export default function Home() {
@@ -46,11 +46,13 @@ export default function Home() {
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
 
-  // Auto-show tutorial on first visit
+  // Auto-show tutorial on first visit & init stats
   useEffect(() => {
     if (!hasSeenTutorial()) {
       setShowTutorial(true);
     }
+    ensureStatsInit();
+    trackSessionStart();
   }, []);
 
   // Robot announcer — use stadium's lead announcer voice
@@ -117,6 +119,24 @@ export default function Home() {
     // Check achievements when game ends
     if (gameState.gameOver && !prevGameOver.current) {
       prevGameOver.current = true;
+      const userSide = userTeam === 'home' ? 'home' : 'away';
+      const opponentSide = userSide === 'home' ? 'away' : 'home';
+      const userWon = gameState.score[userSide] > gameState.score[opponentSide];
+      const userLineup = userSide === 'home' ? gameState.homeLineup : gameState.awayLineup;
+      const opponentLineup = userSide === 'home' ? gameState.awayLineup : gameState.homeLineup;
+
+      // Count hits
+      const userHits = [...userLineup, ...(userSide === 'home' ? (gameState.homePlayerHistory || []) : (gameState.awayPlayerHistory || []))]
+        .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
+      const oppHits = [...opponentLineup, ...(userSide === 'home' ? (gameState.awayPlayerHistory || []) : (gameState.homePlayerHistory || []))]
+        .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
+
+      // Track stats for milestone achievements
+      trackGameCompleted(userWon, userTeam, null, gameStadium, userHits, oppHits);
+      trackGameEndTime();
+      checkTeamAchievements();
+
+      // Check gameplay achievements
       const newOnes = checkGameAchievements(gameState, userTeam);
       if (newOnes.length > 0) {
         setNewAchievements(newOnes);
