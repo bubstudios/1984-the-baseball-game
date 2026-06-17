@@ -18,7 +18,9 @@ import SubstitutionsPanel from '@/components/game/SubstitutionsPanel';
 import Fireworks from '@/components/game/Fireworks';
 import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
-import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle } from 'lucide-react';
+import RetroLoading from '@/components/game/RetroLoading';
+import useRetroAudio from '@/hooks/useRetroAudio';
+import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -37,7 +39,9 @@ export default function Home() {
   const [hrTrigger, setHrTrigger] = useState(0);
   const [winTrigger, setWinTrigger] = useState(0);
   const [robotVoice, setRobotVoice] = useState(false);
+  const [retroAudio, setRetroAudio] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [loadingScreen, setLoadingScreen] = useState(true);
   const prevLastPlay = useRef(null);
 
   // Auto-show tutorial on first visit
@@ -52,6 +56,7 @@ export default function Home() {
     ? STADIUM_FLAVOR[TEAM_TO_FLAVOR[homeTeam]]?.announcers?.[0]
     : null;
   useRobotAnnouncer(gameState, robotVoice, announcerName);
+  useRetroAudio(gameState, retroAudio);
 
   const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather) => {
     setHomeTeam(home);
@@ -234,9 +239,21 @@ export default function Home() {
   }
 
   if (!gameState) {
+    if (loadingScreen) {
+      return <RetroLoading onComplete={() => setLoadingScreen(false)} />;
+    }
     return (
       <>
-        <div className="fixed top-4 right-4 z-40">
+        <div className="fixed top-4 right-4 z-40 flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setRetroAudio(!retroAudio)}
+            className={`h-8 w-8 p-0 rounded-full border-muted-foreground/30 hover:border-primary/50 ${retroAudio ? 'bg-primary/10 border-primary/50' : ''}`}
+            title={retroAudio ? 'Retro audio on' : 'Retro audio off'}
+          >
+            <Radio className="w-4 h-4" />
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -297,6 +314,15 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRetroAudio(!retroAudio)}
+              className={`h-7 px-2 text-[10px] font-heading gap-1 ${retroAudio ? 'border-primary/50 text-primary' : ''}`}
+              title={retroAudio ? 'Retro audio on' : 'Retro audio off'}
+            >
+              <Radio className="w-3 h-3" />
+            </Button>
             <Button
               variant="outline"
               size="sm"
