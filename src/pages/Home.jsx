@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TEAMS, PITCH_TYPES, SWING_TYPES } from '@/lib/gameData';
 import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk } from '@/lib/gameEngine';
 import { applyWeatherEffects } from '@/lib/weather';
@@ -344,17 +343,28 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Tab buttons */}
+      <div className="shrink-0 bg-card/50 border-b border-border">
+        <div className="grid grid-cols-3 gap-1 px-3 py-1">
+          <button
+            onClick={() => setTab('game')}
+            className={`font-heading text-xs rounded-md py-1.5 transition-all ${tab === 'game' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >Game</button>
+          <button
+            onClick={() => setTab('log')}
+            className={`font-heading text-xs rounded-md py-1.5 transition-all ${tab === 'log' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >Play Log</button>
+          <button
+            onClick={() => setTab('box')}
+            className={`font-heading text-xs rounded-md py-1.5 transition-all ${tab === 'box' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >Box Score</button>
+        </div>
+      </div>
+
       {/* Scrollable middle content */}
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
-        {/* Tabs */}
-        <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="w-full grid grid-cols-3 h-9 mb-2">
-            <TabsTrigger value="game" className="font-heading text-xs">Game</TabsTrigger>
-            <TabsTrigger value="log" className="font-heading text-xs">Play Log</TabsTrigger>
-            <TabsTrigger value="box" className="font-heading text-xs">Box Score</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="game" className="mt-0 space-y-2">
+        {tab === 'game' && (
+          <>
             {/* Scoreboard — compact */}
             <div className="bg-card border border-border rounded-lg px-2 py-1.5">
               <Scoreboard
@@ -407,22 +417,22 @@ export default function Home() {
                 </Button>
               </div>
             )}
-          </TabsContent>
+          </>
+        )}
 
-          <TabsContent value="log">
-            <div className="bg-card border border-border rounded-xl p-3">
-              <h3 className="font-heading text-sm font-bold text-foreground mb-2">Play-by-Play</h3>
-              <PlayLog log={gameState.log} />
-            </div>
-          </TabsContent>
+        {tab === 'log' && (
+          <div className="bg-card border border-border rounded-xl p-3">
+            <h3 className="font-heading text-sm font-bold text-foreground mb-2">Play-by-Play</h3>
+            <PlayLog log={gameState.log} />
+          </div>
+        )}
 
-          <TabsContent value="box">
-            <div className="bg-card border border-border rounded-xl p-3">
-              <h3 className="font-heading text-sm font-bold text-foreground mb-2">Box Score</h3>
-              <BoxScore state={gameState} />
-            </div>
-          </TabsContent>
-        </Tabs>
+        {tab === 'box' && (
+          <div className="bg-card border border-border rounded-xl p-3">
+            <h3 className="font-heading text-sm font-bold text-foreground mb-2">Box Score</h3>
+            <BoxScore state={gameState} />
+          </div>
+        )}
       </div>
 
       {/* Action Panel — pinned to bottom, always visible */}
