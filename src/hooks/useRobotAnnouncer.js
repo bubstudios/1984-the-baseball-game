@@ -64,15 +64,7 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
 
     const profile = ANNOUNCER_PROFILES[announcerName] || ANNOUNCER_PROFILES['default'];
     const voices = window.speechSynthesis.getVoices();
-    // Pick a distinctly male or female voice based on the announcer's sex flag
-    const isFemale = profile.sex === 'female';
-    const voice = isFemale
-      ? voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) ||
-        voices.find(v => v.lang.startsWith('en') && (v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Susan'))) ||
-        voices.find(v => v.lang.startsWith('en'))
-      : voices.find(v => v.name.includes('Daniel') || v.name.includes('Fred')) ||
-        voices.find(v => v.lang.startsWith('en') && v.name.includes('Male')) ||
-        voices.find(v => v.lang.startsWith('en'));
+    const voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
 
     // Split text into chunks by detecting player names via the roster set
     const words = cleanedText.split(' ');
@@ -125,8 +117,9 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
       utterance.volume = 0.85;
 
       if (chunk.slow) {
-        utterance.pitch = Math.min(2.0, profile.pitch + 0.20);
-        utterance.rate = Math.max(0.30, profile.rate * 0.40);
+        // Player names: much lower pitch + slow rate to contrast with commentary voice
+        utterance.pitch = Math.max(0.10, profile.pitch * 0.35);
+        utterance.rate = Math.max(0.30, profile.rate * 0.35);
       } else {
         utterance.pitch = profile.pitch;
         utterance.rate = profile.rate;
@@ -138,8 +131,8 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
         gain = audioCtx.createGain();
         analyser = audioCtx.createAnalyser();
         osc.type = 'sine';
-        osc.frequency.value = chunk.slow ? profile.modFreq * 1.15 : profile.modFreq;
-        gain.gain.value = chunk.slow ? profile.modGain * 0.9 : profile.modGain;
+        osc.frequency.value = chunk.slow ? profile.modFreq * 0.65 : profile.modFreq;
+        gain.gain.value = chunk.slow ? profile.modGain * 1.8 : profile.modGain;
         osc.connect(gain);
         gain.connect(analyser);
         analyser.connect(audioCtx.destination);
@@ -172,7 +165,6 @@ export default function useRobotAnnouncer(gameState, enabled, announcerName) {
   const audioCtxRef = useRef(null);
   const lastLogIdx = useRef(0);
   const promoCooldown = useRef(0);
-  const voiceToggle = useRef(false); // alternate between announcers in a pair
 
   const ensureCtx = () => {
     if (!audioCtxRef.current) {
@@ -216,24 +208,11 @@ export default function useRobotAnnouncer(gameState, enabled, announcerName) {
         const lastSpeakable = speakable[speakable.length - 1];
         const ctx = ensureCtx();
 
-        // Alternate between lead and color commentator for variety
-        // Get the full announcer pair from STADIUM_FLAVOR
-        voiceToggle.current = !voiceToggle.current;
-        const fallbackName = voiceToggle.current ? announcerName : (announcerName + 'Color');
-        // Map fallback to actual color commentators — pick the second in each known pair
-        const colorMap = {
-          'Harry CarayColor': 'Steve Stone', 'Ned MartinColor': 'Bob Montgomery',
-          'Ernie HarwellColor': 'Paul Carey', 'Jerry ColemanColor': 'Dave Campbell',
-          'Phil RizzutoColor': 'Bill White', 'Chuck ThompsonColor': 'Brooks Robinson',
-          'Ralph KinerColor': 'Tim McCarver',
-        };
-        const speakerName = voiceToggle.current ? announcerName : (colorMap[fallbackName] || announcerName);
-
         // Micro-pause for ball-in-play: 400ms of silence (retro processing delay)
         const needPause = HIT_PLAY_TYPES.includes(lastSpeakable.type);
         const delay = needPause ? 450 : 0;
 
-        speakRobot(lastSpeakable.text, ctx, speakerName, delay);
+        speakRobot(lastSpeakable.text, ctx, announcerName, delay);
       }
 
       // Blowout promo injection: occasionally sneak in a vintage promo
