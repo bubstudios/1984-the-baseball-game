@@ -303,43 +303,37 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1 shrink-0">
-          <Button
-            variant="ghost"
-            size="sm"
+        <div className="flex items-center gap-0.5 shrink-0">
+          <button
             onClick={() => { if (!retroAudio) unlockAudio(); setRetroAudio(!retroAudio); }}
-            className={`h-7 w-7 p-0 rounded-full ${retroAudio ? 'bg-primary/15 text-primary' : 'text-muted-foreground'}`}
-            title={retroAudio ? 'Retro audio on' : 'Retro audio off'}
+            className={`w-9 h-9 flex items-center justify-center rounded-full transition-colors ${retroAudio ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
+            aria-label={retroAudio ? 'Retro audio on' : 'Retro audio off'}
           >
-            <Radio className="w-3.5 h-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
+            <Radio className="w-4 h-4" />
+          </button>
+          <button
             onClick={() => setRobotVoice(!robotVoice)}
-            className={`h-7 w-7 p-0 rounded-full ${robotVoice ? 'text-primary' : 'text-muted-foreground'}`}
-            title={robotVoice ? 'Mute announcer' : 'Robot announcer'}
+            className={`w-9 h-9 flex items-center justify-center rounded-full transition-colors ${robotVoice ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
+            aria-label={robotVoice ? 'Mute announcer' : 'Robot announcer'}
           >
-            {robotVoice ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
-          </Button>
+            {robotVoice ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          </button>
           {!gameState.gameOver && (
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={() => { setSubsTab('pinchhit'); setShowSubs(true); }}
-              className="h-7 w-7 p-0 rounded-full text-muted-foreground"
+              className="w-9 h-9 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              aria-label="Substitutions"
             >
-              <Users className="w-3.5 h-3.5" />
-            </Button>
+              <Users className="w-4 h-4" />
+            </button>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={handleNewGame}
-            className="h-7 w-7 p-0 rounded-full text-muted-foreground"
+            className="w-9 h-9 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            aria-label="New Game"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-          </Button>
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
