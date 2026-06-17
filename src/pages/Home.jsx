@@ -348,10 +348,10 @@ export default function Home() {
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
         {/* Tabs */}
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="w-full grid grid-cols-3 h-7 mb-2">
-            <TabsTrigger value="game" className="font-heading text-[10px] py-0">Game</TabsTrigger>
-            <TabsTrigger value="log" className="font-heading text-[10px] py-0">Play Log</TabsTrigger>
-            <TabsTrigger value="box" className="font-heading text-[10px] py-0">Box Score</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-3 h-9 mb-2">
+            <TabsTrigger value="game" className="font-heading text-xs">Game</TabsTrigger>
+            <TabsTrigger value="log" className="font-heading text-xs">Play Log</TabsTrigger>
+            <TabsTrigger value="box" className="font-heading text-xs">Box Score</TabsTrigger>
           </TabsList>
 
           <TabsContent value="game" className="mt-0 space-y-2">
