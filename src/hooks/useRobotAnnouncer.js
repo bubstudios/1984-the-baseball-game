@@ -120,8 +120,8 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
       utterance.volume = 0.85;
 
       if (chunk.slow) {
-        utterance.pitch = Math.max(0.1, profile.pitch - 0.25);
-        utterance.rate = Math.max(0.25, profile.rate * 0.35);
+        utterance.pitch = Math.min(2.0, profile.pitch + 0.20);
+        utterance.rate = Math.max(0.30, profile.rate * 0.40);
       } else {
         utterance.pitch = profile.pitch;
         utterance.rate = profile.rate;
@@ -133,8 +133,8 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
         gain = audioCtx.createGain();
         analyser = audioCtx.createAnalyser();
         osc.type = 'sine';
-        osc.frequency.value = chunk.slow ? profile.modFreq * 0.7 : profile.modFreq;
-        gain.gain.value = chunk.slow ? profile.modGain * 1.4 : profile.modGain;
+        osc.frequency.value = chunk.slow ? profile.modFreq * 1.15 : profile.modFreq;
+        gain.gain.value = chunk.slow ? profile.modGain * 0.9 : profile.modGain;
         osc.connect(gain);
         gain.connect(analyser);
         analyser.connect(audioCtx.destination);
