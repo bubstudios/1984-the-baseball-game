@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TEAMS, PITCH_TYPES, SWING_TYPES } from '@/lib/gameData';
-import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher } from '@/lib/gameEngine';
+import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk } from '@/lib/gameEngine';
 import { applyWeatherEffects } from '@/lib/weather';
 import TeamSelect from '@/components/game/TeamSelect';
 import BallparkSelect from '@/components/game/BallparkSelect';
@@ -128,8 +128,10 @@ export default function Home() {
 
     const cpuSwing = cpuSelectSwing(updatedState);
     const pitchObj = PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"];
-    const newState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
-    setGameState(newState);
+    const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
+    // CPU may make substitutions after the at-bat
+    const afterSubs = cpuDecideSubstitutions(resultState);
+    setGameState(afterSubs);
     setProcessing(false);
   }, [gameState, processing]);
 
@@ -137,8 +139,10 @@ export default function Home() {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
     const cpuPitch = cpuSelectPitch(gameState);
-    const newState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
-    setGameState(newState);
+    const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
+    // CPU may make substitutions after the at-bat
+    const afterSubs = cpuDecideSubstitutions(resultState);
+    setGameState(afterSubs);
     setProcessing(false);
   }, [gameState, processing]);
 
@@ -154,6 +158,12 @@ export default function Home() {
   const handleHitAndRun = useCallback(() => {
     if (!gameState || gameState.gameOver || processing) return;
     const newState = setHitAndRun(gameState, !gameState.hitAndRun);
+    setGameState(newState);
+  }, [gameState, processing]);
+
+  const handleIntBB = useCallback(() => {
+    if (!gameState || gameState.gameOver || processing) return;
+    const newState = intentionalWalk(gameState);
     setGameState(newState);
   }, [gameState, processing]);
 
@@ -402,6 +412,7 @@ export default function Home() {
                       onSwing={handleSwing}
                       onSteal={handleSteal}
                       onHitAndRun={handleHitAndRun}
+                      onIntBB={handleIntBB}
                       disabled={processing}
                       bases={gameState.bases}
                       hitAndRun={gameState.hitAndRun}

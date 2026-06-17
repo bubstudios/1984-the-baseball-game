@@ -1528,4 +1528,105 @@ export function changePitcher(state, newPitcher) {
   return newState;
 }
 
+// --- INTENTIONAL WALK ---
+export function intentionalWalk(state) {
+  const newState = JSON.parse(JSON.stringify(state));
+  const batter = getCurrentBatter(newState);
+  const pitcher = getCurrentPitcher(newState);
+
+  batter.gameStats.bb++;
+  pitcher.gameStats.bb++;
+  const msg = `${batter.name} is intentionally walked!`;
+  newState.log.push({ type: 'walk', text: msg });
+  newState.lastPlay = { type: 'walk', text: msg };
+  handleWalk(newState, batter);
+  newState.balls = 0;
+  newState.strikes = 0;
+  advanceBatter(newState);
+  return newState;
+}
+
+// --- CPU SUBSTITUTION LOGIC ---
+export function cpuDecideSubstitutions(state) {
+  const newState = JSON.parse(JSON.stringify(state));
+  if (newState.gameOver) return newState;
+
+  const isAwayBatting = newState.halfInning === 'top';
+  const cpuBattingTeam = isAwayBatting ? 'away' : 'home';
+  const cpuPitchingTeam = isAwayBatting ? 'home' : 'away';
+  const cpuLineup = isAwayBatting ? newState.awayLineup : newState.homeLineup;
+  const cpuBullpen = isAwayBatting ? newState.homeBullpen : newState.awayBullpen;
+
+  // --- CPU Pitching Change ---
+  const cpuPitcher = isAwayBatting ? newState.homePitcher : newState.awayPitcher;
+  const pitchCount = cpuPitcher.gameStats.pitches || 0;
+  const bb = cpuPitcher.gameStats.bb || 0;
+  const runs = cpuPitcher.gameStats.r || 0;
+  const inning = newState.inning;
+
+  // Pull starter: 90+ pitches, or struggling badly (6+ BB, or gave up 5+ runs before 6th)
+  const fatiguePull = pitchCount >= 90;
+  const walksPull = bb >= 6;
+  const blowupPull = inning < 6 && runs >= 5;
+  // Late innings close game: pull starter if lead is tight (7th+)
+  const cpuScore = newState.score[cpuPitchingTeam];
+  const userScore = newState.score[cpuBattingTeam];
+  const trailing = cpuScore < userScore;
+  const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2;
+
+  // Recently gave up runs AND walked a batter this inning
+  const recentCollapse = (runs >= 2 && bb >= 2 && inning >= 5);
+
+  const shouldChangePitcher = (fatiguePull || walksPull || blowupPull || lateClose || recentCollapse) && cpuBullpen.length > 0;
+
+  if (shouldChangePitcher) {
+    // Pick best reliever by control rating
+    const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
+    const newPitcher = sorted[0];
+    const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
+
+    const oldPitcher = isAwayBatting ? newState.homePitcher : newState.awayPitcher;
+    if (isAwayBatting) {
+      newState.homePitcher = newP;
+    } else {
+      newState.awayPitcher = newP;
+    }
+
+    // Remove from bullpen, save old stats
+    const bpIdx = cpuBullpen.findIndex(p => p.name === newPitcher.name);
+    if (bpIdx >= 0) cpuBullpen.splice(bpIdx, 1);
+
+    const historyKey = isAwayBatting ? 'homePlayerHistory' : 'awayPlayerHistory';
+    if (!newState[historyKey].find(p => p.name === oldPitcher.name)) {
+      newState[historyKey].push({ ...oldPitcher });
+    }
+
+    const reason = fatiguePull ? 'tired arm' : walksPull ? 'lost command' : blowupPull ? 'rough outing' : 'high-leverage situation';
+    newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
+  }
+
+  // --- CPU Pinch Hit ---
+  // Only consider in 7th+ innings, trailing, with bench players available
+  const cpuBench = isAwayBatting ? TEAMS[newState.awayTeam]?.bench : TEAMS[newState.homeTeam]?.bench;
+  if (inning >= 7 && trailing && cpuBench && cpuBench.length > 0) {
+    const batterIdx = isAwayBatting ? newState.awayBatterIndex : newState.homeBatterIndex;
+    const batter = cpuLineup[batterIdx % cpuLineup.length];
+    const pitcherSpot = batter.assignedPos === 'SP' || batter.pos === 'SP';
+
+    // Always pinch-hit for pitcher in NL (no DH) if trailing late
+    if (pitcherSpot) {
+      const bestHitter = [...cpuBench].sort((a, b) => b.contact - a.contact)[0];
+      pinchHit(newState, { ...bestHitter });
+    } else if (batter.contact <= 3 && inning >= 8) {
+      // Pinch hit for weak contact hitters in 8th+
+      const bestHitter = [...cpuBench].sort((a, b) => b.contact - a.contact)[0];
+      if (bestHitter.contact > batter.contact + 1) {
+        pinchHit(newState, { ...bestHitter });
+      }
+    }
+  }
+
+  return newState;
+}
+
 export { getCurrentBatter, getCurrentPitcher, getBattingTeam };

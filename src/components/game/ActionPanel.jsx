@@ -8,6 +8,7 @@ export default function ActionPanel({
   onSwing,
   onSteal,
   onHitAndRun,
+  onIntBB,
   disabled,
   bases,
   hitAndRun,
@@ -49,6 +50,9 @@ export default function ActionPanel({
     }
 
     const pitches = pitcherPitches || ["Fastball", "Breaking Ball", "Changeup"];
+
+    // Determine if bases are open for IBB (1st base empty = can put batter on)
+    const canIBB = !bases || !bases[0];
 
     const pitchShortNames = {
       "Fastball": "FB",
@@ -149,6 +153,19 @@ export default function ActionPanel({
           .duration-700 { animation-duration: 0.7s; }
           .duration-300 { animation-duration: 0.3s; }
         `}</style>
+
+        {/* Intentional Walk */}
+        {canIBB && (
+          <div className="flex justify-center pt-1">
+            <button
+              disabled={disabled}
+              onClick={onIntBB}
+              className="h-8 px-4 rounded-lg border border-amber-500/30 hover:border-amber-400 hover:bg-amber-500/10 text-[10px] font-heading font-bold text-amber-400/80 transition-all disabled:opacity-40"
+            >
+              🖐 Int. Walk
+            </button>
+          </div>
+        )}
       </div>
     );
   }
