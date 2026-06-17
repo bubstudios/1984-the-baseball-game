@@ -1015,8 +1015,10 @@ function resolveSwing(state, swingType, pitch) {
 
         if (roll < dpChance) {
           if (hasForceAt3rd) {
-            // Bases loaded DP: runner on 3rd scores (unless it's the 3rd out)
+            // Double play with force at 3rd: runner on 2nd forced at 3rd (out)
+            // Runner on 1st advances to 2nd. If bases loaded, runner on 3rd scores.
             const runner3rd = state.bases[2];
+            const runner1st = state.bases[0];
             if (runner3rd && state.outs < 2) {
               runner3rd.gameStats.runs++;
               scoreRun(state);
@@ -1025,13 +1027,21 @@ function resolveSwing(state, swingType, pitch) {
               pitcher.gameStats.er++;
               state.log.push({ type: 'info', text: `${runner3rd.name} scores on the double play` });
             }
-            state.bases[2] = null;
-            state.bases[1] = null;
-            state.bases[0] = runner3rd || null;
-            const msg = `${batter.name} grounds into a double play — force at 3rd and 1st!`;
+            state.bases[2] = runner3rd || null; // runner3rd scored, so null; or was already null
+            state.bases[1] = runner1st || null; // runner from 1st advances to 2nd
+            state.bases[0] = null;               // batter out at 1st
+            const msg = runner3rd
+              ? `${batter.name} grounds into a double play — force at 3rd and 1st!`
+              : `${batter.name} grounds into a double play — force at 3rd and 1st!`;
             state.log.push({ type: 'doubleplay', text: msg });
             state.lastPlay = { type: 'doubleplay', text: msg };
           } else {
+            // Standard DP: runner on 1st forced at 2nd
+            // If runner on 2nd exists (runners on 1st & 2nd, force at 2nd variant), they move to 3rd
+            if (state.bases[1]) {
+              state.bases[2] = state.bases[2] || state.bases[1];
+              state.bases[1] = null;
+            }
             state.bases[0] = null;
             const msg = `${batter.name} grounds into a double play!`;
             state.log.push({ type: 'doubleplay', text: msg });

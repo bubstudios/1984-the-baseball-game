@@ -100,7 +100,7 @@ export default function Home() {
     if (lastPlay && lastPlay !== prevLastPlay.current) {
       prevLastPlay.current = lastPlay;
       const battingTeam = gameState.halfInning === 'bottom' ? 'home' : 'away';
-      if (lastPlay.type === 'homerun' && battingTeam === 'home') {
+      if (['homerun', 'peskyPole', 'basketHR', 'shortPorch'].includes(lastPlay.type) && battingTeam === 'home') {
         setHrTrigger(t => t + 1);
       }
     }
