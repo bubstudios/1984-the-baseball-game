@@ -9,7 +9,7 @@ import BallparkSelect from '@/components/game/BallparkSelect';
 import LineupManager from '@/components/game/LineupManager';
 import DiamondView from '@/components/game/DiamondView';
 import Scoreboard from '@/components/game/Scoreboard';
-import CommentaryBanner from '@/components/game/CommentaryBanner';
+import CommentaryBanner, { TEAM_TO_FLAVOR, STADIUM_FLAVOR } from '@/components/game/CommentaryBanner';
 import MatchupCard from '@/components/game/MatchupCard';
 import ActionPanel from '@/components/game/ActionPanel';
 import PlayLog from '@/components/game/PlayLog';
@@ -47,8 +47,11 @@ export default function Home() {
     }
   }, []);
 
-  // Robot announcer
-  useRobotAnnouncer(gameState, robotVoice);
+  // Robot announcer — use stadium's lead announcer voice
+  const announcerName = homeTeam && TEAM_TO_FLAVOR[homeTeam]
+    ? STADIUM_FLAVOR[TEAM_TO_FLAVOR[homeTeam]]?.announcers?.[0]
+    : null;
+  useRobotAnnouncer(gameState, robotVoice, announcerName);
 
   const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather) => {
     setHomeTeam(home);

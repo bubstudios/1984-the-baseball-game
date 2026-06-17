@@ -59,7 +59,7 @@ const NICKNAMES = {
 };
 
 // 1984 Announcers & Stadium Flavor — expanded with real stadium atmosphere
-const STADIUM_FLAVOR = {
+export const STADIUM_FLAVOR = {
   chicagoCubs: {
     announcers: ["Harry Caray", "Steve Stone"],
     stadium: "Wrigley Field",
@@ -317,7 +317,7 @@ const STADIUM_FLAVOR = {
 };
 
 // Team key to flavor key mapping (matches TEAMS keys from gameData.js)
-const TEAM_TO_FLAVOR = {
+export const TEAM_TO_FLAVOR = {
   cubs: "chicagoCubs",
   redsox: "bostonRedSox",
   tigers: "detroitTigers",

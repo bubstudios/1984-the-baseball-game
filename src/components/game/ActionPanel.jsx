@@ -59,13 +59,12 @@ export default function ActionPanel({
       "Split-Finger": "SF",
     };
 
-    // Spin direction per pitch type
-    const spinClass = (name) => {
-      if (animatingPitch === name) {
-        if (name === "Fastball" || name === "Changeup") return 'animate-spin-vertical';
-        return 'animate-spin-horizontal';
-      }
-      return '';
+    // Animation per pitch type
+    const animClass = (name) => {
+      if (animatingPitch !== name) return '';
+      if (name === "Knuckleball") return 'animate-knuckle-shake';
+      if (name === "Fastball" || name === "Changeup") return 'animate-spin-vertical';
+      return 'animate-spin-horizontal';
     };
 
     const spinDuration = (name) => {
@@ -101,7 +100,7 @@ export default function ActionPanel({
                     border shadow-lg
                     flex items-center justify-center
                     transition-all duration-200
-                    ${spinClass(pitchName)} ${spinDuration(pitchName)}
+                    ${animClass(pitchName)} ${pitchName !== "Knuckleball" ? spinDuration(pitchName) : ''}
                     ${activePitch === pitchName ? `scale-110 shadow-xl ${ringColor} ring-2` : ''}
                     ${animatingPitch === pitchName ? `scale-110 ${ringColor} ring-2` : ''}
                     ${disabled ? 'opacity-40' : 'hover:scale-105 cursor-pointer'}
@@ -130,8 +129,22 @@ export default function ActionPanel({
             50% { transform: rotateY(360deg); }
             100% { transform: rotateY(0deg); }
           }
+          @keyframes knuckleShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-4px, 3px) rotate(-8deg); }
+            20% { transform: translate(5px, -2px) rotate(6deg); }
+            30% { transform: translate(-6px, -4px) rotate(-5deg); }
+            40% { transform: translate(3px, 5px) rotate(9deg); }
+            50% { transform: translate(-5px, 1px) rotate(-7deg); }
+            60% { transform: translate(6px, -3px) rotate(4deg); }
+            70% { transform: translate(-3px, 4px) rotate(-10deg); }
+            80% { transform: translate(4px, -5px) rotate(8deg); }
+            90% { transform: translate(-2px, 2px) rotate(-3deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+          }
           .animate-spin-vertical { animation: spinVertical 0.5s ease-in-out; }
           .animate-spin-horizontal { animation: spinHorizontal 0.5s ease-in-out; }
+          .animate-knuckle-shake { animation: knuckleShake 0.6s ease-in-out; }
           .duration-350 { animation-duration: 0.35s; }
           .duration-700 { animation-duration: 0.7s; }
           .duration-300 { animation-duration: 0.3s; }
