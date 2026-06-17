@@ -161,6 +161,7 @@ const GROUNDOUT_LINES = [
   c("hit it right at him.", 'uncommon'),
   c("nothing doing there.", 'uncommon'),
   c("good fundamentals.", 'uncommon'),
+  c("ropes a one-hopper — snared on a hop.", 'rare'),
   c("a tailor-made double play ball — but only one out.", 'rare'),
 ];
 
@@ -205,7 +206,7 @@ const LINEOUT_LINES = [
   c("lines it right at"), c("smokes one toward"),
   c("rips a liner — snared by"), c("hard liner to"),
   c("laser shot right at"),
-  c("ropes one — snared on a hop by"), c("lines it — leaping grab by"),
+  c("lines it — leaping grab by"),
   c("smokes one — stabbed by"), c("ropes a liner — picked clean by"),
   c("line drive — caught by", 'uncommon'),
   c("rips one right on the screws — snared by", 'uncommon'),

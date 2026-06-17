@@ -323,9 +323,9 @@ export default function Home() {
   const away = TEAMS[awayTeam];
 
   return (
-    <div className="h-[100dvh] bg-background text-foreground flex flex-col overflow-hidden">
+    <div className="h-[100dvh] md:h-auto md:min-h-screen bg-background text-foreground flex flex-col overflow-hidden md:overflow-visible">
       {/* Compact Top Bar */}
-      <div className="shrink-0 border-b border-border bg-card/50 px-3 py-1.5 flex items-center justify-between">
+      <div className="shrink-0 border-b border-border bg-card/50 px-3 md:px-6 py-1.5 flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-sm shrink-0">⚾</span>
           <div className="min-w-0">
@@ -389,104 +389,138 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Scrollable middle content */}
-      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
-        {tab === 'game' && (
-          <>
-            {/* Scoreboard — compact */}
-            <div className="bg-card border border-border rounded-lg px-2 py-1.5">
-              <Scoreboard
-                innings={gameState.innings}
-                score={gameState.score}
-                currentInning={gameState.inning}
-                halfInning={gameState.halfInning}
-                awayAbbr={away?.abbr}
-                homeAbbr={home?.abbr}
-              />
-            </div>
-
-            {/* Diamond */}
-            <div className="flex justify-center">
-              <DiamondView
-                bases={gameState.bases}
-                lastPlay={gameState.lastPlay}
-                isDay={gameWeather?.isDay}
-              />
-            </div>
-
-            {/* Commentary */}
-            <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} stadium={gameStadium} homeTeamKey={homeTeam} />
-
-            {/* Matchup */}
-            <div className="bg-card border border-border rounded-lg px-2 py-1.5">
-              <MatchupCard
-                batter={batter}
-                adjustedBatter={situationalBatter}
-                pitcher={pitcher}
-                halfInning={gameState.halfInning}
-                homeTeam={homeTeam}
-                awayTeam={awayTeam}
-              />
-            </div>
-
-            {/* Game Over state */}
-            {gameState.gameOver && (
-              <div className="bg-card border border-primary/30 rounded-xl p-4 text-center space-y-3">
-                <Trophy className="w-8 h-8 text-primary mx-auto" />
-                <div>
-                  <h2 className="font-heading text-base font-bold text-foreground">Game Over!</h2>
-                  <p className="font-heading text-primary font-bold mt-1">
-                    {gameState.score.home > gameState.score.away ? home?.name : away?.name} Win!
-                  </p>
+      {/* Middle content — responsive: single column mobile, two-column desktop */}
+      <div className="flex-1 overflow-y-auto px-3 md:px-6 py-2 md:max-w-6xl md:mx-auto md:w-full">
+        {/* Desktop: Game tab gets two-column layout */}
+        <div className="md:flex md:gap-4">
+          {/* Left column: Diamond + Commentary + Matchup */}
+          <div className="md:flex-1 md:min-w-0 space-y-2">
+            {tab === 'game' && (
+              <>
+                {/* Scoreboard — compact */}
+                <div className="bg-card border border-border rounded-lg px-2 py-1.5">
+                  <Scoreboard
+                    innings={gameState.innings}
+                    score={gameState.score}
+                    currentInning={gameState.inning}
+                    halfInning={gameState.halfInning}
+                    awayAbbr={away?.abbr}
+                    homeAbbr={home?.abbr}
+                  />
                 </div>
-                <Button onClick={handleNewGame} className="gap-2">
-                  <RotateCcw className="w-4 h-4" />
-                  <span className="font-heading">New Game</span>
-                </Button>
-              </div>
-            )}
 
-            {/* Newly unlocked achievements */}
-            {newAchievements.length > 0 && (
-              <div className="bg-card border border-primary/40 rounded-xl p-3 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-primary" />
-                  <span className="font-heading text-xs text-foreground">Achievement{newAchievements.length > 1 ? 's' : ''} Unlocked!</span>
+                {/* Diamond */}
+                <div className="flex justify-center">
+                  <DiamondView
+                    bases={gameState.bases}
+                    lastPlay={gameState.lastPlay}
+                    isDay={gameWeather?.isDay}
+                  />
                 </div>
-                {newAchievements.map(id => {
-                  const ach = ACHIEVEMENTS.find(a => a.id === id);
-                  if (!ach) return null;
-                  return (
-                    <div key={id} className="flex items-center gap-2 text-[11px] text-foreground/80">
-                      <span>{ach.icon}</span>
-                      <span className="font-heading font-bold">{ach.name}</span>
-                      <span className="text-muted-foreground">— {ach.desc}</span>
+
+                {/* Commentary */}
+                <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} stadium={gameStadium} homeTeamKey={homeTeam} />
+
+                {/* Matchup */}
+                <div className="bg-card border border-border rounded-lg px-2 py-1.5">
+                  <MatchupCard
+                    batter={batter}
+                    adjustedBatter={situationalBatter}
+                    pitcher={pitcher}
+                    halfInning={gameState.halfInning}
+                    homeTeam={homeTeam}
+                    awayTeam={awayTeam}
+                  />
+                </div>
+
+                {/* Game Over state */}
+                {gameState.gameOver && (
+                  <div className="bg-card border border-primary/30 rounded-xl p-4 text-center space-y-3">
+                    <Trophy className="w-8 h-8 text-primary mx-auto" />
+                    <div>
+                      <h2 className="font-heading text-base font-bold text-foreground">Game Over!</h2>
+                      <p className="font-heading text-primary font-bold mt-1">
+                        {gameState.score.home > gameState.score.away ? home?.name : away?.name} Win!
+                      </p>
                     </div>
-                  );
-                })}
+                    <Button onClick={handleNewGame} className="gap-2">
+                      <RotateCcw className="w-4 h-4" />
+                      <span className="font-heading">New Game</span>
+                    </Button>
+                  </div>
+                )}
+
+                {/* Newly unlocked achievements */}
+                {newAchievements.length > 0 && (
+                  <div className="bg-card border border-primary/40 rounded-xl p-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Trophy className="w-4 h-4 text-primary" />
+                      <span className="font-heading text-xs text-foreground">Achievement{newAchievements.length > 1 ? 's' : ''} Unlocked!</span>
+                    </div>
+                    {newAchievements.map(id => {
+                      const ach = ACHIEVEMENTS.find(a => a.id === id);
+                      if (!ach) return null;
+                      return (
+                        <div key={id} className="flex items-center gap-2 text-[11px] text-foreground/80">
+                          <span>{ach.icon}</span>
+                          <span className="font-heading font-bold">{ach.name}</span>
+                          <span className="text-muted-foreground">— {ach.desc}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            )}
+
+            {tab === 'log' && (
+              <div className="bg-card border border-border rounded-xl p-3">
+                <h3 className="font-heading text-sm font-bold text-foreground mb-2">Play-by-Play</h3>
+                <PlayLog log={gameState.log} />
               </div>
             )}
-          </>
-        )}
 
-        {tab === 'log' && (
-          <div className="bg-card border border-border rounded-xl p-3">
-            <h3 className="font-heading text-sm font-bold text-foreground mb-2">Play-by-Play</h3>
-            <PlayLog log={gameState.log} />
+            {tab === 'box' && (
+              <div className="bg-card border border-border rounded-xl p-3">
+                <h3 className="font-heading text-sm font-bold text-foreground mb-2">Box Score</h3>
+                <BoxScore state={gameState} />
+              </div>
+            )}
           </div>
-        )}
 
-        {tab === 'box' && (
-          <div className="bg-card border border-border rounded-xl p-3">
-            <h3 className="font-heading text-sm font-bold text-foreground mb-2">Box Score</h3>
-            <BoxScore state={gameState} />
+          {/* Right column: Action Panel (desktop) */}
+          <div className="hidden md:block md:w-72 md:shrink-0">
+            {!gameState.gameOver && (
+              <div className="bg-card border border-border rounded-xl p-4 sticky top-4">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <span className="text-xs text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
+                  <span className="text-sm text-primary font-heading font-bold">
+                    {isUserBatting ? 'Batting' : 'Pitching'}
+                  </span>
+                </div>
+                <ActionPanel
+                  isPitching={isUserPitching}
+                  onPitch={handlePitch}
+                  onSwing={handleSwing}
+                  onSteal={handleSteal}
+                  onHitAndRun={handleHitAndRun}
+                  onIntBB={handleIntBB}
+                  disabled={processing}
+                  bases={gameState.bases}
+                  hitAndRun={gameState.hitAndRun}
+                  pitcherPitches={pitcher.pitches}
+                  pitcherNeedsReplacement={pitcherNeedsReplacement}
+                  onNeedReliever={() => { setSubsTab('pitching'); setShowSubs(true); }}
+                />
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Action Panel — pinned to bottom, always visible */}
+      {/* Action Panel — pinned to bottom on mobile only */}
       {!gameState.gameOver && (
-        <div className="shrink-0 border-t border-border bg-card/90 backdrop-blur px-3 py-2">
+        <div className="shrink-0 border-t border-border bg-card/90 backdrop-blur px-3 py-2 md:hidden">
           <div className="flex items-center justify-center gap-2 mb-1">
             <span className="text-[10px] text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
             <span className="text-[11px] text-primary font-heading font-bold">
