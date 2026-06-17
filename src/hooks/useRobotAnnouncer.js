@@ -84,6 +84,10 @@ export default function useRobotAnnouncer(gameState, enabled, announcerName) {
     if (!audioCtxRef.current) {
       audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
     }
+    // Resume if suspended (browsers suspend AudioContext until user gesture)
+    if (audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume();
+    }
     return audioCtxRef.current;
   };
 
@@ -97,13 +101,14 @@ export default function useRobotAnnouncer(gameState, enabled, announcerName) {
     const newEntries = log.slice(lastLogIdx.current);
 
     if (newEntries.length > 0) {
-      // Only read the LAST play entry (not info/ball/strike/foul noise)
+      // Read play outcomes AND pitch results (strike/ball)
       const speakable = newEntries.filter(e => {
         const t = e.type;
         return t === 'single' || t === 'double' || t === 'triple' || t === 'homerun' ||
                t === 'strikeout' || t === 'walk' || t === 'groundout' || t === 'flyout' ||
                t === 'doubleplay' || t === 'error' || t === 'fc' || t === 'sacfly' ||
-               t === 'steal' || t === 'caughtstealing' || t === 'popout' || t === 'lineout';
+               t === 'steal' || t === 'caughtstealing' || t === 'popout' || t === 'lineout' ||
+               t === 'strike' || t === 'ball' || t === 'foul';
       });
 
       if (speakable.length > 0) {
@@ -114,7 +119,7 @@ export default function useRobotAnnouncer(gameState, enabled, announcerName) {
 
       lastLogIdx.current = log.length;
     }
-  }, [gameState?.log, enabled]);
+  }, [gameState?.log, enabled, announcerName]);
 
   // Cleanup on unmount
   useEffect(() => {
