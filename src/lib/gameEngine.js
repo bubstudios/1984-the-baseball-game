@@ -391,12 +391,15 @@ function endHalfInning(state) {
 
   if (state.halfInning === 'top') {
     state.halfInning = 'bottom';
-    // 7th inning stretch
+    // 7th inning stretch with stadium-specific flavor
     if (state.inning === 7) {
       const homeFlavor = TEAMS[state.homeTeam];
-      const stretchSong = homeFlavor.league === 'NL' && homeFlavor.city === 'Chicago' 
-        ? `🎶 Harry Caray grabs the mic — "Take me out to the ballgame…" 🎶`
-        : `🎶 7th Inning Stretch at ${TEAMS[state.homeTeam]?.stadium || 'the ballpark'}! 🎶`;
+      const teamKey = state.homeTeam;
+      const stretchLines = {
+        cubs: `🎶 Harry Caray grabs the mic — "Take me out to the ballgame…" 🎶`,
+        redsox: `🎶 The crowd belts out 'Sweet Caroline' in the middle of the 8th — but first, the 7th inning stretch at Fenway! 🎶`,
+      };
+      const stretchSong = stretchLines[teamKey] || `🎶 7th Inning Stretch at ${homeFlavor?.stadium || 'the ballpark'}! 🎶`;
       state.log.push({ type: 'info', text: stretchSong });
     }
     if (state.inning >= 9 && state.score.home > state.score.away) {
