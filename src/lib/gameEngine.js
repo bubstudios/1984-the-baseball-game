@@ -327,23 +327,20 @@ function advanceRunners(state, bases, batter, isHit = false) {
   }
 
   // Trailing runner sneaks extra base when defense throws elsewhere
-  // On a single with runners advancing, the batter can take 2nd if the throw goes to 3rd/home
+  // On a single, the batter can take 2nd if the defense throws to 3rd (or home) trying to nail a runner
   if (isHit && bases === 1) {
     const runnerOn3rd = state.bases[2];
-    const runnerOn2nd = state.bases[1];
     const batterOn1st = state.bases[0];
-    const leadRunner = runnerOn3rd || runnerOn2nd;
-    // Only if batter is on 1st and there's a lead runner ahead of them
-    if (batterOn1st && leadRunner && batterOn1st.name === batter.name && leadRunner.name !== batter.name) {
+    // Only if batter is on 1st, 2nd is open, and there's a runner at 3rd drawing a throw
+    if (batterOn1st && batterOn1st.name === batter.name && runnerOn3rd && !state.bases[1]) {
       const ofArm = getOutfieldArm(defenders);
-      const leadSpeed = leadRunner.speed / 10;
+      const leadSpeed = runnerOn3rd.speed / 10;
       const batterSpeed = batter.speed / 10;
       const sneakChance = 0.08 + leadSpeed * 0.28 - (ofArm / 10) * 0.06 + batterSpeed * 0.10;
       if (Math.random() < Math.max(0.02, Math.min(sneakChance, 0.40))) {
         state.bases[1] = batter;
         state.bases[0] = null;
-        const dest = runnerOn3rd ? 'home' : 'third';
-        state.log.push({ type: 'info', text: `${batter.name.split(' ').pop()} takes second — defense threw to ${dest}!` });
+        state.log.push({ type: 'info', text: `${batter.name.split(' ').pop()} takes second — defense threw to third!` });
       }
     }
   }
