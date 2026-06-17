@@ -493,20 +493,25 @@ export function setHitAndRun(state, active) {
 
 // CPU decides whether to attempt a steal
 export function cpuDecideSteal(state) {
+  // Never steal with 2 outs or when it makes no strategic sense
+  if (state.outs >= 2) return -1;
+
   const defenders = getDefensivePlayers(state);
   const catcherArm = getCatcherArm(defenders);
   const pitcher = getCurrentPitcher(state);
   const armFactor = (catcherArm / 10) * 0.30; // strong arm deters steals
   const pitchFactor = (pitcher.pitchSpeed / 10) * 0.12; // fast delivery deters steals
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 2; i++) { // Only steal 2nd (i=0) or 3rd (i=1), never home (i=2)
     const runner = state.bases[i];
     if (!runner) continue;
-    // Can't steal into an occupied base (except stealing home — no next base to block)
-    if (i < 2 && state.bases[i + 1]) continue;
+    // Can't steal into an occupied base
+    if (state.bases[i + 1]) continue;
+    // Pitchers and catchers don't steal (slow)
+    if (runner.speed <= 2) continue;
     const speedFactor = runner.speed / 10;
-    // CPU steals ~10-35% of opportunities based on speed, reduced by catcher arm + pitch speed
-    if (Math.random() < Math.max(0.04, 0.10 + speedFactor * 0.30 - armFactor - pitchFactor)) {
+    // CPU steals ~8-25% of opportunities based on speed, reduced by catcher arm + pitch speed
+    if (Math.random() < Math.max(0.03, 0.06 + speedFactor * 0.22 - armFactor - pitchFactor)) {
       return i;
     }
   }
@@ -641,10 +646,10 @@ function resolveSwing(state, swingType, pitch) {
       return;
     }
 
-    // Bunt success: Contact (not bunting skill) + Speed for hit chance
-    const contactSkill = batter.contact / 10;
+    // Bunt success: Bunting skill + Speed for hit chance (sacrifice bunts are harder)
+    const buntingSkill = (batter.bunting || 3) / 10;
     const speedFactor = batter.speed / 10;
-    const buntSuccess = Math.random() < (0.25 + contactSkill * 0.28 + speedFactor * 0.17);
+    const buntSuccess = Math.random() < (0.12 + buntingSkill * 0.30 + speedFactor * 0.18);
 
     if (buntSuccess) {
       batter.gameStats.ab++;
@@ -1445,7 +1450,10 @@ function getSplitAdjustedPlayer(player, pitcherHand) {
 
   const splitHRRate = split.ab > 0 ? split.hr / split.ab : 0;
   const hrRatio = overallHRRate > 0 ? splitHRRate / overallHRRate : 1;
-  const adjustedPower = Math.max(1, Math.min(10, Math.round(player.power * hrRatio)));
+  // Cap hrRatio: tiny sample sizes can cause absurd inflation (e.g., 2 HR = 3.4x)
+  // Also floor to prevent zeroing out power for 0-HR splits
+  const cappedHRRatio = Math.max(0.4, Math.min(hrRatio, 1.8));
+  const adjustedPower = Math.max(1, Math.min(10, Math.round(player.power * cappedHRRatio)));
 
   return { ...player, contact: adjustedContact, power: adjustedPower };
 }
@@ -1603,18 +1611,32 @@ export function intentionalWalk(state) {
 }
 
 // --- CPU SUBSTITUTION LOGIC ---
-export function cpuDecideSubstitutions(state) {
+// userTeam: 'home' or 'away' — the user controls this team, CPU controls the other
+export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const newState = JSON.parse(JSON.stringify(state));
   if (newState.gameOver) return newState;
 
+  const cpuTeam = userTeam === 'home' ? 'away' : 'home';
   const isAwayBatting = newState.halfInning === 'top';
   const cpuBattingTeam = isAwayBatting ? 'away' : 'home';
-  const cpuPitchingTeam = isAwayBatting ? 'home' : 'away';
-  const cpuLineup = isAwayBatting ? newState.awayLineup : newState.homeLineup;
-  const cpuBullpen = isAwayBatting ? newState.homeBullpen : newState.awayBullpen;
 
-  // --- CPU Pitching Change ---
-  const cpuPitcher = isAwayBatting ? newState.homePitcher : newState.awayPitcher;
+  // Only make decisions for CPU's team — never touch the user's team
+  if (cpuBattingTeam !== cpuTeam) {
+    // CPU is fielding — only handle CPU pitching changes
+    const cpuPitchingTeam = isAwayBatting ? 'home' : 'away';
+    if (cpuPitchingTeam !== cpuTeam) return newState; // shouldn't happen, but safety
+  }
+
+  const cpuLineup = cpuTeam === 'away' ? newState.awayLineup : newState.homeLineup;
+  const cpuBullpen = cpuTeam === 'away' ? newState.homeBullpen : newState.awayBullpen;
+
+  const isCpuBatting = cpuBattingTeam === cpuTeam;
+  const cpuPitchingTeam = isAwayBatting ? 'home' : 'away';
+
+  // --- CPU Pitching Change (only if CPU is pitching) ---
+  if (isCpuBatting) return newState; // CPU is batting, no pitching change needed
+
+  const cpuPitcher = cpuPitchingTeam === 'home' ? newState.homePitcher : newState.awayPitcher;
   const pitchCount = cpuPitcher.gameStats.pitches || 0;
   const bb = cpuPitcher.gameStats.bb || 0;
   const runs = cpuPitcher.gameStats.r || 0;
@@ -1641,8 +1663,8 @@ export function cpuDecideSubstitutions(state) {
     const newPitcher = sorted[0];
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
 
-    const oldPitcher = isAwayBatting ? newState.homePitcher : newState.awayPitcher;
-    if (isAwayBatting) {
+    const oldPitcher = cpuPitchingTeam === 'home' ? newState.homePitcher : newState.awayPitcher;
+    if (cpuPitchingTeam === 'home') {
       newState.homePitcher = newP;
     } else {
       newState.awayPitcher = newP;
@@ -1652,7 +1674,7 @@ export function cpuDecideSubstitutions(state) {
     const bpIdx = cpuBullpen.findIndex(p => p.name === newPitcher.name);
     if (bpIdx >= 0) cpuBullpen.splice(bpIdx, 1);
 
-    const historyKey = isAwayBatting ? 'homePlayerHistory' : 'awayPlayerHistory';
+    const historyKey = cpuPitchingTeam === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
     if (!newState[historyKey].find(p => p.name === oldPitcher.name)) {
       newState[historyKey].push({ ...oldPitcher });
     }
@@ -1661,13 +1683,16 @@ export function cpuDecideSubstitutions(state) {
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
   }
 
-  // --- CPU Pinch Hit ---
+  // --- CPU Pinch Hit (only if CPU is batting) ---
+  if (!isCpuBatting) return newState;
+
   // Only consider in 7th+ innings, trailing, with bench players available
-  const cpuBench = isAwayBatting ? TEAMS[newState.awayTeam]?.bench : TEAMS[newState.homeTeam]?.bench;
+  const cpuBench = TEAMS[cpuTeam === 'away' ? newState.awayTeam : newState.homeTeam]?.bench;
   if (inning >= 7 && trailing && cpuBench && cpuBench.length > 0) {
-    const batterIdx = isAwayBatting ? newState.awayBatterIndex : newState.homeBatterIndex;
+    const batterIdx = cpuTeam === 'away' ? newState.awayBatterIndex : newState.homeBatterIndex;
     const batter = cpuLineup[batterIdx % cpuLineup.length];
     const pitcherSpot = batter.assignedPos === 'SP' || batter.pos === 'SP';
+    const cpuUseDH = (TEAMS[newState.homeTeam]?.league === 'AL') && (newState.homeTeam === (cpuTeam === 'home' ? newState.homeTeam : newState.awayTeam));
 
     // Always pinch-hit for pitcher in NL (no DH) if trailing late
     if (pitcherSpot) {

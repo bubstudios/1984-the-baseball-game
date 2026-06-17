@@ -51,6 +51,8 @@ export const TEAMS = {
       { name: "Willie Hernandez", pos: "CL", throws: "L", bats: "L", stamina: 4, pitchSpeed: 7, offSpeed: 10, control: 9, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Aurelio Lopez", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Doug Bair", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Bill Scherrer", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Sid Monge", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -100,6 +102,8 @@ export const TEAMS = {
       { name: "Goose Gossage", pos: "CL", throws: "R", bats: "R", stamina: 3, pitchSpeed: 9, offSpeed: 8, control: 7, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Craig Lefferts", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 7, control: 8, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Dave Dravecky", pos: "RP", throws: "L", bats: "L", stamina: 5, pitchSpeed: 5, offSpeed: 7, control: 8, contact: 4, power: 2, bunting: 5, speed: 3 },
+      { name: "Greg Booker", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Luis DeLeon", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 3, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -149,6 +153,8 @@ export const TEAMS = {
       { name: "Lee Smith", pos: "CL", throws: "R", bats: "R", stamina: 4, pitchSpeed: 10, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Tim Stoddard", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 5, control: 5, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "George Frazier", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Warren Brusstar", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Dickie Noles", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 4, contact: 3, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -198,6 +204,8 @@ export const TEAMS = {
       { name: "Jesse Orosco", pos: "CL", throws: "L", bats: "L", stamina: 4, pitchSpeed: 7, offSpeed: 8, control: 7, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Doug Sisk", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 7, control: 5, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Brent Gaff", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Tom Gorman", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Ed Lynch", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -249,6 +257,8 @@ export const TEAMS = {
       { name: "Bob Stanley", pos: "CL", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 8, control: 8, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Mark Clear", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 8, offSpeed: 5, control: 4, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "John Henry Johnson", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Steve Crawford", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Charlie Mitchell", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -300,6 +310,8 @@ export const TEAMS = {
       { name: "Dave Righetti", pos: "CL", throws: "L", bats: "L", stamina: 4, pitchSpeed: 9, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Jay Howell", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Mike Armstrong", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Bob Shirley", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Clay Christiansen", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -351,6 +363,8 @@ export const TEAMS = {
       { name: "Tippy Martinez", pos: "CL", throws: "L", bats: "L", stamina: 4, pitchSpeed: 7, offSpeed: 8, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Sammy Stewart", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Tom Underwood", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Bill Swaggerty", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "John Pacella", pos: "RP", throws: "R", bats: "R", stamina: 3, pitchSpeed: 7, offSpeed: 4, control: 4, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -400,6 +414,8 @@ export const TEAMS = {
       { name: "Ken Howell", pos: "CL", throws: "R", bats: "R", stamina: 4, pitchSpeed: 8, offSpeed: 6, control: 5, contact: 3, power: 1, bunting: 4, speed: 3 },
       { name: "Pat Zachry", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 4, power: 1, bunting: 4, speed: 2 },
       { name: "Carlos Diaz", pos: "RP", throws: "L", bats: "L", stamina: 3, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Tom Niedenfuer", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 7, control: 8, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Burt Hooton", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 7, control: 7, contact: 4, power: 2, bunting: 4, speed: 2 },
     ],
   },
 };

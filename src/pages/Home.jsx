@@ -135,10 +135,10 @@ export default function Home() {
     const pitchObj = PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"];
     const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
     // CPU may make substitutions after the at-bat
-    const afterSubs = cpuDecideSubstitutions(resultState);
+    const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
     setGameState(afterSubs);
     setProcessing(false);
-  }, [gameState, processing]);
+  }, [gameState, processing, userTeam]);
 
   const handleSwing = useCallback((swingIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
@@ -146,10 +146,10 @@ export default function Home() {
     const cpuPitch = cpuSelectPitch(gameState);
     const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
     // CPU may make substitutions after the at-bat
-    const afterSubs = cpuDecideSubstitutions(resultState);
+    const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
     setGameState(afterSubs);
     setProcessing(false);
-  }, [gameState, processing]);
+  }, [gameState, processing, userTeam]);
 
   const handleSteal = useCallback((baseIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
@@ -318,7 +318,7 @@ export default function Home() {
               variant="outline"
               size="sm"
               onClick={() => setRetroAudio(!retroAudio)}
-              className={`h-7 px-2 text-[10px] font-heading gap-1 ${retroAudio ? 'border-primary/50 text-primary' : ''}`}
+              className={`h-7 px-2 text-[10px] font-heading gap-1 ${retroAudio ? 'bg-primary/15 border-primary/70 text-primary shadow-sm shadow-primary/20' : ''}`}
               title={retroAudio ? 'Retro audio on' : 'Retro audio off'}
             >
               <Radio className="w-3 h-3" />

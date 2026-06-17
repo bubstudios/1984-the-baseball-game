@@ -93,20 +93,23 @@ export default function DiamondView({ bases, lastPlay, isDay = false }) {
         {bases[2] && <circle cx="40" cy="100" r="5" fill="hsl(38, 85%, 55%)" stroke="white" strokeWidth="1.5" className="animate-pulse" />}
       </svg>
 
-      {/* Runner names */}
+      {/* Runner names with speed */}
       {bases[0] && (
         <div className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] text-primary font-heading font-semibold bg-card/80 px-1.5 py-0.5 rounded">
           {bases[0].name.split(' ').pop()}
+          <span className="text-[8px] text-muted-foreground ml-0.5 align-top">SPD{bases[0].speed}</span>
         </div>
       )}
       {bases[1] && (
         <div className="absolute left-1/2 -translate-x-1/2 top-2 text-[10px] text-primary font-heading font-semibold bg-card/80 px-1.5 py-0.5 rounded">
           {bases[1].name.split(' ').pop()}
+          <span className="text-[8px] text-muted-foreground ml-0.5 align-top">SPD{bases[1].speed}</span>
         </div>
       )}
       {bases[2] && (
         <div className="absolute left-0 top-1/2 -translate-y-1/2 text-[10px] text-primary font-heading font-semibold bg-card/80 px-1.5 py-0.5 rounded">
           {bases[2].name.split(' ').pop()}
+          <span className="text-[8px] text-muted-foreground ml-0.5 align-top">SPD{bases[2].speed}</span>
         </div>
       )}
 
