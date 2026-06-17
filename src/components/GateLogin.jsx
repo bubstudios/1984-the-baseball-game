@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
 
 const GATE_KEY = 'game_auth_1984';
+const VALID_USER = 'MITCHELL';
+const VALID_PASS = 'ISAJERRY';
 
 export function isAuthenticated() {
   return sessionStorage.getItem(GATE_KEY) === 'true';
@@ -16,28 +17,19 @@ export default function GateLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
       setError('Enter both username and password');
       return;
     }
-    setLoading(true);
-    setError('');
-    try {
-      const res = await base44.functions.invoke('validateLogin', { username: username.trim(), password });
-      if (res.data?.success) {
-        sessionStorage.setItem(GATE_KEY, 'true');
-        window.location.reload();
-      } else {
-        setError(res.data?.error || 'Invalid credentials');
-      }
-    } catch (err) {
-      setError('Something went wrong. Try again.');
+    if (username.trim() === VALID_USER && password === VALID_PASS) {
+      sessionStorage.setItem(GATE_KEY, 'true');
+      window.location.reload();
+    } else {
+      setError('Invalid credentials');
     }
-    setLoading(false);
   };
 
   return (
@@ -88,10 +80,9 @@ export default function GateLogin() {
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-primary text-primary-foreground font-heading font-bold text-sm py-2.5 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+            className="w-full bg-primary text-primary-foreground font-heading font-bold text-sm py-2.5 rounded-lg hover:bg-primary/90 transition-colors"
           >
-            {loading ? 'Checking...' : 'Sign In'}
+            Sign In
           </button>
         </form>
 
