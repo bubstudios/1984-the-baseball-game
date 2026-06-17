@@ -1006,10 +1006,10 @@ function resolveSwing(state, swingType, pitch) {
 
       if (hasForceAt2nd && state.outs < 2) {
         const middleInfield = getMiddleInfieldRating(defenders);
-        const dpFactor = (middleInfield / 10) * 0.15;
+        const dpFactor = (middleInfield / 10) * 0.22;
         const runnerSpeed = (runnerOn1st ? runnerOn1st.speed : 5) / 10;
-        let dpChance = 0.20 + dpFactor - (runnerSpeed * 0.08);
-        dpChance = Math.max(0.06, Math.min(dpChance, 0.40));
+        let dpChance = 0.30 + dpFactor - (runnerSpeed * 0.04);
+        dpChance = Math.max(0.10, Math.min(dpChance, 0.45));
 
         const roll = Math.random();
 
@@ -1126,17 +1126,18 @@ function resolveSwing(state, swingType, pitch) {
       }
     }
 
-    // ---- SACRIFICE FLY (deep fly balls only, runner on 3rd) ----
-    // isDeepFly: fly ball to the outfield, not shallow or infield popup
-    const isDeepFly = isFlyBall && out.type !== 'popout' &&
-      (out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'));
-    if (isDeepFly && state.bases[2] && state.outs < 2) {
+    // ---- SACRIFICE FLY (any outfield fly ball, runner on 3rd) ----
+    const isMediumPlusFly = isFlyBall && out.type !== 'popout' &&
+      !out.text.includes('shallow ');
+    if (isMediumPlusFly && state.bases[2] && state.outs < 2) {
       const runner = state.bases[2];
       const runnerSpeed = runner.speed / 10;
       const ofArm = getOutfieldArm(defenders) / 10;
-      // Sac fly: speed helps, strong OF arm hurts, ~10-35% chance on deep flies
-      const sacFlyChance = 0.08 + runnerSpeed * 0.30 - ofArm * 0.10;
-      if (Math.random() < Math.max(0.04, Math.min(sacFlyChance, 0.35))) {
+      const isDeep = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall');
+      // Sac fly: higher chance on deep flies, speed helps, strong OF arm hurts
+      const depthBonus = isDeep ? 0.15 : 0;
+      const sacFlyChance = 0.15 + depthBonus + runnerSpeed * 0.35 - ofArm * 0.08;
+      if (Math.random() < Math.max(0.06, Math.min(sacFlyChance, 0.50))) {
         runner.gameStats.runs++;
         scoreRun(state);
         state.bases[2] = null;
@@ -1155,8 +1156,8 @@ function resolveSwing(state, swingType, pitch) {
       }
     }
 
-    // ---- TAG-UP on fly outs (deep flies only, 2nd→3rd) ----
-    if (isDeepFly) {
+    // ---- TAG-UP on fly outs (medium+ depth, 2nd→3rd) ----
+    if (isMediumPlusFly) {
       const runner = state.bases[1];
       if (runner && state.outs < 2) {
         const speedFactor = runner.speed / 10;
@@ -1320,6 +1321,8 @@ function handleHitAndRunCaught(state) {
       }
     }
   }
+  // Reset hit-and-run after resolution — prevents cascading attempts
+  state.hitAndRun = false;
 }
 
 // --- PROCESS AT BAT ---

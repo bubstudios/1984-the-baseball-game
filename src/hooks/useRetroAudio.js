@@ -136,14 +136,13 @@ function crowdReact(intensity = 'mild') {
 }
 
 // ─── Crack of the Bat ───────────────────────────────────────────────
-// Brief square-wave burst + noise spike
+// Brief square-wave burst + noise spike — bat hits ball
 
 export function playBatCrack() {
   ensureResumed();
   const ctx = getAudioCtx();
   const now = ctx.currentTime;
 
-  // Square wave — sharp attack, instant cutoff
   const osc = ctx.createOscillator();
   osc.type = 'square';
   osc.frequency.setValueAtTime(1200, now);
@@ -174,6 +173,100 @@ export function playBatCrack() {
   noiseGain.connect(ctx.destination);
   noise.start(now);
   noise.stop(now + 0.09);
+}
+
+// ─── Out Tone ────────────────────────────────────────────────────────
+// Low descending buzz for any out
+
+export function playOutTone() {
+  ensureResumed();
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(220, now);
+  osc.frequency.exponentialRampToValueAtTime(80, now + 0.25);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.15, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.30);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.32);
+}
+
+// ─── Steal Tone ──────────────────────────────────────────────────────
+// Two quick ascending chirps — "boop-beep"
+
+export function playStealTone() {
+  ensureResumed();
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+
+  [0, 0.12].forEach((delay, i) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.value = i === 0 ? 440 : 660;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.12, now + delay);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.10);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + delay);
+    osc.stop(now + delay + 0.11);
+  });
+}
+
+// ─── Walk / HBP Tone ─────────────────────────────────────────────────
+// Neutral flat buzz
+
+export function playWalkTone() {
+  ensureResumed();
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  osc.type = 'square';
+  osc.frequency.value = 300;
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.12, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.22);
+}
+
+// ─── Run Scored ──────────────────────────────────────────────────────
+// Four quick ascending tones (touching all 4 bases)
+
+export function playRunScore() {
+  ensureResumed();
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const freqs = [330, 440, 550, 660];
+
+  freqs.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.value = freq;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.10, now + i * 0.10);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.10 + 0.09);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + i * 0.10);
+    osc.stop(now + i * 0.10 + 0.10);
+  });
 }
 
 // ─── Disk Drive Clack ───────────────────────────────────────────────
@@ -250,36 +343,66 @@ export default function useRetroAudio(gameState, enabled) {
     const log = gameState.log;
     const newEntries = log.slice(prevLogIdx.current);
 
+    // Bat-on-ball: bat actually made contact with the ball
+    const batContactTypes = new Set([
+      'single', 'double', 'triple', 'homerun',
+      'groundout', 'flyout', 'doubleplay', 'popout', 'lineout',
+      'sacfly', 'fc', 'offMonster', 'ivyStuck',
+      'basketHR', 'shortPorch', 'peskyPole', 'triangle',
+    ]);
+
+    // Any kind of out
+    const outTypes = new Set([
+      'strikeout', 'groundout', 'flyout', 'doubleplay',
+      'popout', 'lineout', 'caughtstealing', 'fc',
+    ]);
+
     if (newEntries.length > 0) {
-      const playTypes = ['single', 'double', 'triple', 'homerun', 'strikeout', 'walk',
-        'groundout', 'flyout', 'doubleplay', 'error', 'sacfly',
-        'steal', 'caughtstealing', 'popout', 'lineout', 'fc', 'offMonster',
-        'ivyStuck', 'basketHR', 'shortPorch', 'peskyPole', 'triangle'];
-
       newEntries.forEach(entry => {
-        if (playTypes.includes(entry.type)) {
-          // Bat crack for all ball-in-play events
-          playBatCrack();
+        const t = entry.type;
 
-          // Crowd reaction based on play type
-          if (entry.type === 'homerun' || entry.type === 'basketHR' || entry.type === 'shortPorch' || entry.type === 'peskyPole') {
-            crowdReact('hr');
-          } else if (entry.type === 'strikeout' || entry.type === 'doubleplay') {
-            crowdReact('strikeout');
-          } else if (entry.type === 'error' || entry.type === 'steal') {
-            crowdReact('error');
-          } else if (entry.type === 'single' || entry.type === 'double' || entry.type === 'triple' || entry.type === 'offMonster' || entry.type === 'ivyStuck' || entry.type === 'triangle') {
-            crowdReact('mild');
-          } else if (entry.type === 'walk') {
-            crowdReact('mild');
+        // ── Sound effects ──
+        if (t === 'foul') {
+          playBatCrack(); // foul = bat hit ball
+        } else if (batContactTypes.has(t)) {
+          playBatCrack();
+          if (outTypes.has(t)) {
+            // Delay out tone slightly so both are heard
+            setTimeout(playOutTone, 180);
           }
+        } else if (t === 'strikeout') {
+          playOutTone();
+        } else if (t === 'steal') {
+          playStealTone();
+        } else if (t === 'walk') {
+          playWalkTone();
+        } else if (t === 'caughtstealing') {
+          playOutTone();
         }
 
-        // Check for walk-off in game over text
+        // Check for runs scored in the commentary text
+        if (entry.text && /\d+\s*(run|RBI)/i.test(entry.text) && batContactTypes.has(t)) {
+          setTimeout(playRunScore, 120);
+        }
+
+        // ── Crowd reactions ──
+        if (t === 'homerun' || t === 'basketHR' || t === 'shortPorch' || t === 'peskyPole') {
+          crowdReact('hr');
+        } else if (t === 'strikeout' || t === 'doubleplay') {
+          crowdReact('strikeout');
+        } else if (t === 'error' || t === 'steal') {
+          crowdReact('error');
+        } else if (t === 'single' || t === 'double' || t === 'triple' || t === 'offMonster' || t === 'ivyStuck' || t === 'triangle') {
+          crowdReact('mild');
+        } else if (t === 'walk') {
+          crowdReact('mild');
+        }
+
+        // Walk-off and game over
         if (entry.text && entry.text.includes('Walk-off')) {
           crowdReact('walkoff');
         }
-        if (entry.text && entry.text.includes('Game Over') && entry.type === 'info') {
+        if (entry.text && entry.text.includes('Game Over') && t === 'info') {
           crowdReact(entry.text.includes('win') ? 'walkoff' : 'hr');
         }
       });
