@@ -1012,7 +1012,7 @@ function resolveSwing(state, swingType, pitch) {
     }
 
     // ---- ERROR CHECK on ground balls ----
-    const isGrounder = !isFlyBall && out.pos !== 'SP';
+    const isGrounder = !isFlyBall;
     if (isGrounder) {
       const fielder = defenders[out.pos];
       if (fielder) {
@@ -1856,11 +1856,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   // STRICT GUARD: only act if CPU team is the one pitching
   if (cpuPitchingSide !== cpuSide) return newState;
 
+  const cpuBullpen = cpuSide === 'away' ? newState.awayBullpen : newState.homeBullpen;
+
   // Auto-replace CPU pitcher if they were pinch-hit for (DH off only)
   const cpuLineupField = cpuSide === 'away' ? newState.awayLineup : newState.homeLineup;
   const cpuPitcherField = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
-  const cpuUseDH = newState.homeTeam === (cpuSide === 'home' ? newState.homeTeam : newState.awayTeam)
-    ? false : false; // DH flag is per-game, not per-team — skip for now
   const pitcherInLineup = cpuLineupField.some(p => p.name === cpuPitcherField.name);
   if (!pitcherInLineup && cpuBullpen.length > 0) {
     const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
@@ -1879,7 +1879,6 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     return newState;
   }
 
-  const cpuBullpen = cpuSide === 'away' ? newState.awayBullpen : newState.homeBullpen;
   const cpuPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
   const pitchCount = cpuPitcher.gameStats.pitches || 0;
   const bb = cpuPitcher.gameStats.bb || 0;

@@ -155,31 +155,37 @@ export default function Home() {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
 
-    // CPU may attempt steal when user is pitching
-    let updatedState = gameState;
-    const cpuSteal = cpuDecideSteal(gameState);
-    if (cpuSteal >= 0) {
-      updatedState = { ...gameState, pendingSteal: cpuSteal };
-    }
+    try {
+      // CPU may attempt steal when user is pitching
+      let updatedState = gameState;
+      const cpuSteal = cpuDecideSteal(gameState);
+      if (cpuSteal >= 0) {
+        updatedState = { ...gameState, pendingSteal: cpuSteal };
+      }
 
-    const cpuSwing = cpuSelectSwing(updatedState);
-    const pitchObj = PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"];
-    const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
-    // CPU may make substitutions after the at-bat
-    const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
-    setGameState(afterSubs);
-    setProcessing(false);
+      const cpuSwing = cpuSelectSwing(updatedState);
+      const pitchObj = PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"];
+      const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
+      // CPU may make substitutions after the at-bat
+      const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
+      setGameState(afterSubs);
+    } finally {
+      setProcessing(false);
+    }
   }, [gameState, processing, userTeam]);
 
   const handleSwing = useCallback((swingIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
-    const cpuPitch = cpuSelectPitch(gameState);
-    const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
-    // CPU may make substitutions after the at-bat
-    const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
-    setGameState(afterSubs);
-    setProcessing(false);
+    try {
+      const cpuPitch = cpuSelectPitch(gameState);
+      const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
+      // CPU may make substitutions after the at-bat
+      const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
+      setGameState(afterSubs);
+    } finally {
+      setProcessing(false);
+    }
   }, [gameState, processing, userTeam]);
 
   const handleSteal = useCallback((baseIndex) => {
