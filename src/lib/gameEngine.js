@@ -672,9 +672,18 @@ function resolveSwing(state, swingType, pitch) {
       // Pitcher sacrifice bunt: always succeeds, advance runner, batter out
       const r1 = state.bases[0];
       if (r1) {
-        if (state.bases[1]) state.bases[2] = state.bases[1];
-        state.bases[1] = r1;
-        state.bases[0] = null;
+        // Runner on 3rd scores if bases loaded
+        if (state.bases[2]) {
+          state.bases[2].gameStats.runs++;
+          scoreRun(state);
+          batter.gameStats.rbi++;
+          pitcher.gameStats.r++;
+          pitcher.gameStats.er++;
+          state.log.push({ type: 'info', text: `${state.bases[2].name.split(' ').pop()} scores on the sacrifice` });
+        }
+        state.bases[2] = state.bases[1] || null; // runner from 2nd to 3rd (or empty)
+        state.bases[1] = r1;                      // runner from 1st to 2nd
+        state.bases[0] = null;                    // batter out at 1st
       }
       batter.gameStats.ab++;
       pitcher.gameStats.so++;
@@ -1078,7 +1087,7 @@ function resolveSwing(state, swingType, pitch) {
               pitcher.gameStats.er++;
               state.log.push({ type: 'info', text: `${runner3rd.name} scores on the double play` });
             }
-            state.bases[2] = runner3rd || null; // runner3rd scored, so null; or was already null
+            state.bases[2] = null;            // runner scored + forced out at 3rd — base empty
             state.bases[1] = runner1st || null; // runner from 1st advances to 2nd
             state.bases[0] = null;               // batter out at 1st
             const msg = runner3rd
@@ -1709,6 +1718,14 @@ export function changePitcher(state, newPitcher) {
       assignedPos: 'SP',
       gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
     };
+  } else {
+    // Pitcher was pinch-hit for — add new pitcher to the lineup
+    lineup.push({
+      ...newPitcher,
+      order: lineup.length + 1,
+      assignedPos: 'SP',
+      gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+    });
   }
 
   // Save old pitcher to player history so box score retains their stats

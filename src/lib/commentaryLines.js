@@ -154,14 +154,14 @@ const GROUNDOUT_LINES = [
   c("grounds out to short."), c("grounds out to second."),
   c("grounds out to third."), c("grounds out to the pitcher."),
   c("grounds out to first."),
-  c("Ground ball to short."), c("Routine groundout."),
-  c("Retired on a ground ball."),
-  c("Easy hopper."), c("Around the horn."),
-  c("Two hops and a throw."), c("Routine as can be."),
-  c("Hit it right at him.", 'uncommon'),
-  c("Nothing doing there.", 'uncommon'),
-  c("Good fundamentals.", 'uncommon'),
-  c("A tailor-made double play ball — but only one out.", 'rare'),
+  c("ground ball to short."), c("routine groundout."),
+  c("retired on a ground ball."),
+  c("easy hopper."), c("around the horn for the out."),
+  c("two hops and a throw."), c("routine as can be."),
+  c("hit it right at him.", 'uncommon'),
+  c("nothing doing there.", 'uncommon'),
+  c("good fundamentals.", 'uncommon'),
+  c("a tailor-made double play ball — but only one out.", 'rare'),
 ];
 
 // =========== FLYOUT ===========
@@ -169,7 +169,7 @@ const FLYOUT_LINES = [
   c("flies out to"), c("fly ball to left."), c("routine flyout."),
   c("easy play."),
   c("can of corn."), c("camping under it."),
-  c("routine chance."), c("basket catch."),
+  c("routine chance."),
   c("easy chance for the outfielder.", 'uncommon'),
   c("he barely had to move.", 'uncommon'),
   c("routine play.", 'uncommon'),
@@ -208,8 +208,8 @@ const LINEOUT_LINES = [
   c("ropes one — snared on a hop by"), c("lines it — leaping grab by"),
   c("smokes one — stabbed by"), c("ropes a liner — picked clean by"),
   c("line drive — caught by", 'uncommon'),
-  c("That's hit right on the screws but right at him.", 'uncommon'),
-  c("Robbed! That was smoked.", 'rare'),
+  c("rips one right on the screws — snared by", 'uncommon'),
+  c("robbed! That was smoked by", 'rare'),
 ];
 
 // =========== POPOUT ===========
