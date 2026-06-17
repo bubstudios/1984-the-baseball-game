@@ -620,7 +620,7 @@ function resolveSwing(state, swingType, pitch) {
         return;
       }
       state.log.push({ type: 'strike', text: `Strike ${state.strikes} — ${batter.name} takes a ${pitch.location} ${pitch.pitchType}` });
-      state.lastPlay = { type: 'strike', text: `Strike ${state.strikes} — ${batter.name} takes it` };
+      state.lastPlay = { type: 'strike', text: `Strike ${state.strikes} — ${batter.name} watches it` };
       return;
     } else {
       state.balls++;
@@ -664,12 +664,12 @@ function resolveSwing(state, swingType, pitch) {
     }
 
     // Pitchers always sacrifice when there's a runner to advance (slow, always bunting to move runner)
-    const isPitcherHitting = batter.pos === 'SP' || batter.assignedPos === 'SP' || batter.speed <= 2;
+    const isPitcherHitting = batter.pos === 'SP' || batter.assignedPos === 'SP';
     const hasRunnerOn1st = !!state.bases[0];
     const canSacrifice = state.outs < 2 && hasRunnerOn1st;
 
-    if (isPitcherHitting && canSacrifice && !pitch.isStrike) {
-      // Pitcher sacrifice bunt: always succeeds on a strike pitch, advance runner, batter out
+    if (isPitcherHitting && canSacrifice) {
+      // Pitcher sacrifice bunt: always succeeds, advance runner, batter out
       const r1 = state.bases[0];
       if (r1) {
         if (state.bases[1]) state.bases[2] = state.bases[1];
@@ -689,10 +689,12 @@ function resolveSwing(state, swingType, pitch) {
       return;
     }
 
-    // Bunt success: Bunting skill + Speed for hit chance (sacrifice bunts are harder)
+    // Bunt success: Bunting skill + Speed for hit chance
+    // Pitchers: nearly impossible to leg out a bunt hit
     const buntingSkill = (batter.bunting || 3) / 10;
     const speedFactor = batter.speed / 10;
-    const buntSuccess = Math.random() < (0.12 + buntingSkill * 0.30 + speedFactor * 0.18);
+    const pitcherPenalty = isPitcherHitting ? 0.02 : 1.0; // pitchers have 2% normal chance
+    const buntSuccess = Math.random() < ((0.12 + buntingSkill * 0.30 + speedFactor * 0.18) * pitcherPenalty);
 
     if (buntSuccess) {
       batter.gameStats.ab++;
@@ -722,8 +724,8 @@ function resolveSwing(state, swingType, pitch) {
         recordOut(state);
         return;
       }
-      state.log.push({ type: 'foul', text: `${batter.name} fouls off the bunt — Strike ${state.strikes}` });
-      state.lastPlay = { type: 'foul', text: `Foul bunt — Strike ${state.strikes}` };
+      state.log.push({ type: 'foul', text: `${batter.name} fouls off the bunt — strike ${state.strikes}` });
+      state.lastPlay = { type: 'foul', text: `Foul bunt — strike ${state.strikes}` };
       return;
     }
   }
@@ -777,7 +779,7 @@ function resolveSwing(state, swingType, pitch) {
       }
       return;
     }
-    state.log.push({ type: 'strike', text: `Swing and a miss! Strike ${state.strikes}` });
+    state.log.push({ type: 'strike', text: `Swing and a miss — strike ${state.strikes}` });
     state.lastPlay = { type: 'strike', text: `Swinging strike ${state.strikes}` };
     return;
   }
@@ -797,7 +799,7 @@ function resolveSwing(state, swingType, pitch) {
   // Foul ball
   if (Math.random() < 0.25) {
     if (state.strikes < 2) state.strikes++;
-    state.log.push({ type: 'foul', text: `${batter.name} fouls it off — ${state.balls}-${state.strikes}` });
+    state.log.push({ type: 'foul', text: `${batter.name} fouls it off — ${state.balls} and ${state.strikes}` });
     state.lastPlay = { type: 'foul', text: `Foul ball` };
     batter.gameStats.ab--;
     return;
@@ -1692,6 +1694,11 @@ export function changePitcher(state, newPitcher) {
     newState.awayPitcher = newP;
   }
 
+  // Remove reliever from the bullpen
+  const bullpen = isHomePitching ? newState.homeBullpen : newState.awayBullpen;
+  const bpIdx = bullpen.findIndex(p => p.name === newPitcher.name);
+  if (bpIdx >= 0) bullpen.splice(bpIdx, 1);
+
   // Swap the new pitcher into the fielding lineup (replace old pitcher's batting slot)
   const lineup = isHomePitching ? newState.homeLineup : newState.awayLineup;
   const oldPitcherSlot = lineup.findIndex(p => p.name === oldPitcher.name);
@@ -1708,12 +1715,10 @@ export function changePitcher(state, newPitcher) {
   const historyKey = isHomePitching ? 'homePlayerHistory' : 'awayPlayerHistory';
   const existing = newState[historyKey].find(p => p.name === oldPitcher.name);
   if (existing) {
-    // Merge pitching stats into existing entry (player was already saved via pinch-hit etc.)
     existing.gameStats = {
       ...existing.gameStats,
       pitches: oldPitcher.gameStats.pitches,
       ip: oldPitcher.gameStats.ip,
-      // Preserve batting SO separate; pitcher SO for K display
       pitcherSo: oldPitcher.gameStats.so,
       pitcherBB: oldPitcher.gameStats.bb,
       pitcherH: oldPitcher.gameStats.h,

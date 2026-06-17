@@ -82,7 +82,7 @@ const SINGLE_LINES = [
   c("Just what the doctor ordered."), c("Clean single."),
   c("Solid piece of hitting.", 'uncommon'),
   c("Hit it where they weren't.", 'uncommon'),
-  c("Stayed with the pitch.", 'uncommon'),
+  c("stayed with the pitch — base hit.", 'uncommon'),
   c("Nice stroke.", 'uncommon'),
   c("Poked it through the infield.", 'uncommon'),
   c("That's a frozen rope through the hole.", 'rare'),
@@ -166,13 +166,13 @@ const GROUNDOUT_LINES = [
 
 // =========== FLYOUT ===========
 const FLYOUT_LINES = [
-  c("flies out to"), c("Fly ball to left."), c("Routine flyout."),
-  c("Easy play."),
-  c("Can of corn."), c("Camping under it."),
-  c("Routine chance."), c("Basket catch."),
-  c("Easy chance for the outfielder.", 'uncommon'),
-  c("He barely had to move.", 'uncommon'),
-  c("Routine play.", 'uncommon'),
+  c("flies out to"), c("fly ball to left."), c("routine flyout."),
+  c("easy play."),
+  c("can of corn."), c("camping under it."),
+  c("routine chance."), c("basket catch."),
+  c("easy chance for the outfielder.", 'uncommon'),
+  c("he barely had to move.", 'uncommon'),
+  c("routine play.", 'uncommon'),
 ];
 
 // =========== DOUBLE PLAY ===========
@@ -203,11 +203,11 @@ const END_INNING_LINES = [
 // =========== LINE DRIVE / LINEOUT ===========
 const LINEOUT_LINES = [
   c("lines it right at"), c("smokes one toward"),
-  c("rips a liner —"), c("Hard liner to"),
+  c("rips a liner — snared by"), c("hard liner to"),
   c("laser shot right at"),
-  c("Snared on a hop!"), c("leaps and grabs it!"),
-  c("stabbed and caught!"), c("picks it clean!"),
-  c("Line drive — caught!", 'uncommon'),
+  c("ropes one — snared on a hop by"), c("lines it — leaping grab by"),
+  c("smokes one — stabbed by"), c("ropes a liner — picked clean by"),
+  c("line drive — caught by", 'uncommon'),
   c("That's hit right on the screws but right at him.", 'uncommon'),
   c("Robbed! That was smoked.", 'rare'),
 ];
@@ -227,13 +227,13 @@ const STRIKEOUT_SWINGING_LINES = [
   c("goes down swinging!"), c("can't catch up — strike three!"),
   c("whiffs on strike three!"), c("fans on a wicked"),
   c("swings right through it — out!"),
-  c("chases one out of the zone — Struck out!"),
-  c("swings and misses — Struck out!"),
+  c("chases one out of the zone — struck out!"),
+  c("swings and misses — struck out!"),
   c("flails and misses — strike three!"),
   c("flails at one in the dirt — strikeout!"),
   c("couldn't lay off the high heat.", 'uncommon'),
   c("swings right over the top of it.", 'uncommon'),
-  c("A big cut — and a big miss.", 'rare'),
+  c("a big cut — and a big miss.", 'rare'),
 ];
 
 // =========== CALLED STRIKEOUT (name prefixed) ===========
