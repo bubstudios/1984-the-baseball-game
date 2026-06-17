@@ -24,24 +24,25 @@ Object.values(TEAMS).forEach(team => {
   team.bench?.forEach(p => PLAYER_NAMES.add(p.name));
 });
 
-// Voice profiles for each announcer — different pitch, rate, and modulation
+// Voice profiles — each with a sex flag so broadcast pairs sound like two different people
+// Lead announcers use 'male', color commentators use 'female' (or solo if only one announcer)
 const ANNOUNCER_PROFILES = {
-  'Harry Caray':    { pitch: 0.75, rate: 0.85, modFreq: 55,  modGain: 0.20 },
-  'Steve Stone':    { pitch: 0.55, rate: 1.00, modFreq: 95,  modGain: 0.12 },
-  'Ned Martin':     { pitch: 0.50, rate: 0.95, modFreq: 80,  modGain: 0.14 },
-  'Bob Montgomery': { pitch: 0.40, rate: 1.00, modFreq: 75,  modGain: 0.16 },
-  'Ernie Harwell':  { pitch: 0.55, rate: 0.90, modFreq: 85,  modGain: 0.14 },
-  'Paul Carey':     { pitch: 0.50, rate: 1.00, modFreq: 90,  modGain: 0.13 },
-  'Jerry Coleman':  { pitch: 0.60, rate: 1.10, modFreq: 100, modGain: 0.11 },
-  'Dave Campbell':  { pitch: 0.50, rate: 1.00, modFreq: 80,  modGain: 0.14 },
-  'Phil Rizzuto':   { pitch: 0.65, rate: 1.15, modFreq: 110, modGain: 0.10 },
-  'Bill White':     { pitch: 0.35, rate: 0.95, modFreq: 70,  modGain: 0.18 },
-  'Chuck Thompson': { pitch: 0.50, rate: 0.95, modFreq: 80,  modGain: 0.14 },
-  'Brooks Robinson':{ pitch: 0.45, rate: 0.90, modFreq: 75,  modGain: 0.15 },
-  'Vin Scully':     { pitch: 0.50, rate: 0.88, modFreq: 70,  modGain: 0.13 },
-  'Ralph Kiner':    { pitch: 0.50, rate: 1.00, modFreq: 85,  modGain: 0.14 },
-  'Tim McCarver':   { pitch: 0.55, rate: 1.05, modFreq: 90,  modGain: 0.12 },
-  'default':        { pitch: 0.50, rate: 1.05, modFreq: 80,  modGain: 0.15 },
+  'Harry Caray':    { pitch: 0.78, rate: 0.85, modFreq: 55,  modGain: 0.22, sex: 'male' },
+  'Steve Stone':    { pitch: 1.30, rate: 0.95, modFreq: 105, modGain: 0.08, sex: 'female' },
+  'Ned Martin':     { pitch: 0.52, rate: 0.92, modFreq: 78,  modGain: 0.16, sex: 'male' },
+  'Bob Montgomery': { pitch: 1.25, rate: 0.98, modFreq: 90,  modGain: 0.09, sex: 'female' },
+  'Ernie Harwell':  { pitch: 0.58, rate: 0.88, modFreq: 82,  modGain: 0.15, sex: 'male' },
+  'Paul Carey':     { pitch: 1.20, rate: 0.95, modFreq: 100, modGain: 0.10, sex: 'female' },
+  'Jerry Coleman':  { pitch: 0.62, rate: 1.05, modFreq: 95,  modGain: 0.12, sex: 'male' },
+  'Dave Campbell':  { pitch: 1.35, rate: 0.98, modFreq: 110, modGain: 0.07, sex: 'female' },
+  'Phil Rizzuto':   { pitch: 0.68, rate: 1.10, modFreq: 105, modGain: 0.11, sex: 'male' },
+  'Bill White':     { pitch: 1.15, rate: 0.92, modFreq: 85,  modGain: 0.09, sex: 'female' },
+  'Chuck Thompson': { pitch: 0.52, rate: 0.95, modFreq: 78,  modGain: 0.15, sex: 'male' },
+  'Brooks Robinson':{ pitch: 1.28, rate: 0.90, modFreq: 92,  modGain: 0.08, sex: 'female' },
+  'Vin Scully':     { pitch: 0.50, rate: 0.88, modFreq: 72,  modGain: 0.14, sex: 'male' },
+  'Ralph Kiner':    { pitch: 0.54, rate: 0.95, modFreq: 82,  modGain: 0.15, sex: 'male' },
+  'Tim McCarver':   { pitch: 1.22, rate: 1.00, modFreq: 95,  modGain: 0.08, sex: 'female' },
+  'default':        { pitch: 0.50, rate: 1.05, modFreq: 80,  modGain: 0.15, sex: 'male' },
 };
 
 // Ball-in-play types that get the retro micro-pause treatment
@@ -63,9 +64,15 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
 
     const profile = ANNOUNCER_PROFILES[announcerName] || ANNOUNCER_PROFILES['default'];
     const voices = window.speechSynthesis.getVoices();
-    const voice = voices.find(v => v.name.includes('Daniel') || v.name.includes('Fred')) ||
-                  voices.find(v => v.lang.startsWith('en') && v.name.includes('Male')) ||
-                  voices.find(v => v.lang.startsWith('en'));
+    // Pick a distinctly male or female voice based on the announcer's sex flag
+    const isFemale = profile.sex === 'female';
+    const voice = isFemale
+      ? voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) ||
+        voices.find(v => v.lang.startsWith('en') && (v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Susan'))) ||
+        voices.find(v => v.lang.startsWith('en'))
+      : voices.find(v => v.name.includes('Daniel') || v.name.includes('Fred')) ||
+        voices.find(v => v.lang.startsWith('en') && v.name.includes('Male')) ||
+        voices.find(v => v.lang.startsWith('en'));
 
     // Split text into chunks by detecting player names via the roster set
     const words = cleanedText.split(' ');
@@ -165,6 +172,7 @@ export default function useRobotAnnouncer(gameState, enabled, announcerName) {
   const audioCtxRef = useRef(null);
   const lastLogIdx = useRef(0);
   const promoCooldown = useRef(0);
+  const voiceToggle = useRef(false); // alternate between announcers in a pair
 
   const ensureCtx = () => {
     if (!audioCtxRef.current) {
@@ -208,11 +216,24 @@ export default function useRobotAnnouncer(gameState, enabled, announcerName) {
         const lastSpeakable = speakable[speakable.length - 1];
         const ctx = ensureCtx();
 
+        // Alternate between lead and color commentator for variety
+        // Get the full announcer pair from STADIUM_FLAVOR
+        voiceToggle.current = !voiceToggle.current;
+        const fallbackName = voiceToggle.current ? announcerName : (announcerName + 'Color');
+        // Map fallback to actual color commentators — pick the second in each known pair
+        const colorMap = {
+          'Harry CarayColor': 'Steve Stone', 'Ned MartinColor': 'Bob Montgomery',
+          'Ernie HarwellColor': 'Paul Carey', 'Jerry ColemanColor': 'Dave Campbell',
+          'Phil RizzutoColor': 'Bill White', 'Chuck ThompsonColor': 'Brooks Robinson',
+          'Ralph KinerColor': 'Tim McCarver',
+        };
+        const speakerName = voiceToggle.current ? announcerName : (colorMap[fallbackName] || announcerName);
+
         // Micro-pause for ball-in-play: 400ms of silence (retro processing delay)
         const needPause = HIT_PLAY_TYPES.includes(lastSpeakable.type);
         const delay = needPause ? 450 : 0;
 
-        speakRobot(lastSpeakable.text, ctx, announcerName, delay);
+        speakRobot(lastSpeakable.text, ctx, speakerName, delay);
       }
 
       // Blowout promo injection: occasionally sneak in a vintage promo
