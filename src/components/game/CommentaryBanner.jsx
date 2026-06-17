@@ -38,6 +38,8 @@ const NICKNAMES = {
   "Dennis Eckersley": ["Eck"],
   "Bruce Sutter": ["The Riddler"],
   "Dan Quisenberry": ["Quiz"],
+  "Keith Moreland": ["Zonk"],
+  "Leon Durham": ["Bull"],
 };
 
 // 1984 Announcers & Stadium Flavor
@@ -246,9 +248,20 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     options.push(`${batterName} hitting ${avg} on the afternoon`);
   }
 
-  // Pitcher focus
-  options.push(`${pitcher?.name} deals from the stretch`);
+  // Pitcher focus — windup with bases empty, stretch with runners on
+  const pitcherDelivery = runnersOn > 0
+    ? `${pitcher?.name} deals from the stretch`
+    : `${pitcher?.name} works from the windup`;
+  options.push(pitcherDelivery);
   options.push(`${pitcher?.name} looks in for the sign`);
+  if (runnersOn === 0) {
+    options.push(`${pitcher?.name} winds and fires`);
+    options.push(`${pitcher?.name} comes set — here's the pitch`);
+  }
+  if (runnersOn > 0) {
+    options.push(`${pitcher?.name} comes to the stretch, checks the runner`);
+    options.push(`${pitcher?.name} from the stretch — kicks and deals`);
+  }
 
   // Runners on
   if (runnersOn === 1) options.push(`Runner aboard for ${lastName}`);
@@ -268,6 +281,46 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
   if (info.cityFlavor) {
     const cflav = info.cityFlavor[Math.floor(Math.random() * info.cityFlavor.length)];
     options.push(cflav);
+  }
+
+  // Classic baseball slang & sayings
+  const slangOptions = [
+    `Ducks on the pond for ${lastName}`,
+    `Chance to clear the ducks off the pond here`,
+    `${lastName} digging in at the dish`,
+    `The hot corner is ready — ${lastName} steps in`,
+    `Can of corn territory out there`,
+    `${pitcher?.name} might give him a little chin music`,
+    `${lastName} could use a little seeing-eye single right here`,
+    `This one's hit on a frozen rope!`,
+    `Around the horn — let's see what develops`,
+    `Warning track power out there`,
+    `${lastName} looking for his pitch to drive`,
+    `He's got warning track power but that's about it`,
+    `Twin killing would be big right here`,
+    `Double play depth — middle infielders creeping in`,
+    `No-doubter off the bat!`,
+    `${lastName} protecting the plate now`,
+    `${lastName} crowds the dish`,
+    `He'll take one for the team if he has to`,
+    `Gap-to-gap hitter, this ${posName}`,
+    `${pitcher?.name} painting the corners`,
+    `${pitcher?.name} dotting the black with that heater`,
+    `He's got swing-and-miss stuff working today`,
+    `The hook is on — ${pitcher?.name} dealing`,
+    `Pitcher's duel unfolding here at ${info.stadium || 'the ballpark'}`,
+    `Hitters' counts and pitchers' counts — that's the chess match`,
+    `Gotta love October-type baseball — every pitch matters`,
+    `Small ball might be the play here`,
+    `Hit 'em where they ain't`,
+    `Good wood on that one`,
+    `He's in a groove — locked in at the plate`
+  ];
+
+  // Mix in slang occasionally (~30% chance)
+  if (Math.random() < 0.30) {
+    const slang = slangOptions[Math.floor(Math.random() * slangOptions.length)];
+    options.push(slang);
   }
 
   // Inning-specific atmosphere
