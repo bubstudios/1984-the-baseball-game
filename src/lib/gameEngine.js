@@ -646,6 +646,31 @@ function resolveSwing(state, swingType, pitch) {
       return;
     }
 
+    // Pitchers always sacrifice when there's a runner to advance (slow, always bunting to move runner)
+    const isPitcherHitting = batter.pos === 'SP' || batter.assignedPos === 'SP' || batter.speed <= 2;
+    const hasRunnerOn1st = !!state.bases[0];
+    const canSacrifice = state.outs < 2 && hasRunnerOn1st;
+
+    if (isPitcherHitting && canSacrifice && !pitch.isStrike) {
+      // Pitcher sacrifice bunt: always succeeds on a strike pitch, advance runner, batter out
+      const r1 = state.bases[0];
+      if (r1) {
+        if (state.bases[1]) state.bases[2] = state.bases[1];
+        state.bases[1] = r1;
+        state.bases[0] = null;
+      }
+      batter.gameStats.ab++;
+      pitcher.gameStats.so++;
+      const msg = `${batter.name} lays down the sacrifice — ${r1?.name?.split(' ').pop()} moves to second`;
+      state.log.push({ type: 'groundout', text: msg });
+      state.lastPlay = { type: 'groundout', text: `Sacrifice bunt by ${batter.name}` };
+      state.balls = 0;
+      state.strikes = 0;
+      advanceBatter(state);
+      recordOut(state);
+      return;
+    }
+
     // Bunt success: Bunting skill + Speed for hit chance (sacrifice bunts are harder)
     const buntingSkill = (batter.bunting || 3) / 10;
     const speedFactor = batter.speed / 10;
@@ -718,9 +743,19 @@ function resolveSwing(state, swingType, pitch) {
       batter.gameStats.ab++;
       batter.gameStats.so++;
       pitcher.gameStats.so++;
-      const msg = pitch.isStrike
-        ? `${batter.name} goes down swinging!`
-        : `${batter.name} swings and misses — Struck out!`;
+      const strikeoutMsgs = pitch.isStrike ? [
+        `${batter.name} goes down swinging!`,
+        `${batter.name} can't catch up — strike three!`,
+        `${batter.name} whiffs on strike three!`,
+        `${batter.name} fans on a wicked ${pitch.pitchType}!`,
+        `${batter.name} swings right through it — out!`,
+      ] : [
+        `${batter.name} chases one out of the zone — Struck out!`,
+        `${batter.name} swings and misses — Struck out!`,
+        `${batter.name} flails and misses — strike three!`,
+        `${batter.name} hacks at ball four — strikeout!`,
+      ];
+      const msg = strikeoutMsgs[Math.floor(Math.random() * strikeoutMsgs.length)];
       state.log.push({ type: 'strikeout', text: msg });
       state.lastPlay = { type: 'strikeout', text: msg };
       state.balls = 0;
@@ -1691,21 +1726,22 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const newState = JSON.parse(JSON.stringify(state));
   if (newState.gameOver) return newState;
 
-  const cpuTeam = userTeam === 'home' ? 'away' : 'home';
-  const cpuBattingTeam = newState.halfInning === 'top' ? 'away' : 'home';
-  const isCpuBatting = cpuBattingTeam === cpuTeam;
+  // userTeam is a team key (e.g. 'cubs'), not 'home'/'away' — figure out which side the CPU controls
+  const cpuSide = newState.homeTeam === userTeam ? 'away' : 'home';
+  const cpuBattingSide = newState.halfInning === 'top' ? 'away' : 'home';
+  const isCpuBatting = cpuBattingSide === cpuSide;
 
   if (isCpuBatting) {
     // CPU is batting — consider pinch hitting in late innings
-    const cpuLineup = cpuTeam === 'away' ? newState.awayLineup : newState.homeLineup;
-    const cpuBench = TEAMS[cpuTeam === 'away' ? newState.awayTeam : newState.homeTeam]?.bench;
+    const cpuLineup = cpuSide === 'away' ? newState.awayLineup : newState.homeLineup;
+    const cpuBench = TEAMS[cpuSide === 'away' ? newState.awayTeam : newState.homeTeam]?.bench;
     const inning = newState.inning;
-    const cpuScore = newState.score[cpuTeam];
-    const otherTeam = cpuTeam === 'away' ? 'home' : 'away';
+    const cpuScore = newState.score[cpuSide];
+    const otherTeam = cpuSide === 'away' ? 'home' : 'away';
     const trailing = cpuScore < newState.score[otherTeam];
 
     if (inning >= 7 && trailing && cpuBench && cpuBench.length > 0) {
-      const batterIdx = cpuTeam === 'away' ? newState.awayBatterIndex : newState.homeBatterIndex;
+      const batterIdx = cpuSide === 'away' ? newState.awayBatterIndex : newState.homeBatterIndex;
       const batter = cpuLineup[batterIdx % cpuLineup.length];
       const pitcherSpot = batter.assignedPos === 'SP' || batter.pos === 'SP';
 
@@ -1723,12 +1759,12 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   }
 
   // CPU is fielding — only handle CPU pitching changes
-  const cpuPitchingTeam = newState.halfInning === 'top' ? 'home' : 'away';
+  const cpuPitchingSide = newState.halfInning === 'top' ? 'home' : 'away';
   // STRICT GUARD: only act if CPU team is the one pitching
-  if (cpuPitchingTeam !== cpuTeam) return newState;
+  if (cpuPitchingSide !== cpuSide) return newState;
 
-  const cpuBullpen = cpuTeam === 'away' ? newState.homeBullpen : newState.awayBullpen;
-  const cpuPitcher = cpuPitchingTeam === 'home' ? newState.homePitcher : newState.awayPitcher;
+  const cpuBullpen = cpuSide === 'away' ? newState.awayBullpen : newState.homeBullpen;
+  const cpuPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
   const pitchCount = cpuPitcher.gameStats.pitches || 0;
   const bb = cpuPitcher.gameStats.bb || 0;
   const runs = cpuPitcher.gameStats.r || 0;
@@ -1738,8 +1774,8 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const fatiguePull = pitchCount >= 90;
   const walksPull = bb >= 6;
   const blowupPull = inning < 6 && runs >= 5;
-  const cpuScore = newState.score[cpuPitchingTeam];
-  const userScore = newState.score[cpuBattingTeam];
+  const cpuScore = newState.score[cpuPitchingSide];
+  const userScore = newState.score[cpuBattingSide];
   const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2;
   const recentCollapse = (runs >= 2 && bb >= 2 && inning >= 5);
 
@@ -1750,8 +1786,8 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     const newPitcher = sorted[0];
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
 
-    const oldPitcher = cpuPitchingTeam === 'home' ? newState.homePitcher : newState.awayPitcher;
-    if (cpuPitchingTeam === 'home') {
+    const oldPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
+    if (cpuPitchingSide === 'home') {
       newState.homePitcher = newP;
     } else {
       newState.awayPitcher = newP;
@@ -1760,7 +1796,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     const bpIdx = cpuBullpen.findIndex(p => p.name === newPitcher.name);
     if (bpIdx >= 0) cpuBullpen.splice(bpIdx, 1);
 
-    const historyKey = cpuPitchingTeam === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
+    const historyKey = cpuPitchingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
     if (!newState[historyKey].find(p => p.name === oldPitcher.name)) {
       newState[historyKey].push({ ...oldPitcher });
     }

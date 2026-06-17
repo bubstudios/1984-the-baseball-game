@@ -95,7 +95,7 @@ export default function DiamondView({ bases, lastPlay, isDay = false }) {
 
       {/* Runner names with speed — positioned inside diamond edges to avoid clipping */}
       {bases[0] && (
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] text-primary font-heading font-semibold bg-card/90 px-1 py-0.5 rounded whitespace-nowrap">
+        <div className="absolute right-1 bottom-[35%] text-[9px] text-primary font-heading font-semibold bg-card/90 px-1 py-0.5 rounded whitespace-nowrap z-20">
           {bases[0].name.split(' ').pop()}
           <span className="text-[7px] text-muted-foreground ml-0.5 align-top">SPD{bases[0].speed}</span>
         </div>
