@@ -16,7 +16,8 @@ import PlayLog from '@/components/game/PlayLog';
 import BoxScore from '@/components/game/BoxScore';
 import SubstitutionsPanel from '@/components/game/SubstitutionsPanel';
 import Fireworks from '@/components/game/Fireworks';
-import { RotateCcw, Trophy, Users } from 'lucide-react';
+import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
+import { RotateCcw, Trophy, Users, Volume2, VolumeX } from 'lucide-react';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -33,7 +34,11 @@ export default function Home() {
   const [showSubs, setShowSubs] = useState(false);
   const [hrTrigger, setHrTrigger] = useState(0);
   const [winTrigger, setWinTrigger] = useState(0);
+  const [robotVoice, setRobotVoice] = useState(false);
   const prevLastPlay = useRef(null);
+
+  // Robot announcer
+  useRobotAnnouncer(gameState, robotVoice);
 
   const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather) => {
     setHomeTeam(home);
@@ -243,6 +248,15 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRobotVoice(!robotVoice)}
+              className={`h-7 px-2 text-[10px] font-heading gap-1 ${robotVoice ? 'border-primary/50 text-primary' : ''}`}
+              title={robotVoice ? 'Mute announcer' : 'Robot announcer'}
+            >
+              {robotVoice ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
+            </Button>
             {!gameState.gameOver && (
               <Button
                 variant="outline"
