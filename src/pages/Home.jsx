@@ -17,7 +17,8 @@ import BoxScore from '@/components/game/BoxScore';
 import SubstitutionsPanel from '@/components/game/SubstitutionsPanel';
 import Fireworks from '@/components/game/Fireworks';
 import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
-import { RotateCcw, Trophy, Users, Volume2, VolumeX } from 'lucide-react';
+import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
+import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle } from 'lucide-react';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -35,7 +36,15 @@ export default function Home() {
   const [hrTrigger, setHrTrigger] = useState(0);
   const [winTrigger, setWinTrigger] = useState(0);
   const [robotVoice, setRobotVoice] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
   const prevLastPlay = useRef(null);
+
+  // Auto-show tutorial on first visit
+  useEffect(() => {
+    if (!hasSeenTutorial()) {
+      setShowTutorial(true);
+    }
+  }, []);
 
   // Robot announcer
   useRobotAnnouncer(gameState, robotVoice);
@@ -211,7 +220,23 @@ export default function Home() {
   }
 
   if (!gameState) {
-    return <TeamSelect onSelect={handleTeamSelect} />;
+    return (
+      <>
+        <div className="fixed top-4 right-4 z-40">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowTutorial(true)}
+            className="h-8 w-8 p-0 rounded-full border-muted-foreground/30 hover:border-primary/50"
+            title="How to play"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </Button>
+        </div>
+        <TeamSelect onSelect={handleTeamSelect} />
+        {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
+      </>
+    );
   }
 
   const batter = getCurrentBatter(gameState);
