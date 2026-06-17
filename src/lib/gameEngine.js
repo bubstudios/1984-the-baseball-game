@@ -1,5 +1,6 @@
 import { TEAMS, PITCH_TYPES, SWING_TYPES, TEAM_IDS, PLAYER_ERRORS, DEFAULT_PITCHES } from './gameData';
 import { applyWeatherEffects } from './weather';
+import { BALLPARKS, getBallparkEffect, getHitDirection, checkBallparkQuirk } from './ballparks';
 
 // Create initial game state with two selected teams
 export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null) {
@@ -761,6 +762,14 @@ function resolveSwing(state, swingType, pitch) {
   const errorWx = wx.errorMult || 1;
   const contactWx = wx.contactMod || 0;
 
+  // Ballpark effects
+  const stadiumName = TEAMS[state.homeTeam]?.stadium;
+  const ballparkEffect = getBallparkEffect(stadiumName, adjBatter.bats, state.weather);
+  const ballparkHRMod = ballparkEffect.hrMod || 1;
+
+  // Determine typical hit direction for this batter
+  const hitDirection = getHitDirection(adjBatter.bats);
+
   // Ball in play — determine hit vs out
   const powerRating = adjBatter.power / 10;
   let hitChance = 0.20 + (contactRating + contactWx / 10) * 0.28;
@@ -798,17 +807,32 @@ function resolveSwing(state, swingType, pitch) {
     const speedFactor = adjBatter.speed / 10;
     const hitRoll = Math.random();
 
-    if (hitRoll < effectivePower * 0.065 * hrMod) {
+    if (hitRoll < effectivePower * 0.065 * hrMod * ballparkHRMod) {
       // HOME RUN
       batter.gameStats.hr++;
       const runnersOn = state.bases.filter(b => b !== null).length;
       const rbi = advanceRunners(state, 4, batter);
       const grandSlam = runnersOn === 3;
-      const msg = grandSlam
-        ? `💥 GRAND SLAM! ${batter.name} clears the bases!`
-        : rbi > 1
-        ? `💥 ${batter.name} hits a ${rbi}-run HOME RUN!`
-        : `💥 ${batter.name} hits a solo HOME RUN!`;
+
+      // Ballpark-specific HR descriptions
+      const ballpark = BALLPARKS[stadiumName];
+      const fieldDesc = ballpark?.wallDesc?.[hitDirection] || `to ${hitDirection}`;
+      let hrText;
+      if (ballpark?.quirks?.includes('greenMonster') && (hitDirection === 'LF' || hitDirection === 'LCF')) {
+        hrText = `Up and over the Green Monster! ${runnersOn === 3 ? 'GRAND SLAM! ' : ''}${batter.name} clears the 37-foot wall!`;
+      } else if (ballpark?.quirks?.includes('shortRF') && hitDirection === 'RF' && adjBatter.bats === 'L') {
+        hrText = `Into the short porch! ${runnersOn === 3 ? 'GRAND SLAM! ' : ''}${batter.name} hooks one just over ${fieldDesc}!`;
+      } else if (ballpark?.quirks?.includes('peskyPole') && hitDirection === 'RF') {
+        hrText = `Around Pesky's Pole! ${runnersOn === 3 ? 'GRAND SLAM! ' : ''}${batter.name} wraps it inside the right field foul pole!`;
+      } else if (ballpark?.quirks?.includes('ivy') && (hitDirection === 'LF' || hitDirection === 'LCF')) {
+        hrText = `Onto Waveland Avenue! ${runnersOn === 3 ? 'GRAND SLAM! ' : ''}${batter.name} launches one over the ivy and out of Wrigley!`;
+      } else {
+        hrText = `${batter.name} sends it deep ${fieldDesc} —`;
+        hrText += grandSlam ? ` GRAND SLAM! ${batter.name} clears the bases!`
+          : rbi > 1 ? ` a ${rbi}-run HOME RUN!`
+          : ` a solo HOME RUN!`;
+      }
+      const msg = `💥 ${hrText}`;
       state.log.push({ type: 'homerun', text: msg });
       state.lastPlay = { type: 'homerun', text: msg };
     } else if (hitRoll < (effectivePower * 0.10 + speedFactor * 0.08) * doubleMod) {
@@ -886,6 +910,38 @@ function resolveSwing(state, swingType, pitch) {
     // Determine if it's a fly ball (CF/RF/LF positions) or ground ball
     const isFlyBall = ['CF', 'RF', 'LF'].includes(out.pos) || out.type === 'popout';
     const outType = out.type || (isFlyBall ? 'flyout' : 'groundout');
+
+    // ---- BALLPARK QUIRK CHECK on fly balls ----
+    if (isFlyBall && out.type !== 'popout') {
+      const quirk = checkBallparkQuirk(stadiumName, adjBatter.bats, hitDirection, state.weather);
+      if (quirk && quirk.isHit) {
+        batter.gameStats.ab++;
+        batter.gameStats.hits++;
+        pitcher.gameStats.h++;
+        if (quirk.isHR) {
+          batter.gameStats.hr++;
+          advanceRunners(state, 4, batter);
+        } else {
+          advanceRunners(state, quirk.bases, batter, true);
+        }
+        state.log.push({ type: quirk.type, text: quirk.text });
+        state.lastPlay = { type: quirk.type, text: quirk.text };
+        state.balls = 0;
+        state.strikes = 0;
+        advanceBatter(state);
+        return;
+      }
+      if (quirk && !quirk.isHit) {
+        // Quirk that confirms the out (e.g., deep RCF at Fenway)
+        state.log.push({ type: quirk.type, text: quirk.text });
+        state.lastPlay = { type: quirk.type, text: quirk.text };
+        state.balls = 0;
+        state.strikes = 0;
+        advanceBatter(state);
+        recordOut(state);
+        return;
+      }
+    }
 
     // ---- ERROR CHECK on ground balls ----
     const isGrounder = !isFlyBall && out.pos !== 'SP';
