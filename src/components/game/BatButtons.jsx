@@ -20,8 +20,8 @@ export default function BatButtons({ onSwing, disabled }) {
 
   return (
     <div className="space-y-2">
-      <div className="text-[10px] font-heading uppercase tracking-widest text-foreground/60 text-center mb-2">Choose Swing</div>
-      <div className="flex items-end justify-center gap-4 sm:gap-6">
+      <div className="text-[9px] font-heading uppercase tracking-widest text-foreground/60 text-center mb-1">Choose Swing</div>
+      <div className="flex items-end justify-center gap-3 sm:gap-4">
         {BAT_ACTIONS.map((action) => {
           const isActive = swinging === action.swingIndex;
           return (
@@ -34,7 +34,7 @@ export default function BatButtons({ onSwing, disabled }) {
               {/* Bat — horizontal, arcs upward on swing */}
               <div
                 className={`
-                  relative w-36 h-10
+                  relative w-24 h-8
                   ${isActive ? 'animate-bat-swing' : 'hover:scale-110 transition-transform'}
                   ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
                 `}
@@ -106,8 +106,8 @@ export default function BatButtons({ onSwing, disabled }) {
                   <path d="M12,34 Q40,32 64,29" fill="none" stroke="#C89840" strokeWidth="0.5" opacity="0.25" />
                 </svg>
               </div>
-              <span className="font-heading font-bold text-xs text-foreground">{action.label}</span>
-              <span className="text-[9px] text-foreground/50 -mt-1">{action.desc}</span>
+              <span className="font-heading font-bold text-[10px] text-foreground">{action.label}</span>
+              <span className="text-[8px] text-foreground/50 -mt-0.5">{action.desc}</span>
             </button>
           );
         })}

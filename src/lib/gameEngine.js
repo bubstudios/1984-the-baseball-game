@@ -560,7 +560,7 @@ function resolvePitch(state, pitchType) {
   }
 
   // HBP — hit by pitch
-  const hbpChance = Math.max(0.005, (10 - pitcher.control) * 0.004);
+  const hbpChance = Math.max(0.002, (10 - pitcher.control) * 0.0015);
   if (Math.random() < hbpChance) {
     return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true };
   }
@@ -904,9 +904,12 @@ function resolveSwing(state, swingType, pitch) {
       { text: `${batter.name} pops it up behind the plate — ${defenders['C']?.name || 'the catcher'} makes the grab`, pos: '2B', type: 'popout' },
       { text: `Infield pop-up — ${defenders['2B']?.name || 'the second baseman'} calls for it and makes the catch`, pos: '2B', type: 'popout' },
       { text: `${batterLast} pops one up in foul territory — ${defenders['3B']?.name || 'the third baseman'} makes the play`, pos: '3B', type: 'popout' },
-      { text: `${batter.name} lines it right at ${defenders['3B']?.name || 'the third baseman'} — snagged!`, pos: '3B', type: 'lineout' },
-      { text: `Sharp line drive — speared by ${defenders['SS']?.name || 'the shortstop'}!`, pos: 'SS', type: 'lineout' },
-      { text: `${batterLast} ropes one to ${defenders['1B']?.name || 'first'} — picked out of the air!`, pos: '1B', type: 'lineout' },
+      { text: `${batter.name} lines it right at ${defenders['3B']?.name || 'the third baseman'} — caught!`, pos: '3B', type: 'lineout' },
+      { text: `${batterLast} smokes one toward ${defenders['SS']?.name || 'the shortstop'} — snared on a hop!`, pos: 'SS', type: 'lineout' },
+      { text: `${batter.name} rips a liner — ${defenders['SS']?.name || 'the shortstop'} leaps and grabs it!`, pos: 'SS', type: 'lineout' },
+      { text: `Hard liner to ${defenders['1B']?.name || 'first'} — stabbed and caught!`, pos: '1B', type: 'lineout' },
+      { text: `${batterLast} lines one — ${defenders['2B']?.name || 'the second baseman'} dives and makes the stop!`, pos: '2B', type: 'lineout' },
+      { text: `Laser shot right at ${defenders['3B']?.name || 'third'} — picks it clean!`, pos: '3B', type: 'lineout' },
     ];
 
     const allOuts = [...groundOutTypes, ...flyOutTypes, ...otherOuts];
@@ -1043,7 +1046,14 @@ function resolveSwing(state, swingType, pitch) {
               state.bases[1] = null;
             }
             state.bases[0] = null;
-            const msg = `${batter.name} grounds into a double play!`;
+            const dpMsgs = [
+              `${batter.name} grounds to short — toss to ${defenders['2B']?.name?.split(' ').pop() || 'second'} for one, relay to first — double play!`,
+              `${batterLast} bounces it to ${defenders['2B']?.name?.split(' ').pop() || 'second'} — flips to ${defenders['SS']?.name?.split(' ').pop() || 'short'} for the force, over to first — two!`,
+              `${batter.name} taps it to the mound — ${defenders['SP']?.name?.split(' ').pop() || 'the pitcher'} goes to second, on to first — inning-ending double play!`,
+              `${batterLast} grounds sharply to third — ${defenders['3B']?.name?.split(' ').pop() || 'third'} steps on the bag, fires across — twin killing!`,
+              `${batter.name} rolls one to short — underhand flip to ${defenders['2B']?.name?.split(' ').pop() || 'second'}, the turn and throw — double play!`,
+            ];
+            const msg = dpMsgs[Math.floor(Math.random() * dpMsgs.length)];
             state.log.push({ type: 'doubleplay', text: msg });
             state.lastPlay = { type: 'doubleplay', text: msg };
           }
@@ -1061,8 +1071,8 @@ function resolveSwing(state, swingType, pitch) {
           if (state.outs >= 3) endHalfInning(state);
           return;
         } else if (roll < dpChance + 0.30) {
-          if (hasForceAt3rd && Math.random() < 0.55) {
-            // Force at 3rd: runner on 3rd scores (force at home removed)
+          if (hasForceAt3rd && Math.random() < 0.55 && state.outs < 2) {
+            // Force at 3rd: runner on 3rd scores (force at home removed, only if not already 2 outs)
             const runner3rd = state.bases[2];
             if (runner3rd) {
               runner3rd.gameStats.runs++;
@@ -1112,8 +1122,8 @@ function resolveSwing(state, swingType, pitch) {
         const r1 = state.bases[0];
         const runner3rd = state.bases[2];
         const r2 = state.bases[1];
-        // Bases loaded: runner on 3rd scores when defense doesn't throw home
-        if (runner3rd && r2 && r1) {
+        // Bases loaded: runner on 3rd scores ONLY if fewer than 2 outs (no run on force 3rd out)
+        if (runner3rd && r2 && r1 && state.outs < 2) {
           runner3rd.gameStats.runs++;
           scoreRun(state);
           batter.gameStats.rbi++;
@@ -1136,10 +1146,10 @@ function resolveSwing(state, swingType, pitch) {
       }
     }
 
-    // ---- SACRIFICE FLY (any outfield fly ball, runner on 3rd) ----
-    const isMediumPlusFly = isFlyBall && out.type !== 'popout' &&
+    // ---- SACRIFICE FLY (outfield fly ball only, runner on 3rd) ----
+    const isOutfieldFly = isFlyBall && out.type !== 'popout' && out.type !== 'lineout' &&
       !out.text.includes('shallow ');
-    if (isMediumPlusFly && state.bases[2] && state.outs < 2) {
+    if (isOutfieldFly && state.bases[2] && state.outs < 2) {
       const runner = state.bases[2];
       const runnerSpeed = runner.speed / 10;
       const ofArm = getOutfieldArm(defenders) / 10;
@@ -1166,8 +1176,8 @@ function resolveSwing(state, swingType, pitch) {
       }
     }
 
-    // ---- TAG-UP on fly outs (medium+ depth, 2nd→3rd) ----
-    if (isMediumPlusFly) {
+    // ---- TAG-UP on outfield fly outs only (medium+ depth, 2nd→3rd) ----
+    if (isOutfieldFly) {
       const runner = state.bases[1];
       if (runner && state.outs < 2) {
         const speedFactor = runner.speed / 10;
@@ -1354,10 +1364,11 @@ export function processAtBat(state, pitchType, swingType) {
   // Walk trigger — pitcher loses command, instant walk regardless of count
   const pitcher = getCurrentPitcher(newState);
   const batter = getCurrentBatter(newState);
-  const walkChance = Math.max(0.02, (10 - pitcher.control) * 0.014);
+  const walkChance = Math.max(0.01, (10 - pitcher.control) * 0.005);
   if (Math.random() < walkChance) {
     batter.gameStats.bb++;
     pitcher.gameStats.bb++;
+    pitcher.gameStats.pitches += 4; // jump pitch count for full at-bat
     const msg = `${batter.name} draws a walk!`;
     newState.log.push({ type: 'walk', text: msg });
     newState.lastPlay = { type: 'walk', text: msg };
@@ -1663,6 +1674,7 @@ export function intentionalWalk(state) {
 
   batter.gameStats.bb++;
   pitcher.gameStats.bb++;
+  pitcher.gameStats.pitches += 4; // jump pitch count for full at-bat
   const msg = `${batter.name} is intentionally walked!`;
   newState.log.push({ type: 'walk', text: msg });
   newState.lastPlay = { type: 'walk', text: msg };
@@ -1674,54 +1686,66 @@ export function intentionalWalk(state) {
 }
 
 // --- CPU SUBSTITUTION LOGIC ---
-// userTeam: 'home' or 'away' — the user controls this team, CPU controls the other
+// Only acts on the CPU-controlled team, never the user's team
 export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const newState = JSON.parse(JSON.stringify(state));
   if (newState.gameOver) return newState;
 
   const cpuTeam = userTeam === 'home' ? 'away' : 'home';
-  const isAwayBatting = newState.halfInning === 'top';
-  const cpuBattingTeam = isAwayBatting ? 'away' : 'home';
+  const cpuBattingTeam = newState.halfInning === 'top' ? 'away' : 'home';
+  const isCpuBatting = cpuBattingTeam === cpuTeam;
 
-  // Only make decisions for CPU's team — never touch the user's team
-  if (cpuBattingTeam !== cpuTeam) {
-    // CPU is fielding — only handle CPU pitching changes
-    const cpuPitchingTeam = isAwayBatting ? 'home' : 'away';
-    if (cpuPitchingTeam !== cpuTeam) return newState; // shouldn't happen, but safety
+  if (isCpuBatting) {
+    // CPU is batting — consider pinch hitting in late innings
+    const cpuLineup = cpuTeam === 'away' ? newState.awayLineup : newState.homeLineup;
+    const cpuBench = TEAMS[cpuTeam === 'away' ? newState.awayTeam : newState.homeTeam]?.bench;
+    const inning = newState.inning;
+    const cpuScore = newState.score[cpuTeam];
+    const otherTeam = cpuTeam === 'away' ? 'home' : 'away';
+    const trailing = cpuScore < newState.score[otherTeam];
+
+    if (inning >= 7 && trailing && cpuBench && cpuBench.length > 0) {
+      const batterIdx = cpuTeam === 'away' ? newState.awayBatterIndex : newState.homeBatterIndex;
+      const batter = cpuLineup[batterIdx % cpuLineup.length];
+      const pitcherSpot = batter.assignedPos === 'SP' || batter.pos === 'SP';
+
+      if (pitcherSpot) {
+        const bestHitter = [...cpuBench].sort((a, b) => b.contact - a.contact)[0];
+        pinchHit(newState, { ...bestHitter });
+      } else if (batter.contact <= 3 && inning >= 8) {
+        const bestHitter = [...cpuBench].sort((a, b) => b.contact - a.contact)[0];
+        if (bestHitter.contact > batter.contact + 1) {
+          pinchHit(newState, { ...bestHitter });
+        }
+      }
+    }
+    return newState;
   }
 
-  const cpuLineup = cpuTeam === 'away' ? newState.awayLineup : newState.homeLineup;
+  // CPU is fielding — only handle CPU pitching changes
+  const cpuPitchingTeam = newState.halfInning === 'top' ? 'home' : 'away';
+  // STRICT GUARD: only act if CPU team is the one pitching
+  if (cpuPitchingTeam !== cpuTeam) return newState;
+
   const cpuBullpen = cpuTeam === 'away' ? newState.homeBullpen : newState.awayBullpen;
-
-  const isCpuBatting = cpuBattingTeam === cpuTeam;
-  const cpuPitchingTeam = isAwayBatting ? 'home' : 'away';
-
-  // --- CPU Pitching Change (only if CPU is pitching) ---
-  if (isCpuBatting) return newState; // CPU is batting, no pitching change needed
-
   const cpuPitcher = cpuPitchingTeam === 'home' ? newState.homePitcher : newState.awayPitcher;
   const pitchCount = cpuPitcher.gameStats.pitches || 0;
   const bb = cpuPitcher.gameStats.bb || 0;
   const runs = cpuPitcher.gameStats.r || 0;
   const inning = newState.inning;
 
-  // Pull starter: 90+ pitches, or struggling badly (6+ BB, or gave up 5+ runs before 6th)
+  // Pull starter: 90+ pitches, or struggling badly
   const fatiguePull = pitchCount >= 90;
   const walksPull = bb >= 6;
   const blowupPull = inning < 6 && runs >= 5;
-  // Late innings close game: pull starter if lead is tight (7th+)
   const cpuScore = newState.score[cpuPitchingTeam];
   const userScore = newState.score[cpuBattingTeam];
-  const trailing = cpuScore < userScore;
   const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2;
-
-  // Recently gave up runs AND walked a batter this inning
   const recentCollapse = (runs >= 2 && bb >= 2 && inning >= 5);
 
   const shouldChangePitcher = (fatiguePull || walksPull || blowupPull || lateClose || recentCollapse) && cpuBullpen.length > 0;
 
   if (shouldChangePitcher) {
-    // Pick best reliever by control rating
     const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
     const newPitcher = sorted[0];
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
@@ -1733,7 +1757,6 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       newState.awayPitcher = newP;
     }
 
-    // Remove from bullpen, save old stats
     const bpIdx = cpuBullpen.findIndex(p => p.name === newPitcher.name);
     if (bpIdx >= 0) cpuBullpen.splice(bpIdx, 1);
 
@@ -1744,30 +1767,6 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
     const reason = fatiguePull ? 'tired arm' : walksPull ? 'lost command' : blowupPull ? 'rough outing' : 'high-leverage situation';
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
-  }
-
-  // --- CPU Pinch Hit (only if CPU is batting) ---
-  if (!isCpuBatting) return newState;
-
-  // Only consider in 7th+ innings, trailing, with bench players available
-  const cpuBench = TEAMS[cpuTeam === 'away' ? newState.awayTeam : newState.homeTeam]?.bench;
-  if (inning >= 7 && trailing && cpuBench && cpuBench.length > 0) {
-    const batterIdx = cpuTeam === 'away' ? newState.awayBatterIndex : newState.homeBatterIndex;
-    const batter = cpuLineup[batterIdx % cpuLineup.length];
-    const pitcherSpot = batter.assignedPos === 'SP' || batter.pos === 'SP';
-    const cpuUseDH = (TEAMS[newState.homeTeam]?.league === 'AL') && (newState.homeTeam === (cpuTeam === 'home' ? newState.homeTeam : newState.awayTeam));
-
-    // Always pinch-hit for pitcher in NL (no DH) if trailing late
-    if (pitcherSpot) {
-      const bestHitter = [...cpuBench].sort((a, b) => b.contact - a.contact)[0];
-      pinchHit(newState, { ...bestHitter });
-    } else if (batter.contact <= 3 && inning >= 8) {
-      // Pinch hit for weak contact hitters in 8th+
-      const bestHitter = [...cpuBench].sort((a, b) => b.contact - a.contact)[0];
-      if (bestHitter.contact > batter.contact + 1) {
-        pinchHit(newState, { ...bestHitter });
-      }
-    }
   }
 
   return newState;
