@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
-import { Play, User, Cpu } from 'lucide-react';
+import { Play, User, Cpu, Trophy } from 'lucide-react';
+import AchievementsPanel from '@/components/game/AchievementsPanel';
+import { getUnlockedCount } from '@/lib/achievements';
 
 // MLB team logo IDs for mlbstatic.com
 const TEAM_LOGOS = {
@@ -21,6 +23,7 @@ const nlTeams = Object.keys(TEAMS).filter(k => TEAMS[k].league === 'NL');
 export default function TeamSelect({ onSelect }) {
   const [userTeam, setUserTeam] = useState(null);
   const [cpuTeam, setCpuTeam] = useState(null);
+  const [showAchievements, setShowAchievements] = useState(false);
 
   const handleTeamClick = (teamKey) => {
     if (userTeam === teamKey) {
@@ -145,7 +148,34 @@ export default function TeamSelect({ onSelect }) {
           <p className="font-body text-sm text-muted-foreground">
             Pick your team and an opponent. Real 1984 rosters. Ratings 1–10 from actual stats.
           </p>
+
+          {/* Tab switcher */}
+          <div className="grid grid-cols-2 gap-1 bg-muted rounded-lg p-1 mt-3">
+            <button
+              onClick={() => setShowAchievements(false)}
+              className={`font-heading text-[11px] rounded-md py-1.5 transition-all ${
+                !showAchievements ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              ⚾ New Game
+            </button>
+            <button
+              onClick={() => setShowAchievements(true)}
+              className={`font-heading text-[11px] rounded-md py-1.5 transition-all flex items-center justify-center gap-1 ${
+                showAchievements ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Trophy className="w-3 h-3" />
+              Achievements
+              <span className="text-[9px] text-primary/70">({getUnlockedCount()})</span>
+            </button>
+          </div>
         </div>
+
+        {showAchievements ? (
+          <AchievementsPanel />
+        ) : (
+          <>
 
         {/* Selection status */}
         <div className="flex items-center justify-center gap-4">
@@ -208,6 +238,8 @@ export default function TeamSelect({ onSelect }) {
         <p className="text-[10px] text-muted-foreground/50 text-center font-body pb-8">
           You control batting and pitching for your team. CPU controls the opponent.
         </p>
+          </>
+        )}
       </div>
     </div>
   );

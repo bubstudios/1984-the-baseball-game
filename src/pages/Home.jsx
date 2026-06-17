@@ -19,6 +19,7 @@ import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
 import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
+import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount } from '@/lib/achievements';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 
 export default function Home() {
@@ -41,7 +42,9 @@ export default function Home() {
   const [retroAudio, setRetroAudio] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [loadingScreen, setLoadingScreen] = useState(true);
+  const [newAchievements, setNewAchievements] = useState([]);
   const prevLastPlay = useRef(null);
+  const prevGameOver = useRef(false);
 
   // Auto-show tutorial on first visit
   useEffect(() => {
@@ -108,6 +111,15 @@ export default function Home() {
       if (prevLastPlay.current?.type !== '__win_fired__') {
         prevLastPlay.current = { type: '__win_fired__' };
         setTimeout(() => setWinTrigger(t => t + 1), 300);
+      }
+    }
+
+    // Check achievements when game ends
+    if (gameState.gameOver && !prevGameOver.current) {
+      prevGameOver.current = true;
+      const newOnes = checkGameAchievements(gameState, userTeam);
+      if (newOnes.length > 0) {
+        setNewAchievements(newOnes);
       }
     }
   }, [gameState]);
@@ -211,6 +223,8 @@ export default function Home() {
     setAwayTeam(null);
     setUserTeam(null);
     setTab('game');
+    setNewAchievements([]);
+    prevGameOver.current = false;
   };
 
   if (ballparkPhase) {
@@ -409,6 +423,27 @@ export default function Home() {
                   <RotateCcw className="w-4 h-4" />
                   <span className="font-heading">New Game</span>
                 </Button>
+              </div>
+            )}
+
+            {/* Newly unlocked achievements */}
+            {newAchievements.length > 0 && (
+              <div className="bg-card border border-primary/40 rounded-xl p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-primary" />
+                  <span className="font-heading text-xs text-foreground">Achievement{newAchievements.length > 1 ? 's' : ''} Unlocked!</span>
+                </div>
+                {newAchievements.map(id => {
+                  const ach = ACHIEVEMENTS.find(a => a.id === id);
+                  if (!ach) return null;
+                  return (
+                    <div key={id} className="flex items-center gap-2 text-[11px] text-foreground/80">
+                      <span>{ach.icon}</span>
+                      <span className="font-heading font-bold">{ach.name}</span>
+                      <span className="text-muted-foreground">— {ach.desc}</span>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </>
