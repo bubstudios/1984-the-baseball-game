@@ -492,6 +492,8 @@ export function cpuDecideSteal(state) {
   for (let i = 0; i < 3; i++) {
     const runner = state.bases[i];
     if (!runner) continue;
+    // Can't steal into an occupied base (except stealing home — no next base to block)
+    if (i < 2 && state.bases[i + 1]) continue;
     const speedFactor = runner.speed / 10;
     // CPU steals ~10-35% of opportunities based on speed, reduced by catcher arm + pitch speed
     if (Math.random() < Math.max(0.04, 0.10 + speedFactor * 0.30 - armFactor - pitchFactor)) {

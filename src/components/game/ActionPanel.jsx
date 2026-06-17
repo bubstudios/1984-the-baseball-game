@@ -131,7 +131,7 @@ export default function ActionPanel({
           <div className="text-[9px] font-heading uppercase tracking-widest text-amber-400/80">Steal Base</div>
           <div className="flex gap-2">
             {bases.map((runner, i) => {
-              if (!runner || i + 1 >= 3) return null;
+              if (!runner || i + 1 >= 3 || bases[i + 1]) return null;
               return (
                 <Button
                   key={i}
