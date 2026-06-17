@@ -7,13 +7,20 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import Home from '@/pages/Home';
+import GateLogin, { isAuthenticated } from '@/components/GateLogin';
+import { useState, useEffect } from 'react';
 // Add page imports here
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const [gateAuthed, setGateAuthed] = useState(null);
+
+  useEffect(() => {
+    setGateAuthed(isAuthenticated());
+  }, []);
 
   // Show loading spinner while checking app public settings or auth
-  if (isLoadingPublicSettings || isLoadingAuth) {
+  if (isLoadingPublicSettings || isLoadingAuth || gateAuthed === null) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
@@ -26,10 +33,14 @@ const AuthenticatedApp = () => {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
       navigateToLogin();
       return null;
     }
+  }
+
+  // Game gate — single shared login
+  if (!gateAuthed) {
+    return <GateLogin />;
   }
 
   // Render the main app

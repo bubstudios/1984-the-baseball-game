@@ -61,10 +61,10 @@ export default function AchievementsPanel() {
           <div key={cat}>
             <div className="flex items-center gap-2 mb-1.5">
               <div className={`w-1.5 h-1.5 rounded-full ${info.dot}`} />
-              <span className="font-heading text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <span className="font-heading text-[10px] font-bold uppercase tracking-wider text-foreground/70">
                 {info.label}
               </span>
-              <span className="text-[9px] text-muted-foreground/50">
+              <span className="text-[9px] text-foreground/50">
                 {unlockedInCat}/{items.length}
               </span>
             </div>
@@ -75,7 +75,7 @@ export default function AchievementsPanel() {
                   <div
                     key={ach.id}
                     className={`flex items-center gap-2.5 p-2 rounded-lg border transition-all ${
-                      isDone ? `${info.color} opacity-100` : 'border-border/30 bg-card/40 opacity-50'
+                      isDone ? `${info.color} opacity-100` : 'border-border/40 bg-card/60 opacity-75'
                     }`}
                   >
                     <div className={`w-7 h-7 rounded-md flex items-center justify-center text-sm shrink-0 ${
@@ -84,10 +84,10 @@ export default function AchievementsPanel() {
                       {ach.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className={`font-heading text-[10px] font-bold block truncate ${isDone ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      <span className={`font-heading text-[10px] font-bold block truncate ${isDone ? 'text-foreground' : 'text-foreground/60'}`}>
                         {ach.name}
                       </span>
-                      <p className={`text-[8px] truncate ${isDone ? 'text-foreground/50' : 'text-muted-foreground/40'}`}>
+                      <p className={`text-[8px] truncate ${isDone ? 'text-foreground/50' : 'text-foreground/40'}`}>
                         {ach.desc}
                       </p>
                     </div>
