@@ -493,10 +493,11 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     `The tools of ignorance — and ${lastName}'s wearing 'em proudly`,
   ];
 
-  // Mix in slang occasionally (~30% chance)
-  if (Math.random() < 0.30) {
-    const slang = slangOptions[Math.floor(Math.random() * slangOptions.length)];
-    options.push(slang);
+  // Always mix in 1-2 slang terms for a colorful broadcast feel
+  const shuffleSlang = [...slangOptions].sort(() => Math.random() - 0.5);
+  const slangCount = Math.random() < 0.35 ? 2 : 1;
+  for (let i = 0; i < slangCount; i++) {
+    options.push(shuffleSlang[i]);
   }
 
   // Inning-specific atmosphere
