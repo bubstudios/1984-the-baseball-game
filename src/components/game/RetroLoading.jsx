@@ -17,12 +17,12 @@ export default function RetroLoading({ onComplete }) {
       setDots(d => d.length < 3 ? d + '.' : '');
     }, 400);
 
-    // Loading completes after ~3 seconds
+    // Loading completes after ~5 seconds
     const loadTimer = setTimeout(() => {
       clearInterval(dotInterval);
       setLoaded(true);
       stopDiskClack();
-    }, 2800);
+    }, 4800);
 
     return () => {
       clearInterval(dotInterval);
@@ -48,6 +48,11 @@ export default function RetroLoading({ onComplete }) {
             1984: THE BASEBALL SEASON
           </div>
 
+          {/* Studio credit */}
+          <div className="font-mono text-[9px] text-[#2a8a2a] mb-5 tracking-[0.15em]">
+            created by Bub Studios
+          </div>
+
           {/* Loading line */}
           <div className="flex items-center justify-center gap-1 font-mono text-sm text-[#44dd44] mb-2">
             <span>LOADING PROGRAM{dots}</span>
@@ -57,8 +62,8 @@ export default function RetroLoading({ onComplete }) {
           {/* Status bar — fills up */}
           <div className="w-64 h-2 bg-[#0a150a] border border-[#1a3a1a] rounded-sm overflow-hidden mt-3">
             <div
-              className="h-full bg-[#33cc33] transition-all duration-2800 ease-linear rounded-sm"
-              style={{ width: loaded ? '100%' : '0%', transitionDuration: '2800ms' }}
+              className="h-full bg-[#33cc33] transition-all ease-linear rounded-sm"
+              style={{ width: loaded ? '100%' : '0%', transitionDuration: '4800ms' }}
             />
           </div>
 
