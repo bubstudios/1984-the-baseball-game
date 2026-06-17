@@ -338,7 +338,10 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
   const hr = batter?.gameStats?.hr || 0;
   const avg = ab > 0 ? (hits / ab).toFixed(3) : '.000';
 
-  const count = `${gameState.balls}-${gameState.strikes}`;
+  const count = gameState.balls === 0 && gameState.strikes === 0 ? 'no balls and no strikes'
+    : gameState.balls === 0 ? `0 and ${gameState.strikes}`
+    : gameState.strikes === 0 ? `${gameState.balls} and 0`
+    : `${gameState.balls} and ${gameState.strikes}`;
   const outs = gameState.outs;
   const inning = gameState.inning;
   const half = gameState.halfInning === 'top' ? 'top' : 'bottom';

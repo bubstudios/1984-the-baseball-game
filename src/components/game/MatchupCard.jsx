@@ -26,8 +26,8 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
           {batter.bats && <span className="text-[10px] text-muted-foreground ml-1">({batter.bats})</span>}
         </div>
         <div className="flex items-center gap-3 mt-1.5">
-          <span className={`text-[10px] ${isOutOfPosition ? 'text-orange-400' : 'text-muted-foreground'} flex items-center gap-0.5`}>
-            {displayPos}
+          <span className={`text-[10px] font-bold ${isOutOfPosition ? 'text-orange-400' : 'text-primary'} flex items-center gap-0.5`}>
+            #{batter.order}
             {isOutOfPosition && <AlertTriangle className="w-3 h-3" />}
           </span>
           <span className={`text-[10px] font-semibold ${isAdjusted ? 'text-primary' : 'text-primary'}`}>

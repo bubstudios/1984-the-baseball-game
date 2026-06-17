@@ -753,7 +753,7 @@ function resolveSwing(state, swingType, pitch) {
         `${batter.name} chases one out of the zone — Struck out!`,
         `${batter.name} swings and misses — Struck out!`,
         `${batter.name} flails and misses — strike three!`,
-        `${batter.name} hacks at ball four — strikeout!`,
+        `${batter.name} flails at one in the dirt — strikeout!`,
       ];
       const msg = strikeoutMsgs[Math.floor(Math.random() * strikeoutMsgs.length)];
       state.log.push({ type: 'strikeout', text: msg });
@@ -906,16 +906,18 @@ function resolveSwing(state, swingType, pitch) {
     // (defenders already computed above for range penalty)
 
     // Pick an out type with position mapping
+    // Position names for commentary — avoid "1B" / "2B" abbreviations in spoken text
+    const posNames = { '1B': 'first base', '2B': 'second base', '3B': 'third base', 'SS': 'shortstop', 'SP': 'the pitcher', 'C': 'the catcher', 'LF': 'left field', 'CF': 'center field', 'RF': 'right field' };
     const groundOutTypes = [
-      { text: `${batter.name} grounds out to short`, pos: 'SS' },
-      { text: `${batter.name} grounds out to second`, pos: '2B' },
-      { text: `${batter.name} grounds out to third`, pos: '3B' },
-      { text: `${batter.name} grounds out to the pitcher`, pos: 'SP' },
-      { text: `${batter.name} grounds out to first`, pos: '1B' },
+      { text: `${batter.name} grounds out to short`, pos: 'SS', posName: 'shortstop' },
+      { text: `${batter.name} grounds out to second`, pos: '2B', posName: 'second' },
+      { text: `${batter.name} grounds out to third`, pos: '3B', posName: 'third' },
+      { text: `${batter.name} grounds out to the pitcher`, pos: 'SP', posName: 'the pitcher' },
+      { text: `${batter.name} grounds out to first`, pos: '1B', posName: 'first' },
     ];
     const batterLast = batter.name.split(' ').pop();
     const flyFields = { CF: ['center', 'center field'], RF: ['right', 'right field'], LF: ['left', 'left field'] };
-    const depths = ['shallow ', '', 'deep ', 'to the warning track in ', 'back at the wall in '];
+    const depths = ['shallow ', '', 'deep ', 'the warning track in ', 'back at the wall in '];
     const actions = [
       'tracks it down', 'makes the catch', 'hauls it in', 'runs it down',
       'drifts over and makes the grab', 'has room and makes the catch',
@@ -1122,7 +1124,8 @@ function resolveSwing(state, swingType, pitch) {
             state.bases[0] = batter;
             batter.gameStats.ab++;
             const scoreText = runner3rd ? ` ${runner3rd.name.split(' ').pop()} scores` : '';
-            const msg = `${batter.name} grounds to ${out.pos} — force out at 3rd! ${forcedRunner ? forcedRunner.name + ' retired' : ''}${scoreText} — batter reaches on fielder's choice.`;
+            const forcePosName = posNames[out.pos] || out.pos;
+            const msg = `${batter.name} grounds to ${forcePosName} — force out at 3rd! ${forcedRunner ? forcedRunner.name + ' retired' : ''}${scoreText} — batter reaches on fielder's choice.`;
             state.log.push({ type: 'fc', text: msg });
             state.lastPlay = { type: 'fc', text: msg };
           } else {
@@ -1140,7 +1143,8 @@ function resolveSwing(state, swingType, pitch) {
             state.bases[0] = batter;
             batter.gameStats.ab++;
             const scoreText = runner3rd ? ` ${runner3rd.name.split(' ').pop()} scores` : '';
-            const msg = `${batter.name} grounds to ${out.pos} — force out at 2nd! ${runnerOn1st ? runnerOn1st.name + ' retired' : ''}${scoreText} — batter reaches on fielder's choice.`;
+            const force2PosName = posNames[out.pos] || out.pos;
+            const msg = `${batter.name} grounds to ${force2PosName} — force out at 2nd! ${runnerOn1st ? runnerOn1st.name + ' retired' : ''}${scoreText} — batter reaches on fielder's choice.`;
             state.log.push({ type: 'fc', text: msg });
             state.lastPlay = { type: 'fc', text: msg };
           }
@@ -1676,6 +1680,18 @@ export function changePitcher(state, newPitcher) {
     newState.awayPitcher = newP;
   }
 
+  // Swap the new pitcher into the fielding lineup (replace old pitcher's batting slot)
+  const lineup = isHomePitching ? newState.homeLineup : newState.awayLineup;
+  const oldPitcherSlot = lineup.findIndex(p => p.name === oldPitcher.name);
+  if (oldPitcherSlot >= 0) {
+    lineup[oldPitcherSlot] = {
+      ...newPitcher,
+      order: lineup[oldPitcherSlot].order,
+      assignedPos: 'SP',
+      gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+    };
+  }
+
   // Save old pitcher to player history so box score retains their stats
   const historyKey = isHomePitching ? 'homePlayerHistory' : 'awayPlayerHistory';
   const existing = newState[historyKey].find(p => p.name === oldPitcher.name);
@@ -1747,11 +1763,48 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
       if (pitcherSpot) {
         const bestHitter = [...cpuBench].sort((a, b) => b.contact - a.contact)[0];
-        pinchHit(newState, { ...bestHitter });
+        const afterPinchHit = pinchHit(newState, { ...bestHitter });
+        // Apply the pinch-hit result to newState
+        if (isCpuBatting) {
+          if (cpuSide === 'away') {
+            newState.awayLineup = afterPinchHit.awayLineup;
+            newState.awayBatterIndex = afterPinchHit.awayBatterIndex;
+            if (!newState.awayPlayerHistory) newState.awayPlayerHistory = [];
+            afterPinchHit.awayPlayerHistory?.forEach(p => {
+              if (!newState.awayPlayerHistory.find(h => h.name === p.name)) newState.awayPlayerHistory.push(p);
+            });
+            newState.log = afterPinchHit.log;
+          } else {
+            newState.homeLineup = afterPinchHit.homeLineup;
+            newState.homeBatterIndex = afterPinchHit.homeBatterIndex;
+            if (!newState.homePlayerHistory) newState.homePlayerHistory = [];
+            afterPinchHit.homePlayerHistory?.forEach(p => {
+              if (!newState.homePlayerHistory.find(h => h.name === p.name)) newState.homePlayerHistory.push(p);
+            });
+            newState.log = afterPinchHit.log;
+          }
+        }
       } else if (batter.contact <= 3 && inning >= 8) {
         const bestHitter = [...cpuBench].sort((a, b) => b.contact - a.contact)[0];
         if (bestHitter.contact > batter.contact + 1) {
-          pinchHit(newState, { ...bestHitter });
+          const afterPinchHit2 = pinchHit(newState, { ...bestHitter });
+          if (cpuSide === 'away') {
+            newState.awayLineup = afterPinchHit2.awayLineup;
+            newState.awayBatterIndex = afterPinchHit2.awayBatterIndex;
+            if (!newState.awayPlayerHistory) newState.awayPlayerHistory = [];
+            afterPinchHit2.awayPlayerHistory?.forEach(p => {
+              if (!newState.awayPlayerHistory.find(h => h.name === p.name)) newState.awayPlayerHistory.push(p);
+            });
+            newState.log = afterPinchHit2.log;
+          } else {
+            newState.homeLineup = afterPinchHit2.homeLineup;
+            newState.homeBatterIndex = afterPinchHit2.homeBatterIndex;
+            if (!newState.homePlayerHistory) newState.homePlayerHistory = [];
+            afterPinchHit2.homePlayerHistory?.forEach(p => {
+              if (!newState.homePlayerHistory.find(h => h.name === p.name)) newState.homePlayerHistory.push(p);
+            });
+            newState.log = afterPinchHit2.log;
+          }
         }
       }
     }

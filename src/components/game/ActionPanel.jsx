@@ -36,7 +36,7 @@ export default function ActionPanel({
     if (pitcherNeedsReplacement) {
       return (
         <div className="space-y-3 text-center">
-          <div className="text-xs text-amber-400 font-heading">Pitcher was pinch-hit for</div>
+          <div className="text-xs text-amber-400 font-heading">Pitcher was pinch-hit for — bring in a reliever</div>
           <Button
             variant="default"
             size="lg"
@@ -154,9 +154,9 @@ export default function ActionPanel({
           .duration-300 { animation-duration: 0.3s; }
         `}</style>
 
-        {/* Intentional Walk */}
-        {canIBB && (
-          <div className="flex justify-center pt-1">
+        {/* Intentional Walk + Change Pitcher */}
+        <div className="flex justify-center gap-2 pt-1">
+          {canIBB && (
             <button
               disabled={disabled}
               onClick={onIntBB}
@@ -164,8 +164,14 @@ export default function ActionPanel({
             >
               🖐 Int. Walk
             </button>
-          </div>
-        )}
+          )}
+          <button
+            onClick={onNeedReliever}
+            className="h-8 px-4 rounded-lg border border-blue-500/30 hover:border-blue-400 hover:bg-blue-500/10 text-[10px] font-heading font-bold text-blue-400/80 transition-all"
+          >
+            🔄 Change Pitcher
+          </button>
+        </div>
       </div>
     );
   }
