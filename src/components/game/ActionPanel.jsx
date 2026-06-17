@@ -173,49 +173,34 @@ export default function ActionPanel({
   const runnersOn = bases && bases.some(b => b !== null);
 
   return (
-    <div className="space-y-2.5">
-      {/* Steal buttons */}
+    <div className="space-y-2">
+      {/* Steal buttons + Hit-and-run — compact inline on one row */}
       {runnersOn && (
-        <div className="space-y-1.5">
-          <div className="text-[9px] font-heading uppercase tracking-widest text-amber-400/80">Steal Base</div>
-          <div className="flex gap-2">
-            {bases.map((runner, i) => {
-              if (!runner || i + 1 >= 3 || bases[i + 1]) return null;
-              return (
-                <Button
-                  key={i}
-                  variant="outline"
-                  size="sm"
-                  disabled={disabled}
-                  onClick={() => onSteal(i)}
-                  className="flex-1 h-10 border-amber-500/30 hover:border-amber-400 hover:bg-amber-500/10 transition-all"
-                >
-                  <span className="font-heading font-bold text-xs text-amber-400">
-                    🏃 Steal {i === 0 ? '2nd' : i === 1 ? '3rd' : 'Home'}
-                  </span>
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Hit-and-run toggle */}
-      {runnersOn && (
-        <div className="flex justify-center">
-          <Button
-            variant={hitAndRun ? 'default' : 'outline'}
-            size="sm"
+        <div className="flex items-center gap-1.5 flex-wrap justify-center">
+          {bases.map((runner, i) => {
+            if (!runner || i + 1 >= 3 || bases[i + 1]) return null;
+            return (
+              <button
+                key={i}
+                disabled={disabled}
+                onClick={() => onSteal(i)}
+                className="h-7 px-2.5 rounded-md border border-amber-500/30 hover:border-amber-400 hover:bg-amber-500/10 text-[10px] font-heading font-bold text-amber-400 transition-all disabled:opacity-40"
+              >
+                🏃 Steal {i === 0 ? '2nd' : i === 1 ? '3rd' : 'Home'}
+              </button>
+            );
+          })}
+          <button
             disabled={disabled}
             onClick={onHitAndRun}
-            className={`h-9 px-4 text-xs font-heading font-bold transition-all ${
+            className={`h-7 px-2.5 rounded-md text-[10px] font-heading font-bold transition-all disabled:opacity-40 ${
               hitAndRun
-                ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
-                : 'border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/10 text-cyan-400'
+                ? 'bg-cyan-600 hover:bg-cyan-700 text-white border border-cyan-500'
+                : 'border border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/10 text-cyan-400'
             }`}
           >
-            {hitAndRun ? '✓ Hit & Run ON' : 'Hit & Run'}
-          </Button>
+            {hitAndRun ? '✓ H&R' : 'Hit & Run'}
+          </button>
         </div>
       )}
 

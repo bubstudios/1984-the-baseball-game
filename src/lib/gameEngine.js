@@ -1015,8 +1015,17 @@ function resolveSwing(state, swingType, pitch) {
 
         if (roll < dpChance) {
           if (hasForceAt3rd) {
+            // Bases loaded DP: runner on 3rd scores (unless it's the 3rd out)
             const runner3rd = state.bases[2];
-            if (runner3rd) state.bases[2] = null;
+            if (runner3rd && state.outs < 2) {
+              runner3rd.gameStats.runs++;
+              scoreRun(state);
+              batter.gameStats.rbi++;
+              pitcher.gameStats.r++;
+              pitcher.gameStats.er++;
+              state.log.push({ type: 'info', text: `${runner3rd.name} scores on the double play` });
+            }
+            state.bases[2] = null;
             state.bases[1] = null;
             state.bases[0] = runner3rd || null;
             const msg = `${batter.name} grounds into a double play — force at 3rd and 1st!`;
@@ -1043,17 +1052,40 @@ function resolveSwing(state, swingType, pitch) {
           return;
         } else if (roll < dpChance + 0.30) {
           if (hasForceAt3rd && Math.random() < 0.55) {
+            // Force at 3rd: runner on 3rd scores (force at home removed)
+            const runner3rd = state.bases[2];
+            if (runner3rd) {
+              runner3rd.gameStats.runs++;
+              scoreRun(state);
+              batter.gameStats.rbi++;
+              pitcher.gameStats.r++;
+              pitcher.gameStats.er++;
+            }
             const forcedRunner = state.bases[1];
+            state.bases[2] = null;
             state.bases[1] = state.bases[0];
             state.bases[0] = batter;
             batter.gameStats.ab++;
-            const msg = `${batter.name} grounds to ${out.pos} — force out at 3rd! ${forcedRunner ? forcedRunner.name + ' retired' : ''} — batter reaches on fielder's choice.`;
+            const scoreText = runner3rd ? ` ${runner3rd.name.split(' ').pop()} scores` : '';
+            const msg = `${batter.name} grounds to ${out.pos} — force out at 3rd! ${forcedRunner ? forcedRunner.name + ' retired' : ''}${scoreText} — batter reaches on fielder's choice.`;
             state.log.push({ type: 'fc', text: msg });
             state.lastPlay = { type: 'fc', text: msg };
           } else {
+            // Force at 2nd with bases loaded: runner on 3rd scores
+            const runner3rd = state.bases[2];
+            if (runner3rd) {
+              runner3rd.gameStats.runs++;
+              scoreRun(state);
+              batter.gameStats.rbi++;
+              pitcher.gameStats.r++;
+              pitcher.gameStats.er++;
+            }
+            state.bases[2] = state.bases[1];
+            state.bases[1] = null;
             state.bases[0] = batter;
             batter.gameStats.ab++;
-            const msg = `${batter.name} grounds to ${out.pos} — force out at 2nd! ${runnerOn1st ? runnerOn1st.name + ' retired' : ''} — batter reaches on fielder's choice.`;
+            const scoreText = runner3rd ? ` ${runner3rd.name.split(' ').pop()} scores` : '';
+            const msg = `${batter.name} grounds to ${out.pos} — force out at 2nd! ${runnerOn1st ? runnerOn1st.name + ' retired' : ''}${scoreText} — batter reaches on fielder's choice.`;
             state.log.push({ type: 'fc', text: msg });
             state.lastPlay = { type: 'fc', text: msg };
           }
@@ -1065,13 +1097,31 @@ function resolveSwing(state, swingType, pitch) {
       }
 
       // Regular groundout: advance runner on 1st to 2nd (batter out, force removed)
+      // Also handle bases loaded: runner on 3rd scores when force is at 1st/2nd (not home)
       if (hasForceAt2nd) {
         const r1 = state.bases[0];
-        if (state.bases[1]) { if (!state.bases[2]) state.bases[2] = state.bases[1]; state.bases[1] = null; }
+        const runner3rd = state.bases[2];
+        const r2 = state.bases[1];
+        // Bases loaded: runner on 3rd scores when defense doesn't throw home
+        if (runner3rd && r2 && r1) {
+          runner3rd.gameStats.runs++;
+          scoreRun(state);
+          batter.gameStats.rbi++;
+          pitcher.gameStats.r++;
+          pitcher.gameStats.er++;
+          out.text = `${out.text} — ${runner3rd.name.split(' ').pop()} scores`;
+        }
+        // Shift runners (force removed at 1st, runner at 1st advances to 2nd)
+        if (state.bases[1] && !state.bases[2]) { state.bases[2] = state.bases[1]; }
         state.bases[1] = r1;
         state.bases[0] = null;
-        if (!out.text.includes('advances')) {
-          out.text = `${out.text} — ${r1.name.split(' ').pop()} advances to second`;
+        state.bases[2] = runner3rd || state.bases[2];
+        // Only add advancement text if this wasn't the 3rd out
+        if (!out.text.includes('advances') && !out.text.includes('scores')) {
+          const willBeThirdOut = state.outs >= 2;
+          if (!willBeThirdOut) {
+            out.text = `${out.text} — ${r1.name.split(' ').pop()} advances to second`;
+          }
         }
       }
     }
