@@ -49,6 +49,39 @@ const HIT_PLAY_TYPES = ['single', 'double', 'triple', 'homerun', 'groundout', 'f
   'doubleplay', 'error', 'sacfly', 'popout', 'lineout', 'fc',
   'offMonster', 'ivyStuck', 'basketHR', 'shortPorch', 'peskyPole', 'triangle'];
 
+// Split a word into syllables for robot voice pauses
+function splitSyllables(word) {
+  const vowels = 'aeiouyAEIOUY';
+  const isVowel = (c) => vowels.includes(c);
+  const syllables = [];
+  let current = '';
+  for (let i = 0; i < word.length; i++) {
+    current += word[i];
+    // Split before consonant that follows a vowel and precedes another vowel
+    if (isVowel(word[i]) && i + 2 < word.length && !isVowel(word[i+1]) && isVowel(word[i+2])) {
+      syllables.push(current);
+      current = '';
+    }
+  }
+  if (current) syllables.push(current);
+  return syllables.length > 1 ? syllables : [word];
+}
+
+// Robot-ize a player name: split into syllables with pauses between
+function robotizeName(name) {
+  const words = name.split(' ');
+  const result = [];
+  words.forEach((word, wi) => {
+    const sylls = splitSyllables(word);
+    sylls.forEach((s, si) => {
+      result.push(s);
+      if (si < sylls.length - 1) result.push('...');
+    });
+    if (wi < words.length - 1) result.push('...');
+  });
+  return result.join(' ');
+}
+
 // Speak text with a retro robot voice: player names get slow robotic treatment
 // Uses onend chaining instead of setTimeout delays for reliable sequencing
 function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
@@ -68,17 +101,16 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
                   voices.find(v => v.lang.startsWith('en'));
 
     // Split text into chunks by detecting player names via the roster set
-    // We scan for 2-word and 3-word name sequences from the roster
     const words = cleanedText.split(' ');
     const chunks = [];
     let i = 0;
 
     while (i < words.length) {
-      // Try to match a 3-word name first (e.g. "Cal Ripken Jr.")
+      // Try 3-word name (e.g. "Cal Ripken Jr.")
       if (i + 2 < words.length) {
         const threeWord = `${words[i]} ${words[i+1]} ${words[i+2]}`;
         if (PLAYER_NAMES.has(threeWord)) {
-          chunks.push({ text: threeWord, slow: true });
+          chunks.push({ text: robotizeName(threeWord), slow: true });
           i += 3;
           continue;
         }
@@ -87,15 +119,14 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
       if (i + 1 < words.length) {
         const twoWord = `${words[i]} ${words[i+1]}`;
         if (PLAYER_NAMES.has(twoWord)) {
-          chunks.push({ text: twoWord, slow: true });
+          chunks.push({ text: robotizeName(twoWord), slow: true });
           i += 2;
           continue;
         }
       }
-      // Single word — collect in a normal chunk
+      // Collect normal text
       { let normalWords = [];
       while (i < words.length) {
-        // Peek ahead — if next words form a name, stop collecting
         let isNextName = false;
         if (i + 2 < words.length && PLAYER_NAMES.has(`${words[i]} ${words[i+1]} ${words[i+2]}`)) isNextName = true;
         else if (i + 1 < words.length && PLAYER_NAMES.has(`${words[i]} ${words[i+1]}`)) isNextName = true;

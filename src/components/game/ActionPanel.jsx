@@ -174,33 +174,36 @@ export default function ActionPanel({
 
   return (
     <div className="space-y-2">
-      {/* Steal buttons + Hit-and-run — compact inline on one row */}
+      {/* Steal + Hit & Run — compact row above swing buttons */}
       {runnersOn && (
-        <div className="flex items-center gap-1.5 flex-wrap justify-center">
-          {bases.map((runner, i) => {
-            if (!runner || i + 1 >= 3 || bases[i + 1]) return null;
-            return (
-              <button
-                key={i}
-                disabled={disabled}
-                onClick={() => onSteal(i)}
-                className="h-7 px-2.5 rounded-md border border-amber-500/30 hover:border-amber-400 hover:bg-amber-500/10 text-[10px] font-heading font-bold text-amber-400 transition-all disabled:opacity-40"
-              >
-                🏃 Steal {i === 0 ? '2nd' : i === 1 ? '3rd' : 'Home'}
-              </button>
-            );
-          })}
-          <button
-            disabled={disabled}
-            onClick={onHitAndRun}
-            className={`h-7 px-2.5 rounded-md text-[10px] font-heading font-bold transition-all disabled:opacity-40 ${
-              hitAndRun
-                ? 'bg-cyan-600 hover:bg-cyan-700 text-white border border-cyan-500'
-                : 'border border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/10 text-cyan-400'
-            }`}
-          >
-            {hitAndRun ? '✓ H&R' : 'Hit & Run'}
-          </button>
+        <div className="space-y-1">
+          <div className="text-[9px] font-heading uppercase tracking-widest text-amber-400/60 text-center">Runner Action</div>
+          <div className="flex items-center gap-1.5 justify-center flex-wrap">
+            {bases.map((runner, i) => {
+              if (!runner || i + 1 >= 3 || bases[i + 1]) return null;
+              return (
+                <button
+                  key={i}
+                  disabled={disabled}
+                  onClick={() => onSteal(i)}
+                  className="h-8 px-3 rounded-lg border border-amber-500/40 hover:border-amber-400 hover:bg-amber-500/10 text-[11px] font-heading font-bold text-amber-400 bg-amber-500/5 transition-all disabled:opacity-30"
+                >
+                  🏃 Steal {i === 0 ? '2nd' : i === 1 ? '3rd' : 'Home'}
+                </button>
+              );
+            })}
+            <button
+              disabled={disabled}
+              onClick={onHitAndRun}
+              className={`h-8 px-3 rounded-lg text-[11px] font-heading font-bold transition-all disabled:opacity-30 ${
+                hitAndRun
+                  ? 'bg-cyan-600 hover:bg-cyan-700 text-white border border-cyan-500'
+                  : 'border border-cyan-500/40 hover:border-cyan-400 hover:bg-cyan-500/10 text-cyan-400 bg-cyan-500/5'
+              }`}
+            >
+              {hitAndRun ? '✓ Hit & Run' : 'Hit & Run'}
+            </button>
+          </div>
         </div>
       )}
 
