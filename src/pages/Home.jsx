@@ -19,7 +19,7 @@ import Fireworks from '@/components/game/Fireworks';
 import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
 import RetroLoading from '@/components/game/RetroLoading';
-import useRetroAudio from '@/hooks/useRetroAudio';
+import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 
 export default function Home() {
@@ -248,7 +248,7 @@ export default function Home() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setRetroAudio(!retroAudio)}
+            onClick={() => { if (!retroAudio) unlockAudio(); setRetroAudio(!retroAudio); }}
             className={`h-8 w-8 p-0 rounded-full border-muted-foreground/30 hover:border-primary/50 ${retroAudio ? 'bg-primary/10 border-primary/50' : ''}`}
             title={retroAudio ? 'Retro audio on' : 'Retro audio off'}
           >
@@ -317,7 +317,7 @@ export default function Home() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setRetroAudio(!retroAudio)}
+              onClick={() => { if (!retroAudio) unlockAudio(); setRetroAudio(!retroAudio); }}
               className={`h-7 px-2 text-[10px] font-heading gap-1 ${retroAudio ? 'bg-primary/15 border-primary/70 text-primary shadow-sm shadow-primary/20' : ''}`}
               title={retroAudio ? 'Retro audio on' : 'Retro audio off'}
             >

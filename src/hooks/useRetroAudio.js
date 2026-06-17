@@ -8,8 +8,21 @@ function getAudioCtx() {
   if (!sharedCtx) {
     sharedCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
-  if (sharedCtx.state === 'suspended') sharedCtx.resume();
   return sharedCtx;
+}
+
+// Call this from a user gesture (click/tap) to unlock the AudioContext
+export function unlockAudio() {
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
+}
+
+function ensureResumed() {
+  if (sharedCtx && sharedCtx.state === 'suspended') {
+    sharedCtx.resume().catch(() => {});
+  }
 }
 
 // ─── White Noise Crowd Generator ────────────────────────────────────
@@ -22,6 +35,7 @@ let crowdRunning = false;
 
 function startCrowdNoise() {
   if (crowdRunning) return;
+  ensureResumed();
   const ctx = getAudioCtx();
   crowdRunning = true;
 
@@ -125,6 +139,7 @@ function crowdReact(intensity = 'mild') {
 // Brief square-wave burst + noise spike
 
 export function playBatCrack() {
+  ensureResumed();
   const ctx = getAudioCtx();
   const now = ctx.currentTime;
 
