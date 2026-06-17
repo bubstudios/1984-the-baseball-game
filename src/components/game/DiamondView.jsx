@@ -107,9 +107,9 @@ export default function DiamondView({ bases, lastPlay, isDay = false }) {
         </div>
       )}
       {bases[2] && (
-        <div className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-primary font-heading font-semibold bg-card/90 px-1 py-0.5 rounded whitespace-nowrap">
+        <div className="absolute left-1 top-1/2 -translate-y-1/2 text-[10px] text-primary font-heading font-semibold bg-card/95 px-1.5 py-0.5 rounded whitespace-nowrap z-20 shadow-md">
           {bases[2].name.split(' ').pop()}
-          <span className="text-[7px] text-muted-foreground ml-0.5 align-top">SPD{bases[2].speed}</span>
+          <span className="text-[8px] text-muted-foreground ml-1 align-top">SPD{bases[2].speed}</span>
         </div>
       )}
 

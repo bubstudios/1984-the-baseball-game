@@ -748,7 +748,7 @@ function resolveSwing(state, swingType, pitch) {
 
   // Contact chance
   const contactRating = adjBatter.contact / 10;
-  let contactChance = 0.25 + contactRating * 0.35;
+  let contactChance = 0.28 + contactRating * 0.35;
 
   if (isPower) contactChance -= 0.10;
   if (isContact) contactChance += 0.12;
@@ -806,7 +806,7 @@ function resolveSwing(state, swingType, pitch) {
   batter.gameStats.ab++;
 
   // Foul ball
-  if (Math.random() < 0.25) {
+  if (Math.random() < 0.18) {
     if (state.strikes < 2) state.strikes++;
     state.log.push({ type: 'foul', text: `${batter.name} fouls it off — ${state.balls} and ${state.strikes}` });
     state.lastPlay = { type: 'foul', text: `Foul ball` };
@@ -1193,12 +1193,14 @@ function resolveSwing(state, swingType, pitch) {
           pitcher.gameStats.r++;
           pitcher.gameStats.er++;
           out.text = `${out.text} — ${runner3rd.name.split(' ').pop()} scores`;
+          // Remove runner3rd from base so runner2nd can advance
+          state.bases[2] = null;
         }
         // Shift runners (force removed at 1st, runner at 1st advances to 2nd)
-        if (state.bases[1] && !state.bases[2]) { state.bases[2] = state.bases[1]; }
-        state.bases[1] = r1;
-        state.bases[0] = null;
-        state.bases[2] = runner3rd || state.bases[2];
+        const savedR2 = state.bases[1];
+        state.bases[0] = null;                    // batter out at 1st
+        state.bases[1] = r1;                      // runner from 1st to 2nd
+        state.bases[2] = savedR2 || state.bases[2]; // runner from 2nd to 3rd (force)
         // Only add advancement text if this wasn't the 3rd out
         if (!out.text.includes('advances') && !out.text.includes('scores')) {
           const willBeThirdOut = state.outs >= 2;
@@ -1853,6 +1855,29 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const cpuPitchingSide = newState.halfInning === 'top' ? 'home' : 'away';
   // STRICT GUARD: only act if CPU team is the one pitching
   if (cpuPitchingSide !== cpuSide) return newState;
+
+  // Auto-replace CPU pitcher if they were pinch-hit for (DH off only)
+  const cpuLineupField = cpuSide === 'away' ? newState.awayLineup : newState.homeLineup;
+  const cpuPitcherField = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
+  const cpuUseDH = newState.homeTeam === (cpuSide === 'home' ? newState.homeTeam : newState.awayTeam)
+    ? false : false; // DH flag is per-game, not per-team — skip for now
+  const pitcherInLineup = cpuLineupField.some(p => p.name === cpuPitcherField.name);
+  if (!pitcherInLineup && cpuBullpen.length > 0) {
+    const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
+    const newPitcher = sorted[0];
+    const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
+    const oldP = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
+    if (cpuPitchingSide === 'home') newState.homePitcher = newP;
+    else newState.awayPitcher = newP;
+    const bpIdx = cpuBullpen.findIndex(p => p.name === newPitcher.name);
+    if (bpIdx >= 0) cpuBullpen.splice(bpIdx, 1);
+    const historyKey = cpuPitchingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
+    if (!newState[historyKey].find(p => p.name === oldP.name)) newState[historyKey].push({ ...oldP });
+    // Add new pitcher to lineup
+    cpuLineupField.push({ ...newPitcher, order: cpuLineupField.length + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+    newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
+    return newState;
+  }
 
   const cpuBullpen = cpuSide === 'away' ? newState.awayBullpen : newState.homeBullpen;
   const cpuPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;

@@ -48,11 +48,11 @@ const STRIKEOUT_LINES = [
 
 // =========== WALK ===========
 const WALK_LINES = [
-  c("Ball four."), c("Batter awarded first base."), c("He draws the walk."),
+  c("Ball four."), c("Batter awarded first base on the walk."), c("He draws the walk."),
   c("Base on balls."),
   c("Free pass."), c("First class ticket to first base."),
   c("He'll take it — ball four."), c("Four wide ones."),
-  c("Gift-wrapped first base."), c("No purchase necessary."),
+  c("Gift-wrapped first base."), c("No purchase necessary — ball four."),
   c("The pitcher lost him."),
   c("Showing patience at the plate.", 'uncommon'),
   c("Worked the count and earned it.", 'uncommon'),

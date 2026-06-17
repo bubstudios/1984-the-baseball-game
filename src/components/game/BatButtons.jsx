@@ -29,14 +29,14 @@ export default function BatButtons({ onSwing, disabled }) {
               key={action.swingIndex}
               disabled={disabled || swinging !== null}
               onClick={() => handleSwing(action.swingIndex)}
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center gap-1 bg-card/60 hover:bg-card/80 rounded-xl px-3 py-2 transition-colors"
             >
               {/* Bat — horizontal, arcs upward on swing */}
               <div
                 className={`
                   relative w-24 h-8
                   ${isActive ? 'animate-bat-swing' : 'hover:scale-110 transition-transform'}
-                  ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
+                  ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                 `}
               >
                 <svg viewBox="0 0 180 50" className="w-full h-full">
