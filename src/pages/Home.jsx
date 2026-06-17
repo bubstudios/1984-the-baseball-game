@@ -247,7 +247,9 @@ export default function Home() {
   const userFieldingLineup = isUserPitching
     ? (gameState.halfInning === 'top' ? gameState.homeLineup : gameState.awayLineup)
     : null;
-  const pitcherNeedsReplacement = isUserPitching && pitcher && userFieldingLineup
+  // Only flag pitcher as needing replacement if DH is off (pitcher was in lineup and removed)
+  // With DH on, the pitcher never bats, so they won't be in the lineup — that's expected
+  const pitcherNeedsReplacement = isUserPitching && pitcher && userFieldingLineup && !useDH
     ? !userFieldingLineup.some(p => p.name === pitcher.name)
     : false;
   const situationalBatter = getSituationalBatter(gameState);
