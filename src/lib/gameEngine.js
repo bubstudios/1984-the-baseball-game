@@ -254,6 +254,11 @@ function advanceRunners(state, bases, batter, isHit = false) {
   }
 
   let rbi = 0;
+
+  // Save pre-advancement base state — speed checks should only apply to runners
+  // who were already at that base before this hit, not runners moved by standard advancement
+  const preBases = [...state.bases];
+
   // Standard advancement
   for (let i = 2; i >= 0; i--) {
     if (state.bases[i]) {
@@ -284,6 +289,8 @@ function advanceRunners(state, bases, batter, isHit = false) {
     for (let i = 0; i < 3; i++) {
       const runner = state.bases[i];
       if (!runner) continue;
+      // Only check speed for runners who were already at this base BEFORE standard advancement
+      if (preBases[i]?.name !== runner.name) continue;
       const speedFactor = runner.speed / 10;
 
       if (i === 0) {
