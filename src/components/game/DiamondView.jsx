@@ -31,7 +31,7 @@ export default function DiamondView({ bases, lastPlay, isDay = false }) {
   const moundStroke = isDay ? '#c4a462' : 'hsl(45, 30%, 55%)';
 
   return (
-    <div className={`relative w-full aspect-square max-w-[340px] mx-auto rounded-xl overflow-hidden ${skyBg} transition-colors duration-500`}>
+    <div className={`relative w-full aspect-square max-w-[260px] sm:max-w-[300px] mx-auto rounded-xl overflow-hidden ${skyBg} transition-colors duration-500`}>
       {/* Outfield grass */}
       <div className="absolute inset-0 rounded-t-full overflow-hidden">
         <div
