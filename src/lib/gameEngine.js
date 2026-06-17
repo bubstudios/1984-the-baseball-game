@@ -898,7 +898,7 @@ function resolveSwing(state, swingType, pitch) {
       // TRIPLE — based on Contact, Power, and Speed
       const rbi = advanceRunners(state, 3, batter, true);
       const tripleLine = pickLine(TRIPLE_LINES);
-      const msg = tripleLine.startsWith('rips a triple') ? `${batter.name} ${tripleLine}${rbi > 0 ? ` ${rbi} RBI!` : ''}` : `${tripleLine}${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
+      const msg = `${batter.name} ${tripleLine}${rbi > 0 ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'triple', text: msg });
       state.lastPlay = { type: 'triple', text: msg };
     } else if (hitRoll < effectivePower * 0.32 * doubleMod) {
@@ -948,7 +948,11 @@ function resolveSwing(state, swingType, pitch) {
     const fField = flyFields[fPos];
     const depth = depths[Math.floor(Math.random() * depths.length)];
     const flyLine = pickLine(FLYOUT_LINES);
-    const flyOutText = flyLine.includes('flies out to') ? `${batter.name} ${flyLine} ${depth}${fField[0]}` : `${batter.name} ${flyLine} ${depth}${fField[0]} — caught`;
+    const flyOutText = flyLine.includes('flies out to')
+      ? `${batter.name} ${flyLine} ${depth}${fField[0]}`
+      : flyLine.includes(' — ')
+        ? `${batter.name} ${flyLine} ${depth}${fField[0]}`
+        : `${batter.name} flies out — ${flyLine} ${depth}${fField[0]} — caught`;
     const flyOutTypes = [
       { text: flyOutText, pos: fPos, type: 'flyout' },
     ];

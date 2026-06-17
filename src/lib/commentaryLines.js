@@ -35,7 +35,7 @@ const STRIKEOUT_LINES = [
   c("That's three!"), c("Back to the dugout!"), c("Nothing doing!"),
   // old school (uncommon)
   c("He couldn't catch up to that one.", 'uncommon'),
-  c("Blew it right by him.", 'uncommon'),
+  c("Blew it right by him — strike three.", 'uncommon'),
   c("Left him guessing.", 'uncommon'),
   c("Frozen at the plate.", 'uncommon'),
   c("Caught looking.", 'uncommon'),
@@ -51,7 +51,7 @@ const WALK_LINES = [
   c("Ball four."), c("Batter awarded first base."), c("He draws the walk."),
   c("Base on balls."),
   c("Free pass."), c("First class ticket to first base."),
-  c("He'll take it."), c("Four wide ones."),
+  c("He'll take it — ball four."), c("Four wide ones."),
   c("Gift-wrapped first base."), c("No purchase necessary."),
   c("The pitcher lost him."),
   c("Showing patience at the plate.", 'uncommon'),
@@ -78,12 +78,12 @@ const SINGLE_LINES = [
   c("bloops a single into shallow right."), c("singles sharply up the middle."),
   c("Base hit."), c("Single to center."), c("Sharp single."), c("One-base hit."),
   c("Base knock."), c("A little duck snort falls in."),
-  c("That's a seeing-eye single."), c("He found some grass."),
-  c("Just what the doctor ordered."), c("Clean single."),
-  c("Solid piece of hitting.", 'uncommon'),
-  c("Hit it where they weren't.", 'uncommon'),
+  c("That's a seeing-eye single."), c("Single — found some grass."),
+  c("Base knock — just what the doctor ordered."), c("Clean single."),
+  c("Single — solid piece of hitting.", 'uncommon'),
+  c("Single — hit it where they weren't.", 'uncommon'),
   c("stayed with the pitch — base hit.", 'uncommon'),
-  c("Nice stroke.", 'uncommon'),
+  c("Single — nice stroke.", 'uncommon'),
   c("Poked it through the infield.", 'uncommon'),
   c("That's a frozen rope through the hole.", 'rare'),
 ];
@@ -94,10 +94,10 @@ const DOUBLE_LINES = [
   c("Two-base hit."), c("Stand-up double."),
   c("Splits the outfielders."), c("Into the alley!"),
   c("That's extra bases."), c("Two bags for him."),
-  c("A gapper."), c("Rattles around the wall."),
-  c("Drove it with authority.", 'uncommon'),
+  c("Double — a gapper."), c("Rattles around the wall."),
+  c("Double — drove it with authority.", 'uncommon'),
   c("Shot into the gap.", 'uncommon'),
-  c("That's textbook hitting.", 'uncommon'),
+  c("Double — that's textbook hitting.", 'uncommon'),
   c("He was thinking two all the way.", 'uncommon'),
   c("One-hopped the wall — easy stand-up double.", 'rare'),
 ];
@@ -105,13 +105,13 @@ const DOUBLE_LINES = [
 // =========== TRIPLE ===========
 const TRIPLE_LINES = [
   c("rips a triple into the gap."), c("Triple."), c("Three-base hit."),
-  c("Wheels!"), c("He's flying around the bases!"),
+  c("Triple! Wheels!"), c("Triple! He's flying around the bases!"),
   c("Triple city!"), c("Standing on third with three bags."),
-  c("Track meet around the bases."),
-  c("Turned on the jets.", 'uncommon'),
-  c("Excellent baserunning.", 'uncommon'),
-  c("Legged it out.", 'uncommon'),
-  c("Hustle from the batter.", 'uncommon'),
+  c("Triple! Track meet around the bases."),
+  c("Triple — turned on the jets.", 'uncommon'),
+  c("Triple — excellent baserunning.", 'uncommon'),
+  c("Triple — legged it out.", 'uncommon'),
+  c("Triple! Hustle from the batter.", 'uncommon'),
   c("Slid into third with a cloud of dust.", 'rare'),
   c("That's the hardest hit in baseball — a stand-up triple.", 'rare'),
 ];
@@ -156,24 +156,24 @@ const GROUNDOUT_LINES = [
   c("grounds out to first."),
   c("ground ball to short."), c("routine groundout."),
   c("retired on a ground ball."),
-  c("easy hopper."), c("around the horn for the out."),
-  c("two hops and a throw."), c("routine as can be."),
-  c("hit it right at him.", 'uncommon'),
-  c("nothing doing there.", 'uncommon'),
-  c("good fundamentals.", 'uncommon'),
+  c("groundout — an easy hopper."), c("around the horn for the out."),
+  c("two hops and a throw — groundout."), c("routine as can be — groundout."),
+  c("right at 'em — groundout.", 'uncommon'),
+  c("groundout — nothing doing there.", 'uncommon'),
+  c("groundout — good fundamentals.", 'uncommon'),
   c("ropes a one-hopper — snared on a hop.", 'rare'),
   c("a tailor-made double play ball — but only one out.", 'rare'),
 ];
 
 // =========== FLYOUT ===========
 const FLYOUT_LINES = [
-  c("flies out to"), c("fly ball to left."), c("routine flyout."),
-  c("easy play."),
-  c("can of corn."), c("camping under it."),
-  c("routine chance."),
-  c("easy chance for the outfielder.", 'uncommon'),
-  c("he barely had to move.", 'uncommon'),
-  c("routine play.", 'uncommon'),
+  c("flies out to"), c("fly ball to left —"), c("routine flyout —"),
+  c("easy play —"),
+  c("can of corn —"), c("camping under it —"),
+  c("routine fly ball —"),
+  c("easy chance for the outfielder —", 'uncommon'),
+  c("fielder barely had to move —", 'uncommon'),
+  c("routine fly ball —", 'uncommon'),
 ];
 
 // =========== DOUBLE PLAY ===========
@@ -232,9 +232,9 @@ const STRIKEOUT_SWINGING_LINES = [
   c("swings and misses — struck out!"),
   c("flails and misses — strike three!"),
   c("flails at one in the dirt — strikeout!"),
-  c("couldn't lay off the high heat.", 'uncommon'),
-  c("swings right over the top of it.", 'uncommon'),
-  c("a big cut — and a big miss.", 'rare'),
+  c("couldn't lay off the high heat — strike three!", 'uncommon'),
+  c("swings right over the top of it — strike three!", 'uncommon'),
+  c("a big cut — and a big miss — strike three!", 'rare'),
 ];
 
 // =========== CALLED STRIKEOUT (name prefixed) ===========
@@ -242,9 +242,9 @@ const STRIKEOUT_CALLED_LINES = [
   c("called out on strikes!"), c("frozen — strike three!"),
   c("watches strike three go by!"), c("caught looking!"),
   c("can't believe it — called strike three!"),
-  c("goes down looking.", 'uncommon'),
-  c("never took the bat off his shoulder.", 'uncommon'),
-  c("Frozen like a statue at the plate.", 'rare'),
+  c("goes down looking — strike three!", 'uncommon'),
+  c("never took the bat off his shoulder — strike three!", 'uncommon'),
+  c("Frozen like a statue at the plate — strike three!", 'rare'),
 ];
 
 // =========== BUNT SINGLE ===========
