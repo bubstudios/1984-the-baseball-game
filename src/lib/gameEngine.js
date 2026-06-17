@@ -385,6 +385,14 @@ function endHalfInning(state) {
 
   if (state.halfInning === 'top') {
     state.halfInning = 'bottom';
+    // 7th inning stretch
+    if (state.inning === 7) {
+      const homeFlavor = TEAMS[state.homeTeam];
+      const stretchSong = homeFlavor.league === 'NL' && homeFlavor.city === 'Chicago' 
+        ? `🎶 Harry Caray grabs the mic — "Take me out to the ballgame…" 🎶`
+        : `🎶 7th Inning Stretch at ${TEAMS[state.homeTeam]?.stadium || 'the ballpark'}! 🎶`;
+      state.log.push({ type: 'info', text: stretchSong });
+    }
     if (state.inning >= 9 && state.score.home > state.score.away) {
       state.gameOver = true;
       state.waitingForInput = false;
@@ -928,8 +936,8 @@ function resolveSwing(state, swingType, pitch) {
         const middleInfield = getMiddleInfieldRating(defenders);
         const dpFactor = (middleInfield / 10) * 0.15;
         const runnerSpeed = (runnerOn1st ? runnerOn1st.speed : 5) / 10;
-        let dpChance = 0.10 + dpFactor - (runnerSpeed * 0.12);
-        dpChance = Math.max(0.02, Math.min(dpChance, 0.35));
+        let dpChance = 0.20 + dpFactor - (runnerSpeed * 0.08);
+        dpChance = Math.max(0.06, Math.min(dpChance, 0.40));
 
         const roll = Math.random();
 
@@ -950,8 +958,16 @@ function resolveSwing(state, swingType, pitch) {
           }
           state.balls = 0; state.strikes = 0;
           advanceBatter(state);
-          recordOut(state);
-          if (!state.gameOver && state.outs < 3) recordOut(state);
+          // First out
+          state.outs++;
+          getCurrentPitcher(state).gameStats.ip += 1/3;
+          if (!state.gameOver && state.outs < 3) {
+            // Second out — only if inning didn't end on first
+            state.outs++;
+            getCurrentPitcher(state).gameStats.ip += 1/3;
+            if (state.outs >= 3) endHalfInning(state);
+          }
+          if (state.outs >= 3) endHalfInning(state);
           return;
         } else if (roll < dpChance + 0.30) {
           if (hasForceAt3rd && Math.random() < 0.55) {
@@ -1220,6 +1236,22 @@ export function processAtBat(state, pitchType, swingType) {
   }
 
   newState.pitchResult = resolvePitch(newState, pitchType);
+
+  // Wild pitch resolved entirely in resolvePitch — skip swing, just check for walk
+  if (newState.pitchResult.isWildPitch) {
+    if (newState.balls >= 4) {
+      const walkBatter = getCurrentBatter(newState);
+      walkBatter.gameStats.bb++;
+      getCurrentPitcher(newState).gameStats.bb++;
+      const msg = `${walkBatter.name} walks on a wild pitch!`;
+      newState.log.push({ type: 'walk', text: msg });
+      newState.lastPlay = { type: 'walk', text: msg };
+      handleWalk(newState, walkBatter);
+      newState.balls = 0; newState.strikes = 0;
+      advanceBatter(newState);
+    }
+    return newState;
+  }
 
   // HBP bypasses swing entirely
   if (newState.pitchResult.isHBP) {

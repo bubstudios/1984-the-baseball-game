@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TEAMS, PITCH_TYPES, SWING_TYPES } from '@/lib/gameData';
@@ -15,6 +15,7 @@ import ActionPanel from '@/components/game/ActionPanel';
 import PlayLog from '@/components/game/PlayLog';
 import BoxScore from '@/components/game/BoxScore';
 import SubstitutionsPanel from '@/components/game/SubstitutionsPanel';
+import Fireworks from '@/components/game/Fireworks';
 import { RotateCcw, Trophy, Users } from 'lucide-react';
 
 export default function Home() {
@@ -30,6 +31,9 @@ export default function Home() {
   const [useDH, setUseDH] = useState(false);
   const [gameWeather, setGameWeather] = useState(null);
   const [showSubs, setShowSubs] = useState(false);
+  const [hrTrigger, setHrTrigger] = useState(0);
+  const [winTrigger, setWinTrigger] = useState(0);
+  const prevLastPlay = useRef(null);
 
   const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather) => {
     setHomeTeam(home);
@@ -65,6 +69,26 @@ export default function Home() {
   const handleLineupConfirm = useCallback((customLineup) => {
     startGame(lineupPhase.home, lineupPhase.away, customLineup, null, lineupPhase.useDH, lineupPhase.weather);
   }, [lineupPhase, startGame]);
+
+  // Fireworks: detect home team HRs and wins
+  useEffect(() => {
+    if (!gameState) return;
+    const lastPlay = gameState.lastPlay;
+    if (lastPlay && lastPlay !== prevLastPlay.current) {
+      prevLastPlay.current = lastPlay;
+      const battingTeam = gameState.halfInning === 'bottom' ? 'home' : 'away';
+      if (lastPlay.type === 'homerun' && battingTeam === 'home') {
+        setHrTrigger(t => t + 1);
+      }
+    }
+    if (gameState.gameOver && gameState.score.home > gameState.score.away) {
+      // Only trigger once per game
+      if (prevLastPlay.current?.type !== '__win_fired__') {
+        prevLastPlay.current = { type: '__win_fired__' };
+        setTimeout(() => setWinTrigger(t => t + 1), 300);
+      }
+    }
+  }, [gameState]);
 
   const isUserBatting = gameState && (
     (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
@@ -362,6 +386,10 @@ export default function Home() {
           </Button>
         </div>
       </div>
+
+      {/* Fireworks */}
+      <Fireworks trigger={hrTrigger} type="hr" />
+      <Fireworks trigger={winTrigger} type="win" />
 
       {/* Substitutions Panel */}
       {showSubs && (
