@@ -1015,12 +1015,17 @@ function resolveSwing(state, swingType, pitch) {
       }
     }
 
-    // ---- SACRIFICE FLY ----
-    if (state.bases[2] && state.outs < 2) {
+    // ---- SACRIFICE FLY (deep fly balls only, runner on 3rd) ----
+    // isDeepFly: fly ball to the outfield, not shallow or infield popup
+    const isDeepFly = isFlyBall && out.type !== 'popout' &&
+      (out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'));
+    if (isDeepFly && state.bases[2] && state.outs < 2) {
       const runner = state.bases[2];
       const runnerSpeed = runner.speed / 10;
-      const sacFlyChance = 0.15 + runnerSpeed * 0.45;
-      if (Math.random() < sacFlyChance) {
+      const ofArm = getOutfieldArm(defenders) / 10;
+      // Sac fly: speed helps, strong OF arm hurts, ~10-35% chance on deep flies
+      const sacFlyChance = 0.08 + runnerSpeed * 0.30 - ofArm * 0.10;
+      if (Math.random() < Math.max(0.04, Math.min(sacFlyChance, 0.35))) {
         runner.gameStats.runs++;
         scoreRun(state);
         state.bases[2] = null;
@@ -1039,20 +1044,18 @@ function resolveSwing(state, swingType, pitch) {
       }
     }
 
-    // ---- TAG-UP on fly outs ----
-    if (isFlyBall) {
-      for (let i = 0; i < 2; i++) {
-        const runner = state.bases[i];
-        if (!runner) continue;
+    // ---- TAG-UP on fly outs (deep flies only, 2nd→3rd) ----
+    if (isDeepFly) {
+      const runner = state.bases[1];
+      if (runner && state.outs < 2) {
         const speedFactor = runner.speed / 10;
-        const ofArm = defenders[out.pos] ? defenders[out.pos].arm / 10 : 0.5;
-        if (i === 1 && state.outs < 2) {
-          const tagChance = 0.08 + speedFactor * 0.40 - ofArm * 0.12;
-          if (Math.random() < Math.max(0.02, tagChance)) {
-            state.bases[2] = runner;
-            state.bases[1] = null;
-            state.log.push({ type: 'info', text: `${runner.name} tags up and advances to third!` });
-          }
+        const ofArm = getOutfieldArm(defenders) / 10;
+        // Tag from 2nd to 3rd: fast runner, weak arm helps
+        const tagChance = 0.05 + speedFactor * 0.35 - ofArm * 0.10;
+        if (Math.random() < Math.max(0.02, Math.min(tagChance, 0.30))) {
+          state.bases[2] = runner;
+          state.bases[1] = null;
+          state.log.push({ type: 'info', text: `${runner.name} tags up and advances to third!` });
         }
       }
     }
