@@ -1,4 +1,5 @@
 import React from 'react';
+import { pickHarryLine } from '@/lib/harryCarayLines';
 
 // Player nicknames — researched from 1984 MLB lore
 const NICKNAMES = {
@@ -532,7 +533,10 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
 
   const flavorKey = TEAM_TO_FLAVOR[homeTeamKey] || null;
   const stadiumInfo = flavorKey ? STADIUM_FLAVOR[flavorKey] : null;
-  const text = getCommentary(batter, pitcher, gameState, stadiumInfo);
+  const isCubsGame = homeTeamKey === 'cubs';
+  const text = isCubsGame && Math.random() < 0.65
+    ? pickHarryLine()
+    : getCommentary(batter, pitcher, gameState, stadiumInfo);
 
   return (
     <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">
