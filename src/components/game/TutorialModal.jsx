@@ -24,7 +24,6 @@ const STEPS = [
     text: (
       <>
         <strong>Normal Swing</strong> — balanced contact and power<br />
-        <strong>Contact Swing</strong> — higher contact, less power<br />
         <strong>Power Swing</strong> — swing for the fences, lower contact<br />
         <strong>Bunt</strong> — lay one down to advance runners<br />
         <br />
@@ -41,7 +40,7 @@ const STEPS = [
         <strong>FB</strong> Fastball · <strong>BB</strong> Breaking Ball · <strong>CU</strong> Changeup<br />
         <strong>KN</strong> Knuckleball · <strong>SC</strong> Screwball · <strong>SF</strong> Split-Finger<br />
         <br />
-        Faster pitches are harder to hit but easier to steal on. Breaking balls have higher strike chances.
+        Faster pitches are harder to hit and harder to steal against — they get to the plate quicker. Breaking balls have higher strike chances.
       </>
     ),
   },
