@@ -12,6 +12,8 @@ export default function ActionPanel({
   bases,
   hitAndRun,
   pitcherPitches,
+  pitcherNeedsReplacement,
+  onNeedReliever,
 }) {
   const [activePitch, setActivePitch] = useState(null);
   const [animatingPitch, setAnimatingPitch] = useState(null);
@@ -29,6 +31,23 @@ export default function ActionPanel({
   };
 
   if (isPitching) {
+    // Pitcher was pinch-hit for — must bring in a reliever first
+    if (pitcherNeedsReplacement) {
+      return (
+        <div className="space-y-3 text-center">
+          <div className="text-xs text-amber-400 font-heading">Pitcher was pinch-hit for</div>
+          <Button
+            variant="default"
+            size="lg"
+            onClick={onNeedReliever}
+            className="w-full h-12 font-heading font-bold text-sm bg-amber-600 hover:bg-amber-700"
+          >
+            Bring in a Reliever
+          </Button>
+        </div>
+      );
+    }
+
     const pitches = pitcherPitches || ["Fastball", "Breaking Ball", "Changeup"];
 
     const pitchShortNames = {

@@ -241,6 +241,14 @@ export default function Home() {
 
   const batter = getCurrentBatter(gameState);
   const pitcher = getCurrentPitcher(gameState);
+
+  // Detect if the user's current pitcher was pinch-hit for and needs a replacement
+  const userFieldingLineup = isUserPitching
+    ? (gameState.halfInning === 'top' ? gameState.homeLineup : gameState.awayLineup)
+    : null;
+  const pitcherNeedsReplacement = isUserPitching && pitcher && userFieldingLineup
+    ? !userFieldingLineup.some(p => p.name === pitcher.name)
+    : false;
   const situationalBatter = getSituationalBatter(gameState);
   const battingTeamKey = getBattingTeam(gameState) === 'home' ? homeTeam : awayTeam;
   const battingTeamName = TEAMS[battingTeamKey]?.name || '';
@@ -392,6 +400,8 @@ export default function Home() {
                       bases={gameState.bases}
                       hitAndRun={gameState.hitAndRun}
                       pitcherPitches={pitcher.pitches}
+                      pitcherNeedsReplacement={pitcherNeedsReplacement}
+                      onNeedReliever={() => setShowSubs(true)}
                     />
                   </div>
                 )}
