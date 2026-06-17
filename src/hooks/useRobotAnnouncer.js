@@ -49,39 +49,6 @@ const HIT_PLAY_TYPES = ['single', 'double', 'triple', 'homerun', 'groundout', 'f
   'doubleplay', 'error', 'sacfly', 'popout', 'lineout', 'fc',
   'offMonster', 'ivyStuck', 'basketHR', 'shortPorch', 'peskyPole', 'triangle'];
 
-// Split a word into syllables for robot voice pauses
-function splitSyllables(word) {
-  const vowels = 'aeiouyAEIOUY';
-  const isVowel = (c) => vowels.includes(c);
-  const syllables = [];
-  let current = '';
-  for (let i = 0; i < word.length; i++) {
-    current += word[i];
-    // Split before consonant that follows a vowel and precedes another vowel
-    if (isVowel(word[i]) && i + 2 < word.length && !isVowel(word[i+1]) && isVowel(word[i+2])) {
-      syllables.push(current);
-      current = '';
-    }
-  }
-  if (current) syllables.push(current);
-  return syllables.length > 1 ? syllables : [word];
-}
-
-// Robot-ize a player name: split into syllables with pauses between
-function robotizeName(name) {
-  const words = name.split(' ');
-  const result = [];
-  words.forEach((word, wi) => {
-    const sylls = splitSyllables(word);
-    sylls.forEach((s, si) => {
-      result.push(s);
-      if (si < sylls.length - 1) result.push('...');
-    });
-    if (wi < words.length - 1) result.push('...');
-  });
-  return result.join(' ');
-}
-
 // Speak text with a retro robot voice: player names get slow robotic treatment
 // Uses onend chaining instead of setTimeout delays for reliable sequencing
 function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
@@ -110,7 +77,7 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
       if (i + 2 < words.length) {
         const threeWord = `${words[i]} ${words[i+1]} ${words[i+2]}`;
         if (PLAYER_NAMES.has(threeWord)) {
-          chunks.push({ text: robotizeName(threeWord), slow: true });
+          chunks.push({ text: threeWord, slow: true });
           i += 3;
           continue;
         }
@@ -119,7 +86,7 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
       if (i + 1 < words.length) {
         const twoWord = `${words[i]} ${words[i+1]}`;
         if (PLAYER_NAMES.has(twoWord)) {
-          chunks.push({ text: robotizeName(twoWord), slow: true });
+          chunks.push({ text: twoWord, slow: true });
           i += 2;
           continue;
         }
