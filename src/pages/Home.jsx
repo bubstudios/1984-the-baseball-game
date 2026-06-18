@@ -193,32 +193,32 @@ export default function Home() {
     // Check achievements when game ends
     if (gameState.gameOver && !prevGameOver.current) {
       prevGameOver.current = true;
-      const userSide = gameState.homeTeam === userTeam ? 'home' : 'away';
-      const opponentSide = userSide === 'home' ? 'away' : 'home';
-      const userWon = gameState.score[userSide] > gameState.score[opponentSide];
-      const userLineup = userSide === 'home' ? gameState.homeLineup : gameState.awayLineup;
-      const opponentLineup = userSide === 'home' ? gameState.awayLineup : gameState.homeLineup;
+      try {
+        const userSide = gameState.homeTeam === userTeam ? 'home' : 'away';
+        const opponentSide = userSide === 'home' ? 'away' : 'home';
+        const userWon = gameState.score[userSide] > gameState.score[opponentSide];
+        const userLineup = userSide === 'home' ? gameState.homeLineup : gameState.awayLineup;
+        const opponentLineup = userSide === 'home' ? gameState.awayLineup : gameState.homeLineup;
 
-      // Count hits
-      const userHits = [...userLineup, ...(userSide === 'home' ? (gameState.homePlayerHistory || []) : (gameState.awayPlayerHistory || []))]
-        .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
-      const oppHits = [...opponentLineup, ...(userSide === 'home' ? (gameState.awayPlayerHistory || []) : (gameState.homePlayerHistory || []))]
-        .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
+        const userHits = [...userLineup, ...(userSide === 'home' ? (gameState.homePlayerHistory || []) : (gameState.awayPlayerHistory || []))]
+          .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
+        const oppHits = [...opponentLineup, ...(userSide === 'home' ? (gameState.awayPlayerHistory || []) : (gameState.homePlayerHistory || []))]
+          .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
 
-      // Track stats for milestone achievements
-      trackGameCompleted(userWon, userTeam, null, gameStadium, userHits, oppHits);
-      trackGameEndTime();
-      checkTeamAchievements();
+        trackGameCompleted(userWon, userTeam, null, gameStadium, userHits, oppHits);
+        trackGameEndTime();
+        checkTeamAchievements();
 
-      // Earl Weaver Special: manager ejected + team won
-      if (gameState._managerEjected && userWon) {
-        unlockAchievement('earl_weaver');
-      }
+        if (gameState._managerEjected && userWon) {
+          unlockAchievement('earl_weaver');
+        }
 
-      // Check gameplay achievements
-      const newOnes = checkGameAchievements(gameState, userTeam);
-      if (newOnes.length > 0) {
-        setNewAchievements(newOnes);
+        const newOnes = checkGameAchievements(gameState, userTeam);
+        if (newOnes.length > 0) {
+          setNewAchievements(newOnes);
+        }
+      } catch (e) {
+        // Silently ignore game-over stat tracking failures — don't crash the UI
       }
     }
   }, [gameState]);
@@ -519,7 +519,7 @@ export default function Home() {
     : null;
   // Only flag pitcher as needing replacement if DH is off (pitcher was in lineup and removed)
   // With DH on, the pitcher never bats, so they won't be in the lineup — that's expected
-  const pitcherNeedsReplacement = isUserPitching && pitcher && userFieldingLineup && !useDH
+  const pitcherNeedsReplacement = isUserPitching && pitcher && userFieldingLineup && !useDH && pitcher.name
     ? !userFieldingLineup.some(p => p.name === pitcher.name)
     : false;
   const situationalBatter = getSituationalBatter(gameState);
