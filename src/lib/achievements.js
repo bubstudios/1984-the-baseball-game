@@ -66,6 +66,7 @@ export const ACHIEVEMENTS = [
   { id: 'ace_of_staff', name: 'Ace of the Staff', desc: 'Complete a game with your starting pitcher', icon: '🃏', category: '1984' },
   { id: 'workhorse', name: 'Workhorse', desc: 'Throw 140+ pitches with one pitcher', icon: '🐴', category: '1984' },
   { id: 'old_school', name: 'Old School Manager', desc: 'Win without making a pitching change', icon: '👴', category: '1984' },
+  { id: 'one_pitch_wonder', name: 'One-Pitch Wonder', desc: 'Complete a game using only one type of pitch', icon: '🌀', category: '1984' },
 
   // ── VERY RARE ──
   { id: 'twenty_one_guns', name: '21 Guns', desc: 'Score 21 runs in a game', icon: '🔫', category: 'rare' },
@@ -536,6 +537,9 @@ export function checkGameAchievements(gameState, userTeam = 'home') {
   // Old School: no pitching change (only 1 pitcher all game)
   const pitcherCount = new Set(userPitchers.map(p => p.name)).size;
   if (pitcherCount === 1 && userWon) u('old_school');
+  // One-Pitch Wonder: completed game using only one pitch type
+  const pitchTypes = gameState.userPitchTypes || [];
+  if (pitchTypes.length === 1 && gameState.inning >= 5) u('one_pitch_wonder');
 
   // ── VERY RARE ──
   if (userScore >= 21) u('twenty_one_guns');

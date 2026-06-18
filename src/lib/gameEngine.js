@@ -1291,6 +1291,23 @@ function resolveSwing(state, swingType, pitch) {
           }
         }
       }
+
+      // Runner on 2nd, less than 2 outs, groundout to right side → advance to 3rd
+      if (!hasForceAt2nd && state.bases[1] && !state.bases[2] && state.outs < 2 && out.type === 'groundout') {
+        const runner = state.bases[1];
+        const isRightSide = ['1B', '2B'].includes(out.pos);
+        const speedFactor = runner.speed / 10;
+        // Right-side grounders: runner on 2nd can advance to 3rd (fielder goes to 1st for the out)
+        // Higher chance on right side (1B/2B), lower on left side (SS/3B) — throw is shorter
+        const advanceChance = isRightSide
+          ? 0.55 + speedFactor * 0.35  // right side: 55-90%
+          : 0.15 + speedFactor * 0.25; // left side: 15-40%
+        if (Math.random() < Math.max(0.05, advanceChance)) {
+          state.bases[2] = runner;
+          state.bases[1] = null;
+          out.text = `${out.text} — ${runner.name.split(' ').pop()} advances to third`;
+        }
+      }
     }
 
     // ---- SACRIFICE FLY (outfield fly ball only, runner on 3rd) ----
@@ -1685,6 +1702,12 @@ export function processAtBat(state, pitchType, swingType) {
   }
 
   newState.pitchResult = resolvePitch(newState, pitchType);
+
+  // Track distinct pitch types used by the user (for One-Pitch Wonder achievement)
+  if (!newState.userPitchTypes) newState.userPitchTypes = [];
+  if (!newState.userPitchTypes.includes(pitchType.name)) {
+    newState.userPitchTypes = [...newState.userPitchTypes, pitchType.name];
+  }
 
   // Wild pitch resolved entirely in resolvePitch — skip swing, just check for walk
   if (newState.pitchResult.isWildPitch) {
