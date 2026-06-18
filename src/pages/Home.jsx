@@ -17,6 +17,7 @@ import SubstitutionsPanel from '@/components/game/SubstitutionsPanel';
 import Fireworks from '@/components/game/Fireworks';
 import ArgumentsBanner from '@/components/game/ArgumentsBanner';
 import BallparkEventBanner from '@/components/game/BallparkEventBanner';
+import InjuryBanner from '@/components/game/InjuryBanner';
 import { getArgumentSeverity, resolveArgument, getEjectionCommentary, rollUmpire, maybeDugoutChirp } from '@/lib/umpireArguments';
 import { rollBallparkEvent, resetBallparkEvents } from '@/lib/ballparkEvents';
 import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
@@ -51,6 +52,7 @@ export default function Home() {
   const [gameUmpire, setGameUmpire] = useState(null);
   const [ejectionCount, setEjectionCount] = useState(0);
   const [ballparkEvent, setBallparkEvent] = useState(null);
+  const [injuryResult, setInjuryResult] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
 
@@ -79,6 +81,7 @@ export default function Home() {
     setEjectionCount(0);
     setArgumentResult(null);
     setBallparkEvent(null);
+    setInjuryResult(null);
     resetBallparkEvents();
     setGameStadium(lineupPhase?.parkTeam ? TEAMS[lineupPhase.parkTeam]?.stadium : null);
     setGameWeather(weather || null);
@@ -127,6 +130,11 @@ export default function Home() {
         prevLastPlay.current = { type: '__win_fired__' };
         setTimeout(() => setWinTrigger(t => t + 1), 300);
       }
+    }
+
+    // Check for injuries
+    if (gameState.lastInjury && !injuryResult) {
+      setInjuryResult(gameState.lastInjury);
     }
 
     // Check achievements when game ends
@@ -365,6 +373,7 @@ export default function Home() {
     setNewAchievements([]);
     setArgumentResult(null);
     setGameUmpire(null);
+    setInjuryResult(null);
     prevGameOver.current = false;
   };
 
@@ -682,6 +691,14 @@ export default function Home() {
         <BallparkEventBanner
           event={ballparkEvent}
           onDismiss={() => setBallparkEvent(null)}
+        />
+      )}
+
+      {/* Injury Banner */}
+      {injuryResult && (
+        <InjuryBanner
+          injury={injuryResult}
+          onDismiss={() => setInjuryResult(null)}
         />
       )}
 

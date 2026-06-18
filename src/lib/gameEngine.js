@@ -10,6 +10,7 @@ import {
   BUNT_SINGLE_LINES, SACRIFICE_BUNT_LINES, SAC_FLY_LINES,
   STEAL_LINES, ERROR_LINES, FC_LINES,
 } from './commentaryLines';
+import { checkPitcherInjury, checkPlayInjury } from './injuries';
 
 // Create initial game state with two selected teams
 export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null) {
@@ -1436,6 +1437,103 @@ function handleHitAndRunCaught(state) {
 
 // --- PROCESS AT BAT ---
 
+// Run injury checks after a play — modifies state in place
+function runInjuryChecks(newState) {
+  const lastPlay = newState.lastPlay;
+  if (!lastPlay) return;
+
+  const batter = getCurrentBatter(newState);
+
+  switch (lastPlay.type) {
+    case 'walk': {
+      // HBP → check batter for hand/wrist/rib injury
+      if (lastPlay.text?.includes('hit by the pitch')) {
+        const hbpResult = checkPlayInjury(newState, 'hit_by_pitch', batter.name);
+        if (hbpResult) {
+          newState.lastInjury = hbpResult;
+          applyInjuryState(newState, hbpResult);
+          newState.log.push({ type: 'injury', text: `🚑 ${hbpResult.commentary}` });
+        }
+      }
+      break;
+    }
+    case 'steal': {
+      const runner = newState.bases.find(b => b && b.name !== batter.name) || batter;
+      const stealResult = checkPlayInjury(newState, 'steal_success', runner.name);
+      if (stealResult) {
+        newState.lastInjury = stealResult;
+        applyInjuryState(newState, stealResult);
+        newState.log.push({ type: 'injury', text: `🚑 ${stealResult.commentary}` });
+      }
+      break;
+    }
+    case 'caughtstealing': {
+      const csRunner = newState.bases.find(b => b) || batter;
+      const csResult = checkPlayInjury(newState, 'steal_attempt', csRunner.name);
+      if (csResult) {
+        newState.lastInjury = csResult;
+        applyInjuryState(newState, csResult);
+        newState.log.push({ type: 'injury', text: `🚑 ${csResult.commentary}` });
+      }
+      break;
+    }
+    case 'homerun': {
+      const hrResult = checkPlayInjury(newState, 'homerun', batter.name);
+      if (hrResult) {
+        newState.lastInjury = hrResult;
+        applyInjuryState(newState, hrResult);
+        newState.log.push({ type: 'injury', text: `🚑 ${hrResult.commentary}` });
+      }
+      break;
+    }
+    case 'single':
+    case 'double':
+    case 'triple': {
+      const hitResult = checkPlayInjury(newState, 'sprint_to_first', batter.name);
+      if (hitResult) {
+        newState.lastInjury = hitResult;
+        applyInjuryState(newState, hitResult);
+        newState.log.push({ type: 'injury', text: `🚑 ${hitResult.commentary}` });
+      }
+      break;
+    }
+    case 'error': {
+      const errResult = checkPlayInjury(newState, 'sprint_to_first', batter.name);
+      if (errResult) {
+        newState.lastInjury = errResult;
+        applyInjuryState(newState, errResult);
+        newState.log.push({ type: 'injury', text: `🚑 ${errResult.commentary}` });
+      }
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+// Mark a player as injured in the state
+function applyInjuryState(newState, injuryResult) {
+  if (!injuryResult) return;
+  const playerName = injuryResult.player;
+
+  // Find in lineups
+  const awayIdx = newState.awayLineup.findIndex(p => p.name === playerName);
+  const homeIdx = newState.homeLineup.findIndex(p => p.name === playerName);
+  if (awayIdx >= 0) {
+    newState.awayLineup[awayIdx] = { ...newState.awayLineup[awayIdx], injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name };
+  }
+  if (homeIdx >= 0) {
+    newState.homeLineup[homeIdx] = { ...newState.homeLineup[homeIdx], injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name };
+  }
+
+  if (newState.homePitcher?.name === playerName) {
+    newState.homePitcher = { ...newState.homePitcher, injured: true, injuryType: injuryResult.severity };
+  }
+  if (newState.awayPitcher?.name === playerName) {
+    newState.awayPitcher = { ...newState.awayPitcher, injured: true, injuryType: injuryResult.severity };
+  }
+}
+
 export function processAtBat(state, pitchType, swingType) {
   const home = TEAMS[state.homeTeam];
   const away = TEAMS[state.awayTeam];
@@ -1518,6 +1616,21 @@ export function processAtBat(state, pitchType, swingType) {
     newState.gameOver = true;
     newState.waitingForInput = false;
     newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
+  }
+
+  // Run injury checks after the play resolves
+  if (!newState.gameOver) {
+    runInjuryChecks(newState);
+  }
+
+  // Pitcher fatigue injury check (only if no injury happened this play)
+  if (!newState.gameOver && !newState.lastInjury) {
+    const pInjury = checkPitcherInjury(newState);
+    if (pInjury) {
+      newState.lastInjury = pInjury;
+      applyInjuryState(newState, pInjury);
+      newState.log.push({ type: 'injury', text: `🚑 ${pInjury.commentary}` });
+    }
   }
 
   return newState;

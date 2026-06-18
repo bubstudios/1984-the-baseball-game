@@ -18,6 +18,8 @@ const typeStyles = {
   steal: 'text-amber-400 font-semibold',
   caughtstealing: 'text-red-400',
   error: 'text-orange-400 font-semibold',
+  injury: 'text-red-500 font-semibold',
+  ejection: 'text-red-500 font-bold',
   info: 'text-primary font-semibold',
 };
 
