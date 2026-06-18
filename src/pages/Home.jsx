@@ -18,6 +18,9 @@ import Fireworks from '@/components/game/Fireworks';
 import ArgumentsBanner from '@/components/game/ArgumentsBanner';
 import BallparkEventBanner from '@/components/game/BallparkEventBanner';
 import InjuryBanner from '@/components/game/InjuryBanner';
+import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
+import ErrorBoundary from '@/components/game/ErrorBoundary';
+import { applyInjuryReplacement } from '@/lib/injuryReplacement';
 import { getArgumentSeverity, resolveArgument, getEjectionCommentary, rollUmpire, maybeDugoutChirp } from '@/lib/umpireArguments';
 import { rollBallparkEvent, resetBallparkEvents } from '@/lib/ballparkEvents';
 import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
@@ -140,9 +143,16 @@ export default function Home() {
     }
 
     // Check for injuries — only show once per injury
+    // If there's a pending injury requiring user selection, show the selection modal
+    if (gameState._pendingInjury && !injuryResult) {
+      setInjuryResult({ ...gameState._pendingInjury, _pending: true });
+      return;
+    }
     if (gameState.lastInjury && !injuryResult && !gameState._injuryShown) {
-      setInjuryResult(gameState.lastInjury);
-      // Mark as shown to prevent re-triggering
+      // If injury was already auto-handled (no bench), show the standard banner
+      if (!gameState._pendingInjury) {
+        setInjuryResult(gameState.lastInjury);
+      }
       setGameState(prev => prev ? { ...prev, _injuryShown: true } : prev);
     }
 
@@ -400,6 +410,13 @@ export default function Home() {
     setGameState(newState);
     setShowSubs(false);
   }, [gameState]);
+
+  const handleInjuryReplacement = (chosenPlayer) => {
+    if (!gameState || !gameState._pendingInjury) return;
+    const newState = applyInjuryReplacement(gameState, chosenPlayer);
+    setGameState(newState);
+    setInjuryResult(null);
+  };
 
   const handleNewGame = () => {
     setGameState(null);
@@ -763,11 +780,19 @@ export default function Home() {
         />
       )}
 
-      {/* Injury Banner */}
-      {injuryResult && (
+      {/* Injury Banner — standard notification when no bench choice needed */}
+      {injuryResult && !injuryResult._pending && (
         <InjuryBanner
           injury={injuryResult}
           onDismiss={() => setInjuryResult(null)}
+        />
+      )}
+
+      {/* Injury Replacement Modal — forced bench selection */}
+      {injuryResult && injuryResult._pending && (
+        <InjuryReplacementModal
+          pendingInjury={injuryResult}
+          onSelect={handleInjuryReplacement}
         />
       )}
 

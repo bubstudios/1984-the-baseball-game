@@ -49,10 +49,14 @@ export function getEffectivePitcher(state) {
 
   if (fatigue.fatigueLevel === 0) return pitcher;
 
+  // Offspeed drops too when gassed — everything flattens out
+  const offSpeedPen = fatigue.fatigueLevel >= 3 ? Math.min(4, Math.round((fatigue.fatigueLevel - 2) * 1.5)) : 0;
+
   return {
     ...pitcher,
     effectivePitchSpeed: Math.max(1, pitcher.pitchSpeed - fatigue.speedPen),
     effectiveControl: Math.max(1, pitcher.control - fatigue.controlPen),
+    effectiveOffSpeed: Math.max(1, pitcher.offSpeed - offSpeedPen),
     fatigueLevel: fatigue.fatigueLevel,
     fatigueSpeedPen: fatigue.speedPen,
     fatigueControlPen: fatigue.controlPen,
@@ -825,8 +829,11 @@ function resolveSwing(state, swingType, pitch) {
   // Pitcher's off-speed and pitch speed affect contact (use effective ratings)
   const effPitcher2 = getEffectivePitcher(state) || pitcher;
   const effSpeed = effPitcher2.effectivePitchSpeed || effPitcher2.pitchSpeed;
-  const pitcherDifficulty = (pitcher.offSpeed / 10) * 0.07 + (effSpeed / 10) * 0.05;
+  const effOffSpeed = effPitcher2.effectiveOffSpeed || effPitcher2.offSpeed || pitcher.offSpeed;
+  const pitcherDifficulty = (effOffSpeed / 10) * 0.07 + (effSpeed / 10) * 0.05;
   contactChance -= pitcherDifficulty;
+  // Gassed pitchers: significantly easier to make contact against
+  if (effPitcher2.fatigueLevel >= 3) contactChance += 0.12;
   contactChance = Math.max(0.05, Math.min(contactChance, 0.85));
 
   const madeContact = Math.random() < contactChance;
@@ -960,6 +967,14 @@ function resolveSwing(state, swingType, pitch) {
   const effPitcher3 = getEffectivePitcher(state) || pitcher;
   const effCtrl2 = effPitcher3.effectiveControl || effPitcher3.control;
   hitChance -= (effCtrl2 / 10) * 0.03;
+
+  // Gassed pitchers: balls over the plate = batters feast
+  if (effPitcher3.fatigueLevel >= 3) hitChance += 0.10;
+  if (effPitcher3.fatigueLevel >= 4) hitChance += 0.06;
+
+  // Gassed + low speed = meatballs: significant power boost
+  const gassedSpeed = effPitcher3.effectivePitchSpeed || effPitcher3.pitchSpeed;
+  if (gassedSpeed <= 2 && effPitcher3.fatigueLevel >= 3) hitChance += 0.05;
 
   // Outfield positioning: power hitters → deeper OF → more singles drop in
   const ofPositioningBonus = (adjBatter.power / 10) * 0.05;
@@ -1865,42 +1880,32 @@ function applyInjuryState(newState, injuryResult) {
       newState[historyKey].push({ ...injuredPlayer, injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name });
     }
 
-    // Auto-substitute based on player role
+    // Determine available bench options
+    let benchOptions = [];
     if (isPitcher && bullpen.length > 0) {
-      // Pitcher injured → replace with best reliever
-      const bestRP = [...bullpen].sort((a, b) => b.control - a.control)[0];
-      const newP = { ...bestRP, pitchCount: 0, pitches: bestRP.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
-      if (isAway) {
-        newState.awayPitcher = newP;
-      } else {
-        newState.homePitcher = newP;
-      }
-      const bpIdx = bullpen.findIndex(p => p.name === bestRP.name);
-      if (bpIdx >= 0) bullpen.splice(bpIdx, 1);
-      targetLineup[targetIdx] = { ...bestRP, order: injuredPlayer.order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-      newState.log.push({ type: 'info', text: `🚑 ${playerName} injured — ${bestRP.name} takes the mound` });
-    } else if (isCurrentBatter && bench.length > 0) {
-      // Injured batter → pinch hit
-      const bestPH = [...bench].sort((a, b) => b.contact - a.contact)[0];
-      targetLineup[targetIdx] = { ...bestPH, order: injuredPlayer.order, assignedPos: bestPH.pos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-      newState.log.push({ type: 'info', text: `🚑 ${playerName} injured — ${bestPH.name} pinch-hits` });
+      benchOptions = [...bullpen].map(rp => ({ ...rp, pos: 'RP', reason: 'reliever' }));
     } else if (bench.length > 0) {
-      // Injured fielder → defensive replacement
-      const bestSub = [...bench].sort((a, b) => b.defense - a.defense)[0];
-      const oldPos = injuredPlayer.assignedPos || injuredPlayer.pos;
-      targetLineup[targetIdx] = { ...bestSub, order: injuredPlayer.order, assignedPos: oldPos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-      newState.log.push({ type: 'info', text: `🚑 ${playerName} injured — ${bestSub.name} takes over at ${oldPos}` });
-    } else {
-      // No bench available — just mark injured
-      targetLineup[targetIdx] = { ...injuredPlayer, injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name };
+      benchOptions = [...bench];
     }
 
-    // Also replace the injured player on the bases (e.g., injured running on a double)
-    for (let i = 0; i < 3; i++) {
-      if (newState.bases[i] && newState.bases[i].name === playerName) {
-        newState.bases[i] = targetLineup[targetIdx];
-        break;
-      }
+    if (benchOptions.length > 0) {
+      // Set pending injury — user MUST pick a replacement before continuing
+      newState._pendingInjury = {
+        ...injuryResult,
+        isPitcher,
+        isCurrentBatter,
+        oldPos: injuredPlayer.assignedPos || injuredPlayer.pos,
+        benchOptions,
+        isAway,
+        targetIdx,
+        injuryType: injuryResult.severity,
+      };
+      // Mark the player as injured in lineup but don't replace yet
+      targetLineup[targetIdx] = { ...injuredPlayer, injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name, _injured: true };
+    } else {
+      // No bench — just mark injured, can't continue (auto-sub with last resort)
+      targetLineup[targetIdx] = { ...injuredPlayer, injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name };
+      newState.log.push({ type: 'info', text: `🚑 ${playerName} injured — no bench replacements available!` });
     }
   }
 
