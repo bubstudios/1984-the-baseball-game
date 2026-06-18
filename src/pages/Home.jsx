@@ -347,12 +347,19 @@ export default function Home() {
   const handleSteal = useCallback((baseIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
-    const stealState = attemptSteal(gameState, baseIndex);
-    // Only process the steal — don't auto-pitch. Batter keeps their turn.
-    const withArgs = checkForArgument(stealState);
-    setGameState(withArgs);
-    setProcessing(false);
-  }, [gameState, processing]);
+    try {
+      // Steal attempt: runner goes on the pitch, batter takes automatically
+      const stealPending = { ...gameState, pendingSteal: baseIndex };
+      // CPU selects pitch, batter takes (swingType 3 = Take Pitch)
+      const cpuPitch = cpuSelectPitch(stealPending);
+      const resultState = processAtBat(stealPending, PITCH_TYPES[cpuPitch], SWING_TYPES[3]);
+      const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
+      const withArgs = checkForArgument(afterSubs);
+      setGameState(withArgs);
+    } finally {
+      setProcessing(false);
+    }
+  }, [gameState, processing, userTeam]);
 
   const handleHitAndRun = useCallback(() => {
     if (!gameState || gameState.gameOver || processing) return;

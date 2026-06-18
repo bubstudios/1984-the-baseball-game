@@ -635,7 +635,7 @@ export function checkGameAchievements(gameState, userTeam) {
   if (allUserPlayers.some(p => p.gameStats?.hits > 0)) u('batter_up');
   if (allUserPlayers.some(p => p.gameStats?.runs > 0)) u('crossed_plate');
   if (logText.includes('double play') && userIsFielding(gameState, userSide, log)) u('around_horn');
-  if ((logText.includes('1-2-3') || logText.includes('retired in order')) && userScore === opponentScore) u('three_up_down');
+  if (logText.includes('1-2-3') || logText.includes('retired in order')) u('three_up_down');
   if (userWon) u('ballgame');
 
   // ── HITTING (user team only) ──
@@ -689,15 +689,15 @@ export function checkGameAchievements(gameState, userTeam) {
       if (userPitchers.some(p => (p.gameStats?.so || 0) >= 10)) u('mr_perfect');
     }
   }
-  if (userIsFielder && (logText.includes('strike out the side') || logText.includes('struck out the side'))) u('frozen_rope');
-
   // ── DEFENSE (user team fielding) ──
-  if (userIsFielding(gameState, userSide, log) && (logText.includes('diving catch') || logText.includes('dives and makes the catch') || logText.includes('lays out'))) u('leather_glove');
-  if (userIsFielding(gameState, userSide, log) && (logText.includes('thrown out at home') || logText.includes('nailed at the plate'))) u('cannon_arm');
-  if (userIsFielding(gameState, userSide, log) && logText.includes('caught stealing')) u('caught_stealing');
-  if (userIsFielding(gameState, userSide, log) && logText.includes('double play')) u('twin_killing');
-  if (userIsFielding(gameState, userSide, log) && (logText.includes('to short') || logText.includes('to third'))) u('around_horn_dp');
-  if (userIsFielding(gameState, userSide, log) && logText.includes('robs') && logText.includes('home run')) u('web_gem');
+  const userIsFielder = userIsFielding(gameState, userSide, log);
+  if (userIsFielder && (logText.includes('strike out the side') || logText.includes('struck out the side'))) u('frozen_rope');
+  if (userIsFielder && (logText.includes('diving catch') || logText.includes('dives and makes the catch') || logText.includes('lays out'))) u('leather_glove');
+  if (userIsFielder && (logText.includes('thrown out at home') || logText.includes('nailed at the plate'))) u('cannon_arm');
+  if (userIsFielder && logText.includes('caught stealing')) u('caught_stealing');
+  if (userIsFielder && logText.includes('double play')) u('twin_killing');
+  if (userIsFielder && (logText.includes('to short') || logText.includes('to third'))) u('around_horn_dp');
+  if (userIsFielder && logText.includes('robs') && logText.includes('home run')) u('web_gem');
 
   // ── COMEBACKS ──
   const maxDeficit = computeMaxDeficit(gameState, userSide);
@@ -723,8 +723,6 @@ export function checkGameAchievements(gameState, userTeam) {
   // ── 1984-THEMED ──
   u('like_its_1984');
 
-  // All remaining log-text achievements must involve the user's team
-  const userIsFielder = userIsFielding(gameState, userSide, log);
   // Small ball: scored a run without a hit (user team only)
   if (userScore > 0 && logText.includes('scores') && (logText.includes('bunt') || logText.includes('sacrifice fly') || logText.includes('steals home'))) u('small_ball');
   const allSB = allUserPlayers.reduce((sum, p) => sum + (p.gameStats?.sb || 0), 0);

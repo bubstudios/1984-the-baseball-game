@@ -1087,7 +1087,8 @@ function resolveSwing(state, swingType, pitch) {
     const out = allOuts[Math.floor(Math.random() * allOuts.length)];
 
     // Determine if it's a fly ball (CF/RF/LF positions) or ground ball
-    const isFlyBall = ['CF', 'RF', 'LF'].includes(out.pos) || out.type === 'popout';
+    // Lineouts and popouts are caught in the air — NOT ground balls (no force plays)
+    const isFlyBall = ['CF', 'RF', 'LF'].includes(out.pos) || out.type === 'popout' || out.type === 'lineout';
     const outType = out.type || (isFlyBall ? 'flyout' : 'groundout');
 
     // ---- BALLPARK QUIRK CHECK on fly balls ----
@@ -1189,8 +1190,12 @@ function resolveSwing(state, swingType, pitch) {
         const roll = Math.random();
 
         if (roll < dpChance) {
-          if (hasForceAt3rd) {
-            // Double play with force at 3rd: runner on 2nd forced at 3rd (out)
+          // Middle-infield grounders (2B, SS) → prefer 4-6-3 / 6-4-3 (force at 2nd)
+          const isMiddleInfield = ['2B', 'SS'].includes(out.pos);
+
+          if (hasForceAt3rd && !isMiddleInfield) {
+            // Double play with force at 3rd (only for 3B/1B/P grounders)
+            // Runner on 2nd forced at 3rd (out)
             // Runner on 1st advances to 2nd. If bases loaded, runner on 3rd scores.
             const runner3rd = state.bases[2];
             const runner1st = state.bases[0];
@@ -1359,9 +1364,9 @@ function resolveSwing(state, swingType, pitch) {
       const ofArm = getOutfieldArm(defenders) / 10;
       const isDeep = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall');
       // Sac fly: higher chance on deep flies, speed helps, strong OF arm hurts
-      const depthBonus = isDeep ? 0.18 : 0;
-      const sacFlyChance = 0.20 + depthBonus + runnerSpeed * 0.35 - ofArm * 0.08;
-      if (Math.random() < Math.max(0.08, Math.min(sacFlyChance, 0.50))) {
+      const depthBonus = isDeep ? 0.30 : 0.05;
+      const sacFlyChance = 0.30 + depthBonus + runnerSpeed * 0.42 - ofArm * 0.08;
+      if (Math.random() < Math.max(0.10, Math.min(sacFlyChance, 0.90))) {
         runner.gameStats.runs++;
         scoreRun(state);
         state.bases[2] = null;

@@ -15,6 +15,7 @@ const TEAM_LOGOS = {
   yankees: 'https://www.mlbstatic.com/team-logos/147.svg',
   orioles: 'https://www.mlbstatic.com/team-logos/110.svg',
   dodgers: 'https://www.mlbstatic.com/team-logos/119.svg',
+  reds: 'https://www.mlbstatic.com/team-logos/113.svg',
 };
 
 const alTeams = Object.keys(TEAMS).filter(k => TEAMS[k].league === 'AL');
