@@ -832,12 +832,46 @@ function resolveSwing(state, swingType, pitch) {
   const madeContact = Math.random() < contactChance;
 
   if (!madeContact) {
+    // If pitch was a ball and batter isn't forced to swing (H&R), they often recognize it
+    if (!pitch.isStrike && !state.hitAndRun) {
+      const holdUpChance = 0.50 + contactRating * 0.18; // 50-68% based on contact skill
+      if (Math.random() < holdUpChance) {
+        state.balls++;
+        if (state.balls >= 4) {
+          batter.gameStats.bb++;
+          pitcher.gameStats.bb++;
+          const walkMsg = `${batter.name} ${pickLine(WALK_LINES)}`;
+          state.log.push({ type: 'walk', text: walkMsg });
+          state.lastPlay = { type: 'walk', text: walkMsg };
+          handleWalk(state, batter);
+          state.balls = 0;
+          state.strikes = 0;
+          advanceBatter(state);
+          return;
+        }
+        const ballLabels = [
+          `Ball ${state.balls} — just off the plate`,
+          `Takes outside — ball ${state.balls}`,
+          `Ball ${state.balls} — low`,
+          `Pulled the bat back — ball ${state.balls}`,
+          `Checked the swing — ball ${state.balls}`,
+          `Held up — ball ${state.balls}`,
+          `Ball ${state.balls} — high`,
+          `Lays off — ball ${state.balls}`,
+        ];
+        const ballLabel = ballLabels[Math.floor(Math.random() * ballLabels.length)];
+        state.log.push({ type: 'ball', text: ballLabel });
+        state.lastPlay = { type: 'ball', text: ballLabel };
+        return;
+      }
+    }
+
+    // Batter swung and missed (either at a strike, or chased a ball)
     state.strikes++;
     if (state.strikes >= 3) {
       batter.gameStats.ab++;
       batter.gameStats.so++;
       pitcher.gameStats.so++;
-      // Mix called vs swinging strikeouts based on pitch location
       const isLooking = pitch.location && ['outside corner', 'inside corner', 'high strike', 'low strike', 'down the middle'].includes(pitch.location) && Math.random() < 0.45;
       const strikeoutLine = isLooking
         ? pickLine(STRIKEOUT_CALLED_LINES)
@@ -851,62 +885,35 @@ function resolveSwing(state, swingType, pitch) {
       state.strikes = 0;
       advanceBatter(state);
       recordOut(state);
-
-      // Hit-and-run: if strikeout and runner on base, check if runner caught
       if (state.hitAndRun && !state.gameOver) {
         handleHitAndRunCaught(state);
       }
       return;
     }
-    // Checked swing on a ball — umpire rules it's not a swing
-    if (!pitch.isStrike && Math.random() < 0.09) {
-      state.balls++;
-      if (state.balls >= 4) {
-        batter.gameStats.bb++;
-        pitcher.gameStats.bb++;
-        const walkMsg = `${batter.name} ${pickLine(WALK_LINES)}`;
-        state.log.push({ type: 'walk', text: walkMsg });
-        state.lastPlay = { type: 'walk', text: walkMsg };
-        handleWalk(state, batter);
-        state.balls = 0;
-        state.strikes = 0;
-        advanceBatter(state);
-        return;
-      }
-      const ballLabels = [
-        `Pulled the bat back — ball ${state.balls} called`,
-        `Held up — ball ${state.balls}`,
-        `Checked the swing — no, he didn't go — ball ${state.balls}`,
-      ];
-      const ballLabel = ballLabels[Math.floor(Math.random() * ballLabels.length)];
-      state.log.push({ type: 'ball', text: ballLabel });
-      state.lastPlay = { type: 'ball', text: ballLabel };
-      if (state.hitAndRun && !state.gameOver) {
-        state.hitAndRun = false;
-        handleHitAndRunMiss(state);
-      }
-      return;
+
+    // Non-strikeout miss — H&R runner was going
+    if (state.hitAndRun && !state.gameOver) {
+      state.hitAndRun = false;
+      handleHitAndRunMiss(state);
     }
 
-    // Mix non-strikeout strike descriptions (weighted: common first, rare last)
-    const strikeLabels = [
-      `Swing and a miss — strike ${state.strikes}`,
-      `Checked his swing — strike ${state.strikes}`,
+    const isChasing = !pitch.isStrike;
+    const strikeLabels = isChasing ? [
+      `Chases outside — strike ${state.strikes}`,
+      `Waves at a ${pitch.pitchType} — strike ${state.strikes}`,
+      `Can't lay off the ${pitch.pitchType} — strike ${state.strikes}`,
       `Couldn't hold up — strike ${state.strikes}`,
+      `Swings through the ${pitch.pitchType} — strike ${state.strikes}`,
+    ] : [
+      `Swing and a miss — strike ${state.strikes}`,
       `Taken at the knees — strike ${state.strikes}`,
-      `Just pulled the bat back — strike ${state.strikes} called`,
       `Waves at a ${pitch.pitchType} — strike ${state.strikes}`,
-      `Waves at a ${pitch.pitchType} — strike ${state.strikes}`,
-      // Rare — announcer confused about a foul tip
+      `Just misses — strike ${state.strikes}`,
       `Fouled off attempt — nope, swing and a miss, strike ${state.strikes}`,
     ];
     const strikeLabel = strikeLabels[Math.floor(Math.random() * strikeLabels.length)];
     state.log.push({ type: 'strike', text: strikeLabel });
     state.lastPlay = { type: 'strike', text: strikeLabel };
-    if (state.hitAndRun && !state.gameOver) {
-      state.hitAndRun = false;
-      handleHitAndRunMiss(state);
-    }
     return;
   }
 
@@ -1887,6 +1894,14 @@ function applyInjuryState(newState, injuryResult) {
       // No bench available — just mark injured
       targetLineup[targetIdx] = { ...injuredPlayer, injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name };
     }
+
+    // Also replace the injured player on the bases (e.g., injured running on a double)
+    for (let i = 0; i < 3; i++) {
+      if (newState.bases[i] && newState.bases[i].name === playerName) {
+        newState.bases[i] = targetLineup[targetIdx];
+        break;
+      }
+    }
   }
 
   // Also mark in pitcher state if the injured player was the pitcher
@@ -2374,10 +2389,12 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const cpuBullpen = cpuSide === 'away' ? newState.awayBullpen : newState.homeBullpen;
 
   // Auto-replace CPU pitcher if they were pinch-hit for (DH off only)
+  // With DH on, pitcher is NOT in the batting lineup — that's normal, not a pinch-hit signal
   const cpuLineupField = cpuSide === 'away' ? newState.awayLineup : newState.homeLineup;
   const cpuPitcherField = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
+  const hasDH = cpuLineupField.some(p => (p.assignedPos || p.pos) === 'DH');
   const pitcherInLineup = cpuLineupField.some(p => p.name === cpuPitcherField.name);
-  if (!pitcherInLineup && cpuBullpen.length > 0) {
+  if (!hasDH && !pitcherInLineup && cpuBullpen.length > 0) {
     const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
     const newPitcher = sorted[0];
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
