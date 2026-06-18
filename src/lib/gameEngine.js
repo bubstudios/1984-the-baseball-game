@@ -1301,7 +1301,7 @@ function resolveSwing(state, swingType, pitch) {
         // Higher chance on right side (1B/2B), lower on left side (SS/3B) — throw is shorter
         const advanceChance = isRightSide
           ? 0.55 + speedFactor * 0.35  // right side: 55-90%
-          : 0.15 + speedFactor * 0.25; // left side: 15-40%
+          : 0.05 + speedFactor * 0.20; // left side: 5-25%
         if (Math.random() < Math.max(0.05, advanceChance)) {
           state.bases[2] = runner;
           state.bases[1] = null;
