@@ -132,9 +132,11 @@ export default function Home() {
       }
     }
 
-    // Check for injuries
-    if (gameState.lastInjury && !injuryResult) {
+    // Check for injuries — only show once per injury
+    if (gameState.lastInjury && !injuryResult && !gameState._injuryShown) {
       setInjuryResult(gameState.lastInjury);
+      // Mark as shown to prevent re-triggering
+      setGameState(prev => prev ? { ...prev, _injuryShown: true } : prev);
     }
 
     // Check achievements when game ends

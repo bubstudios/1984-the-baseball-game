@@ -14,10 +14,6 @@ export default function InjuryBanner({ injury, onDismiss }) {
   useEffect(() => {
     if (!injury) return;
     setVisible(true);
-    // Auto-dismiss after 5 seconds for less severe injuries
-    const timeout = injury.severity === "IL60" || injury.severity === "SEASON" ? 7000 : 4500;
-    const timer = setTimeout(() => onDismiss(), timeout);
-    return () => clearTimeout(timer);
   }, [injury]);
 
   if (!injury || !visible) return null;

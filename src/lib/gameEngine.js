@@ -38,8 +38,9 @@ function getPitcherFatigue(inningsPitched, pitcher) {
 
 // Get the current pitcher with fatigue-adjusted ratings
 export function getEffectivePitcher(state) {
+  if (!state) return null;
   const pitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
-  if (!pitcher) return null;
+  if (!pitcher || !pitcher.stamina) return pitcher || null;
 
   const ip = (pitcher.gameStats?.ip || 0) + (pitcher.pitchCount || 0) * 0.03; // approximate innings from pitches
   // Better: track actual innings from gameStats.ip (already incremented per out)
@@ -1570,26 +1571,77 @@ function runInjuryChecks(newState) {
   }
 }
 
-// Mark a player as injured in the state
+// Mark a player as injured and auto-substitute them out
 function applyInjuryState(newState, injuryResult) {
   if (!injuryResult) return;
   const playerName = injuryResult.player;
 
-  // Find in lineups
+  // Determine which team the player is on
   const awayIdx = newState.awayLineup.findIndex(p => p.name === playerName);
   const homeIdx = newState.homeLineup.findIndex(p => p.name === playerName);
-  if (awayIdx >= 0) {
-    newState.awayLineup[awayIdx] = { ...newState.awayLineup[awayIdx], injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name };
-  }
-  if (homeIdx >= 0) {
-    newState.homeLineup[homeIdx] = { ...newState.homeLineup[homeIdx], injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name };
+  const isAway = awayIdx >= 0;
+  const targetLineup = isAway ? newState.awayLineup : newState.homeLineup;
+  const targetIdx = isAway ? awayIdx : homeIdx;
+  const teamKey = isAway ? newState.awayTeam : newState.homeTeam;
+  const teamData = TEAMS[teamKey];
+  const bench = teamData?.bench || [];
+  const bullpen = isAway ? newState.awayBullpen : newState.homeBullpen;
+
+  // If not in either starting lineup, check player history
+  if (targetLineup && targetIdx >= 0) {
+    const injuredPlayer = targetLineup[targetIdx];
+    const isPitcher = injuredPlayer.pos === 'SP' || injuredPlayer.pos === 'RP' || injuredPlayer.pos === 'CL' ||
+                      (injuredPlayer.assignedPos && ['SP','RP','CL'].includes(injuredPlayer.assignedPos));
+    const isCurrentBatter = (isAway && newState.awayBatterIndex % newState.awayLineup.length === targetIdx) ||
+                            (!isAway && newState.homeBatterIndex % newState.homeLineup.length === targetIdx);
+
+    // Save to player history before replacing
+    const historyKey = isAway ? 'awayPlayerHistory' : 'homePlayerHistory';
+    if (!newState[historyKey].find(p => p.name === playerName)) {
+      newState[historyKey].push({ ...injuredPlayer, injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name });
+    }
+
+    // Auto-substitute based on player role
+    if (isPitcher && bullpen.length > 0) {
+      // Pitcher injured → replace with best reliever
+      const bestRP = [...bullpen].sort((a, b) => b.control - a.control)[0];
+      const newP = { ...bestRP, pitchCount: 0, pitches: bestRP.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
+      if (isAway) {
+        newState.awayPitcher = newP;
+      } else {
+        newState.homePitcher = newP;
+      }
+      const bpIdx = bullpen.findIndex(p => p.name === bestRP.name);
+      if (bpIdx >= 0) bullpen.splice(bpIdx, 1);
+      targetLineup[targetIdx] = { ...bestRP, order: injuredPlayer.order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      newState.log.push({ type: 'info', text: `🚑 ${playerName} injured — ${bestRP.name} takes the mound` });
+    } else if (isCurrentBatter && bench.length > 0) {
+      // Injured batter → pinch hit
+      const bestPH = [...bench].sort((a, b) => b.contact - a.contact)[0];
+      targetLineup[targetIdx] = { ...bestPH, order: injuredPlayer.order, assignedPos: bestPH.pos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      newState.log.push({ type: 'info', text: `🚑 ${playerName} injured — ${bestPH.name} pinch-hits` });
+    } else if (bench.length > 0) {
+      // Injured fielder → defensive replacement
+      const bestSub = [...bench].sort((a, b) => b.defense - a.defense)[0];
+      const oldPos = injuredPlayer.assignedPos || injuredPlayer.pos;
+      targetLineup[targetIdx] = { ...bestSub, order: injuredPlayer.order, assignedPos: oldPos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      newState.log.push({ type: 'info', text: `🚑 ${playerName} injured — ${bestSub.name} takes over at ${oldPos}` });
+    } else {
+      // No bench available — just mark injured
+      targetLineup[targetIdx] = { ...injuredPlayer, injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name };
+    }
   }
 
-  if (newState.homePitcher?.name === playerName) {
-    newState.homePitcher = { ...newState.homePitcher, injured: true, injuryType: injuryResult.severity };
+  // Also mark in pitcher state if the injured player was the pitcher
+  if (newState.homePitcher?.name === playerName && newState.homePitcher) {
+    if (!newState.homePitcher.injured) {
+      newState.homePitcher = { ...newState.homePitcher, injured: true, injuryType: injuryResult.severity };
+    }
   }
-  if (newState.awayPitcher?.name === playerName) {
-    newState.awayPitcher = { ...newState.awayPitcher, injured: true, injuryType: injuryResult.severity };
+  if (newState.awayPitcher?.name === playerName && newState.awayPitcher) {
+    if (!newState.awayPitcher.injured) {
+      newState.awayPitcher = { ...newState.awayPitcher, injured: true, injuryType: injuryResult.severity };
+    }
   }
 }
 

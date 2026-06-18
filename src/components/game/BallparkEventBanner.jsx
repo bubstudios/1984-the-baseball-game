@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CloudLightning, Dog, Wrench, Users, Zap, Bird, Tv, Star } from 'lucide-react';
+import { CloudLightning, Dog, Wrench, Users, Zap, Bird, Tv, Star, X } from 'lucide-react';
 
 const CATEGORY_ICONS = {
   fans: Users,
@@ -29,20 +29,18 @@ export default function BallparkEventBanner({ event, onDismiss }) {
   useEffect(() => {
     if (!event) return;
     setVisible(true);
-    const timer = setTimeout(() => onDismiss(), 4000);
-    return () => clearTimeout(timer);
   }, [event]);
 
   if (!event || !visible) return null;
 
   return (
-    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-500">
-      <div className={`bg-card/95 border ${borderColor} rounded-xl px-4 py-3 shadow-xl max-w-sm`}>
+    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-500" onClick={onDismiss}>
+      <div className={`bg-card/95 border ${borderColor} rounded-xl px-4 py-3 shadow-xl max-w-sm cursor-pointer`}>
         <div className="flex items-start gap-3">
           <div className="mt-0.5">
             <Icon className="w-5 h-5 text-primary/80" />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-0.5">
               <span className="text-[10px] font-heading uppercase tracking-wider text-primary/60">
                 {event.rarity === "legendary" ? "⚡ Legendary Event" : "Ballpark Event"}
@@ -55,6 +53,12 @@ export default function BallparkEventBanner({ event, onDismiss }) {
               </p>
             )}
           </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); onDismiss(); }}
+            className="w-7 h-7 flex items-center justify-center rounded-full bg-muted/50 hover:bg-muted text-muted-foreground shrink-0"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </div>

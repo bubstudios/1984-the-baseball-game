@@ -130,7 +130,7 @@ const INJURIES = [
   },
   { id: "hamstring_tear", name: "Hamstring Tear", bodyPart: "leg", category: "leg",
     triggers: ["sprint", "steal"],
-    severity: { DTD: 0.30, IL15: 0.40, IL60: 0.20, SEASON: 0.10 },
+    severity: { DTD: 0.00, IL15: 0.30, IL60: 0.45, SEASON: 0.25 },  // tear = serious, never day-to-day
   },
 
   // ── ANKLE ──
