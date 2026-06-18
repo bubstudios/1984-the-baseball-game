@@ -28,8 +28,9 @@ export function rollUmpire() {
 }
 
 // ── Disputed Call Severity ──
-export function getArgumentSeverity(lastPlay) {
-  if (!lastPlay) return null;
+// gameState param provides context for verifying claims like "bases loaded"
+export function getArgumentSeverity(lastPlay, gameState) {
+  if (!lastPlay || !gameState) return null;
 
   const type = lastPlay?.type;
   const text = lastPlay?.text || "";
@@ -40,7 +41,7 @@ export function getArgumentSeverity(lastPlay) {
     if (text.includes("Strike 3") || text.includes("strike 3") || text.includes("called strike three") || text.includes("takes a") || text.includes("watches it")) {
       return { severity: "low", score: 1, callType: "strike call", text };
     }
-    return null; // routine strikes don't spark arguments
+    return null;
   }
 
   // MEDIUM severity
@@ -62,8 +63,9 @@ export function getArgumentSeverity(lastPlay) {
     if (text.includes("scores") && text.includes("tags") && Math.random() < 0.25) {
       return { severity: "high", score: 6, callType: "home plate play", text };
     }
-    // Bases loaded strikeout
-    if ((text.includes("fans on") || text.includes("strikes out")) && Math.random() < 0.15) {
+    // Bases loaded strikeout — only if bases were actually loaded
+    const basesLoaded = gameState.bases?.filter(b => b !== null).length === 3;
+    if (basesLoaded && (text.includes("fans on") || text.includes("strikes out")) && Math.random() < 0.25) {
       return { severity: "high", score: 5, callType: "bases-loaded strikeout", text };
     }
     return null;
@@ -88,6 +90,11 @@ export function getArgumentSeverity(lastPlay) {
       return { severity: "medium", score: 3, callType: "trapped ball", text };
     }
     return null;
+  }
+
+  // triple — sparky managers argue close tag-ups
+  if (type === "triple" && Math.random() < 0.15) {
+    return { severity: "medium", score: 3, callType: "close tag-up at third", text };
   }
 
   return null;

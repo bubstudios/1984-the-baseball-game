@@ -1184,7 +1184,8 @@ function resolveSwing(state, swingType, pitch) {
 
       // Regular groundout: advance runner on 1st to 2nd (batter out, force removed)
       // Also handle bases loaded: runner on 3rd scores when force is at 1st/2nd (not home)
-      if (hasForceAt2nd) {
+      // NOTE: Only for actual groundouts, not lineouts (caught in the air = no force advance)
+      if (hasForceAt2nd && out.type === 'groundout') {
         const r1 = state.bases[0];
         const runner3rd = state.bases[2];
         const r2 = state.bases[1];
@@ -1894,7 +1895,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const blowupPull = inning < 6 && runs >= 5;
   const cpuScore = newState.score[cpuPitchingSide];
   const userScore = newState.score[cpuBattingSide];
-  const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2;
+  const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2 && pitchCount >= 25;
   const recentCollapse = (runs >= 2 && bb >= 2 && inning >= 5);
 
   const shouldChangePitcher = (fatiguePull || walksPull || blowupPull || lateClose || recentCollapse) && cpuBullpen.length > 0;

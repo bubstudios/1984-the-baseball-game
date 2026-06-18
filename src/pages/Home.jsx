@@ -127,7 +127,7 @@ export default function Home() {
     // Check achievements when game ends
     if (gameState.gameOver && !prevGameOver.current) {
       prevGameOver.current = true;
-      const userSide = userTeam === 'home' ? 'home' : 'away';
+      const userSide = gameState.homeTeam === userTeam ? 'home' : 'away';
       const opponentSide = userSide === 'home' ? 'away' : 'home';
       const userWon = gameState.score[userSide] > gameState.score[opponentSide];
       const userLineup = userSide === 'home' ? gameState.homeLineup : gameState.awayLineup;
@@ -161,7 +161,7 @@ export default function Home() {
   const checkForArgument = useCallback((state) => {
     if (!state || state.gameOver || !state.lastPlay) return state;
 
-    const severity = getArgumentSeverity(state.lastPlay);
+    const severity = getArgumentSeverity(state.lastPlay, state);
     if (!severity) return state;
 
     // Which team is arguing? The one that got the bad call (batting team)

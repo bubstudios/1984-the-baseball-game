@@ -10,7 +10,8 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
 
   const displayBatter = adjustedBatter || batter;
   const displayPos = batter.assignedPos || batter.pos;
-  const isOutOfPosition = batter.assignedPos && batter.assignedPos !== batter.pos;
+  const isPitcher = batter.pos === 'SP' || batter.pos === 'CL' || batter.pos === 'RP' || batter.assignedPos === 'SP';
+  const isOutOfPosition = !isPitcher && batter.assignedPos && batter.assignedPos !== batter.pos;
   const isAdjusted = adjustedBatter && (adjustedBatter.contact !== batter.contact || adjustedBatter.power !== batter.power);
 
   return (
@@ -73,7 +74,7 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
           {pitcher.throws && <span className="text-[10px] text-muted-foreground ml-1">({pitcher.throws}HP)</span>}
         </div>
         <div className="flex items-center gap-3 mt-1.5">
-          <span className="text-[10px] text-muted-foreground">{pitcher.pos}</span>
+          <span className="text-[10px] text-muted-foreground">{pitcher.assignedPos || pitcher.pos}</span>
           <span className="text-[10px] text-emerald-400 font-semibold">SPD {pitcher.pitchSpeed}</span>
           <span className="text-[10px] text-purple-400 font-semibold">OFF {pitcher.offSpeed}</span>
           <span className="text-[10px] text-blue-400 font-semibold">CTL {pitcher.control}</span>
