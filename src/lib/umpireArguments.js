@@ -25,37 +25,35 @@ export function rollUmpire() {
 
 // ── Trigger Decision — what sparked this, and how serious is it? ──
 // Returns { callType, severity: "chirp"|"low"|"medium"|"high"|"obscure", score: 0-10 }
-export function getArgumentSeverity(lastPlay, gameState) {
+export function getArgumentSeverity(lastPlay, gameState, usedTopics) {
   if (!lastPlay || !gameState) return null;
   const type = lastPlay?.type;
   const text = lastPlay?.text || "";
   const r = Math.random();
 
-  // ── BALLS & STRIKES (most common argument engine) ──
+  const tc = usedTopics || {};
+  const topicCapped = (key, max) => (tc[key] || 0) >= max;
+
+  // ── BALLS & STRIKES (most common — no cap) ──
   if (["strike", "foul"].includes(type)) {
-    // Called strike three — classic spark
     if (text.includes("Strike 3") || text.includes("strike 3") || text.includes("called strike three")) {
-      return { callType: "called strike three", severity: "medium", score: 3 };
+      return { callType: "called strike three", severity: "medium", score: 3, topicKey: "strikeZone" };
     }
-    // Watch strike on 2-strike count
     if ((text.includes("takes a") || text.includes("watches it")) && r < 0.18) {
-      return { callType: "borderline strike", severity: "low", score: 1 };
+      return { callType: "borderline strike", severity: "low", score: 1, topicKey: "strikeZone" };
     }
-    // Swinging strike at borderline pitch — minor chirp
     if ((text.includes("Swinging strike") || text.includes("Swing and a miss")) && r < 0.10) {
-      return { callType: "pitch appeared outside", severity: "chirp", score: 0 };
+      return { callType: "pitch appeared outside", severity: "chirp", score: 0, topicKey: "strikeZone" };
     }
     return null;
   }
 
   if (type === "ball") {
-    // Ball 4 walk on full count
     if (text.includes("Ball 4") && r < 0.30) {
-      return { callType: "borderline ball four", severity: "low", score: 1 };
+      return { callType: "borderline ball four", severity: "low", score: 1, topicKey: "strikeZone" };
     }
-    // Regular ball — dugout may chirp about missed strike
     if (r < 0.04) {
-      return { callType: "pitch looked good", severity: "chirp", score: 0 };
+      return { callType: "pitch looked good", severity: "chirp", score: 0, topicKey: "strikeZone" };
     }
     return null;
   }
@@ -63,130 +61,174 @@ export function getArgumentSeverity(lastPlay, gameState) {
   // ── SAFE / OUT ──
   if (["single", "groundout", "double"].includes(type)) {
     if (text.includes("beats it out") || text.includes("infield single")) {
-      return { callType: "bang-bang play at first", severity: "medium", score: 4 };
+      if (!topicCapped("bangBang", 3)) return { callType: "bang-bang play at first", severity: "medium", score: 4, topicKey: "bangBang" };
     }
     if (text.includes("fielder's choice")) {
-      return { callType: "close force play", severity: "medium", score: 3 };
+      if (!topicCapped("forcePlay", 2)) return { callType: "close force play", severity: "medium", score: 3, topicKey: "forcePlay" };
     }
-    // Double play: did the runner slide hard? Was the turn legal?
     if (text.includes("double play") && r < 0.12) {
-      return { callType: "hard slide into second", severity: "medium", score: 3 };
+      const dpArgs = ["hard slide into second", "neighborhood play at second — did he touch the bag?", "runner interfered with the pivot"];
+      if (!topicCapped("dpPlay", 2)) return { callType: dpArgs[Math.floor(Math.random() * dpArgs.length)], severity: "medium", score: 3, topicKey: "dpPlay" };
     }
     return null;
   }
 
-  // Ball in play — safe/out at first
+  // Lineout trap (cap at 1)
   if (type === "lineout" && r < 0.08) {
-    return { callType: "did infielder trap it?", severity: "low", score: 2 };
+    if (!topicCapped("trappedBall", 1)) {
+      const trapArgs = ["did the infielder trap it?", "short hop or clean catch?", "ball hit the dirt first"];
+      return { callType: trapArgs[Math.floor(Math.random() * trapArgs.length)], severity: "low", score: 2, topicKey: "trappedBall" };
+    }
   }
 
   // ── FAIR / FOUL ──
   if (["foul", "single", "double"].includes(type)) {
     if ((text.includes("down the line") || text.includes("past the bag")) && r < 0.15) {
-      return { callType: "fair or foul down the line", severity: "medium", score: 4 };
+      if (!topicCapped("fairFoul", 2)) return { callType: "fair or foul down the line", severity: "medium", score: 4, topicKey: "fairFoul" };
     }
   }
 
-  // ── HOME RUN DISPUTES (always high severity) ──
+  // ── HOME RUN DISPUTES (cap at 1) ──
   if (type === "homerun" && r < 0.20) {
-    const hrCalls = ["fair or foul HR", "fan reached over wall", "ball hit catwalk/obstruction"];
-    return { callType: hrCalls[Math.floor(Math.random() * hrCalls.length)], severity: "high", score: 7 };
+    if (!topicCapped("hrDispute", 1)) {
+      const hrCalls = ["fair or foul HR", "fan reached over the wall", "ball hit the top of the wall — HR or in play?"];
+      return { callType: hrCalls[Math.floor(Math.random() * hrCalls.length)], severity: "high", score: 7, topicKey: "hrDispute" };
+    }
   }
 
-  // ── FAN INTERFERENCE (rare) ──
+  // ── FAN INTERFERENCE (cap at 1) ──
   if (["flyout", "sacfly"].includes(type) && r < 0.02) {
-    const fanCalls = ["fan interfered with catch", "fan reached onto field", "fan touched live ball"];
-    return { callType: fanCalls[Math.floor(Math.random() * fanCalls.length)], severity: "high", score: 6 };
+    if (!topicCapped("fanInterference", 1)) {
+      return { callType: "fan interfered with the catch", severity: "high", score: 6, topicKey: "fanInterference" };
+    }
   }
 
   // ── HIT BY PITCH ──
   if (type === "walk" && (text.includes("hit by the pitch") || text.includes("HBP"))) {
     const hbpCalls = ["he leaned into it", "that was intentional", "you hit me"];
-    return { callType: hbpCalls[Math.floor(Math.random() * hbpCalls.length)], severity: "medium", score: 5 };
+    return { callType: hbpCalls[Math.floor(Math.random() * hbpCalls.length)], severity: "medium", score: 5, topicKey: "hbp" };
   }
 
   // ── CHECK SWINGS ──
   if (type === "strike" && (text.includes("Swinging strike") || text.includes("Swing and a miss")) && r < 0.06) {
-    return { callType: "check swing appeal", severity: "low", score: 2 };
+    return { callType: "check swing appeal", severity: "low", score: 2, topicKey: "checkSwing" };
   }
   if (type === "strikeout" && r < 0.04) {
-    return { callType: "strike three — check swing", severity: "medium", score: 3 };
+    return { callType: "strike three — check swing", severity: "medium", score: 3, topicKey: "checkSwing" };
   }
 
-  // ── BALKS (rare, obscure, very 1980s) ──
+  // ── BALKS (cap at 1) ──
   if (r < 0.008 && !["homerun", "error", "strikeout"].includes(type)) {
-    const balkCalls = ["that's not a balk", "he's been doing that all game", "I didn't move"];
-    return { callType: balkCalls[Math.floor(Math.random() * balkCalls.length)], severity: "medium", score: 3 };
+    if (!topicCapped("balk", 1)) {
+      const balkCalls = ["that's not a balk", "he's been doing that all game", "I didn't move"];
+      return { callType: balkCalls[Math.floor(Math.random() * balkCalls.length)], severity: "medium", score: 3, topicKey: "balk" };
+    }
   }
 
-  // ── TRAP vs CATCH ──
+  // ── TRAP vs CATCH on flyout/popout (cap at 1) ──
+  if (["flyout", "popout"].includes(type) && r < 0.03) {
+    if (!topicCapped("trappedBall", 1)) {
+      return { callType: "trapped or clean catch?", severity: "low", score: 2, topicKey: "trappedBall" };
+    }
+  }
+
+  // ── Error — did it hit the grass? ──
   if (type === "error" && r < 0.10) {
-    return { callType: "did it hit the grass?", severity: "medium", score: 3 };
-  }
-  if (["lineout", "flyout", "popout"].includes(type) && r < 0.03) {
-    return { callType: "trapped or clean catch?", severity: "low", score: 2 };
+    if (!topicCapped("trappedBall", 1)) {
+      return { callType: "did it hit the grass?", severity: "medium", score: 3, topicKey: "trappedBall" };
+    }
   }
 
-  // ── COLLISION PLAYS (1984 baseball had lots) ──
+  // ── COLLISION PLAYS (cap at 1) ──
   if ((type === "sacfly" || type === "homerun") && text.includes("scores") && r < 0.15) {
-    const collCalls = ["runner into catcher", "catcher blocked the plate", "that was a clean block"];
-    return { callType: collCalls[Math.floor(Math.random() * collCalls.length)], severity: "high", score: 6 };
+    if (!topicCapped("collision", 1)) {
+      const collCalls = ["runner into catcher", "catcher blocked the plate", "obstruction on the play"];
+      return { callType: collCalls[Math.floor(Math.random() * collCalls.length)], severity: "high", score: 6, topicKey: "collision" };
+    }
   }
 
-  // ── GROUND RULE DISPUTES (rare but fun) ──
+  // ── GROUND RULE DISPUTES (cap at 1) ──
   if ((type === "double" || type === "triple") && r < 0.02) {
-    const grCalls = ["ball lodged in fence", "ball bounced into stands", "ground-rule double vs HR"];
-    return { callType: grCalls[Math.floor(Math.random() * grCalls.length)], severity: "high", score: 7 };
+    if (!topicCapped("groundRule", 1)) {
+      const grCalls = ["ball lodged in the fence", "ball bounced into the stands", "ground-rule double vs HR debate"];
+      return { callType: grCalls[Math.floor(Math.random() * grCalls.length)], severity: "high", score: 7, topicKey: "groundRule" };
+    }
   }
 
-  // ── EQUIPMENT (very 1980s) ──
+  // ── CATCHER'S INTERFERENCE (cap at 1) ──
+  if (["strike", "foul"].includes(type) && r < 0.005) {
+    if (!topicCapped("catcherInterference", 1)) {
+      return { callType: "catcher's interference — glove hit the bat", severity: "medium", score: 4, topicKey: "catcherInterference" };
+    }
+  }
+
+  // ── RUNNER LEFT EARLY ON TAG-UP (cap at 2) ──
+  if (["sacfly", "flyout"].includes(type) && text.includes("tags") && r < 0.08) {
+    if (!topicCapped("leftEarly", 2)) {
+      return { callType: "runner left early on the tag-up", severity: "medium", score: 3, topicKey: "leftEarly" };
+    }
+  }
+
+  // ── PITCHER DOCTORING THE BALL (cap at 1) ──
+  if (r < 0.004 && !["homerun", "error"].includes(type)) {
+    if (!topicCapped("doctoring", 1)) {
+      const docCalls = ["pitcher going to his mouth", "something on the ball", "scuffed ball — let me see it"];
+      return { callType: docCalls[Math.floor(Math.random() * docCalls.length)], severity: "low", score: 1, topicKey: "doctoring" };
+    }
+  }
+
+  // ── EQUIPMENT (cap at 1) ──
   if (r < 0.006) {
-    const equipCalls = ["pine tar issue", "scuffed ball", "broken bat debate"];
-    return { callType: equipCalls[Math.floor(Math.random() * equipCalls.length)], severity: "low", score: 1 };
+    if (!topicCapped("equipment", 1)) {
+      const equipCalls = ["pine tar on the bat handle", "cracked bat — fair ball?", "helmet flew off — time should've been called"];
+      return { callType: equipCalls[Math.floor(Math.random() * equipCalls.length)], severity: "low", score: 1, topicKey: "equipment" };
+    }
   }
 
-  // ── BASE RUNNING ──
+  // ── BASE RUNNING (cap at 3) ──
   if (["steal", "caughtstealing"].includes(type) && r < 0.08) {
-    return { callType: "missed the bag on appeal", severity: "medium", score: 3 };
+    if (!topicCapped("baseRunning", 3)) {
+      const brCalls = ["missed the bag on the slide", "runner came off the bag", "tag wasn't applied"];
+      return { callType: brCalls[Math.floor(Math.random() * brCalls.length)], severity: "medium", score: 3, topicKey: "baseRunning" };
+    }
   }
   if (type === "double" && r < 0.03) {
-    return { callType: "did he touch first?", severity: "low", score: 1 };
+    if (!topicCapped("baseRunning", 3)) {
+      return { callType: "did he touch first?", severity: "low", score: 1, topicKey: "baseRunning" };
+    }
   }
 
   // ── TIME / PACE ──
   if (r < 0.004) {
-    const timeCalls = ["ump won't grant time", "pitcher quick-pitching"];
-    return { callType: timeCalls[Math.floor(Math.random() * timeCalls.length)], severity: "chirp", score: 0 };
+    const timeCalls = ["ump won't grant time", "pitcher quick-pitching", "batter not ready — should've been dead ball"];
+    return { callType: timeCalls[Math.floor(Math.random() * timeCalls.length)], severity: "chirp", score: 0, topicKey: "timePace" };
   }
 
-  // ── BENCH JOCKEYING (can happen without any play) ──
+  // ── BENCH JOCKEYING ──
   if (!type && r < 0.003) {
-    return { callType: "chirps from the dugout", severity: "chirp", score: 0 };
+    return { callType: "chirps from the dugout", severity: "chirp", score: 0, topicKey: "chirp" };
   }
 
-  // ── OBSCURE RARE EVENTS (1 in 500+ games) ──
+  // ── OBSCURE RARE EVENTS (cap at 1) ──
   if (r < 0.002) {
-    const obscureEvents = [
-      "fan runs on the field",
-      "animal on the field",
-      "ball hits a bird",
-      "grounds crew interference",
-      "umpire hit by batted ball",
-      "wrong count displayed",
-      "extra baseball thrown onto field",
-      "fielder threw glove at ball",
-      "argument about a call from three innings ago",
-    ];
-    return { callType: obscureEvents[Math.floor(Math.random() * obscureEvents.length)], severity: "obscure", score: 8 };
+    if (!topicCapped("obscure", 1)) {
+      const obscureEvents = [
+        "fan runs on the field", "animal on the field", "ball hits a bird",
+        "grounds crew interference", "umpire hit by batted ball", "wrong count displayed",
+        "extra baseball thrown onto field", "fielder threw his glove at the ball",
+        "argument about a call from three innings ago",
+      ];
+      return { callType: obscureEvents[Math.floor(Math.random() * obscureEvents.length)], severity: "obscure", score: 8, topicKey: "obscure" };
+    }
   }
 
-  // ── Extra chance: dugout chirping on any ball-in-play ──
+  // ── Extra chance: dugout chirping on any ball-in-play (no cap) ──
   if (r < 0.015 && type) {
     const genericChirps = [
-      "come on, Blue!", "that's been a strike all day", "consistent zone suddenly changes",
-      "missed strike call", "repeated edge calls"
+      "come on, Blue!", "that's been a strike all day", "zone keeps changing",
+      "where was that pitch?", "get some glasses, ump", "inconsistent zone all night"
     ];
-    return { callType: genericChirps[Math.floor(Math.random() * genericChirps.length)], severity: "chirp", score: 0 };
+    return { callType: genericChirps[Math.floor(Math.random() * genericChirps.length)], severity: "chirp", score: 0, topicKey: "chirp" };
   }
 
   return null;

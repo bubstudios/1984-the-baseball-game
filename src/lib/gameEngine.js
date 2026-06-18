@@ -747,10 +747,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     if (!newState[hk2].find(p => p.name === oldP.name)) newState[hk2].push({ ...oldP });
     let si2 = cpuLineupField.findIndex(p => p.order === oldP.order);
     if (si2 < 0) si2 = cpuLineupField.findIndex(p => p.name === oldP.name);
-    const on2 = oldP.order || (si2 >= 0 ? cpuLineupField[si2].order : cpuLineupField.length + 1);
-    const le2 = { ...newPitcher, order: on2, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-    if (si2 >= 0) cpuLineupField[si2] = le2; else cpuLineupField.push(le2);
-    if (!cpuLineupField.some(p => p.name === newPitcher.name)) cpuLineupField.push({ ...newPitcher, order: Math.max(...cpuLineupField.map(p => p.order || 0), 0) + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+    if (si2 < 0) si2 = cpuLineupField.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
+    if (si2 >= 0) {
+      const le2 = { ...newPitcher, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      cpuLineupField[si2] = le2;
+    }
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
     return newState;
   }
@@ -778,8 +779,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     if (!cpuDH) {
       let si = fl.findIndex(p => p.name === oldPitcher.name);
       if (si < 0 && oldPitcher.order) si = fl.findIndex(p => p.order === oldPitcher.order);
-      const en = { ...newPitcher, order: si >= 0 ? fl[si].order : (oldPitcher.order || fl.length + 1), assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-      if (si >= 0) fl[si] = en;
+      if (si < 0) si = fl.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
+      if (si >= 0) {
+        const en = { ...newPitcher, order: fl[si].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+        fl[si] = en;
+      }
     }
     const reason = severeFatigue ? 'completely gassed' : fatiguePull ? `${ip} innings — arm is tiring` : walksPull ? 'lost command' : blowupPull ? 'rough outing' : 'high-leverage situation';
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });

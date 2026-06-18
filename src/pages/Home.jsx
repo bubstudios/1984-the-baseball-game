@@ -234,38 +234,52 @@ export default function Home() {
     }
 
     // First: check for a real play-based argument
-    const severity = state.lastPlay ? getArgumentSeverity(state.lastPlay, state) : null;
+    const severity = state.lastPlay ? getArgumentSeverity(state.lastPlay, state, state._argTopicCounts) : null;
 
     if (!severity) {
       // No play argument — maybe just a random dugout chirp
       const chirp = maybeDugoutChirp(state);
       if (chirp) {
-        const battingKeystr = getBattingTeam(state) === 'home' ? homeTeam : awayTeam;
-        const manager = MANAGERS[battingKeystr];
+        // Chirps can come from either dugout
+        const battingSide = getBattingTeam(state);
+        const chirpSide = Math.random() < 0.5 ? battingSide : (battingSide === 'home' ? 'away' : 'home');
+        const chirpTeamKey = chirpSide === 'home' ? homeTeam : awayTeam;
+        const manager = MANAGERS[chirpTeamKey];
+        // Skip if this team's manager was ejected
+        const isEjected = chirpSide === 'home' ? state._homeManagerEjected : state._awayManagerEjected;
+        if (isEjected) return state;
         const umpireObj = state.umpire || 'standard';
-        const battingScore = state.score[getBattingTeam(state)];
-        const fieldingScore = state.score[getBattingTeam(state) === 'home' ? 'away' : 'home'];
-        const scoreDiff = fieldingScore - battingScore;
-        const chirpResult = resolveArgument(chirp, manager?.personality || 5, umpireObj, state.inning, scoreDiff, getBattingTeam(state) === 'home');
+        const chirpScore = state.score[chirpSide];
+        const oppScore = state.score[chirpSide === 'home' ? 'away' : 'home'];
+        const scoreDiff = oppScore - chirpScore;
+        const chirpResult = resolveArgument(chirp, manager?.personality || 5, umpireObj, state.inning, scoreDiff, chirpSide === 'home');
         if (chirpResult) {
           chirpResult.managerName = manager?.name || 'The Manager';
-          setArgumentResult({ ...chirpResult, homeTeamKey: battingKeystr });
+          setArgumentResult({ ...chirpResult, homeTeamKey: homeTeam });
         }
       }
       return state;
     }
 
-    // Has a real argument — continue with full resolution
+    // Determine which team argues based on the play outcome
+    // Batting team argues when the call hurt them (outs, strikes)
+    // Fielding team argues when the call went against them (hits, walks)
+    const playType = state.lastPlay?.type;
+    const FIELDING_ARGUES = ['single', 'double', 'triple', 'homerun', 'walk', 'error', 'ball'];
+    const battingSide = getBattingTeam(state);
+    const fieldingSide = battingSide === 'home' ? 'away' : 'home';
+    const arguingSide = FIELDING_ARGUES.includes(playType) ? fieldingSide : battingSide;
+    const arguingTeamKey = arguingSide === 'home' ? homeTeam : awayTeam;
+    const manager = MANAGERS[arguingTeamKey];
 
-    // Which team is arguing? The one that got the bad call (batting team)
-    const battingKeystr = getBattingTeam(state) === 'home' ? homeTeam : awayTeam;
-    const manager = MANAGERS[battingKeystr];
+    // Check if this team's manager was already ejected
+    const isManagerEjected = arguingSide === 'home' ? state._homeManagerEjected : state._awayManagerEjected;
+    if (isManagerEjected && severity.severity === 'chirp') return state;
+
     const umpireObj = state.umpire || 'standard';
-    // Manager-umpire relationship modifiers
-    const relationMod = getManagerUmpireRelation(battingKeystr, state.umpire?.id) / 100;
-    const battingScore = state.score[getBattingTeam(state)];
-    const fieldingScore = state.score[getBattingTeam(state) === 'home' ? 'away' : 'home'];
-    const scoreDiff = fieldingScore - battingScore;
+    const arguingScore = state.score[arguingSide];
+    const opposingScore = state.score[arguingSide === 'home' ? 'away' : 'home'];
+    const scoreDiff = opposingScore - arguingScore;
 
     const result = resolveArgument(
       severity,
@@ -273,27 +287,40 @@ export default function Home() {
       umpireObj,
       state.inning,
       scoreDiff,
-      getBattingTeam(state) === 'home'
+      arguingSide === 'home'
     );
 
     if (!result) return state;
 
-    // Attach manager name
-    result.managerName = manager?.name || 'The Manager';
+    // Use coach name if manager was ejected
+    if (isManagerEjected) {
+      result.managerName = manager?.coach || 'The Acting Manager';
+      if (result.escaLevel > 2) result.escaLevel = 2;
+      result.ejected = false;
+    } else {
+      result.managerName = manager?.name || 'The Manager';
+    }
+
+    // Track topic usage
+    if (severity.topicKey) {
+      const counts = { ...(state._argTopicCounts || {}) };
+      counts[severity.topicKey] = (counts[severity.topicKey] || 0) + 1;
+      state = { ...state, _argTopicCounts: counts };
+    }
 
     // Track argument for first_argument achievement
     unlockAchievement('first_argument');
 
     // If ejected, log it and check achievements
     if (result.ejected && result.whoArgues === 'manager') {
-      const cmt = getEjectionCommentary(battingKeystr, result);
-      const ejectedTeam = getBattingTeam(state);
+      const cmt = getEjectionCommentary(homeTeam, result);
+      const ejectedKey = arguingSide === 'home' ? '_homeManagerEjected' : '_awayManagerEjected';
       state = {
         ...state,
         log: [...state.log, { type: 'ejection', text: `🟥 ${cmt}` }],
-        // Track that this team/manager was ejected (for Earl Weaver Special)
         _managerEjected: true,
-        _ejectedTeam: ejectedTeam,
+        _ejectedTeam: arguingSide,
+        [ejectedKey]: true,
       };
       setEjectionCount(c => {
         const newCount = c + 1;
@@ -307,12 +334,12 @@ export default function Home() {
       });
     } else {
       // Non-ejection argument — log it
-      const cmt = getEjectionCommentary(battingKeystr, result);
+      const cmt = getEjectionCommentary(homeTeam, result);
       state = { ...state, log: [...state.log, { type: 'info', text: `🗣️ ${cmt}` }] };
     }
 
     // Show the animation
-    setArgumentResult({ ...result, homeTeamKey: battingKeystr });
+    setArgumentResult({ ...result, homeTeamKey: homeTeam });
 
     return state;
   }, [homeTeam, awayTeam]);

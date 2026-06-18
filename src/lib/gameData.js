@@ -565,13 +565,13 @@ export const TEAM_IDS = Object.keys(TEAMS);
 
 // ── 1984 Managers (argument personality: 1=calm, 5=fiery, 10=explosive) ──
 export const MANAGERS = {
-  tigers: { name: "Sparky Anderson", personality: 3 },
-  padres: { name: "Dick Williams", personality: 7 },
-  cubs: { name: "Jim Frey", personality: 5 },
-  mets: { name: "Davey Johnson", personality: 4 },
-  redsox: { name: "Ralph Houk", personality: 5 },
-  yankees: { name: "Yogi Berra", personality: 6 },
-  orioles: { name: "Joe Altobelli", personality: 4 },
-  dodgers: { name: "Tommy Lasorda", personality: 9 },
-  reds: { name: "Pete Rose", personality: 6 },
+  tigers: { name: "Sparky Anderson", personality: 3, coach: "Dick Tracewski" },
+  padres: { name: "Dick Williams", personality: 7, coach: "Ozzie Virgil Sr." },
+  cubs: { name: "Jim Frey", personality: 5, coach: "Don Zimmer" },
+  mets: { name: "Davey Johnson", personality: 4, coach: "Mel Stottlemyre" },
+  redsox: { name: "Ralph Houk", personality: 5, coach: "Walt Hriniak" },
+  yankees: { name: "Yogi Berra", personality: 6, coach: "Jeff Torborg" },
+  orioles: { name: "Joe Altobelli", personality: 4, coach: "Cal Ripken Sr." },
+  dodgers: { name: "Tommy Lasorda", personality: 9, coach: "Monty Basgall" },
+  reds: { name: "Pete Rose", personality: 6, coach: "George Scherger" },
 };

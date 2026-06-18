@@ -133,10 +133,12 @@ export function changePitcher(state, newPitcher, side) {
   if (!usesDH) {
     let slotIdx = lineup.findIndex(p => p.name === oldPitcher.name);
     if (slotIdx < 0 && oldPitcher.order) slotIdx = lineup.findIndex(p => p.order === oldPitcher.order);
-    const orderNum = slotIdx >= 0 ? lineup[slotIdx].order : (oldPitcher.order || lineup.length + 1);
-    const lineupEntry = { ...newPitcher, order: orderNum, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-    if (slotIdx >= 0) lineup[slotIdx] = lineupEntry;
-    else lineup.push(lineupEntry);
+    if (slotIdx < 0) slotIdx = lineup.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
+    if (slotIdx >= 0) {
+      const lineupEntry = { ...newPitcher, order: lineup[slotIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      lineup[slotIdx] = lineupEntry;
+    }
+    // Never push a new entry — avoids creating a phantom batting slot
   }
 
   // Save old pitcher to player history so box score retains their stats
