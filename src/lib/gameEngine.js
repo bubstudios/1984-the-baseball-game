@@ -751,7 +751,7 @@ function resolveSwing(state, swingType, pitch) {
 
   // Contact chance
   const contactRating = adjBatter.contact / 10;
-  let contactChance = 0.28 + contactRating * 0.35;
+  let contactChance = 0.38 + contactRating * 0.35;
 
   if (isPower) contactChance -= 0.10;
   if (isContact) contactChance += 0.12;
@@ -776,8 +776,14 @@ function resolveSwing(state, swingType, pitch) {
       batter.gameStats.ab++;
       batter.gameStats.so++;
       pitcher.gameStats.so++;
-      const strikeoutLine = pickLine(STRIKEOUT_SWINGING_LINES);
-      const msg = strikeoutLine.includes('fans on a wicked') ? `${batter.name} fans on a wicked ${pitch.pitchType}!` : `${batter.name} ${strikeoutLine}`;
+      // Mix called vs swinging strikeouts based on pitch location
+      const isLooking = pitch.location && ['outside corner', 'inside corner', 'high strike', 'low strike', 'down the middle'].includes(pitch.location) && Math.random() < 0.45;
+      const strikeoutLine = isLooking
+        ? pickLine(STRIKEOUT_CALLED_LINES)
+        : pickLine(STRIKEOUT_SWINGING_LINES);
+      const msg = strikeoutLine.includes('fans on a wicked')
+        ? `${batter.name} fans on a wicked ${pitch.pitchType}!`
+        : `${batter.name} ${strikeoutLine}`;
       state.log.push({ type: 'strikeout', text: msg });
       state.lastPlay = { type: 'strikeout', text: msg };
       state.balls = 0;
@@ -791,8 +797,19 @@ function resolveSwing(state, swingType, pitch) {
       }
       return;
     }
-    state.log.push({ type: 'strike', text: `Swing and a miss — strike ${state.strikes}` });
-    state.lastPlay = { type: 'strike', text: `Swinging strike ${state.strikes}` };
+    // Mix non-strikeout strike descriptions
+    const strikeLabels = [
+      `Swing and a miss — strike ${state.strikes}`,
+      `Checked his swing — strike ${state.strikes}`,
+      `Couldn't hold up — strike ${state.strikes}`,
+      `Taken at the knees — strike ${state.strikes}`,
+      `Just pulled the bat back — strike ${state.strikes} called`,
+      `Fouled off attempt — nope, swing and a miss, strike ${state.strikes}`,
+      `Waves at a ${pitch.pitchType} — strike ${state.strikes}`,
+    ];
+    const strikeLabel = strikeLabels[Math.floor(Math.random() * strikeLabels.length)];
+    state.log.push({ type: 'strike', text: strikeLabel });
+    state.lastPlay = { type: 'strike', text: strikeLabel };
     return;
   }
 

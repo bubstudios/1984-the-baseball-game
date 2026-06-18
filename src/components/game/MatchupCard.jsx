@@ -10,7 +10,7 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
 
   const displayBatter = adjustedBatter || batter;
   const displayPos = batter.assignedPos || batter.pos;
-  const isPitcher = batter.pos === 'SP' || batter.pos === 'CL' || batter.pos === 'RP' || batter.assignedPos === 'SP';
+  const isPitcher = ['SP','CL','RP','SP/RP','P'].includes(batter.pos) || batter.assignedPos === 'SP';
   const isOutOfPosition = !isPitcher && batter.assignedPos && batter.assignedPos !== batter.pos;
   const isAdjusted = adjustedBatter && (adjustedBatter.contact !== batter.contact || adjustedBatter.power !== batter.power);
 

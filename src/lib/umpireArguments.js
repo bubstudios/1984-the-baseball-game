@@ -258,16 +258,22 @@ export function resolveArgument(severityInfo, managerPersonality, umpireType, in
   const billyMartin = manager >= 9;
 
   // ── Who argues? ──
+  // Batters don't argue walks, HBP, or ball calls — they just got on base
+  const callIsWalk = severityInfo.callType?.includes("ball four") || severityInfo.callType?.includes("ball/strike") || severityInfo.callType?.includes("hit by the pitch") || severityInfo.callType?.includes("borderline");
+  const canBatterArgue = !callIsWalk;
+
   if (severityInfo.severity === "obscure" || severityInfo.severity === "high") {
     whoArgues = "manager";
   } else if (severityInfo.severity === "medium") {
-    whoArgues = r < 0.55 + hotheadBoost ? "manager" :
-                r < 0.72 ? "batter" :
-                r < 0.85 ? "catcher" : "pitcher";
+    if (r < 0.55 + hotheadBoost) whoArgues = "manager";
+    else if (canBatterArgue && r < 0.72) whoArgues = "batter";
+    else if (r < 0.85) whoArgues = "catcher";
+    else whoArgues = "pitcher";
   } else { // low
-    whoArgues = r < 0.30 + hotheadBoost ? "manager" :
-                r < 0.55 ? "batter" :
-                r < 0.75 ? "catcher" : "pitcher";
+    if (r < 0.30 + hotheadBoost) whoArgues = "manager";
+    else if (canBatterArgue && r < 0.55) whoArgues = "batter";
+    else if (r < 0.75) whoArgues = "catcher";
+    else whoArgues = "pitcher";
   }
 
   // ── Escalation (manager only) ──

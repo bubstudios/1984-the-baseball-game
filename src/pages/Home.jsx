@@ -161,29 +161,29 @@ export default function Home() {
   const checkForArgument = useCallback((state) => {
     if (!state || state.gameOver) return state;
 
-    // First: random dugout chirp (can happen without any play)
-    const chirp = maybeDugoutChirp(state);
-    if (chirp) {
-      const battingKeystr = getBattingTeam(state) === 'home' ? homeTeam : awayTeam;
-      const manager = MANAGERS[battingKeystr];
-      const umpire = gameUmpire || 'standard';
-      const battingScore = state.score[getBattingTeam(state)];
-      const fieldingScore = state.score[getBattingTeam(state) === 'home' ? 'away' : 'home'];
-      const scoreDiff = fieldingScore - battingScore;
-      const chirpResult = resolveArgument(chirp, manager?.personality || 5, umpire, state.inning, scoreDiff, getBattingTeam(state) === 'home');
-      if (chirpResult) {
-        chirpResult.managerName = manager?.name || 'The Manager';
-        setArgumentResult({ ...chirpResult, homeTeamKey: battingKeystr });
+    // First: check for a real play-based argument
+    const severity = state.lastPlay ? getArgumentSeverity(state.lastPlay, state) : null;
+
+    if (!severity) {
+      // No play argument — maybe just a random dugout chirp
+      const chirp = maybeDugoutChirp(state);
+      if (chirp) {
+        const battingKeystr = getBattingTeam(state) === 'home' ? homeTeam : awayTeam;
+        const manager = MANAGERS[battingKeystr];
+        const umpire = gameUmpire || 'standard';
+        const battingScore = state.score[getBattingTeam(state)];
+        const fieldingScore = state.score[getBattingTeam(state) === 'home' ? 'away' : 'home'];
+        const scoreDiff = fieldingScore - battingScore;
+        const chirpResult = resolveArgument(chirp, manager?.personality || 5, umpire, state.inning, scoreDiff, getBattingTeam(state) === 'home');
+        if (chirpResult) {
+          chirpResult.managerName = manager?.name || 'The Manager';
+          setArgumentResult({ ...chirpResult, homeTeamKey: battingKeystr });
+        }
       }
-      // Don't let a chirp replace a real argument — check both
-      const severity = getArgumentSeverity(state.lastPlay, state);
-      if (!severity) return state;
-      // Fall through to full argument check
+      return state;
     }
 
-    if (!state.lastPlay) return state;
-    const severity = getArgumentSeverity(state.lastPlay, state);
-    if (!severity) return state;
+    // Has a real argument — continue with full resolution
 
     // Which team is arguing? The one that got the bad call (batting team)
     const battingKeystr = getBattingTeam(state) === 'home' ? homeTeam : awayTeam;
