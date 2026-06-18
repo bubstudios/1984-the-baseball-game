@@ -395,3 +395,161 @@ registerTeamAds('cubs', 'charity', [
   "Help keep Chicago's parks and neighborhoods clean.",
   "Support your local community organizations this summer.",
 ]);
+
+// ── Yankees / New York (#201–300) ──
+
+// Yankees-specific team promos
+registerTeamAds('yankees', 'team_promo', [
+  "Join the Yankees this Sunday for Old-Timers Day at Yankee Stadium.",
+  "Don't miss Old-Timers Day as Yankee legends return to the Bronx.",
+  "The Yankees invite youngsters to attend Youth Baseball Day next weekend.",
+  "Stop by the souvenir stands for official Yankees yearbooks and scorecards.",
+]);
+
+// Mets-specific team promos
+registerTeamAds('mets', 'team_promo', [
+  "The Mets continue their homestand tomorrow evening at Shea Stadium.",
+  "Kids Day returns to Shea Stadium this Sunday.",
+  "The first 10,000 fans at Shea Stadium receive a commemorative Mets poster.",
+  "Meet several Mets players this Saturday during a special fan event.",
+]);
+
+// Yankees player appearances
+registerTeamAds('yankees', 'team_promo', [
+  "Don Mattingly will be signing autographs Saturday afternoon in White Plains.",
+  "Meet Don Mattingly and several Yankee teammates this weekend.",
+  "Ron Guidry will appear at a charity fundraiser in the Bronx on Saturday.",
+  "Dave Winfield will meet fans following a youth baseball clinic.",
+]);
+
+// Mets player appearances
+registerTeamAds('mets', 'team_promo', [
+  "Keith Hernandez will sign autographs this weekend on Long Island.",
+  "Darryl Strawberry will appear at a baseball card show Saturday morning.",
+  "Several Mets players will participate in a charity softball game this weekend.",
+  "Dwight Gooden is scheduled to appear at a youth baseball event.",
+]);
+
+// Shared NY team promos (both teams)
+const NY_SHARED_TEAM_PROMO = [
+  "Stop by and meet members of both New York clubs at upcoming charity functions.",
+  "Fans are encouraged to check local listings for player appearances.",
+];
+registerTeamAds('yankees', 'team_promo', NY_SHARED_TEAM_PROMO);
+registerTeamAds('mets', 'team_promo', NY_SHARED_TEAM_PROMO);
+
+// Shared NY charity (both teams)
+const NY_SHARED_CHARITY = [
+  "Youth baseball clinics continue throughout New York this summer.",
+  "Sign up now for Little League camps across the metropolitan area.",
+];
+registerTeamAds('yankees', 'charity', NY_SHARED_CHARITY);
+registerTeamAds('mets', 'charity', NY_SHARED_CHARITY);
+
+// Shared NY community — landmarks, Broadway, family attractions (both teams)
+const NY_SHARED_COMMUNITY = [
+  // Landmarks
+  "Take a ferry ride and visit the Statue of Liberty this weekend.",
+  "Lady Liberty continues to welcome visitors from around the world.",
+  "Spend an afternoon exploring Ellis Island.",
+  "The Statue of Liberty restoration project continues thanks to generous donations.",
+  "Visit the Empire State Building for one of the finest views in America.",
+  "The observation deck atop the Empire State Building is open daily.",
+  "Take in the sights of New York from the top of Rockefeller Center.",
+  "Rockefeller Center remains one of the city's most popular attractions.",
+  "Visit the Metropolitan Museum of Art this weekend.",
+  "Explore thousands of years of history at the Metropolitan Museum of Art.",
+  "The Museum of Modern Art features exciting new exhibits this summer.",
+  "Spend a day at the American Museum of Natural History.",
+  "The Hayden Planetarium welcomes visitors throughout the week.",
+  "Learn about the universe at the Hayden Planetarium.",
+  "Visit the Guggenheim Museum and enjoy its unique architecture.",
+  // Broadway
+  "Broadway continues to offer world-class entertainment.",
+  "See one of New York's great musicals this weekend.",
+  "Cats continues its successful Broadway run.",
+  "Tickets remain available for select Broadway performances.",
+  "Enjoy an evening in the theater district after today's game.",
+  "New productions are opening regularly throughout Manhattan.",
+  "Broadway remains one of New York's greatest attractions.",
+  "Consider making a night of it with dinner and a show.",
+  "Visitors from around the world continue to flock to Broadway.",
+  "Check local listings for performance times and ticket availability.",
+  // Family attractions
+  "Visit the Bronx Zoo and see animals from around the globe.",
+  "The Bronx Zoo remains one of America's largest zoological parks.",
+  "Spend a day exploring Central Park.",
+  "Central Park offers activities for visitors of all ages.",
+  "Enjoy a relaxing afternoon in Central Park this weekend.",
+  "Visit the New York Botanical Garden in the Bronx.",
+  "The Botanical Garden is featuring beautiful summer displays.",
+  "Take the family to Coney Island for rides and entertainment.",
+  "Enjoy the boardwalk attractions at Coney Island.",
+  "Spend a day along the beaches of Long Island.",
+  // Community events
+  "The New York Public Library invites visitors to its summer programs.",
+  "Reading programs are underway at libraries throughout the city.",
+  "Support your neighborhood Little League this season.",
+  "Youth baseball remains one of America's great traditions.",
+  "Community recreation programs continue throughout New York this summer.",
+  "Consider volunteering with local youth organizations.",
+  "New York parks offer activities for the entire family.",
+  "Enjoy free concerts in city parks throughout the summer.",
+  "Outdoor movie nights continue across the five boroughs.",
+  "Check local listings for neighborhood festivals and events.",
+  // General New York flavor
+  "It's another beautiful day in New York City.",
+  "The skyline never gets old.",
+  "New York remains one of the most exciting cities in the world.",
+  "Visitors continue to arrive from every corner of the globe.",
+  "There's always something happening in New York.",
+  "The city is alive today.",
+  "Baseball and New York simply belong together.",
+  "The sounds of summer are everywhere today.",
+  "A fine day for baseball in the Big Apple.",
+  "New York baseball fans know their game.",
+];
+registerTeamAds('yankees', 'community', NY_SHARED_COMMUNITY);
+registerTeamAds('mets', 'community', NY_SHARED_COMMUNITY);
+
+// Shared NY sponsor — radio & TV (both teams)
+const NY_SHARED_SPONSOR = [
+  "Stay tuned after the game for local news and weather updates.",
+  "Join us later tonight for sports highlights from around the league.",
+  "Baseball fans can catch additional coverage following today's game.",
+  "Stay with us for postgame interviews and analysis.",
+  "More Yankees baseball is coming your way tomorrow evening.",
+];
+registerTeamAds('yankees', 'sponsor', NY_SHARED_SPONSOR);
+registerTeamAds('mets', 'sponsor', [
+  "Stay tuned after the game for local news and weather updates.",
+  "Join us later tonight for sports highlights from around the league.",
+  "Baseball fans can catch additional coverage following today's game.",
+  "Stay with us for postgame interviews and analysis.",
+  "More Mets baseball is coming your way tomorrow evening.",
+]);
+
+// Phil Rizzuto-style reads — Yankees only
+registerTeamAds('yankees', 'community', [
+  "Holy cow, traffic looks heavy on the Major Deegan today.",
+  "If you're heading home through the Bronx, give yourself a little extra time.",
+  "Phil says it's a beautiful day to be at the ballpark.",
+  "Scooter says he'd rather be here than sitting in traffic.",
+  "Phil would like to wish a happy birthday to Joey in Yonkers.",
+  "Happy anniversary to Frank and Marie celebrating 35 years in Queens.",
+  "A birthday greeting goes out to Mrs. Sullivan in Staten Island.",
+  "Phil says hello to everyone listening from New Jersey.",
+  "Greetings to Yankee fans throughout Connecticut.",
+  "Thanks for spending your afternoon with us.",
+  // Rare / funny Rizzuto reads
+  "Phil says he got lost driving to the stadium again.",
+  "Scooter claims every road in the Bronx goes the wrong direction.",
+  "Phil says he once missed batting practice because of traffic.",
+  "Holy cow, somebody just handed Phil another birthday card.",
+  "Phil has now received three birthday announcements this inning.",
+  "Scooter says he's still trying to figure out his new VCR.",
+  "Phil says the instruction manual was thicker than a phone book.",
+  "Somebody sent Phil a fruit basket and he'd like to say thank you.",
+  "Phil would also like to thank the nice lady who mailed him homemade cookies.",
+  "And now, back to baseball from New York City.",
+]);
