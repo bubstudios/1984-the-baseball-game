@@ -682,3 +682,155 @@ const CA_SHARED_MILITARY = [
 ];
 registerTeamAds('dodgers', 'community', CA_SHARED_MILITARY);
 registerTeamAds('padres', 'community', CA_SHARED_MILITARY);
+
+// ── Tigers / Detroit (#401–425) ──
+
+registerTeamAds('tigers', 'team_promo', [
+  "Visit historic Tiger Stadium and experience one of baseball's great ballparks.",
+  "The Tigers continue their homestand tomorrow afternoon in Detroit.",
+  "Stop by the team store for official Tigers merchandise.",
+  "The first 10,000 fans receive a Tigers team poster this Sunday.",
+  "Join the Tigers for Youth Baseball Day next weekend.",
+]);
+
+registerTeamAds('tigers', 'community', [
+  "Visit the Detroit Zoo and enjoy exhibits from around the world.",
+  "The Detroit Zoo welcomes visitors all summer long.",
+  "Take the family to Greenfield Village this weekend.",
+  "Explore American history at Greenfield Village.",
+  "Visit the Henry Ford Museum and discover America's industrial heritage.",
+  "Detroit remains the automobile capital of the world.",
+  "Tour one of Detroit's automotive museums this summer.",
+  "We salute the hardworking men and women of Michigan's auto industry.",
+  "Take a stroll along the Detroit Riverfront this weekend.",
+  "Summer concerts continue throughout metropolitan Detroit.",
+  "The Tigers thank fans listening throughout Michigan.",
+  "Greetings to baseball fans across the Great Lakes region.",
+  "Ernie Harwell wishes everyone a pleasant evening.",
+  "Another beautiful Michigan afternoon for baseball.",
+  "The folks here in Detroit are enjoying this one.",
+  "Happy birthday to Mr. Harold Simmons of Dearborn, celebrating his 82nd today.",
+  "Congratulations to the graduates of Detroit Central High School.",
+  "Support your local Little League programs this summer.",
+  "Baseball remains a wonderful game for youngsters everywhere.",
+  "The Tigers appreciate your support all season long.",
+]);
+
+// ── Orioles / Baltimore (#426–450) ──
+
+registerTeamAds('orioles', 'team_promo', [
+  "The Orioles return home tomorrow night at Memorial Stadium.",
+  "The first 10,000 fans receive an Orioles commemorative cap.",
+  "Orioles players will participate in a youth clinic this Saturday.",
+  "Pick up your official Orioles yearbook at concession stands.",
+  "Support Orioles Charities and local youth baseball.",
+]);
+
+registerTeamAds('orioles', 'community', [
+  "Visit Baltimore's beautiful Inner Harbor this weekend.",
+  "The Inner Harbor continues to attract visitors from around the country.",
+  "Spend the day exploring Baltimore's waterfront attractions.",
+  "The National Aquarium welcomes visitors daily.",
+  "Discover fascinating marine life at the National Aquarium.",
+  "Visit historic Fort McHenry, birthplace of our national anthem.",
+  "Fort McHenry remains one of Maryland's most treasured landmarks.",
+  "Enjoy a harbor cruise through Baltimore Harbor.",
+  "Baltimore offers history, culture, and family fun.",
+  "Baltimore remains one of baseball's great cities.",
+  "The fans here know their baseball.",
+  "We thank listeners throughout Maryland and the Mid-Atlantic region.",
+  "Chuck Thompson reminds everyone to enjoy the game.",
+  "Happy anniversary to George and Martha celebrating 40 years in Towson.",
+  "A birthday greeting goes out to young Michael in Annapolis.",
+  "Summer activities continue throughout Baltimore County.",
+  "Community baseball programs are underway across Maryland.",
+  "The Orioles appreciate your loyal support.",
+  "Baseball and Baltimore have always gone hand in hand.",
+  "Ain't the beer cold.",
+]);
+
+// ── Red Sox / Boston (#451–475) ──
+
+registerTeamAds('redsox', 'team_promo', [
+  "The Red Sox continue their homestand tomorrow at Fenway Park.",
+  "The first 15,000 fans receive a Red Sox team poster.",
+  "Stop by the souvenir stands for official Red Sox merchandise.",
+  "Youth baseball clinics continue across New England.",
+  "Support local baseball programs throughout Massachusetts.",
+]);
+
+registerTeamAds('redsox', 'community', [
+  "Take a walk along Boston's historic Freedom Trail.",
+  "Visit the Freedom Trail and explore America's past.",
+  "The USS Constitution remains one of Boston's most popular attractions.",
+  "Tour historic Boston Harbor this weekend.",
+  "The New England Aquarium welcomes visitors daily.",
+  "Explore the wonders of the ocean at the New England Aquarium.",
+  "Spend the afternoon at Faneuil Hall Marketplace.",
+  "Faneuil Hall continues to attract visitors from around the world.",
+  "Visit the Museum of Fine Arts this weekend.",
+  "Discover history and culture throughout Boston.",
+  "Fenway Park remains one of baseball's most beloved ballparks.",
+  "Red Sox fans are among the most knowledgeable in baseball.",
+  "Greetings to listeners throughout New England.",
+  "Another fine evening for baseball in Boston.",
+  "Happy birthday to Mrs. O'Leary of Worcester.",
+  "Congratulations to graduates throughout Massachusetts.",
+  "Summer festivals continue across New England.",
+  "We thank Red Sox fans for their continued support.",
+  "There's nothing quite like baseball at Fenway Park.",
+  "Enjoy the game and enjoy Boston.",
+]);
+
+// ── Generic MLB / PSA / Community (#476–490) ──
+
+const GENERAL_PSA = [
+  "Support your local youth baseball league this summer.",
+  "Encourage children to get involved in sports and recreation.",
+  "Reading is important. Visit your local library this week.",
+  "Libraries across America offer summer reading programs.",
+  "Drive safely and always wear your seatbelt.",
+  "Please remember to drink responsibly.",
+  "Support community organizations in your hometown.",
+  "Volunteer opportunities are available throughout your community.",
+  "Keep America's parks clean and beautiful.",
+  "Recycle aluminum cans whenever possible.",
+  "Baseball is best enjoyed with family and friends.",
+  "Take a youngster to a ballgame this summer.",
+  "Spend quality time outdoors this weekend.",
+  "Support local charities and community events.",
+  "Thank you for being a baseball fan.",
+];
+
+// Merge PSAs into general community pool — they play everywhere
+GENERAL_COMMUNITY.push(...GENERAL_PSA);
+
+// ── Rare Easter Egg Ads (#491–500) ──
+
+// Announcer-specific rare reads — registered to their teams
+registerTeamAds('cubs', 'community', [
+  "Harry says he's pretty sure he left his scorecard in the seventh inning.",
+  "Just want to say hello to little Jimmy Cochrane, who skipped school today to watch his favorite team.",
+]);
+registerTeamAds('yankees', 'community', [
+  "Phil Rizzuto is still trying to program his VCR.",
+]);
+registerTeamAds('dodgers', 'community', [
+  "Vin Scully notes that somewhere, someone is listening to this game while stuck in traffic.",
+]);
+registerTeamAds('padres', 'community', [
+  "Jerry Coleman believes the seagulls have taken over left field.",
+]);
+registerTeamAds('tigers', 'community', [
+  "Ernie Harwell says this game reminds him of one he saw thirty years ago.",
+]);
+
+// Generic heartwarming Easter eggs — playable anywhere
+const EASTER_EGG_FINALE = [
+  "The organist appears to know more songs than the announcers.",
+  "A fan has reportedly caught three foul balls today. That's a good day.",
+  "Someone in the upper deck is keeping score the old-fashioned way.",
+  "The hot dog vendor appears to be winning his section by a wide margin.",
+  "Somewhere, a youngster is falling in love with baseball for the first time today.",
+];
+GENERAL_COMMUNITY.push(...EASTER_EGG_FINALE);
