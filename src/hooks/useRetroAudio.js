@@ -453,6 +453,7 @@ export function stopDiskClack() {
 export default function useRetroAudio(gameState, enabled) {
   const prevLogIdx = useRef(0);
   const started = useRef(false);
+  const hasPlayedAnthem = useRef(false);
 
   // Start/stop crowd noise
   useEffect(() => {
@@ -532,10 +533,11 @@ export default function useRetroAudio(gameState, enabled) {
           if (entry.text && entry.text.includes('🎶')) {
             // 7th inning stretch — play after a short delay for the text announcement
             setTimeout(playStretchMusic, 1500);
-          } else if (entry.text && entry.text.includes('Top of inning 1 —')) {
-            // Star Spangled Banner at game start — only "Top of inning 1 —"
+          } else if (entry.text && entry.text.includes('Top of inning 1 —') && !hasPlayedAnthem.current) {
+            // Star Spangled Banner at game start — once per game only
+            hasPlayedAnthem.current = true;
             setTimeout(playAnthem, 600);
-          } else if (entry.text && /(Top|Bottom) of inning \d/.test(entry.text) && !entry.text.includes('Top of inning 1 —')) {
+          } else if (entry.text && /(Top|Bottom) of inning \d/.test(entry.text)) {
             // Half-inning change jingle — match text anywhere, not just start
             setTimeout(playHalfInningBreak, 600);
           }

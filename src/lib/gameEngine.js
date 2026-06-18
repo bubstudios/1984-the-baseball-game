@@ -858,6 +858,32 @@ function resolveSwing(state, swingType, pitch) {
       }
       return;
     }
+    // Checked swing on a ball — umpire rules it's not a swing
+    if (!pitch.isStrike && Math.random() < 0.09) {
+      state.balls++;
+      if (state.balls >= 4) {
+        batter.gameStats.bb++;
+        pitcher.gameStats.bb++;
+        const walkMsg = `${batter.name} ${pickLine(WALK_LINES)}`;
+        state.log.push({ type: 'walk', text: walkMsg });
+        state.lastPlay = { type: 'walk', text: walkMsg };
+        handleWalk(state, batter);
+        state.balls = 0;
+        state.strikes = 0;
+        advanceBatter(state);
+        return;
+      }
+      const ballLabels = [
+        `Pulled the bat back — ball ${state.balls} called`,
+        `Held up — ball ${state.balls}`,
+        `Checked the swing — no, he didn't go — ball ${state.balls}`,
+      ];
+      const ballLabel = ballLabels[Math.floor(Math.random() * ballLabels.length)];
+      state.log.push({ type: 'ball', text: ballLabel });
+      state.lastPlay = { type: 'ball', text: ballLabel };
+      return;
+    }
+
     // Mix non-strikeout strike descriptions (weighted: common first, rare last)
     const strikeLabels = [
       `Swing and a miss — strike ${state.strikes}`,
@@ -2249,6 +2275,18 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
     const reason = severeFatigue ? 'completely gassed' : fatiguePull ? `${ip} innings — arm is tiring` : walksPull ? 'lost command' : blowupPull ? 'rough outing' : 'high-leverage situation';
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
+
+    // Update the batting lineup so the new pitcher replaces the old one's spot
+    const fieldLineup = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
+    const oldSlot = fieldLineup.findIndex(p => p.name === oldPitcher.name);
+    if (oldSlot >= 0) {
+      fieldLineup[oldSlot] = { ...newPitcher, order: fieldLineup[oldSlot].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+    } else if (oldPitcher.order) {
+      const slotByOrder = fieldLineup.findIndex(p => p.order === oldPitcher.order);
+      if (slotByOrder >= 0) {
+        fieldLineup[slotByOrder] = { ...newPitcher, order: oldPitcher.order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      }
+    }
   }
 
   return newState;

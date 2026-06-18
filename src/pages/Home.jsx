@@ -61,6 +61,7 @@ export default function Home() {
   const prevLogLength = useRef(0);
   const prevHalfInning = useRef(null);
   const [showAd, setShowAd] = useState(null);
+  const [showStretch, setShowStretch] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -143,6 +144,15 @@ export default function Home() {
       setInjuryResult(gameState.lastInjury);
       // Mark as shown to prevent re-triggering
       setGameState(prev => prev ? { ...prev, _injuryShown: true } : prev);
+    }
+
+    // Detect 7th inning stretch
+    if (gameState.log.length > prevLogLength.current) {
+      const newEntries = gameState.log.slice(prevLogLength.current);
+      const stretchEntry = newEntries.find(l => l.type === 'info' && l.text && l.text.includes('🎶'));
+      if (stretchEntry && !gameState.gameOver) {
+        setShowStretch(stretchEntry.text);
+      }
     }
 
     // Trigger ads on half-inning transition or pitching change
@@ -404,6 +414,7 @@ export default function Home() {
     prevHalfInning.current = null;
     prevLogLength.current = 0;
     setShowAd(null);
+    setShowStretch(null);
   };
 
   if (ballparkPhase) {
@@ -580,6 +591,19 @@ export default function Home() {
                 {/* Ad read — appears between innings / during pitching changes */}
                 {showAd && (
                   <AdRead ad={showAd} onDismiss={() => setShowAd(null)} autoDismissMs={10000} />
+                )}
+
+                {/* 7th Inning Stretch banner */}
+                {showStretch && (
+                  <div className="bg-primary/10 border border-primary/30 rounded-xl px-4 py-3 text-center cursor-pointer animate-in slide-in-from-bottom-4 fade-in duration-500" onClick={() => setShowStretch(null)}>
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <span className="text-xs font-display text-primary animate-pulse">🎤</span>
+                      <span className="text-[10px] font-heading uppercase tracking-[0.2em] text-primary/80">7th Inning Stretch</span>
+                      <span className="text-xs font-display text-primary animate-pulse">🎤</span>
+                    </div>
+                    <p className="text-sm font-heading text-foreground/90 leading-relaxed italic">{showStretch}</p>
+                    <p className="text-[9px] text-muted-foreground/40 mt-2 font-heading">tap to continue</p>
+                  </div>
                 )}
 
                 {/* Commentary */}
