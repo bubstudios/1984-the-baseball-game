@@ -2,6 +2,7 @@ import React from 'react';
 import { pickHarryLine } from '@/lib/harryCarayLines';
 import { pickPadresLine } from '@/lib/jerryColemanLines';
 import { pickVinLine } from '@/lib/vinScullyLines';
+import { pickMetsLine } from '@/lib/metsBroadcastLines';
 
 // Player nicknames — researched from 1984 MLB lore
 const NICKNAMES = {
@@ -285,7 +286,7 @@ export const STADIUM_FLAVOR = {
     stretchFlavor: null,
   },
   newYorkMets: {
-    announcers: ["Ralph Kiner", "Tim McCarver"],
+    announcers: ["Ralph Kiner", "Tim McCarver", "Bob Murphy"],
     stadium: "Shea Stadium",
     nicknames: ["Shea"],
     flavor: [
@@ -538,13 +539,16 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isCubsGame = homeTeamKey === 'cubs';
   const isPadresGame = homeTeamKey === 'padres';
   const isDodgersGame = homeTeamKey === 'dodgers';
+  const isMetsGame = homeTeamKey === 'mets';
   const text = isCubsGame && Math.random() < 0.65
     ? pickHarryLine()
     : isPadresGame && Math.random() < 0.65
       ? pickPadresLine()
       : isDodgersGame && Math.random() < 0.70
         ? pickVinLine()
-        : getCommentary(batter, pitcher, gameState, stadiumInfo);
+        : isMetsGame && Math.random() < 0.65
+          ? pickMetsLine()
+          : getCommentary(batter, pitcher, gameState, stadiumInfo);
 
   return (
     <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">
