@@ -436,14 +436,16 @@ export function checkGameAchievements(gameState, userTeam = 'home') {
   u('play_ball');
   if (allUserPlayers.some(p => p.gameStats?.hits > 0)) u('batter_up');
   if (allUserPlayers.some(p => p.gameStats?.runs > 0)) u('crossed_plate');
-  if (logText.includes('double play')) u('around_horn');
-  if (logText.includes('1-2-3') || logText.includes('retired in order')) u('three_up_down');
+  if (logText.includes('double play') && userIsFielding(gameState, userSide, log)) u('around_horn');
+  if ((logText.includes('1-2-3') || logText.includes('retired in order')) && userScore === opponentScore) u('three_up_down');
   if (userWon) u('ballgame');
 
-  // ── HITTING ──
-  if (logText.includes('infield single') || logText.includes('beats it out')) u('infield_hit');
-  if (logText.includes('double') && logText.includes('double play') === false) u('gap_power');
-  if (logText.includes('triple')) u('legs_for_days');
+  // ── HITTING (user team only) ──
+  // infield hit: check log entries of type 'single' mentioning user players
+  const userNames = allUserPlayers.map(p => p.name);
+  if (log.some(l => l.type === 'single' && l.text && (l.text.includes('infield single') || l.text.includes('beats it out')) && userNames.some(n => l.text.includes(n)))) u('infield_hit');
+  if (log.some(l => l.type === 'double' && l.text && userNames.some(n => l.text.includes(n)))) u('gap_power');
+  if (log.some(l => l.type === 'triple' && l.text && userNames.some(n => l.text.includes(n)))) u('legs_for_days');
   if (allUserPlayers.some(p => p.gameStats?.hr > 0)) u('touch_em_all');
   if (allUserPlayers.some(p => p.gameStats?.hits >= 3)) u('rally_starter');
   if (allUserPlayers.some(p => p.gameStats?.hits >= 4)) u('perfect_day');
@@ -469,8 +471,8 @@ export function checkGameAchievements(gameState, userTeam = 'home') {
     if (hitTypes >= 3) u('cycle_watch');
   }
 
-  if (logText.includes('GRAND SLAM')) u('grand_salami');
-  if (logText.includes('Walk-off') || logText.includes('walk-off')) u('walk_off_hero');
+  if (allUserPlayers.some(p => (p.gameStats?.hr || 0) > 0 && (p.gameStats?.rbi || 0) >= 4) || log.filter(l => l.type === 'homerun' && l.text && l.text.includes('GRAND SLAM') && userNames.some(n => l.text.includes(n))).length > 0) u('grand_salami');
+  if (userWon && logText.includes('Walk-off')) u('walk_off_hero');
 
   // ── PITCHING ──
   if (userPitchers.some(p => (p.gameStats?.so || 0) > 0)) u('punchout');
@@ -489,15 +491,15 @@ export function checkGameAchievements(gameState, userTeam = 'home') {
       if (userPitchers.some(p => (p.gameStats?.so || 0) >= 10)) u('mr_perfect');
     }
   }
-  if (logText.includes('strike out the side') || logText.includes('struck out the side')) u('frozen_rope');
+  if (userIsFielder && (logText.includes('strike out the side') || logText.includes('struck out the side'))) u('frozen_rope');
 
-  // ── DEFENSE ──
-  if (logText.includes('diving catch') || logText.includes('dives and makes the catch') || logText.includes('lays out')) u('leather_glove');
-  if (logText.includes('thrown out at home') || logText.includes('nailed at the plate')) u('cannon_arm');
-  if (logText.includes('caught stealing')) u('caught_stealing');
-  if (logText.includes('double play')) u('twin_killing');
-  if (logText.includes('to short') || logText.includes('to third')) u('around_horn_dp');
-  if (logText.includes('robs') && logText.includes('home run')) u('web_gem');
+  // ── DEFENSE (user team fielding) ──
+  if (userIsFielding(gameState, userSide, log) && (logText.includes('diving catch') || logText.includes('dives and makes the catch') || logText.includes('lays out'))) u('leather_glove');
+  if (userIsFielding(gameState, userSide, log) && (logText.includes('thrown out at home') || logText.includes('nailed at the plate'))) u('cannon_arm');
+  if (userIsFielding(gameState, userSide, log) && logText.includes('caught stealing')) u('caught_stealing');
+  if (userIsFielding(gameState, userSide, log) && logText.includes('double play')) u('twin_killing');
+  if (userIsFielding(gameState, userSide, log) && (logText.includes('to short') || logText.includes('to third'))) u('around_horn_dp');
+  if (userIsFielding(gameState, userSide, log) && logText.includes('robs') && logText.includes('home run')) u('web_gem');
 
   // ── COMEBACKS ──
   const maxDeficit = computeMaxDeficit(gameState, userSide);
@@ -508,26 +510,29 @@ export function checkGameAchievements(gameState, userTeam = 'home') {
   if (userWon && (logText.includes('Walk-off') || logText.includes('walk-off'))) u('bottom_ninth');
 
   // ── FUNNY ──
-  // Golden/Silver Sombrero: check for player with 4/3 K's
   const userKs = {};
   allUserPlayers.forEach(p => { if (p.gameStats?.so) userKs[p.name] = p.gameStats.so; });
   if (Object.values(userKs).some(k => k >= 4)) u('golden_sombrero');
   if (Object.values(userKs).some(k => k >= 3)) u('silver_sombrero');
-  if (logText.includes('error') && (logText.match(/error/gi) || []).length >= 3) u('oops');
-  if (logText.includes('reaches on an error')) u('little_league');
+  if (userIsFielder && logText.includes('error') && (logText.match(/error/gi) || []).length >= 3) u('oops');
+  if (allUserPlayers.some(p => p.gameStats?.runs > 0) && logText.includes('reaches on an error')) u('little_league');
   if (gameState.inning >= 15) u('free_baseball');
-  // Beanball tracked separately — HBP count
+  // Beanball: HBP by user pitcher
+  const userP = currentPitcher;
   const hbpCount = (logText.match(/hit by the pitch/gi) || []).length;
-  if (hbpCount >= 3) u('beanball');
+  if (userIsFielder && hbpCount >= 3) u('beanball');
 
   // ── 1984-THEMED ──
   u('like_its_1984');
+
+  // All remaining log-text achievements must involve the user's team
+  const userIsFielder = userIsFielding(gameState, userSide, log);
   // Small ball: scored a run without a hit (user team only)
   if (userScore > 0 && logText.includes('scores') && (logText.includes('bunt') || logText.includes('sacrifice fly') || logText.includes('steals home'))) u('small_ball');
   const allSB = allUserPlayers.reduce((sum, p) => sum + (p.gameStats?.sb || 0), 0);
   if (allSB >= 5) u('whitey_ball');
-  // The Wizard: 10+ assists — we approximate via log mentions of SS
-  if ((logText.match(/to short/gi) || []).length >= 10) u('the_wizard');
+  // The Wizard: 10+ assists by user SS
+  if (userIsFielder && (logText.match(/to short/gi) || []).length >= 10) u('the_wizard');
   const totalHR = allUserPlayers.reduce((sum, p) => sum + (p.gameStats?.hr || 0), 0);
   if (totalHR >= 4) u('power_surge');
   // Ace of the Staff: complete game (pitcher with 9+ IP)
@@ -547,9 +552,20 @@ export function checkGameAchievements(gameState, userTeam = 'home') {
   // Immaculate inning: 9 pitches, 3 Ks in one inning — check log
   if (logText.includes('immaculate') || logText.includes('9 pitches')) u('immaculate');
   if (totalHR >= 5) u('four_bagger_frenzy');
-  if (logText.includes('500')) u('no_doubter');
+  if (log.filter(l => l.type === 'homerun' && l.text && l.text.includes('500') && userNames.some(n => l.text.includes(n))).length > 0) u('no_doubter');
 
   return newlyUnlocked;
+}
+
+// Helper: determine if the user's team was fielding when a given event happened
+function userIsFielding(gameState, userSide, log) {
+  // The user's team fields when the batting team is NOT the user's side
+  // During top of inning: away bats (if user is home, user fields)
+  // During bottom: home bats (if user is away, user fields)
+  // We check if there's any log entry that indicates user defense made a play
+  const userLineup = userSide === 'home' ? gameState.homeLineup : gameState.awayLineup;
+  const userFielders = userLineup.filter(p => (p.assignedPos || p.pos) !== 'DH').map(p => p.name);
+  return log.some(l => l.text && userFielders.some(f => l.text.includes(f)));
 }
 
 function computeMaxDeficit(gameState, userSide) {
