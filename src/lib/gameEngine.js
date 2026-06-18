@@ -96,6 +96,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     gameOver: false, waitingForInput: true, lastPlay: null, pitchResult: null,
     hitAndRun: false, pendingSteal: null,
     weather: weather || null, umpire: umpire || null,
+    useDH: !!useDH,
     homePlayerHistory: [], awayPlayerHistory: [],
   };
 }
@@ -735,7 +736,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const cpuBullpen = cpuSide === 'away' ? newState.awayBullpen : newState.homeBullpen;
   const cpuLineupField = cpuSide === 'away' ? newState.awayLineup : newState.homeLineup;
   const cpuPitcherField = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
-  const hasDH = cpuLineupField.some(p => (p.assignedPos || p.pos) === 'DH');
+  const hasDH = !!newState.useDH;
   const pitcherInLineup = cpuLineupField.some(p => p.name === cpuPitcherField.name);
   if (!hasDH && !pitcherInLineup && cpuBullpen.length > 0) {
     const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
@@ -775,7 +776,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     const hk = cpuPitchingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
     if (!newState[hk].find(p => p.name === oldPitcher.name)) newState[hk].push({ ...oldPitcher });
     const fl = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
-    const cpuDH = fl.some(p => (p.assignedPos || p.pos) === 'DH');
+    const cpuDH = !!newState.useDH;
     if (!cpuDH) {
       let si = fl.findIndex(p => p.name === oldPitcher.name);
       if (si < 0 && oldPitcher.order) si = fl.findIndex(p => p.order === oldPitcher.order);

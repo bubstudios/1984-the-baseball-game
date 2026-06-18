@@ -129,7 +129,7 @@ export function changePitcher(state, newPitcher, side) {
 
   // Swap the new pitcher into the fielding lineup (only if DH is not in effect)
   const lineup = isHome ? newState.homeLineup : newState.awayLineup;
-  const usesDH = lineup.some(p => (p.assignedPos || p.pos) === 'DH');
+  const usesDH = newState.useDH;
   if (!usesDH) {
     let slotIdx = lineup.findIndex(p => p.name === oldPitcher.name);
     if (slotIdx < 0 && oldPitcher.order) slotIdx = lineup.findIndex(p => p.order === oldPitcher.order);
