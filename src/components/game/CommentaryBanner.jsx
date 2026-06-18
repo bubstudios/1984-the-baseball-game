@@ -388,6 +388,10 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     options.push(`${batterName} hitting ${avg} on the afternoon`);
   }
 
+  // Fatigue warnings
+  const isFatigued = pitcher?.fatigueLevel > 0;
+  const isGassed = pitcher?.fatigueLevel >= 3;
+
   // Pitcher focus — windup with bases empty, stretch with runners on
   const pitcherDelivery = runnersOn > 0
     ? `${pitcher?.name} deals from the stretch`
@@ -401,6 +405,18 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
   if (runnersOn > 0) {
     options.push(`${pitcher?.name} comes to the stretch, checks the runner`);
     options.push(`${pitcher?.name} from the stretch — kicks and deals`);
+  }
+
+  // Fatigue commentary
+  if (isGassed) {
+    options.push(`${pitcher?.name} is running on fumes — the manager might need to think about the bullpen`);
+    options.push(`${pitcher?.name} has lost a few ticks on the fastball — he's laboring out there`);
+    options.push(`The velocity is dropping — ${pitcher?.name} is clearly gassed`);
+    if (announcer) options.push(`${announcer}: "You can see the arm slot dropping — ${pitcher?.name} is running on empty"`);
+  } else if (isFatigued) {
+    options.push(`${pitcher?.name} is starting to show signs of fatigue — the command isn't quite as sharp`);
+    options.push(`A little less zip on the fastball — ${pitcher?.name} is working deep into this one`);
+    if (announcer) options.push(`${announcer}: "${pitcher?.name} is grinding — you can tell the tank is starting to get low"`);
   }
 
   // Runners on

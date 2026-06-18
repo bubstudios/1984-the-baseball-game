@@ -68,6 +68,11 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
         <div className="flex items-center gap-2 mb-1">
           <span className="text-[10px] font-heading uppercase tracking-wider text-secondary font-semibold">Pitching</span>
           <span className="text-[10px] text-muted-foreground">{pitchingTeam?.abbr || ''}</span>
+          {pitcher.fatigueLevel > 0 && (
+            <span className={`text-[9px] font-heading font-bold rounded px-1.5 py-0.5 ${pitcher.fatigueLevel >= 3 ? 'bg-red-500/20 text-red-400' : pitcher.fatigueLevel >= 2 ? 'bg-orange-500/20 text-orange-400' : 'bg-amber-500/20 text-amber-400'}`}>
+              {pitcher.fatigueLevel >= 3 ? 'GASSED' : pitcher.fatigueLevel >= 2 ? 'TIRING' : 'FADING'}
+            </span>
+          )}
         </div>
         <div className="font-heading font-bold text-sm text-foreground truncate">
           {pitcher.name}
@@ -75,13 +80,19 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
         </div>
         <div className="flex items-center gap-3 mt-1.5">
           <span className="text-[10px] text-muted-foreground">{pitcher.assignedPos || pitcher.pos}</span>
-          <span className="text-[10px] text-emerald-400 font-semibold">SPD {pitcher.pitchSpeed}</span>
+          <span className={`text-[10px] font-semibold ${pitcher.fatigueSpeedPen ? 'text-orange-400' : 'text-emerald-400'}`}>
+            SPD {pitcher.effectivePitchSpeed || pitcher.pitchSpeed}
+            {pitcher.fatigueSpeedPen > 0 && <span className="text-[9px] text-red-400 ml-0.5">-{pitcher.fatigueSpeedPen}</span>}
+          </span>
           <span className="text-[10px] text-purple-400 font-semibold">OFF {pitcher.offSpeed}</span>
-          <span className="text-[10px] text-blue-400 font-semibold">CTL {pitcher.control}</span>
+          <span className={`text-[10px] font-semibold ${pitcher.fatigueControlPen ? 'text-orange-400' : 'text-blue-400'}`}>
+            CTL {pitcher.effectiveControl || pitcher.control}
+            {pitcher.fatigueControlPen > 0 && <span className="text-[9px] text-red-400 ml-0.5">-{pitcher.fatigueControlPen}</span>}
+          </span>
         </div>
         {pitcher.gameStats && (
           <div className="flex gap-2 mt-1 text-[10px] text-muted-foreground/70">
-            <span>{pitcher.gameStats.pitches} P</span>
+            <span>{pitcher.gameStats.ip?.toFixed(1) || 0} IP</span>
             <span>{pitcher.gameStats.so} K</span>
             <span>{pitcher.gameStats.bb} BB</span>
           </div>

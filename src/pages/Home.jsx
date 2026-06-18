@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS, PITCH_TYPES, SWING_TYPES, MANAGERS } from '@/lib/gameData';
-import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk } from '@/lib/gameEngine';
+import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk } from '@/lib/gameEngine';
 import { applyWeatherEffects } from '@/lib/weather';
 import TeamSelect from '@/components/game/TeamSelect';
 import BallparkSelect from '@/components/game/BallparkSelect';
@@ -434,7 +434,7 @@ export default function Home() {
   }
 
   const batter = getCurrentBatter(gameState);
-  const pitcher = getCurrentPitcher(gameState);
+  const pitcher = getEffectivePitcher(gameState) || getCurrentPitcher(gameState);
 
   // Detect if the user's current pitcher was pinch-hit for and needs a replacement
   const userFieldingLineup = isUserPitching

@@ -436,28 +436,42 @@ export function checkPlayInjury(state, trigger, playerName) {
   return rollInjury(player, trigger, state);
 }
 
-// ── Check pitcher injury (fatigue-based) ──
+// ── Check pitcher injury (fatigue-based, innings instead of pitch count) ──
 export function checkPitcherInjury(state) {
   if (!state || state.gameOver) return null;
 
   const pitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
   if (!pitcher) return null;
 
-  const pitchCount = pitcher.gameStats?.pitches || 0;
+  const ip = pitcher.gameStats?.ip || 0;
+  const stamina = pitcher.stamina || 5;
+  const isReliever = ['RP', 'CL'].includes(pitcher.pos) || ['RP', 'CL'].includes(pitcher.assignedPos);
 
-  // No injury risk before 50 pitches
-  if (pitchCount < 50) return null;
+  // No injury risk before reaching stamina threshold
+  const threshold = isReliever ? stamina * 0.4 : stamina * 0.7;
+  if (ip < threshold) return null;
 
-  // Escalating risk: 50-70 pitches low, 70-90 moderate, 90+ high
+  // Escalating risk based on innings beyond threshold
+  const overThreshold = ip - threshold;
   let triggerChance = 0;
-  if (pitchCount >= 90) triggerChance = 0.15;
-  else if (pitchCount >= 70) triggerChance = 0.06;
-  else triggerChance = 0.02;
+  if (overThreshold >= 3) triggerChance = 0.12;    // 3+ innings past stamina → high risk
+  else if (overThreshold >= 2) triggerChance = 0.06; // 2 innings past → moderate
+  else if (overThreshold >= 1) triggerChance = 0.03; // 1 inning past → low
+  else triggerChance = 0.015;                         // just hitting threshold
+
+  // Late innings (8+) amplify injury risk
+  const lateInningMult = state.inning >= 9 ? 2.0 : state.inning >= 8 ? 1.5 : 1.0;
+  triggerChance *= lateInningMult;
+
+  // Durability modifier
+  const durability = getPlayerDurability(pitcher.name);
+  const durabilityFactor = (10 - durability) / 10 + 0.5; // range 0.5-1.5, center 1.0
+  triggerChance *= durabilityFactor;
 
   if (Math.random() > triggerChance) return null;
 
   // Determine trigger type
-  const trigger = pitchCount >= 90 ? "pitch_fatigue" : "pitcher_fatigue";
+  const trigger = overThreshold >= 3 ? "pitch_fatigue" : "pitcher_fatigue";
   return rollInjury(pitcher, trigger, state);
 }
 

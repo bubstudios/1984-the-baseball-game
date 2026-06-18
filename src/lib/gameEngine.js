@@ -10,7 +10,54 @@ import {
   BUNT_SINGLE_LINES, SACRIFICE_BUNT_LINES, SAC_FLY_LINES,
   STEAL_LINES, ERROR_LINES, FC_LINES,
 } from './commentaryLines';
-import { checkPitcherInjury, checkPlayInjury } from './injuries';
+import { checkPitcherInjury, checkPlayInjury, getPlayerDurability } from './injuries';
+
+// ── Pitcher Fatigue (innings-based) ──
+// Stamina 10 → can go 8-9 innings. Stamina 4 (reliever) → gassed after 2 innings.
+// Starters (SP): fatigueThreshold = stamina * 0.7 innings
+// Relievers (RP/CL): fatigueThreshold = stamina * 0.4 innings (much sharper drop-off)
+function getPitcherFatigue(inningsPitched, pitcher) {
+  const stamina = pitcher.stamina || 5;
+  const isReliever = ['RP', 'CL'].includes(pitcher.pos) || ['RP', 'CL'].includes(pitcher.assignedPos);
+  const threshold = isReliever ? stamina * 0.4 : stamina * 0.7;
+
+  if (inningsPitched <= threshold) return { fatigueLevel: 0, speedPen: 0, controlPen: 0, injuryMult: 1 };
+
+  const overThreshold = inningsPitched - threshold;
+  // Each inning beyond threshold adds penalties
+  // Speed drops ~0.5 per inning over; Control drops ~0.7 per inning over
+  const speedPen = Math.min(5, Math.round(overThreshold * 0.5));
+  const controlPen = Math.min(5, Math.round(overThreshold * 0.7));
+  const fatigueLevel = Math.min(4, Math.floor(overThreshold));
+
+  // Injury multiplier increases in late innings
+  const injuryMult = inningsPitched >= 8 ? 2.5 : inningsPitched >= 6 ? 1.5 : 1;
+
+  return { fatigueLevel, speedPen, controlPen, injuryMult };
+}
+
+// Get the current pitcher with fatigue-adjusted ratings
+export function getEffectivePitcher(state) {
+  const pitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
+  if (!pitcher) return null;
+
+  const ip = (pitcher.gameStats?.ip || 0) + (pitcher.pitchCount || 0) * 0.03; // approximate innings from pitches
+  // Better: track actual innings from gameStats.ip (already incremented per out)
+  const actualIP = pitcher.gameStats?.ip || 0;
+  const fatigue = getPitcherFatigue(actualIP, pitcher);
+
+  if (fatigue.fatigueLevel === 0) return pitcher;
+
+  return {
+    ...pitcher,
+    effectivePitchSpeed: Math.max(1, pitcher.pitchSpeed - fatigue.speedPen),
+    effectiveControl: Math.max(1, pitcher.control - fatigue.controlPen),
+    fatigueLevel: fatigue.fatigueLevel,
+    fatigueSpeedPen: fatigue.speedPen,
+    fatigueControlPen: fatigue.controlPen,
+    injuryRiskMult: fatigue.injuryMult,
+  };
+}
 
 // Create initial game state with two selected teams
 export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null) {
@@ -452,12 +499,15 @@ export function attemptSteal(state, baseIndex) {
   const newState = JSON.parse(JSON.stringify(state));
   const speedFactor = runner.speed / 10;
   const pitcher = getCurrentPitcher(newState);
+  const effPForSteal = getEffectivePitcher(newState) || pitcher;
   const defenders = getDefensivePlayers(newState);
   const catcherArm = getCatcherArm(defenders);
 
   // Success based on speed + catcher arm + pitcher control + pitch speed (faster delivery = harder to steal)
-  const pitchSpeedFactor = (pitcher.pitchSpeed / 10) * 0.13;
-  let successChance = 0.20 + speedFactor * 0.55 - (catcherArm / 10) * 0.12 - (pitcher.control / 10) * 0.03 - pitchSpeedFactor;
+  const pSpeed = effPForSteal.effectivePitchSpeed || effPForSteal.pitchSpeed;
+  const pCtrl = effPForSteal.effectiveControl || effPForSteal.control;
+  const pitchSpeedFactor = (pSpeed / 10) * 0.13;
+  let successChance = 0.20 + speedFactor * 0.55 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - pitchSpeedFactor;
   successChance = Math.max(0.08, Math.min(successChance, 0.80));
   const success = Math.random() < successChance;
 
@@ -519,8 +569,9 @@ export function cpuDecideSteal(state) {
   const defenders = getDefensivePlayers(state);
   const catcherArm = getCatcherArm(defenders);
   const pitcher = getCurrentPitcher(state);
+  const effPForCpu = getEffectivePitcher(state) || pitcher;
   const armFactor = (catcherArm / 10) * 0.30; // strong arm deters steals
-  const pitchFactor = (pitcher.pitchSpeed / 10) * 0.12; // fast delivery deters steals
+  const pitchFactor = ((effPForCpu.effectivePitchSpeed || effPForCpu.pitchSpeed) / 10) * 0.12;
 
   for (let i = 0; i < 2; i++) { // Only steal 2nd (i=0) or 3rd (i=1), never home (i=2)
     const runner = state.bases[i];
@@ -541,12 +592,16 @@ export function cpuDecideSteal(state) {
 // Resolve pitch outcome using pitcher ratings (1-10 scale)
 function resolvePitch(state, pitchType) {
   const pitcher = getCurrentPitcher(state);
+  const effectiveP = getEffectivePitcher(state) || pitcher;
   pitcher.gameStats.pitches++;
 
-  const controlFactor = pitcher.control / 10;
+  const controlFactor = effectiveP.effectiveControl
+    ? effectiveP.effectiveControl / 10
+    : effectiveP.control / 10;
 
   // Wild pitch — low control pitchers lose it, runners advance
-  const wpChance = Math.max(0.008, (10 - pitcher.control) * 0.008);
+  const effControl = effectiveP.effectiveControl || effectiveP.control;
+  const wpChance = Math.max(0.008, (10 - effControl) * 0.008);
   if (Math.random() < wpChance) {
     const hasRunners = state.bases.some(b => b !== null);
     if (hasRunners) {
@@ -581,7 +636,7 @@ function resolvePitch(state, pitchType) {
   }
 
   // HBP — hit by pitch
-  const hbpChance = Math.max(0.002, (10 - pitcher.control) * 0.0015);
+  const hbpChance = Math.max(0.002, (10 - (effectiveP.effectiveControl || effectiveP.control)) * 0.0015);
   if (Math.random() < hbpChance) {
     return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true };
   }
@@ -764,8 +819,10 @@ function resolveSwing(state, swingType, pitch) {
     contactChance = Math.max(0.03, contactChance); // still possible but harder
   }
 
-  // Pitcher's off-speed and pitch speed affect contact
-  const pitcherDifficulty = (pitcher.offSpeed / 10) * 0.07 + (pitcher.pitchSpeed / 10) * 0.05;
+  // Pitcher's off-speed and pitch speed affect contact (use effective ratings)
+  const effPitcher2 = getEffectivePitcher(state) || pitcher;
+  const effSpeed = effPitcher2.effectivePitchSpeed || effPitcher2.pitchSpeed;
+  const pitcherDifficulty = (pitcher.offSpeed / 10) * 0.07 + (effSpeed / 10) * 0.05;
   contactChance -= pitcherDifficulty;
   contactChance = Math.max(0.05, Math.min(contactChance, 0.85));
 
@@ -856,7 +913,9 @@ function resolveSwing(state, swingType, pitch) {
   if (isPower) hitChance -= 0.04;
   if (isContact) hitChance += 0.08;
 
-  hitChance -= (pitcher.control / 10) * 0.03;
+  const effPitcher3 = getEffectivePitcher(state) || pitcher;
+  const effCtrl2 = effPitcher3.effectiveControl || effPitcher3.control;
+  hitChance -= (effCtrl2 / 10) * 0.03;
 
   // Outfield positioning: power hitters → deeper OF → more singles drop in
   const ofPositioningBonus = (adjBatter.power / 10) * 0.05;
@@ -1550,8 +1609,10 @@ export function processAtBat(state, pitchType, swingType) {
 
   // Walk trigger — pitcher loses command, instant walk regardless of count
   const pitcher = getCurrentPitcher(newState);
+  const effPForWalk = getEffectivePitcher(newState) || pitcher;
   const batter = getCurrentBatter(newState);
-  const walkChance = Math.max(0.01, (10 - pitcher.control) * 0.005);
+  const walkCtrl = effPForWalk.effectiveControl || effPForWalk.control;
+  const walkChance = Math.max(0.01, (10 - walkCtrl) * 0.005);
   if (Math.random() < walkChance) {
     batter.gameStats.bb++;
     pitcher.gameStats.bb++;
@@ -2014,21 +2075,25 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   }
 
   const cpuPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
-  const pitchCount = cpuPitcher.gameStats.pitches || 0;
+  const ip = cpuPitcher.gameStats.ip || 0;
   const bb = cpuPitcher.gameStats.bb || 0;
   const runs = cpuPitcher.gameStats.r || 0;
   const inning = newState.inning;
+  const stamina = cpuPitcher.stamina || 5;
+  const isReliever = ['RP', 'CL'].includes(cpuPitcher.pos) || ['RP', 'CL'].includes(cpuPitcher.assignedPos);
+  const maxInnings = isReliever ? stamina * 0.4 : stamina * 0.7;
 
-  // Pull starter: 90+ pitches, or struggling badly
-  const fatiguePull = pitchCount >= 90;
-  const walksPull = bb >= 6;
+  // Pull logic based on innings vs stamina
+  const fatiguePull = ip >= maxInnings + 0.5; // half inning past threshold
+  const walksPull = bb >= 5;
   const blowupPull = inning < 6 && runs >= 5;
   const cpuScore = newState.score[cpuPitchingSide];
   const userScore = newState.score[cpuBattingSide];
-  const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2 && pitchCount >= 25;
+  const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2 && ip >= 2;
   const recentCollapse = (runs >= 2 && bb >= 2 && inning >= 5);
+  const severeFatigue = ip >= maxInnings + 2; // 2 innings past threshold = must pull
 
-  const shouldChangePitcher = (fatiguePull || walksPull || blowupPull || lateClose || recentCollapse) && cpuBullpen.length > 0;
+  const shouldChangePitcher = (severeFatigue || fatiguePull || walksPull || blowupPull || lateClose || recentCollapse) && cpuBullpen.length > 0;
 
   if (shouldChangePitcher) {
     const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
@@ -2050,7 +2115,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       newState[historyKey].push({ ...oldPitcher });
     }
 
-    const reason = fatiguePull ? 'tired arm' : walksPull ? 'lost command' : blowupPull ? 'rough outing' : 'high-leverage situation';
+    const reason = severeFatigue ? 'completely gassed' : fatiguePull ? `${ip} innings — arm is tiring` : walksPull ? 'lost command' : blowupPull ? 'rough outing' : 'high-leverage situation';
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
   }
 
