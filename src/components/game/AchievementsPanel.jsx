@@ -16,9 +16,11 @@ const CATEGORY_INFO = {
   community: { label: 'Community', color: 'bg-teal-500/10 border-teal-500/20', dot: 'bg-teal-400' },
   hidden: { label: 'Hidden', color: 'bg-slate-500/10 border-slate-500/20', dot: 'bg-slate-400' },
   teamSpecific: { label: 'Team-Specific', color: 'bg-rose-500/10 border-rose-500/20', dot: 'bg-rose-400' },
+  multiTeam: { label: 'Multi-Team', color: 'bg-violet-500/10 border-violet-500/20', dot: 'bg-violet-400' },
+  ejection: { label: 'Arguments', color: 'bg-red-500/10 border-red-500/20', dot: 'bg-red-400' },
 };
 
-const categoryOrder = ['first', 'hitting', 'pitching', 'defense', 'comeback', 'funny', '1984', 'rare', 'milestone', 'streak', 'community', 'hidden', 'teamSpecific'];
+const categoryOrder = ['first', 'hitting', 'pitching', 'defense', 'comeback', 'funny', '1984', 'rare', 'milestone', 'streak', 'community', 'hidden', 'teamSpecific', 'multiTeam', 'ejection'];
 
 const TEAM_LABELS = {
   reds: 'CIN',

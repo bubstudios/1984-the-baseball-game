@@ -1,6 +1,8 @@
 // Achievement definitions for 1984: The Baseball Season
 // Organized by category with id, name, desc, icon, and category
 
+import { TEAMS } from './gameData';
+
 export const ACHIEVEMENTS = [
   // ── FIRST-TIME ──
   { id: 'play_ball', name: 'Play Ball!', desc: 'Start your first game', icon: '⚾', category: 'first' },
@@ -131,25 +133,121 @@ export const ACHIEVEMENTS = [
   { id: 'just_one_more', name: 'Just One More', desc: 'Play 3 games in one session', icon: '🎮', category: 'community' },
   { id: 'marathon', name: 'Marathon Session', desc: 'Play 10 games in one session', icon: '🏃‍♂️', category: 'community' },
 
-  // ── TEAM-SPECIFIC: CINCINNATI REDS ──
-  { id: 'reds_first_game', name: 'First Professional', desc: 'Play your first game as the Reds', icon: '🔴', category: 'teamSpecific', team: 'reds' },
-  { id: 'reds_riverfront_win', name: 'Queen City Baseball', desc: 'Win a game at Riverfront Stadium', icon: '🏟️', category: 'teamSpecific', team: 'reds' },
-  { id: 'reds_25_home', name: 'Along the Ohio', desc: 'Play 25 Reds home games', icon: '🚢', category: 'teamSpecific', team: 'reds', threshold: 25 },
-  { id: 'reds_50_wins', name: 'Big Red Legacy', desc: 'Win 50 games as the Reds', icon: '🏆', category: 'teamSpecific', team: 'reds', threshold: 50 },
-  { id: 'reds_100_riverfront', name: 'Riverfront Regular', desc: 'Play 100 games at Riverfront Stadium', icon: '🏛️', category: 'teamSpecific', team: 'reds', threshold: 100 },
-  { id: 'reds_10run_win', name: 'Machine Memories', desc: 'Win by 10+ runs as the Reds', icon: '💥', category: 'teamSpecific', team: 'reds' },
-  { id: 'reds_5_subs', name: 'Bench Warmers', desc: 'Win using 5+ substitutes as the Reds', icon: '🪑', category: 'teamSpecific', team: 'reds' },
+  // ── TEAM-SPECIFIC: CUBS ──
+  { id: 'cubs_wrigley_win', name: 'Friendly Confines', desc: 'Win a game at Wrigley Field', icon: '🏟️', category: 'teamSpecific', team: 'cubs' },
+  { id: 'cubs_3_hr', name: 'Waveland Avenue', desc: 'Hit 3 home runs in a game as the Cubs', icon: '🌊', category: 'teamSpecific', team: 'cubs' },
+  { id: 'cubs_comeback', name: 'Windy City Baseball', desc: 'Win after trailing as the Cubs', icon: '🌬️', category: 'teamSpecific', team: 'cubs' },
+  { id: 'cubs_10_runs', name: 'Bleacher Bum', desc: 'Score 10+ runs at Wrigley', icon: '🍻', category: 'teamSpecific', team: 'cubs' },
+  { id: 'cubs_25_home', name: 'Day Baseball', desc: 'Win 25 Cubs home games', icon: '☀️', category: 'teamSpecific', team: 'cubs', threshold: 25 },
+  { id: 'cubs_100_wins', name: 'North Side Pride', desc: 'Win 100 games as the Cubs', icon: '🏴', category: 'teamSpecific', team: 'cubs', threshold: 100 },
+  { id: 'cubs_15_hits', name: 'Ivy Covered', desc: 'Record 15 hits in a game as the Cubs', icon: '🌿', category: 'teamSpecific', team: 'cubs' },
+  { id: 'cubs_walkoff', name: 'Go Cubs Go', desc: 'Win a walk-off game as the Cubs', icon: '🎵', category: 'teamSpecific', team: 'cubs' },
+
+  // ── TEAM-SPECIFIC: YANKEES ──
+  { id: 'yanks_4_hr', name: 'Bronx Bombers', desc: 'Hit 4 home runs in one game as the Yankees', icon: '💣', category: 'teamSpecific', team: 'yankees' },
+  { id: 'yanks_shutout', name: 'Monumental', desc: 'Throw a shutout as the Yankees', icon: '🗿', category: 'teamSpecific', team: 'yankees' },
+  { id: 'yanks_12_runs', name: 'Pinstripe Power', desc: 'Score 12 runs in a game as the Yankees', icon: '👔', category: 'teamSpecific', team: 'yankees' },
+  { id: 'yanks_all_hit', name: "Murderers' Row", desc: 'Have every starter record a hit as the Yankees', icon: '☠️', category: 'teamSpecific', team: 'yankees' },
+  { id: 'yanks_100_wins', name: 'The House That Ruth Built', desc: 'Win 100 games as the Yankees', icon: '🏛️', category: 'teamSpecific', team: 'yankees', threshold: 100 },
+  { id: 'yanks_10_streak', name: 'October Expectations', desc: 'Win 10 straight games as the Yankees', icon: '📈', category: 'teamSpecific', team: 'yankees', threshold: 10 },
+  { id: 'yanks_2000_hits', name: 'Yankee Tradition', desc: 'Record 2,000 total Yankees hits', icon: '📊', category: 'teamSpecific', team: 'yankees', threshold: 2000 },
+  { id: 'yanks_15_so', name: 'Roll Call', desc: 'Strike out 15 batters as the Yankees', icon: '📣', category: 'teamSpecific', team: 'yankees' },
+
+  // ── TEAM-SPECIFIC: METS ──
+  { id: 'mets_extras', name: 'Shea Crazy', desc: 'Win in extra innings as the Mets', icon: '⏱️', category: 'teamSpecific', team: 'mets' },
+  { id: 'mets_comeback_5', name: "Amazin'", desc: 'Come back from 5 runs down as the Mets', icon: '😲', category: 'teamSpecific', team: 'mets' },
+  { id: 'mets_50_wins', name: 'Flushing Faithful', desc: 'Win 50 games as the Mets', icon: '🟠', category: 'teamSpecific', team: 'mets', threshold: 50 },
+  { id: 'mets_20_hits', name: 'Orange and Blue', desc: 'Record 20 hits in a game as the Mets', icon: '🧡', category: 'teamSpecific', team: 'mets' },
+  { id: 'mets_100_games', name: 'Queens Baseball', desc: 'Play 100 Mets games', icon: '🚇', category: 'teamSpecific', team: 'mets', threshold: 100 },
+  { id: 'mets_3_errors_win', name: 'Miracle in Queens', desc: 'Win despite committing 3+ errors as the Mets', icon: '🤯', category: 'teamSpecific', team: 'mets' },
+  { id: 'mets_wall_scraper', name: 'Shea Wind', desc: 'Hit a home run that barely clears the fence as the Mets', icon: '🌬️', category: 'teamSpecific', team: 'mets' },
+  { id: 'mets_late_comeback', name: 'Ya Gotta Believe', desc: 'Win after trailing entering the 8th as the Mets', icon: '🙏', category: 'teamSpecific', team: 'mets' },
+
+  // ── TEAM-SPECIFIC: DODGERS ──
+  { id: 'dodgers_ds_win', name: 'Blue Heaven', desc: 'Win at Dodger Stadium', icon: '💙', category: 'teamSpecific', team: 'dodgers' },
+  { id: 'dodgers_cg', name: 'Vin Would Approve', desc: 'Throw a complete game as the Dodgers', icon: '🎙️', category: 'teamSpecific', team: 'dodgers' },
+  { id: 'dodgers_50_wins', name: 'Chavez Ravine', desc: 'Win 50 Dodgers games', icon: '🏔️', category: 'teamSpecific', team: 'dodgers', threshold: 50 },
+  { id: 'dodgers_walkoff', name: 'Hollywood Ending', desc: 'Walk-off victory as the Dodgers', icon: '🎬', category: 'teamSpecific', team: 'dodgers' },
+  { id: 'dodgers_1_hit', name: "Sandy's Shadow", desc: 'Throw a one-hit game as the Dodgers', icon: '👻', category: 'teamSpecific', team: 'dodgers' },
+  { id: 'dodgers_100_home', name: 'Sunset Baseball', desc: 'Play 100 Dodgers home games', icon: '🌅', category: 'teamSpecific', team: 'dodgers', threshold: 100 },
+  { id: 'dodgers_10_road', name: 'West Coast Swing', desc: 'Win 10 road games as the Dodgers', icon: '🛫', category: 'teamSpecific', team: 'dodgers', threshold: 10 },
+  { id: 'dodgers_12_so', name: 'Boys in Blue', desc: 'Strike out 12 batters in a game as the Dodgers', icon: '🔵', category: 'teamSpecific', team: 'dodgers' },
+
+  // ── TEAM-SPECIFIC: PADRES ──
+  { id: 'padres_murph_win', name: 'Friar Faithful', desc: 'Win at Jack Murphy Stadium', icon: '✝️', category: 'teamSpecific', team: 'padres' },
+  { id: 'padres_100_games', name: 'Pacific Coast', desc: 'Play 100 Padres games', icon: '🌊', category: 'teamSpecific', team: 'padres', threshold: 100 },
+  { id: 'padres_day_win', name: 'Sunny San Diego', desc: 'Win a day game as the Padres', icon: '☀️', category: 'teamSpecific', team: 'padres' },
+  { id: 'padres_3_doubles', name: 'Sea Level Shot', desc: 'Hit 3 doubles in a game as the Padres', icon: '🌴', category: 'teamSpecific', team: 'padres' },
+  { id: 'padres_5_sb', name: 'Mission Bay', desc: 'Steal 5 bases as the Padres', icon: '🏃', category: 'teamSpecific', team: 'padres' },
+  { id: 'padres_50_wins', name: 'Brown and Gold', desc: 'Win 50 games as the Padres', icon: '🟤', category: 'teamSpecific', team: 'padres', threshold: 50 },
+  { id: 'padres_15_hits', name: 'Southern California Baseball', desc: 'Record 15 hits in a game as the Padres', icon: '🌞', category: 'teamSpecific', team: 'padres' },
+  { id: 'padres_comeback_4', name: 'Coastal Comeback', desc: 'Win after trailing by 4 as the Padres', icon: '🏖️', category: 'teamSpecific', team: 'padres' },
+
+  // ── TEAM-SPECIFIC: RED SOX ──
+  { id: 'sox_10_doubles', name: 'Green Monster', desc: 'Hit 10 doubles as the Red Sox', icon: '🧱', category: 'teamSpecific', team: 'redsox', threshold: 10 },
+  { id: 'sox_fenway_win', name: 'Fenway Favorite', desc: 'Win at Fenway Park', icon: '❤️', category: 'teamSpecific', team: 'redsox' },
+  { id: 'sox_pole_hr', name: "Pesky's Pole", desc: 'Hit a home run down the line at Fenway', icon: '📍', category: 'teamSpecific', team: 'redsox' },
+  { id: 'sox_100_games', name: 'Yawkey Way', desc: 'Play 100 Red Sox games', icon: '🛣️', category: 'teamSpecific', team: 'redsox', threshold: 100 },
+  { id: 'sox_100_wins', name: 'Red Sox Nation', desc: 'Win 100 games as Boston', icon: '🗺️', category: 'teamSpecific', team: 'redsox', threshold: 100 },
+  { id: 'sox_15_runs', name: 'Monster Mash', desc: 'Score 15 runs as the Red Sox', icon: '🎸', category: 'teamSpecific', team: 'redsox' },
+  { id: 'sox_shutout', name: 'Boston Strong', desc: 'Throw a shutout as the Red Sox', icon: '💪', category: 'teamSpecific', team: 'redsox' },
+  { id: 'sox_25_home', name: 'Sweet Caroline', desc: 'Win 25 home games as the Red Sox', icon: '🎶', category: 'teamSpecific', team: 'redsox', threshold: 25 },
+
+  // ── TEAM-SPECIFIC: TIGERS ──
+  { id: 'tigers_win', name: 'Bless You Boys', desc: 'Win a Tigers game', icon: '🐅', category: 'teamSpecific', team: 'tigers' },
+  { id: 'tigers_100_games', name: 'Motor City Baseball', desc: 'Play 100 Tigers games', icon: '🏭', category: 'teamSpecific', team: 'tigers', threshold: 100 },
+  { id: 'tigers_50_wins', name: 'Tiger Town', desc: 'Win 50 Tigers games', icon: '🏙️', category: 'teamSpecific', team: 'tigers', threshold: 50 },
+  { id: 'tigers_10_runs', name: 'Roar of the Crowd', desc: 'Score 10 runs in a game as the Tigers', icon: '🦁', category: 'teamSpecific', team: 'tigers' },
+  { id: 'tigers_cg', name: 'Detroit Iron', desc: 'Throw a complete game as the Tigers', icon: '🔩', category: 'teamSpecific', team: 'tigers' },
+  { id: 'tigers_25_home', name: 'Michigan Summer', desc: 'Win 25 home games as the Tigers', icon: '🌻', category: 'teamSpecific', team: 'tigers', threshold: 25 },
+  { id: 'tigers_4_hr', name: 'Motor City Mashers', desc: 'Hit 4 home runs as the Tigers', icon: '🚗', category: 'teamSpecific', team: 'tigers' },
+  { id: 'tigers_18_hits', name: 'Corner Heroes', desc: 'Record 18 hits in a game as the Tigers', icon: '⚾', category: 'teamSpecific', team: 'tigers' },
+
+  // ── TEAM-SPECIFIC: ORIOLES ──
+  { id: 'orioles_mem_win', name: 'Birdland', desc: 'Win a game at Memorial Stadium', icon: '🐦', category: 'teamSpecific', team: 'orioles' },
+  { id: 'orioles_extras', name: 'Oriole Magic', desc: 'Win in extra innings as the Orioles', icon: '🪄', category: 'teamSpecific', team: 'orioles' },
+  { id: 'orioles_100_games', name: 'Charm City', desc: 'Play 100 Orioles games', icon: '🦀', category: 'teamSpecific', team: 'orioles', threshold: 100 },
+  { id: 'orioles_50_wins', name: 'Baltimore Baseball', desc: 'Win 50 Orioles games', icon: '⚓', category: 'teamSpecific', team: 'orioles', threshold: 50 },
+  { id: 'orioles_3_hr', name: 'Warehouse District', desc: 'Hit 3 home runs as the Orioles', icon: '🏗️', category: 'teamSpecific', team: 'orioles' },
+  { id: 'orioles_4_sb', name: 'Chesapeake Charge', desc: 'Steal 4 bases as the Orioles', icon: '🌊', category: 'teamSpecific', team: 'orioles' },
+  { id: 'orioles_12_runs', name: 'Orange Crush', desc: 'Score 12 runs as the Orioles', icon: '🟠', category: 'teamSpecific', team: 'orioles' },
+  { id: 'orioles_comeback_6', name: 'Maryland Miracle', desc: 'Come back from 6 runs down as the Orioles', icon: '🌟', category: 'teamSpecific', team: 'orioles' },
+
+  // ── TEAM-SPECIFIC: REDS ──
+  { id: 'reds_first_game', name: 'First Professional', desc: 'Play a Reds game', icon: '🔴', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_riverfront_win', name: 'Queen City Baseball', desc: 'Win at Riverfront Stadium', icon: '👑', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_100_games', name: 'Along the Ohio', desc: 'Play 100 Reds games', icon: '🚢', category: 'teamSpecific', team: 'reds', threshold: 100 },
+  { id: 'reds_50_wins', name: 'Big Red Legacy', desc: 'Win 50 Reds games', icon: '🏆', category: 'teamSpecific', team: 'reds', threshold: 50 },
   { id: 'reds_4_sb', name: 'Riverboat Gambler', desc: 'Steal 4 bases in a game as the Reds', icon: '🎰', category: 'teamSpecific', team: 'reds' },
-  { id: 'reds_5run_inning', name: 'Chili Night', desc: 'Score 5 runs in one inning as the Reds', icon: '🍲', category: 'teamSpecific', team: 'reds' },
-  { id: 'reds_machine', name: 'Big Red Machine', desc: 'Score 10+ runs and allow 2 or fewer as the Reds', icon: '⚙️', category: 'teamSpecific', team: 'reds' },
-  { id: 'reds_shutout', name: 'Cincinnati Strong', desc: 'Throw a complete game shutout as the Reds', icon: '🔒', category: 'teamSpecific', team: 'reds' },
-  { id: 'reds_sweep', name: 'Queen City Sweep', desc: 'Win 3+ consecutive games as the Reds', icon: '🧹', category: 'teamSpecific', team: 'reds', threshold: 3 },
+  { id: 'reds_10_runs', name: 'Machine Memories', desc: 'Score 10+ runs as the Reds', icon: '💥', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_5run_inning', name: 'Cincinnati Chili', desc: 'Score 5 runs in one inning as the Reds', icon: '🍲', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_100_home', name: 'Riverfront Regular', desc: 'Play 100 games at Riverfront', icon: '🏛️', category: 'teamSpecific', team: 'reds', threshold: 100 },
+
+  // ── MULTI-TEAM ──
+  { id: 'nl_tour', name: 'National League Tour', desc: 'Win with the Cubs, Mets, Dodgers, Padres, and Reds', icon: '🏟️', category: 'multiTeam' },
+  { id: 'al_tour', name: 'American League Tour', desc: 'Win with the Yankees, Red Sox, Tigers, and Orioles', icon: '🏟️', category: 'multiTeam' },
+  { id: 'coast_to_coast', name: 'Coast to Coast', desc: 'Win with every team', icon: '🗺️', category: 'multiTeam' },
+  { id: 'all_stadiums', name: 'Frequent Flyer', desc: 'Play a game in every stadium', icon: '✈️', category: 'multiTeam' },
+  { id: 'games_250_total', name: 'Baseball Traveler', desc: 'Play 250 total games', icon: '🧭', category: 'multiTeam', threshold: 250 },
+  { id: 'franchise_hopper', name: 'Franchise Hopper', desc: 'Win 10 games with each team', icon: '🦘', category: 'multiTeam' },
+  { id: 'local_hero', name: 'Local Hero', desc: 'Unlock every team-specific achievement for one franchise', icon: '🦸', category: 'multiTeam' },
+  { id: 'historian', name: 'Historian', desc: 'Unlock at least one achievement for every team', icon: '📜', category: 'multiTeam' },
 
   // ── HIDDEN / TIME-BASED ──
   { id: 'night_game', name: 'Night Game', desc: 'Play after 10 PM local time', icon: '🦉', category: 'hidden' },
   { id: 'early_bird', name: 'Early Bird', desc: 'Play before 6 AM', icon: '🐦', category: 'hidden' },
   { id: 'rain_delay_pause', name: 'Rain Delay', desc: 'Stay paused for 15 minutes', icon: '🌧️', category: 'hidden' },
   { id: 'couldnt_put_down', name: "Couldn't Put It Down", desc: 'Play 5 hours without closing', icon: '📖', category: 'hidden' },
+
+  // ── HIDDEN / EASTER EGG (team broadcast events) ──
+  { id: 'easter_wrigley_weather', name: 'Wrigley Weather', desc: 'Game includes a wind-related commentary event', icon: '💨', category: 'hidden' },
+  { id: 'easter_hollywood_traffic', name: 'Hollywood Traffic', desc: 'California traffic announcement occurs', icon: '🚗', category: 'hidden' },
+  { id: 'easter_holy_cow', name: 'Holy Cow!', desc: 'Receive a Harry Caray birthday announcement', icon: '🎂', category: 'hidden' },
+  { id: 'easter_scooter', name: 'Scooter Says', desc: 'Receive a Phil Rizzuto off-topic announcement', icon: '🗣️', category: 'hidden' },
+  { id: 'easter_riverboat', name: 'Riverboat', desc: 'Hear a barge horn announcement in Cincinnati', icon: '📯', category: 'hidden' },
+  { id: 'easter_fenway_faithful', name: 'Fenway Faithful', desc: 'Hear a crowd sing-along announcement', icon: '🎤', category: 'hidden' },
+  { id: 'easter_birdland', name: 'Birdland Bonus', desc: 'Fan catches multiple foul balls in Baltimore', icon: '🧤', category: 'hidden' },
+  { id: 'easter_motor_city', name: 'Motor City Classic', desc: 'Game includes a vintage Tigers history reference', icon: '🏭', category: 'hidden' },
 
   // ── ARGUMENTS & EJECTIONS ──
   { id: 'first_argument', name: 'Have a Word', desc: 'First manager argument', icon: '🗣️', category: 'ejection' },
@@ -195,6 +293,16 @@ function getDefaultStats() {
     // Achievement-specific trackers
     errorCounts: {},            // per game error count by team
     hbpCounts: {},             // HBP per game
+    // Per-team tracking
+    teamGames: {},             // { teamKey: count }
+    teamWins: {},              // { teamKey: count }
+    teamHomeGames: {},         // { teamKey: count }
+    teamHomeWins: {},          // { teamKey: count }
+    teamRoadWins: {},          // { teamKey: count }
+    teamHitsTotal: {},         // { teamKey: cumulative }
+    teamWinStreak: {},         // { teamKey: current streak }
+    teamBestStreak: {},        // { teamKey: best streak }
+    teamStreakReset: {},       // { teamKey: lastOpponent } to detect streak resets
   };
 }
 
@@ -308,7 +416,7 @@ export function trackSessionStart() {
 }
 
 // Called when a game finishes
-export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName, userHitCount, opponentHitCount) {
+export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName, userHitCount, opponentHitCount, isHomeGame = true) {
   const stats = loadStats();
   stats.gamesCompleted++;
   stats.gamesInSession++;
@@ -330,6 +438,67 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
   // Track ballparks
   if (stadiumName && !stats.ballparksVisited.includes(stadiumName)) stats.ballparksVisited.push(stadiumName);
 
+  // Per-team tracking
+  if (userTeam) {
+    stats.teamGames[userTeam] = (stats.teamGames[userTeam] || 0) + 1;
+    stats.teamHomeGames[userTeam] = (stats.teamHomeGames[userTeam] || 0) + (isHomeGame ? 1 : 0);
+    stats.teamHitsTotal[userTeam] = (stats.teamHitsTotal[userTeam] || 0) + (userHitCount || 0);
+
+    // Team win streak
+    const prevStreakTeam = stats.teamStreakReset?.[userTeam];
+    if (userWon) {
+      stats.teamWinStreak[userTeam] = (stats.teamWinStreak[userTeam] || 0) + 1;
+      if ((stats.teamWinStreak[userTeam] || 0) > (stats.teamBestStreak[userTeam] || 0)) {
+        stats.teamBestStreak[userTeam] = stats.teamWinStreak[userTeam];
+      }
+      stats.teamWins[userTeam] = (stats.teamWins[userTeam] || 0) + 1;
+      if (isHomeGame) {
+        stats.teamHomeWins[userTeam] = (stats.teamHomeWins[userTeam] || 0) + 1;
+      } else {
+        stats.teamRoadWins[userTeam] = (stats.teamRoadWins[userTeam] || 0) + 1;
+      }
+    } else {
+      stats.teamWinStreak[userTeam] = 0;
+    }
+    stats.teamStreakReset[userTeam] = opponentTeam;
+
+    // Team games thresholds
+    checkThreshold('cubs_100_wins', stats.teamWins['cubs'] || 0);
+    checkThreshold('yanks_100_wins', stats.teamWins['yankees'] || 0);
+    checkThreshold('mets_50_wins', stats.teamWins['mets'] || 0);
+    checkThreshold('dodgers_50_wins', stats.teamWins['dodgers'] || 0);
+    checkThreshold('padres_50_wins', stats.teamWins['padres'] || 0);
+    checkThreshold('sox_100_wins', stats.teamWins['redsox'] || 0);
+    checkThreshold('tigers_50_wins', stats.teamWins['tigers'] || 0);
+    checkThreshold('orioles_50_wins', stats.teamWins['orioles'] || 0);
+    checkThreshold('reds_50_wins', stats.teamWins['reds'] || 0);
+
+    // Cumulative team stats
+    checkThreshold('yanks_2000_hits', stats.teamHitsTotal['yankees'] || 0);
+    checkThreshold('sox_10_doubles', stats.teamHitsTotal['redsox'] || 0);
+
+    // Team games played
+    checkThreshold('mets_100_games', stats.teamGames['mets'] || 0);
+    checkThreshold('padres_100_games', stats.teamGames['padres'] || 0);
+    checkThreshold('sox_100_games', stats.teamGames['redsox'] || 0);
+    checkThreshold('tigers_100_games', stats.teamGames['tigers'] || 0);
+    checkThreshold('orioles_100_games', stats.teamGames['orioles'] || 0);
+    checkThreshold('reds_100_games', stats.teamGames['reds'] || 0);
+
+    // Team home games
+    checkThreshold('cubs_25_home', stats.teamHomeWins['cubs'] || 0);
+    checkThreshold('sox_25_home', stats.teamHomeWins['redsox'] || 0);
+    checkThreshold('tigers_25_home', stats.teamHomeWins['tigers'] || 0);
+    checkThreshold('dodgers_100_home', stats.teamHomeGames['dodgers'] || 0);
+    checkThreshold('reds_100_home', stats.teamHomeGames['reds'] || 0);
+
+    // Team streaks
+    checkThreshold('yanks_10_streak', stats.teamWinStreak['yankees'] || 0);
+
+    // Team road wins
+    checkThreshold('dodgers_10_road', stats.teamRoadWins['dodgers'] || 0);
+  }
+
   // Games completed thresholds
   checkThreshold('games_1', stats.gamesCompleted);
   checkThreshold('games_2', stats.gamesCompleted);
@@ -338,6 +507,7 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
   checkThreshold('games_50', stats.gamesCompleted);
   checkThreshold('games_100', stats.gamesCompleted);
   checkThreshold('games_250', stats.gamesCompleted);
+  checkThreshold('games_250_total', stats.gamesCompleted);
   checkThreshold('games_500', stats.gamesCompleted);
   checkThreshold('games_1000', stats.gamesCompleted);
 
@@ -372,6 +542,9 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
   // How?! (lose despite out-hitting by 10)
   if (!userWon && userHitCount !== undefined && opponentHitCount !== undefined &&
       userHitCount - opponentHitCount >= 10) unlockAchievement('how_ach');
+
+  // Multi-team: Franchise Hopper (10 wins with each team)
+  checkFranchiseHopper(stats);
 
   saveStats(stats);
 }
@@ -426,11 +599,21 @@ export function trackGameEndTime() {
 
 // ── In-game achievement checker (called when game ends) ──
 
-export function checkGameAchievements(gameState, userTeam = 'home') {
+export function checkGameAchievements(gameState, userTeam) {
   const newlyUnlocked = [];
   const u = (id) => { if (unlockAchievement(id)) newlyUnlocked.push(id); };
 
-  const userSide = userTeam === 'home' ? 'home' : 'away';
+  // Determine user side from team key (supports both 'home'/'away' legacy and team key like 'cubs')
+  let userSide;
+  if (userTeam === 'home' || userTeam === 'away') {
+    userSide = userTeam;
+  } else if (gameState.homeTeam === userTeam) {
+    userSide = 'home';
+  } else if (gameState.awayTeam === userTeam) {
+    userSide = 'away';
+  } else {
+    userSide = 'home'; // fallback
+  }
   const opponentSide = userSide === 'home' ? 'away' : 'home';
   const userScore = gameState.score[userSide];
   const opponentScore = gameState.score[opponentSide];
@@ -442,6 +625,7 @@ export function checkGameAchievements(gameState, userTeam = 'home') {
   const userPitchers = [currentPitcher, ...userHistory.filter(p => p.gameStats?.pitches !== undefined)];
   const allUserPlayers = [...userLineup, ...userHistory];
   const allOppPlayers = [...opponentLineup, ...(userSide === 'home' ? (gameState.awayPlayerHistory || []) : (gameState.homePlayerHistory || []))];
+  const userHitsAll = allUserPlayers.reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
 
   const log = gameState.log || [];
   const logText = log.map(l => l.text).join(' ');
@@ -560,6 +744,130 @@ export function checkGameAchievements(gameState, userTeam = 'home') {
   const pitchTypes = gameState.userPitchTypes || [];
   if (pitchTypes.length === 1 && gameState.inning >= 5) u('one_pitch_wonder');
 
+  // ───────────────────────────────────────────────────
+  // ── TEAM-SPECIFIC ACHIEVEMENTS (user team only) ──
+  // ───────────────────────────────────────────────────
+  const teamKey = userTeam && userTeam !== 'home' && userTeam !== 'away' ? userTeam : (userSide === 'home' ? gameState.homeTeam : gameState.awayTeam);
+  const stadium = TEAMS[gameState.homeTeam]?.stadium || '';
+
+  // ── CUBS ──
+  if (teamKey === 'cubs') {
+    if (userWon && stadium === 'Wrigley Field') u('cubs_wrigley_win');
+    if (totalHR >= 3) u('cubs_3_hr');
+    if (userWon && maxDeficit > 0) u('cubs_comeback');
+    if (userScore >= 10 && stadium === 'Wrigley Field') u('cubs_10_runs');
+    if (userHitsAll >= 15) u('cubs_15_hits');
+    if (userWon && (logText.includes('Walk-off') || logText.includes('walk-off'))) u('cubs_walkoff');
+  }
+
+  // ── YANKEES ──
+  if (teamKey === 'yankees') {
+    if (totalHR >= 4) u('yanks_4_hr');
+    if (opponentScore === 0) u('yanks_shutout');
+    if (userScore >= 12) u('yanks_12_runs');
+    if (userWon && userPitchers.some(p => (p.gameStats?.so || 0) >= 15) || allOppPlayers.reduce((s, p) => s + (p.gameStats?.so || 0), 0) >= 15) u('yanks_15_so');
+    // Murderers' Row: every starter (starting lineup, up to 9) has at least 1 hit
+    const starters = userLineup.slice(0, 9);
+    if (starters.length >= 9 && starters.every(p => (p.gameStats?.hits || 0) > 0)) u('yanks_all_hit');
+  }
+
+  // ── METS ──
+  if (teamKey === 'mets') {
+    if (userWon && gameState.inning > 9) u('mets_extras');
+    if (userWon && maxDeficit >= 5) u('mets_comeback_5');
+    if (userHitsAll >= 20) u('mets_20_hits');
+    // Win despite 3+ errors
+    const userErrorCount = (logText.match(/error/gi) || []).length;
+    if (userWon && userErrorCount >= 3) u('mets_3_errors_win');
+    // Wall-scraper HR (ballpark quirk or 'barely clears' in commentary)
+    if (logText.includes('barely clears') || logText.includes('short porch') || logText.includes('Pesky')) u('mets_wall_scraper');
+    // Win after trailing entering 8th
+    if (userWon && didTrailAfterInning(gameState, userSide, 7)) u('mets_late_comeback');
+  }
+
+  // ── DODGERS ──
+  if (teamKey === 'dodgers') {
+    if (userWon && stadium === 'Dodger Stadium') u('dodgers_ds_win');
+    if (userPitchers.some(p => (p.gameStats?.ip || 0) >= 9)) u('dodgers_cg');
+    if (userWon && (logText.includes('Walk-off') || logText.includes('walk-off'))) u('dodgers_walkoff');
+    if (oppHits === 1 && gameState.inning >= 9) u('dodgers_1_hit');
+    if (userPitchers.some(p => (p.gameStats?.so || 0) >= 12) || allOppPlayers.reduce((s, p) => s + (p.gameStats?.so || 0), 0) >= 12) u('dodgers_12_so');
+  }
+
+  // ── PADRES ──
+  if (teamKey === 'padres') {
+    if (userWon && stadium === 'Jack Murphy Stadium') u('padres_murph_win');
+    if (userWon && gameState.weather?.isDay !== false) u('padres_day_win');
+    // 3 doubles
+    const doubleCount = log.filter(l => l.type === 'double' && l.text && userNames.some(n => l.text.includes(n))).length;
+    if (doubleCount >= 3) u('padres_3_doubles');
+    if (allSB >= 5) u('padres_5_sb');
+    if (userHitsAll >= 15) u('padres_15_hits');
+    if (userWon && maxDeficit >= 4) u('padres_comeback_4');
+  }
+
+  // ── RED SOX ──
+  if (teamKey === 'redsox') {
+    if (userWon && stadium === 'Fenway Park') u('sox_fenway_win');
+    if (userScore >= 15) u('sox_15_runs');
+    if (opponentScore === 0) u('sox_shutout');
+    // Pesky's Pole: HR down the RF line at Fenway
+    if (stadium === 'Fenway Park' && logText.includes("Pesky's Pole") || logText.includes('right field foul pole') && logText.includes('home run')) u('sox_pole_hr');
+  }
+
+  // ── TIGERS ──
+  if (teamKey === 'tigers') {
+    if (userWon) u('tigers_win');
+    if (userScore >= 10) u('tigers_10_runs');
+    if (userPitchers.some(p => (p.gameStats?.ip || 0) >= 9)) u('tigers_cg');
+    if (totalHR >= 4) u('tigers_4_hr');
+    if (userHitsAll >= 18) u('tigers_18_hits');
+  }
+
+  // ── ORIOLES ──
+  if (teamKey === 'orioles') {
+    if (userWon && stadium === 'Memorial Stadium') u('orioles_mem_win');
+    if (userWon && gameState.inning > 9) u('orioles_extras');
+    if (totalHR >= 3) u('orioles_3_hr');
+    if (allSB >= 4) u('orioles_4_sb');
+    if (userScore >= 12) u('orioles_12_runs');
+    if (userWon && maxDeficit >= 6) u('orioles_comeback_6');
+  }
+
+  // ── REDS ──
+  if (teamKey === 'reds') {
+    u('reds_first_game');
+    if (userWon && stadium === 'Riverfront Stadium') u('reds_riverfront_win');
+    if (allSB >= 4) u('reds_4_sb');
+    if (userScore >= 10) u('reds_10_runs');
+    // 5-run inning
+    const had5RunInning = checkFiveRunInning(gameState, userSide);
+    if (had5RunInning) u('reds_5run_inning');
+  }
+
+  // ────────────────────────────────────────────
+  // ── HIDDEN / EASTER EGG CHECKS ──
+  // ────────────────────────────────────────────
+  // Wrigley Weather: wind-related commentary
+  if ((logText.includes('wind is blowing') || logText.includes('wind blowing') || logText.includes('wind off the lake')) &&
+      (stadium === 'Wrigley Field' || gameState.homeTeam === 'cubs')) u('easter_wrigley_weather');
+  // Hollywood Traffic: California traffic mention
+  if ((logText.includes('freeway') || logText.includes('traffic') && logText.includes('Los Angeles')) &&
+      (teamKey === 'dodgers' || teamKey === 'padres')) u('easter_hollywood_traffic');
+  // Holy Cow: Harry Caray birthday
+  if (logText.includes('birthday') && (gameState.homeTeam === 'cubs' || teamKey === 'cubs')) u('easter_holy_cow');
+  // Scooter Says: Rizzuto off-topic
+  if ((logText.includes('Holy cow') || logText.includes('Scooter says')) && (teamKey === 'yankees' || gameState.homeTeam === 'yankees')) u('easter_scooter');
+  // Riverboat: barge horn in Cincinnati
+  if ((logText.includes('barge') || logText.includes('riverboat')) && (teamKey === 'reds' || gameState.homeTeam === 'reds')) u('easter_riverboat');
+  // Fenway Faithful: crowd sing-along
+  if ((logText.includes('Sweet Caroline') || logText.includes('crowd belts') || logText.includes('sing-along')) &&
+      (stadium === 'Fenway Park' || gameState.homeTeam === 'redsox')) u('easter_fenway_faithful');
+  // Birdland Bonus: multiple foul balls in Baltimore
+  if ((logText.match(/foul ball/gi) || []).length >= 3 && (teamKey === 'orioles' || gameState.homeTeam === 'orioles')) u('easter_birdland');
+  // Motor City Classic: vintage Tigers reference
+  if ((logText.includes('Ernie Harwell') && logText.includes('years ago')) && (teamKey === 'tigers' || gameState.homeTeam === 'tigers')) u('easter_motor_city');
+
   // ── VERY RARE ──
   if (userScore >= 21) u('twenty_one_guns');
   if (userWon && (userScore - opponentScore) >= 15) u('mercy');
@@ -620,4 +928,87 @@ export function checkTeamAchievements() {
   if (usedNL.length >= NL_TEAMS.length) unlockAchievement('teams_nl');
   if (stats.teamsUsed.length >= 26) unlockAchievement('teams_all');
   if (stats.ballparksVisited.length >= 26) unlockAchievement('parks_all');
+
+  // Multi-team: NL Tour (win with Cubs, Mets, Dodgers, Padres, Reds)
+  const nlTourTeams = ['cubs', 'mets', 'dodgers', 'padres', 'reds'];
+  if (nlTourTeams.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('nl_tour');
+
+  // Multi-team: AL Tour (win with Yankees, Red Sox, Tigers, Orioles)
+  const alTourTeams = ['yankees', 'redsox', 'tigers', 'orioles'];
+  if (alTourTeams.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('al_tour');
+
+  // Multi-team: Coast to Coast (win with every team)
+  const allTeams = ['cubs', 'mets', 'dodgers', 'padres', 'reds', 'yankees', 'redsox', 'tigers', 'orioles'];
+  if (allTeams.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('coast_to_coast');
+
+  // Multi-team: Frequent Flyer (play in every stadium)
+  const allStadiums = [
+    'Wrigley Field', 'Shea Stadium', 'Dodger Stadium', 'Jack Murphy Stadium', 'Riverfront Stadium',
+    'Yankee Stadium', 'Fenway Park', 'Tiger Stadium', 'Memorial Stadium',
+  ];
+  if (allStadiums.every(s => stats.ballparksVisited.includes(s))) unlockAchievement('all_stadiums');
+
+  // Multi-team: Historian (at least one achievement for every team)
+  checkHistorian();
+
+  // Multi-team: Local Hero (all team-specific achievements for one franchise)
+  checkLocalHero();
+}
+
+function checkFranchiseHopper(stats) {
+  const allTeams = ['cubs', 'mets', 'dodgers', 'padres', 'reds', 'yankees', 'redsox', 'tigers', 'orioles'];
+  if (allTeams.every(t => (stats.teamWins[t] || 0) >= 10)) unlockAchievement('franchise_hopper');
+}
+
+function checkHistorian() {
+  const achs = loadAchievements();
+  const teamAchIds = {
+    cubs: ['cubs_wrigley_win', 'cubs_3_hr', 'cubs_comeback', 'cubs_10_runs', 'cubs_25_home', 'cubs_100_wins', 'cubs_15_hits', 'cubs_walkoff'],
+    mets: ['mets_extras', 'mets_comeback_5', 'mets_50_wins', 'mets_20_hits', 'mets_100_games', 'mets_3_errors_win', 'mets_wall_scraper', 'mets_late_comeback'],
+    dodgers: ['dodgers_ds_win', 'dodgers_cg', 'dodgers_50_wins', 'dodgers_walkoff', 'dodgers_1_hit', 'dodgers_100_home', 'dodgers_10_road', 'dodgers_12_so'],
+    padres: ['padres_murph_win', 'padres_100_games', 'padres_day_win', 'padres_3_doubles', 'padres_5_sb', 'padres_50_wins', 'padres_15_hits', 'padres_comeback_4'],
+    reds: ['reds_first_game', 'reds_riverfront_win', 'reds_100_games', 'reds_50_wins', 'reds_4_sb', 'reds_10_runs', 'reds_5run_inning', 'reds_100_home'],
+    yankees: ['yanks_4_hr', 'yanks_shutout', 'yanks_12_runs', 'yanks_all_hit', 'yanks_100_wins', 'yanks_10_streak', 'yanks_2000_hits', 'yanks_15_so'],
+    redsox: ['sox_10_doubles', 'sox_fenway_win', 'sox_pole_hr', 'sox_100_games', 'sox_100_wins', 'sox_15_runs', 'sox_shutout', 'sox_25_home'],
+    tigers: ['tigers_win', 'tigers_100_games', 'tigers_50_wins', 'tigers_10_runs', 'tigers_cg', 'tigers_25_home', 'tigers_4_hr', 'tigers_18_hits'],
+    orioles: ['orioles_mem_win', 'orioles_extras', 'orioles_100_games', 'orioles_50_wins', 'orioles_3_hr', 'orioles_4_sb', 'orioles_12_runs', 'orioles_comeback_6'],
+  };
+
+  const teamsWithAch = Object.entries(teamAchIds).filter(([_, ids]) => ids.some(id => achs[id]));
+  if (teamsWithAch.length >= Object.keys(teamAchIds).length) unlockAchievement('historian');
+}
+
+function checkLocalHero() {
+  const achs = loadAchievements();
+  const teamAchIds = {
+    cubs: ['cubs_wrigley_win', 'cubs_3_hr', 'cubs_comeback', 'cubs_10_runs', 'cubs_25_home', 'cubs_100_wins', 'cubs_15_hits', 'cubs_walkoff'],
+    mets: ['mets_extras', 'mets_comeback_5', 'mets_50_wins', 'mets_20_hits', 'mets_100_games', 'mets_3_errors_win', 'mets_wall_scraper', 'mets_late_comeback'],
+    dodgers: ['dodgers_ds_win', 'dodgers_cg', 'dodgers_50_wins', 'dodgers_walkoff', 'dodgers_1_hit', 'dodgers_100_home', 'dodgers_10_road', 'dodgers_12_so'],
+    padres: ['padres_murph_win', 'padres_100_games', 'padres_day_win', 'padres_3_doubles', 'padres_5_sb', 'padres_50_wins', 'padres_15_hits', 'padres_comeback_4'],
+    reds: ['reds_first_game', 'reds_riverfront_win', 'reds_100_games', 'reds_50_wins', 'reds_4_sb', 'reds_10_runs', 'reds_5run_inning', 'reds_100_home'],
+    yankees: ['yanks_4_hr', 'yanks_shutout', 'yanks_12_runs', 'yanks_all_hit', 'yanks_100_wins', 'yanks_10_streak', 'yanks_2000_hits', 'yanks_15_so'],
+    redsox: ['sox_10_doubles', 'sox_fenway_win', 'sox_pole_hr', 'sox_100_games', 'sox_100_wins', 'sox_15_runs', 'sox_shutout', 'sox_25_home'],
+    tigers: ['tigers_win', 'tigers_100_games', 'tigers_50_wins', 'tigers_10_runs', 'tigers_cg', 'tigers_25_home', 'tigers_4_hr', 'tigers_18_hits'],
+    orioles: ['orioles_mem_win', 'orioles_extras', 'orioles_100_games', 'orioles_50_wins', 'orioles_3_hr', 'orioles_4_sb', 'orioles_12_runs', 'orioles_comeback_6'],
+  };
+
+  if (Object.values(teamAchIds).some(ids => ids.every(id => achs[id]))) unlockAchievement('local_hero');
+}
+
+// Check if user's team was trailing after a specific inning
+function didTrailAfterInning(gameState, userSide, inning) {
+  const oppSide = userSide === 'home' ? 'away' : 'home';
+  const innings = gameState.innings || [];
+  let userTotal = 0, oppTotal = 0;
+  for (let i = 0; i < Math.min(inning, innings.length); i++) {
+    if (innings[i][userSide] !== null) userTotal += innings[i][userSide];
+    if (innings[i][oppSide] !== null) oppTotal += innings[i][oppSide];
+  }
+  return oppTotal > userTotal;
+}
+
+// Check if user team scored 5+ runs in any single inning
+function checkFiveRunInning(gameState, userSide) {
+  const innings = gameState.innings || [];
+  return innings.some(inn => (inn[userSide] || 0) >= 5);
 }
