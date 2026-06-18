@@ -298,6 +298,9 @@ function advanceRunners(state, bases, batter, isHit = false) {
     const batterPower = batter.power / 10;
     const positioningPenalty = batterPower * 0.10; // power hitters → deeper OF → harder extra bases
 
+    // Runners are much more aggressive with 2 outs — running on any contact
+    const outsMultiplier = state.outs >= 2 ? 1.60 : (state.outs === 1 ? 1.15 : 1.0);
+
     for (let i = 0; i < 3; i++) {
       const runner = state.bases[i];
       if (!runner) continue;
@@ -308,7 +311,7 @@ function advanceRunners(state, bases, batter, isHit = false) {
       if (i === 0) {
         // Runner on 1st: on a single, try for 3rd; on a double, try for home
         if (bases === 2) {
-          const homeChance = 0.15 + speedFactor * 0.50 - armPenalty - positioningPenalty;
+          const homeChance = (0.15 + speedFactor * 0.50 - armPenalty - positioningPenalty) * outsMultiplier;
           if (Math.random() < Math.max(0.02, homeChance)) {
             runner.gameStats.runs++;
             scoreRun(state);
@@ -317,8 +320,8 @@ function advanceRunners(state, bases, batter, isHit = false) {
             state.log.push({ type: 'info', text: `${runner.name} hustles all the way home from first!` });
           }
         } else if (bases === 1) {
-          const thirdChance = 0.05 + speedFactor * 0.40 - armPenalty * 0.6 - positioningPenalty * 0.4;
-          if (Math.random() < Math.max(0.02, thirdChance)) {
+          const thirdChance = (0.12 + speedFactor * 0.40 - armPenalty * 0.6 - positioningPenalty * 0.4) * outsMultiplier;
+          if (Math.random() < Math.max(0.03, thirdChance)) {
             state.bases[2] = runner;
             state.bases[0] = null;
             state.log.push({ type: 'info', text: `${runner.name} wheels to third on the single!` });
@@ -327,8 +330,8 @@ function advanceRunners(state, bases, batter, isHit = false) {
       } else if (i === 1) {
         // Runner on 2nd: on a single, try for home
         if (bases === 1) {
-          const homeChance = 0.20 + speedFactor * 0.55 - armPenalty - positioningPenalty;
-          if (Math.random() < Math.max(0.03, homeChance)) {
+          const homeChance = (0.28 + speedFactor * 0.55 - armPenalty - positioningPenalty) * outsMultiplier;
+          if (Math.random() < Math.max(0.05, homeChance)) {
             runner.gameStats.runs++;
             scoreRun(state);
             rbi++;
@@ -1220,9 +1223,9 @@ function resolveSwing(state, swingType, pitch) {
       const ofArm = getOutfieldArm(defenders) / 10;
       const isDeep = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall');
       // Sac fly: higher chance on deep flies, speed helps, strong OF arm hurts
-      const depthBonus = isDeep ? 0.15 : 0;
-      const sacFlyChance = 0.15 + depthBonus + runnerSpeed * 0.35 - ofArm * 0.08;
-      if (Math.random() < Math.max(0.06, Math.min(sacFlyChance, 0.50))) {
+      const depthBonus = isDeep ? 0.18 : 0;
+      const sacFlyChance = 0.20 + depthBonus + runnerSpeed * 0.35 - ofArm * 0.08;
+      if (Math.random() < Math.max(0.08, Math.min(sacFlyChance, 0.50))) {
         runner.gameStats.runs++;
         scoreRun(state);
         state.bases[2] = null;
@@ -1249,8 +1252,8 @@ function resolveSwing(state, swingType, pitch) {
         const speedFactor = runner.speed / 10;
         const ofArm = getOutfieldArm(defenders) / 10;
         // Tag from 2nd to 3rd: fast runner, weak arm helps
-        const tagChance = 0.05 + speedFactor * 0.35 - ofArm * 0.10;
-        if (Math.random() < Math.max(0.02, Math.min(tagChance, 0.30))) {
+        const tagChance = 0.10 + speedFactor * 0.35 - ofArm * 0.10;
+        if (Math.random() < Math.max(0.04, Math.min(tagChance, 0.35))) {
           state.bases[2] = runner;
           state.bases[1] = null;
           state.log.push({ type: 'info', text: `${runner.name} tags up and advances to third!` });
