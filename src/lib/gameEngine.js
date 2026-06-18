@@ -2404,36 +2404,34 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const cpuBullpen = cpuSide === 'away' ? newState.awayBullpen : newState.homeBullpen;
 
   // Auto-replace CPU pitcher if they were pinch-hit for (DH off only)
-  if (!newState._cpuAutoSubDone) {
-    const cpuLineupField = cpuSide === 'away' ? newState.awayLineup : newState.homeLineup;
-    const cpuPitcherField = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
-    const hasDH = cpuLineupField.some(p => (p.assignedPos || p.pos) === 'DH');
-    const pitcherInLineup = cpuLineupField.some(p => p.name === cpuPitcherField.name);
-    if (!hasDH && !pitcherInLineup && cpuBullpen.length > 0) {
-      const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
-      const newPitcher = sorted[0];
-      const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
-      const oldP = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
-      if (cpuPitchingSide === 'home') newState.homePitcher = newP;
-      else newState.awayPitcher = newP;
-      const bpIdx = cpuBullpen.findIndex(p => p.name === newPitcher.name);
-      if (bpIdx >= 0) cpuBullpen.splice(bpIdx, 1);
-      const historyKey = cpuPitchingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
-      if (!newState[historyKey].find(p => p.name === oldP.name)) newState[historyKey].push({ ...oldP });
-      // Try order match, fallback to name match, then force-add
-      let slotIdx = cpuLineupField.findIndex(p => p.order === oldP.order);
-      if (slotIdx < 0) slotIdx = cpuLineupField.findIndex(p => p.name === oldP.name);
-      const entry = { ...newPitcher, order: oldP.order || (slotIdx >= 0 ? cpuLineupField[slotIdx].order : cpuLineupField.length + 1), assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-      if (slotIdx >= 0) cpuLineupField[slotIdx] = entry;
-      else cpuLineupField.push(entry);
-      // Safety: verify pitcher is now in lineup to prevent chain reactions
-      if (!cpuLineupField.some(p => p.name === newPitcher.name)) {
-        cpuLineupField.push({ ...newPitcher, order: Math.max(...cpuLineupField.map(p => p.order || 0), 0) + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
-      }
-      newState._cpuAutoSubDone = true;
-      newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
-      return newState;
+  const cpuLineupField = cpuSide === 'away' ? newState.awayLineup : newState.homeLineup;
+  const cpuPitcherField = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
+  const hasDH = cpuLineupField.some(p => (p.assignedPos || p.pos) === 'DH');
+  const pitcherInLineup = cpuLineupField.some(p => p.name === cpuPitcherField.name);
+  if (!hasDH && !pitcherInLineup && cpuBullpen.length > 0) {
+    const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
+    const newPitcher = sorted[0];
+    const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
+    const oldP = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
+    if (cpuPitchingSide === 'home') newState.homePitcher = newP;
+    else newState.awayPitcher = newP;
+    const bpIdx = cpuBullpen.findIndex(p => p.name === newPitcher.name);
+    if (bpIdx >= 0) cpuBullpen.splice(bpIdx, 1);
+    const historyKey = cpuPitchingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
+    if (!newState[historyKey].find(p => p.name === oldP.name)) newState[historyKey].push({ ...oldP });
+    // Try order, fallback to name, then force-add — must succeed to prevent chains
+    let slotIdx = cpuLineupField.findIndex(p => p.order === oldP.order);
+    if (slotIdx < 0) slotIdx = cpuLineupField.findIndex(p => p.name === oldP.name);
+    const orderNum = oldP.order || (slotIdx >= 0 ? cpuLineupField[slotIdx].order : cpuLineupField.length + 1);
+    const lineupEntry = { ...newPitcher, order: orderNum, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+    if (slotIdx >= 0) cpuLineupField[slotIdx] = lineupEntry;
+    else cpuLineupField.push(lineupEntry);
+    // Safety: verify pitcher is now in lineup
+    if (!cpuLineupField.some(p => p.name === newPitcher.name)) {
+      cpuLineupField.push({ ...newPitcher, order: Math.max(...cpuLineupField.map(p => p.order || 0), 0) + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
     }
+    newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
+    return newState;
   }
 
   const cpuPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
@@ -2446,14 +2444,14 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const maxInnings = isReliever ? stamina * 0.4 : stamina * 0.7;
 
   // Pull logic based on innings vs stamina
-  const fatiguePull = ip >= maxInnings + 0.5; // half inning past threshold
+  const fatiguePull = ip >= maxInnings + 0.5;
   const walksPull = bb >= 5;
   const blowupPull = inning < 6 && runs >= 5;
   const cpuScore = newState.score[cpuPitchingSide];
   const userScore = newState.score[cpuBattingSide];
   const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2 && ip >= 2;
   const recentCollapse = (runs >= 2 && bb >= 2 && inning >= 5);
-  const severeFatigue = ip >= maxInnings + 2; // 2 innings past threshold = must pull
+  const severeFatigue = ip >= maxInnings + 2;
 
   const shouldChangePitcher = (severeFatigue || fatiguePull || walksPull || blowupPull || lateClose || recentCollapse) && cpuBullpen.length > 0;
 
@@ -2463,11 +2461,8 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
 
     const oldPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
-    if (cpuPitchingSide === 'home') {
-      newState.homePitcher = newP;
-    } else {
-      newState.awayPitcher = newP;
-    }
+    if (cpuPitchingSide === 'home') newState.homePitcher = newP;
+    else newState.awayPitcher = newP;
 
     const bpIdx = cpuBullpen.findIndex(p => p.name === newPitcher.name);
     if (bpIdx >= 0) cpuBullpen.splice(bpIdx, 1);
@@ -2477,20 +2472,21 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       newState[historyKey].push({ ...oldPitcher });
     }
 
+    // Update the batting lineup — try name, then order, then force-add
+    const fieldLineup = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
+    let slotIdx = fieldLineup.findIndex(p => p.name === oldPitcher.name);
+    if (slotIdx < 0 && oldPitcher.order) slotIdx = fieldLineup.findIndex(p => p.order === oldPitcher.order);
+    const entry = { ...newPitcher, order: slotIdx >= 0 ? fieldLineup[slotIdx].order : (oldPitcher.order || fieldLineup.length + 1), assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+    if (slotIdx >= 0) fieldLineup[slotIdx] = entry;
+    else fieldLineup.push(entry);
+
+    // Safety: verify the new pitcher is in the lineup
+    if (!fieldLineup.some(p => p.name === newPitcher.name)) {
+      fieldLineup.push({ ...newPitcher, order: Math.max(...fieldLineup.map(p => p.order || 0), 0) + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+    }
+
     const reason = severeFatigue ? 'completely gassed' : fatiguePull ? `${ip} innings — arm is tiring` : walksPull ? 'lost command' : blowupPull ? 'rough outing' : 'high-leverage situation';
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
-
-    // Update the batting lineup so the new pitcher replaces the old one's spot
-    const fieldLineup = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
-    const oldSlot = fieldLineup.findIndex(p => p.name === oldPitcher.name);
-    if (oldSlot >= 0) {
-      fieldLineup[oldSlot] = { ...newPitcher, order: fieldLineup[oldSlot].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-    } else if (oldPitcher.order) {
-      const slotByOrder = fieldLineup.findIndex(p => p.order === oldPitcher.order);
-      if (slotByOrder >= 0) {
-        fieldLineup[slotByOrder] = { ...newPitcher, order: oldPitcher.order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-      }
-    }
   }
 
   return newState;
