@@ -23,20 +23,23 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
 
   const runners = gameState.bases.map((b, i) => b ? { ...b, baseIndex: i } : null).filter(Boolean);
 
-  // Available bench players for the user's team
+  // Available bench players for the user's team — exclude players already used
+  const benchUsed = userIsHome ? (gameState.homeBenchUsed || []) : (gameState.awayBenchUsed || []);
   const usedNames = useMemo(() => {
     const names = new Set();
     const allLineup = [...gameState.homeLineup, ...gameState.awayLineup];
     allLineup.forEach(p => names.add(p.name));
+    benchUsed.forEach(p => names.add(p.name));
     return names;
-  }, [gameState.homeLineup, gameState.awayLineup]);
+  }, [gameState.homeLineup, gameState.awayLineup, benchUsed]);
 
   const myBench = useMemo(() => {
     if (!myTeam?.bench) return [];
     return myTeam.bench.filter(p => !usedNames.has(p.name));
   }, [myTeam, usedNames]);
 
-  const bullpen = myTeam?.bullpen || [];
+  // Use in-game bullpen (relievers are removed as they're used)
+  const bullpen = userIsHome ? (gameState.homeBullpen || []) : (gameState.awayBullpen || []);
   const currentPitcher = userIsHome ? gameState.homePitcher : gameState.awayPitcher;
 
   const tabs = [
