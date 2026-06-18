@@ -4,6 +4,7 @@ import { pickPadresLine } from '@/lib/jerryColemanLines';
 import { pickVinLine } from '@/lib/vinScullyLines';
 import { pickMetsLine } from '@/lib/metsBroadcastLines';
 import { pickYankeesLine } from '@/lib/yankeesBroadcastLines';
+import { pickRedSoxLine } from '@/lib/redSoxBroadcastLines';
 
 // Player nicknames — researched from 1984 MLB lore
 const NICKNAMES = {
@@ -99,7 +100,7 @@ export const STADIUM_FLAVOR = {
     stretchFlavor: "Harry Caray grabs the mic — \"Take me out to the ballgame…\"",
   },
   bostonRedSox: {
-    announcers: ["Ned Martin", "Bob Montgomery"],
+    announcers: ["Ned Martin", "Bob Montgomery", "Joe Castiglione"],
     stadium: "Fenway Park",
     nicknames: ["Fenway", "America's Most Beloved Ballpark"],
     flavor: [
@@ -542,6 +543,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isDodgersGame = homeTeamKey === 'dodgers';
   const isMetsGame = homeTeamKey === 'mets';
   const isYankeesGame = homeTeamKey === 'yankees';
+  const isRedSoxGame = homeTeamKey === 'redsox';
   const text = isCubsGame && Math.random() < 0.65
     ? pickHarryLine()
     : isPadresGame && Math.random() < 0.65
@@ -552,7 +554,9 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
           ? pickMetsLine()
           : isYankeesGame && Math.random() < 0.65
             ? pickYankeesLine()
-            : getCommentary(batter, pitcher, gameState, stadiumInfo);
+            : isRedSoxGame && Math.random() < 0.65
+              ? pickRedSoxLine()
+              : getCommentary(batter, pitcher, gameState, stadiumInfo);
 
   return (
     <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">
