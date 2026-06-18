@@ -173,12 +173,23 @@ const TEAM_POOLS = {};
  * @returns {{ text: string, category: string, isTeamSpecific: boolean }}
  */
 export function pickAd(homeTeamKey = null) {
+  const teamPool = TEAM_POOLS[homeTeamKey];
+  const hasTeamAds = teamPool && Object.values(teamPool).some(arr => arr.length > 0);
+
+  // Adjust weights when team-specific ads are available
+  let weights;
+  if (hasTeamAds) {
+    weights = { sponsor: 0.25, community: 0.40, charity: 0.10, team_promo: 0.25 };
+  } else {
+    weights = { sponsor: 0.60, community: 0.20, charity: 0.10, team_promo: 0.10 };
+  }
+
   // Pick category by weight
   const roll = Math.random();
   let cumulative = 0;
   let chosenCategory = 'sponsor';
-  for (const [cat, cfg] of Object.entries(AD_CATEGORIES)) {
-    cumulative += cfg.weight;
+  for (const [cat, w] of Object.entries(weights)) {
+    cumulative += w;
     if (roll < cumulative) {
       chosenCategory = cat;
       break;
@@ -186,7 +197,6 @@ export function pickAd(homeTeamKey = null) {
   }
 
   const categoryConfig = AD_CATEGORIES[chosenCategory];
-  const teamPool = TEAM_POOLS[homeTeamKey];
 
   // Build the pool: team-specific ads first (if any), then general
   let pool = [...categoryConfig.general];
@@ -254,3 +264,134 @@ export function getAdLeadOut(announcerName = null) {
   }
   return leadOut;
 }
+
+// ── TEAM-SPECIFIC ADS ──
+// Registered at import-time so they're available immediately.
+
+// ── Cubs / Chicago (#101–200) ──
+
+registerTeamAds('cubs', 'team_promo', [
+  // Player signings & events
+  "Don't forget, Ryne Sandberg will be signing autographs Saturday morning at the Woodfield Mall in Schaumburg.",
+  "Bob Dernier and Keith Moreland will meet fans this Saturday at Navy Pier.",
+  "Stop by Wrigley Field on Sunday. The first 10,000 youngsters receive a Cubs team poster.",
+  "Join the Cubs Charities softball game next weekend featuring several current and former Cubs players.",
+  // Giveaways at Wrigley
+  "Visit Wrigley Field next Sunday for Family Day festivities.",
+  "Kids 12 and under receive a complimentary Cubs pennant next Sunday.",
+  "Sunday is Bat Day at Wrigley Field. Arrive early while supplies last.",
+  "The first 15,000 fans next Saturday receive a commemorative Cubs cap.",
+  // Cubs merchandise
+  "Pick up your official Cubs yearbook at concession stands throughout the ballpark.",
+  "The 1984 Cubs yearbook is now available for just three dollars.",
+  "Collect official Cubs baseball cards available throughout the stadium.",
+  "Stop by the Cubs souvenir stand for shirts, caps, and pennants.",
+  "Show your Cubs pride with officially licensed merchandise.",
+  "Remember to keep your ticket stub for special promotional discounts.",
+  // Concessions & ballpark experience
+  "Enjoy a hot dog and cold soda while watching today's game.",
+  "Wrigley Field concessions feature Chicago-style hot dogs and fresh popcorn.",
+  "Nothing goes better with baseball than peanuts and popcorn.",
+  "Take home a scorecard and keep track of today's action.",
+  "Be sure to score along at home and settle those baseball arguments later.",
+  "Cubs fans are encouraged to bring their gloves for batting practice home run balls.",
+  "Arrive early and watch batting practice before tomorrow's game.",
+  // Tickets & upcoming games
+  "The Cubs continue their homestand tomorrow afternoon at Wrigley Field.",
+  "Tickets remain available for tomorrow's matchup.",
+  "Call the Cubs ticket office for information on upcoming games.",
+  "Group ticket packages are available for churches, schools, and organizations.",
+  "Bring your church group out to the ballpark this summer.",
+  "Organize a company outing and enjoy Cubs baseball together.",
+  // Wrigley atmosphere
+  "Summer is baseball season in Chicago.",
+  "There's nothing quite like a summer afternoon at Wrigley Field.",
+  "The ivy is looking beautiful at Wrigley once again.",
+  "The famous ivy continues to be one of baseball's unique sights.",
+  "The wind appears to be blowing out toward Waveland Avenue today.",
+  "Fans on Waveland Avenue should keep an eye on those fly balls.",
+  "A reminder that rooftop seating is available across from Wrigley Field.",
+  "Some lucky fans are enjoying today's game from the rooftops.",
+]);
+
+registerTeamAds('cubs', 'sponsor', [
+  // WGN
+  "WGN reminds viewers to stay tuned after the game for the evening news.",
+  "Join Jack Brickhouse tonight for special Cubs highlights on WGN.",
+  "Stay tuned to WGN for your favorite shows following today's ballgame.",
+  "WGN proudly brings Cubs baseball to fans throughout America.",
+  "Cubs baseball on WGN is seen from coast to coast.",
+  "Greetings to Cubs fans watching all across America on WGN.",
+  // General broadcast
+  "Baseball truly is the national pastime.",
+  "Thanks for spending part of your afternoon with us.",
+  "Stay tuned for more Cubs baseball all season long.",
+  "The Cubs thank fans listening throughout Illinois, Iowa, Wisconsin, and Indiana.",
+]);
+
+registerTeamAds('cubs', 'community', [
+  // Museums & attractions
+  "Visit the Museum of Science and Industry and see the new computer technology exhibit.",
+  "The Museum of Science and Industry welcomes visitors seven days a week.",
+  "Take the family to Brookfield Zoo this weekend and see animals from around the world.",
+  "Brookfield Zoo is featuring special summer exhibits throughout the month.",
+  "Spend a day at Lincoln Park Zoo. Admission is always free.",
+  "Enjoy the beautiful summer weather along Chicago's lakefront.",
+  "Visit the Sears Tower Skydeck and see Chicago from 103 stories above the city.",
+  "The observation deck at Sears Tower offers one of the finest views in America.",
+  "Plan a trip to Navy Pier and enjoy dining, shopping, and entertainment.",
+  "Take an architectural boat tour along the Chicago River this weekend.",
+  "The Chicago Historical Society invites you to explore the city's rich history.",
+  "Catch a performance by the Chicago Symphony Orchestra this weekend.",
+  "The Art Institute of Chicago is featuring a special impressionist exhibit.",
+  "Spend an afternoon exploring the Art Institute's world-famous collection.",
+  // Events
+  "The Taste of Chicago returns next month with food from across the city.",
+  "Mark your calendars for the annual Taste of Chicago celebration.",
+  "The Chicago Air and Water Show is coming soon to the lakefront.",
+  "Don't miss one of the nation's largest free air shows right here in Chicago.",
+  "Visit Old Chicago amusement park in Bolingbrook for rides and family fun.",
+  "The DuPage County Fair begins this week with rides, games, and live entertainment.",
+  "The Illinois State Fair is just around the corner in Springfield.",
+  "Enjoy live music and family activities at Grant Park this weekend.",
+  "Buckingham Fountain is putting on a spectacular display all summer long.",
+  "Spend an evening along Michigan Avenue and see why it's called the Magnificent Mile.",
+  "Take a stroll down Michigan Avenue and enjoy Chicago's finest shopping.",
+  "Chicago's lakefront beaches are open and ready for summer visitors.",
+  // Shedd & Adler
+  "Visit Shedd Aquarium and discover fascinating sea life from around the globe.",
+  "Shedd Aquarium is featuring special exhibits throughout the summer.",
+  "The Adler Planetarium invites visitors to explore the wonders of space.",
+  "Learn about the stars and planets at the Adler Planetarium.",
+  // Harry Caray / traffic / birthdays
+  "Harry Caray reminds everyone to drive carefully on the Kennedy Expressway tonight.",
+  "Traffic is reportedly heavy on the Eisenhower this afternoon.",
+  "Harry says if you're heading home after the game, give yourself a little extra time.",
+  "If you're stuck in traffic, at least you'll have the Cubs game on the radio.",
+  "Harry Caray would like to wish a happy 79th birthday to Mrs. Helen Kowalski of Cicero.",
+  "Happy anniversary to Frank and Dolores celebrating 42 years together in Oak Park.",
+  "A birthday greeting goes out to Tommy in Joliet, who turns 10 today.",
+  "Congratulations to the graduating class of Lane Tech High School.",
+  "Best wishes to all the graduates across the Chicago area this month.",
+  // Rooftop / closing
+  "Harry wonders if those rooftop fans paid for tickets.",
+  "Steve says they probably did, Harry.",
+  "Harry says he'd like to watch one game from up there himself.",
+  // General Chicago color
+  "Enjoy the game, enjoy the weather, and enjoy Chicago.",
+  "We hope you're having a wonderful day wherever you're watching from.",
+  "Thanks again for joining us from the Friendly Confines.",
+  "We'll be back with more Cubs baseball right after this message.",
+]);
+
+registerTeamAds('cubs', 'charity', [
+  "Cubs Charities thanks fans for their continued support.",
+  "Consider donating to your local Little League program this summer.",
+  "Sign up now for youth baseball clinics hosted by local coaches throughout Chicagoland.",
+  "Encourage your youngsters to get involved in baseball this summer.",
+  "Registration is open for neighborhood park district baseball leagues.",
+  "The Chicago Park District offers activities for children all summer long.",
+  "The Cubs remind fans to recycle aluminum cans whenever possible.",
+  "Help keep Chicago's parks and neighborhoods clean.",
+  "Support your local community organizations this summer.",
+]);
