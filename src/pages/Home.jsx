@@ -443,17 +443,20 @@ export default function Home() {
 
   if (ballparkPhase) {
     return (
+      <ErrorBoundary>
       <BallparkSelect
         userTeam={ballparkPhase.home}
         cpuTeam={ballparkPhase.away}
         onConfirm={handleBallparkConfirm}
         onBack={() => setBallparkPhase(null)}
       />
+      </ErrorBoundary>
     );
   }
 
   if (lineupPhase) {
     return (
+      <ErrorBoundary>
       <LineupManager
         teamKey={lineupPhase.home}
         teamData={TEAMS[lineupPhase.home]}
@@ -462,6 +465,7 @@ export default function Home() {
         onConfirm={handleLineupConfirm}
         onBack={() => { setLineupPhase(null); setBallparkPhase({ home: lineupPhase.home, away: lineupPhase.away }); }}
       />
+      </ErrorBoundary>
     );
   }
 
@@ -517,6 +521,7 @@ export default function Home() {
   const away = TEAMS[awayTeam];
 
   return (
+    <ErrorBoundary>
     <div className="h-[100dvh] md:h-auto md:min-h-screen bg-background text-foreground flex flex-col overflow-hidden md:overflow-visible">
       {/* Compact Top Bar */}
       <div className="shrink-0 border-b border-border bg-card/50 px-3 md:px-6 py-1.5 flex items-center justify-between">
@@ -811,5 +816,6 @@ export default function Home() {
         />
       )}
     </div>
+    </ErrorBoundary>
   );
 }

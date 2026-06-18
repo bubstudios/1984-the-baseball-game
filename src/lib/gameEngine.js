@@ -883,9 +883,10 @@ function resolveSwing(state, swingType, pitch) {
       const strikeoutLine = isLooking
         ? pickLine(STRIKEOUT_CALLED_LINES)
         : pickLine(STRIKEOUT_SWINGING_LINES);
-      const msg = strikeoutLine.includes('fans on a wicked')
-        ? `${batter.name} fans on a wicked ${pitch.pitchType}!`
-        : `${batter.name} ${strikeoutLine}`;
+      // Lines ending with "!" are complete; otherwise append the pitch type
+      const msg = strikeoutLine.endsWith('!')
+        ? `${batter.name} ${strikeoutLine}`
+        : `${batter.name} ${strikeoutLine} ${pitch.pitchType}!`;
       state.log.push({ type: 'strikeout', text: msg });
       state.lastPlay = { type: 'strikeout', text: msg };
       state.balls = 0;

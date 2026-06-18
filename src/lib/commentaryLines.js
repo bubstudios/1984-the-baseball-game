@@ -225,7 +225,15 @@ const POPOUT_LINES = [
 // =========== STRIKEOUT SWINGING (name prefixed) ===========
 const STRIKEOUT_SWINGING_LINES = [
   c("goes down swinging!"), c("can't catch up — strike three!"),
-  c("whiffs on strike three!"), c("fans on a wicked"),
+  c("whiffs on strike three!"),
+  c("fans on a wicked"),
+  c("chases a nasty"),
+  c("buckles at a sharp"),
+  c("flails at a filthy"),
+  c("goes down hacking at a"),
+  c("waves at a devastating"),
+  c("can't catch up to a blazing"),
+  c("whiffs on a knee-buckling"),
   c("swings right through it — out!"),
   c("chases one out of the zone — struck out!"),
   c("swings and misses — struck out!"),
