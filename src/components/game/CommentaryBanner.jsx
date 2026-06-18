@@ -3,6 +3,7 @@ import { pickHarryLine } from '@/lib/harryCarayLines';
 import { pickPadresLine } from '@/lib/jerryColemanLines';
 import { pickVinLine } from '@/lib/vinScullyLines';
 import { pickMetsLine } from '@/lib/metsBroadcastLines';
+import { pickYankeesLine } from '@/lib/yankeesBroadcastLines';
 
 // Player nicknames — researched from 1984 MLB lore
 const NICKNAMES = {
@@ -193,7 +194,7 @@ export const STADIUM_FLAVOR = {
     stretchFlavor: null,
   },
   newYorkYankees: {
-    announcers: ["Phil Rizzuto", "Bill White"],
+    announcers: ["Phil Rizzuto", "Frank Messer", "Bill White"],
     stadium: "Yankee Stadium",
     nicknames: ["The House That Ruth Built", "The Stadium"],
     flavor: [
@@ -540,6 +541,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isPadresGame = homeTeamKey === 'padres';
   const isDodgersGame = homeTeamKey === 'dodgers';
   const isMetsGame = homeTeamKey === 'mets';
+  const isYankeesGame = homeTeamKey === 'yankees';
   const text = isCubsGame && Math.random() < 0.65
     ? pickHarryLine()
     : isPadresGame && Math.random() < 0.65
@@ -548,7 +550,9 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
         ? pickVinLine()
         : isMetsGame && Math.random() < 0.65
           ? pickMetsLine()
-          : getCommentary(batter, pitcher, gameState, stadiumInfo);
+          : isYankeesGame && Math.random() < 0.65
+            ? pickYankeesLine()
+            : getCommentary(batter, pitcher, gameState, stadiumInfo);
 
   return (
     <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">
