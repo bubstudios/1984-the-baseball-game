@@ -280,8 +280,12 @@ const STEAL_LINES = {
     c("caught stealing second!"), c("caught stealing third!"),
     c("caught stealing home!"), c("gunned down at second!"),
     c("gunned down at third!"),
+    c("thrown out — bad read all the way."),
+    c("he's out — that's a rally killer."),
     c("The catcher nails him!", 'uncommon'),
     c("Not even close — he's out by a mile.", 'uncommon'),
+    c("That one's going to sting.", 'uncommon'),
+    c("And the crowd lets him hear it.", 'uncommon'),
   ],
 };
 

@@ -378,8 +378,10 @@ function advanceRunners(state, bases, batter, isHit = false) {
         }
       } else if (i === 1) {
         // Runner on 2nd: on a single, try for home
+        // With 2 outs, runners go on any contact — extremely aggressive
         if (bases === 1) {
-          const homeChance = (0.28 + speedFactor * 0.55 - armPenalty - positioningPenalty) * outsMultiplier;
+          const twoOutBonus = state.outs >= 2 ? 0.20 : 0;
+          const homeChance = (0.28 + speedFactor * 0.55 - armPenalty - positioningPenalty + twoOutBonus) * outsMultiplier;
           if (Math.random() < Math.max(0.05, homeChance)) {
             runner.gameStats.runs++;
             scoreRun(state);
@@ -856,15 +858,17 @@ function resolveSwing(state, swingType, pitch) {
       }
       return;
     }
-    // Mix non-strikeout strike descriptions
+    // Mix non-strikeout strike descriptions (weighted: common first, rare last)
     const strikeLabels = [
       `Swing and a miss — strike ${state.strikes}`,
       `Checked his swing — strike ${state.strikes}`,
       `Couldn't hold up — strike ${state.strikes}`,
       `Taken at the knees — strike ${state.strikes}`,
       `Just pulled the bat back — strike ${state.strikes} called`,
-      `Fouled off attempt — nope, swing and a miss, strike ${state.strikes}`,
       `Waves at a ${pitch.pitchType} — strike ${state.strikes}`,
+      `Waves at a ${pitch.pitchType} — strike ${state.strikes}`,
+      // Rare — announcer confused about a foul tip
+      `Fouled off attempt — nope, swing and a miss, strike ${state.strikes}`,
     ];
     const strikeLabel = strikeLabels[Math.floor(Math.random() * strikeLabels.length)];
     state.log.push({ type: 'strike', text: strikeLabel });
@@ -1182,6 +1186,16 @@ function resolveSwing(state, swingType, pitch) {
             state.lastPlay = { type: 'doubleplay', text: msg };
           } else {
             // Standard DP: runner on 1st forced at 2nd
+            // If runner on 3rd exists, they score (DP is at 2nd + 1st, run counts)
+            const runner3rdDP = state.bases[2];
+            if (runner3rdDP && state.outs < 2) {
+              runner3rdDP.gameStats.runs++;
+              scoreRun(state);
+              batter.gameStats.rbi++;
+              pitcher.gameStats.r++;
+              pitcher.gameStats.er++;
+              state.bases[2] = null;
+            }
             // If runner on 2nd exists (runners on 1st & 2nd, force at 2nd variant), they move to 3rd
             if (state.bases[1]) {
               state.bases[2] = state.bases[2] || state.bases[1];
@@ -1341,18 +1355,55 @@ function resolveSwing(state, swingType, pitch) {
       }
     }
 
-    // ---- TAG-UP on outfield fly outs only (medium+ depth, 2nd→3rd) ----
+    // ---- TAG-UP on outfield fly outs only (medium+ depth, 2nd→3rd AND 3rd→home) ----
     if (isOutfieldFly) {
-      const runner = state.bases[1];
-      if (runner && state.outs < 2) {
-        const speedFactor = runner.speed / 10;
+      const runner3rd = state.bases[2];
+      const runner2nd = state.bases[1];
+      const isDeep = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall');
+
+      // Runner on 3rd: always tags on deep flies, sometimes on medium depth
+      if (runner3rd && state.outs < 2) {
+        const speedFactor = runner3rd.speed / 10;
         const ofArm = getOutfieldArm(defenders) / 10;
-        // Tag from 2nd to 3rd: fast runner, weak arm helps
+        const depthBonus = isDeep ? 0.40 : 0.10;
+        // Deep fly: even slow runners score. Medium: speed-dependent.
+        const homeTagChance = depthBonus + speedFactor * 0.30 - ofArm * 0.08;
+        if (Math.random() < Math.max(0.05, Math.min(homeTagChance, 0.65))) {
+          runner3rd.gameStats.runs++;
+          scoreRun(state);
+          batter.gameStats.rbi++;
+          getCurrentPitcher(state).gameStats.r++;
+          getCurrentPitcher(state).gameStats.er++;
+          state.bases[2] = null;
+          state.log.push({ type: 'sacfly', text: `${runner3rd.name} tags up and scores!` });
+          // After scoring, runner from 2nd can now tag to 3rd
+          if (runner2nd && state.outs < 2) {
+            const sf2 = runner2nd.speed / 10;
+            const tag2Chance = isDeep ? (0.15 + sf2 * 0.40 - ofArm * 0.10) : (0.05 + sf2 * 0.25 - ofArm * 0.08);
+            if (Math.random() < Math.max(0.03, Math.min(tag2Chance, 0.35))) {
+              state.bases[2] = runner2nd;
+              state.bases[1] = null;
+              state.log.push({ type: 'info', text: `${runner2nd.name} tags up and advances to third!` });
+            }
+          }
+          batter.gameStats.ab--;
+          state.balls = 0;
+          state.strikes = 0;
+          advanceBatter(state);
+          recordOut(state);
+          return;
+        }
+      }
+
+      // Runner on 2nd: tag to 3rd only if 3rd is open
+      if (runner2nd && state.outs < 2 && !state.bases[2]) {
+        const speedFactor = runner2nd.speed / 10;
+        const ofArm = getOutfieldArm(defenders) / 10;
         const tagChance = 0.10 + speedFactor * 0.35 - ofArm * 0.10;
         if (Math.random() < Math.max(0.04, Math.min(tagChance, 0.35))) {
-          state.bases[2] = runner;
+          state.bases[2] = runner2nd;
           state.bases[1] = null;
-          state.log.push({ type: 'info', text: `${runner.name} tags up and advances to third!` });
+          state.log.push({ type: 'info', text: `${runner2nd.name} tags up and advances to third!` });
         }
       }
     }
@@ -1515,11 +1566,9 @@ function handleHitAndRunCaught(state) {
 // --- PROCESS AT BAT ---
 
 // Run injury checks after a play — modifies state in place
-function runInjuryChecks(newState) {
+function runInjuryChecks(newState, batter) {
   const lastPlay = newState.lastPlay;
   if (!lastPlay) return;
-
-  const batter = getCurrentBatter(newState);
 
   switch (lastPlay.type) {
     case 'walk': {
@@ -1745,6 +1794,8 @@ export function processAtBat(state, pitchType, swingType) {
     return newState;
   }
 
+  const batterWhoJustBatted = getCurrentBatter(newState);
+
   resolveSwing(newState, swingType, newState.pitchResult);
 
   // Walk-off check
@@ -1754,9 +1805,9 @@ export function processAtBat(state, pitchType, swingType) {
     newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
   }
 
-  // Run injury checks after the play resolves
+  // Run injury checks after the play resolves (use the batter who actually batted)
   if (!newState.gameOver) {
-    runInjuryChecks(newState);
+    runInjuryChecks(newState, batterWhoJustBatted);
   }
 
   // Pitcher fatigue injury check (only if no injury happened this play)

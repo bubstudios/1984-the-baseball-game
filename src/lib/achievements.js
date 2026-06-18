@@ -522,8 +522,8 @@ export function checkGameAchievements(gameState, userTeam = 'home') {
 
   // ── 1984-THEMED ──
   u('like_its_1984');
-  // Small ball: scored a run but no hits in an inning — tricky, approximate via walk + SB + SF
-  if (logText.includes('scores') && (logText.includes('bunt') || logText.includes('sacrifice fly') || logText.includes('steals home'))) u('small_ball');
+  // Small ball: scored a run without a hit (user team only)
+  if (userScore > 0 && logText.includes('scores') && (logText.includes('bunt') || logText.includes('sacrifice fly') || logText.includes('steals home'))) u('small_ball');
   const allSB = allUserPlayers.reduce((sum, p) => sum + (p.gameStats?.sb || 0), 0);
   if (allSB >= 5) u('whitey_ball');
   // The Wizard: 10+ assists — we approximate via log mentions of SS

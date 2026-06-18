@@ -563,21 +563,31 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isYankeesGame = homeTeamKey === 'yankees';
   const isRedSoxGame = homeTeamKey === 'redsox';
   const isTigersGame = homeTeamKey === 'tigers';
-  const text = isCubsGame && Math.random() < 0.65
-    ? pickHarryLine()
-    : isPadresGame && Math.random() < 0.65
-      ? pickPadresLine()
-      : isDodgersGame && Math.random() < 0.70
-        ? pickVinLine()
-        : isMetsGame && Math.random() < 0.65
-          ? pickMetsLine()
-          : isYankeesGame && Math.random() < 0.65
-            ? pickYankeesLine()
-            : isRedSoxGame && Math.random() < 0.65
-              ? pickRedSoxLine()
-              : isTigersGame && Math.random() < 0.65
-                ? pickTigersLine()
-                : getCommentary(batter, pitcher, gameState, stadiumInfo);
+  // Steal acknowledgment — always mention a stolen base
+  const isSteal = lastPlay?.type === 'steal';
+  const isCaughtStealing = lastPlay?.type === 'caughtstealing';
+  let text;
+  if (isSteal && lastPlay?.text) {
+    text = `He's going! ${lastPlay.text}`;
+  } else if (isCaughtStealing && lastPlay?.text) {
+    text = lastPlay.text;
+  } else {
+    text = isCubsGame && Math.random() < 0.65
+      ? pickHarryLine()
+      : isPadresGame && Math.random() < 0.65
+        ? pickPadresLine()
+        : isDodgersGame && Math.random() < 0.70
+          ? pickVinLine()
+          : isMetsGame && Math.random() < 0.65
+            ? pickMetsLine()
+            : isYankeesGame && Math.random() < 0.65
+              ? pickYankeesLine()
+              : isRedSoxGame && Math.random() < 0.65
+                ? pickRedSoxLine()
+                : isTigersGame && Math.random() < 0.65
+                  ? pickTigersLine()
+                  : getCommentary(batter, pitcher, gameState, stadiumInfo);
+  }
 
   return (
     <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">

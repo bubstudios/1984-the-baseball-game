@@ -295,6 +295,58 @@ export function playHalfInningBreak() {
   });
 }
 
+// ─── Star Spangled Banner — ~15 seconds, game opening ──────────────
+
+export function playAnthem() {
+  ensureResumed();
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+
+  // Note frequencies
+  const C3 = 131, D3 = 147, Eb3 = 156, F3 = 175, G3 = 196, Ab3 = 208, Bb3 = 233;
+  const C4 = 262, D4 = 294, Eb4 = 311, F4 = 349, G4 = 392, Ab4 = 415, Bb4 = 466;
+  const C5 = 523;
+
+  // Melody: [freq, duration_sec, gap_sec]
+  const melody = [
+    // "Oh say can you see"
+    [G4, 0.30, 0.02], [C4, 0.50, 0.02], [Eb4, 0.28, 0.02], [G4, 0.25, 0.02],
+    [C5, 0.50, 0.02], [Eb4, 0.25, 0.02],
+    // "by the dawn's early light"
+    [D4, 0.30, 0.02], [C4, 0.28, 0.02], [Bb3, 0.30, 0.02], [G3, 0.50, 0.02],
+    [Eb4, 0.25, 0.02], [D4, 0.30, 0.02], [C4, 0.50, 0.15],
+    // "What so proudly we hailed"
+    [G4, 0.30, 0.02], [G4, 0.25, 0.02], [Ab4, 0.25, 0.02], [Bb4, 0.25, 0.02],
+    [C5, 0.50, 0.02], [Bb4, 0.25, 0.02], [Ab4, 0.25, 0.02],
+    // "at the twilight's last gleaming"
+    [G4, 0.25, 0.02], [F4, 0.25, 0.02], [G4, 0.25, 0.02], [Eb4, 0.50, 0.02],
+    [D4, 0.25, 0.02], [C4, 0.50, 0.15],
+    // "Whose broad stripes and bright stars"
+    [G4, 0.30, 0.02], [C4, 0.50, 0.02], [Eb4, 0.25, 0.02], [G4, 0.25, 0.02],
+    [C5, 0.50, 0.02], [Eb4, 0.25, 0.02],
+    // "through the perilous fight"
+    [D4, 0.30, 0.02], [C4, 0.25, 0.02], [Bb3, 0.30, 0.02], [G3, 0.50, 0.25],
+    // "O'er the ramparts we watched"
+    [C5, 0.30, 0.02], [Bb4, 0.25, 0.02], [Ab4, 0.25, 0.02], [Bb4, 0.25, 0.02],
+    [C5, 0.30, 0.02], [Bb4, 0.35, 0.02], [Ab4, 0.40, 0.15],
+  ];
+
+  let t = 0;
+  melody.forEach(([freq, dur, gap]) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.value = freq;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.10, now + t);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + t + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + t);
+    osc.stop(now + t + dur + 0.02);
+    t += dur + gap;
+  });
+}
+
 // ─── 7th Inning Stretch — "Take Me Out to the Ballgame" ──────────────
 // ~13 seconds of the classic tune using square-wave melody
 
@@ -480,6 +532,9 @@ export default function useRetroAudio(gameState, enabled) {
           if (entry.text && entry.text.includes('🎶')) {
             // 7th inning stretch — play after a short delay for the text announcement
             setTimeout(playStretchMusic, 1500);
+          } else if (entry.text && entry.text.includes('Top of inning 1')) {
+            // Star Spangled Banner at game start
+            setTimeout(playAnthem, 600);
           } else if (entry.text && /^(Top|Bottom) of inning/.test(entry.text)) {
             // Half-inning change jingle
             setTimeout(playHalfInningBreak, 600);
