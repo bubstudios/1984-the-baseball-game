@@ -26,6 +26,8 @@ import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
 import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement } from '@/lib/achievements';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
+import { pickAd } from '@/lib/broadcastAds';
+import AdRead from '@/components/game/AdRead';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -55,6 +57,9 @@ export default function Home() {
   const [injuryResult, setInjuryResult] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
+  const prevLogLength = useRef(0);
+  const prevHalfInning = useRef(null);
+  const [showAd, setShowAd] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -138,6 +143,24 @@ export default function Home() {
       // Mark as shown to prevent re-triggering
       setGameState(prev => prev ? { ...prev, _injuryShown: true } : prev);
     }
+
+    // Trigger ads on half-inning transition or pitching change
+    const currentHalf = `${gameState.halfInning}-${gameState.inning}`;
+    if (prevHalfInning.current && prevHalfInning.current !== currentHalf && !gameState.gameOver) {
+      // New half-inning started — ad break
+      setShowAd(pickAd(homeTeam));
+    } else if (gameState.log.length > prevLogLength.current) {
+      // Check newest log entries for pitching changes
+      const newEntries = gameState.log.slice(prevLogLength.current);
+      const hasPitchingChange = newEntries.some(l =>
+        l.type === 'info' && l.text && l.text.includes('replaces') && l.text.includes('on the mound')
+      );
+      if (hasPitchingChange && !gameState.gameOver) {
+        setShowAd(pickAd(homeTeam));
+      }
+    }
+    prevLogLength.current = gameState.log.length;
+    prevHalfInning.current = currentHalf;
 
     // Check achievements when game ends
     if (gameState.gameOver && !prevGameOver.current) {
@@ -377,6 +400,9 @@ export default function Home() {
     setGameUmpire(null);
     setInjuryResult(null);
     prevGameOver.current = false;
+    prevHalfInning.current = null;
+    prevLogLength.current = 0;
+    setShowAd(null);
   };
 
   if (ballparkPhase) {
@@ -549,6 +575,11 @@ export default function Home() {
                     isDay={gameWeather?.isDay}
                   />
                 </div>
+
+                {/* Ad read — appears between innings / during pitching changes */}
+                {showAd && (
+                  <AdRead ad={showAd} onDismiss={() => setShowAd(null)} autoDismissMs={6000} />
+                )}
 
                 {/* Commentary */}
                 <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} stadium={gameStadium} homeTeamKey={homeTeam} />
