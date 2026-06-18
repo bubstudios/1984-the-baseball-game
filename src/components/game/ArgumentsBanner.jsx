@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, X } from 'lucide-react';
+import { ArrowRight, X, Megaphone } from 'lucide-react';
 
 const LEVEL_LABELS = ["Grumbling...", "Leaning out...", "On the field!", "In his face!", "NUCLEAR!"];
 const LEVEL_COLORS = ["text-amber-400", "text-orange-400", "text-orange-500", "text-red-500", "text-red-600"];
@@ -13,7 +13,13 @@ export default function ArgumentsBanner({ result, onDismiss }) {
     setVisible(true);
     setStage(0);
 
-    // Step through escalation levels 0..result.escaLevel
+    // Chirp mode: quick flash, auto-dismiss after 2.5s
+    if (result.isChirp) {
+      const timer = setTimeout(() => onDismiss(), 2500);
+      return () => clearTimeout(timer);
+    }
+
+    // Full escalation: step through levels
     const totalStages = result.escaLevel + 1;
     let current = 0;
 
@@ -30,10 +36,31 @@ export default function ArgumentsBanner({ result, onDismiss }) {
 
   if (!result || !visible) return null;
 
+  // ── Chirp Mode: quick bottom-toast flash ──
+  if (result.isChirp) {
+    return (
+      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
+        <div className="bg-card/95 border border-primary/20 rounded-xl px-4 py-2 shadow-lg flex items-center gap-2 max-w-xs">
+          <Megaphone className="w-4 h-4 text-primary/70 shrink-0" />
+          <span className="text-sm font-heading text-primary/90 italic">
+            {result.whoArgues === 'manager' ? (
+              <>{result.callType}</>
+            ) : result.whoArgues === 'dugout' ? (
+              <>{result.callType}</>
+            ) : result.whoArgues === 'batter' ? (
+              <>Batter: "{result.callType}"</>
+            ) : (
+              <>{result.callType}</>
+            )}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Full Escalation Modal ──
   const isFinal = stage >= result.escaLevel;
   const levelColor = LEVEL_COLORS[Math.min(result.escaLevel, 4)];
-
-  // Special effects
   const showHat = result.hatThrow && isFinal;
   const showDirt = result.dirtKick && isFinal;
   const showBasePickup = result.basePickup && isFinal;
@@ -41,7 +68,6 @@ export default function ArgumentsBanner({ result, onDismiss }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onDismiss}>
       <div className="relative bg-card border border-primary/30 rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
-        {/* Close button */}
         <button
           onClick={onDismiss}
           className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-muted/50 hover:bg-muted text-muted-foreground"
@@ -49,7 +75,6 @@ export default function ArgumentsBanner({ result, onDismiss }) {
           <X className="w-4 h-4" />
         </button>
 
-        {/* Argument animation */}
         <div className="space-y-4 text-center">
           {/* Stage indicator */}
           <div className="flex items-center justify-center gap-1.5">
@@ -69,12 +94,10 @@ export default function ArgumentsBanner({ result, onDismiss }) {
             ))}
           </div>
 
-          {/* Escalation label */}
           <div className={`font-heading text-lg font-bold ${levelColor} transition-all duration-300`}>
             {stage <= result.escaLevel ? LEVEL_LABELS[stage] || LEVEL_LABELS[0] : LEVEL_LABELS[result.escaLevel]}
           </div>
 
-          {/* Who's arguing */}
           <div className="text-sm font-heading text-foreground/80">
             {result.whoArgues === 'manager' ? `Manager: ${result.managerName || 'The Skipper'}` :
              result.whoArgues === 'batter' ? 'Batter throws his hands up' :
@@ -82,42 +105,24 @@ export default function ArgumentsBanner({ result, onDismiss }) {
              result.whoArgues === 'pitcher' ? 'Pitcher stares at the umpire' : ''}
           </div>
 
-          {/* Call being disputed */}
           <div className="text-xs text-muted-foreground italic">
             Disputed: {result.callType}
           </div>
 
-          {/* Ejection — final state */}
           {isFinal && result.ejected && (
             <div className="bg-destructive/20 border border-destructive/40 rounded-xl p-3 animate-pulse">
               <div className="text-base font-heading font-bold text-destructive">⚡ EJECTED! ⚡</div>
-              {showBasePickup && (
-                <div className="text-xs text-destructive/80 mt-1">He's taking the base with him!</div>
-              )}
-              {showDirt && (
-                <div className="text-xs text-destructive/80 mt-1">Dirt kicked all over home plate!</div>
-              )}
-              {showHat && (
-                <div className="text-xs text-destructive/80 mt-1">Hat thrown to the ground!</div>
-              )}
-              {result.delayedEjection && (
-                <div className="text-xs text-destructive/80 mt-1">The delayed ejection — he just couldn't help himself!</div>
-              )}
+              {showBasePickup && <div className="text-xs text-destructive/80 mt-1">He's taking the base with him!</div>}
+              {showDirt && <div className="text-xs text-destructive/80 mt-1">Dirt kicked all over home plate!</div>}
+              {showHat && <div className="text-xs text-destructive/80 mt-1">Hat thrown to the ground!</div>}
+              {result.delayedEjection && <div className="text-xs text-destructive/80 mt-1">The delayed ejection — he just couldn't help himself!</div>}
             </div>
           )}
 
-          {/* Special effect animation */}
-          {showBasePickup && (
-            <div className="text-4xl animate-bounce">🧢</div>
-          )}
-          {showDirt && (
-            <div className="text-4xl animate-ping">💨</div>
-          )}
-          {showHat && (
-            <div className="text-4xl animate-bounce">🎩</div>
-          )}
+          {showBasePickup && <div className="text-4xl animate-bounce">🧢</div>}
+          {showDirt && <div className="text-4xl animate-ping">💨</div>}
+          {showHat && <div className="text-4xl animate-bounce">🎩</div>}
 
-          {/* Crowd reaction */}
           <div className="text-xs text-foreground/60 font-heading italic">
             {isFinal
               ? (result.basePickup ? "Crowd goes absolutely wild!" :
@@ -130,7 +135,6 @@ export default function ArgumentsBanner({ result, onDismiss }) {
               : '...'}
           </div>
 
-          {/* Continue button */}
           {isFinal && (
             <button
               onClick={onDismiss}

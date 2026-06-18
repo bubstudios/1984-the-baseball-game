@@ -16,7 +16,7 @@ import BoxScore from '@/components/game/BoxScore';
 import SubstitutionsPanel from '@/components/game/SubstitutionsPanel';
 import Fireworks from '@/components/game/Fireworks';
 import ArgumentsBanner from '@/components/game/ArgumentsBanner';
-import { getArgumentSeverity, resolveArgument, getEjectionCommentary, rollUmpire } from '@/lib/umpireArguments';
+import { getArgumentSeverity, resolveArgument, getEjectionCommentary, rollUmpire, maybeDugoutChirp } from '@/lib/umpireArguments';
 import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
 import RetroLoading from '@/components/game/RetroLoading';
@@ -159,8 +159,29 @@ export default function Home() {
 
   // Argument check after a play resolves
   const checkForArgument = useCallback((state) => {
-    if (!state || state.gameOver || !state.lastPlay) return state;
+    if (!state || state.gameOver) return state;
 
+    // First: random dugout chirp (can happen without any play)
+    const chirp = maybeDugoutChirp(state);
+    if (chirp) {
+      const battingKeystr = getBattingTeam(state) === 'home' ? homeTeam : awayTeam;
+      const manager = MANAGERS[battingKeystr];
+      const umpire = gameUmpire || 'standard';
+      const battingScore = state.score[getBattingTeam(state)];
+      const fieldingScore = state.score[getBattingTeam(state) === 'home' ? 'away' : 'home'];
+      const scoreDiff = fieldingScore - battingScore;
+      const chirpResult = resolveArgument(chirp, manager?.personality || 5, umpire, state.inning, scoreDiff, getBattingTeam(state) === 'home');
+      if (chirpResult) {
+        chirpResult.managerName = manager?.name || 'The Manager';
+        setArgumentResult({ ...chirpResult, homeTeamKey: battingKeystr });
+      }
+      // Don't let a chirp replace a real argument — check both
+      const severity = getArgumentSeverity(state.lastPlay, state);
+      if (!severity) return state;
+      // Fall through to full argument check
+    }
+
+    if (!state.lastPlay) return state;
     const severity = getArgumentSeverity(state.lastPlay, state);
     if (!severity) return state;
 
