@@ -420,14 +420,15 @@ export default function Home() {
     setGameState(prev => {
       if (!prev || prev.gameOver) return prev;
       try {
-        const newState = changePitcher(prev, newPitcher);
+        const side = userTeam === prev.homeTeam ? 'home' : 'away';
+        const newState = changePitcher(prev, newPitcher, side);
         return newState;
       } catch (e) {
         return prev;
       }
     });
     setShowSubs(false);
-  }, []);
+  }, [userTeam]);
 
   const handleInjuryReplacement = (chosenPlayer) => {
     if (!gameState || !gameState._pendingInjury) return;

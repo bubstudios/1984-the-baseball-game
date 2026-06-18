@@ -109,25 +109,26 @@ export function defensiveSwitch(state, slotIndex, newPos, newPlayer) {
   return newState;
 }
 
-export function changePitcher(state, newPitcher) {
+export function changePitcher(state, newPitcher, side) {
   const newState = JSON.parse(JSON.stringify(state));
-  const isHomePitching = newState.halfInning === 'top';
+  // Use explicit side if provided, otherwise fall back to half-inning logic
+  const isHome = side ? side === 'home' : newState.halfInning === 'top';
   const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
 
-  const oldPitcher = isHomePitching ? newState.homePitcher : newState.awayPitcher;
-  if (isHomePitching) {
+  const oldPitcher = isHome ? newState.homePitcher : newState.awayPitcher;
+  if (isHome) {
     newState.homePitcher = newP;
   } else {
     newState.awayPitcher = newP;
   }
 
   // Remove reliever from the bullpen
-  const bullpen = isHomePitching ? newState.homeBullpen : newState.awayBullpen;
+  const bullpen = isHome ? newState.homeBullpen : newState.awayBullpen;
   const bpIdx = bullpen.findIndex(p => p.name === newPitcher.name);
   if (bpIdx >= 0) bullpen.splice(bpIdx, 1);
 
   // Swap the new pitcher into the fielding lineup (only if DH is not in effect)
-  const lineup = isHomePitching ? newState.homeLineup : newState.awayLineup;
+  const lineup = isHome ? newState.homeLineup : newState.awayLineup;
   const usesDH = lineup.some(p => (p.assignedPos || p.pos) === 'DH');
   if (!usesDH) {
     let slotIdx = lineup.findIndex(p => p.name === oldPitcher.name);
@@ -139,7 +140,7 @@ export function changePitcher(state, newPitcher) {
   }
 
   // Save old pitcher to player history so box score retains their stats
-  const historyKey = isHomePitching ? 'homePlayerHistory' : 'awayPlayerHistory';
+  const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
   const existing = newState[historyKey].find(p => p.name === oldPitcher.name);
   if (existing) {
     existing.gameStats = {
