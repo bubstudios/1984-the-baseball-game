@@ -393,32 +393,41 @@ export default function Home() {
   }, [gameState, processing]);
 
   const handlePinchHit = useCallback((player) => {
-    if (!gameState || gameState.gameOver) return;
-    const newState = pinchHit(gameState, player);
-    setGameState(newState);
+    setGameState(prev => {
+      if (!prev || prev.gameOver) return prev;
+      return pinchHit(prev, player);
+    });
     setShowSubs(false);
-  }, [gameState]);
+  }, []);
 
   const handlePinchRun = useCallback((baseIndex, player) => {
-    if (!gameState || gameState.gameOver) return;
-    const newState = pinchRun(gameState, baseIndex, player);
-    setGameState(newState);
+    setGameState(prev => {
+      if (!prev || prev.gameOver) return prev;
+      return pinchRun(prev, baseIndex, player);
+    });
     setShowSubs(false);
-  }, [gameState]);
+  }, []);
 
   const handleDefensiveSwitch = useCallback((slotIndex, newPos, newPlayer) => {
-    if (!gameState || gameState.gameOver) return;
-    const newState = defensiveSwitch(gameState, slotIndex, newPos, newPlayer);
-    setGameState(newState);
+    setGameState(prev => {
+      if (!prev || prev.gameOver) return prev;
+      return defensiveSwitch(prev, slotIndex, newPos, newPlayer);
+    });
     if (newPlayer) setShowSubs(false);
-  }, [gameState]);
+  }, []);
 
   const handlePitchingChange = useCallback((newPitcher) => {
-    if (!gameState || gameState.gameOver) return;
-    const newState = changePitcher(gameState, newPitcher);
-    setGameState(newState);
+    setGameState(prev => {
+      if (!prev || prev.gameOver) return prev;
+      try {
+        const newState = changePitcher(prev, newPitcher);
+        return newState;
+      } catch (e) {
+        return prev;
+      }
+    });
     setShowSubs(false);
-  }, [gameState]);
+  }, []);
 
   const handleInjuryReplacement = (chosenPlayer) => {
     if (!gameState || !gameState._pendingInjury) return;
