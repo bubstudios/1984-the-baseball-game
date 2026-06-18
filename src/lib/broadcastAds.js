@@ -834,3 +834,78 @@ const EASTER_EGG_FINALE = [
   "Somewhere, a youngster is falling in love with baseball for the first time today.",
 ];
 GENERAL_COMMUNITY.push(...EASTER_EGG_FINALE);
+
+// ── Reds / Cincinnati (#501–550) ──
+
+registerTeamAds('reds', 'team_promo', [
+  "The Reds continue their homestand tomorrow night at Riverfront Stadium.",
+  "The first 10,000 fans this Sunday receive a commemorative Reds team poster.",
+  "Stop by souvenir stands for your official 1984 Reds yearbook.",
+  "Join the Reds for Youth Baseball Day next Saturday afternoon.",
+  "Little League Night returns to Riverfront Stadium next week.",
+  "Reds players will sign autographs this Saturday at the Carew Tower concourse.",
+  "Don't miss Bat Day at Riverfront Stadium — the first 5,000 youngsters receive a free Louisville Slugger.",
+  "Team Photo Day is coming up — check the scorecard for details.",
+  "Reds Baseball Camp registration is now open for ages 8 through 14.",
+  "Johnny Bench will appear at a special Big Red Machine autograph event next month.",
+]);
+
+registerTeamAds('reds', 'sponsor', [
+  "Visit your local Skyline Chili and enjoy Cincinnati's favorite three-way.",
+  "Skyline Chili — the official chili of Reds baseball.",
+  "Gold Star Chili invites you to stop in after tonight's game.",
+  "Hudepohl Beer — Cincinnati's own since 1885.",
+  "Enjoy a cold Hudepohl at the ballpark tonight.",
+  "WKRP in Cincinnati brings you all the hits, all summer long.",
+  "Tune in to WLW 700 for complete Reds coverage throughout the season.",
+  "WLW — the 50,000-watt voice of the Cincinnati Reds.",
+  "Kings Island is now open for the summer season — ride The Beast if you dare.",
+  "Kings Island welcomes families from across the region.",
+  "Visit your local Kroger for fresh produce and great deals.",
+  "P&G — bringing quality products to Cincinnati families for over a century.",
+  "Cincinnati Bell — connecting the Queen City.",
+]);
+
+registerTeamAds('reds', 'community', [
+  "Visit the Cincinnati Zoo this weekend — home of the world-famous white Bengal tigers.",
+  "The Cincinnati Zoo welcomes visitors all summer long.",
+  "Take the family to Kings Island this weekend.",
+  "The Beast roller coaster is waiting.",
+  "Visit the observation deck atop Carew Tower and see Cincinnati from above.",
+  "Tour historic Union Terminal and experience the grand Art Deco architecture.",
+  "Take a riverboat cruise along the Ohio River this weekend.",
+  "Enjoy dinner aboard one of Cincinnati's famous riverboats.",
+  "Walk along the Serpentine Wall and enjoy the view of the Ohio.",
+  "The banks of the Ohio River offer a beautiful setting for a summer afternoon.",
+  "Explore the Krohn Conservatory in Eden Park.",
+  "The Krohn Conservatory features beautiful botanical displays all summer.",
+  "Visit the Cincinnati Art Museum and discover works from around the world.",
+  "Eden Park offers one of the best views of the city.",
+  "Spend an afternoon at Coney Island on the river.",
+  "Baseball fans throughout the tri-state area are enjoying this one.",
+  "Greetings to listeners in Kentucky, Indiana, and across the Ohio Valley.",
+  "Thank you to our loyal Reds fans throughout the Queen City.",
+  "Joe and Marty thank you for spending your evening with us.",
+  "A beautiful night along the river for baseball.",
+]);
+
+registerTeamAds('reds', 'charity', [
+  "Support Reds Community Fund youth baseball programs throughout the tri-state area.",
+  "Registration is open for summer youth baseball leagues in Cincinnati.",
+  "Consider donating to local Little League programs this summer.",
+  "Help keep youth baseball strong in the Queen City.",
+  "The Reds remind fans to please recycle bottles and aluminum cans at Riverfront Stadium.",
+]);
+
+// ── Reds Easter Eggs ──
+
+registerTeamAds('reds', 'community', [
+  "Joe Nuxhall says he still remembers his first big league pitch — he was 15 years old.",
+  "Joe says he once pitched both ends of a doubleheader and still had energy for a chili three-way after.",
+  "The organist appears to know every song written since 1869.",
+  "A gentleman in Section 314 has now kept score for 43 consecutive innings.",
+  "Someone just spilled an entire tray of chili dogs in the upper deck.",
+  "The barge horns on the Ohio are so loud tonight you'd think they're in the stadium.",
+  "Marty says this crowd reminds him of the Big Red Machine days.",
+  "The Reds have played baseball in Cincinnati longer than most American cities have had professional sports.",
+]);

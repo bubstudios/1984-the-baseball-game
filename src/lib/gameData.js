@@ -368,6 +368,56 @@ export const TEAMS = {
     ],
   },
 
+  reds: {
+    city: "Cincinnati",
+    name: "Reds",
+    abbr: "CIN",
+    league: "NL",
+    stadium: "Riverfront Stadium",
+    lineup: [
+      { name: "Gary Redus", pos: "LF", bats: "R", contact: 6, power: 4, bunting: 6, speed: 9, defense: 5, arm: 6,
+        splits: { vsLHP: { ab: 98, ba: .276, hr: 2 }, vsRHP: { ab: 342, ba: .246, hr: 5 } } },
+      { name: "Pete Rose", pos: "1B", bats: "S", contact: 8, power: 1, bunting: 8, speed: 3, defense: 4, arm: 4,
+        splits: { vsLHP: { ab: 112, ba: .321, hr: 0 }, vsRHP: { ab: 262, ba: .271, hr: 0 } } },
+      { name: "Dave Parker", pos: "RF", bats: "L", contact: 7, power: 7, bunting: 2, speed: 4, defense: 5, arm: 8,
+        splits: { vsLHP: { ab: 108, ba: .250, hr: 3 }, vsRHP: { ab: 386, ba: .293, hr: 13 } } },
+      { name: "Cesar Cedeno", pos: "CF", bats: "R", contact: 6, power: 5, bunting: 4, speed: 6, defense: 6, arm: 6,
+        splits: { vsLHP: { ab: 156, ba: .288, hr: 4 }, vsRHP: { ab: 288, ba: .271, hr: 6 } } },
+      { name: "Dave Concepcion", pos: "SS", bats: "R", contact: 5, power: 3, bunting: 6, speed: 5, defense: 8, arm: 8,
+        splits: { vsLHP: { ab: 125, ba: .240, hr: 1 }, vsRHP: { ab: 376, ba: .245, hr: 3 } } },
+      { name: "Nick Esasky", pos: "3B", bats: "R", contact: 4, power: 7, bunting: 2, speed: 3, defense: 5, arm: 7,
+        splits: { vsLHP: { ab: 88, ba: .227, hr: 3 }, vsRHP: { ab: 236, ba: .182, hr: 7 } } },
+      { name: "Ron Oester", pos: "2B", bats: "S", contact: 5, power: 2, bunting: 5, speed: 4, defense: 7, arm: 5,
+        splits: { vsLHP: { ab: 128, ba: .258, hr: 1 }, vsRHP: { ab: 338, ba: .237, hr: 2 } } },
+      { name: "Dann Bilardello", pos: "C", bats: "R", contact: 4, power: 3, bunting: 3, speed: 2, defense: 7, arm: 7,
+        splits: { vsLHP: { ab: 64, ba: .234, hr: 1 }, vsRHP: { ab: 155, ba: .194, hr: 1 } } },
+    ],
+    bench: [
+      { name: "Brad Gulden", pos: "C", bats: "L", contact: 4, power: 2, bunting: 3, speed: 2, defense: 6, arm: 6,
+        splits: estSplits(.221, 2, 98, 30, "L") },
+      { name: "Duane Walker", pos: "OF", bats: "L", contact: 5, power: 4, bunting: 3, speed: 4, defense: 5, arm: 5,
+        splits: estSplits(.239, 5, 134, 38, "L") },
+      { name: "Tom Lawless", pos: "2B/SS", bats: "R", contact: 4, power: 1, bunting: 6, speed: 6, defense: 6, arm: 5,
+        splits: estSplits(.218, 0, 112, 30, "R") },
+      { name: "Wayne Krenchicki", pos: "3B/1B", bats: "L", contact: 5, power: 3, bunting: 4, speed: 3, defense: 5, arm: 5,
+        splits: estSplits(.251, 4, 158, 42, "L") },
+      { name: "Eric Davis", pos: "OF", bats: "R", contact: 4, power: 4, bunting: 4, speed: 8, defense: 5, arm: 6,
+        splits: estSplits(.205, 2, 44, 12, "R") },
+    ],
+    rotation: [
+      { name: "Mario Soto", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 8, offSpeed: 9, control: 7, contact: 3, power: 1, bunting: 4, speed: 2, pitches: ["Fastball", "Changeup", "Breaking Ball"] },
+      { name: "Jeff Russell", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 3, power: 1, bunting: 4, speed: 2 },
+      { name: "Joe Price", pos: "SP", throws: "L", bats: "L", stamina: 6, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 2 },
+      { name: "Jay Tibbs", pos: "SP", throws: "R", bats: "R", stamina: 6, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+    ],
+    bullpen: [
+      { name: "John Franco", pos: "CL", throws: "L", bats: "L", stamina: 4, pitchSpeed: 7, offSpeed: 8, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Ted Power", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 7, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Tom Hume", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Bob Owchinko", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+    ],
+  },
+
   dodgers: {
     city: "Los Angeles",
     name: "Dodgers",
@@ -454,6 +504,10 @@ export const PLAYER_ERRORS = {
   "Steve Sax": 22, "Ken Landreaux": 5, "Pedro Guerrero": 27, "Mike Marshall": 7,
   "Mike Scioscia": 13, "Greg Brock": 9, "Franklin Stubbs": 4, "Dave Anderson": 14,
   "Bill Russell": 10, "Candy Maldonado": 3, "Bob Bailor": 4, "Steve Yeager": 4, "R.J. Reynolds": 2,
+  // Reds
+  "Gary Redus": 12, "Pete Rose": 5, "Dave Parker": 9, "Cesar Cedeno": 6,
+  "Dave Concepcion": 18, "Nick Esasky": 17, "Ron Oester": 14, "Dann Bilardello": 7,
+  "Brad Gulden": 3, "Duane Walker": 3, "Tom Lawless": 5, "Wayne Krenchicki": 6, "Eric Davis": 2,
 };
 
 // Estimate splits for bench players based on overall stats + handedness
@@ -519,4 +573,5 @@ export const MANAGERS = {
   yankees: { name: "Yogi Berra", personality: 6 },
   orioles: { name: "Joe Altobelli", personality: 4 },
   dodgers: { name: "Tommy Lasorda", personality: 9 },
+  reds: { name: "Pete Rose", personality: 6 },
 };

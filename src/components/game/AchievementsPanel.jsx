@@ -15,9 +15,22 @@ const CATEGORY_INFO = {
   streak: { label: 'Streaks', color: 'bg-indigo-500/10 border-indigo-500/20', dot: 'bg-indigo-400' },
   community: { label: 'Community', color: 'bg-teal-500/10 border-teal-500/20', dot: 'bg-teal-400' },
   hidden: { label: 'Hidden', color: 'bg-slate-500/10 border-slate-500/20', dot: 'bg-slate-400' },
+  teamSpecific: { label: 'Team-Specific', color: 'bg-rose-500/10 border-rose-500/20', dot: 'bg-rose-400' },
 };
 
-const categoryOrder = ['first', 'hitting', 'pitching', 'defense', 'comeback', 'funny', '1984', 'rare', 'milestone', 'streak', 'community', 'hidden'];
+const categoryOrder = ['first', 'hitting', 'pitching', 'defense', 'comeback', 'funny', '1984', 'rare', 'milestone', 'streak', 'community', 'hidden', 'teamSpecific'];
+
+const TEAM_LABELS = {
+  reds: 'CIN',
+  cubs: 'CHC',
+  mets: 'NYM',
+  dodgers: 'LAD',
+  padres: 'SD',
+  tigers: 'DET',
+  redsox: 'BOS',
+  yankees: 'NYY',
+  orioles: 'BAL',
+};
 
 export default function AchievementsPanel() {
   const unlocked = loadAchievements();
@@ -84,9 +97,16 @@ export default function AchievementsPanel() {
                       {ach.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className={`font-heading text-[10px] font-bold block truncate ${isDone ? 'text-foreground' : 'text-foreground/60'}`}>
-                        {ach.name}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`font-heading text-[10px] font-bold block truncate ${isDone ? 'text-foreground' : 'text-foreground/60'}`}>
+                          {ach.name}
+                        </span>
+                        {ach.team && TEAM_LABELS[ach.team] && (
+                          <span className="text-[7px] font-heading font-bold bg-rose-500/20 text-rose-400 rounded px-1 py-px uppercase tracking-wider shrink-0">
+                            {TEAM_LABELS[ach.team]}
+                          </span>
+                        )}
+                      </div>
                       <p className={`text-[8px] truncate ${isDone ? 'text-foreground/50' : 'text-foreground/40'}`}>
                         {ach.desc}
                       </p>

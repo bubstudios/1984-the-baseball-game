@@ -6,6 +6,7 @@ import { pickMetsLine } from '@/lib/metsBroadcastLines';
 import { pickYankeesLine } from '@/lib/yankeesBroadcastLines';
 import { pickRedSoxLine } from '@/lib/redSoxBroadcastLines';
 import { pickTigersLine } from '@/lib/tigersBroadcastLines';
+import { pickRedsLine } from '@/lib/redsBroadcastLines';
 
 // Player nicknames — researched from 1984 MLB lore
 const NICKNAMES = {
@@ -63,6 +64,17 @@ const NICKNAMES = {
   "Mike Easler": ["The Hit Man"],
   "Carmelo Martínez": ["The M&M Boys"],
   "Kevin McReynolds": ["The M&M Boys"],
+  "Pete Rose": ["Charlie Hustle"],
+  "Dave Parker": ["The Cobra"],
+  "Cesar Cedeno": ["The Hawk"],
+  "Mario Soto": ["Soto"],
+  "John Franco": ["El Presidente"],
+  "Dave Concepcion": ["Davey"],
+  "Gary Redus": ["Red Dog"],
+  "Eric Davis": ["Eric the Red"],
+  "Tony Perez": ["Big Dog"],
+  "Johnny Bench": ["Hands"],
+  "Joe Morgan": ["Little Joe"],
 };
 
 // 1984 Announcers & Stadium Flavor — expanded with real stadium atmosphere
@@ -322,6 +334,42 @@ export const STADIUM_FLAVOR = {
     ],
     stretchFlavor: null,
   },
+  cincinnatiReds: {
+    announcers: ["Joe Nuxhall", "Marty Brennaman"],
+    stadium: "Riverfront Stadium",
+    nicknames: ["Riverfront", "The Concrete Doughnut"],
+    flavor: [
+      "the artificial turf playing quick tonight at Riverfront",
+      "ground balls can really scoot through on this turf",
+      "Riverfront Stadium on the banks of the Ohio River",
+      "the symmetrical bowl here at Riverfront — baseball under the lights in Cincinnati",
+      "you can see the downtown skyline just beyond the outfield — Carew Tower standing tall",
+      "a few barges moving slowly down the Ohio beyond the outfield — classic Cincinnati scene",
+      "the Queen City enjoying a beautiful evening at the old concrete doughnut",
+      "this crowd knows its baseball — they've been watching it here since 1869",
+      "Riverfront's been good to the Reds since it opened in 1970",
+    ],
+    weatherFlavor: [
+      "the heat is radiating off the artificial turf — the ground temperature has to be pushing 120 degrees out there",
+      "a little river fog drifting in from the Ohio tonight — might make it tough to track the ball in the outfield",
+      "a humid summer evening along the river — the ball should carry better as the night warms up",
+    ],
+    cityFlavor: [
+      "nothing wrong with a bowl of Cincinnati chili at Skyline before the game — three-way, extra cheese",
+      "if you're taking I-75 or the Brent Spence Bridge after the final out, give yourself a few extra minutes",
+      "the chili parlors downtown should be busy tonight — Skyline, Gold Star, Camp Washington — take your pick",
+      "greetings from Cincinnati, the Queen City — baseball's first professional team, and this town's never forgotten it",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of the Big Red Machine — Bench, Morgan, Perez, Rose — my goodness, what a team that was",
+      "this place was absolutely rocking during the World Series years of '75 and '76",
+      "a lot of baseball history in this town — the Reds have been playing professional ball longer than most cities have even existed",
+      "Pete Rose is out at first base tonight, still managing from the field at age 43 — nobody out-hustles Charlie Hustle",
+      "that smooth play at short — Concepcion makes it look so easy, doesn't he?",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
 };
 
 // Team key to flavor key mapping (matches TEAMS keys from gameData.js)
@@ -334,6 +382,7 @@ export const TEAM_TO_FLAVOR = {
   orioles: "baltimoreOrioles",
   dodgers: "losAngelesDodgers",
   mets: "newYorkMets",
+  reds: "cincinnatiReds",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -563,6 +612,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isYankeesGame = homeTeamKey === 'yankees';
   const isRedSoxGame = homeTeamKey === 'redsox';
   const isTigersGame = homeTeamKey === 'tigers';
+  const isRedsGame = homeTeamKey === 'reds';
   // Steal acknowledgment — always mention a stolen base
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -586,7 +636,9 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                 ? pickRedSoxLine()
                 : isTigersGame && Math.random() < 0.65
                   ? pickTigersLine()
-                  : getCommentary(batter, pitcher, gameState, stadiumInfo);
+                  : isRedsGame && Math.random() < 0.70
+                    ? pickRedsLine()
+                    : getCommentary(batter, pitcher, gameState, stadiumInfo);
   }
 
   return (

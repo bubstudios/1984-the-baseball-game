@@ -101,6 +101,20 @@ export const BALLPARKS = {
     description: "Short down both lines (309') but quickly deepens. Fair for all hitters.",
     wallDesc: { LF: "the short left field porch at 309 feet", LCF: "the left-center gap", CF: "the center field wall at 405 feet", RCF: "the right-center alley", RF: "the short right field line at 309 feet" },
   },
+  "Riverfront Stadium": {
+    dimensions: {
+      LF: { distance: 330, wallHeight: 8 },
+      LCF: { distance: 375, wallHeight: 8 },
+      CF: { distance: 404, wallHeight: 8 },
+      RCF: { distance: 375, wallHeight: 8 },
+      RF: { distance: 330, wallHeight: 8 },
+    },
+    quirks: ["artificialTurf", "riverFog"],
+    hrFactors: { LH: 1.02, RH: 1.02 },
+    avgDistance: 363,
+    description: "Symmetrical cookie-cutter stadium on the banks of the Ohio River. Artificial turf makes ground balls shoot through the infield.",
+    wallDesc: { LF: "the left field fence at 330 feet", LCF: "the left-center alley", CF: "the center field wall at 404 feet", RCF: "the right-center gap", RF: "the right field line at 330 feet" },
+  },
   "Dodger Stadium": {
     dimensions: {
       LF: { distance: 330, wallHeight: 8 },

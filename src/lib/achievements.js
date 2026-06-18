@@ -131,6 +131,20 @@ export const ACHIEVEMENTS = [
   { id: 'just_one_more', name: 'Just One More', desc: 'Play 3 games in one session', icon: '🎮', category: 'community' },
   { id: 'marathon', name: 'Marathon Session', desc: 'Play 10 games in one session', icon: '🏃‍♂️', category: 'community' },
 
+  // ── TEAM-SPECIFIC: CINCINNATI REDS ──
+  { id: 'reds_first_game', name: 'First Professional', desc: 'Play your first game as the Reds', icon: '🔴', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_riverfront_win', name: 'Queen City Baseball', desc: 'Win a game at Riverfront Stadium', icon: '🏟️', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_25_home', name: 'Along the Ohio', desc: 'Play 25 Reds home games', icon: '🚢', category: 'teamSpecific', team: 'reds', threshold: 25 },
+  { id: 'reds_50_wins', name: 'Big Red Legacy', desc: 'Win 50 games as the Reds', icon: '🏆', category: 'teamSpecific', team: 'reds', threshold: 50 },
+  { id: 'reds_100_riverfront', name: 'Riverfront Regular', desc: 'Play 100 games at Riverfront Stadium', icon: '🏛️', category: 'teamSpecific', team: 'reds', threshold: 100 },
+  { id: 'reds_10run_win', name: 'Machine Memories', desc: 'Win by 10+ runs as the Reds', icon: '💥', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_5_subs', name: 'Bench Warmers', desc: 'Win using 5+ substitutes as the Reds', icon: '🪑', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_4_sb', name: 'Riverboat Gambler', desc: 'Steal 4 bases in a game as the Reds', icon: '🎰', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_5run_inning', name: 'Chili Night', desc: 'Score 5 runs in one inning as the Reds', icon: '🍲', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_machine', name: 'Big Red Machine', desc: 'Score 10+ runs and allow 2 or fewer as the Reds', icon: '⚙️', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_shutout', name: 'Cincinnati Strong', desc: 'Throw a complete game shutout as the Reds', icon: '🔒', category: 'teamSpecific', team: 'reds' },
+  { id: 'reds_sweep', name: 'Queen City Sweep', desc: 'Win 3+ consecutive games as the Reds', icon: '🧹', category: 'teamSpecific', team: 'reds', threshold: 3 },
+
   // ── HIDDEN / TIME-BASED ──
   { id: 'night_game', name: 'Night Game', desc: 'Play after 10 PM local time', icon: '🦉', category: 'hidden' },
   { id: 'early_bird', name: 'Early Bird', desc: 'Play before 6 AM', icon: '🐦', category: 'hidden' },
