@@ -881,6 +881,10 @@ function resolveSwing(state, swingType, pitch) {
       const ballLabel = ballLabels[Math.floor(Math.random() * ballLabels.length)];
       state.log.push({ type: 'ball', text: ballLabel });
       state.lastPlay = { type: 'ball', text: ballLabel };
+      if (state.hitAndRun && !state.gameOver) {
+        state.hitAndRun = false;
+        handleHitAndRunMiss(state);
+      }
       return;
     }
 
@@ -899,13 +903,15 @@ function resolveSwing(state, swingType, pitch) {
     const strikeLabel = strikeLabels[Math.floor(Math.random() * strikeLabels.length)];
     state.log.push({ type: 'strike', text: strikeLabel });
     state.lastPlay = { type: 'strike', text: strikeLabel };
+    if (state.hitAndRun && !state.gameOver) {
+      state.hitAndRun = false;
+      handleHitAndRunMiss(state);
+    }
     return;
   }
 
-  // Made contact — hit-and-run: batter contact matters, runner speed for advancement
+  // Made contact — hit-and-run: runner was going, batter swinging
   if (state.hitAndRun) {
-    // On hit-and-run contact, runners automatically advance one extra base
-    batter.gameStats.ab++;
     state.hitAndRun = false;
     handleHitAndRunContact(state, batter, pitcher, adjBatter);
     return;
@@ -1468,47 +1474,174 @@ function handleWalk(state, batter) {
 // --- HIT AND RUN RESOLUTION ---
 
 function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
-  const contactSkill = adjBatter.contact / 10;
+  const contactRating = adjBatter.contact / 10;
   const powerRating = adjBatter.power / 10;
+  const defenders = getDefensivePlayers(state);
+  const wx = applyWeatherEffects(state.weather, {});
+  const hrMod = wx.hrMod || 1;
+  const doubleMod = wx.doubleMod || 1;
+  const posNames = { '1B': 'first', '2B': 'second', '3B': 'third', SS: 'shortstop', SP: 'the pitcher', C: 'the catcher', LF: 'left', CF: 'center', RF: 'right' };
 
-  // On hit-and-run contact: higher ground ball tendency, runners advance
-  // Determine hit quality based on contact — NO speed-based extra advancement
-  const hitRoll = Math.random();
-  const hitChance = 0.25 + contactSkill * 0.30;
+  // Foul ball — runner goes back, at-bat continues, H&R stays on
+  if (Math.random() < 0.18) {
+    if (state.strikes < 2) state.strikes++;
+    state.hitAndRun = true; // restore for next pitch
+    state.log.push({ type: 'foul', text: `${batter.name} fouls it off on the hit-and-run — runner holds` });
+    state.lastPlay = { type: 'foul', text: `Foul ball — runner goes back` };
+    return;
+  }
 
-  if (hitRoll < hitChance) {
-    // Hit on hit-and-run
+  batter.gameStats.ab++;
+
+  // Hit vs out
+  const effPitcher = getEffectivePitcher(state) || pitcher;
+  let hitChance = 0.18 + contactRating * 0.28;
+  hitChance -= (pitcher.offSpeed / 10) * 0.07 + ((effPitcher.effectivePitchSpeed || effPitcher.pitchSpeed) / 10) * 0.05;
+  hitChance = Math.max(0.08, Math.min(hitChance, 0.68));
+
+  if (Math.random() < hitChance) {
+    // ── HIT — runners get extra base from head start ──
     batter.gameStats.hits++;
     pitcher.gameStats.h++;
-
-    if (hitRoll < powerRating * 0.06) {
-      advanceRunners(state, 2, batter, false);
-      const msg = `${batter.name} rips a double on the hit-and-run!`;
+    const hitRoll = Math.random();
+    if (hitRoll < powerRating * 0.065 * hrMod) {
+      batter.gameStats.hr++;
+      advanceRunners(state, 4, batter);
+      const msg = `💥 ${batter.name} crushes one on the hit-and-run — HOME RUN!`;
+      state.log.push({ type: 'homerun', text: msg });
+      state.lastPlay = { type: 'homerun', text: msg };
+    } else if (hitRoll < powerRating * 0.32 * doubleMod) {
+      advanceRunners(state, 2, batter, true);
+      const extra = advanceHitAndRunRunners(state, batter);
+      const msg = extra ? `${batter.name} rips a double on the hit-and-run! ${extra}` : `${batter.name} doubles on the hit-and-run!`;
       state.log.push({ type: 'double', text: msg });
       state.lastPlay = { type: 'double', text: msg };
     } else {
-      advanceRunners(state, 1, batter, false);
-      // Hit-and-run: existing baserunners get one extra base (they were going on the pitch)
-      // The batter stays at 1st — they just hit a single
-      const runnerNames = advanceHitAndRunRunners(state, batter);
-      const msg = runnerNames
-        ? `${batter.name} slaps a single — hit-and-run! ${runnerNames}`
-        : `${batter.name} slaps a single — hit-and-run works!`;
+      advanceRunners(state, 1, batter, true);
+      const extra = advanceHitAndRunRunners(state, batter);
+      const msg = extra ? `${batter.name} slaps a single — hit-and-run! ${extra}` : `${batter.name} singles on the hit-and-run!`;
       state.log.push({ type: 'single', text: msg });
       state.lastPlay = { type: 'single', text: msg };
     }
   } else {
-    // Ground out on hit-and-run
-    batter.gameStats.ab++;
-    const outTypes = [
-      `${batter.name} grounds out to second`,
-      `${batter.name} grounds out to short`,
-      `${batter.name} taps back to the pitcher`,
-    ];
-    const msg = outTypes[Math.floor(Math.random() * outTypes.length)];
-    state.log.push({ type: 'groundout', text: msg });
-    state.lastPlay = { type: 'groundout', text: msg };
-    recordOut(state);
+    // ── OUT — type determines runner fate ──
+    const outRoll = Math.random();
+
+    if (outRoll < 0.45) {
+      // GROUND BALL — runners had head start, no DP possible, they advance
+      const gPositions = ['SS', '2B', '3B', 'SP', '1B'];
+      const gPos = gPositions[Math.floor(Math.random() * gPositions.length)];
+      let scoredNames = [];
+      for (let i = 2; i >= 0; i--) {
+        const runner = state.bases[i];
+        if (!runner) continue;
+        if (i + 1 >= 3) {
+          runner.gameStats.runs++;
+          scoreRun(state);
+          batter.gameStats.rbi++;
+          pitcher.gameStats.r++;
+          pitcher.gameStats.er++;
+          scoredNames.push(runner.name.split(' ').pop());
+          state.bases[i] = null;
+        } else if (!state.bases[i + 1]) {
+          state.bases[i + 1] = runner;
+          state.bases[i] = null;
+        }
+      }
+      const scoreText = scoredNames.length > 0 ? ` — ${scoredNames.join(', ')} scores` : '';
+      const msg = `${batter.name} grounds out to ${posNames[gPos]}${scoreText} — runners advance on the hit-and-run`;
+      state.log.push({ type: 'groundout', text: msg });
+      state.lastPlay = { type: 'groundout', text: msg };
+      recordOut(state);
+
+    } else if (outRoll < 0.68) {
+      // FLY OUT to outfield — runner was going, needs to get back
+      const fPositions = ['LF', 'CF', 'RF'];
+      const fPos = fPositions[Math.floor(Math.random() * fPositions.length)];
+      const depthRoll = Math.random();
+      const isDeep = depthRoll < 0.35;
+      const isShallow = depthRoll > 0.65;
+      const depthLabel = isDeep ? 'deep ' : isShallow ? 'shallow ' : '';
+      const msg = `${batter.name} flies out to ${depthLabel}${posNames[fPos]}`;
+      state.log.push({ type: 'flyout', text: msg });
+      state.lastPlay = { type: 'flyout', text: msg };
+      recordOut(state);
+      if (!state.gameOver) {
+        for (let i = 0; i < 3; i++) {
+          const runner = state.bases[i];
+          if (!runner) continue;
+          if (isDeep) {
+            // Deep fly: runner gets back safely, might tag from 3rd
+            if (i === 2 && state.outs < 3) {
+              const tagChance = 0.15 + (runner.speed / 10) * 0.40;
+              if (Math.random() < tagChance) {
+                runner.gameStats.runs++;
+                scoreRun(state);
+                batter.gameStats.rbi++;
+                getCurrentPitcher(state).gameStats.r++;
+                getCurrentPitcher(state).gameStats.er++;
+                state.bases[i] = null;
+                batter.gameStats.ab--;
+                state.log.push({ type: 'sacfly', text: `${runner.name} tags and scores on the deep fly!` });
+              }
+            }
+          } else if (isShallow) {
+            // Shallow fly — runner might get doubled off based on fielder position
+            let canThrow = false, throwBase = '';
+            if (fPos === 'RF' && i <= 1) { canThrow = true; throwBase = i === 0 ? 'first' : 'second'; }
+            else if (fPos === 'CF' && i === 1) { canThrow = true; throwBase = 'second'; }
+            else if (fPos === 'LF' && i >= 1) { canThrow = true; throwBase = i === 1 ? 'second' : 'third'; }
+            if (canThrow && state.outs < 3) {
+              const ofArm = (defenders[fPos]?.arm || 5) / 10;
+              const catchChance = 0.18 + ofArm * 0.25 - (runner.speed / 10) * 0.12;
+              if (Math.random() < Math.max(0.05, Math.min(catchChance, 0.50))) {
+                state.bases[i] = null;
+                state.log.push({ type: 'info', text: `❌ ${runner.name} can't get back to ${throwBase} — doubled off on the hit-and-run!` });
+                recordOut(state);
+                break;
+              }
+            }
+          }
+          // Medium depth: runner returns safely
+        }
+      }
+
+    } else if (outRoll < 0.88) {
+      // LINE OUT to infielder — DANGEROUS, runner very likely doubled off
+      const loPositions = ['3B', 'SS', '1B', '2B'];
+      const loPos = loPositions[Math.floor(Math.random() * loPositions.length)];
+      const fielder = defenders[loPos];
+      const fielderName = fielder?.name || posNames[loPos];
+      const msg = `${batter.name} lines out to ${fielderName}!`;
+      state.log.push({ type: 'lineout', text: msg });
+      state.lastPlay = { type: 'lineout', text: msg };
+      recordOut(state);
+      if (!state.gameOver) {
+        for (let i = 0; i < 3; i++) {
+          const runner = state.bases[i];
+          if (!runner) continue;
+          const doubleOffChance = 0.50 + ((fielder?.arm || 5) / 10) * 0.15 - (runner.speed / 10) * 0.10;
+          if (state.outs < 3 && Math.random() < Math.max(0.25, Math.min(doubleOffChance, 0.75))) {
+            const baseName = ['first', 'second', 'third'][i];
+            state.bases[i] = null;
+            state.log.push({ type: 'info', text: `❌ ${runner.name} doubled off ${baseName} — caught on the hit-and-run!` });
+            recordOut(state);
+            break;
+          }
+        }
+      }
+
+    } else {
+      // POP OUT — ball goes high enough, runner has time to get back
+      const poPositions = ['C', '2B', '3B'];
+      const poPos = poPositions[Math.floor(Math.random() * poPositions.length)];
+      const fielder = defenders[poPos];
+      const fielderName = fielder?.name || posNames[poPos];
+      const msg = `${batter.name} pops out to ${fielderName} — runners hold on the hit-and-run`;
+      state.log.push({ type: 'popout', text: msg });
+      state.lastPlay = { type: 'popout', text: msg };
+      recordOut(state);
+    }
   }
 
   state.balls = 0;
@@ -1592,6 +1725,33 @@ function handleHitAndRunCaught(state) {
   }
   // Reset hit-and-run after resolution — prevents cascading attempts
   state.hitAndRun = false;
+}
+
+// Runner was going on hit-and-run but batter missed — treat as steal attempt
+function handleHitAndRunMiss(state) {
+  for (let i = 0; i < 2; i++) {
+    const runner = state.bases[i];
+    if (!runner || state.bases[i + 1]) continue;
+    const speedFactor = runner.speed / 10;
+    const defenders = getDefensivePlayers(state);
+    const catcherArm = getCatcherArm(defenders);
+    const successChance = 0.20 + speedFactor * 0.55 - (catcherArm / 10) * 0.12;
+    const baseName = i === 0 ? 'second' : 'third';
+    if (Math.random() < Math.max(0.10, Math.min(successChance, 0.75))) {
+      runner.gameStats.sb = (runner.gameStats.sb || 0) + 1;
+      state.bases[i + 1] = runner;
+      state.bases[i] = null;
+      const stealLine = pickLine(STEAL_LINES.success).replace(/second|third|home/, baseName);
+      state.log.push({ type: 'info', text: `${runner.name} ${stealLine} on the hit-and-run` });
+    } else {
+      runner.gameStats.cs = (runner.gameStats.cs || 0) + 1;
+      state.bases[i] = null;
+      const caughtLine = pickLine(STEAL_LINES.caught).replace(/second|third|home/, baseName);
+      state.log.push({ type: 'info', text: `❌ ${runner.name} ${caughtLine} on the hit-and-run!` });
+      recordOut(state);
+    }
+    break;
+  }
 }
 
 // --- PROCESS AT BAT ---
