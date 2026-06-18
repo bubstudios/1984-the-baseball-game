@@ -98,7 +98,7 @@ export const STADIUM_FLAVOR = {
       "the Bleacher Bums are in peak form today — if an opposing player catches a home run ball out there, you know it's coming right back onto the field",
       "this crowd stays loud whether it's April or September",
     ],
-    stretchFlavor: "Harry Caray grabs the mic — \"Take me out to the ballgame…\"",
+    stretchFlavor: "Harry Caray grabs the mic — \"Take me out to the ballgame… Let's get some runs!\"",
   },
   bostonRedSox: {
     announcers: ["Ned Martin", "Bob Montgomery", "Joe Castiglione"],

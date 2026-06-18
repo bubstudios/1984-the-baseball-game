@@ -28,6 +28,7 @@ import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit,
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 import { pickAd } from '@/lib/broadcastAds';
 import AdRead from '@/components/game/AdRead';
+import FlyWFlag from '@/components/game/FlyWFlag';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -599,6 +600,10 @@ export default function Home() {
                 {/* Game Over state */}
                 {gameState.gameOver && (
                   <div className="bg-card border border-primary/30 rounded-xl p-4 text-center space-y-3">
+                    {/* Fly the W — Cubs home win */}
+                    {homeTeam === 'cubs' && gameState.score.home > gameState.score.away && (
+                      <FlyWFlag />
+                    )}
                     <Trophy className="w-8 h-8 text-primary mx-auto" />
                     <div>
                       <h2 className="font-heading text-base font-bold text-foreground">Game Over!</h2>

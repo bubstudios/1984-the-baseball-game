@@ -460,7 +460,7 @@ function endHalfInning(state) {
       const homeFlavor = TEAMS[state.homeTeam];
       const teamKey = state.homeTeam;
       const stretchLines = {
-        cubs: `🎶 Harry Caray grabs the mic — "Take me out to the ballgame…" 🎶`,
+        cubs: `🎶 Harry Caray grabs the mic — "Take me out to the ballgame… Let's get some runs!" 🎶`,
         redsox: `🎶 The crowd belts out 'Sweet Caroline' in the middle of the 8th — but first, the 7th inning stretch at Fenway! 🎶`,
       };
       const stretchSong = stretchLines[teamKey] || `🎶 7th Inning Stretch at ${homeFlavor?.stadium || 'the ballpark'}! 🎶`;
