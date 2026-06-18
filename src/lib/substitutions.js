@@ -126,16 +126,16 @@ export function changePitcher(state, newPitcher) {
   const bpIdx = bullpen.findIndex(p => p.name === newPitcher.name);
   if (bpIdx >= 0) bullpen.splice(bpIdx, 1);
 
-  // Swap the new pitcher into the fielding lineup
+  // Swap the new pitcher into the fielding lineup (only if DH is not in effect)
   const lineup = isHomePitching ? newState.homeLineup : newState.awayLineup;
-  let slotIdx = lineup.findIndex(p => p.name === oldPitcher.name);
-  if (slotIdx < 0 && oldPitcher.order) slotIdx = lineup.findIndex(p => p.order === oldPitcher.order);
-  const orderNum = slotIdx >= 0 ? lineup[slotIdx].order : (oldPitcher.order || lineup.length + 1);
-  const lineupEntry = { ...newPitcher, order: orderNum, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-  if (slotIdx >= 0) lineup[slotIdx] = lineupEntry;
-  else lineup.push(lineupEntry);
-  if (!lineup.some(p => p.name === newPitcher.name)) {
-    lineup.push({ ...newPitcher, order: Math.max(...lineup.map(p => p.order || 0), 0) + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+  const usesDH = lineup.some(p => (p.assignedPos || p.pos) === 'DH');
+  if (!usesDH) {
+    let slotIdx = lineup.findIndex(p => p.name === oldPitcher.name);
+    if (slotIdx < 0 && oldPitcher.order) slotIdx = lineup.findIndex(p => p.order === oldPitcher.order);
+    const orderNum = slotIdx >= 0 ? lineup[slotIdx].order : (oldPitcher.order || lineup.length + 1);
+    const lineupEntry = { ...newPitcher, order: orderNum, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+    if (slotIdx >= 0) lineup[slotIdx] = lineupEntry;
+    else lineup.push(lineupEntry);
   }
 
   // Save old pitcher to player history so box score retains their stats

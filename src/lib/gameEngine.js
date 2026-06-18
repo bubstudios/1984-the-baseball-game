@@ -774,11 +774,13 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     const hk = cpuPitchingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
     if (!newState[hk].find(p => p.name === oldPitcher.name)) newState[hk].push({ ...oldPitcher });
     const fl = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
-    let si = fl.findIndex(p => p.name === oldPitcher.name);
-    if (si < 0 && oldPitcher.order) si = fl.findIndex(p => p.order === oldPitcher.order);
-    const en = { ...newPitcher, order: si >= 0 ? fl[si].order : (oldPitcher.order || fl.length + 1), assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-    if (si >= 0) fl[si] = en; else fl.push(en);
-    if (!fl.some(p => p.name === newPitcher.name)) fl.push({ ...newPitcher, order: Math.max(...fl.map(p => p.order || 0), 0) + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+    const cpuDH = fl.some(p => (p.assignedPos || p.pos) === 'DH');
+    if (!cpuDH) {
+      let si = fl.findIndex(p => p.name === oldPitcher.name);
+      if (si < 0 && oldPitcher.order) si = fl.findIndex(p => p.order === oldPitcher.order);
+      const en = { ...newPitcher, order: si >= 0 ? fl[si].order : (oldPitcher.order || fl.length + 1), assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      if (si >= 0) fl[si] = en;
+    }
     const reason = severeFatigue ? 'completely gassed' : fatiguePull ? `${ip} innings — arm is tiring` : walksPull ? 'lost command' : blowupPull ? 'rough outing' : 'high-leverage situation';
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
   }
