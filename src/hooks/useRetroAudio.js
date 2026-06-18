@@ -532,11 +532,11 @@ export default function useRetroAudio(gameState, enabled) {
           if (entry.text && entry.text.includes('🎶')) {
             // 7th inning stretch — play after a short delay for the text announcement
             setTimeout(playStretchMusic, 1500);
-          } else if (entry.text && entry.text.includes('Top of inning 1')) {
-            // Star Spangled Banner at game start
+          } else if (entry.text && entry.text.includes('Top of inning 1 —')) {
+            // Star Spangled Banner at game start — only "Top of inning 1 —"
             setTimeout(playAnthem, 600);
-          } else if (entry.text && /^(Top|Bottom) of inning/.test(entry.text)) {
-            // Half-inning change jingle
+          } else if (entry.text && /(Top|Bottom) of inning \d/.test(entry.text) && !entry.text.includes('Top of inning 1 —')) {
+            // Half-inning change jingle — match text anywhere, not just start
             setTimeout(playHalfInningBreak, 600);
           }
         }

@@ -1276,8 +1276,8 @@ function resolveSwing(state, swingType, pitch) {
 
       // Regular groundout: advance runner on 1st to 2nd (batter out, force removed)
       // Also handle bases loaded: runner on 3rd scores when force is at 1st/2nd (not home)
-      // NOTE: Only for actual groundouts, not lineouts (caught in the air = no force advance)
-      if (hasForceAt2nd && out.type === 'groundout') {
+      // NOTE: Only for ground balls, not lineouts (caught in the air = no force advance)
+      if (hasForceAt2nd && isGrounder) {
         const r1 = state.bases[0];
         const runner3rd = state.bases[2];
         const r2 = state.bases[1];
@@ -1307,7 +1307,7 @@ function resolveSwing(state, swingType, pitch) {
       }
 
       // Runner on 2nd, less than 2 outs, groundout to right side → advance to 3rd
-      if (!hasForceAt2nd && state.bases[1] && !state.bases[2] && state.outs < 2 && out.type === 'groundout') {
+      if (!hasForceAt2nd && state.bases[1] && !state.bases[2] && state.outs < 2 && isGrounder) {
         const runner = state.bases[1];
         const isRightSide = ['1B', '2B'].includes(out.pos);
         const speedFactor = runner.speed / 10;
@@ -2045,14 +2045,17 @@ export function changePitcher(state, newPitcher) {
       assignedPos: 'SP',
       gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
     };
-  } else {
-    // Pitcher was pinch-hit for — add new pitcher to the lineup
-    lineup.push({
-      ...newPitcher,
-      order: lineup.length + 1,
-      assignedPos: 'SP',
-      gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
-    });
+  } else if (oldPitcher.order) {
+    // Pitcher was pinch-hit for — find their original slot by order number (don't create a new slot)
+    const slotByOrder = lineup.findIndex(p => p.order === oldPitcher.order);
+    if (slotByOrder >= 0) {
+      lineup[slotByOrder] = {
+        ...newPitcher,
+        order: oldPitcher.order,
+        assignedPos: 'SP',
+        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+      };
+    }
   }
 
   // Save old pitcher to player history so box score retains their stats
@@ -2194,8 +2197,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     if (bpIdx >= 0) cpuBullpen.splice(bpIdx, 1);
     const historyKey = cpuPitchingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
     if (!newState[historyKey].find(p => p.name === oldP.name)) newState[historyKey].push({ ...oldP });
-    // Add new pitcher to lineup
-    cpuLineupField.push({ ...newPitcher, order: cpuLineupField.length + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+    // Replace the pinch hitter (or old pitcher's slot) instead of pushing a new slot
+    const slotByOrder = cpuLineupField.findIndex(p => p.order === oldP.order);
+    if (slotByOrder >= 0) {
+      cpuLineupField[slotByOrder] = { ...newPitcher, order: oldP.order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+    }
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
     return newState;
   }

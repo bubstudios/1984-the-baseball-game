@@ -147,8 +147,8 @@ export default function Home() {
     // Trigger ads on half-inning transition or pitching change
     const currentHalf = `${gameState.halfInning}-${gameState.inning}`;
     if (prevHalfInning.current && prevHalfInning.current !== currentHalf && !gameState.gameOver) {
-      // New half-inning started — ad break
-      setShowAd(pickAd(homeTeam));
+      // New half-inning started — ad break (only if no ad is currently showing)
+      setShowAd(prev => prev ? prev : pickAd(homeTeam));
     } else if (gameState.log.length > prevLogLength.current) {
       // Check newest log entries for pitching changes
       const newEntries = gameState.log.slice(prevLogLength.current);
@@ -156,7 +156,7 @@ export default function Home() {
         l.type === 'info' && l.text && l.text.includes('replaces') && l.text.includes('on the mound')
       );
       if (hasPitchingChange && !gameState.gameOver) {
-        setShowAd(pickAd(homeTeam));
+        setShowAd(prev => prev ? prev : pickAd(homeTeam));
       }
     }
     prevLogLength.current = gameState.log.length;
@@ -578,7 +578,7 @@ export default function Home() {
 
                 {/* Ad read — appears between innings / during pitching changes */}
                 {showAd && (
-                  <AdRead ad={showAd} onDismiss={() => setShowAd(null)} autoDismissMs={6000} />
+                  <AdRead ad={showAd} onDismiss={() => setShowAd(null)} autoDismissMs={10000} />
                 )}
 
                 {/* Commentary */}
