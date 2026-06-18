@@ -43,7 +43,9 @@ export default function ArgumentsBanner({ result, onDismiss }) {
         <div className="bg-card/95 border border-primary/20 rounded-xl px-4 py-2 shadow-lg flex items-center gap-2 max-w-xs">
           <Megaphone className="w-4 h-4 text-primary/70 shrink-0" />
           <span className="text-sm font-heading text-primary/90 italic">
-            {result.whoArgues === 'manager' ? (
+            {result.isHBP ? (
+              <>{result.callText || result.callType}</>
+            ) : result.whoArgues === 'manager' ? (
               <>{result.callType}</>
             ) : result.whoArgues === 'dugout' ? (
               <>{result.callType}</>

@@ -231,6 +231,43 @@ export function resolveArgument(severityInfo, managerPersonality, umpireType, in
   let escaLevel = 0;
   const r = Math.random();
 
+  // ── HBP: batter is mad at the pitcher, not the umpire ──
+  const isHBP = severityInfo.callType?.includes("hit by the pitch") ||
+                severityInfo.callType?.includes("leaned into it") ||
+                severityInfo.callType?.includes("that was intentional") ||
+                severityInfo.callType?.includes("you hit me");
+
+  if (isHBP) {
+    // Batter vs pitcher tension — no umpire argument, no ejection from this
+    const hbpReactions = [
+      "batter glares at the pitcher",
+      "batter says something to the mound",
+      "batter stares down at the pitcher on his way to first",
+      "batter and catcher exchange words",
+      "batter takes his time getting to first — not happy",
+    ];
+    const reaction = hbpReactions[Math.floor(Math.random() * hbpReactions.length)];
+    // Manager may still come out to argue it was intentional (Los Angeles style)
+    if (r < 0.20 + managerFire * 0.15) {
+      return {
+        whoArgues: "manager", escaLevel: 1, ejected: false,
+        manager, umpireType,
+        callType: severityInfo.callType,
+        callText: reaction,
+        crowdExcitement: 10,
+        isChirp: false, isHBP: true,
+      };
+    }
+    return {
+      whoArgues: "batter", escaLevel: 0, ejected: false,
+      manager, umpireType,
+      callType: severityInfo.callType,
+      callText: reaction,
+      crowdExcitement: 5,
+      isChirp: true, isHBP: true,  // treat like a chirp (quick flash, no escalation)
+    };
+  }
+
   // Chirp: just a shout from the dugout, no escalation
   if (severityInfo.severity === "chirp") {
     if (r < 0.25 + managerFire * 0.3) whoArgues = "manager";

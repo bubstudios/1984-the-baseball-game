@@ -16,7 +16,9 @@ import BoxScore from '@/components/game/BoxScore';
 import SubstitutionsPanel from '@/components/game/SubstitutionsPanel';
 import Fireworks from '@/components/game/Fireworks';
 import ArgumentsBanner from '@/components/game/ArgumentsBanner';
+import BallparkEventBanner from '@/components/game/BallparkEventBanner';
 import { getArgumentSeverity, resolveArgument, getEjectionCommentary, rollUmpire, maybeDugoutChirp } from '@/lib/umpireArguments';
+import { rollBallparkEvent, resetBallparkEvents } from '@/lib/ballparkEvents';
 import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
 import RetroLoading from '@/components/game/RetroLoading';
@@ -48,6 +50,7 @@ export default function Home() {
   const [argumentResult, setArgumentResult] = useState(null);
   const [gameUmpire, setGameUmpire] = useState(null);
   const [ejectionCount, setEjectionCount] = useState(0);
+  const [ballparkEvent, setBallparkEvent] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
 
@@ -75,6 +78,8 @@ export default function Home() {
     setGameUmpire(rollUmpire());
     setEjectionCount(0);
     setArgumentResult(null);
+    setBallparkEvent(null);
+    resetBallparkEvents();
     setGameStadium(lineupPhase?.parkTeam ? TEAMS[lineupPhase.parkTeam]?.stadium : null);
     setGameWeather(weather || null);
     const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather);
@@ -160,6 +165,12 @@ export default function Home() {
   // Argument check after a play resolves
   const checkForArgument = useCallback((state) => {
     if (!state || state.gameOver) return state;
+
+    // Check for random ballpark event (one per game)
+    const bpEvent = rollBallparkEvent(state);
+    if (bpEvent && !ballparkEvent) {
+      setBallparkEvent(bpEvent);
+    }
 
     // First: check for a real play-based argument
     const severity = state.lastPlay ? getArgumentSeverity(state.lastPlay, state) : null;
@@ -663,6 +674,14 @@ export default function Home() {
         <ArgumentsBanner
           result={argumentResult}
           onDismiss={() => setArgumentResult(null)}
+        />
+      )}
+
+      {/* Ballpark Event Banner */}
+      {ballparkEvent && (
+        <BallparkEventBanner
+          event={ballparkEvent}
+          onDismiss={() => setBallparkEvent(null)}
         />
       )}
 
