@@ -80,8 +80,8 @@ export const UMPIRES = {
     nick: "The Rookie",
     experience: 1,
     zone: { type: "neutral", widthMod: -2, lowMod: -2, highMod: -1, outsideMod: -2 },
-    consistency: 65,
-    safeOutAccuracy: 74,
+    consistency: 80,
+    safeOutAccuracy: 85,
     temperament: { type: "standard", leash: 0.25, quickEject: false, warningChance: 0.40 },
     traits: ["rookieNerves"],
     pitcherFriendly: false,
@@ -180,8 +180,8 @@ export const UMPIRES = {
     nick: "The Coin Flip",
     experience: 8,
     zone: { type: "erratic", widthMod: 0, lowMod: 0, highMod: 0, outsideMod: 0 },
-    consistency: 40,
-    safeOutAccuracy: 72,
+    consistency: 55,
+    safeOutAccuracy: 80,
     temperament: { type: "shortFuse", leash: 0.35, quickEject: true, warningChance: 0.20 },
     traits: ["rabbitEars", "homeCrowdSensitive"],
     pitcherFriendly: false,
@@ -278,8 +278,8 @@ export const UMPIRES = {
     nick: "The Enigma",
     experience: 7,
     zone: { type: "random", widthMod: 0, lowMod: 0, highMod: 0, outsideMod: 0 },
-    consistency: 80,
-    safeOutAccuracy: 82,
+    consistency: 85,
+    safeOutAccuracy: 87,
     temperament: { type: "standard", leash: 0.25, quickEject: false, warningChance: 0.40 },
     traits: [],
     pitcherFriendly: false,
@@ -315,7 +315,7 @@ export function getUmpireZoneEffect(umpire) {
 
   // Erratic (Muldoon): random per pitch variation
   if (zone.type === "erratic") {
-    effect += (Math.random() - 0.5) * 30; // -15 to +15 random swing
+    effect += (Math.random() - 0.5) * 16; // -8 to +8 random swing
   }
 
   // Random zone (Farnsworth): random overall profile
@@ -334,7 +334,7 @@ export function getUmpireZoneEffect(umpire) {
   // Consistency: how predictable the zone is
   // Lower consistency = more variance around the effect
   if (umpire.consistency < 95) {
-    const variance = (100 - umpire.consistency) * 0.15;
+    const variance = (100 - umpire.consistency) * 0.10;
     effect += (Math.random() - 0.5) * variance * 2;
   }
 
