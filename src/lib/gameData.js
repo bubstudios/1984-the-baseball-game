@@ -508,3 +508,15 @@ export const SWING_TYPES = [
 ];
 
 export const TEAM_IDS = Object.keys(TEAMS);
+
+// ── 1984 Managers (argument personality: 1=calm, 5=fiery, 10=explosive) ──
+export const MANAGERS = {
+  tigers: { name: "Sparky Anderson", personality: 3 },
+  padres: { name: "Dick Williams", personality: 7 },
+  cubs: { name: "Jim Frey", personality: 5 },
+  mets: { name: "Davey Johnson", personality: 4 },
+  redsox: { name: "Ralph Houk", personality: 5 },
+  yankees: { name: "Yogi Berra", personality: 6 },
+  orioles: { name: "Joe Altobelli", personality: 4 },
+  dodgers: { name: "Tommy Lasorda", personality: 9 },
+};

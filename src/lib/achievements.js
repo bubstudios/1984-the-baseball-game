@@ -135,6 +135,16 @@ export const ACHIEVEMENTS = [
   { id: 'early_bird', name: 'Early Bird', desc: 'Play before 6 AM', icon: '🐦', category: 'hidden' },
   { id: 'rain_delay_pause', name: 'Rain Delay', desc: 'Stay paused for 15 minutes', icon: '🌧️', category: 'hidden' },
   { id: 'couldnt_put_down', name: "Couldn't Put It Down", desc: 'Play 5 hours without closing', icon: '📖', category: 'hidden' },
+
+  // ── ARGUMENTS & EJECTIONS ──
+  { id: 'first_argument', name: 'Have a Word', desc: 'First manager argument', icon: '🗣️', category: 'ejection' },
+  { id: 'youre_gone', name: "You're Gone!", desc: 'First manager ejection', icon: '👋', category: 'ejection' },
+  { id: 'frequent_flyer', name: 'Frequent Flyer', desc: '10 manager ejections', icon: '✈️', category: 'ejection', threshold: 10 },
+  { id: 'billy_martin', name: 'Billy Martin Award', desc: '25 manager ejections', icon: '😤', category: 'ejection', threshold: 25 },
+  { id: 'earl_weaver', name: 'Earl Weaver Special', desc: 'Get ejected and win anyway', icon: '😈', category: 'ejection' },
+  { id: 'dirt_kicker', name: 'Dirt Kicker', desc: 'Kick dirt on home plate', icon: '🦶', category: 'ejection' },
+  { id: 'base_thief', name: 'Base Thief', desc: 'Manager removes first base in protest', icon: '🏟️', category: 'ejection' },
+  { id: 'bench_tossed', name: 'Didn\'t Even Leave the Dugout', desc: 'Manager ejected from the bench', icon: '🪑', category: 'ejection' },
 ];
 
 // ── Stats storage ──

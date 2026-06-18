@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { TEAMS, PITCH_TYPES, SWING_TYPES } from '@/lib/gameData';
+import { TEAMS, PITCH_TYPES, SWING_TYPES, MANAGERS } from '@/lib/gameData';
 import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk } from '@/lib/gameEngine';
 import { applyWeatherEffects } from '@/lib/weather';
 import TeamSelect from '@/components/game/TeamSelect';
@@ -15,11 +15,13 @@ import PlayLog from '@/components/game/PlayLog';
 import BoxScore from '@/components/game/BoxScore';
 import SubstitutionsPanel from '@/components/game/SubstitutionsPanel';
 import Fireworks from '@/components/game/Fireworks';
+import ArgumentsBanner from '@/components/game/ArgumentsBanner';
+import { getArgumentSeverity, resolveArgument, getEjectionCommentary, rollUmpire } from '@/lib/umpireArguments';
 import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
 import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
-import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements } from '@/lib/achievements';
+import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement } from '@/lib/achievements';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 
 export default function Home() {
@@ -43,6 +45,9 @@ export default function Home() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [loadingScreen, setLoadingScreen] = useState(true);
   const [newAchievements, setNewAchievements] = useState([]);
+  const [argumentResult, setArgumentResult] = useState(null);
+  const [gameUmpire, setGameUmpire] = useState(null);
+  const [ejectionCount, setEjectionCount] = useState(0);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
 
@@ -67,6 +72,9 @@ export default function Home() {
     setAwayTeam(away);
     setUserTeam(home); // user controls home team
     setUseDH(useDHFlag);
+    setGameUmpire(rollUmpire());
+    setEjectionCount(0);
+    setArgumentResult(null);
     setGameStadium(lineupPhase?.parkTeam ? TEAMS[lineupPhase.parkTeam]?.stadium : null);
     setGameWeather(weather || null);
     const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather);
@@ -136,6 +144,11 @@ export default function Home() {
       trackGameEndTime();
       checkTeamAchievements();
 
+      // Earl Weaver Special: manager ejected + team won
+      if (gameState._managerEjected && userWon) {
+        unlockAchievement('earl_weaver');
+      }
+
       // Check gameplay achievements
       const newOnes = checkGameAchievements(gameState, userTeam);
       if (newOnes.length > 0) {
@@ -143,6 +156,71 @@ export default function Home() {
       }
     }
   }, [gameState]);
+
+  // Argument check after a play resolves
+  const checkForArgument = useCallback((state) => {
+    if (!state || state.gameOver || !state.lastPlay) return state;
+
+    const severity = getArgumentSeverity(state.lastPlay);
+    if (!severity) return state;
+
+    // Which team is arguing? The one that got the bad call (batting team)
+    const battingKeystr = getBattingTeam(state) === 'home' ? homeTeam : awayTeam;
+    const manager = MANAGERS[battingKeystr];
+    const umpire = gameUmpire || 'standard';
+    const battingScore = state.score[getBattingTeam(state)];
+    const fieldingScore = state.score[getBattingTeam(state) === 'home' ? 'away' : 'home'];
+    const scoreDiff = fieldingScore - battingScore;
+
+    const result = resolveArgument(
+      severity,
+      manager?.personality || 5,
+      umpire,
+      state.inning,
+      scoreDiff,
+      getBattingTeam(state) === 'home'
+    );
+
+    if (!result) return state;
+
+    // Attach manager name
+    result.managerName = manager?.name || 'The Manager';
+
+    // Track argument for first_argument achievement
+    unlockAchievement('first_argument');
+
+    // If ejected, log it and check achievements
+    if (result.ejected && result.whoArgues === 'manager') {
+      const cmt = getEjectionCommentary(battingKeystr, result);
+      const ejectedTeam = getBattingTeam(state);
+      state = {
+        ...state,
+        log: [...state.log, { type: 'ejection', text: `🟥 ${cmt}` }],
+        // Track that this team/manager was ejected (for Earl Weaver Special)
+        _managerEjected: true,
+        _ejectedTeam: ejectedTeam,
+      };
+      setEjectionCount(c => {
+        const newCount = c + 1;
+        unlockAchievement('youre_gone');
+        if (newCount >= 10) unlockAchievement('frequent_flyer');
+        if (newCount >= 25) unlockAchievement('billy_martin');
+        if (result.dirtKick) unlockAchievement('dirt_kicker');
+        if (result.basePickup) unlockAchievement('base_thief');
+        if (result.benchEjection) unlockAchievement('bench_tossed');
+        return newCount;
+      });
+    } else {
+      // Non-ejection argument — log it
+      const cmt = getEjectionCommentary(battingKeystr, result);
+      state = { ...state, log: [...state.log, { type: 'info', text: `🗣️ ${cmt}` }] };
+    }
+
+    // Show the animation
+    setArgumentResult({ ...result, homeTeamKey: battingKeystr });
+
+    return state;
+  }, [homeTeam, awayTeam, gameUmpire]);
 
   const isUserBatting = gameState && (
     (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
@@ -168,7 +246,8 @@ export default function Home() {
       const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
-      setGameState(afterSubs);
+      const withArgs = checkForArgument(afterSubs);
+      setGameState(withArgs);
     } finally {
       setProcessing(false);
     }
@@ -182,7 +261,8 @@ export default function Home() {
       const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
-      setGameState(afterSubs);
+      const withArgs = checkForArgument(afterSubs);
+      setGameState(withArgs);
     } finally {
       setProcessing(false);
     }
@@ -193,7 +273,8 @@ export default function Home() {
     setProcessing(true);
     const stealState = attemptSteal(gameState, baseIndex);
     // Only process the steal — don't auto-pitch. Batter keeps their turn.
-    setGameState(stealState);
+    const withArgs = checkForArgument(stealState);
+    setGameState(withArgs);
     setProcessing(false);
   }, [gameState, processing]);
 
@@ -250,6 +331,8 @@ export default function Home() {
     setUserTeam(null);
     setTab('game');
     setNewAchievements([]);
+    setArgumentResult(null);
+    setGameUmpire(null);
     prevGameOver.current = false;
   };
 
@@ -553,6 +636,14 @@ export default function Home() {
       {/* Fireworks */}
       <Fireworks trigger={hrTrigger} type="hr" />
       <Fireworks trigger={winTrigger} type="win" />
+
+      {/* Arguments Banner */}
+      {argumentResult && (
+        <ArgumentsBanner
+          result={argumentResult}
+          onDismiss={() => setArgumentResult(null)}
+        />
+      )}
 
       {/* Substitutions Panel */}
       {showSubs && (
