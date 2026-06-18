@@ -5,6 +5,7 @@ import { pickVinLine } from '@/lib/vinScullyLines';
 import { pickMetsLine } from '@/lib/metsBroadcastLines';
 import { pickYankeesLine } from '@/lib/yankeesBroadcastLines';
 import { pickRedSoxLine } from '@/lib/redSoxBroadcastLines';
+import { pickTigersLine } from '@/lib/tigersBroadcastLines';
 
 // Player nicknames — researched from 1984 MLB lore
 const NICKNAMES = {
@@ -135,6 +136,7 @@ export const STADIUM_FLAVOR = {
   detroitTigers: {
     announcers: ["Ernie Harwell", "Paul Carey"],
     stadium: "Tiger Stadium",
+    nicknames: ["The Corner", "Michigan and Trumbull"],
     nicknames: ["The Corner", "Tiger Stadium"],
     flavor: [
       "the right field overhang here at The Corner",
@@ -544,6 +546,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isMetsGame = homeTeamKey === 'mets';
   const isYankeesGame = homeTeamKey === 'yankees';
   const isRedSoxGame = homeTeamKey === 'redsox';
+  const isTigersGame = homeTeamKey === 'tigers';
   const text = isCubsGame && Math.random() < 0.65
     ? pickHarryLine()
     : isPadresGame && Math.random() < 0.65
@@ -556,7 +559,9 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
             ? pickYankeesLine()
             : isRedSoxGame && Math.random() < 0.65
               ? pickRedSoxLine()
-              : getCommentary(batter, pitcher, gameState, stadiumInfo);
+              : isTigersGame && Math.random() < 0.65
+                ? pickTigersLine()
+                : getCommentary(batter, pitcher, gameState, stadiumInfo);
 
   return (
     <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">
