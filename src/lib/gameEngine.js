@@ -2256,27 +2256,16 @@ export function changePitcher(state, newPitcher) {
   const bpIdx = bullpen.findIndex(p => p.name === newPitcher.name);
   if (bpIdx >= 0) bullpen.splice(bpIdx, 1);
 
-  // Swap the new pitcher into the fielding lineup (replace old pitcher's batting slot)
+  // Swap the new pitcher into the fielding lineup
   const lineup = isHomePitching ? newState.homeLineup : newState.awayLineup;
-  const oldPitcherSlot = lineup.findIndex(p => p.name === oldPitcher.name);
-  if (oldPitcherSlot >= 0) {
-    lineup[oldPitcherSlot] = {
-      ...newPitcher,
-      order: lineup[oldPitcherSlot].order,
-      assignedPos: 'SP',
-      gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
-    };
-  } else if (oldPitcher.order) {
-    // Pitcher was pinch-hit for — find their original slot by order number (don't create a new slot)
-    const slotByOrder = lineup.findIndex(p => p.order === oldPitcher.order);
-    if (slotByOrder >= 0) {
-      lineup[slotByOrder] = {
-        ...newPitcher,
-        order: oldPitcher.order,
-        assignedPos: 'SP',
-        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
-      };
-    }
+  let slotIdx = lineup.findIndex(p => p.name === oldPitcher.name);
+  if (slotIdx < 0 && oldPitcher.order) slotIdx = lineup.findIndex(p => p.order === oldPitcher.order);
+  const orderNum = slotIdx >= 0 ? lineup[slotIdx].order : (oldPitcher.order || lineup.length + 1);
+  const lineupEntry = { ...newPitcher, order: orderNum, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+  if (slotIdx >= 0) lineup[slotIdx] = lineupEntry;
+  else lineup.push(lineupEntry);
+  if (!lineup.some(p => p.name === newPitcher.name)) {
+    lineup.push({ ...newPitcher, order: Math.max(...lineup.map(p => p.order || 0), 0) + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
   }
 
   // Save old pitcher to player history so box score retains their stats
