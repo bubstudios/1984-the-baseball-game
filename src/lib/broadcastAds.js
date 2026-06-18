@@ -553,3 +553,132 @@ registerTeamAds('yankees', 'community', [
   "Phil would also like to thank the nice lady who mailed him homemade cookies.",
   "And now, back to baseball from New York City.",
 ]);
+
+// ── Dodgers / California (#301–400) ──
+
+// Dodgers-specific team promos
+registerTeamAds('dodgers', 'team_promo', [
+  "The Dodgers return home tomorrow night for another exciting series at Dodger Stadium.",
+  "Pick up your official Dodgers yearbook at souvenir stands throughout the ballpark.",
+  "The first 15,000 fans this Saturday receive a commemorative Dodgers cap.",
+  "Bring the family to Dodger Stadium for Family Day this Sunday.",
+  "Orel Hershiser will meet fans at a special community event this weekend.",
+  "Meet several Dodgers players during an upcoming autograph session.",
+  "Youth baseball clinics continue throughout Southern California this summer.",
+  "Register now for Dodgers-sponsored youth baseball camps.",
+  "The Dodgers thank fans throughout California for their continued support.",
+  "Tickets remain available for upcoming games at Dodger Stadium.",
+]);
+
+// Padres-specific team promos
+registerTeamAds('padres', 'team_promo', [
+  "The Padres continue their homestand tomorrow evening at Jack Murphy Stadium.",
+  "Join the Padres this weekend for Youth Baseball Day.",
+  "The first 10,000 fans receive a Padres team poster.",
+  "Padres players will participate in a charity softball event this weekend.",
+  "Sign up now for youth baseball programs throughout San Diego County.",
+  "Support local baseball and recreation programs this summer.",
+  "Visit the Padres team store for official merchandise.",
+  "The Padres thank their loyal fans across Southern California.",
+  "Group ticket packages remain available for upcoming games.",
+  "Bring your Little League team out to a Padres game this summer.",
+]);
+
+// Shared CA community — Disneyland, Universal, beaches, San Diego, aerospace (both teams)
+const CA_SHARED_COMMUNITY = [
+  // Disneyland
+  "Spend a magical day at Disneyland in Anaheim.",
+  "Disneyland continues to create memories for families from around the world.",
+  "Visit Disneyland and experience exciting attractions for all ages.",
+  "Make Disneyland part of your Southern California vacation plans.",
+  "New attractions and entertainment await visitors at Disneyland.",
+  "Disneyland remains one of America's favorite family destinations.",
+  "Enjoy the rides, parades, and excitement of Disneyland.",
+  "Plan your next family adventure at Disneyland.",
+  "Thousands of visitors are enjoying Disneyland this summer.",
+  "Disneyland welcomes guests every day of the year.",
+  // Universal Studios & Hollywood
+  "Visit Universal Studios Hollywood and see how movies are made.",
+  "Take a behind-the-scenes tour at Universal Studios.",
+  "Universal Studios offers excitement for movie fans of all ages.",
+  "See famous movie sets and special effects demonstrations.",
+  "Experience Hollywood magic at Universal Studios.",
+  "Visit the famous Hollywood Walk of Fame this weekend.",
+  "Take a stroll past the stars along Hollywood Boulevard.",
+  "Explore the entertainment capital of the world.",
+  "See iconic Hollywood landmarks throughout Los Angeles.",
+  "Hollywood remains one of America's most famous destinations.",
+  // Beaches & SoCal lifestyle
+  "Enjoy the sunshine along the beaches of Southern California.",
+  "Huntington Beach welcomes visitors throughout the summer.",
+  "Spend a relaxing afternoon along the Pacific Coast.",
+  "The beaches are beautiful this time of year.",
+  "Take a drive along the scenic Pacific Coast Highway.",
+  "Southern California offers some of the finest weather anywhere.",
+  "Enjoy a day of surfing, swimming, and sunshine.",
+  "The Pacific Ocean provides a spectacular backdrop for summer fun.",
+  "Plan a family picnic at one of California's beautiful beaches.",
+  "Another perfect Southern California day is underway.",
+  // San Diego attractions
+  "Visit the world-famous San Diego Zoo this weekend.",
+  "The San Diego Zoo remains one of the finest zoological parks in the world.",
+  "Spend a day exploring Balboa Park.",
+  "Balboa Park offers museums, gardens, and cultural attractions.",
+  "SeaWorld San Diego invites visitors to enjoy marine life exhibits.",
+  "SeaWorld continues to delight families from across the country.",
+  "Enjoy the beautiful San Diego waterfront.",
+  "Take a harbor cruise and explore San Diego Bay.",
+  "Visit historic Old Town San Diego.",
+  "San Diego's year-round climate makes it a wonderful place to visit.",
+  // Aerospace & technology
+  "Southern California continues to lead the nation in aerospace innovation.",
+  "Thousands of Californians work in the aerospace industry.",
+  "New advances in aviation and technology are shaping the future.",
+  "California remains a center of scientific achievement.",
+  "The future is being built right here in Southern California.",
+  "Visit local science museums and discover tomorrow's technology.",
+  "Aerospace exhibits are now open throughout the region.",
+  "Learn about aviation history at area museums.",
+  "California's engineers continue to push the boundaries of innovation.",
+  "Technology is changing the way America lives and works.",
+  // Vin Scully storytelling
+  "A summer afternoon and a baseball game. Some things never go out of style.",
+  "Baseball has a way of bringing people together.",
+  "Another beautiful day beneath the California sun.",
+  "The game continues to connect generations of fans.",
+  "Summer memories often begin at a ballpark.",
+  "A father and son enjoying a game together—that's baseball.",
+  "Every game tells a story.",
+  "Baseball remains one of America's great traditions.",
+  "There is something special about a day at the ballpark.",
+  "Wherever you're listening from today, we're glad you're with us.",
+  // Rare California color
+  "Traffic is reportedly heavy on the Hollywood Freeway this afternoon.",
+  "Give yourself extra time if you're heading toward Anaheim tonight.",
+  "Southern California drivers are encouraged to take it easy out there.",
+  "It seems everyone decided to head to the beach today.",
+  "Another postcard-perfect California afternoon.",
+  "Somewhere, someone is probably stuck on the freeway listening to this game.",
+  "At least they're spending the time with baseball.",
+  "The palm trees are swaying gently beyond the outfield.",
+  "We hope you're enjoying this beautiful California day.",
+  "Stay tuned for more baseball from the Golden State.",
+];
+registerTeamAds('dodgers', 'community', CA_SHARED_COMMUNITY);
+registerTeamAds('padres', 'community', CA_SHARED_COMMUNITY);
+
+// Military & naval flavor — shared but especially Padres territory
+const CA_SHARED_MILITARY = [
+  "We salute the men and women serving at Naval Base San Diego.",
+  "Our thanks to military personnel listening throughout Southern California.",
+  "The Navy remains an important part of San Diego life.",
+  "Military families are an important part of our community.",
+  "We extend our appreciation to those serving our country.",
+  "San Diego proudly supports America's armed forces.",
+  "Greetings to sailors stationed throughout the Pacific Fleet.",
+  "We thank military families for their service and sacrifice.",
+  "Naval aviation continues to play a vital role in national defense.",
+  "Many service members are enjoying today's ballgame with us.",
+];
+registerTeamAds('dodgers', 'community', CA_SHARED_MILITARY);
+registerTeamAds('padres', 'community', CA_SHARED_MILITARY);
