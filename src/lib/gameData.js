@@ -563,15 +563,24 @@ export const SWING_TYPES = [
 
 export const TEAM_IDS = Object.keys(TEAMS);
 
-// ── 1984 Managers (argument personality: 1=calm, 5=fiery, 10=explosive) ──
+// ── 1984 Managers (personality: 1=calm, 10=explosive; traits 1-100) ──
 export const MANAGERS = {
-  tigers: { name: "Sparky Anderson", personality: 3, coach: "Dick Tracewski" },
-  padres: { name: "Dick Williams", personality: 7, coach: "Ozzie Virgil Sr." },
-  cubs: { name: "Jim Frey", personality: 5, coach: "Don Zimmer" },
-  mets: { name: "Davey Johnson", personality: 4, coach: "Mel Stottlemyre" },
-  redsox: { name: "Ralph Houk", personality: 5, coach: "Walt Hriniak" },
-  yankees: { name: "Yogi Berra", personality: 6, coach: "Jeff Torborg" },
-  orioles: { name: "Joe Altobelli", personality: 4, coach: "Cal Ripken Sr." },
-  dodgers: { name: "Tommy Lasorda", personality: 9, coach: "Monty Basgall" },
-  reds: { name: "Pete Rose", personality: 6, coach: "George Scherger" },
+  tigers: { name: "Sparky Anderson", personality: 3, coach: "Dick Tracewski",
+    arguesBallsStrikes: 30, arguesSafeOut: 50, protectsPlayers: 80, strategicEjections: 10 },
+  padres: { name: "Dick Williams", personality: 7, coach: "Ozzie Virgil Sr.",
+    arguesBallsStrikes: 65, arguesSafeOut: 80, protectsPlayers: 70, strategicEjections: 20 },
+  cubs: { name: "Jim Frey", personality: 5, coach: "Don Zimmer",
+    arguesBallsStrikes: 50, arguesSafeOut: 60, protectsPlayers: 55, strategicEjections: 15 },
+  mets: { name: "Davey Johnson", personality: 4, coach: "Mel Stottlemyre",
+    arguesBallsStrikes: 40, arguesSafeOut: 55, protectsPlayers: 60, strategicEjections: 10 },
+  redsox: { name: "Ralph Houk", personality: 5, coach: "Walt Hriniak",
+    arguesBallsStrikes: 55, arguesSafeOut: 50, protectsPlayers: 45, strategicEjections: 20 },
+  yankees: { name: "Yogi Berra", personality: 6, coach: "Jeff Torborg",
+    arguesBallsStrikes: 50, arguesSafeOut: 65, protectsPlayers: 70, strategicEjections: 25 },
+  orioles: { name: "Joe Altobelli", personality: 4, coach: "Cal Ripken Sr.",
+    arguesBallsStrikes: 35, arguesSafeOut: 55, protectsPlayers: 50, strategicEjections: 5 },
+  dodgers: { name: "Tommy Lasorda", personality: 9, coach: "Monty Basgall",
+    arguesBallsStrikes: 80, arguesSafeOut: 90, protectsPlayers: 95, strategicEjections: 40 },
+  reds: { name: "Pete Rose", personality: 6, coach: "George Scherger",
+    arguesBallsStrikes: 55, arguesSafeOut: 70, protectsPlayers: 75, strategicEjections: 15 },
 };
