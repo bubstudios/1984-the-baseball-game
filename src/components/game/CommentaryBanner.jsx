@@ -1,6 +1,7 @@
 import React from 'react';
 import { pickHarryLine } from '@/lib/harryCarayLines';
 import { pickPadresLine } from '@/lib/jerryColemanLines';
+import { pickVinLine } from '@/lib/vinScullyLines';
 
 // Player nicknames — researched from 1984 MLB lore
 const NICKNAMES = {
@@ -257,7 +258,7 @@ export const STADIUM_FLAVOR = {
     stretchFlavor: null,
   },
   losAngelesDodgers: {
-    announcers: ["Vin Scully"],
+    announcers: ["Vin Scully", "Jerry Doggett"],
     stadium: "Dodger Stadium",
     nicknames: ["Chavez Ravine", "Blue Heaven on Earth"],
     flavor: [
@@ -536,11 +537,14 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const stadiumInfo = flavorKey ? STADIUM_FLAVOR[flavorKey] : null;
   const isCubsGame = homeTeamKey === 'cubs';
   const isPadresGame = homeTeamKey === 'padres';
+  const isDodgersGame = homeTeamKey === 'dodgers';
   const text = isCubsGame && Math.random() < 0.65
     ? pickHarryLine()
     : isPadresGame && Math.random() < 0.65
       ? pickPadresLine()
-      : getCommentary(batter, pitcher, gameState, stadiumInfo);
+      : isDodgersGame && Math.random() < 0.70
+        ? pickVinLine()
+        : getCommentary(batter, pitcher, gameState, stadiumInfo);
 
   return (
     <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">
