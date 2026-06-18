@@ -11,6 +11,7 @@ import {
   STEAL_LINES, ERROR_LINES, FC_LINES,
 } from './commentaryLines';
 import { checkPitcherInjury, checkPlayInjury, getPlayerDurability } from './injuries';
+import { getUmpireZoneEffect, maybeMissedCall } from './umpires';
 
 // ── Pitcher Fatigue (innings-based) ──
 // Stamina 10 → can go 8-9 innings. Stamina 4 (reliever) → gassed after 2 innings.
@@ -65,7 +66,7 @@ export function getEffectivePitcher(state) {
 }
 
 // Create initial game state with two selected teams
-export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null) {
+export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null, umpire = null) {
   const home = TEAMS[homeTeam];
   const away = TEAMS[awayTeam];
 
@@ -143,6 +144,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     hitAndRun: false,
     pendingSteal: null,
     weather: weather || null,
+    umpire: umpire || null,
     homePlayerHistory: [],
     awayPlayerHistory: [],
   };
@@ -650,9 +652,16 @@ function resolvePitch(state, pitchType) {
 
   const baseStrikeChance = 0.35 + controlFactor * 0.28;
   const controlBonus = pitchType.controlBonus || 0;
-  const strikeChance = baseStrikeChance + (controlBonus * 0.04);
+  let strikeChance = baseStrikeChance + (controlBonus * 0.04);
 
-  const isStrike = Math.random() < Math.min(strikeChance, 0.82);
+  // Umpire zone effect — named umpires influence the strike zone
+  const umpire = state.umpire;
+  if (umpire) {
+    const zoneEffect = getUmpireZoneEffect(umpire) / 100; // convert percentage points to multiplier offset
+    strikeChance += zoneEffect;
+  }
+
+  const isStrike = Math.random() < Math.min(Math.max(strikeChance, 0.08), 0.92);
 
   return {
     pitchType: pitchType.name,

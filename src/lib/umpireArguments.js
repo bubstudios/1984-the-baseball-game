@@ -13,14 +13,10 @@ export const MANAGERS = {
   dodgers: { name: "Tommy Lasorda", personality: 9, team: "dodgers" },
 };
 
-// ── Umpire Personalities ──
-const UMPIRE_TYPES = {
-  easygoing: { name: "Easygoing", leash: 0.15, warningChance: 0.70 },
-  standard: { name: "Standard", leash: 0.25, warningChance: 0.40 },
-  shortFuse: { name: "Short Fuse", leash: 0.40, warningChance: 0.15 },
-};
-
+// ── Umpire Personalities (legacy fallback for old code) ──
+// Now using named umpires from lib/umpires.js — getUmpireArgumentMod()
 export function rollUmpire() {
+  // Fallback for old code: return a generic umpire type string
   const roll = Math.random();
   if (roll < 0.30) return "easygoing";
   if (roll < 0.80) return "standard";
@@ -219,11 +215,33 @@ export function maybeDugoutChirp(gameState) {
 }
 
 // ── Resolve the argument: who argues, how far, what happens ──
-export function resolveArgument(severityInfo, managerPersonality, umpireType, inning, scoreDiff, isHomeTeam) {
+export function resolveArgument(severityInfo, managerPersonality, umpire, inning, scoreDiff, isHomeTeam) {
   if (!severityInfo) return null;
 
   const manager = managerPersonality || 5;
-  const umpire = UMPIRE_TYPES[umpireType] || UMPIRE_TYPES.standard;
+
+  // Support both new umpire objects and legacy string types
+  let umpireData;
+  if (typeof umpire === 'object' && umpire !== null) {
+    umpireData = {
+      name: umpire.name || "Standard",
+      leash: umpire.temperament?.leash || 0.25,
+      warningChance: umpire.temperament?.warningChance || 0.40,
+      quickEject: umpire.temperament?.quickEject || false,
+      type: umpire.temperament?.type || "standard",
+    };
+    umpire.umpireData = umpireData; // stash for getEjectionCommentary
+  } else {
+    // Legacy string fallback
+    const legacyTypes = {
+      easygoing: { name: "Easygoing", leash: 0.15, warningChance: 0.70, quickEject: false, type: "easygoing" },
+      standard: { name: "Standard", leash: 0.25, warningChance: 0.40, quickEject: false, type: "standard" },
+      shortFuse: { name: "Short Fuse", leash: 0.40, warningChance: 0.15, quickEject: true, type: "shortFuse" },
+    };
+    umpireData = legacyTypes[umpire] || legacyTypes.standard;
+    umpire = { umpireData };
+  }
+
   const managerFire = manager / 10;
 
   // ── Manager decides whether to engage ──
@@ -251,7 +269,7 @@ export function resolveArgument(severityInfo, managerPersonality, umpireType, in
     if (r < 0.20 + managerFire * 0.15) {
       return {
         whoArgues: "manager", escaLevel: 1, ejected: false,
-        manager, umpireType,
+        manager, umpireType: umpireData.type, umpireName: umpire?.name,
         callType: severityInfo.callType,
         callText: reaction,
         crowdExcitement: 10,
@@ -260,7 +278,7 @@ export function resolveArgument(severityInfo, managerPersonality, umpireType, in
     }
     return {
       whoArgues: "batter", escaLevel: 0, ejected: false,
-      manager, umpireType,
+      manager, umpireType: umpireData.type, umpireName: umpire?.name,
       callType: severityInfo.callType,
       callText: reaction,
       crowdExcitement: 5,
@@ -277,7 +295,7 @@ export function resolveArgument(severityInfo, managerPersonality, umpireType, in
     escaLevel = 0;
     return {
       whoArgues, escaLevel: 0, ejected: false,
-      manager, umpireType, callType: severityInfo.callType,
+      manager, umpireType: umpireData.type, umpireName: umpire?.name, callType: severityInfo.callType,
       callText: severityInfo.callType,
       crowdExcitement: 5,
       isChirp: true,
@@ -345,9 +363,9 @@ export function resolveArgument(severityInfo, managerPersonality, umpireType, in
   // ── Ejection chance (by escalation level, modified by umpire) ──
   const ejectionChances = {
     0: 0,
-    1: 0.03 + umpire.leash * 0.2,
-    2: 0.18 + umpire.leash * 0.4,
-    3: 0.65 + umpire.leash * 0.3,
+    1: 0.03 + umpireData.leash * 0.2,
+    2: 0.18 + umpireData.leash * 0.4,
+    3: 0.65 + umpireData.leash * 0.3,
     4: 1.0,
   };
   const ejected = r < (ejectionChances[escaLevel] || 0);
@@ -368,7 +386,7 @@ export function resolveArgument(severityInfo, managerPersonality, umpireType, in
   return {
     whoArgues, escaLevel, ejected,
     delayedEjection, benchEjection, hatThrow, dirtKick, basePickup,
-    manager, umpireType,
+    manager, umpireType: umpireData.type, umpireName: umpire?.name,
     callType: severityInfo.callType,
     callText: severityInfo.callType,
     crowdExcitement: escaLevel * 15 + (ejected ? 25 : 0) + (hatThrow ? 10 : 0) + (dirtKick ? 15 : 0) + (basePickup ? 20 : 0),

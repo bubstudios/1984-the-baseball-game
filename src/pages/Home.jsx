@@ -21,7 +21,8 @@ import InjuryBanner from '@/components/game/InjuryBanner';
 import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
 import { applyInjuryReplacement } from '@/lib/injuryReplacement';
-import { getArgumentSeverity, resolveArgument, getEjectionCommentary, rollUmpire, maybeDugoutChirp } from '@/lib/umpireArguments';
+import { getArgumentSeverity, resolveArgument, getEjectionCommentary, maybeDugoutChirp } from '@/lib/umpireArguments';
+import { pickUmpire, getManagerUmpireRelation } from '@/lib/umpires';
 import { rollBallparkEvent, resetBallparkEvents } from '@/lib/ballparkEvents';
 import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
@@ -55,7 +56,7 @@ export default function Home() {
   const [loadingScreen, setLoadingScreen] = useState(true);
   const [newAchievements, setNewAchievements] = useState([]);
   const [argumentResult, setArgumentResult] = useState(null);
-  const [gameUmpire, setGameUmpire] = useState(null);
+  const [selectedUmpire, setSelectedUmpire] = useState(null);
   const [ejectionCount, setEjectionCount] = useState(0);
   const [ballparkEvent, setBallparkEvent] = useState(null);
   const [injuryResult, setInjuryResult] = useState(null);
@@ -87,7 +88,8 @@ export default function Home() {
     setAwayTeam(away);
     setUserTeam(home); // user controls home team
     setUseDH(useDHFlag);
-    setGameUmpire(rollUmpire());
+    const umpire = selectedUmpire || pickUmpire();
+    setSelectedUmpire(umpire);
     setEjectionCount(0);
     setArgumentResult(null);
     setBallparkEvent(null);
@@ -95,10 +97,14 @@ export default function Home() {
     resetBallparkEvents();
     setGameStadium(lineupPhase?.parkTeam ? TEAMS[lineupPhase.parkTeam]?.stadium : null);
     setGameWeather(weather || null);
-    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather);
+    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire);
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
+    if (umpire) {
+      state.log.push({ type: 'info', text: `👨‍⚖️ Home plate umpire: ${umpire.name} — "${umpire.nick}"` });
+      state.log.push({ type: 'info', text: `   ${umpire.pregameLine}` });
+    }
     if (weather) {
       state.log.push({ type: 'info', text: `🌤 ${weather.summary} — ${weather.date}` });
       if (weather.effects.length > 0) {
@@ -114,7 +120,8 @@ export default function Home() {
     setBallparkPhase({ home, away });
   }, []);
 
-  const handleBallparkConfirm = useCallback((parkTeam, useDHFlag, weather) => {
+  const handleBallparkConfirm = useCallback((parkTeam, useDHFlag, weather, umpire) => {
+    setSelectedUmpire(umpire);
     setLineupPhase({ home: ballparkPhase.home, away: ballparkPhase.away, useDH: useDHFlag, parkTeam, weather });
     setBallparkPhase(null);
   }, [ballparkPhase]);
@@ -235,11 +242,11 @@ export default function Home() {
       if (chirp) {
         const battingKeystr = getBattingTeam(state) === 'home' ? homeTeam : awayTeam;
         const manager = MANAGERS[battingKeystr];
-        const umpire = gameUmpire || 'standard';
+        const umpireObj = state.umpire || 'standard';
         const battingScore = state.score[getBattingTeam(state)];
         const fieldingScore = state.score[getBattingTeam(state) === 'home' ? 'away' : 'home'];
         const scoreDiff = fieldingScore - battingScore;
-        const chirpResult = resolveArgument(chirp, manager?.personality || 5, umpire, state.inning, scoreDiff, getBattingTeam(state) === 'home');
+        const chirpResult = resolveArgument(chirp, manager?.personality || 5, umpireObj, state.inning, scoreDiff, getBattingTeam(state) === 'home');
         if (chirpResult) {
           chirpResult.managerName = manager?.name || 'The Manager';
           setArgumentResult({ ...chirpResult, homeTeamKey: battingKeystr });
@@ -253,7 +260,9 @@ export default function Home() {
     // Which team is arguing? The one that got the bad call (batting team)
     const battingKeystr = getBattingTeam(state) === 'home' ? homeTeam : awayTeam;
     const manager = MANAGERS[battingKeystr];
-    const umpire = gameUmpire || 'standard';
+    const umpireObj = state.umpire || 'standard';
+    // Manager-umpire relationship modifiers
+    const relationMod = getManagerUmpireRelation(battingKeystr, state.umpire?.id) / 100;
     const battingScore = state.score[getBattingTeam(state)];
     const fieldingScore = state.score[getBattingTeam(state) === 'home' ? 'away' : 'home'];
     const scoreDiff = fieldingScore - battingScore;
@@ -261,7 +270,7 @@ export default function Home() {
     const result = resolveArgument(
       severity,
       manager?.personality || 5,
-      umpire,
+      umpireObj,
       state.inning,
       scoreDiff,
       getBattingTeam(state) === 'home'
@@ -306,7 +315,7 @@ export default function Home() {
     setArgumentResult({ ...result, homeTeamKey: battingKeystr });
 
     return state;
-  }, [homeTeam, awayTeam, gameUmpire]);
+  }, [homeTeam, awayTeam]);
 
   const isUserBatting = gameState && (
     (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
@@ -432,7 +441,7 @@ export default function Home() {
     setTab('game');
     setNewAchievements([]);
     setArgumentResult(null);
-    setGameUmpire(null);
+    setSelectedUmpire(null);
     setInjuryResult(null);
     prevGameOver.current = false;
     prevHalfInning.current = null;

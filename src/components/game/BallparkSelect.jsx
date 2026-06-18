@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
 import { generateWeather } from '@/lib/weather';
-import { Play, MapPin, Users, RefreshCw, Sun, Moon, Thermometer, Wind, Cloud, CloudRain, CloudSnow } from 'lucide-react';
+import { pickUmpire } from '@/lib/umpires';
+import { Play, MapPin, Users, RefreshCw, Sun, Moon, Thermometer, Wind, Cloud, CloudRain, CloudSnow, UserCheck } from 'lucide-react';
 
 export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack }) {
   const [selectedPark, setSelectedPark] = useState(null);
   const [selectedParkTeam, setSelectedParkTeam] = useState(null);
   const [weather, setWeather] = useState(null);
+  const [umpire, setUmpire] = useState(null);
 
   const userTeamData = TEAMS[userTeam];
   const cpuTeamData = TEAMS[cpuTeam];
@@ -15,21 +17,24 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
   const handleSelect = (park, teamKey) => {
     setSelectedPark(park);
     setSelectedParkTeam(teamKey);
-    // Generate weather for this park
-    const w = generateWeather(TEAMS[teamKey].city);
-    setWeather(w);
+    setWeather(generateWeather(TEAMS[teamKey].city));
+    if (!umpire) setUmpire(pickUmpire());
   };
 
-  const handleRegenerate = () => {
+  const handleRegenerateWeather = () => {
     if (selectedParkTeam) {
       setWeather(generateWeather(TEAMS[selectedParkTeam].city));
     }
   };
 
+  const handleRegenerateUmpire = () => {
+    setUmpire(pickUmpire());
+  };
+
   const handleConfirm = () => {
     if (selectedParkTeam && weather) {
       const useDH = TEAMS[selectedParkTeam].league === 'AL';
-      onConfirm(selectedParkTeam, useDH, weather);
+      onConfirm(selectedParkTeam, useDH, weather, umpire);
     }
   };
 
@@ -142,7 +147,7 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleRegenerate}
+                onClick={handleRegenerateWeather}
                 className="h-7 px-2 text-[10px] text-muted-foreground hover:text-foreground gap-1"
               >
                 <RefreshCw className="w-3 h-3" />
@@ -196,6 +201,48 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Umpire Panel */}
+        {umpire && (
+          <div className="bg-card border border-border rounded-xl p-4 space-y-2 animate-in fade-in">
+            <div className="flex items-center justify-between">
+              <h3 className="font-heading text-sm font-bold text-foreground">Home Plate Umpire</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRegenerateUmpire}
+                className="h-7 px-2 text-[10px] text-muted-foreground hover:text-foreground gap-1"
+              >
+                <RefreshCw className="w-3 h-3" />
+                Re-roll
+              </Button>
+            </div>
+            <div className="bg-muted/30 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-primary shrink-0" />
+                <div>
+                  <span className="font-heading text-sm font-bold text-foreground">{umpire.name}</span>
+                  <span className="text-[10px] font-heading italic text-primary/80 ml-2">"{umpire.nick}"</span>
+                </div>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1.5 leading-relaxed">{umpire.pregameLine}</p>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {umpire.pitcherFriendly && (
+                  <span className="text-[9px] font-heading px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400">Pitcher's Ump</span>
+                )}
+                {umpire.hitterFriendly && (
+                  <span className="text-[9px] font-heading px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-400">Hitter's Ump</span>
+                )}
+                <span className="text-[9px] font-heading px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground">
+                  Zone: {umpire.zone.type.charAt(0).toUpperCase() + umpire.zone.type.slice(1)}
+                </span>
+                {umpire.temperament?.quickEject && (
+                  <span className="text-[9px] font-heading px-1.5 py-0.5 rounded bg-red-500/10 text-red-400">Quick Hook</span>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
