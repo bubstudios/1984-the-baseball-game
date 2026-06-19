@@ -137,6 +137,9 @@ export function changePitcher(state, newPitcher, side) {
     if (slotIdx >= 0) {
       const lineupEntry = { ...newPitcher, order: lineup[slotIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
       lineup[slotIdx] = lineupEntry;
+      // Persist order + assignedPos on the pitcher state so future lookups can find their slot
+      newP.order = lineupEntry.order;
+      newP.assignedPos = 'SP';
     }
     // Never push a new entry — avoids creating a phantom batting slot
   }
