@@ -7,6 +7,7 @@ import { pickYankeesLine } from '@/lib/yankeesBroadcastLines';
 import { pickRedSoxLine } from '@/lib/redSoxBroadcastLines';
 import { pickTigersLine } from '@/lib/tigersBroadcastLines';
 import { pickRedsLine } from '@/lib/redsBroadcastLines';
+import { pickRoyalsLine } from '@/lib/royalsBroadcastLines';
 
 // Player nicknames — researched from 1984 MLB lore
 const NICKNAMES = {
@@ -45,7 +46,12 @@ const NICKNAMES = {
   "Mookie Wilson": ["Mook"],
   "Dennis Eckersley": ["Eck"],
   "Bruce Sutter": ["The Riddler"],
-  "Dan Quisenberry": ["Quiz"],
+  "Dan Quisenberry": ["Quiz", "The Submarine"],
+  "George Brett": ["Mullet", "The Captain"],
+  "Willie Wilson": ["The Jet", "Mookie"],
+  "Steve Balboni": ["Bye-Bye", "Bones"],
+  "Bret Saberhagen": ["Sabes"],
+  "Frank White": ["Smooth"],
   "Keith Moreland": ["Zonk"],
   "Leon Durham": ["Bull"],
   "Aurelio López": ["Señor Smoke"],
@@ -334,6 +340,41 @@ export const STADIUM_FLAVOR = {
     ],
     stretchFlavor: null,
   },
+  kansasCityRoyals: {
+    announcers: ["Denny Matthews", "Fred White"],
+    stadium: "Royals Stadium",
+    nicknames: ["Royals Stadium", "The K"],
+    flavor: [
+      "the fountains are flowing beyond the outfield — just a gorgeous sight on a Kansas City evening",
+      "one of baseball's most beautiful ballparks here at Royals Stadium",
+      "a perfect summer night in the Heartland",
+      "the water dancing in the fountains beyond the right-center field fence",
+      "baseball and barbecue — not a bad combination in Kansas City",
+      "Royals Stadium was built for baseball and nothing else — outstanding sightlines everywhere",
+      "you can see the fountains sparkling from any seat in the ballpark",
+      "this ballpark remains one of baseball's showcase facilities",
+      "a gorgeous night in Kansas City — the fountains are flowing",
+    ],
+    weatherFlavor: [
+      "a little hazy and humid tonight — typical Missouri summer — but the ball should carry",
+      "a gorgeous, crisp Midwestern evening — perfect baseball weather at Royals Stadium",
+    ],
+    cityFlavor: [
+      "if you're heading out after the game, the barbecue joints on the Missouri side will still be smoking",
+      "I grabbed some burnt ends before the first pitch — that is pure Kansas City right there",
+      "Kansas City has supported this club since day one — great baseball town",
+      "the crowd is filing in from all across the metro — Johnson County, Wyandotte, even folks driving in from Lawrence and Topeka",
+      "a great baseball crowd tonight — Kansas City always shows up for its Royals",
+      "Baseball and barbecue — a pretty good combination, and Kansas City does both better than just about anyone",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of George Brett's .390 chase — that was must-see baseball every single night in 1980",
+      "the Royals have built their reputation on pitching, speed, and defense, and you can feel that tradition in the stadium",
+      "this franchise has been playing winning baseball since the late '70s — the crowd here expects excellence",
+      "the Royals continue to draw some of baseball's best fans — Kansas City has always been a great baseball town",
+    ],
+    stretchFlavor: null,
+  },
   cincinnatiReds: {
     announcers: ["Joe Nuxhall", "Marty Brennaman"],
     stadium: "Riverfront Stadium",
@@ -383,6 +424,7 @@ export const TEAM_TO_FLAVOR = {
   dodgers: "losAngelesDodgers",
   mets: "newYorkMets",
   reds: "cincinnatiReds",
+  royals: "kansasCityRoyals",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -613,6 +655,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isRedSoxGame = homeTeamKey === 'redsox';
   const isTigersGame = homeTeamKey === 'tigers';
   const isRedsGame = homeTeamKey === 'reds';
+  const isRoyalsGame = homeTeamKey === 'royals';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -658,7 +701,9 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                   ? pickTigersLine()
                   : isRedsGame && Math.random() < 0.70
                     ? pickRedsLine()
-                    : getCommentary(batter, pitcher, gameState, stadiumInfo);
+                    : isRoyalsGame && Math.random() < 0.70
+                      ? pickRoyalsLine()
+                      : getCommentary(batter, pitcher, gameState, stadiumInfo);
   }
 
   return (

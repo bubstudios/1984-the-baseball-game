@@ -115,6 +115,20 @@ export const BALLPARKS = {
     description: "Symmetrical cookie-cutter stadium on the banks of the Ohio River. Artificial turf makes ground balls shoot through the infield.",
     wallDesc: { LF: "the left field fence at 330 feet", LCF: "the left-center alley", CF: "the center field wall at 404 feet", RCF: "the right-center gap", RF: "the right field line at 330 feet" },
   },
+  "Royals Stadium": {
+    dimensions: {
+      LF: { distance: 330, wallHeight: 8 },
+      LCF: { distance: 385, wallHeight: 8 },
+      CF: { distance: 410, wallHeight: 8 },
+      RCF: { distance: 385, wallHeight: 8 },
+      RF: { distance: 330, wallHeight: 8 },
+    },
+    quirks: ["fountains", "hugeOutfield", "tripleAlley"],
+    hrFactors: { LH: 0.94, RH: 0.96 },
+    avgDistance: 368,
+    description: "One of baseball's most beautiful ballparks. The iconic fountains beyond the outfield and huge gaps make triples a Royals specialty.",
+    wallDesc: { LF: "the left field fence at 330 feet", LCF: "the deep left-center gap", CF: "the center field wall at 410 feet, fountains just beyond", RCF: "the right-center alley", RF: "the right field fence at 330 feet" },
+  },
   "Dodger Stadium": {
     dimensions: {
       LF: { distance: 330, wallHeight: 8 },
@@ -263,6 +277,18 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
         bases: 4,
         isHit: true,
         isHR: true,
+      };
+    }
+  }
+
+  // Royals Stadium — huge outfield turns doubles into triples
+  if (quirks.includes('hugeOutfield') && (hitDirection === 'LCF' || hitDirection === 'RCF')) {
+    if (roll < 0.10) {
+      return {
+        type: 'royalsTriple',
+        text: `Into the gap at Royals Stadium! The big outfield gives the runner time — he's racing for third! The throw won't be in time!`,
+        bases: 3,
+        isHit: true,
       };
     }
   }

@@ -223,6 +223,18 @@ export const ACHIEVEMENTS = [
   { id: 'reds_5run_inning', name: 'Cincinnati Chili', desc: 'Score 5 runs in one inning as the Reds', icon: '🍲', category: 'teamSpecific', team: 'reds' },
   { id: 'reds_100_home', name: 'Riverfront Regular', desc: 'Play 100 games at Riverfront', icon: '🏛️', category: 'teamSpecific', team: 'reds', threshold: 100 },
 
+  // ── TEAM-SPECIFIC: ROYALS ──
+  { id: 'royals_first_win', name: 'Fountain City', desc: 'Win your first Royals game', icon: '⛲', category: 'teamSpecific', team: 'royals' },
+  { id: 'royals_50_wins', name: 'Royal Treatment', desc: 'Win 50 games as Kansas City', icon: '👑', category: 'teamSpecific', team: 'royals', threshold: 50 },
+  { id: 'royals_100_wins', name: 'Crown Jewel', desc: 'Win 100 games as Kansas City', icon: '💎', category: 'teamSpecific', team: 'royals', threshold: 100 },
+  { id: 'royals_25_home', name: 'Water Works', desc: 'Play 25 games at Royals Stadium', icon: '🌊', category: 'teamSpecific', team: 'royals', threshold: 25 },
+  { id: 'royals_george_3', name: "George's Team", desc: 'Win with George Brett recording 3 hits', icon: '🐐', category: 'teamSpecific', team: 'royals' },
+  { id: 'royals_balboni_hr', name: 'Bye-Bye', desc: 'Hit a home run with Steve Balboni', icon: '👋', category: 'teamSpecific', team: 'royals' },
+  { id: 'royals_4_sb', name: 'Small Ball', desc: 'Steal 4 bases in one game as the Royals', icon: '🏃', category: 'teamSpecific', team: 'royals' },
+  { id: 'royals_15_hits', name: 'Kansas City Baseball', desc: 'Record 15 hits as the Royals', icon: '🎯', category: 'teamSpecific', team: 'royals' },
+  { id: 'royals_3_hr_at_home', name: 'Fountain Show', desc: 'Hit 3 home runs at Royals Stadium', icon: '🎆', category: 'teamSpecific', team: 'royals' },
+  { id: 'royals_zero_errors', name: 'Royals Way', desc: 'Win while committing zero errors as the Royals', icon: '🧹', category: 'teamSpecific', team: 'royals' },
+
   // ── MULTI-TEAM ──
   { id: 'nl_tour', name: 'National League Tour', desc: 'Win with the Cubs, Mets, Dodgers, Padres, and Reds', icon: '🏟️', category: 'multiTeam' },
   { id: 'al_tour', name: 'American League Tour', desc: 'Win with the Yankees, Red Sox, Tigers, and Orioles', icon: '🏟️', category: 'multiTeam' },
@@ -232,6 +244,13 @@ export const ACHIEVEMENTS = [
   { id: 'franchise_hopper', name: 'Franchise Hopper', desc: 'Win 10 games with each team', icon: '🦘', category: 'multiTeam' },
   { id: 'local_hero', name: 'Local Hero', desc: 'Unlock every team-specific achievement for one franchise', icon: '🦸', category: 'multiTeam' },
   { id: 'historian', name: 'Historian', desc: 'Unlock at least one achievement for every team', icon: '📜', category: 'multiTeam' },
+
+  // ── HIDDEN: ROYALS EASTER EGGS ──
+  { id: 'easter_fountains', name: 'The Fountains', desc: 'Hear 25 fountain references in Royals games', icon: '⛲', category: 'hidden', threshold: 25 },
+  { id: 'easter_barbecue_ad', name: 'Barbecue Run', desc: 'Hear a Kansas City barbecue advertisement', icon: '🍖', category: 'hidden' },
+  { id: 'easter_jazz_night', name: 'Jazz Night', desc: 'Hear a jazz-related Kansas City reference', icon: '🎷', category: 'hidden' },
+  { id: 'easter_quiz_save', name: 'Quiz', desc: 'Record a save with Dan Quisenberry', icon: '📊', category: 'hidden' },
+  { id: 'easter_submarine', name: 'Submarine', desc: 'Strike out a batter with Dan Quisenberry', icon: '🚢', category: 'hidden' },
 
   // ── HIDDEN / TIME-BASED ──
   { id: 'night_game', name: 'Night Game', desc: 'Play after 10 PM local time', icon: '🦉', category: 'hidden' },
@@ -472,6 +491,9 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
     checkThreshold('tigers_50_wins', stats.teamWins['tigers'] || 0);
     checkThreshold('orioles_50_wins', stats.teamWins['orioles'] || 0);
     checkThreshold('reds_50_wins', stats.teamWins['reds'] || 0);
+    checkThreshold('royals_50_wins', stats.teamWins['royals'] || 0);
+    checkThreshold('royals_100_wins', stats.teamWins['royals'] || 0);
+    checkThreshold('royals_25_home', stats.teamHomeGames['royals'] || 0);
 
     // Cumulative team stats
     checkThreshold('yanks_2000_hits', stats.teamHitsTotal['yankees'] || 0);
@@ -854,6 +876,22 @@ export function checkGameAchievements(gameState, userTeam) {
     if (had5RunInning) u('reds_5run_inning');
   }
 
+  // ── ROYALS ──
+  if (teamKey === 'royals') {
+    if (userWon) u('royals_first_win');
+    if (totalHR >= 3 && stadium === 'Royals Stadium') u('royals_3_hr_at_home');
+    if (allSB >= 4) u('royals_4_sb');
+    if (userHitsAll >= 15) u('royals_15_hits');
+    const royalsErrorCount = (logText.match(/error/gi) || []).length;
+    if (userWon && royalsErrorCount === 0) u('royals_zero_errors');
+    // George Brett: 3+ hits
+    const brett = allUserPlayers.find(p => p.name === 'George Brett');
+    if (brett && (brett.gameStats?.hits || 0) >= 3 && userWon) u('royals_george_3');
+    // Balboni HR
+    const balboni = allUserPlayers.find(p => p.name === 'Steve Balboni');
+    if (balboni && (balboni.gameStats?.hr || 0) > 0) u('royals_balboni_hr');
+  }
+
   // ────────────────────────────────────────────
   // ── HIDDEN / EASTER EGG CHECKS ──
   // ────────────────────────────────────────────
@@ -947,13 +985,13 @@ export function checkTeamAchievements() {
   if (alTourTeams.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('al_tour');
 
   // Multi-team: Coast to Coast (win with every team)
-  const allTeams = ['cubs', 'mets', 'dodgers', 'padres', 'reds', 'yankees', 'redsox', 'tigers', 'orioles'];
+  const allTeams = ['cubs', 'mets', 'dodgers', 'padres', 'reds', 'yankees', 'redsox', 'tigers', 'orioles', 'royals'];
   if (allTeams.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('coast_to_coast');
 
   // Multi-team: Frequent Flyer (play in every stadium)
   const allStadiums = [
     'Wrigley Field', 'Shea Stadium', 'Dodger Stadium', 'Jack Murphy Stadium', 'Riverfront Stadium',
-    'Yankee Stadium', 'Fenway Park', 'Tiger Stadium', 'Memorial Stadium',
+    'Yankee Stadium', 'Fenway Park', 'Tiger Stadium', 'Memorial Stadium', 'Royals Stadium',
   ];
   if (allStadiums.every(s => stats.ballparksVisited.includes(s))) unlockAchievement('all_stadiums');
 
@@ -965,7 +1003,7 @@ export function checkTeamAchievements() {
 }
 
 function checkFranchiseHopper(stats) {
-  const allTeams = ['cubs', 'mets', 'dodgers', 'padres', 'reds', 'yankees', 'redsox', 'tigers', 'orioles'];
+  const allTeams = ['cubs', 'mets', 'dodgers', 'padres', 'reds', 'yankees', 'redsox', 'tigers', 'orioles', 'royals'];
   if (allTeams.every(t => (stats.teamWins[t] || 0) >= 10)) unlockAchievement('franchise_hopper');
 }
 
@@ -981,6 +1019,7 @@ function checkHistorian() {
     redsox: ['sox_10_doubles', 'sox_fenway_win', 'sox_pole_hr', 'sox_100_games', 'sox_100_wins', 'sox_15_runs', 'sox_shutout', 'sox_25_home'],
     tigers: ['tigers_win', 'tigers_100_games', 'tigers_50_wins', 'tigers_10_runs', 'tigers_cg', 'tigers_25_home', 'tigers_4_hr', 'tigers_18_hits'],
     orioles: ['orioles_mem_win', 'orioles_extras', 'orioles_100_games', 'orioles_50_wins', 'orioles_3_hr', 'orioles_4_sb', 'orioles_12_runs', 'orioles_comeback_6'],
+    royals: ['royals_first_win', 'royals_50_wins', 'royals_100_wins', 'royals_25_home', 'royals_george_3', 'royals_balboni_hr', 'royals_4_sb', 'royals_15_hits', 'royals_3_hr_at_home', 'royals_zero_errors'],
   };
 
   const teamsWithAch = Object.entries(teamAchIds).filter(([_, ids]) => ids.some(id => achs[id]));
@@ -999,6 +1038,7 @@ function checkLocalHero() {
     redsox: ['sox_10_doubles', 'sox_fenway_win', 'sox_pole_hr', 'sox_100_games', 'sox_100_wins', 'sox_15_runs', 'sox_shutout', 'sox_25_home'],
     tigers: ['tigers_win', 'tigers_100_games', 'tigers_50_wins', 'tigers_10_runs', 'tigers_cg', 'tigers_25_home', 'tigers_4_hr', 'tigers_18_hits'],
     orioles: ['orioles_mem_win', 'orioles_extras', 'orioles_100_games', 'orioles_50_wins', 'orioles_3_hr', 'orioles_4_sb', 'orioles_12_runs', 'orioles_comeback_6'],
+    royals: ['royals_first_win', 'royals_50_wins', 'royals_100_wins', 'royals_25_home', 'royals_george_3', 'royals_balboni_hr', 'royals_4_sb', 'royals_15_hits', 'royals_3_hr_at_home', 'royals_zero_errors'],
   };
 
   if (Object.values(teamAchIds).some(ids => ids.every(id => achs[id]))) unlockAchievement('local_hero');

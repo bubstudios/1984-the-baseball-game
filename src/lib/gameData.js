@@ -418,6 +418,59 @@ export const TEAMS = {
     ],
   },
 
+  royals: {
+    city: "Kansas City",
+    name: "Royals",
+    abbr: "KC",
+    league: "AL",
+    stadium: "Royals Stadium",
+    lineup: [
+      { name: "Willie Wilson", pos: "CF", bats: "S", contact: 7, power: 2, bunting: 8, speed: 10, defense: 7, arm: 6,
+        splits: { vsLHP: { ab: 177, ba: .282, hr: 1 }, vsRHP: { ab: 381, ba: .310, hr: 1 } } },
+      { name: "Frank White", pos: "2B", bats: "R", contact: 6, power: 5, bunting: 5, speed: 5, defense: 10, arm: 7,
+        splits: { vsLHP: { ab: 168, ba: .274, hr: 6 }, vsRHP: { ab: 395, ba: .256, hr: 11 } } },
+      { name: "George Brett", pos: "3B", bats: "L", contact: 10, power: 7, bunting: 4, speed: 5, defense: 7, arm: 8,
+        splits: { vsLHP: { ab: 112, ba: .375, hr: 2 }, vsRHP: { ab: 338, ba: .269, hr: 11 } } },
+      { name: "Hal McRae", pos: "DH", bats: "R", contact: 7, power: 6, bunting: 2, speed: 3, defense: 0, arm: 0,
+        splits: { vsLHP: { ab: 168, ba: .315, hr: 6 }, vsRHP: { ab: 302, ba: .281, hr: 9 } } },
+      { name: "Steve Balboni", pos: "1B", bats: "R", contact: 4, power: 9, bunting: 2, speed: 2, defense: 5, arm: 5,
+        splits: { vsLHP: { ab: 148, ba: .250, hr: 8 }, vsRHP: { ab: 358, ba: .229, hr: 22 } } },
+      { name: "Pat Sheridan", pos: "RF", bats: "L", contact: 6, power: 5, bunting: 4, speed: 5, defense: 6, arm: 6,
+        splits: { vsLHP: { ab: 38, ba: .184, hr: 0 }, vsRHP: { ab: 296, ba: .291, hr: 9 } } },
+      { name: "Darryl Motley", pos: "LF", bats: "R", contact: 5, power: 6, bunting: 3, speed: 5, defense: 6, arm: 6,
+        splits: { vsLHP: { ab: 110, ba: .300, hr: 4 }, vsRHP: { ab: 324, ba: .278, hr: 11 } } },
+      { name: "Jamie Quirk", pos: "C", bats: "L", contact: 5, power: 4, bunting: 3, speed: 2, defense: 5, arm: 6,
+        splits: estSplits(.238, 5, 152, 45, "L") },
+      { name: "Onix Concepcion", pos: "SS", bats: "R", contact: 5, power: 2, bunting: 5, speed: 5, defense: 7, arm: 6,
+        splits: { vsLHP: { ab: 121, ba: .248, hr: 0 }, vsRHP: { ab: 296, ba: .250, hr: 1 } } },
+    ],
+    bench: [
+      { name: "Dane Iorg", pos: "1B/OF", bats: "L", contact: 6, power: 3, bunting: 3, speed: 3, defense: 5, arm: 5,
+        splits: estSplits(.276, 4, 142, 40, "L") },
+      { name: "Buddy Biancalana", pos: "SS", bats: "S", contact: 4, power: 2, bunting: 5, speed: 6, defense: 6, arm: 5,
+        splits: estSplits(.188, 2, 98, 28, "S") },
+      { name: "John Wathan", pos: "C/OF", bats: "R", contact: 5, power: 3, bunting: 4, speed: 4, defense: 5, arm: 6,
+        splits: estSplits(.249, 4, 181, 52, "R") },
+      { name: "Greg Pryor", pos: "INF", bats: "R", contact: 5, power: 2, bunting: 5, speed: 4, defense: 6, arm: 5,
+        splits: estSplits(.231, 2, 134, 38, "R") },
+      { name: "Cesar Geronimo", pos: "OF", bats: "L", contact: 5, power: 3, bunting: 4, speed: 4, defense: 7, arm: 7,
+        splits: estSplits(.244, 3, 168, 48, "L") },
+    ],
+    rotation: [
+      { name: "Bret Saberhagen", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 8, control: 9, contact: 3, power: 1, bunting: 5, speed: 3 },
+      { name: "Bud Black", pos: "SP", throws: "L", bats: "L", stamina: 8, pitchSpeed: 6, offSpeed: 7, control: 7, contact: 3, power: 1, bunting: 5, speed: 2 },
+      { name: "Charlie Leibrandt", pos: "SP", throws: "L", bats: "L", stamina: 7, pitchSpeed: 5, offSpeed: 8, control: 8, contact: 3, power: 1, bunting: 5, speed: 2 },
+      { name: "Mark Gubicza", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 8, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 3 },
+    ],
+    bullpen: [
+      { name: "Dan Quisenberry", pos: "CL", throws: "R", bats: "R", stamina: 4, pitchSpeed: 4, offSpeed: 9, control: 10, contact: 2, power: 1, bunting: 3, speed: 2, pitches: ["Fastball", "Breaking Ball", "Changeup"], specialty: { name: "The Submarine", pitch: "Breaking Ball", label: "RC" } },
+      { name: "Steve Farr", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Mike Jones", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Joe Beckwith", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Gary Christenson", pos: "RP", throws: "L", bats: "L", stamina: 3, pitchSpeed: 5, offSpeed: 5, control: 4, contact: 2, power: 1, bunting: 3, speed: 2 },
+    ],
+  },
+
   dodgers: {
     city: "Los Angeles",
     name: "Dodgers",
@@ -508,6 +561,10 @@ export const PLAYER_ERRORS = {
   "Gary Redus": 12, "Pete Rose": 5, "Dave Parker": 9, "Cesar Cedeno": 6,
   "Dave Concepcion": 18, "Nick Esasky": 17, "Ron Oester": 14, "Dann Bilardello": 7,
   "Brad Gulden": 3, "Duane Walker": 3, "Tom Lawless": 5, "Wayne Krenchicki": 6, "Eric Davis": 2,
+  // Royals
+  "Willie Wilson": 6, "Frank White": 8, "George Brett": 22, "Hal McRae": 0,
+  "Steve Balboni": 17, "Pat Sheridan": 5, "Darryl Motley": 6, "Jamie Quirk": 7, "Onix Concepcion": 21,
+  "Dane Iorg": 4, "Buddy Biancalana": 5, "John Wathan": 5, "Greg Pryor": 6, "Cesar Geronimo": 2,
 };
 
 // Estimate splits for bench players based on overall stats + handedness
@@ -583,4 +640,6 @@ export const MANAGERS = {
     arguesBallsStrikes: 80, arguesSafeOut: 90, protectsPlayers: 95, strategicEjections: 40 },
   reds: { name: "Pete Rose", personality: 6, coach: "George Scherger",
     arguesBallsStrikes: 55, arguesSafeOut: 70, protectsPlayers: 75, strategicEjections: 15 },
+  royals: { name: "Dick Howser", personality: 4, coach: "Rocky Colavito",
+    arguesBallsStrikes: 35, arguesSafeOut: 50, protectsPlayers: 55, strategicEjections: 10 },
 };
