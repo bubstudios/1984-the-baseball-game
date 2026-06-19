@@ -35,7 +35,7 @@ export const BALLPARK_EVENTS = [
   { id: "vendor_spill", category: "fans", text: "A vendor has dropped a tray of hot dogs — the fans near the aisle are helping clean it up.", delay: 10, rarity: "common" },
 
   // ── EQUIPMENT ──
-  { id: "broken_bat", category: "equipment", text: "Broken bat shard flies toward the mound — grounds crew clears the field.", delay: 10, rarity: "common" },
+  { id: "broken_bat", category: "equipment", text: "Broken bat shard flies toward the mound — grounds crew clears the field.", delay: 10, rarity: "common", requiresContact: true },
   { id: "cracked_helmet", category: "equipment", text: "The batter's helmet has cracked — he'll need a replacement before continuing.", delay: 20, rarity: "uncommon" },
   { id: "mask_strap", category: "equipment", text: "The catcher's mask strap has broken — the backup mask is being brought out.", delay: 30, rarity: "uncommon" },
   { id: "broken_belt", category: "equipment", text: "The pitcher has broken his belt! A clubhouse attendant is sprinting out with a new one.", delay: 45, rarity: "rare" },
@@ -56,7 +56,7 @@ export const BALLPARK_EVENTS = [
   { id: "organist_wrong", category: "stadium", text: "The organist just played 'Take Me Out to the Ballgame' in the third inning. Someone's getting a talking-to.", delay: 0, rarity: "rare" },
 
   // ── GROUNDS CREW ──
-  { id: "loose_base", category: "grounds", text: "First base has come loose! The grounds crew is running out to re-anchor it.", delay: 40, rarity: "uncommon", effects: { momentumReset: true } },
+  { id: "loose_base", category: "grounds", text: "First base has come loose! The grounds crew is running out to re-anchor it.", delay: 40, rarity: "uncommon", effects: { momentumReset: true }, requiresContact: true },
   { id: "home_plate_shifted", category: "grounds", text: "Home plate has shifted — the crew is digging it out and resetting it.", delay: 35, rarity: "uncommon" },
   { id: "mound_repair", category: "grounds", text: "The mound needs a quick repair — the head groundskeeper is out with a rake and tamp.", delay: 25, rarity: "uncommon" },
   { id: "divot_infield", category: "grounds", text: "A large divot in the infield dirt — grounds crew fills it in quickly.", delay: 15, rarity: "common" },
@@ -77,7 +77,7 @@ export const BALLPARK_EVENTS = [
   { id: "dog_on_field", category: "animals", text: "A dog has wandered onto the field! The outfielders are trying to coax it toward the dugout.", delay: 90, rarity: "rare", effects: { morale: 5 } },
   { id: "cat_on_field", category: "animals", text: "A cat has found its way into the outfield. The grounds crew is trying to catch it — good luck.", delay: 60, rarity: "rare" },
   { id: "bird_delays", category: "animals", text: "A bird is refusing to leave the batter's box — the umpire is waving his arms but it's not budging.", delay: 25, rarity: "uncommon" },
-  { id: "bird_hit", category: "animals", text: "The batted ball struck a bird! The bird appears okay — it flew off toward the outfield.", delay: 15, rarity: "legendary" },
+  { id: "bird_hit", category: "animals", text: "The batted ball struck a bird! The bird appears okay — it flew off toward the outfield.", delay: 15, rarity: "legendary", requiresContact: true },
   { id: "squirrel", category: "animals", text: "A squirrel is sprinting across the infield! The crowd cheers as it dodges the shortstop.", delay: 20, rarity: "uncommon" },
   { id: "bee_swarm", category: "animals", text: "A swarm of bees has settled near the on-deck circle! Players are being moved to safety.", delay: 120, rarity: "rare", effects: { concentrationPenalty: 2 } },
   { id: "seagulls", category: "animals", text: "A flock of seagulls has landed in the outfield — they're completely ignoring the game.", delay: 30, rarity: "uncommon" },
@@ -114,7 +114,7 @@ export const BALLPARK_EVENTS = [
   { id: "power_failure", category: "legendary", text: "Power failure in the surrounding neighborhood — we're running on emergency lights for the moment.", delay: 240, rarity: "legendary" },
   { id: "fireworks_accidental", category: "legendary", text: "The fireworks have accidentally been triggered! The sky above the stadium is exploding with color mid-inning!", delay: 30, rarity: "legendary" },
   { id: "mascot_ejected", category: "legendary", text: "The mascot has been ejected by the umpire! You have to see it to believe it.", delay: 45, rarity: "legendary" },
-  { id: "ball_in_jersey", category: "legendary", text: "The ball got stuck inside a player's jersey! The umpire is trying to fish it out while everyone laughs.", delay: 30, rarity: "legendary" },
+  { id: "ball_in_jersey", category: "legendary", text: "The ball got stuck inside a player's jersey! The umpire is trying to fish it out while everyone laughs.", delay: 30, rarity: "legendary", requiresContact: true },
   { id: "two_balls_field", category: "legendary", text: "There are two baseballs on the field at the same time! Someone threw one in from the bullpen by accident.", delay: 15, rarity: "legendary" },
   { id: "anthem_return", category: "legendary", text: "The national anthem singer from earlier has returned to the field — apparently there was a mix-up about the recognition ceremony.", delay: 60, rarity: "legendary" },
 ];
@@ -138,6 +138,11 @@ export function rollBallparkEvent(gameState) {
   // Even if the roll passes, only one event per game
   eventFired = true;
 
+  // Determine if the last play involved bat-on-ball contact
+  const lastPlayType = gameState.lastPlay?.type;
+  const contactTypes = ['single','double','triple','homerun','groundout','flyout','lineout','popout','foul','error','sacfly','fc','doubleplay'];
+  const hadContact = contactTypes.includes(lastPlayType);
+
   // Weight by rarity
   const roll = Math.random();
   let pool;
@@ -146,7 +151,13 @@ export function rollBallparkEvent(gameState) {
   else if (roll < 0.95) pool = BALLPARK_EVENTS.filter(e => e.rarity === "rare");
   else pool = BALLPARK_EVENTS.filter(e => e.rarity === "legendary");
 
-  if (pool.length === 0) pool = BALLPARK_EVENTS;
+  // Filter out contact-required events when there was no contact
+  if (!hadContact) {
+    pool = pool.filter(e => !e.requiresContact);
+  }
+
+  if (pool.length === 0) pool = BALLPARK_EVENTS.filter(e => hadContact || !e.requiresContact);
+  if (pool.length === 0) return null;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 

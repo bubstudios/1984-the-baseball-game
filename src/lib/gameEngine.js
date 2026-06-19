@@ -523,7 +523,32 @@ function resolveSwing(state, swingType, pitch) {
           if (state.outs >= 3) endHalfInning(state); return;
         } else if (roll < dpc + 0.30) {
           let fcText;
-          if (r1 && r2 && Math.random() < 0.55 && state.outs < 2) { const r3 = state.bases[2]; if (r3) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[2] = null; state.bases[1] = state.bases[0]; state.bases[0] = batter; batter.gameStats.ab++; fcText = `${batter.name} ${pickLine(FC_LINES)} ${posNames[out.pos] || out.pos} — force out at 3rd! ${r2 ? r2.name + ' retired' : ''}${r3 ? ` ${r3.name.split(' ').pop()} scores` : ''} — batter reaches on fielder's choice.`; }
+          const fielderPos = out.pos;
+          const r1runner = r1, r2runner = r2;
+          // With runners on 1st & 2nd: force depends on who fields it
+          // 2B/SS → force at 2nd (flip to SS covering, relay to 1st)
+          // 3B → force at 3rd (step on bag, throw to 1st)
+          if (r1runner && r2runner && state.outs < 2) {
+            const r3 = state.bases[2];
+            const forceAtThird = fielderPos === '3B' || (fielderPos === 'SP' && Math.random() < 0.4);
+            if (forceAtThird) {
+              // 3B or pitcher fields → steps on 3rd for the force
+              if (r3) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; }
+              state.bases[2] = null;
+              state.bases[1] = r1runner;
+              state.bases[0] = batter;
+              batter.gameStats.ab++;
+              fcText = `${batter.name} ${pickLine(FC_LINES)} ${posNames[fielderPos] || fielderPos} — force out at 3rd! ${r2runner ? r2runner.name + ' retired' : ''}${r3 ? ` ${r3.name.split(' ').pop()} scores` : ''} — batter reaches on fielder's choice.`;
+            } else {
+              // 2B/SS/1B → flip to 2nd for the force, batter safe at 1st
+              if (r3) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; }
+              state.bases[2] = state.bases[1]; // r2 moves to 3rd
+              state.bases[1] = null;             // r1 is out at 2nd
+              state.bases[0] = batter;           // batter safe at 1st
+              batter.gameStats.ab++;
+              fcText = `${batter.name} ${pickLine(FC_LINES)} ${posNames[fielderPos] || fielderPos} — force out at 2nd! ${r1runner ? r1runner.name + ' retired' : ''}${r3 ? ` ${r3.name.split(' ').pop()} scores` : ''} — batter reaches on fielder's choice.`;
+            }
+          }
           else { const r3 = state.bases[2]; if (r3) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[2] = state.bases[1]; state.bases[1] = null; state.bases[0] = batter; batter.gameStats.ab++; fcText = `${batter.name} ${pickLine(FC_LINES)} ${posNames[out.pos] || out.pos} — force out at 2nd! ${r1 ? r1.name + ' retired' : ''}${r3 ? ` ${r3.name.split(' ').pop()} scores` : ''} — batter reaches on fielder's choice.`; }
           state.log.push({ type: 'fc', text: fcText }); state.lastPlay = { type: 'fc', text: fcText };
           state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return;
