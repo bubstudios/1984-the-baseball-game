@@ -627,9 +627,14 @@ export function processAtBat(state, pitchType, swingType) {
   // ── Reach Back: specialty pitch — near-automatic strike ──
   const isReachBack = pitchType && (pitchType.name === '__reachback__' || pitchType === '__reachback__');
   if (isReachBack) {
+    const pitcher = getCurrentPitcher(newState);
+    // Reset reach-back counter when a different pitcher takes the mound
+    if (newState._reachBackPitcher !== pitcher.name) {
+      newState._reachBackUses = 0;
+      newState._reachBackPitcher = pitcher.name;
+    }
     newState._reachBackUses = (newState._reachBackUses || 0) + 1;
     newState._wasReachBack = true;
-    const pitcher = getCurrentPitcher(newState);
     pitcher.gameStats.pitches++;
     const batter = getCurrentBatter(newState);
     // Specialty pitch: 95% strike, 85% chance of inducing weak contact or whiff

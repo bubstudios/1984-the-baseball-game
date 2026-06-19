@@ -26,7 +26,7 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
   const historical = (playerHistory || []).filter(p => !activeNames.has(p.name));
   const allBatters = [...lineup, ...historical];
 
-  // Collect all pitchers: current pitcher + any pitcher from history
+  // Collect all pitchers: current pitcher + history + lineup pitchers who pitched
   const pitcherNames = new Set();
   const allPitchers = [];
   if (pitcher) {
@@ -35,6 +35,14 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
   }
   (playerHistory || []).forEach(p => {
     if ((p.gameStats?.pitches > 0 || p.gameStats?.ip > 0) && !pitcherNames.has(p.name)) {
+      pitcherNames.add(p.name);
+      allPitchers.push(p);
+    }
+  });
+  // Also check the lineup for pitchers who have accumulated stats but aren't the active pitcher
+  lineup.forEach(p => {
+    const isPitcherSlot = ['SP','RP','CL'].includes(p.assignedPos || p.pos);
+    if (isPitcherSlot && (p.gameStats?.pitches > 0 || p.gameStats?.ip > 0) && !pitcherNames.has(p.name)) {
       pitcherNames.add(p.name);
       allPitchers.push(p);
     }
