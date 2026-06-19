@@ -1,6 +1,7 @@
 import React from 'react';
-import { ACHIEVEMENTS, loadAchievements } from '@/lib/achievements';
-import { Trophy, Lock } from 'lucide-react';
+import { ACHIEVEMENTS, loadAchievements, resetAchievements } from '@/lib/achievements';
+import { Trophy, Lock, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 const CATEGORY_INFO = {
   first: { label: 'First-Time', color: 'bg-amber-500/10 border-amber-500/20', dot: 'bg-amber-400' },
@@ -35,9 +36,17 @@ const TEAM_LABELS = {
 };
 
 export default function AchievementsPanel() {
-  const unlocked = loadAchievements();
+  const [unlocked, setUnlocked] = useState(loadAchievements());
+  const [confirmReset, setConfirmReset] = useState(false);
   const totalUnlocked = Object.keys(unlocked).length;
   const total = ACHIEVEMENTS.length;
+
+  const handleReset = () => {
+    if (!confirmReset) { setConfirmReset(true); return; }
+    resetAchievements();
+    setUnlocked({});
+    setConfirmReset(false);
+  };
 
   // Group achievements by category
   const grouped = {};
@@ -49,7 +58,17 @@ export default function AchievementsPanel() {
   return (
     <div className="space-y-4">
       {/* Progress header */}
-      <div className="bg-card border border-border rounded-xl p-3 text-center">
+      <div className="bg-card border border-border rounded-xl p-3 text-center relative">
+        <button
+          onClick={handleReset}
+          className={`absolute top-2 right-2 h-7 px-2 rounded-md text-[10px] font-heading transition-all ${
+            confirmReset
+              ? 'bg-destructive/20 border border-destructive/40 text-destructive'
+              : 'bg-muted/30 border border-muted/20 text-muted-foreground/50 hover:text-destructive/70 hover:border-destructive/30'
+          }`}
+        >
+          {confirmReset ? 'Confirm?' : <Trash2 className="w-3 h-3" />}
+        </button>
         <div className="flex items-center justify-center gap-2 mb-1">
           <Trophy className="w-4 h-4 text-primary" />
           <span className="font-heading text-sm text-foreground">Achievements</span>

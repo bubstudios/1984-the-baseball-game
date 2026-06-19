@@ -365,6 +365,19 @@ export function getUnlockedCount() {
   return Object.keys(loadAchievements()).length;
 }
 
+export function resetAchievements() {
+  try {
+    localStorage.removeItem(ACH_KEY);
+  } catch (e) { /* ignore */ }
+}
+
+export function resetAllData() {
+  try {
+    localStorage.removeItem(ACH_KEY);
+    localStorage.removeItem(STATS_KEY);
+  } catch (e) { /* ignore */ }
+}
+
 // ── Public stat helpers ──
 
 export function getStats() { return loadStats(); }

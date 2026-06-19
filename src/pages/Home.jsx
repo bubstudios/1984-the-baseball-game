@@ -29,6 +29,7 @@ import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal'
 import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
 import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement } from '@/lib/achievements';
+import AchievementPopup from '@/components/game/AchievementPopup';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 import { pickAd } from '@/lib/broadcastAds';
 import AdRead from '@/components/game/AdRead';
@@ -55,6 +56,7 @@ export default function Home() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [loadingScreen, setLoadingScreen] = useState(true);
   const [newAchievements, setNewAchievements] = useState([]);
+  const [showAchievementPopup, setShowAchievementPopup] = useState(false);
   const [argumentResult, setArgumentResult] = useState(null);
   const [selectedUmpire, setSelectedUmpire] = useState(null);
   const [ejectionCount, setEjectionCount] = useState(0);
@@ -228,6 +230,7 @@ export default function Home() {
         const newOnes = checkGameAchievements(gameState, userTeam);
         if (newOnes.length > 0) {
           setNewAchievements(newOnes);
+          setShowAchievementPopup(true);
         }
       } catch (e) {
         // Silently ignore game-over stat tracking failures — don't crash the UI
@@ -491,6 +494,7 @@ export default function Home() {
     setUserTeam(null);
     setTab('game');
     setNewAchievements([]);
+    setShowAchievementPopup(false);
     setArgumentResult(null);
     setSelectedUmpire(null);
     setInjuryResult(null);
@@ -738,25 +742,12 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Newly unlocked achievements */}
-                {newAchievements.length > 0 && (
-                  <div className="bg-card border border-primary/40 rounded-xl p-3 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Trophy className="w-4 h-4 text-primary" />
-                      <span className="font-heading text-xs text-foreground">Achievement{newAchievements.length > 1 ? 's' : ''} Unlocked!</span>
-                    </div>
-                    {newAchievements.map(id => {
-                      const ach = ACHIEVEMENTS.find(a => a.id === id);
-                      if (!ach) return null;
-                      return (
-                        <div key={id} className="flex items-center gap-2 text-[11px] text-foreground/80">
-                          <span>{ach.icon}</span>
-                          <span className="font-heading font-bold">{ach.name}</span>
-                          <span className="text-muted-foreground">— {ach.desc}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
+                {/* Achievement popup — flashy overlay */}
+                {showAchievementPopup && newAchievements.length > 0 && (
+                  <AchievementPopup
+                    achievementIds={newAchievements}
+                    onDismiss={() => setShowAchievementPopup(false)}
+                  />
                 )}
               </>
             )}
