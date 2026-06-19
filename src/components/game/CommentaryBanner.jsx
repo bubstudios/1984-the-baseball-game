@@ -617,9 +617,22 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
   const hasPlayResult = lastPlay?.text && !['strike','ball','foul'].includes(lastPlay?.type);
+  const wasReachBack = gameState?._wasReachBack;
+  const reachBackPitcher = wasReachBack && pitcher?.specialty ? pitcher : null;
 
   let text;
-  if (hasPlayResult) {
+  if (wasReachBack && reachBackPitcher) {
+    // Super pitch announcer call — mention the signature weapon
+    const calls = [
+      `${reachBackPitcher.name} reaches back for something extra — the ${reachBackPitcher.specialty} is coming!`,
+      `${reachBackPitcher.name} goes to the well — here's that vintage ${reachBackPitcher.specialty}!`,
+      `${reachBackPitcher.name} summons the ${reachBackPitcher.specialty} — the crowd rises!`,
+      `${reachBackPitcher.name} uncorks the ${reachBackPitcher.specialty} — he's pulling out all the stops!`,
+      `You can feel the electricity — ${reachBackPitcher.name} is about to unleash the ${reachBackPitcher.specialty}!`,
+      `${reachBackPitcher.name} grips it, winds, and here it comes — the legendary ${reachBackPitcher.specialty}`,
+    ];
+    text = calls[Math.floor(Math.random() * calls.length)];
+  } else if (hasPlayResult) {
     // Play result IS the headline — show it prominently
     text = lastPlay.text;
   } else if (isSteal && lastPlay?.text) {

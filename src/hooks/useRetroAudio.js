@@ -454,6 +454,7 @@ export default function useRetroAudio(gameState, enabled) {
   const prevLogIdx = useRef(0);
   const started = useRef(false);
   const hasPlayedAnthem = useRef(false);
+  const lastReachBack = useRef(false);
 
   // Start/stop crowd noise
   useEffect(() => {
@@ -499,6 +500,16 @@ export default function useRetroAudio(gameState, enabled) {
       'strikeout', 'groundout', 'flyout', 'doubleplay',
       'popout', 'lineout', 'caughtstealing', 'fc',
     ]);
+
+    // ── Super Pitch (Reach Back) sound ──
+    if (gameState._wasReachBack && !lastReachBack.current) {
+      lastReachBack.current = true;
+      playSuperPitch();
+      crowdReact('bigHit');
+    }
+    if (!gameState._wasReachBack) {
+      lastReachBack.current = false;
+    }
 
     if (newEntries.length > 0) {
       newEntries.forEach(entry => {
@@ -568,6 +579,52 @@ export default function useRetroAudio(gameState, enabled) {
       prevLogIdx.current = log.length;
     }
   }, [gameState?.log, enabled]);
+}
+
+// ─── Super Pitch (Reach Back) ─────────────────────────────────────────
+// Dramatic rising whoosh — the pitcher digs deep and unleashes their signature weapon
+export function playSuperPitch() {
+  ensureResumed();
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+
+  // Rising sine sweep: low rumble that climbs to a sharp peak
+  const osc = ctx.createOscillator();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(80, now);
+  osc.frequency.exponentialRampToValueAtTime(1200, now + 0.45);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.08, now);
+  gain.gain.linearRampToValueAtTime(0.25, now + 0.25);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(300, now);
+  filter.frequency.exponentialRampToValueAtTime(8000, now + 0.40);
+  filter.Q.value = 5;
+
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.58);
+
+  // Snapping whip crack overlay at the peak
+  setTimeout(() => {
+    const snap = ctx.createOscillator();
+    snap.type = 'square';
+    snap.frequency.setValueAtTime(2400, now + 0.40);
+    snap.frequency.exponentialRampToValueAtTime(200, now + 0.48);
+    const snapGain = ctx.createGain();
+    snapGain.gain.setValueAtTime(0.20, now + 0.40);
+    snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.50);
+    snap.connect(snapGain);
+    snapGain.connect(ctx.destination);
+    snap.start(now + 0.40);
+    snap.stop(now + 0.52);
+  }, 400);
 }
 
 export { startCrowdNoise, stopCrowdNoise, crowdReact };
