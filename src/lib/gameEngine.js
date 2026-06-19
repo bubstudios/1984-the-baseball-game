@@ -50,7 +50,7 @@ export function getEffectivePitcher(state) {
   };
 }
 
-export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null, umpire = null) {
+export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null, umpire = null, startingPitcher = null) {
   const home = TEAMS[homeTeam];
   const away = TEAMS[awayTeam];
   const buildLineup = (lineupData, defaultLineup, teamData) => {
@@ -85,7 +85,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
   };
   const homeLineup = buildLineup(customHomeLineup, home.lineup, home);
   const awayLineup = buildLineup(customAwayLineup, away.lineup, away);
-  const homeSP = homeLineup.find(p => p.assignedPos === 'SP') || home.rotation[0];
+  const homeSP = homeLineup.find(p => p.assignedPos === 'SP') || (useDH && startingPitcher ? startingPitcher : home.rotation[0]);
   const awaySP = awayLineup.find(p => p.assignedPos === 'SP') || away.rotation[0];
   return {
     homeTeam, awayTeam, inning: 1, halfInning: 'top', outs: 0, balls: 0, strikes: 0,

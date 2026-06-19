@@ -97,6 +97,12 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
 }
 
 export default function LineupManager({ teamKey, teamData, useDH, parkTeam, onConfirm, onBack }) {
+  const [selectedPitcher, setSelectedPitcher] = useState(teamData.rotation[0]?.name || '');
+  const rotationPitchers = useMemo(() => teamData.rotation || [], [teamData]);
+  const selectedPitcherData = useMemo(() => {
+    return rotationPitchers.find(p => p.name === selectedPitcher) || rotationPitchers[0] || null;
+  }, [rotationPitchers, selectedPitcher]);
+
   const allPositionPlayers = useMemo(() => {
     const players = [...teamData.lineup];
     if (teamData.bench) players.push(...teamData.bench);
@@ -221,7 +227,8 @@ export default function LineupManager({ teamKey, teamData, useDH, parkTeam, onCo
         gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
       };
     });
-    onConfirm(customLineup);
+    // When DH is on, pass the selected starting pitcher separately so the game engine uses them
+    onConfirm(customLineup, useDH ? selectedPitcherData : null);
   };
 
   const hasDuplicates = duplicatePositions.length > 0;
@@ -315,6 +322,35 @@ export default function LineupManager({ teamKey, teamData, useDH, parkTeam, onCo
             ))}
           </div>
         </div>
+
+        {/* Starting Pitcher selector — only when DH is on */}
+        {useDH && (
+          <div className="bg-card border border-border rounded-xl p-3 mb-4">
+            <h3 className="font-heading text-sm font-bold text-foreground mb-2">
+              Starting Pitcher
+            </h3>
+            <p className="text-[10px] text-muted-foreground mb-2 font-body">
+              Choose your starter — they won't bat with the DH rule in effect.
+            </p>
+            <select
+              value={selectedPitcher}
+              onChange={(e) => setSelectedPitcher(e.target.value)}
+              className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              {rotationPitchers.map(p => (
+                <option key={p.name} value={p.name}>
+                  {p.name} — SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}
+                </option>
+              ))}
+            </select>
+            {selectedPitcherData && (
+              <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground">
+                <span>Throws: <span className="text-foreground font-bold">{selectedPitcherData.throws || 'R'}</span></span>
+                <span>Stamina: <span className="text-foreground font-bold">{selectedPitcherData.stamina}/10</span></span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Validation messages */}
         {hasDuplicates && (

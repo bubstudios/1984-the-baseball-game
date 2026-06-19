@@ -85,7 +85,7 @@ export default function Home() {
   useRobotAnnouncer(gameState, robotVoice, announcerName);
   useRetroAudio(gameState, retroAudio);
 
-  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather) => {
+  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, startingPitcher) => {
     setHomeTeam(home);
     setAwayTeam(away);
     setUserTeam(home); // user controls home team
@@ -99,7 +99,7 @@ export default function Home() {
     resetBallparkEvents();
     setGameStadium(lineupPhase?.parkTeam ? TEAMS[lineupPhase.parkTeam]?.stadium : null);
     setGameWeather(weather || null);
-    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire);
+    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire, startingPitcher);
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
@@ -128,8 +128,8 @@ export default function Home() {
     setBallparkPhase(null);
   }, [ballparkPhase]);
 
-  const handleLineupConfirm = useCallback((customLineup) => {
-    startGame(lineupPhase.home, lineupPhase.away, customLineup, null, lineupPhase.useDH, lineupPhase.weather);
+  const handleLineupConfirm = useCallback((customLineup, startingPitcher) => {
+    startGame(lineupPhase.home, lineupPhase.away, customLineup, null, lineupPhase.useDH, lineupPhase.weather, startingPitcher);
   }, [lineupPhase, startGame]);
 
   // Fireworks: detect home team HRs and wins
