@@ -8,6 +8,11 @@ import { pickRedSoxLine, pickRedSoxPlayerLine } from '@/lib/redSoxBroadcastLines
 import { pickTigersLine, pickTigersPlayerLine } from '@/lib/tigersBroadcastLines';
 import { pickRedsLine, pickRedsPlayerLine } from '@/lib/redsBroadcastLines';
 import { pickRoyalsLine, pickRoyalsPlayerLine } from '@/lib/royalsBroadcastLines';
+import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
+
+// Track blowout activation per game session (module-level)
+let _blowoutGameSeed = null;
+let _blowoutAnnounced = false;
 
 // Player nicknames — researched from 1984 MLB lore
 const NICKNAMES = {
@@ -688,6 +693,24 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   } else if (isCaughtStealing && lastPlay?.text) {
     text = lastPlay.text;
   } else {
+    // ── Blowout Mode: announcers get bored and talk about random stuff ──
+    // 8th inning+, 8+ run margin — broadcasters stop calling the game
+    const inBlowout = isBlowoutMode(gameState);
+    if (inBlowout) {
+      if (_blowoutGameSeed !== gameState) {
+        _blowoutGameSeed = gameState;
+        _blowoutAnnounced = false;
+      }
+      if (!_blowoutAnnounced) {
+        _blowoutAnnounced = true;
+        text = `"${getBlowoutActivationLine()}"`;
+      } else if (Math.random() < 0.22) {
+        // Roughly every 4th pitch, instead of game action, they chat about random stuff
+        const line = pickBlowoutLine(homeTeamKey);
+        if (line) text = `"${line}"`;
+      }
+    }
+    if (!text) {
     // No play result yet (between pitches) — use team-specific or generic flavor
     text = isCubsGame && Math.random() < 0.65
       ? pickHarryLine()
@@ -708,6 +731,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                     : isRoyalsGame && Math.random() < 0.70
                       ? (pickRoyalsPlayerLine(batter?.name) || pickRoyalsLine())
                       : getCommentary(batter, pitcher, gameState, stadiumInfo);
+    }
   }
 
   return (
