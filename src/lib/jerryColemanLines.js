@@ -1,16 +1,36 @@
 // Jerry Coleman & Dave Campbell commentary for Padres home games
-// Frequency weights: 75% baseball, 15% defense, 8% weather/SD, 2% Coleman non-sequitur
+// Generic pool — no player-specific lines
+// Use pickPadresPlayerLine() for contextual player flavor
+
+export function pickPadresLine() {
+  const totalWeight = Object.values(POOLS).reduce((sum, pool) => sum + pool.weight, 0);
+  let roll = Math.random() * totalWeight;
+  for (const [category, pool] of Object.entries(POOLS)) {
+    roll -= pool.weight;
+    if (roll <= 0) return pool.lines[Math.floor(Math.random() * pool.lines.length)];
+  }
+  return POOLS.baseball.lines[0];
+}
+
+// Player-specific flavor — only used when that player is at bat
+export function pickPadresPlayerLine(playerName) {
+  const map = {
+    "Tony Gwynn": ["Nobody works harder on their craft than Tony Gwynn.", "Tony studies pitchers more than anyone in the league.", "Pick a spot — any spot — and Tony can hit it there."],
+    "Steve Garvey": ["Steve Garvey — the definition of consistency.", "Garvey knows the strike zone better than the umpires."],
+  };
+  const lines = map[playerName];
+  if (!lines) return null;
+  return lines[Math.floor(Math.random() * lines.length)];
+}
 
 const POOLS = {
   baseball: {
     weight: 75,
     lines: [
-      // Jerry Coleman signature calls
       "Jerry: \"Oh, Doctor!\"",
       "Jerry: \"You can hang a star on that one, baby!\"",
       "Jerry: \"And the beat goes on.\"",
       "Jerry: \"The natives are getting restless.\"",
-      // Jerry on the Padres
       "Jerry: \"The Padres put pressure on you.\"",
       "Jerry: \"They're aggressive on the bases.\"",
       "Jerry: \"They manufacture runs.\"",
@@ -18,7 +38,6 @@ const POOLS = {
       "Jerry: \"They'll take the extra base.\"",
       "Jerry: \"This club doesn't quit.\"",
       "Jerry: \"This is a scrappy ballclub.\"",
-      // Jerry general baseball
       "Jerry: \"That's the way you play the game right there.\"",
       "Jerry: \"Outstanding baseball from both sides tonight.\"",
       "Jerry: \"This is what makes this game so great.\"",
@@ -28,10 +47,8 @@ const POOLS = {
       "Jerry: \"That's heads-up baseball right there.\"",
       "Jerry: \"Good things happen when you put the ball in play.\"",
       "Jerry: \"That's a situation where both clubs would like to score.\"",
-      // Jerry on pitchers
       "Jerry: \"The pitcher is ahead unless he isn't.\"",
       "Jerry: \"He's really dealing out there.\"",
-      // Dave Campbell analysis
       "Dave: \"Good pitch sequence there.\"",
       "Dave: \"Excellent location.\"",
       "Dave: \"That's what the count allows you to do.\"",
@@ -43,21 +60,12 @@ const POOLS = {
       "Dave: \"That's professional hitting.\"",
       "Dave: \"He'll take that all day.\"",
       "Dave: \"Fundamentally sound baseball.\"",
-      // Dave on double plays
       "Dave: \"That's exactly what the pitcher needed.\"",
       "Dave: \"Couldn't have worked out better.\"",
       "Dave: \"Clean turn at second.\"",
-      // Dave on homers
       "Dave: \"Mistake pitch.\"",
       "Dave: \"He got too much of the plate.\"",
       "Dave: \"The hitter was ready for that one.\"",
-      // Dave on Tony Gwynn
-      "Dave: \"Nobody works harder on their craft than Tony Gwynn.\"",
-      "Dave: \"Tony studies pitchers more than anyone in the league.\"",
-      "Dave: \"Pick a spot — any spot — and Tony can hit it there.\"",
-      // Dave on Garvey
-      "Dave: \"Steve Garvey — the definition of consistency.\"",
-      "Dave: \"Garvey knows the strike zone better than the umpires.\"",
     ],
   },
   defense: {
@@ -98,11 +106,9 @@ const POOLS = {
       "Jerry: \"The breeze off the Pacific keeping things cool.\"",
       "Jerry: \"Look at that sky behind the Western Metal building. Just beautiful.\"",
       "Dave: \"Great night for baseball — the weather here is always a factor in the hitter's favor early.\"",
-      // Military appreciation
       "Jerry: \"We want to thank all our servicemen and women here tonight.\"",
       "Jerry: \"A big salute to the sailors from the naval base.\"",
       "Dave: \"Great crowd tonight — lots of military families in the stands.\"",
-      // Beach atmosphere
       "Jerry: \"The beach towels are out in the bleachers.\"",
       "Jerry: \"Looks like everyone brought their sunscreen today.\"",
     ],
@@ -130,16 +136,3 @@ const POOLS = {
     ],
   },
 };
-
-export function pickPadresLine() {
-  const totalWeight = Object.values(POOLS).reduce((sum, pool) => sum + pool.weight, 0);
-  let roll = Math.random() * totalWeight;
-
-  for (const [category, pool] of Object.entries(POOLS)) {
-    roll -= pool.weight;
-    if (roll <= 0) {
-      return pool.lines[Math.floor(Math.random() * pool.lines.length)];
-    }
-  }
-  return POOLS.baseball.lines[0];
-}

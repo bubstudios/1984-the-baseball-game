@@ -1,12 +1,12 @@
 import React from 'react';
 import { pickHarryLine } from '@/lib/harryCarayLines';
-import { pickPadresLine } from '@/lib/jerryColemanLines';
+import { pickPadresLine, pickPadresPlayerLine } from '@/lib/jerryColemanLines';
 import { pickVinLine } from '@/lib/vinScullyLines';
 import { pickMetsLine } from '@/lib/metsBroadcastLines';
-import { pickYankeesLine } from '@/lib/yankeesBroadcastLines';
-import { pickRedSoxLine } from '@/lib/redSoxBroadcastLines';
-import { pickTigersLine } from '@/lib/tigersBroadcastLines';
-import { pickRedsLine } from '@/lib/redsBroadcastLines';
+import { pickYankeesLine, pickYankeesPlayerLine } from '@/lib/yankeesBroadcastLines';
+import { pickRedSoxLine, pickRedSoxPlayerLine } from '@/lib/redSoxBroadcastLines';
+import { pickTigersLine, pickTigersPlayerLine } from '@/lib/tigersBroadcastLines';
+import { pickRedsLine, pickRedsPlayerLine } from '@/lib/redsBroadcastLines';
 import { pickRoyalsLine, pickRoyalsPlayerLine } from '@/lib/royalsBroadcastLines';
 
 // Player nicknames — researched from 1984 MLB lore
@@ -688,19 +688,19 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
     text = isCubsGame && Math.random() < 0.65
       ? pickHarryLine()
       : isPadresGame && Math.random() < 0.65
-        ? pickPadresLine()
+        ? (pickPadresPlayerLine(batter?.name) || pickPadresLine())
         : isDodgersGame && Math.random() < 0.70
           ? pickVinLine()
           : isMetsGame && Math.random() < 0.65
             ? pickMetsLine()
             : isYankeesGame && Math.random() < 0.65
-              ? pickYankeesLine()
+              ? (pickYankeesPlayerLine(batter?.name) || pickYankeesLine())
               : isRedSoxGame && Math.random() < 0.65
-                ? pickRedSoxLine()
+                ? (pickRedSoxPlayerLine(batter?.name) || pickRedSoxLine())
                 : isTigersGame && Math.random() < 0.65
-                  ? pickTigersLine()
+                  ? (pickTigersPlayerLine(batter?.name) || pickTigersLine())
                   : isRedsGame && Math.random() < 0.70
-                    ? pickRedsLine()
+                    ? (pickRedsPlayerLine(batter?.name) || pickRedsLine())
                     : isRoyalsGame && Math.random() < 0.70
                       ? (pickRoyalsPlayerLine(batter?.name) || pickRoyalsLine())
                       : getCommentary(batter, pitcher, gameState, stadiumInfo);
