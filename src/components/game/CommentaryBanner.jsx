@@ -613,15 +613,21 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isRedSoxGame = homeTeamKey === 'redsox';
   const isTigersGame = homeTeamKey === 'tigers';
   const isRedsGame = homeTeamKey === 'reds';
-  // Steal acknowledgment — always mention a stolen base
+  // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
+  const hasPlayResult = lastPlay?.text && !['strike','ball','foul'].includes(lastPlay?.type);
+
   let text;
-  if (isSteal && lastPlay?.text) {
+  if (hasPlayResult) {
+    // Play result IS the headline — show it prominently
+    text = lastPlay.text;
+  } else if (isSteal && lastPlay?.text) {
     text = `He's going! ${lastPlay.text}`;
   } else if (isCaughtStealing && lastPlay?.text) {
     text = lastPlay.text;
   } else {
+    // No play result yet (between pitches) — use team-specific or generic flavor
     text = isCubsGame && Math.random() < 0.65
       ? pickHarryLine()
       : isPadresGame && Math.random() < 0.65
@@ -664,8 +670,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
         "{text}"
       </p>
 
-      {/* Last play flash */}
-      {lastPlay && lastPlay.text && (
+      {/* Last play flash — only shown when main call is flavor, not play result */}
+      {lastPlay && lastPlay.text && !hasPlayResult && (
         <div className="mt-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-1.5 inline-block">
           <span className="text-sm font-heading font-bold text-primary">{lastPlay.text}</span>
         </div>
