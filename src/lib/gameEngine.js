@@ -524,7 +524,7 @@ function resolveSwing(state, swingType, pitch) {
     }
     const isOutfieldFly = isFlyBall && out.type !== 'popout' && out.type !== 'lineout' && !out.text.includes('shallow ');
     if (isOutfieldFly && state.bases[2] && state.outs < 2) { const r = state.bases[2]; const d2 = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'); const db = d2 ? 0.30 : 0.05; const sfc = 0.30 + db + (r.speed / 10) * 0.42 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.10, Math.min(sfc, 0.90))) { r.gameStats.runs++; scoreRun(state); state.bases[2] = null; batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; state.log.push({ type: 'sacfly', text: `${batter.name} ${pickLine(SAC_FLY_LINES)} ${r.name} tags and scores!` }); batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } }
-    if (isOutfieldFly) { const r3 = state.bases[2], r2 = state.bases[1]; const isDeep = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'); if (r3 && state.outs < 2) { const db2 = isDeep ? 0.40 : 0.10; const htc = db2 + (r3.speed / 10) * 0.30 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.05, Math.min(htc, 0.65))) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; state.bases[2] = null; state.log.push({ type: 'sacfly', text: `${r3.name} tags up and scores!` }); if (r2 && state.outs < 2) { const tc2 = isDeep ? (0.15 + (r2.speed / 10) * 0.40 - (getOutfieldArm(defenders) / 10) * 0.10) : (0.05 + (r2.speed / 10) * 0.25 - (getOutfieldArm(defenders) / 10) * 0.08); if (Math.random() < Math.max(0.03, Math.min(tc2, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); } } batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } } if (r2 && state.outs < 2 && !state.bases[2]) { const tc3 = 0.10 + (r2.speed / 10) * 0.35 - (getOutfieldArm(defenders) / 10) * 0.10; if (Math.random() < Math.max(0.04, Math.min(tc3, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); } } }
+    if (isOutfieldFly) { const r3 = state.bases[2], r2 = state.bases[1], r1 = state.bases[0]; const isDeep = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'); if (r3 && state.outs < 2) { const db2 = isDeep ? 0.40 : 0.10; const htc = db2 + (r3.speed / 10) * 0.30 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.05, Math.min(htc, 0.65))) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; state.bases[2] = null; state.log.push({ type: 'sacfly', text: `${r3.name} tags up and scores!` }); if (r2 && state.outs < 2) { const tc2 = isDeep ? (0.15 + (r2.speed / 10) * 0.40 - (getOutfieldArm(defenders) / 10) * 0.10) : (0.05 + (r2.speed / 10) * 0.25 - (getOutfieldArm(defenders) / 10) * 0.08); if (Math.random() < Math.max(0.03, Math.min(tc2, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); } } batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } } if (r1 && isDeep && !state.bases[1] && state.outs < 2) { const r1Tag = state.bases[0]; if (r1Tag) { const tc1 = 0.15 + (r1Tag.speed / 10) * 0.45 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.06, Math.min(tc1, 0.55))) { state.bases[1] = r1Tag; state.bases[0] = null; state.log.push({ type: 'info', text: `${r1Tag.name} tags up and advances to second!` }); } } } if (r2 && state.outs < 2 && !state.bases[2]) { const tc3 = 0.10 + (r2.speed / 10) * 0.35 - (getOutfieldArm(defenders) / 10) * 0.10; if (Math.random() < Math.max(0.04, Math.min(tc3, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); } } }
     state.log.push({ type: isFlyBall ? 'flyout' : 'groundout', text: out.text });
     state.lastPlay = { type: isFlyBall ? 'flyout' : 'groundout', text: out.text };
     state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
@@ -752,9 +752,22 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const hasDH = !!newState.useDH;
   const pitcherInLineup = cpuLineupField.some(p => p.name === cpuPitcherField.name);
   if (!hasDH && !pitcherInLineup && cpuBullpen.length > 0) {
+    const oldP = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
+    const isFreshReliever = (oldP.gameStats?.ip || 0) < 0.5 && (oldP.pos === 'RP' || oldP.pos === 'CL' || oldP.assignedPos === 'RP' || oldP.assignedPos === 'CL');
+    // If the current pitcher is already a fresh reliever (just brought in by a previous replacement),
+    // don't burn another arm — just fix the lineup and return.
+    if (isFreshReliever) {
+      let si2 = cpuLineupField.findIndex(p => p.order === oldP.order);
+      if (si2 < 0) si2 = cpuLineupField.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
+      if (si2 < 0 && cpuLineupField.length < 10) {
+        cpuLineupField.push({ ...oldP, order: cpuLineupField.length + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+      } else if (si2 >= 0) {
+        cpuLineupField[si2] = { ...oldP, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      }
+      return newState;
+    }
     const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
     const newPitcher = sorted[0], newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
-    const oldP = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
     if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
     const bpi2 = cpuBullpen.findIndex(p => p.name === newPitcher.name); if (bpi2 >= 0) cpuBullpen.splice(bpi2, 1);
     const hk2 = cpuPitchingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
@@ -765,6 +778,8 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     if (si2 >= 0) {
       const le2 = { ...newPitcher, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
       cpuLineupField[si2] = le2;
+    } else if (cpuLineupField.length < 10) {
+      cpuLineupField.push({ ...newPitcher, order: cpuLineupField.length + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
     }
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
     return newState;

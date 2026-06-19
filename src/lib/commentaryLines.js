@@ -195,7 +195,8 @@ const END_INNING_LINES = [
   c("That's all for this half inning."), c("Time to switch sides."),
   c("The threat is over."), c("Nobody left standing."),
   c("They'll head back to the dugout.", 'uncommon'),
-  c("Three up, three down.", 'uncommon'),
+  c("The side goes down in order.", 'uncommon'),
+  c("Clean inning for the defense.", 'uncommon'),
   c("Nothing across that inning.", 'uncommon'),
   c("That's a quick one — grab a hot dog.", 'rare'),
 ];
