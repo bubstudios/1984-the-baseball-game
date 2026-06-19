@@ -2,8 +2,10 @@
 // Player-specific lines only used when that player is involved (at bat or on mound)
 
 // ── Generic flavor pool (NO player-specific lines) ──
-export function pickRoyalsLine() {
-  const all = [...ROUTINE, ...RARE, ...ULTRA_RARE, ...FOUNTAIN_LINES, ...KC_REFERENCES, ...STRIKEOUT_LINES, ...PITCHING_NOTES];
+export function pickRoyalsLine(isNight = true) {
+  const fountains = isNight ? FOUNTAIN_LINES : FOUNTAIN_LINES.filter(l => !NIGHT_ONLY_FOUNTAIN.includes(l));
+  const kcRefs = isNight ? KC_REFERENCES : KC_REFERENCES.filter(l => !NIGHT_ONLY_KC.includes(l));
+  const all = [...ROUTINE, ...RARE, ...ULTRA_RARE, ...fountains, ...kcRefs, ...STRIKEOUT_LINES, ...PITCHING_NOTES];
   return all[Math.floor(Math.random() * all.length)];
 }
 
@@ -31,12 +33,25 @@ const ROUTINE = [
   "No trouble there.",
   "Right where he was supposed to be.",
   "Routine chance.",
-  "Three up, three down.",
   "That'll do it.",
   "A smooth play.",
   "Not a difficult chance.",
   "That's an out.",
   "Back to the dugout.",
+];
+
+// Night-only lines — filtered out during day games
+const NIGHT_ONLY_FOUNTAIN = [
+  "A beautiful evening at Royals Stadium.",
+  "The fountains are flowing tonight.",
+  "A gorgeous evening in Kansas City.",
+  "The fountains beyond the outfield are lit beautifully tonight.",
+  "The water is sparkling tonight.",
+];
+
+const NIGHT_ONLY_KC = [
+  "A beautiful night in the Heartland.",
+  "A beautiful baseball night in the Heartland.",
 ];
 
 // ── Strikeouts ──

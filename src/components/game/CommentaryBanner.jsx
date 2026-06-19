@@ -517,7 +517,7 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
 
   // Runners on
   if (runnersOn === 1) options.push(`Runner aboard for ${lastName}`);
-  if (runnersOn === 2) options.push(`Two on, two ${outs === 2 ? 'away' : 'down'}`);
+  if (runnersOn === 2 && outs === 2) options.push(`Two on, two away — ${lastName} at the dish`);
   if (runnersOn === 3) options.push(`Bases loaded, ${outs === 0 ? 'nobody' : outs + ' ' + (outs === 1 ? 'out' : 'outs')}`);
 
   // Situation
@@ -729,7 +729,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                   : isRedsGame && Math.random() < 0.70
                     ? (pickRedsPlayerLine(batter?.name) || pickRedsLine())
                     : isRoyalsGame && Math.random() < 0.70
-                      ? (pickRoyalsPlayerLine(batter?.name) || pickRoyalsLine())
+                      ? (pickRoyalsPlayerLine(batter?.name) || pickRoyalsLine(gameState?.weather?.isDay !== false))
                       : getCommentary(batter, pitcher, gameState, stadiumInfo);
     }
   }

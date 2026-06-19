@@ -217,8 +217,9 @@ export default function Home() {
   const checkForArgument = useCallback((state) => {
     if (!state || state.gameOver) return state;
 
-    // Check for random ballpark event (one per game)
-    const bpEvent = rollBallparkEvent(state);
+    // Check for random ballpark event (one per game) — only between at-bats
+    const isBetweenAtBats = state.balls === 0 && state.strikes === 0;
+    const bpEvent = isBetweenAtBats ? rollBallparkEvent(state) : null;
     if (bpEvent && !ballparkEvent) {
       setBallparkEvent(bpEvent);
     }
