@@ -69,12 +69,16 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
         gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
         order: lineup.length + 1 });
     }
-    if (!useDH && teamData?.rotation?.length > 0) {
-      const spName = teamData.rotation[0].name;
-      if (!lineup.find(p => p.name === spName)) {
-        lineup.push({ ...teamData.rotation[0], assignedPos: 'SP',
-          gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
-          order: lineup.length + 1 });
+    if (!useDH) {
+      // Strip any DH players from the default lineup — pitcher will bat
+      lineup = lineup.filter(p => p.pos !== 'DH');
+      if (teamData?.rotation?.length > 0) {
+        const spName = teamData.rotation[0].name;
+        if (!lineup.find(p => p.name === spName)) {
+          lineup.push({ ...teamData.rotation[0], assignedPos: 'SP',
+            gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+            order: lineup.length + 1 });
+        }
       }
     }
     return lineup;
@@ -305,11 +309,11 @@ export function attemptSteal(state, baseIndex) {
   sc = Math.max(0.08, Math.min(sc, 0.80));
   if (Math.random() < sc) {
     runner.gameStats.sb = (runner.gameStats.sb || 0) + 1;
-    if (baseIndex + 1 >= 3) { runner.gameStats.runs++; scoreRun(newState); newState.bases[baseIndex] = null; newState.log.push({ type: 'info', text: `🏃 ${runner.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, 'home')}` }); }
-    else { newState.bases[baseIndex + 1] = runner; newState.bases[baseIndex] = null; newState.log.push({ type: 'info', text: `🏃 ${runner.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, ['second','third','home'][baseIndex])}` }); }
+    if (baseIndex + 1 >= 3) { runner.gameStats.runs++; scoreRun(newState); newState.bases[baseIndex] = null; const stxt = `🏃 ${runner.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, 'home')}`; newState.log.push({ type: 'steal', text: stxt }); newState.lastPlay = { type: 'steal', text: stxt }; }
+    else { newState.bases[baseIndex + 1] = runner; newState.bases[baseIndex] = null; const stxt = `🏃 ${runner.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, ['second','third','home'][baseIndex])}`; newState.log.push({ type: 'steal', text: stxt }); newState.lastPlay = { type: 'steal', text: stxt }; }
   } else {
     runner.gameStats.cs = (runner.gameStats.cs || 0) + 1; newState.bases[baseIndex] = null; recordOut(newState);
-    newState.log.push({ type: 'info', text: `❌ ${runner.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, ['second','third','home'][baseIndex])}` });
+    const cstxt = `❌ ${runner.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, ['second','third','home'][baseIndex])}`; newState.log.push({ type: 'caughtstealing', text: cstxt }); newState.lastPlay = { type: 'caughtstealing', text: cstxt };
   }
   newState.pendingSteal = null;
   return newState;
