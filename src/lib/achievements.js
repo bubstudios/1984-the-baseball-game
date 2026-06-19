@@ -664,6 +664,7 @@ export function checkGameAchievements(gameState, userTeam) {
 
   const log = gameState.log || [];
   const logText = log.map(l => l.text).join(' ');
+  const userNames = allUserPlayers.map(p => p.name);
 
   // ── FIRST-TIME ──
   u('play_ball');
@@ -685,8 +686,7 @@ export function checkGameAchievements(gameState, userTeam) {
   if (userWon) u('ballgame');
 
   // ── HITTING (user team only) ──
-  // infield hit: check log entries of type 'single' mentioning user players
-  const userNames = allUserPlayers.map(p => p.name);
+  // userNames already defined above
   if (log.some(l => l.type === 'single' && l.text && (l.text.includes('infield single') || l.text.includes('beats it out')) && userNames.some(n => l.text.includes(n)))) u('infield_hit');
   if (log.some(l => l.type === 'double' && l.text && userNames.some(n => l.text.includes(n)))) u('gap_power');
   if (log.some(l => l.type === 'triple' && l.text && userNames.some(n => l.text.includes(n)))) u('legs_for_days');

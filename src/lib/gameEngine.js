@@ -241,10 +241,19 @@ function advanceRunners(state, bases, batter, isHit = false) {
           const tc = (0.12 + speedFactor * 0.40 - armPenalty * 0.6 - positioningPenalty * 0.4) * outsMultiplier;
           if (Math.random() < Math.max(0.03, tc)) { state.bases[2] = runner; state.bases[0] = null; state.log.push({ type: 'info', text: `${runner.name} wheels to third on the single!` }); }
         }
-      } else if (i === 1 && bases === 1) {
-        const twoOutBonus = state.outs >= 2 ? 0.20 : 0;
-        const hc = (0.28 + speedFactor * 0.55 - armPenalty - positioningPenalty + twoOutBonus) * outsMultiplier;
-        if (Math.random() < Math.max(0.05, hc)) { runner.gameStats.runs++; scoreRun(state); rbi++; state.bases[1] = null; state.log.push({ type: 'info', text: `${runner.name} scores from second on the single!` }); }
+      }
+    }
+    // Runner from 2nd scoring on single — check state.bases[2] (the runner was moved there by standard advancement)
+    if (bases === 1 && preBases[1]) {
+      const runnerAt3rd = state.bases[2];
+      if (runnerAt3rd && runnerAt3rd.name === preBases[1].name) {
+        const speedFactor = runnerAt3rd.speed / 10;
+        const twoOutBonus = state.outs >= 2 ? 0.28 : 0;
+        const hc = (0.25 + speedFactor * 0.55 - armPenalty * 0.9 - positioningPenalty * 0.8 + twoOutBonus) * outsMultiplier;
+        if (Math.random() < Math.max(0.06, Math.min(hc, 0.92))) {
+          runnerAt3rd.gameStats.runs++; scoreRun(state); rbi++; state.bases[2] = null;
+          state.log.push({ type: 'info', text: `${runnerAt3rd.name} scores from second on the single!` });
+        }
       }
     }
   }
@@ -258,7 +267,15 @@ function advanceRunners(state, bases, batter, isHit = false) {
     if (b1 && b1.name === batter.name && r3AdvancedToThird && !state.bases[1]) {
       const ofArm = getOutfieldArm(defenders);
       const sc = 0.08 + (r3.speed / 10) * 0.28 - (ofArm / 10) * 0.06 + (batter.speed / 10) * 0.10;
-      if (Math.random() < Math.max(0.02, Math.min(sc, 0.28))) { state.bases[1] = batter; state.bases[0] = null; state.log.push({ type: 'info', text: `${batter.name.split(' ').pop()} takes second — defense threw to third!` }); }
+      if (Math.random() < Math.max(0.02, Math.min(sc, 0.28))) {
+        state.bases[1] = batter; state.bases[0] = null;
+        const takeSecondText = `${batter.name.split(' ').pop()} takes second — defense threw to third!`;
+        state.log.push({ type: 'info', text: takeSecondText });
+        // Enhance lastPlay to include this exciting detail
+        if (state.lastPlay && state.lastPlay.text) {
+          state.lastPlay.text = `${state.lastPlay.text} — ${takeSecondText}`;
+        }
+      }
     }
   }
   batter.gameStats.rbi += rbi; pitcher.gameStats.r += rbi; pitcher.gameStats.er += rbi;
@@ -357,8 +374,9 @@ function resolvePitch(state, pitchType) {
         }
       }
       const wpBase = pickLine(WILD_PITCH_LINES);
-      state.log.push({ type: 'error', text: scored ? `${wpBase} ${scored.name.split(' ').pop()} scores!${moved.length ? ' Runners advance.' : ''}` : `${wpBase} Runners advance!` });
-      state.lastPlay = { type: 'error', text: scored ? `${wpBase} — ${scored.name.split(' ').pop()} scores!` : wpBase };
+      const wpDesc = scored ? `${wpBase} ${scored.name.split(' ').pop()} scores!${moved.length ? ' Runners advance.' : ''}` : `${wpBase} Runners advance!`;
+      state.log.push({ type: 'error', text: wpDesc });
+      state.lastPlay = { type: 'error', text: wpDesc };
     }
     state.balls++;
     return { pitchType: pitchType.name, isStrike: false, location: 'wild pitch', isWildPitch: true };
@@ -498,12 +516,22 @@ function resolveSwing(state, swingType, pitch) {
       state.log.push({ type: 'homerun', text: `💥 ${ht}` }); state.lastPlay = { type: 'homerun', text: `💥 ${ht}` };
     } else if (hr2 < (effPwr * 0.10 + sf2 * 0.08) * doubleMod) {
       const rbi = advanceRunners(state, 3, batter, true);
-      const tripText = `${batter.name} ${pickLine(TRIPLE_LINES)}${rbi ? ` ${rbi} RBI!` : ''}`;
+      let tripFlavor = '';
+      const bpTrp = BALLPARKS[stadiumName];
+      if (bpTrp?.quirks?.includes('hugeOutfield') || bpTrp?.quirks?.includes('fountains')) {
+        tripFlavor = ` — the spacious outfield at ${stadiumName} gives the runner time!`;
+      }
+      const tripText = `${batter.name} ${pickLine(TRIPLE_LINES)}${tripFlavor}${rbi ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'triple', text: tripText });
       state.lastPlay = { type: 'triple', text: tripText };
     } else if (hr2 < effPwr * 0.32 * doubleMod) {
       const rbi = advanceRunners(state, 2, batter, true);
-      const dblText = `${batter.name} ${pickLine(DOUBLE_LINES)}${rbi ? ` ${rbi} RBI!` : ''}`;
+      let dblFlavor = '';
+      const bpDbl = BALLPARKS[stadiumName];
+      if (bpDbl?.quirks?.includes('hugeOutfield') || bpDbl?.quirks?.includes('fountains')) {
+        dblFlavor = ` — the big outfield at ${stadiumName} turns a single into two!`;
+      }
+      const dblText = `${batter.name} ${pickLine(DOUBLE_LINES)}${dblFlavor}${rbi ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'double', text: dblText });
       state.lastPlay = { type: 'double', text: dblText };
     } else {
@@ -549,6 +577,28 @@ function resolveSwing(state, swingType, pitch) {
     }
     if (isGrounder) {
       const r1 = state.bases[0], r2 = state.bases[1];
+      if (r1 && state.outs < 2) {
+        // With 2 outs: runners always go on contact. Speed-based advancement for r1→3rd on ground balls.
+        if (state.outs >= 2 && r2 && isGrounder) {
+          // Runners on 1st+2nd with 2 outs: ground ball anywhere — runners should be off on contact
+          // Runner on 2nd may advance to 3rd based on where the ball was hit
+          const r1speed = r1.speed / 10;
+          const r2speed = r2.speed / 10;
+          const r3 = state.bases[2];
+          if (r3 && r3.name !== r1.name && r3.name !== r2.name) {
+            r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++;
+          }
+          state.bases[2] = r2;
+          state.bases[1] = r1;
+          state.bases[0] = null;
+          batter.gameStats.ab++;
+          const fc2Out = `${batter.name} grounds to ${posNames[out.pos] || out.pos} — runners advance on contact, ${out.pos === 'SS' || out.pos === '2B' ? 'force at 1st' : 'out at 1st'}!`;
+          state.log.push({ type: 'groundout', text: fc2Out });
+          state.lastPlay = { type: 'groundout', text: fc2Out };
+          state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
+          return;
+        }
+      }
       if (r1 && state.outs < 2) {
         const mi = getMiddleInfieldRating(defenders);
         let dpc = 0.30 + (mi / 10) * 0.22 - ((r1 ? r1.speed : 5) / 10) * 0.04; dpc = Math.max(0.10, Math.min(dpc, 0.45));
@@ -919,18 +969,27 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const cpuScore = newState.score[cpuPitchingSide], userScore = newState.score[cpuBattingSide];
   const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2 && ip >= 2;
   const recentCollapse = (runs >= 2 && bbi >= 2 && inning >= 5), severeFatigue = ip >= maxInnings + 2;
-  const shouldChange = (severeFatigue || fatiguePull || walksPull || blowupPull || lateClose || recentCollapse) && cpuBullpen.length > 0;
+  // Don't pull starters with a lead unless severely fatigued
+  const hasLead = cpuScore > userScore;
+  const notSeverelyFatigued = !severeFatigue && !fatiguePull;
+  if (hasLead && notSeverelyFatigued && !walksPull && !blowupPull && !lateClose) return newState;
+
+  const shouldChange = (severeFatigue || fatiguePull || walksPull || blowupPull || lateClose) && cpuBullpen.length > 0;
   if (shouldChange) {
-    // Bullpen management: don't waste closer in blowouts (trailing by 4+)
+    // Bullpen management: closers only in 8th+, mop-up guys in blowouts
     const trailing = cpuScore < userScore;
     const bigDeficit = Math.abs(cpuScore - userScore) >= 4;
     let candidates;
     if (trailing && bigDeficit && inning <= 7) {
-      // Mop-up duty — exclude closers, use worst available (inverted sort)
+      // Mop-up duty — exclude closers, use worst available
       candidates = [...cpuBullpen].filter(p => p.pos !== 'CL').sort((a, b) => a.control - b.control);
       if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => a.control - b.control);
+    } else if (inning < 8) {
+      // Before 8th inning — never use closers, pick best non-closer
+      candidates = [...cpuBullpen].filter(p => p.pos !== 'CL').sort((a, b) => b.control - a.control);
+      if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
     } else {
-      // Normal: best pitcher first
+      // 8th inning+ — closers allowed, best pitcher first
       candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
     }
     const newPitcher = candidates[0];
