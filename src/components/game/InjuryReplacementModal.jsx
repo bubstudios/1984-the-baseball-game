@@ -35,6 +35,11 @@ export default function InjuryReplacementModal({ pendingInjury, onSelect }) {
           </span>
 
           <div className="text-lg font-heading font-bold text-foreground">{pendingInjury.player}</div>
+          {pendingInjury.oldPos && (
+            <div className="text-xs text-muted-foreground font-heading uppercase tracking-wider">
+              {pendingInjury.isPitcher ? 'Pitcher' : pendingInjury.oldPos}
+            </div>
+          )}
           <div className={`font-heading font-bold ${colors.text}`}>{pendingInjury.injury?.name}</div>
           <p className="text-sm font-heading text-foreground/80 italic leading-snug">"{pendingInjury.commentary}"</p>
 

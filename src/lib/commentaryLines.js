@@ -179,7 +179,7 @@ const FLYOUT_LINES = [
 const DOUBLE_PLAY_LINES = [
   c("grounds into a double play."),
   c("Double play."), c("Two away."), c("Around the horn for two."),
-  c("Twin killing!"), c("Just what the doctor ordered!"),
+  c("Twin killing!"), c("Just what the doctor ordered!", 'uncommon'),
   c("Two for one special!"), c("That's a rally killer!"),
   c("Erased in a hurry!"),
   c("Textbook double play.", 'uncommon'),

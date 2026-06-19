@@ -247,10 +247,14 @@ function advanceRunners(state, bases, batter, isHit = false) {
   if (bases <= 3) state.bases[bases - 1] = batter;
   if (isHit && bases === 1) {
     const r3 = state.bases[2], b1 = state.bases[0];
-    if (b1 && b1.name === batter.name && r3 && !state.bases[1]) {
+    // Only allow "takes second on throw to third" when the runner on 3rd actually
+    // advanced there during this play (wasn't already on 3rd before the hit).
+    const preR3 = preBases[2];
+    const r3AdvancedToThird = r3 && preR3 !== r3;
+    if (b1 && b1.name === batter.name && r3AdvancedToThird && !state.bases[1]) {
       const ofArm = getOutfieldArm(defenders);
       const sc = 0.08 + (r3.speed / 10) * 0.28 - (ofArm / 10) * 0.06 + (batter.speed / 10) * 0.10;
-      if (Math.random() < Math.max(0.02, Math.min(sc, 0.40))) { state.bases[1] = batter; state.bases[0] = null; state.log.push({ type: 'info', text: `${batter.name.split(' ').pop()} takes second — defense threw to third!` }); }
+      if (Math.random() < Math.max(0.02, Math.min(sc, 0.28))) { state.bases[1] = batter; state.bases[0] = null; state.log.push({ type: 'info', text: `${batter.name.split(' ').pop()} takes second — defense threw to third!` }); }
     }
   }
   batter.gameStats.rbi += rbi; pitcher.gameStats.r += rbi; pitcher.gameStats.er += rbi;
