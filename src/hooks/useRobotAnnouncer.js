@@ -1,19 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { TEAMS } from '@/lib/gameData';
 
-// 1984 blowout promo lines — injected when one team leads by 6+ in 7th+
-const BLOWOUT_PROMOS = [
-  "STAY... TUNED... FOR... THE... A-TEAM... AFTER... THE... GAME.",
-  "BUY... THE... NEW... MACINTOSH... COMPUTER... TODAY.",
-  "POST... GAME... CONCERT... BY... HUEY... LEWIS... AND... THE... NEWS.",
-  "DON'T... MISS... MIAMI... VICE... FRIDAY... NIGHT... ON... NBC.",
-  "THIS... GAME... BROUGHT... TO... YOU... BY... CHEVROLET... THE... HEARTBEAT... OF... AMERICA.",
-  "COMING... UP... NEXT... WEEK... THE... ALL-STAR... GAME... LIVE... FROM... SAN... FRANCISCO.",
-  "VISIT... YOUR... LOCAL... RADIO... SHACK... FOR... THE... LATEST... TANDY... COMPUTERS.",
-  "NOW... AVAILABLE... ON... VHS... AND... BETAMAX... THE... NATURAL... STARRING... ROBERT... REDFORD.",
-  "CALL... 1-800... COLLECT... TO... PLACE... YOUR... SEASON... TICKET... ORDER... TODAY.",
-  "TRY... NEW... COKE... THE... OFFICIAL... SOFT... DRINK... OF... MAJOR... LEAGUE... BASEBALL.",
-];
+// Blowout promos disabled — user feedback
 
 // Build player name set from all rosters
 const PLAYER_NAMES = new Set();
@@ -172,8 +160,6 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
 export default function useRobotAnnouncer(gameState, enabled, announcerName) {
   const audioCtxRef = useRef(null);
   const lastLogIdx = useRef(0);
-  const promoCooldown = useRef(0);
-
   const ensureCtx = () => {
     if (!audioCtxRef.current) {
       audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -182,13 +168,6 @@ export default function useRobotAnnouncer(gameState, enabled, announcerName) {
       audioCtxRef.current.resume();
     }
     return audioCtxRef.current;
-  };
-
-  // Check if it's a blowout — 6+ run lead in 7th+
-  const isBlowout = (state) => {
-    if (!state || state.inning < 7) return false;
-    const diff = Math.abs(state.score.home - state.score.away);
-    return diff >= 6;
   };
 
   useEffect(() => {
@@ -222,16 +201,6 @@ export default function useRobotAnnouncer(gameState, enabled, announcerName) {
 
         speakRobot(lastSpeakable.text, ctx, announcerName, delay);
       }
-
-      // Blowout promo injection: occasionally sneak in a vintage promo
-      if (isBlowout(gameState) && promoCooldown.current <= 0 && Math.random() < 0.15) {
-        const promo = BLOWOUT_PROMOS[Math.floor(Math.random() * BLOWOUT_PROMOS.length)];
-        const ctx = ensureCtx();
-        const delay = speakable.length > 0 ? 2500 : 500; // wait for last speech to finish
-        speakRobot(promo, ctx, announcerName, delay);
-        promoCooldown.current = 8; // cooldown ~8 plays
-      }
-      if (promoCooldown.current > 0) promoCooldown.current--;
 
       lastLogIdx.current = log.length;
     }

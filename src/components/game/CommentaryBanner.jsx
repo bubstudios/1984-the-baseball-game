@@ -318,7 +318,7 @@ export const STADIUM_FLAVOR = {
       "he drives one deep to center — look at the giant apple rising up beyond the wall! That is a home run for the Mets!",
       "you can hear the rumble of the 7-train rolling past the outfield stands — that is the soundtrack of baseball in Queens",
       "the planes are roaring overhead out of LaGuardia — a little extra noise for the pitchers to work through on the mound",
-      "that ball was absolutely hit a mile — drove it right into the left-field seats where the '7 Line Army' is going absolutely wild",
+      // "7 Line Army" restricted to HR-only — see HR commentary in getCommentary below
     ],
     weatherFlavor: [
       "a brisk, chilly night in Flushing — the wind is whipping in hard off Flushing Bay and it's going to knock down anything hit high into the air",
