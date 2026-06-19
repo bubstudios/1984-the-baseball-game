@@ -135,14 +135,37 @@ const POOLS = {
   },
 };
 
-export function pickMetsLine() {
+export function pickMetsLine(gameState, lastPitch) {
   const totalWeight = Object.values(POOLS).reduce((sum, pool) => sum + pool.weight, 0);
   let roll = Math.random() * totalWeight;
 
   for (const [category, pool] of Object.entries(POOLS)) {
     roll -= pool.weight;
     if (roll <= 0) {
-      return pool.lines[Math.floor(Math.random() * pool.lines.length)];
+      // Collect all valid lines based on context
+      const validLines = pool.lines.filter(line => {
+        // "saw the changeup coming" — only when a changeup was thrown and resulted in a walk/hit
+        if (line.includes('saw it coming') && line.includes('changeup')) {
+          const isChangeup = lastPitch && lastPitch.toLowerCase().includes('changeup');
+          const hadResult = gameState && gameState.lastPlay &&
+            ['single','double','triple','homerun','walk'].includes(gameState.lastPlay.type);
+          return isChangeup && hadResult;
+        }
+        // "count favored the hitter" — only on hitter-friendly counts
+        if (line.includes('count favored the hitter')) {
+          if (!gameState) return true;
+          const b = gameState.balls, s = gameState.strikes;
+          const hitterFavored = (b === 3 && s === 0) || (b === 2 && s === 0) ||
+            (b === 1 && s === 0) || (b === 3 && s === 1) || (b === 2 && s === 1);
+          return hitterFavored;
+        }
+        return true;
+      });
+      if (validLines.length === 0) {
+        // Fall back to any line from this pool ignoring context filters
+        return pool.lines[Math.floor(Math.random() * pool.lines.length)];
+      }
+      return validLines[Math.floor(Math.random() * validLines.length)];
     }
   }
   return POOLS.strategy.lines[0];

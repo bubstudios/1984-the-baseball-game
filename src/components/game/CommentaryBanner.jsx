@@ -696,7 +696,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
         : isDodgersGame && Math.random() < 0.70
           ? pickVinLine()
           : isMetsGame && Math.random() < 0.65
-            ? pickMetsLine()
+            ? pickMetsLine(gameState, gameState?.pitchResult?.pitchType)
             : isYankeesGame && Math.random() < 0.65
               ? (pickYankeesPlayerLine(batter?.name) || pickYankeesLine())
               : isRedSoxGame && Math.random() < 0.65

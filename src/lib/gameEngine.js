@@ -352,7 +352,15 @@ export function cpuDecideSteal(state) {
   const effP = getEffectivePitcher(state) || pitcher;
   const armF = (catcherArm / 10) * 0.30;
   const pitchF = ((effP.effectivePitchSpeed || effP.pitchSpeed) / 10) * 0.12;
-  for (let i = 0; i < 2; i++) { const r = state.bases[i]; if (!r || state.bases[i + 1] || r.speed <= 2) continue; if (Math.random() < Math.max(0.03, 0.06 + (r.speed / 10) * 0.22 - armF - pitchF)) return i; }
+  for (let i = 0; i < 2; i++) {
+    const r = state.bases[i];
+    if (!r || state.bases[i + 1]) continue;
+    // Slow runners (speed <= 3) almost never steal; speed 4 needs a big edge
+    if (r.speed <= 2) continue;  // Never steal
+    if (r.speed <= 3 && Math.random() > 0.03) continue;  // 3% chance
+    if (r.speed <= 4 && Math.random() > 0.06) continue;  // 6% chance
+    if (Math.random() < Math.max(0.02, 0.04 + (r.speed / 10) * 0.20 - armF - pitchF)) return i;
+  }
   return -1;
 }
 
