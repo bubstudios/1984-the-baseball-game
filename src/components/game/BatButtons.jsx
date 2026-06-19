@@ -29,7 +29,7 @@ export default function BatButtons({ onSwing, disabled }) {
               key={action.swingIndex}
               disabled={disabled || swinging !== null}
               onClick={() => handleSwing(action.swingIndex)}
-              className="flex flex-col items-center gap-1 bg-card/60 hover:bg-card/80 rounded-xl px-3 py-2 transition-colors"
+              className="flex flex-col items-center gap-1 bg-amber-950/30 hover:bg-amber-900/40 rounded-xl px-3 py-2 transition-colors border border-amber-800/20"
             >
               {/* Bat — horizontal, arcs upward on swing */}
               <div

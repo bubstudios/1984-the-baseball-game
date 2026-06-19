@@ -64,7 +64,15 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
 
     const profile = ANNOUNCER_PROFILES[announcerName] || ANNOUNCER_PROFILES['default'];
     const voices = window.speechSynthesis.getVoices();
-    const voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+
+    // Prefer a deep, authoritative male voice for broadcast feel
+    let voice = null;
+    const deepMalePatterns = ['Daniel', 'Google UK English Male', 'Microsoft David', 'male', 'deep'];
+    for (const pattern of deepMalePatterns) {
+      const match = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes(pattern.toLowerCase()));
+      if (match) { voice = match; break; }
+    }
+    if (!voice) voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
 
     // Split text into chunks by detecting player names via the roster set
     const words = cleanedText.split(' ');
@@ -117,9 +125,9 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
       utterance.volume = 0.85;
 
       if (chunk.slow) {
-        // Player names: much lower pitch + slow rate to contrast with commentary voice
-        utterance.pitch = Math.max(0.10, profile.pitch * 0.35);
-        utterance.rate = Math.max(0.30, profile.rate * 0.35);
+        // Player names: distinct cadence but still intelligible
+        utterance.pitch = Math.max(0.30, profile.pitch * 0.55);
+        utterance.rate = Math.max(0.50, profile.rate * 0.55);
       } else {
         utterance.pitch = profile.pitch;
         utterance.rate = profile.rate;
