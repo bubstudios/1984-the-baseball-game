@@ -1,292 +1,220 @@
 // ── Injury System for 1984: The Baseball Season ──
-// Career durability drives risk. Exhibition mode: injuries reset after game.
+// Exhibition mode: injuries are rare, mostly minor, and often just scares.
+// Philosophy: stars stay on the field. Realism serves fun, not the other way around.
 
-// Player durability tiers (1-10, higher = more durable/less injury-prone)
-// Based on real 1984 career durability: games played, injury history, longevity
+// ── Player Durability (1-10, higher = more durable) ──
 export const PLAYER_DURABILITY = {
-  // ── Iron Men (10 = almost never hurt) ──
+  // Iron Men (10) — almost never hurt
   "Cal Ripken Jr.": 10,
   "Pete Rose": 10,
   "Steve Garvey": 10,
-  "Dave Winfield": 9,
-  "Eddie Murray": 9,
-  "Dale Murphy": 9,
-  "Dwight Evans": 9,
-  "Lou Whitaker": 9,
-  "Keith Hernandez": 9,
-  "Bill Buckner": 9,
-  "Jim Rice": 9,
-  "Gary Carter": 9,
-  "Tim Raines": 9,
-  "Jose Cruz": 9,
-  "Willie Wilson": 9,
-  "Tony Gwynn": 9,
-  "Alan Trammell": 9,
-  "Buddy Bell": 9,
+  "Phil Niekro": 10,     // 45 years old but indestructible
+
+  // Extremely Durable (9)
+  "Dave Winfield": 9, "Eddie Murray": 9, "Dale Murphy": 9,
+  "Dwight Evans": 9, "Lou Whitaker": 9, "Keith Hernandez": 9,
+  "Bill Buckner": 9, "Jim Rice": 9, "Gary Carter": 9,
+  "Tim Raines": 9, "Jose Cruz": 9, "Willie Wilson": 9,
+  "Tony Gwynn": 9, "Alan Trammell": 9, "Buddy Bell": 9,
   "Frank White": 9,
 
-  // ── Durable Regulars (8) ──
-  "Wade Boggs": 8,
-  "Ryne Sandberg": 8,
-  "Don Mattingly": 8,
-  "Kirk Gibson": 8,
-  "Andre Dawson": 8,
-  "Harold Baines": 8,
-  "George Bell": 8,
-  "Dave Parker": 8,
-  "Jack Clark": 8,
-  "Pedro Guerrero": 8,
-  "Chet Lemon": 8,
-  "Tony Fernandez": 8,
-  "Lloyd Moseby": 8,
-  "Rickey Henderson": 8,
-  "Alfredo Griffin": 8,
-  "Willie Randolph": 8,
-  "Kent Hrbek": 8,
-  "Tom Brunansky": 8,
-  "Gary Gaetti": 8,
-  "Kirby Puckett": 8,
-  "Johnny Ray": 8,
-  "Mike Schmidt": 8,
-  "Tim Wallach": 8,
+  // Durable Regulars (8)
+  "Wade Boggs": 8, "Ryne Sandberg": 8, "Don Mattingly": 8,
+  "Kirk Gibson": 8, "Andre Dawson": 8, "Harold Baines": 8,
+  "George Bell": 8, "Dave Parker": 8, "Jack Clark": 8,
+  "Pedro Guerrero": 8, "Chet Lemon": 8, "Tony Fernandez": 8,
+  "Lloyd Moseby": 8, "Rickey Henderson": 8, "Alfredo Griffin": 8,
+  "Willie Randolph": 8, "Kent Hrbek": 8, "Tom Brunansky": 8,
+  "Gary Gaetti": 8, "Kirby Puckett": 8, "Johnny Ray": 8,
+  "Mike Schmidt": 8, "Tim Wallach": 8, "Dwight Gooden": 8,
+  "Nolan Ryan": 8,
 
-  // ── Standard (6-7) ──
-  "Darryl Strawberry": 7,
-  "Keith Moreland": 7,
-  "Leon Durham": 7,
-  "Jody Davis": 7,
-  "Bob Dernier": 7,
-  "Ron Cey": 7,
-  "Lance Parrish": 7,
-  "Howard Johnson": 7,
-  "Mookie Wilson": 7,
-  "Hubie Brooks": 7,
-  "Wally Backman": 7,
-  "Graig Nettles": 6,
-  "Mike Marshall": 6,
-  "Carmelo Martínez": 6,
-  "Kevin McReynolds": 6,
-  "Terry Kennedy": 7,
-  "Garry Templeton": 7,
-  "Ron Guidry": 7,
-  "Dave Righetti": 6,
-  "Dan Quisenberry": 7,
-  "Bruce Sutter": 6,
-  "Dennis Eckersley": 7,
-
-  // ── Fragile / Injury Prone (4-5) ──
-  "Fernando Valenzuela": 5,
-  "Dwight Gooden": 5,
-  "Orel Hershiser": 6,
-  "John Candelaria": 5,
-  "Mario Soto": 5,
-  "Rick Sutcliffe": 6,
-  "Eric Show": 5,
-  "Bret Saberhagen": 6,
-  "Bobby Ojeda": 5,
-  "Ron Darling": 6,
-
-  // ── Made of Glass (2-3) ──
-  "Phil Niekro": 4,  // old knuckleballer, resilient but 45 years old
-  "Don Sutton": 5,
-  "Tommy John": 3,   // ironically, Tommy John himself
-  "Steve Carlton": 5,
-  "Nolan Ryan": 7,
-  "Goose Gossage": 6,
+  // Standard (6-7)
+  "Darryl Strawberry": 7, "Keith Moreland": 7, "Leon Durham": 7,
+  "Jody Davis": 7, "Bob Dernier": 7, "Ron Cey": 7,
+  "Lance Parrish": 7, "Howard Johnson": 7, "Mookie Wilson": 7,
+  "Hubie Brooks": 7, "Wally Backman": 7, "Terry Kennedy": 7,
+  "Garry Templeton": 7, "Ron Guidry": 7, "Dan Quisenberry": 7,
+  "Dennis Eckersley": 7, "Graig Nettles": 6, "Mike Marshall": 6,
+  "Carmelo Martínez": 6, "Kevin McReynolds": 6, "Dave Righetti": 6,
+  "Bruce Sutter": 6, "Orel Hershiser": 6, "Bret Saberhagen": 6,
+  "Ron Darling": 6, "Rick Sutcliffe": 6, "Goose Gossage": 6,
   "Lee Smith": 6,
-  "Bob Forsch": 5,
+
+  // Fragile (4-5)
+  "Fernando Valenzuela": 5, "John Candelaria": 5, "Mario Soto": 5,
+  "Eric Show": 5, "Bobby Ojeda": 5, "Don Sutton": 5,
+  "Steve Carlton": 5, "Bob Forsch": 5,
+
+  // Made of Glass (2-3)
+  "Tommy John": 3,
 };
 
-// Default durability for unlisted players
 export const DEFAULT_DURABILITY = 6;
 
 export function getPlayerDurability(playerName) {
   return PLAYER_DURABILITY[playerName] || DEFAULT_DURABILITY;
 }
 
-// ── Injury Types ──
+// ── Injury Severity ──
 export const INJURY_TYPES = {
-  // DTD (Day-to-Day) — miss remainder of game
-  DTD: "Day-to-Day",
-
-  // 15-Day
-  IL15: "15-Day IL",
-
-  // 60-Day
-  IL60: "60-Day IL",
-
-  // Season-Ending
-  SEASON: "Season-Ending",
+  MINOR: "Staying In",       // Bruise, cramp — plays through
+  DTD: "Day-to-Day",         // Removed from game
+  IL15: "15-Day IL",         // Exhibition: removed from game
+  IL60: "60-Day IL",         // Exhibition: removed from game  
+  SEASON: "Season-Ending",   // Devastating but extremely rare
 };
 
-// ── Injury Catalog ──
-// Each entry: { id, name, bodyPart, category, triggers, severityWeights, isPitcher, isCatcher, isFielder }
+// ── Position-Based Risk Multiplier ──
+function getPositionRisk(player) {
+  const pos = player.assignedPos || player.pos || '';
+  if (pos === 'C') return 1.5;                   // Catchers take a beating
+  if (['SS', '2B'].includes(pos)) return 1.15;   // Middle infielders
+  if (['CF'].includes(pos)) return 1.1;          // Diving center fielders
+  if (pos === 'SP' && (player.stamina || 5) >= 7) return 0.85; // Workhorse SPs
+  if (['1B', 'DH'].includes(pos)) return 0.7;    // First basemen and DHs
+  if (player.speed >= 8) return 1.1;             // Speedsters
+  return 1.0;
+}
 
+// ── Star Protection — durability bonuses for legendary iron men ──
+function getStarProtection(playerName) {
+  const starProtection = {
+    "Cal Ripken Jr.": 0.10,    // 90% reduction — The Iron Man
+    "Pete Rose": 0.25,         // 75% reduction — played forever
+    "Steve Garvey": 0.30,      // NL record consecutive games streak
+    "Phil Niekro": 0.15,       // Pitched into his late 40s
+  };
+  return starProtection[playerName] || 1.0;
+}
+
+// ── Injury Catalog ──
 const INJURIES = [
-  // ── HAMSTRING ──
+  // ── MINOR (stay in game) ──
+  { id: "bruised_knee", name: "Bruised Knee", bodyPart: "leg", category: "leg",
+    triggers: ["slide", "dive"],
+    severity: { MINOR: 0.85, DTD: 0.12, IL15: 0.03, IL60: 0.00, SEASON: 0.00 },
+  },
+  { id: "jammed_finger", name: "Jammed Finger", bodyPart: "arm", category: "arm",
+    triggers: ["slide", "dive_catch", "foul_tip_hand"],
+    severity: { MINOR: 0.88, DTD: 0.10, IL15: 0.02, IL60: 0.00, SEASON: 0.00 },
+  },
+  { id: "foul_ball_foot", name: "Foul Ball Off Foot", bodyPart: "leg", category: "leg",
+    triggers: ["foul_off_hands", "drop_bat_on_foot"],
+    severity: { MINOR: 0.92, DTD: 0.07, IL15: 0.01, IL60: 0.00, SEASON: 0.00 },
+  },
+  { id: "muscle_cramp", name: "Muscle Cramp", bodyPart: "leg", category: "leg",
+    triggers: ["sprint", "groundout_sprint", "catcher_crouch"],
+    severity: { MINOR: 0.90, DTD: 0.08, IL15: 0.02, IL60: 0.00, SEASON: 0.00 },
+  },
+  { id: "twisted_ankle", name: "Twisted Ankle", bodyPart: "leg", category: "leg",
+    triggers: ["slide", "sudden_stop", "step_on_base", "wet_turf"],
+    severity: { MINOR: 0.75, DTD: 0.20, IL15: 0.04, IL60: 0.01, SEASON: 0.00 },
+  },
+  { id: "stinger", name: "Stinger (Neck/Shoulder)", bodyPart: "core", category: "core",
+    triggers: ["collision", "fielder_collision", "wall_crash"],
+    severity: { MINOR: 0.70, DTD: 0.22, IL15: 0.06, IL60: 0.02, SEASON: 0.00 },
+  },
+  { id: "bruised_hand", name: "Bruised Hand", bodyPart: "arm", category: "arm",
+    triggers: ["hbp_hands", "foul_tip_hand", "mask_impact"],
+    severity: { MINOR: 0.88, DTD: 0.10, IL15: 0.02, IL60: 0.00, SEASON: 0.00 },
+  },
+
+  // ── DAY-TO-DAY (removed from game) ──
   { id: "hamstring_strain", name: "Hamstring Strain", bodyPart: "leg", category: "leg",
     triggers: ["sprint", "steal", "stretch_double", "groundout_sprint"],
-    severity: { DTD: 0.75, IL15: 0.18, IL60: 0.05, SEASON: 0.02 },
+    severity: { MINOR: 0.35, DTD: 0.55, IL15: 0.08, IL60: 0.02, SEASON: 0.00 },
   },
-  { id: "hamstring_tear", name: "Hamstring Tear", bodyPart: "leg", category: "leg",
-    triggers: ["sprint", "steal"],
-    severity: { DTD: 0.00, IL15: 0.30, IL60: 0.45, SEASON: 0.25 },  // tear = serious, never day-to-day
+  { id: "back_stiffness", name: "Back Stiffness", bodyPart: "core", category: "core",
+    triggers: ["swing_awkward", "dive_catch", "catcher_crouch"],
+    severity: { MINOR: 0.40, DTD: 0.50, IL15: 0.08, IL60: 0.02, SEASON: 0.00 },
   },
-
-  // ── ANKLE ──
+  { id: "wrist_soreness", name: "Wrist Soreness", bodyPart: "arm", category: "arm",
+    triggers: ["hbp_hands", "swing_awkward", "swing_collision"],
+    severity: { MINOR: 0.45, DTD: 0.45, IL15: 0.08, IL60: 0.02, SEASON: 0.00 },
+  },
+  { id: "shoulder_soreness", name: "Shoulder Soreness", bodyPart: "arm", category: "arm",
+    triggers: ["throw_deep", "overthrow", "catcher_throw", "pitch_fatigue"],
+    severity: { MINOR: 0.30, DTD: 0.58, IL15: 0.10, IL60: 0.02, SEASON: 0.00 },
+  },
+  { id: "blister", name: "Blister on Finger", bodyPart: "arm", category: "arm",
+    triggers: ["repeated_grip", "hot_weather_pitch"],
+    severity: { MINOR: 0.20, DTD: 0.72, IL15: 0.07, IL60: 0.01, SEASON: 0.00 },
+  },
   { id: "ankle_sprain", name: "Ankle Sprain", bodyPart: "leg", category: "leg",
     triggers: ["slide", "step_on_base", "bad_hop", "wet_turf"],
-    severity: { DTD: 0.65, IL15: 0.25, IL60: 0.08, SEASON: 0.02 },
-  },
-  { id: "ankle_fracture", name: "Ankle Fracture", bodyPart: "leg", category: "leg",
-    triggers: ["slide", "collision"],
-    severity: { DTD: 0.05, IL15: 0.15, IL60: 0.50, SEASON: 0.30 },
+    severity: { MINOR: 0.20, DTD: 0.55, IL15: 0.20, IL60: 0.04, SEASON: 0.01 },
   },
 
-  // ── SHOULDER ──
-  { id: "shoulder_soreness", name: "Shoulder Soreness", bodyPart: "arm", category: "arm",
-    triggers: ["throw_deep", "overthrow", "catcher_throw"],
-    severity: { DTD: 0.80, IL15: 0.15, IL60: 0.04, SEASON: 0.01 },
+  // ── 15-DAY IL (rare removal) ──
+  { id: "hamstring_tear", name: "Hamstring Tear", bodyPart: "leg", category: "leg",
+    triggers: ["sprint", "steal"],
+    severity: { MINOR: 0.00, DTD: 0.10, IL15: 0.55, IL60: 0.30, SEASON: 0.05 },
+  },
+  { id: "elbow_tightness", name: "Elbow Tightness", bodyPart: "arm", category: "arm",
+    triggers: ["pitch_fatigue", "high_pitch_count"],
+    severity: { MINOR: 0.20, DTD: 0.30, IL15: 0.40, IL60: 0.08, SEASON: 0.02 },
   },
   { id: "rotator_cuff", name: "Rotator Cuff Strain", bodyPart: "arm", category: "arm",
     triggers: ["pitch_fatigue", "high_pitch_count", "cold_weather_pitch"],
-    severity: { DTD: 0.25, IL15: 0.45, IL60: 0.20, SEASON: 0.10 },
+    severity: { MINOR: 0.10, DTD: 0.25, IL15: 0.45, IL60: 0.15, SEASON: 0.05 },
+  },
+  { id: "knee_sprain", name: "Knee Sprain", bodyPart: "leg", category: "leg",
+    triggers: ["slide", "sudden_stop", "plate_collision"],
+    severity: { MINOR: 0.10, DTD: 0.30, IL15: 0.42, IL60: 0.14, SEASON: 0.04 },
+  },
+  { id: "rib_strain", name: "Rib Strain", bodyPart: "core", category: "core",
+    triggers: ["dive_catch", "hbp_body", "swing_rotation"],
+    severity: { MINOR: 0.15, DTD: 0.35, IL15: 0.38, IL60: 0.10, SEASON: 0.02 },
   },
 
-  // ── ELBOW ──
-  { id: "elbow_tightness", name: "Elbow Tightness", bodyPart: "arm", category: "arm",
-    triggers: ["pitch_fatigue", "warmup_gone_wrong", "bullpen_overuse"],
-    severity: { DTD: 0.55, IL15: 0.30, IL60: 0.12, SEASON: 0.03 },
+  // ── 60-DAY / SEASON (very rare) ──
+  { id: "acl_tear", name: "Torn ACL", bodyPart: "leg", category: "leg",
+    triggers: ["slide", "sudden_stop", "collision"],
+    severity: { MINOR: 0.00, DTD: 0.00, IL15: 0.05, IL60: 0.35, SEASON: 0.60 },
   },
   { id: "tommy_john", name: "UCL Tear (Tommy John)", bodyPart: "arm", category: "arm",
     triggers: ["velocity_spike", "max_effort_pitches", "one_pitch_too_many"],
-    severity: { DTD: 0.00, IL15: 0.05, IL60: 0.35, SEASON: 0.60 },
+    severity: { MINOR: 0.00, DTD: 0.00, IL15: 0.05, IL60: 0.35, SEASON: 0.60 },
   },
-
-  // ── BACK ──
-  { id: "back_strain", name: "Back Strain", bodyPart: "core", category: "core",
-    triggers: ["swing_awkward", "dive_catch", "catcher_crouch", "dugout_lift"],
-    severity: { DTD: 0.70, IL15: 0.22, IL60: 0.06, SEASON: 0.02 },
+  { id: "rotator_cuff_tear", name: "Torn Rotator Cuff", bodyPart: "arm", category: "arm",
+    triggers: ["pitch_fatigue", "high_pitch_count"],
+    severity: { MINOR: 0.00, DTD: 0.00, IL15: 0.05, IL60: 0.30, SEASON: 0.65 },
   },
-
-  // ── HAND / WRIST ──
-  { id: "wrist_sprain", name: "Wrist Sprain", bodyPart: "arm", category: "arm",
-    triggers: ["hbp_hands", "swing_collision", "dive_catch_impact"],
-    severity: { DTD: 0.60, IL15: 0.28, IL60: 0.10, SEASON: 0.02 },
+  { id: "broken_hand", name: "Broken Hand", bodyPart: "arm", category: "arm",
+    triggers: ["hbp_hands", "fielder_collision"],
+    severity: { MINOR: 0.00, DTD: 0.05, IL15: 0.20, IL60: 0.55, SEASON: 0.20 },
   },
-  { id: "hand_contusion", name: "Hand Contusion", bodyPart: "arm", category: "arm",
-    triggers: ["hbp", "foul_off_hands"],
-    severity: { DTD: 0.85, IL15: 0.12, IL60: 0.02, SEASON: 0.01 },
+  { id: "broken_wrist", name: "Broken Wrist", bodyPart: "arm", category: "arm",
+    triggers: ["hbp_hands", "dive_catch_impact"],
+    severity: { MINOR: 0.00, DTD: 0.05, IL15: 0.15, IL60: 0.55, SEASON: 0.25 },
   },
-
-  // ── KNEE ──
-  { id: "knee_sprain", name: "Knee Sprain", bodyPart: "leg", category: "leg",
-    triggers: ["slide", "sudden_stop", "plate_collision"],
-    severity: { DTD: 0.50, IL15: 0.32, IL60: 0.14, SEASON: 0.04 },
-  },
-  { id: "knee_acl", name: "Knee Ligament Tear", bodyPart: "leg", category: "leg",
-    triggers: ["slide", "sudden_stop", "collision"],
-    severity: { DTD: 0.01, IL15: 0.04, IL60: 0.30, SEASON: 0.65 },
-  },
-
-  // ── RIB ──
-  { id: "rib_strain", name: "Rib Strain", bodyPart: "core", category: "core",
-    triggers: ["dive_catch", "swing_rotation", "hbp_body"],
-    severity: { DTD: 0.55, IL15: 0.30, IL60: 0.12, SEASON: 0.03 },
-  },
-
-  // ── PITCHER-SPECIFIC ──
-  { id: "blister", name: "Blister on Finger", bodyPart: "arm", category: "arm",
-    triggers: ["repeated_grip", "dry_balls", "hot_weather_pitch"],
-    severity: { DTD: 0.92, IL15: 0.07, IL60: 0.01, SEASON: 0.00 },
-  },
-  { id: "shoulder_fatigue", name: "Shoulder Fatigue", bodyPart: "arm", category: "arm",
-    triggers: ["pitch_fatigue", "loss_of_velocity"],
-    severity: { DTD: 0.88, IL15: 0.10, IL60: 0.02, SEASON: 0.00 },
-  },
-
-  // ── CONCUSSION ──
   { id: "concussion", name: "Concussion", bodyPart: "head", category: "head",
-    triggers: ["fielder_collision", "wall_crash", "slide_elbow", "plate_collision"],
-    severity: { DTD: 0.35, IL15: 0.45, IL60: 0.15, SEASON: 0.05 },
+    triggers: ["fielder_collision", "wall_crash", "plate_collision", "slide_elbow"],
+    severity: { MINOR: 0.10, DTD: 0.30, IL15: 0.40, IL60: 0.15, SEASON: 0.05 },
+  },
+  { id: "ankle_fracture", name: "Ankle Fracture", bodyPart: "leg", category: "leg",
+    triggers: ["slide", "collision"],
+    severity: { MINOR: 0.00, DTD: 0.05, IL15: 0.15, IL60: 0.50, SEASON: 0.30 },
+  },
+  { id: "torn_achilles", name: "Torn Achilles", bodyPart: "leg", category: "leg",
+    triggers: ["sprint", "sudden_stop"],
+    severity: { MINOR: 0.00, DTD: 0.00, IL15: 0.00, IL60: 0.30, SEASON: 0.70 },
   },
 
-  // ── CATCHER-SPECIFIC ──
-  { id: "bruised_hand", name: "Bruised Hand", bodyPart: "arm", category: "arm",
-    triggers: ["foul_tip_hand", "mask_impact"],
-    severity: { DTD: 0.90, IL15: 0.08, IL60: 0.02, SEASON: 0.00 },
-  },
-  { id: "knee_soreness", name: "Knee Soreness", bodyPart: "leg", category: "leg",
-    triggers: ["catcher_crouch", "catcher_throw"],
-    severity: { DTD: 0.82, IL15: 0.14, IL60: 0.03, SEASON: 0.01 },
-  },
-
-  // ── WEIRD / OBSCURE ──
+  // ── WEIRD / MINOR (flavor only) ──
   { id: "stretch_injury", name: "Pulled Muscle While Stretching", bodyPart: "core", category: "core",
-    triggers: ["pregame_stretch"],
-    severity: { DTD: 0.95, IL15: 0.04, IL60: 0.01, SEASON: 0.00 },
-  },
-  { id: "cough_strain", name: "Cough-Related Strain", bodyPart: "core", category: "core",
-    triggers: ["dugout_cough"],
-    severity: { DTD: 0.98, IL15: 0.02, IL60: 0.00, SEASON: 0.00 },
+    triggers: ["pregame_stretch"], severity: { MINOR: 0.95, DTD: 0.04, IL15: 0.01, IL60: 0.00, SEASON: 0.00 },
   },
   { id: "celebration_injury", name: "Celebration Injury", bodyPart: "leg", category: "leg",
-    triggers: ["hr_trot_hamstring", "dugout_celebration"],
-    severity: { DTD: 0.88, IL15: 0.10, IL60: 0.02, SEASON: 0.00 },
-  },
-  { id: "high_five_injury", name: "High-Five Injury", bodyPart: "arm", category: "arm",
-    triggers: ["dugout_high_five", "dugout_celebration"],
-    severity: { DTD: 0.99, IL15: 0.01, IL60: 0.00, SEASON: 0.00 },
-  },
-  { id: "manager_collision", name: "Manager Collision", bodyPart: "leg", category: "leg",
-    triggers: ["bump_manager"],
-    severity: { DTD: 0.92, IL15: 0.06, IL60: 0.02, SEASON: 0.00 },
+    triggers: ["hr_trot_hamstring", "dugout_celebration"], severity: { MINOR: 0.88, DTD: 0.10, IL15: 0.02, SEASON: 0.00 },
   },
   { id: "bat_drop", name: "Bat Drop Injury", bodyPart: "leg", category: "leg",
-    triggers: ["drop_bat_on_foot"],
-    severity: { DTD: 0.96, IL15: 0.03, IL60: 0.01, SEASON: 0.00 },
-  },
-  { id: "step_out_twist", name: "Step-Out Twist", bodyPart: "leg", category: "leg",
-    triggers: ["adjust_stance"],
-    severity: { DTD: 0.90, IL15: 0.08, IL60: 0.02, SEASON: 0.00 },
-  },
-  { id: "ball_toss_jam", name: "Finger Jam (Tossing Ball)", bodyPart: "arm", category: "arm",
-    triggers: ["toss_to_ump"],
-    severity: { DTD: 0.97, IL15: 0.02, IL60: 0.01, SEASON: 0.00 },
-  },
-  { id: "helmet_neck", name: "Helmet Neck Strain", bodyPart: "head", category: "head",
-    triggers: ["helmet_wrong"],
-    severity: { DTD: 0.99, IL15: 0.01, IL60: 0.00, SEASON: 0.00 },
-  },
-
-  // ── EXTREME / LEGENDARY ──
-  { id: "warmup_injury", name: "Injured on Warmup Toss", bodyPart: "arm", category: "arm",
-    triggers: ["warmup_toss"],
-    severity: { DTD: 0.15, IL15: 0.45, IL60: 0.28, SEASON: 0.12 },
-  },
-  { id: "routine_catch_injury", name: "Injured on Routine Catch", bodyPart: "arm", category: "arm",
-    triggers: ["misjudge_popup"],
-    severity: { DTD: 0.60, IL15: 0.28, IL60: 0.10, SEASON: 0.02 },
-  },
-  { id: "ump_collision_player", name: "Umpire Collision Injury", bodyPart: "core", category: "core",
-    triggers: ["umpire_collision"],
-    severity: { DTD: 0.50, IL15: 0.30, IL60: 0.15, SEASON: 0.05 },
-  },
-  { id: "bird_strike", name: "Bird Distraction Collision", bodyPart: "head", category: "head",
-    triggers: ["bird_distraction"],
-    severity: { DTD: 0.80, IL15: 0.15, IL60: 0.04, SEASON: 0.01 },
-  },
-  { id: "fan_object_injury", name: "Fan-Thrown Object Injury", bodyPart: "head", category: "head",
-    triggers: ["fan_object"],
-    severity: { DTD: 0.90, IL15: 0.08, IL60: 0.02, SEASON: 0.00 },
-  },
-  { id: "two_player_collision", name: "Two-Player Collision", bodyPart: "core", category: "core",
-    triggers: ["fielder_collision"],
-    severity: { DTD: 0.30, IL15: 0.35, IL60: 0.25, SEASON: 0.10 },
+    triggers: ["drop_bat_on_foot"], severity: { MINOR: 0.96, DTD: 0.03, IL15: 0.01, SEASON: 0.00 },
   },
 ];
 
-// ── Trigger mapping: game play → possible triggers ──
+// ── Trigger mapping ──
 const PLAY_TO_TRIGGER = {
   hit_by_pitch: ["hbp", "hbp_hands", "hbp_body"],
   sprint_to_first: ["sprint", "groundout_sprint"],
@@ -302,144 +230,189 @@ const PLAY_TO_TRIGGER = {
   homerun: ["hr_trot_hamstring"],
 };
 
-// ── Commentary lines for injuries ──
-export const INJURY_COMMENTARY = {
-  generic: [
-    "He's grabbing at his {bodyPart} — that doesn't look good.",
-    "The trainer is out — {player} is down and in obvious discomfort.",
-    "{player} is going to need a moment — he's feeling that one.",
-    "That's an ominous sign — {player} is being looked at by the training staff.",
-    "And {player} is slow to get up. The trainer is on his way.",
+// ── Commentary ──
+const COMMENTARY = {
+  scare: [
+    "Trainer is out to check on {player} — let's hope it's nothing serious.",
+    "The training staff is taking a look at {player}. Looks like he might be okay.",
+    "{player} is shaking it off, but the trainer wants to be sure.",
+    "A quick visit from the trainer — {player} had a close call there.",
+    "He's moving it around — looks like he'll be okay. Scary moment, though.",
+  ],
+  minor: [
+    "{player} is staying in the game — just a {injury}.",
+    "He'll rub some dirt on it — {player} is staying in.",
+    "Looks like just a {injury} — {player} waves off the trainer.",
+    "Nothing serious — {player} got a {injury} but he's good to go.",
+    "The trainer heads back to the dugout — {player} is fine.",
   ],
   DTD: [
-    "Looks like he'll be day-to-day — {player} is done for the afternoon.",
-    "Not serious, but {player} is out for the rest of this one.",
-    "They're calling it day-to-day — precautionary move, but his day is over.",
+    "{player} is done for the day with a {injury}.",
+    "They're being cautious — {player} is out for the rest of this one.",
+    "Day-to-day with a {injury} — {player} will get the rest of the afternoon off.",
   ],
   IL15: [
-    "That could be a 15-day situation — {player} is clearly hurting.",
-    "The way he's favoring that, this might be a couple weeks.",
+    "{player} will be sidelined — looks like a {injury}. Would be a 15-day trip to the DL.",
+    "A {injury} for {player} — that's a 15-day DL stint if this were the regular season.",
   ],
   IL60: [
-    "This one looks serious — {player} is being helped off the field.",
-    "A potential 60-day injury for {player}. Devastating blow.",
+    "Bad news — {player} has a {injury}. That's a 60-day DL injury.",
+    "A tough break — {player} is down with a {injury}. Long-term concern.",
   ],
   SEASON: [
-    "Season-ending injury for {player}. The dugout is absolutely silent.",
-    "Heartbreaking — {player}'s season appears to be over.",
-  ],
-  weird: [
-    "You don't see that every day — {player} injured by a {cause}!",
-    "The {cause} sends {player} to the trainer's room. Baseball is a strange game.",
-    "Of all the ways to get hurt… {player} has been felled by a {cause}.",
+    "Devastating news — {player} has a {injury}. Season would be over.",
+    "Oh no — {player} is done. {injury}. That's a season-ender.",
+    "Heartbreaking — {player}'s season appears over with a {injury}.",
   ],
 };
 
-function pickLine(pool) {
-  return pool[Math.floor(Math.random() * pool.length)];
-}
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-// ── Main injury roll ──
-// Called after a game event that could cause injury. Returns null or an injury result object.
-
+// ── Main Injury Check (called after game events) ──
+// Returns null, an injury-scare (stays in), or a real injury result
 export function rollInjury(player, trigger, gameState = {}) {
   if (!player) return null;
 
   const durability = getPlayerDurability(player.name);
-  const plays = PLAY_TO_TRIGGER[trigger] || [];
+  const starFactor = getStarProtection(player.name);
+  const positionRisk = getPositionRisk(player);
 
-  // Find matching injuries
-  const matchingInjuries = INJURIES.filter(inj =>
+  // ── Base Chance: very low per trigger ──
+  // Target: ~15-25% chance of any injury EVENT per game
+  // With ~40-60 plays per game, that's ~0.4-0.6% per play
+  const baseChance = 0.004;
+
+  // Durability modifies: durability 10 → 0.2x, durability 4 → 1.5x
+  const durabilityFactor = Math.max(0.1, (12 - durability) / 5);
+
+  // Final per-play chance
+  let chance = baseChance * durabilityFactor * positionRisk * starFactor;
+
+  // Pitcher fatigue: slightly higher risk
+  if (trigger === "pitcher_fatigue" || trigger === "pitcher_velocity") {
+    chance *= 1.5;
+  }
+
+  if (Math.random() > chance) return null;
+
+  // ── Find matching injuries ──
+  const plays = PLAY_TO_TRIGGER[trigger] || [];
+  const matching = INJURIES.filter(inj =>
     inj.triggers.some(t => plays.includes(t))
   );
+  if (matching.length === 0) return null;
 
-  if (matchingInjuries.length === 0) return null;
+  const injury = matching[Math.floor(Math.random() * matching.length)];
 
-  // Base injury chance: ~2% per trigger, modified by durability
-  const baseChance = 0.02;
-  const durabilityFactor = (10 - durability) / 10; // 0 for durability 10, 1 for durability 0
-  const adjustedChance = baseChance + durabilityFactor * 0.06;
-  // Range: ~0.1% for durability 10, ~8% for durability 0
+  // ── Roll severity with modified distribution ──
+  // Target: 70% MINOR, 20% DTD, 8% IL15, 2% IL60/SEASON
+  // But we also use the injury's own weights for realism
+  let sevRoll = Math.random();
+  // Shift more weight toward minor outcomes
+  const mildShift = 0.20 + (durability / 10) * 0.30; // Durability pushes more toward mild
+  if (sevRoll < mildShift) sevRoll = sevRoll * 0.5; // Collapse upper range into minor
 
-  // Pitchers pitching → higher base risk
-  const isPitcherPitching = trigger === "pitcher_fatigue" || trigger === "pitcher_velocity";
-  const pitcherMultiplier = isPitcherPitching ? 1.5 : 1.0;
-
-  if (Math.random() > adjustedChance * pitcherMultiplier) return null;
-
-  // Pick a random injury from matching ones
-  const injury = matchingInjuries[Math.floor(Math.random() * matchingInjuries.length)];
-
-  // Roll severity
-  const sevRoll = Math.random();
   let cumulative = 0;
-  let severity = "DTD";
-  for (const [sev, weight] of Object.entries(injury.severity)) {
-    cumulative += weight;
+  let severity = "MINOR";
+  const weights = injury.severity;
+  // Normalize: bump MINOR weight up
+  const adjWeights = {
+    MINOR: weights.MINOR * 1.5,
+    DTD: weights.DTD * 0.9,
+    IL15: weights.IL15 * 0.7,
+    IL60: weights.IL60 * 0.5,
+    SEASON: weights.SEASON * 0.3,
+  };
+  // Ensure zero-weight severities stay zero
+  const total = adjWeights.MINOR + adjWeights.DTD + adjWeights.IL15 + adjWeights.IL60 + adjWeights.SEASON;
+  if (total <= 0) {
+    adjWeights.MINOR = 1.0;
+  }
+  const normTotal = Math.max(0.001, total);
+
+  for (const [sev, w] of Object.entries(adjWeights)) {
+    cumulative += w / normTotal;
     if (sevRoll <= cumulative) {
       severity = sev;
       break;
     }
   }
 
-  // Generate commentary
-  const isWeird = ["cough_related", "stretch_injury", "celebration_injury",
-    "high_five_injury", "manager_collision", "bat_drop", "step_out_twist",
-    "ball_toss_jam", "helmet_neck"].includes(injury.id);
+  // ── Injury SCARE check: 80% chance it's just a scare ──
+  // If the roll lands on something that would remove the player,
+  //   give it an 80% chance to be just a scare (minor cosmetic event)
+  if (severity !== "MINOR" && Math.random() < 0.80) {
+    return {
+      injury: { id: "injury_scare", name: "Injury Scare", bodyPart: injury.bodyPart, category: injury.category },
+      severity: "SCARE",
+      severityLabel: "Injury Scare",
+      player: player.name,
+      position: player.assignedPos || player.pos,
+      bodyPart: injury.bodyPart,
+      category: injury.category,
+      isWeird: false,
+      commentary: pick(COMMENTARY.scare).replace("{player}", player.name).replace("{injury}", injury.name.toLowerCase()),
+      replacementNote: null,
+      trigger,
+      isPitcher: player.pos === 'SP' || player.pos === 'RP' || player.pos === 'CL' ||
+        (player.assignedPos && ['SP', 'RP', 'CL'].includes(player.assignedPos)),
+      isCatcher: (player.assignedPos || player.pos) === 'C',
+      isFielder: !['SP', 'RP', 'CL', 'P'].includes(player.pos),
+      isScare: true,
+    };
+  }
+
+  // ── Real injury (or minor one that stays in) ──
+  const sevPool = COMMENTARY[severity] || COMMENTARY.DTD;
+  const isWeird = ["stretch_injury", "celebration_injury", "bat_drop"].includes(injury.id);
 
   let commentary;
   if (isWeird) {
-    const cause = injury.name.toLowerCase();
-    commentary = pickLine(INJURY_COMMENTARY.weird)
+    commentary = `You don't see that every day — ${player.name} has a ${injury.name.toLowerCase()}!`;
+  } else if (severity === "MINOR") {
+    commentary = pick(COMMENTARY.minor)
       .replace("{player}", player.name)
-      .replace("{cause}", cause);
+      .replace("{injury}", injury.name.toLowerCase());
   } else {
-    const sevPool = INJURY_COMMENTARY[severity] || INJURY_COMMENTARY.generic;
-    commentary = pickLine(sevPool)
+    commentary = pick(sevPool)
       .replace("{player}", player.name)
-      .replace("{bodyPart}", injury.bodyPart);
+      .replace("{injury}", injury.name.toLowerCase());
   }
-
-  // Determine replacement note
-  const replacementNote = isPitcherPitching
-    ? `${player.name} is done for the day — the manager will need to go to the bullpen.`
-    : `The bench will need to fill in for ${player.name}.`;
 
   return {
     injury,
     severity,
-    severityLabel: INJURY_TYPES[severity],
+    severityLabel: INJURY_TYPES[severity] || severity,
     player: player.name,
     position: player.assignedPos || player.pos,
     bodyPart: injury.bodyPart,
     category: injury.category,
     isWeird,
     commentary,
-    replacementNote,
+    replacementNote: severity !== "MINOR"
+      ? `${player.name} is done for the day.`
+      : `${player.name} is staying in the game.`,
     trigger,
-    isPitcher: player.pos === 'SP' || player.pos === 'RP' || player.pos === 'CL' || 
-               (player.assignedPos && ['SP','RP','CL'].includes(player.assignedPos)),
+    isPitcher: player.pos === 'SP' || player.pos === 'RP' || player.pos === 'CL' ||
+      (player.assignedPos && ['SP', 'RP', 'CL'].includes(player.assignedPos)),
     isCatcher: (player.assignedPos || player.pos) === 'C',
-    isFielder: !['SP','RP','CL','P'].includes(player.pos) && 
-               !['SP','RP','CL'].includes(player.assignedPos || ''),
+    isFielder: !['SP', 'RP', 'CL', 'P'].includes(player.pos),
+    isScare: false,
   };
 }
 
 // ── Check injury after a game play ──
 export function checkPlayInjury(state, trigger, playerName) {
   if (!state || state.gameOver) return null;
-
   const lineup = state.halfInning === 'top' ? state.awayLineup : state.homeLineup;
   const player = lineup.find(p => p.name === playerName);
   if (!player) return null;
-
   return rollInjury(player, trigger, state);
 }
 
-// ── Check pitcher injury (fatigue-based, innings instead of pitch count) ──
+// ── Check pitcher injury ──
 export function checkPitcherInjury(state) {
   if (!state || state.gameOver) return null;
-
   const pitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
   if (!pitcher) return null;
 
@@ -447,48 +420,42 @@ export function checkPitcherInjury(state) {
   const stamina = pitcher.stamina || 5;
   const isReliever = ['RP', 'CL'].includes(pitcher.pos) || ['RP', 'CL'].includes(pitcher.assignedPos);
 
-  // No injury risk before reaching stamina threshold
-  const threshold = isReliever ? stamina * 0.4 : stamina * 0.7;
+  // Much harder to get injured — only check when significantly past threshold
+  const threshold = isReliever ? stamina * 0.5 : stamina * 0.8;
   if (ip < threshold) return null;
 
-  // Escalating risk based on innings beyond threshold
   const overThreshold = ip - threshold;
   let triggerChance = 0;
-  if (overThreshold >= 3) triggerChance = 0.12;    // 3+ innings past stamina → high risk
-  else if (overThreshold >= 2) triggerChance = 0.06; // 2 innings past → moderate
-  else if (overThreshold >= 1) triggerChance = 0.03; // 1 inning past → low
-  else triggerChance = 0.015;                         // just hitting threshold
+  if (overThreshold >= 3) triggerChance = 0.04;
+  else if (overThreshold >= 2) triggerChance = 0.02;
+  else if (overThreshold >= 1) triggerChance = 0.01;
+  else triggerChance = 0.005;
 
-  // Late innings (8+) amplify injury risk
-  const lateInningMult = state.inning >= 9 ? 2.0 : state.inning >= 8 ? 1.5 : 1.0;
-  triggerChance *= lateInningMult;
+  const lateMult = state.inning >= 9 ? 2.0 : state.inning >= 8 ? 1.5 : 1.0;
+  triggerChance *= lateMult;
 
-  // Durability modifier
   const durability = getPlayerDurability(pitcher.name);
-  const durabilityFactor = (10 - durability) / 10 + 0.5; // range 0.5-1.5, center 1.0
-  triggerChance *= durabilityFactor;
+  // Iron men are dramatically harder to injure
+  if (durability >= 9) triggerChance *= 0.15;
+  else if (durability >= 7) triggerChance *= 0.5;
+  else if (durability <= 4) triggerChance *= 1.5;
+
+  const starFactor = getStarProtection(pitcher.name);
+  triggerChance *= starFactor;
 
   if (Math.random() > triggerChance) return null;
 
-  // Determine trigger type
   const trigger = overThreshold >= 3 ? "pitch_fatigue" : "pitcher_fatigue";
   return rollInjury(pitcher, trigger, state);
 }
 
-// ── Apply injury: remove player from lineup ──
-// Returns the modified state with the player marked as injured
+// ── Apply injury: mark player ──
 export function applyInjury(state, injuryResult) {
   if (!injuryResult) return state;
-
   const newState = JSON.parse(JSON.stringify(state));
-  const isFielding = injuryResult.position !== 'DH';
-  const isBattingTeam = (newState.halfInning === 'top' && newState.awayLineup.some(p => p.name === injuryResult.player)) ||
-                        (newState.halfInning === 'bottom' && newState.homeLineup.some(p => p.name === injuryResult.player));
 
-  // Find the player in the lineup and mark as injured
   const awayIdx = newState.awayLineup.findIndex(p => p.name === injuryResult.player);
   const homeIdx = newState.homeLineup.findIndex(p => p.name === injuryResult.player);
-
   const targetLineup = awayIdx >= 0 ? newState.awayLineup : homeIdx >= 0 ? newState.homeLineup : null;
   const targetIdx = awayIdx >= 0 ? awayIdx : homeIdx;
 
@@ -501,10 +468,8 @@ export function applyInjury(state, injuryResult) {
     };
   }
 
-  // If pitcher is injured, mark in pitcher state too
   if (injuryResult.isPitcher) {
-    const isHomePitcher = newState.homePitcher?.name === injuryResult.player;
-    if (isHomePitcher) {
+    if (newState.homePitcher?.name === injuryResult.player) {
       newState.homePitcher = { ...newState.homePitcher, injured: true, injuryType: injuryResult.severity };
     } else {
       newState.awayPitcher = { ...newState.awayPitcher, injured: true, injuryType: injuryResult.severity };
@@ -514,7 +479,6 @@ export function applyInjury(state, injuryResult) {
   return newState;
 }
 
-// ── Check if a player is currently injured ──
 export function isPlayerInjured(player) {
   return player?.injured === true;
 }

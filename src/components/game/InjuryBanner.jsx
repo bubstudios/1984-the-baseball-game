@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, X, HeartPulse, Timer } from 'lucide-react';
+import { AlertTriangle, X, HeartPulse, Timer, ShieldCheck, Activity } from 'lucide-react';
 
 const SEVERITY_COLORS = {
+  SCARE: { bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-400", badge: "bg-emerald-500/20 text-emerald-400" },
+  MINOR: { bg: "bg-sky-500/10", border: "border-sky-500/30", text: "text-sky-400", badge: "bg-sky-500/20 text-sky-400" },
   DTD: { bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-400", badge: "bg-amber-500/20 text-amber-400" },
   IL15: { bg: "bg-orange-500/10", border: "border-orange-500/30", text: "text-orange-400", badge: "bg-orange-500/20 text-orange-400" },
   IL60: { bg: "bg-red-500/10", border: "border-red-500/30", text: "text-red-400", badge: "bg-red-500/20 text-red-400" },
@@ -40,6 +42,14 @@ export default function InjuryBanner({ injury, onDismiss }) {
             {isWeird ? (
               <div className="w-12 h-12 bg-primary/10 border border-primary/30 rounded-full flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6 text-primary/80" />
+              </div>
+            ) : injury.severity === "SCARE" ? (
+              <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center justify-center">
+                <ShieldCheck className="w-6 h-6 text-emerald-400/80" />
+              </div>
+            ) : injury.severity === "MINOR" ? (
+              <div className="w-12 h-12 bg-sky-500/10 border border-sky-500/30 rounded-full flex items-center justify-center">
+                <Activity className="w-6 h-6 text-sky-400/80" />
               </div>
             ) : injury.severity === "SEASON" || injury.severity === "IL60" ? (
               <div className="w-12 h-12 bg-destructive/10 border border-destructive/30 rounded-full flex items-center justify-center animate-pulse">

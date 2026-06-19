@@ -277,7 +277,7 @@ export default function Home() {
     // Batting team argues when the call hurt them (outs, strikes)
     // Fielding team argues when the call went against them (hits, walks)
     const playType = state.lastPlay?.type;
-    const FIELDING_ARGUES = ['single', 'double', 'triple', 'homerun', 'walk', 'error', 'ball'];
+    const FIELDING_ARGUES = ['single', 'double', 'triple', 'homerun', 'walk', 'error'];
     const battingSide = getBattingTeam(state);
     const fieldingSide = battingSide === 'home' ? 'away' : 'home';
     const arguingSide = FIELDING_ARGUES.includes(playType) ? fieldingSide : battingSide;

@@ -298,6 +298,8 @@ export function attemptSteal(state, baseIndex) {
   const runner = state.bases[baseIndex];
   if (!runner) return state;
   const newState = JSON.parse(JSON.stringify(state));
+  // Clear one-shot flags from previous play
+  delete newState._wasReachBack;
   const speedFactor = runner.speed / 10;
   const pitcher = getCurrentPitcher(newState);
   const effP = getEffectivePitcher(newState) || pitcher;
@@ -602,6 +604,8 @@ function runInjuryChecks(newState, batter) {
 
 function applyInjuryState(newState, injuryResult) {
   if (!injuryResult) return;
+  // Scares or minor injuries that stay in don't need substitution
+  if (injuryResult.isScare || injuryResult.severity === 'MINOR') return;
   const pn = injuryResult.player;
   const ai = newState.awayLineup.findIndex(p => p.name === pn), hi = newState.homeLineup.findIndex(p => p.name === pn);
   const isA = ai >= 0; const tl = isA ? newState.awayLineup : newState.homeLineup; const ti = isA ? ai : hi;

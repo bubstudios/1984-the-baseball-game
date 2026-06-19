@@ -21,6 +21,9 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
   const currentBattingIndex = gameState.halfInning === 'top' ? gameState.awayBatterIndex : gameState.homeBatterIndex;
   const batter = currentBattingLineup[currentBattingIndex % currentBattingLineup.length];
 
+  // The opposing pitcher the pinch-hitter will face
+  const opposingPitcher = gameState.halfInning === 'top' ? gameState.homePitcher : gameState.awayPitcher;
+
   const runners = gameState.bases.map((b, i) => b ? { ...b, baseIndex: i } : null).filter(Boolean);
 
   // Available bench players for the user's team — exclude players already used
@@ -104,7 +107,14 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                 <p className="text-xs text-muted-foreground italic">No bench players available for {myTeam?.name}</p>
               ) : (
                 <div className="space-y-1.5">
-                  {myBench.map((p, i) => (
+                  {myBench.map((p, i) => {
+                    // Matchup vs opposing pitcher
+                    const vsSameHand = p.bats === opposingPitcher?.throws;
+                    const matchNote = vsSameHand ? 'vs same hand' : 'platoon adv.';
+                    const conDelta = p.contact - (batter?.contact || 0);
+                    const pwrDelta = p.power - (batter?.power || 0);
+
+                    return (
                     <button
                       key={i}
                       onClick={() => onPinchHit(p)}
@@ -114,13 +124,31 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                         <span className="font-heading font-bold text-sm text-foreground">{p.name}</span>
                         <span className="text-[10px] text-muted-foreground">{p.pos} ({p.bats})</span>
                       </div>
-                      <div className="flex gap-3 mt-1 text-[10px]">
-                        <span className="text-primary">CON {p.contact}</span>
-                        <span className="text-amber-400">PWR {p.power}</span>
+                      <div className="flex gap-3 mt-1 text-[10px] items-center">
+                        <span className="text-primary">
+                          CON {p.contact}
+                          {conDelta !== 0 && (
+                            <span className={conDelta > 0 ? 'text-green-400 ml-0.5' : 'text-red-400/60 ml-0.5'}>
+                              {conDelta > 0 ? '↑' : '↓'}{Math.abs(conDelta)}
+                            </span>
+                          )}
+                        </span>
+                        <span className="text-amber-400">
+                          PWR {p.power}
+                          {pwrDelta !== 0 && (
+                            <span className={pwrDelta > 0 ? 'text-green-400 ml-0.5' : 'text-red-400/60 ml-0.5'}>
+                              {pwrDelta > 0 ? '↑' : '↓'}{Math.abs(pwrDelta)}
+                            </span>
+                          )}
+                        </span>
                         <span className="text-cyan-400">SPD {p.speed}</span>
+                        <span className={`ml-auto text-[9px] ${vsSameHand ? 'text-red-400/60' : 'text-green-400/70'}`}>
+                          {matchNote}
+                        </span>
                       </div>
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
