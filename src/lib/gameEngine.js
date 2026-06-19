@@ -85,6 +85,8 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
   };
   const homeLineup = buildLineup(customHomeLineup, home.lineup, home);
   let awayLineup = buildLineup(customAwayLineup, away.lineup, away);
+  // Override away SP if user selected a specific opponent starter
+  const awaySPOverride = opponentStartingPitcher ? away.rotation.find(p => p.name === opponentStartingPitcher.name) : null;
   // Swap opponent SP if user selected a specific starter
   if (awaySPOverride && !useDH) {
     const spIdx = awayLineup.findIndex(p => p.assignedPos === 'SP');
@@ -93,8 +95,6 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     }
   }
   const homeSP = homeLineup.find(p => p.assignedPos === 'SP') || (useDH && startingPitcher ? startingPitcher : home.rotation[0]);
-  // Override away SP if user selected a specific opponent starter
-  const awaySPOverride = opponentStartingPitcher ? away.rotation.find(p => p.name === opponentStartingPitcher.name) : null;
   const awaySP = awayLineup.find(p => p.assignedPos === 'SP') || awaySPOverride || away.rotation[0];
   return {
     homeTeam, awayTeam, inning: 1, halfInning: 'top', outs: 0, balls: 0, strikes: 0,
