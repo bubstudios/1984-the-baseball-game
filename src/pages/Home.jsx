@@ -97,7 +97,8 @@ export default function Home() {
     setBallparkEvent(null);
     setInjuryResult(null);
     resetBallparkEvents();
-    setGameStadium(lineupPhase?.parkTeam ? TEAMS[lineupPhase.parkTeam]?.stadium : null);
+    const stadium = TEAMS[home]?.stadium || null;
+    setGameStadium(stadium);
     setGameWeather(weather || null);
     const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire, startingPitcher);
     const homeName = TEAMS[home].name;

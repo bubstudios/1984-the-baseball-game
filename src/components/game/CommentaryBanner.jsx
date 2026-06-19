@@ -554,11 +554,17 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     options.push(lflav);
   }
 
-  // Classic baseball slang & sayings
-  const slangOptions = [
-    // Hitting
+  // Classic baseball slang & sayings — filter by game context
+  const anyRunners = runnersOn > 0;
+  const runnerSlang = anyRunners ? [
     `Ducks on the pond for ${lastName}`,
     `Chance to clear the ducks off the pond here`,
+    `Twin killing would be big right here`,
+    `Double play depth — middle infielders creeping in`,
+  ] : [];
+  const allSlangOptions = [
+    // Hitting
+    ...runnerSlang,
     `${lastName} digging in at the dish`,
     `The hot corner is ready — ${lastName} steps in`,
     `Can of corn territory out there`,
@@ -592,8 +598,6 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     `He's got swing-and-miss stuff working today`,
     `The hook is on — ${pitcher?.name} dealing`,
     // In the Field
-    `Twin killing would be big right here`,
-    `Double play depth — middle infielders creeping in`,
     `Around the horn they go`,
     `${lastName}'s below the Mendoza Line — needs to get it going`,
     `${lastName} looking for his pitch to drive`,
@@ -612,7 +616,7 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
   ];
 
   // Always mix in 1-2 slang terms for a colorful broadcast feel
-  const shuffleSlang = [...slangOptions].sort(() => Math.random() - 0.5);
+  const shuffleSlang = [...allSlangOptions].sort(() => Math.random() - 0.5);
   const slangCount = Math.random() < 0.35 ? 2 : 1;
   for (let i = 0; i < slangCount; i++) {
     options.push(shuffleSlang[i]);

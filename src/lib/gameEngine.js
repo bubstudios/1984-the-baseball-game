@@ -584,7 +584,14 @@ function resolveSwing(state, swingType, pitch) {
     }
     if (isGrounder) {
       const fielder = defenders[out.pos];
-      if (fielder) { const af = getAdjustedPlayer(fielder); const rp2 = af.pos !== (af.assignedPos || af.pos) ? 0.06 : 0; const ihc = Math.max(0, (batter.speed / 10) * 0.30 - (af.arm / 10) * 0.15 - (af.defenseAdj / 10) * 0.05 + rp2); if (Math.random() < ihc) { batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++; advanceRunners(state, 1, batter, true); const isText = `${batter.name} beats it out — infield single past ${fielder.name}!`; state.log.push({ type: 'single', text: isText }); state.lastPlay = { type: 'single', text: isText }; state.balls = 0; state.strikes = 0; advanceBatter(state); return; } }
+      if (fielder) { const af = getAdjustedPlayer(fielder); const rp2 = af.pos !== (af.assignedPos || af.pos) ? 0.06 : 0; const ihc = Math.max(0, (batter.speed / 10) * 0.30 - (af.arm / 10) * 0.15 - (af.defenseAdj / 10) * 0.05 + rp2); if (Math.random() < ihc) { batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++; // Infield single: runners advance at most one base, no scoring from 2nd
+      for (let br = 2; br >= 0; br--) {
+        if (state.bases[br]) {
+          if (br + 1 >= 3) { state.bases[br].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[br] = null; }
+          else if (!state.bases[br + 1]) { state.bases[br + 1] = state.bases[br]; state.bases[br] = null; }
+        }
+      }
+      state.bases[0] = batter; const isText = `${batter.name} beats it out — infield single past ${fielder.name}!`; state.log.push({ type: 'single', text: isText }); state.lastPlay = { type: 'single', text: isText }; state.balls = 0; state.strikes = 0; advanceBatter(state); return; } }
     }
     if (isGrounder) {
       const r1 = state.bases[0], r2 = state.bases[1];
