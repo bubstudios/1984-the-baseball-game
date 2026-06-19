@@ -278,13 +278,17 @@ export default function Home() {
     }
 
     // Determine which team argues based on the play outcome
-    // Batting team argues when the call hurt them (outs, strikes)
+    // Batting team argues when their guy got HBP (want retaliation/warnings)
     // Fielding team argues when the call went against them (hits, walks)
     const playType = state.lastPlay?.type;
-    const FIELDING_ARGUES = ['single', 'double', 'triple', 'homerun', 'walk', 'error'];
+    const playText = state.lastPlay?.text || '';
+    const isHBP = playType === 'walk' && (playText.includes('hit by the pitch') || playText.includes('HBP'));
+    // HBP: batting team argues (their player got hit)
+    // Otherwise: FIELDING_ARGS means the fielding team argues (hit/walk against them)
+    const FIELDING_ARGUES = isHBP ? [] : ['single', 'double', 'triple', 'homerun', 'walk', 'error'];
     const battingSide = getBattingTeam(state);
     const fieldingSide = battingSide === 'home' ? 'away' : 'home';
-    const arguingSide = FIELDING_ARGUES.includes(playType) ? fieldingSide : battingSide;
+    const arguingSide = isHBP ? battingSide : (FIELDING_ARGUES.includes(playType) ? fieldingSide : battingSide);
     const arguingTeamKey = arguingSide === 'home' ? homeTeam : awayTeam;
     const manager = MANAGERS[arguingTeamKey];
 

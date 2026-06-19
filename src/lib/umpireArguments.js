@@ -110,8 +110,9 @@ export function getArgumentSeverity(lastPlay, gameState, usedTopics) {
   }
 
   // ── HIT BY PITCH (major) ──
+  // Batting team argues (their player got hit). Calls reflect that perspective.
   if (type === "walk" && (text.includes("hit by the pitch") || text.includes("HBP"))) {
-    const hbpCalls = ["he leaned into it","he didn't try to avoid it","that was intentional — warnings should be issued","batter crowded the plate","retaliation from earlier in the game"];
+    const hbpCalls = ["that was intentional — warnings should be issued","retaliation from earlier in the game","no warning before — that one had intent","you've got to protect your hitters","that's the second time — eject him"];
     return arg(pick(hbpCalls), "medium", 5, "hbp", "major");
   }
 
