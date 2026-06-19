@@ -391,9 +391,45 @@ function resolveSwing(state, swingType, pitch) {
   if (swingType.name === 'Bunt') {
     if (!pitch.isStrike && Math.random() < 0.55) { state.balls++; if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; } state.log.push({ type: 'ball', text: `Ball ${state.balls} — ${batter.name} pulls back the bunt` }); state.lastPlay = { type: 'ball', text: `Ball ${state.balls}` }; return; }
     const isPH = batter.pos === 'SP' || batter.assignedPos === 'SP';
+    const isRelieverPitcher = batter.pos === 'RP' || batter.pos === 'CL' || batter.assignedPos === 'RP' || batter.assignedPos === 'CL';
     const hasR1 = !!state.bases[0];
     const canSac = state.outs < 2 && hasR1;
-    if (isPH && canSac) { const r1 = state.bases[0]; if (r1) { if (state.bases[2]) { state.bases[2].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.log.push({ type: 'info', text: `${state.bases[2].name.split(' ').pop()} scores on the sacrifice` }); } state.bases[2] = state.bases[1] || null; state.bases[1] = r1; state.bases[0] = null; } batter.gameStats.ab++; pitcher.gameStats.so++; state.log.push({ type: 'groundout', text: `${batter.name} ${pickLine(SACRIFICE_BUNT_LINES)} ${r1?.name?.split(' ').pop()} moves to second` }); state.lastPlay = { type: 'groundout', text: `Sacrifice bunt by ${batter.name}` }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; }
+    if (isPH && canSac) {
+      // Pitcher sacrifice bunt: 75% success for starters, 55% for relievers
+      const pitcherBuntSkill = isRelieverPitcher ? 0.55 : 0.75;
+      if (Math.random() < pitcherBuntSkill) {
+        const r1 = state.bases[0];
+        if (r1) {
+          if (state.bases[2]) { state.bases[2].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.log.push({ type: 'info', text: `${state.bases[2].name.split(' ').pop()} scores on the sacrifice` }); }
+          state.bases[2] = state.bases[1] || null; state.bases[1] = r1; state.bases[0] = null;
+        }
+        batter.gameStats.ab++; pitcher.gameStats.so++;
+        state.log.push({ type: 'groundout', text: `${batter.name} ${pickLine(SACRIFICE_BUNT_LINES)} ${r1?.name?.split(' ').pop()} moves to second` });
+        state.lastPlay = { type: 'groundout', text: `Sacrifice bunt by ${batter.name}` };
+        state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return;
+      } else {
+        // Failed bunt attempt
+        const failRoll = Math.random();
+        if (failRoll < 0.45) {
+          // Bunt missed — strike
+          state.strikes++;
+          if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; state.log.push({ type: 'strikeout', text: `${batter.name} can't get the bunt down — strike three!` }); state.lastPlay = { type: 'strikeout', text: `${batter.name} fails to bunt — strike three!` }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; }
+          state.log.push({ type: 'strike', text: `${batter.name} misses the bunt — strike ${state.strikes}` });
+          state.lastPlay = { type: 'strike', text: `Missed bunt — strike ${state.strikes}` };
+          return;
+        } else if (failRoll < 0.70) {
+          // Pops it up
+          batter.gameStats.ab++; pitcher.gameStats.so++; state.log.push({ type: 'popout', text: `${batter.name} pops up the bunt attempt — caught by the catcher!` }); state.lastPlay = { type: 'popout', text: `Pop-up bunt — out!` }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return;
+        } else {
+          // Foul bunt
+          state.strikes++;
+          if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; state.log.push({ type: 'strikeout', text: `${batter.name} bunts foul for strike three!` }); state.lastPlay = { type: 'strikeout', text: `${batter.name} bunts foul for strike three!` }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; }
+          state.log.push({ type: 'foul', text: `${batter.name} fouls off the bunt — strike ${state.strikes}` });
+          state.lastPlay = { type: 'foul', text: `Foul bunt — strike ${state.strikes}` };
+          return;
+        }
+      }
+    }
     const buntingSkill = (batter.bunting || 3) / 10;
     const sf = batter.speed / 10;
     const pp = isPH ? 0.02 : 1.0;
@@ -403,7 +439,9 @@ function resolveSwing(state, swingType, pitch) {
   const isPower = swingType.name === 'Power Swing', isContact = swingType.name === 'Contact Swing';
   const adjBatter = getSituationalBatter(state);
   const contactRating = adjBatter.contact / 10;
+  const isPitcherBatting = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
   let contactChance = 0.38 + contactRating * 0.35;
+  if (isPitcherBatting) contactChance *= 0.55; // Pitchers are much worse hitters
   if (isPower) contactChance -= 0.10; if (isContact) contactChance += 0.12; if (!pitch.isStrike) contactChance -= 0.20;
   if (state.hitAndRun) { contactChance -= 0.08; contactChance = Math.max(0.03, contactChance); }
   const effP2 = getEffectivePitcher(state) || pitcher;
@@ -432,7 +470,9 @@ function resolveSwing(state, swingType, pitch) {
   const ballparkHRMod = ballparkEffect.hrMod || 1;
   const hitDirection = getHitDirection(adjBatter.bats);
   const powerRating = adjBatter.power / 10;
+  const isPitcherBatting2 = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
   let hitChance = 0.20 + (contactRating + contactWx / 10) * 0.28;
+  if (isPitcherBatting2) hitChance *= 0.45; // Pitchers rarely get hits
   if (isPower) hitChance -= 0.04; if (isContact) hitChance += 0.08;
   const effP3 = getEffectivePitcher(state) || pitcher;
   hitChance -= (effP3.effectiveControl || effP3.control) / 10 * 0.03;
@@ -558,8 +598,8 @@ function resolveSwing(state, swingType, pitch) {
       if (!r1 && state.bases[1] && !state.bases[2] && state.outs < 2 && isGrounder) { const runner = state.bases[1]; const isRS = ['1B','2B'].includes(out.pos); const ac = isRS ? 0.55 + (runner.speed / 10) * 0.35 : 0.05 + (runner.speed / 10) * 0.20; if (Math.random() < Math.max(0.05, ac)) { state.bases[2] = runner; state.bases[1] = null; out.text = `${out.text} — ${runner.name.split(' ').pop()} advances to third`; } }
     }
     const isOutfieldFly = isFlyBall && out.type !== 'popout' && out.type !== 'lineout' && !out.text.includes('shallow ');
-    if (isOutfieldFly && state.bases[2] && state.outs < 2) { const r = state.bases[2]; const d2 = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'); const db = d2 ? 0.30 : 0.05; const sfc = 0.30 + db + (r.speed / 10) * 0.42 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.10, Math.min(sfc, 0.90))) { r.gameStats.runs++; scoreRun(state); state.bases[2] = null; batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; state.log.push({ type: 'sacfly', text: `${batter.name} ${pickLine(SAC_FLY_LINES)} ${r.name} tags and scores!` }); batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } }
-    if (isOutfieldFly) { const r3 = state.bases[2], r2 = state.bases[1], r1 = state.bases[0]; const isDeep = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'); if (r3 && state.outs < 2) { const db2 = isDeep ? 0.40 : 0.10; const htc = db2 + (r3.speed / 10) * 0.30 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.05, Math.min(htc, 0.65))) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; state.bases[2] = null; state.log.push({ type: 'sacfly', text: `${r3.name} tags up and scores!` }); if (r2 && state.outs < 2) { const tc2 = isDeep ? (0.15 + (r2.speed / 10) * 0.40 - (getOutfieldArm(defenders) / 10) * 0.10) : (0.05 + (r2.speed / 10) * 0.25 - (getOutfieldArm(defenders) / 10) * 0.08); if (Math.random() < Math.max(0.03, Math.min(tc2, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); } } batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } } if (r1 && isDeep && !state.bases[1] && state.outs < 2) { const r1Tag = state.bases[0]; if (r1Tag) { const tc1 = 0.15 + (r1Tag.speed / 10) * 0.45 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.06, Math.min(tc1, 0.55))) { state.bases[1] = r1Tag; state.bases[0] = null; state.log.push({ type: 'info', text: `${r1Tag.name} tags up and advances to second!` }); } } } if (r2 && state.outs < 2 && !state.bases[2]) { const tc3 = 0.10 + (r2.speed / 10) * 0.35 - (getOutfieldArm(defenders) / 10) * 0.10; if (Math.random() < Math.max(0.04, Math.min(tc3, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); } } }
+    if (isOutfieldFly && state.bases[2] && state.outs < 2) { const r = state.bases[2]; const d2 = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'); const db = d2 ? 0.30 : 0.05; const sfc = 0.30 + db + (r.speed / 10) * 0.42 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.10, Math.min(sfc, 0.90))) { r.gameStats.runs++; scoreRun(state); state.bases[2] = null; batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; const sfText = `${batter.name} ${pickLine(SAC_FLY_LINES)} ${r.name} tags and scores!`; state.log.push({ type: 'sacfly', text: sfText }); state.lastPlay = { type: 'sacfly', text: sfText }; batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } }
+    if (isOutfieldFly) { const r3 = state.bases[2], r2 = state.bases[1], r1 = state.bases[0]; const isDeep = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'); if (r3 && state.outs < 2) { const db2 = isDeep ? 0.40 : 0.10; const htc = db2 + (r3.speed / 10) * 0.30 - (getOutfieldArm(defenders) / 10) * 0.08;         if (Math.random() < Math.max(0.05, Math.min(htc, 0.65))) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; state.bases[2] = null; const sfText = `${r3.name} tags up and scores!`; state.log.push({ type: 'sacfly', text: sfText }); state.lastPlay = { type: 'sacfly', text: sfText }; if (r2 && state.outs < 2) { const tc2 = isDeep ? (0.15 + (r2.speed / 10) * 0.40 - (getOutfieldArm(defenders) / 10) * 0.10) : (0.05 + (r2.speed / 10) * 0.25 - (getOutfieldArm(defenders) / 10) * 0.08); if (Math.random() < Math.max(0.03, Math.min(tc2, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); } } batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } } if (r1 && isDeep && !state.bases[1] && state.outs < 2) { const r1Tag = state.bases[0]; if (r1Tag) { const tc1 = 0.15 + (r1Tag.speed / 10) * 0.45 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.06, Math.min(tc1, 0.55))) { state.bases[1] = r1Tag; state.bases[0] = null; state.log.push({ type: 'info', text: `${r1Tag.name} tags up and advances to second!` }); } } } if (r2 && state.outs < 2 && !state.bases[2]) { const tc3 = 0.10 + (r2.speed / 10) * 0.35 - (getOutfieldArm(defenders) / 10) * 0.10; if (Math.random() < Math.max(0.04, Math.min(tc3, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); } } }
     state.log.push({ type: isFlyBall ? 'flyout' : 'groundout', text: out.text });
     state.lastPlay = { type: isFlyBall ? 'flyout' : 'groundout', text: out.text };
     state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
@@ -667,7 +707,9 @@ export function processAtBat(state, pitchType, swingType) {
     pitcher.gameStats.pitches++;
     const batter = getCurrentBatter(newState);
     // Specialty pitch: 95% strike, 85% chance of inducing weak contact or whiff
-    newState.pitchResult = { pitchType: 'Reach Back', isStrike: Math.random() < 0.95, location: 'on the black' };
+    // Use pitcher's specialty name for the pitch, not raw "Reach Back"
+    const spName = (pitcher.specialty?.name || pitcher.specialty) || 'blazing heater';
+    newState.pitchResult = { pitchType: spName, isStrike: Math.random() < 0.95, location: 'on the black', isReachBack: true };
     if (!newState.userPitchTypes) newState.userPitchTypes = [];
     if (!newState.userPitchTypes.includes('__reachback__')) newState.userPitchTypes = [...newState.userPitchTypes, '__reachback__'];
     if (newState.pendingSteal !== null && newState.pendingSteal !== undefined) { const sr = attemptSteal(newState, newState.pendingSteal); Object.assign(newState, sr); if (newState.gameOver) return newState; }
