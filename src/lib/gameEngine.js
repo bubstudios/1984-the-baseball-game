@@ -563,8 +563,19 @@ function resolveSwing(state, swingType, pitch) {
     const isFlyBall = ['CF','RF','LF'].includes(out.pos) || out.type === 'popout' || out.type === 'lineout';
     if (isFlyBall && out.type !== 'popout') {
       const q = checkBallparkQuirk(stadiumName, adjBatter.bats, hitDirection, state.weather);
-      if (q && q.isHit) { batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++; if (q.isHR) { batter.gameStats.hr++; advanceRunners(state, 4, batter); } else advanceRunners(state, q.bases, batter, true); state.log.push({ type: q.type, text: q.text }); state.balls = 0; state.strikes = 0; advanceBatter(state); return; }
-      if (q && !q.isHit) { state.log.push({ type: q.type, text: q.text }); state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; }
+      if (q && q.isHit) {
+        batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
+        if (q.isHR) { batter.gameStats.hr++; advanceRunners(state, 4, batter); }
+        else advanceRunners(state, q.bases, batter, true);
+        state.log.push({ type: q.type, text: q.text });
+        state.lastPlay = { type: q.type, text: q.text };
+        state.balls = 0; state.strikes = 0; advanceBatter(state); return;
+      }
+      if (q && !q.isHit) {
+        state.log.push({ type: q.type, text: q.text });
+        state.lastPlay = { type: q.type, text: q.text };
+        state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return;
+      }
     }
     const isGrounder = !isFlyBall;
     if (isGrounder) {
