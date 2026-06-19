@@ -78,6 +78,18 @@ export const ACHIEVEMENTS = [
   { id: 'no_doubter', name: 'No Doubter', desc: 'Hit a 500-foot home run', icon: '📏', category: 'rare' },
   { id: 'mr_perfect', name: 'Mr. Perfect', desc: 'Perfect game with 10+ strikeouts', icon: '💫', category: 'rare' },
 
+  // ── BLOWOUT & MISCELLANEOUS FUN ──
+  { id: 'blowout_broadcast', name: 'Blowout Broadcast', desc: 'Announcers start talking about sandwiches in a blowout', icon: '🥪', category: 'funny' },
+  { id: 'laugher', name: 'Laugher', desc: 'Win by 10 runs', icon: '😂', category: 'funny' },
+  { id: 'shellacked', name: 'Shellacked', desc: 'Lose by 10 runs', icon: '😵', category: 'funny' },
+  { id: 'crooked_number', name: 'Crooked Number', desc: 'Score 5+ runs in a single inning', icon: '🔢', category: 'funny' },
+  { id: 'ten_spot', name: 'Ten-Spot', desc: 'Score 10+ runs in a game', icon: '🔟', category: 'funny' },
+  { id: 'pitching_duel', name: "Pitcher's Duel", desc: 'Win a 1-0 game', icon: '🤺', category: 'funny' },
+  { id: 'double_digits_drubbing', name: 'Double Digit Drubbing', desc: 'Allow 10+ runs in a game', icon: '🫣', category: 'funny' },
+  { id: 'heart_of_the_order', name: 'Heart of the Order', desc: 'Have your 3-4-5 hitters each drive in a run', icon: '❤️', category: 'funny' },
+  { id: 'oppo_taco', name: 'Oppo Taco', desc: 'Hit an opposite field home run', icon: '🌮', category: 'funny' },
+  { id: 'seven_innings_plus', name: 'Seven Innings Plus', desc: 'Reach the 7th inning stretch (have a lead after 7)', icon: '🎤', category: 'funny' },
+
   // ── GAMES COMPLETED ──
   { id: 'games_1', name: 'First Pitch', desc: 'Complete 1 game', icon: '1️⃣', category: 'milestone', threshold: 1 },
   { id: 'games_2', name: 'Doubleheader', desc: 'Complete 2 games', icon: '2️⃣', category: 'milestone', threshold: 2 },
@@ -935,6 +947,29 @@ export function checkGameAchievements(gameState, userTeam) {
   if (logText.includes('immaculate') || logText.includes('9 pitches')) u('immaculate');
   if (totalHR >= 5) u('four_bagger_frenzy');
   if (log.filter(l => l.type === 'homerun' && l.text && l.text.includes('500') && userNames.some(n => l.text.includes(n))).length > 0) u('no_doubter');
+
+  // ── BLOWOUT & MISCELLANEOUS FUN ──
+  // Blowout Broadcast: announcers start chatting (game in 8th+ with 8+ run margin)
+  if (gameState.inning >= 8 && Math.abs(userScore - opponentScore) >= 8) u('blowout_broadcast');
+  // Laugher: win by 10+
+  if (userWon && (userScore - opponentScore) >= 10) u('laugher');
+  // Shellacked: lose by 10+
+  if (!userWon && (opponentScore - userScore) >= 10) u('shellacked');
+  // Crooked Number: 5+ runs in one inning
+  if (checkFiveRunInning(gameState, userSide)) u('crooked_number');
+  // Ten-Spot: score 10+ runs
+  if (userScore >= 10) u('ten_spot');
+  // Pitcher's Duel: win 1-0
+  if (userWon && userScore === 1 && opponentScore === 0) u('pitching_duel');
+  // Double Digit Drubbing: allow 10+ runs
+  if (opponentScore >= 10) u('double_digits_drubbing');
+  // Heart of the Order: 3-4-5 hitters each with RBI
+  const order345 = userLineup.filter(p => p.order === 3 || p.order === 4 || p.order === 5);
+  if (order345.length >= 3 && order345.every(p => (p.gameStats?.rbi || 0) > 0)) u('heart_of_the_order');
+  // Oppo Taco: opposite field HR mentioned in log
+  if (logText.includes('opposite field') && logText.includes('home run') && userNames.some(n => logText.includes(n))) u('oppo_taco');
+  // Seven Innings Plus: had a lead after 7 innings
+  if (!didTrailAfterInning(gameState, userSide, 7) && computeMaxDeficit(gameState, userSide) <= 0) u('seven_innings_plus');
 
   return newlyUnlocked;
 }
