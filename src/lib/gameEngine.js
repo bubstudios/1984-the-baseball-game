@@ -50,7 +50,7 @@ export function getEffectivePitcher(state) {
   };
 }
 
-export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null, umpire = null, startingPitcher = null) {
+export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null, umpire = null, startingPitcher = null, opponentStartingPitcher = null) {
   const home = TEAMS[homeTeam];
   const away = TEAMS[awayTeam];
   const buildLineup = (lineupData, defaultLineup, teamData) => {
@@ -84,9 +84,18 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     return lineup;
   };
   const homeLineup = buildLineup(customHomeLineup, home.lineup, home);
-  const awayLineup = buildLineup(customAwayLineup, away.lineup, away);
+  let awayLineup = buildLineup(customAwayLineup, away.lineup, away);
+  // Swap opponent SP if user selected a specific starter
+  if (awaySPOverride && !useDH) {
+    const spIdx = awayLineup.findIndex(p => p.assignedPos === 'SP');
+    if (spIdx >= 0) {
+      awayLineup[spIdx] = { ...awaySPOverride, order: awayLineup[spIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+    }
+  }
   const homeSP = homeLineup.find(p => p.assignedPos === 'SP') || (useDH && startingPitcher ? startingPitcher : home.rotation[0]);
-  const awaySP = awayLineup.find(p => p.assignedPos === 'SP') || away.rotation[0];
+  // Override away SP if user selected a specific opponent starter
+  const awaySPOverride = opponentStartingPitcher ? away.rotation.find(p => p.name === opponentStartingPitcher.name) : null;
+  const awaySP = awayLineup.find(p => p.assignedPos === 'SP') || awaySPOverride || away.rotation[0];
   return {
     homeTeam, awayTeam, inning: 1, halfInning: 'top', outs: 0, balls: 0, strikes: 0,
     bases: [null, null, null], score: { home: 0, away: 0 },

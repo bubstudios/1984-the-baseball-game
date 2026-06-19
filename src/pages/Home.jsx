@@ -85,7 +85,7 @@ export default function Home() {
   useRobotAnnouncer(gameState, robotVoice, announcerName);
   useRetroAudio(gameState, retroAudio);
 
-  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, startingPitcher) => {
+  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, startingPitcher, opponentStartingPitcher) => {
     setHomeTeam(home);
     setAwayTeam(away);
     setUserTeam(home); // user controls home team
@@ -100,7 +100,7 @@ export default function Home() {
     const stadium = TEAMS[home]?.stadium || null;
     setGameStadium(stadium);
     setGameWeather(weather || null);
-    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire, startingPitcher);
+    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire, startingPitcher, opponentStartingPitcher);
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
@@ -129,8 +129,8 @@ export default function Home() {
     setBallparkPhase(null);
   }, [ballparkPhase]);
 
-  const handleLineupConfirm = useCallback((customLineup, startingPitcher) => {
-    startGame(lineupPhase.home, lineupPhase.away, customLineup, null, lineupPhase.useDH, lineupPhase.weather, startingPitcher);
+  const handleLineupConfirm = useCallback((customLineup, startingPitcher, opponentStartingPitcher) => {
+    startGame(lineupPhase.home, lineupPhase.away, customLineup, null, lineupPhase.useDH, lineupPhase.weather, startingPitcher, opponentStartingPitcher);
   }, [lineupPhase, startGame]);
 
   // Fireworks: detect home team HRs and wins
@@ -539,6 +539,7 @@ export default function Home() {
       <LineupManager
         teamKey={lineupPhase.home}
         teamData={TEAMS[lineupPhase.home]}
+        opponentTeamData={TEAMS[lineupPhase.away]}
         useDH={lineupPhase.useDH}
         parkTeam={lineupPhase.parkTeam}
         onConfirm={handleLineupConfirm}

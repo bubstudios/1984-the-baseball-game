@@ -96,12 +96,19 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
   );
 }
 
-export default function LineupManager({ teamKey, teamData, useDH, parkTeam, onConfirm, onBack }) {
+export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, onConfirm, onBack }) {
   const [selectedPitcher, setSelectedPitcher] = useState(teamData.rotation[0]?.name || '');
   const rotationPitchers = useMemo(() => teamData.rotation || [], [teamData]);
   const selectedPitcherData = useMemo(() => {
     return rotationPitchers.find(p => p.name === selectedPitcher) || rotationPitchers[0] || null;
   }, [rotationPitchers, selectedPitcher]);
+
+  // Opponent starting pitcher selection
+  const opponentRotation = useMemo(() => opponentTeamData?.rotation || [], [opponentTeamData]);
+  const [opponentSP, setOpponentSP] = useState(opponentRotation[0]?.name || '');
+  const opponentSPData = useMemo(() => {
+    return opponentRotation.find(p => p.name === opponentSP) || opponentRotation[0] || null;
+  }, [opponentRotation, opponentSP]);
 
   const allPositionPlayers = useMemo(() => {
     const players = [...teamData.lineup];
@@ -227,8 +234,8 @@ export default function LineupManager({ teamKey, teamData, useDH, parkTeam, onCo
         gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
       };
     });
-    // When DH is on, pass the selected starting pitcher separately so the game engine uses them
-    onConfirm(customLineup, useDH ? selectedPitcherData : null);
+    // Pass user's SP (for DH) AND opponent's SP
+    onConfirm(customLineup, useDH ? selectedPitcherData : null, opponentSPData);
   };
 
   const hasDuplicates = duplicatePositions.length > 0;
@@ -347,6 +354,35 @@ export default function LineupManager({ teamKey, teamData, useDH, parkTeam, onCo
               <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground">
                 <span>Throws: <span className="text-foreground font-bold">{selectedPitcherData.throws || 'R'}</span></span>
                 <span>Stamina: <span className="text-foreground font-bold">{selectedPitcherData.stamina}/10</span></span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Opponent Starting Pitcher — always shown when opponent data available */}
+        {opponentTeamData && opponentRotation.length > 1 && (
+          <div className="bg-card border border-border rounded-xl p-3 mb-4">
+            <h3 className="font-heading text-sm font-bold text-foreground mb-2">
+              Opponent Starting Pitcher
+            </h3>
+            <p className="text-[10px] text-muted-foreground mb-2 font-body">
+              Choose who you'll face — pick from {opponentTeamData.city} {opponentTeamData.name}'s rotation.
+            </p>
+            <select
+              value={opponentSP}
+              onChange={(e) => setOpponentSP(e.target.value)}
+              className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              {opponentRotation.map(p => (
+                <option key={p.name} value={p.name}>
+                  {p.name} — SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}
+                </option>
+              ))}
+            </select>
+            {opponentSPData && (
+              <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground">
+                <span>Throws: <span className="text-foreground font-bold">{opponentSPData.throws || 'R'}</span></span>
+                <span>Stamina: <span className="text-foreground font-bold">{opponentSPData.stamina}/10</span></span>
               </div>
             )}
           </div>
