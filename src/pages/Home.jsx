@@ -205,37 +205,11 @@ export default function Home() {
     prevLogLength.current = gameState.log.length;
     prevHalfInning.current = currentHalf;
 
-    // Check achievements when game ends
+    // Check achievements when game ends — this runs in the effect but we also
+    // double-check via processGameOver in the pitch/swing handlers for reliability.
     if (gameState.gameOver && !prevGameOver.current) {
       prevGameOver.current = true;
-      try {
-        const userSide = gameState.homeTeam === userTeam ? 'home' : 'away';
-        const opponentSide = userSide === 'home' ? 'away' : 'home';
-        const userWon = gameState.score[userSide] > gameState.score[opponentSide];
-        const userLineup = userSide === 'home' ? gameState.homeLineup : gameState.awayLineup;
-        const opponentLineup = userSide === 'home' ? gameState.awayLineup : gameState.homeLineup;
-
-        const userHits = [...userLineup, ...(userSide === 'home' ? (gameState.homePlayerHistory || []) : (gameState.awayPlayerHistory || []))]
-          .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
-        const oppHits = [...opponentLineup, ...(userSide === 'home' ? (gameState.awayPlayerHistory || []) : (gameState.homePlayerHistory || []))]
-          .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
-
-        trackGameCompleted(userWon, userTeam, null, gameStadium, userHits, oppHits);
-        trackGameEndTime();
-        checkTeamAchievements();
-
-        if (gameState._managerEjected && userWon) {
-          unlockAchievement('earl_weaver');
-        }
-
-        const newOnes = checkGameAchievements(gameState, userTeam);
-        if (newOnes.length > 0) {
-          setNewAchievements(newOnes);
-          setShowAchievementPopup(true);
-        }
-      } catch (e) {
-        // Silently ignore game-over stat tracking failures — don't crash the UI
-      }
+      processGameOver(gameState);
     }
   }, [gameState]);
 
@@ -364,6 +338,39 @@ export default function Home() {
     return state;
   }, [homeTeam, awayTeam]);
 
+  // ── Game-over achievement processing (called from effect AND play handlers) ──
+  const processGameOver = useCallback((state) => {
+    if (!state || !state.gameOver) return;
+    try {
+      const userSide = state.homeTeam === userTeam ? 'home' : 'away';
+      const opponentSide = userSide === 'home' ? 'away' : 'home';
+      const userWon = state.score[userSide] > state.score[opponentSide];
+      const userLineup = userSide === 'home' ? state.homeLineup : state.awayLineup;
+      const opponentLineup = userSide === 'home' ? state.awayLineup : state.homeLineup;
+
+      const userHits = [...userLineup, ...(userSide === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []))]
+        .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
+      const oppHits = [...opponentLineup, ...(userSide === 'home' ? (state.awayPlayerHistory || []) : (state.homePlayerHistory || []))]
+        .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
+
+      trackGameCompleted(userWon, userTeam, null, gameStadium, userHits, oppHits);
+      trackGameEndTime();
+      checkTeamAchievements();
+
+      if (state._managerEjected && userWon) {
+        unlockAchievement('earl_weaver');
+      }
+
+      const newOnes = checkGameAchievements(state, userTeam);
+      if (newOnes.length > 0) {
+        setNewAchievements(newOnes);
+        setShowAchievementPopup(true);
+      }
+    } catch (e) {
+      // Silently ignore — don't crash the UI
+    }
+  }, [userTeam, gameStadium]);
+
   const isUserBatting = gameState && (
     (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
     (gameState.halfInning === 'bottom' && userTeam === gameState.homeTeam)
@@ -392,10 +399,12 @@ export default function Home() {
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       const withArgs = checkForArgument(afterSubs);
       setGameState(withArgs);
+      // Run achievements immediately when game ends — don't wait for the effect
+      if (withArgs.gameOver) processGameOver(withArgs);
     } finally {
       setProcessing(false);
     }
-  }, [gameState, processing, userTeam]);
+  }, [gameState, processing, userTeam, processGameOver]);
 
   const handleSwing = useCallback((swingIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
@@ -407,10 +416,11 @@ export default function Home() {
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       const withArgs = checkForArgument(afterSubs);
       setGameState(withArgs);
+      if (withArgs.gameOver) processGameOver(withArgs);
     } finally {
       setProcessing(false);
     }
-  }, [gameState, processing, userTeam]);
+  }, [gameState, processing, userTeam, processGameOver]);
 
   const handleSteal = useCallback((baseIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
