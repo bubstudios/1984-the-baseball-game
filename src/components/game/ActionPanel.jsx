@@ -15,6 +15,9 @@ export default function ActionPanel({
   pitcherPitches,
   pitcherNeedsReplacement,
   onNeedReliever,
+  pitcherSpecialty,
+  reachBackUses,
+  reachBackMax,
 }) {
   const [activePitch, setActivePitch] = useState(null);
   const [animatingPitch, setAnimatingPitch] = useState(null);
@@ -29,6 +32,16 @@ export default function ActionPanel({
       setActivePitch(null);
       onPitch(pitchName);
     }, 500);
+  };
+
+  const handleReachBack = () => {
+    if (disabled || animatingPitch) return;
+    setAnimatingPitch('__reachback__');
+    setTimeout(() => {
+      setAnimatingPitch(null);
+      setActivePitch(null);
+      onPitch('__reachback__');
+    }, 600);
   };
 
   if (isPitching) {
@@ -67,6 +80,7 @@ export default function ActionPanel({
     const animClass = (name) => {
       if (animatingPitch !== name) return '';
       if (name === "Knuckleball") return 'animate-knuckle-shake';
+      if (name === "Screwball") return 'animate-spin-diagonal';
       if (name === "Fastball" || name === "Changeup") return 'animate-spin-vertical';
       return 'animate-spin-horizontal';
     };
@@ -133,6 +147,11 @@ export default function ActionPanel({
             50% { transform: rotateY(360deg); }
             100% { transform: rotateY(0deg); }
           }
+          @keyframes spinDiagonal {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-55deg) translate(3px, 3px); }
+            100% { transform: rotate(0deg); }
+          }
           @keyframes knuckleShake {
             0% { transform: translate(0, 0) rotate(0deg); }
             10% { transform: translate(-4px, 3px) rotate(-8deg); }
@@ -148,11 +167,41 @@ export default function ActionPanel({
           }
           .animate-spin-vertical { animation: spinVertical 0.5s ease-in-out; }
           .animate-spin-horizontal { animation: spinHorizontal 0.5s ease-in-out; }
+          .animate-spin-diagonal { animation: spinDiagonal 0.55s ease-in-out; }
           .animate-knuckle-shake { animation: knuckleShake 0.6s ease-in-out; }
+          @keyframes reachbackPulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(251,191,36,0.4); }
+            50% { box-shadow: 0 0 20px rgba(251,191,36,0.7); }
+          }
+          .animate-reachback-pulse { animation: reachbackPulse 0.6s ease-in-out; }
           .duration-350 { animation-duration: 0.35s; }
           .duration-700 { animation-duration: 0.7s; }
           .duration-300 { animation-duration: 0.3s; }
         `}</style>
+
+        {/* Reach Back — specialty pitch for iconic pitchers */}
+        {pitcherSpecialty && (
+          <div className="flex justify-center pt-1">
+            <button
+              disabled={disabled || !!animatingPitch || reachBackUses >= reachBackMax}
+              onClick={handleReachBack}
+              className={`relative flex items-center gap-1.5 h-10 px-4 rounded-xl border-2 transition-all ${
+                reachBackUses >= reachBackMax
+                  ? 'border-muted/20 bg-muted/10 text-muted-foreground/40'
+                  : animatingPitch === '__reachback__'
+                    ? 'border-amber-400/60 bg-amber-500/20 text-amber-200 scale-105'
+                    : 'border-amber-500/50 bg-amber-500/10 hover:bg-amber-500/20 hover:border-amber-400/70 text-amber-300'
+              } ${animatingPitch === '__reachback__' ? 'animate-reachback-pulse' : ''}`}
+            >
+              <span className="text-[11px] font-heading font-bold">
+                💪 {pitcherSpecialty.name}
+              </span>
+              <span className="text-[9px] font-heading text-amber-400/60">
+                ({reachBackMax - reachBackUses} left)
+              </span>
+            </button>
+          </div>
+        )}
 
         {/* Intentional Walk + Change Pitcher */}
         <div className="flex justify-center gap-2 pt-1">

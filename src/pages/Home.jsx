@@ -376,7 +376,9 @@ export default function Home() {
       }
 
       const cpuSwing = cpuSelectSwing(updatedState);
-      const pitchObj = PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"];
+      // Handle Reach Back specialty pitch
+      const isReachBack = pitchName === '__reachback__';
+      const pitchObj = isReachBack ? { name: '__reachback__' } : (PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"]);
       const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
@@ -571,6 +573,13 @@ export default function Home() {
   const pitcherNeedsReplacement = isUserPitching && pitcher && userFieldingLineup && !useDH && pitcher.name
     ? !userFieldingLineup.some(p => p.name === pitcher.name)
     : false;
+
+  // Reach Back — specialty pitch for iconic pitchers
+  const pitcherSpecialty = pitcher?.specialty || null;
+  const reachBackUses = gameState._reachBackUses || 0;
+  const isStarter = pitcher?.pos === 'SP' || pitcher?.assignedPos === 'SP';
+  const reachBackMax = isStarter ? 3 : 1;
+
   const situationalBatter = getSituationalBatter(gameState);
   const battingTeamKey = getBattingTeam(gameState) === 'home' ? homeTeam : awayTeam;
   const battingTeamName = TEAMS[battingTeamKey]?.name || '';
@@ -790,6 +799,9 @@ export default function Home() {
                   pitcherPitches={pitcher.pitches}
                   pitcherNeedsReplacement={pitcherNeedsReplacement}
                   onNeedReliever={() => { setSubsTab('pitching'); setShowSubs(true); }}
+                  pitcherSpecialty={pitcherSpecialty}
+                  reachBackUses={reachBackUses}
+                  reachBackMax={reachBackMax}
                 />
               </div>
             )}
@@ -819,6 +831,9 @@ export default function Home() {
             pitcherPitches={pitcher.pitches}
             pitcherNeedsReplacement={pitcherNeedsReplacement}
             onNeedReliever={() => { setSubsTab('pitching'); setShowSubs(true); }}
+            pitcherSpecialty={pitcherSpecialty}
+            reachBackUses={reachBackUses}
+            reachBackMax={reachBackMax}
           />
         </div>
       )}

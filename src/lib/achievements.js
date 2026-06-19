@@ -632,10 +632,21 @@ export function checkGameAchievements(gameState, userTeam) {
 
   // ── FIRST-TIME ──
   u('play_ball');
-  if (allUserPlayers.some(p => p.gameStats?.hits > 0)) u('batter_up');
-  if (allUserPlayers.some(p => p.gameStats?.runs > 0)) u('crossed_plate');
+  if (allUserPlayers.some(p => (p.gameStats?.hits || 0) > 0)) u('batter_up');
+  // Crossed the Plate: check gameStats AND log for scoring mentions
+  const userScoredLog = log.filter(l => {
+    if (!l.text) return false;
+    const mentionsScore = /scores/i.test(l.text) || /HOME RUN/i.test(l.text);
+    if (!mentionsScore) return false;
+    return userNames.some(n => l.text.includes(n));
+  }).length > 0;
+  if (allUserPlayers.some(p => (p.gameStats?.runs || 0) > 0) || (userScore > 0 && userScoredLog)) {
+    u('crossed_plate');
+  }
   if (logText.includes('double play') && userIsFielding(gameState, userSide, log)) u('around_horn');
-  if (logText.includes('1-2-3') || logText.includes('retired in order')) u('three_up_down');
+  // Three up, three down: check for any inning with 0 runs allowed + no baserunner log entries
+  const hadCleanInning = checkCleanInning(gameState, userSide, log);
+  if (hadCleanInning) u('three_up_down');
   if (userWon) u('ballgame');
 
   // ── HITTING (user team only) ──
@@ -696,7 +707,7 @@ export function checkGameAchievements(gameState, userTeam) {
   if (userIsFielder && (logText.includes('thrown out at home') || logText.includes('nailed at the plate'))) u('cannon_arm');
   if (userIsFielder && logText.includes('caught stealing')) u('caught_stealing');
   if (userIsFielder && logText.includes('double play')) u('twin_killing');
-  if (userIsFielder && (logText.includes('to short') || logText.includes('to third'))) u('around_horn_dp');
+  if (userIsFielder && (logText.includes('5-4-3') || logText.includes('6-4-3') || logText.includes('around the horn') || logText.includes('Around the horn'))) u('around_horn_dp');
   if (userIsFielder && logText.includes('robs') && logText.includes('home run')) u('web_gem');
 
   // ── COMEBACKS ──
@@ -1009,4 +1020,27 @@ function didTrailAfterInning(gameState, userSide, inning) {
 function checkFiveRunInning(gameState, userSide) {
   const innings = gameState.innings || [];
   return innings.some(inn => (inn[userSide] || 0) >= 5);
+}
+
+// Check if any half-inning was a 1-2-3 (clean) inning for the user's pitching side
+function checkCleanInning(gameState, userSide, log) {
+  const oppSide = userSide === 'home' ? 'away' : 'home';
+  const innings = gameState.innings || [];
+  for (let i = 0; i < innings.length; i++) {
+    const inn = innings[i];
+    if (inn[oppSide] === null || inn[oppSide] > 0) continue;
+    // Check no baserunner events for this inning in log
+    const innNum = i + 1;
+    const halfLabel = userSide === 'home' ? 'top' : 'bottom';
+    const hadRunner = log.some(l => {
+      if (!l.text) return false;
+      // Look for baserunner mentions around this inning
+      if (l.text.includes(`inning ${innNum}`) || l.text.includes(`inning, ${innNum}`)) {
+        return /single|double|triple|walk|hit by pitch|error|reaches/i.test(l.text);
+      }
+      return false;
+    });
+    if (!hadRunner) return true;
+  }
+  return false;
 }

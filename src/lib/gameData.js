@@ -99,7 +99,7 @@ export const TEAMS = {
       { name: "Andy Hawkins", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 4, power: 1, bunting: 5, speed: 3 },
     ],
     bullpen: [
-      { name: "Goose Gossage", pos: "CL", throws: "R", bats: "R", stamina: 3, pitchSpeed: 9, offSpeed: 8, control: 7, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Goose Gossage", pos: "CL", throws: "R", bats: "R", stamina: 3, pitchSpeed: 9, offSpeed: 8, control: 7, contact: 3, power: 1, bunting: 3, speed: 2, specialty: { name: "Goose Egg", pitch: "Fastball", label: "RC" } },
       { name: "Craig Lefferts", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 7, control: 8, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Dave Dravecky", pos: "RP", throws: "L", bats: "L", stamina: 5, pitchSpeed: 5, offSpeed: 7, control: 8, contact: 4, power: 2, bunting: 5, speed: 3 },
       { name: "Greg Booker", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
@@ -144,13 +144,13 @@ export const TEAMS = {
         splits: estSplits(.215, 3, 142, 30, "S") },
     ],
     rotation: [
-      { name: "Rick Sutcliffe", pos: "SP", throws: "R", bats: "L", stamina: 9, pitchSpeed: 8, offSpeed: 9, control: 8, contact: 6, power: 4, bunting: 6, speed: 3 },
+      { name: "Rick Sutcliffe", pos: "SP", throws: "R", bats: "L", stamina: 9, pitchSpeed: 8, offSpeed: 9, control: 8, contact: 6, power: 4, bunting: 6, speed: 3, specialty: { name: "Sinker-Change Combo", pitch: "Fastball", label: "RC" } },
       { name: "Steve Trout", pos: "SP", throws: "L", bats: "L", stamina: 7, pitchSpeed: 6, offSpeed: 8, control: 6, contact: 5, power: 2, bunting: 6, speed: 3 },
       { name: "Dennis Eckersley", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 7, offSpeed: 7, control: 9, contact: 4, power: 1, bunting: 5, speed: 2 },
       { name: "Scott Sanderson", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 6, control: 7, contact: 4, power: 1, bunting: 5, speed: 2 },
     ],
     bullpen: [
-      { name: "Lee Smith", pos: "CL", throws: "R", bats: "R", stamina: 4, pitchSpeed: 10, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Lee Smith", pos: "CL", throws: "R", bats: "R", stamina: 4, pitchSpeed: 10, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 3, speed: 2, specialty: { name: "High Heat", pitch: "Fastball", label: "RC" } },
       { name: "Tim Stoddard", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 5, control: 5, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "George Frazier", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Warren Brusstar", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 3, power: 1, bunting: 3, speed: 2 },
@@ -195,7 +195,7 @@ export const TEAMS = {
         splits: estSplits(.264, 5, 98, 25, "L") },
     ],
     rotation: [
-      { name: "Dwight Gooden", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 10, offSpeed: 9, control: 7, contact: 4, power: 2, bunting: 5, speed: 4 },
+      { name: "Dwight Gooden", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 10, offSpeed: 9, control: 7, contact: 4, power: 2, bunting: 5, speed: 4, specialty: { name: "Lord Charles", pitch: "Breaking Ball", label: "RC" } },
       { name: "Ron Darling", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 7, offSpeed: 7, control: 6, contact: 5, power: 2, bunting: 5, speed: 4 },
       { name: "Walt Terrell", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 6, offSpeed: 6, control: 7, contact: 4, power: 2, bunting: 5, speed: 3 },
       { name: "Bruce Berenyi", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 5, control: 4, contact: 3, power: 1, bunting: 4, speed: 3 },
@@ -301,8 +301,8 @@ export const TEAMS = {
         splits: estSplits(.249, 2, 168, 46, "R") },
     ],
     rotation: [
-      { name: "Phil Niekro", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 4, offSpeed: 10, control: 8, contact: 3, power: 2, bunting: 5, speed: 2, pitches: ["Fastball", "Knuckleball", "Changeup"] },
-      { name: "Ron Guidry", pos: "SP", throws: "L", bats: "L", stamina: 8, pitchSpeed: 8, offSpeed: 8, control: 7, contact: 3, power: 1, bunting: 4, speed: 3 },
+      { name: "Phil Niekro", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 4, offSpeed: 10, control: 8, contact: 3, power: 2, bunting: 5, speed: 2, pitches: ["Fastball", "Knuckleball", "Changeup"], specialty: { name: "Knucksie Special", pitch: "Knuckleball", label: "RC" } },
+      { name: "Ron Guidry", pos: "SP", throws: "L", bats: "L", stamina: 8, pitchSpeed: 8, offSpeed: 8, control: 7, contact: 3, power: 1, bunting: 4, speed: 3, specialty: { name: "Louisiana Lightning", pitch: "Breaking Ball", label: "RC" } },
       { name: "Ray Fontenot", pos: "SP", throws: "L", bats: "L", stamina: 7, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Dennis Rasmussen", pos: "SP", throws: "L", bats: "L", stamina: 6, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
@@ -457,7 +457,7 @@ export const TEAMS = {
     rotation: [
       { name: "Alejandro Pena", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 8, control: 8, contact: 5, power: 2, bunting: 5, speed: 3 },
       { name: "Orel Hershiser", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 7, offSpeed: 9, control: 7, contact: 5, power: 3, bunting: 7, speed: 4 },
-      { name: "Fernando Valenzuela", pos: "SP", throws: "L", bats: "L", stamina: 9, pitchSpeed: 6, offSpeed: 9, control: 6, contact: 6, power: 3, bunting: 6, speed: 3, pitches: ["Fastball", "Breaking Ball", "Changeup", "Screwball"] },
+      { name: "Fernando Valenzuela", pos: "SP", throws: "L", bats: "L", stamina: 9, pitchSpeed: 6, offSpeed: 9, control: 6, contact: 6, power: 3, bunting: 6, speed: 3, pitches: ["Fastball", "Breaking Ball", "Changeup", "Screwball"], specialty: { name: "El Tornillo", pitch: "Screwball", label: "RC" } },
       { name: "Bob Welch", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 7, control: 7, contact: 5, power: 2, bunting: 5, speed: 3 },
     ],
     bullpen: [

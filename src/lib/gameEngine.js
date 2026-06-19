@@ -619,6 +619,38 @@ function applyInjuryState(newState, injuryResult) {
 export function processAtBat(state, pitchType, swingType) {
   const home = TEAMS[state.homeTeam], away = TEAMS[state.awayTeam];
   const newState = JSON.parse(JSON.stringify(state));
+
+  // ── Reach Back: specialty pitch — near-automatic strike ──
+  const isReachBack = pitchType && (pitchType.name === '__reachback__' || pitchType === '__reachback__');
+  if (isReachBack) {
+    newState._reachBackUses = (newState._reachBackUses || 0) + 1;
+    const pitcher = getCurrentPitcher(newState);
+    pitcher.gameStats.pitches++;
+    const batter = getCurrentBatter(newState);
+    // Specialty pitch: 95% strike, 85% chance of inducing weak contact or whiff
+    newState.pitchResult = { pitchType: 'Reach Back', isStrike: Math.random() < 0.95, location: 'on the black' };
+    if (!newState.userPitchTypes) newState.userPitchTypes = [];
+    if (!newState.userPitchTypes.includes('__reachback__')) newState.userPitchTypes = [...newState.userPitchTypes, '__reachback__'];
+    if (newState.pendingSteal !== null && newState.pendingSteal !== undefined) { const sr = attemptSteal(newState, newState.pendingSteal); Object.assign(newState, sr); if (newState.gameOver) return newState; }
+    const bjb = getCurrentBatter(newState);
+    // Boosted pitch: effective 10s across the board for this pitch
+    const boostedPitcher = { ...pitcher, effectivePitchSpeed: 10, effectiveControl: 10, effectiveOffSpeed: 10 };
+    const effP = getEffectivePitcher(newState);
+    // Temporarily replace the effective pitcher for this resolve
+    const origEff = effP;
+    // We need resolveSwing to use boosted ratings — modify the pitcher in newState temporarily
+    if (newState.halfInning === 'top') newState.homePitcher = boostedPitcher;
+    else newState.awayPitcher = boostedPitcher;
+    resolveSwing(newState, swingType, newState.pitchResult);
+    // Restore original pitcher
+    if (newState.halfInning === 'top') newState.homePitcher = origEff;
+    else newState.awayPitcher = origEff;
+    if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); }
+    if (!newState.gameOver) runInjuryChecks(newState, bjb);
+    if (!newState.gameOver && !newState.lastInjury) { const pi = checkPitcherInjury(newState); if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); } }
+    return newState;
+  }
+
   if (newState.pendingSteal !== null && newState.pendingSteal !== undefined) { const sr = attemptSteal(newState, newState.pendingSteal); Object.assign(newState, sr); if (newState.gameOver) return newState; if (sr.lastPlay?.type === 'caughtstealing') return newState; }
   const pitcher = getCurrentPitcher(newState), effP = getEffectivePitcher(newState) || pitcher;
   const batter = getCurrentBatter(newState);
@@ -800,7 +832,19 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const recentCollapse = (runs >= 2 && bbi >= 2 && inning >= 5), severeFatigue = ip >= maxInnings + 2;
   const shouldChange = (severeFatigue || fatiguePull || walksPull || blowupPull || lateClose || recentCollapse) && cpuBullpen.length > 0;
   if (shouldChange) {
-    const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control); const newPitcher = sorted[0];
+    // Bullpen management: don't waste closer in blowouts (trailing by 4+)
+    const trailing = cpuScore < userScore;
+    const bigDeficit = Math.abs(cpuScore - userScore) >= 4;
+    let candidates;
+    if (trailing && bigDeficit && inning <= 7) {
+      // Mop-up duty — exclude closers, use worst available (inverted sort)
+      candidates = [...cpuBullpen].filter(p => p.pos !== 'CL').sort((a, b) => a.control - b.control);
+      if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => a.control - b.control);
+    } else {
+      // Normal: best pitcher first
+      candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
+    }
+    const newPitcher = candidates[0];
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
     const oldPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
     if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
