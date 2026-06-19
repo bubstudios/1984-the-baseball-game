@@ -640,16 +640,18 @@ export function processAtBat(state, pitchType, swingType) {
     const bjb = getCurrentBatter(newState);
     // Boosted pitch: effective 10s across the board for this pitch
     const boostedPitcher = { ...pitcher, effectivePitchSpeed: 10, effectiveControl: 10, effectiveOffSpeed: 10 };
-    const effP = getEffectivePitcher(newState);
-    // Temporarily replace the effective pitcher for this resolve
-    const origEff = effP;
-    // We need resolveSwing to use boosted ratings — modify the pitcher in newState temporarily
-    if (newState.halfInning === 'top') newState.homePitcher = boostedPitcher;
+    const origPitcher = { ...pitcher };
+    // Snapshot the half-inning before resolveSwing — it may flip if 3 outs occur
+    const pitchHalf = newState.halfInning;
+    // Temporarily replace the pitcher for boosted ratings
+    if (pitchHalf === 'top') newState.homePitcher = boostedPitcher;
     else newState.awayPitcher = boostedPitcher;
     resolveSwing(newState, swingType, newState.pitchResult);
-    // Restore original pitcher
-    if (newState.halfInning === 'top') newState.homePitcher = origEff;
-    else newState.awayPitcher = origEff;
+    // Restore original pitcher using the SAVED half-inning (resolveSwing may have flipped it)
+    if (!newState.gameOver) {
+      if (pitchHalf === 'top') newState.homePitcher = origPitcher;
+      else newState.awayPitcher = origPitcher;
+    }
     if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); }
     if (!newState.gameOver) runInjuryChecks(newState, bjb);
     if (!newState.gameOver && !newState.lastInjury) { const pi = checkPitcherInjury(newState); if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); } }
