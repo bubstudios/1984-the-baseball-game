@@ -150,9 +150,21 @@ export default function Home() {
     }
 
     // Check for injuries — only show once per injury
-    // If there's a pending injury requiring user selection, show the selection modal
     if (gameState._pendingInjury && !injuryResult) {
-      setInjuryResult({ ...gameState._pendingInjury, _pending: true });
+      const isUserTeam = gameState._pendingInjury.isAway
+        ? userTeam === gameState.awayTeam
+        : userTeam === gameState.homeTeam;
+      if (isUserTeam) {
+        // User must pick a replacement for their own team's injury
+        setInjuryResult({ ...gameState._pendingInjury, _pending: true });
+      } else {
+        // CPU team injury — auto-select first bench option
+        const benchOptions = gameState._pendingInjury.benchOptions || [];
+        if (benchOptions.length > 0) {
+          const newState = applyInjuryReplacement(gameState, benchOptions[0]);
+          setGameState(prev => newState);
+        }
+      }
       return;
     }
     if (gameState.lastInjury && !injuryResult && !gameState._injuryShown) {
