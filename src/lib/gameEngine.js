@@ -345,7 +345,7 @@ function resolvePitch(state, pitchType) {
   pitcher.gameStats.pitches++;
   const controlFactor = (effectiveP.effectiveControl || effectiveP.control) / 10;
   const effControl = effectiveP.effectiveControl || effectiveP.control;
-  const wpChance = Math.max(0.008, (10 - effControl) * 0.008);
+  const wpChance = Math.max(0.003, (10 - effControl) * 0.003);
   if (Math.random() < wpChance) {
     const hasR = state.bases.some(b => b !== null);
     if (hasR) {

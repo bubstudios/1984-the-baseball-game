@@ -1,9 +1,24 @@
 // Denny Matthews-style commentary — professional, smooth, understated
-// Not a screamer. Not Harry Caray. The voice of Kansas City.
+// Player-specific lines only used when that player is involved (at bat or on mound)
 
+// ── Generic flavor pool (NO player-specific lines) ──
 export function pickRoyalsLine() {
-  const all = [...ROUTINE, ...RARE, ...ULTRA_RARE, ...FOUNTAIN_LINES, ...KC_REFERENCES, ...HR_LINES, ...GEORGE_BRETT, ...WILSON, ...WHITE, ...BALBONI, ...QUISENBERRY];
+  const all = [...ROUTINE, ...RARE, ...ULTRA_RARE, ...FOUNTAIN_LINES, ...KC_REFERENCES, ...STRIKEOUT_LINES, ...PITCHING_NOTES];
   return all[Math.floor(Math.random() * all.length)];
+}
+
+// ── Contextual player line — used when a specific batter or pitcher is involved ──
+export function pickRoyalsPlayerLine(playerName) {
+  const map = {
+    "George Brett": BRETT_FLAVOR,
+    "Willie Wilson": WILSON_FLAVOR,
+    "Frank White": WHITE_FLAVOR,
+    "Steve Balboni": BALBONI_FLAVOR,
+    "Dan Quisenberry": QUISENBERRY_FLAVOR,
+  };
+  const lines = map[playerName];
+  if (!lines) return null;
+  return lines[Math.floor(Math.random() * lines.length)];
 }
 
 // ── Routine Outs ──
@@ -42,128 +57,62 @@ const STRIKEOUT_LINES = [
   "He froze him.",
 ];
 
-// ── Singles ──
-const SINGLE_LINES = [
-  "A clean base hit.",
-  "Through the right side.",
-  "Back up the middle.",
-  "Into center field.",
-  "That's a base hit.",
-  "The Royals have something going.",
-  "That'll keep the inning alive.",
-  "A solid piece of hitting.",
-  "A single for Kansas City.",
-  "Cleanly into the outfield.",
+// ── Pitching notes (non-player-specific) ──
+const PITCHING_NOTES = [
+  "Here comes the sidearm delivery.",
+  "That one looked like it came out of the grass.",
+  "He drops down low.",
 ];
 
-// ── Doubles ──
-const DOUBLE_LINES = [
-  "Into the gap.",
-  "That one's headed for the wall.",
-  "He'll make second easily.",
-  "A stand-up double.",
-  "Extra bases for Kansas City.",
-  "That'll score a run.",
-  "A big hit for the Royals.",
-  "Driven into the alley.",
-  "That ball was squared up.",
-];
-
-// ── Triples ──
-const TRIPLE_LINES = [
-  "He's got a chance for three.",
-  "Wilson can fly.",
-  "The throw won't be in time.",
-  "He's standing on third.",
-  "A triple for the Royals.",
-  "The speed of Willie Wilson on display.",
-  "That'll be a three-bagger.",
-  "The big outfield here at Royals Stadium pays off.",
-];
-
-// ── Home Runs ──
-const HR_LINES = [
-  "That ball is gone.",
-  "Way back and out of here.",
-  "Into the seats.",
-  "A home run for Kansas City.",
-  "He knew it.",
-  "No doubt about that one.",
-  "That one won't come back.",
-  "He got all of it.",
-  "The Royals strike quickly.",
-  "Goodbye baseball.",
-  "A big swing for Kansas City.",
-  "The Royals have the lead.",
-  "Way back and gone.",
-];
-
-// ── George Brett Specific ──
-const GEORGE_BRETT = [
-  "Another hit for George Brett.",
-  "Brett continues to swing a hot bat.",
-  "That's what George Brett does.",
-  "George Brett drives one into the gap.",
-  "A classic Brett swing.",
-  "George Brett has tied it.",
-  "Brett goes deep.",
-  "The Royals' captain comes through again.",
-  "Brett is putting on a show tonight.",
-  "George Brett is carrying the offense.",
+// ── George Brett flavor — only when Brett is batting ──
+const BRETT_FLAVOR = [
+  "George Brett steps in — always an event at Royals Stadium.",
+  "Brett digs in — the fans rise a little in their seats.",
+  "Brett is locked in tonight.",
+  "The Royals' captain.",
   "The best hitter in the American League.",
-  "Brett delivers.",
+  "Brett is putting on a show tonight.",
+  "George Brett has been doing this for a long time.",
+  "George Brett is carrying the offense.",
+  "Brett — one of the purest swings in baseball.",
 ];
 
-// ── Willie Wilson Specific ──
-const WILSON = [
-  "There he goes.",
-  "Wilson gets a great jump.",
-  "Safe easily.",
+// ── Willie Wilson flavor ──
+const WILSON_FLAVOR = [
+  "Wilson at the plate — always a stolen base threat.",
   "Nobody runs better than Willie Wilson.",
   "You have to keep an eye on him.",
-  "This is where Wilson is dangerous.",
-  "He's flying around the bases.",
-  "Wilson turns on the jets.",
-  "The league's most dangerous baserunner.",
-  "Willie Wilson can change a game with his speed.",
+  "Willie Wilson — the league's most dangerous baserunner.",
+  "Wilson can change a game with his speed.",
+  "Willie Wilson — speed to burn.",
+  "The Royals love having Wilson on the bases.",
 ];
 
-// ── Frank White Specific ──
-const WHITE = [
-  "A smooth play by Frank White.",
-  "Gold Glove work.",
-  "That's why he's one of the best.",
-  "Frank White makes it look easy.",
-  "Another fine defensive play.",
+// ── Frank White flavor ──
+const WHITE_FLAVOR = [
+  "Frank White — Gold Glove second baseman.",
   "You won't find many smoother fielders than Frank White.",
-  "White ranges to his right.",
-  "The best second baseman in the league.",
+  "White is one of the best defensive second basemen in the game.",
+  "Frank White makes it look easy.",
+  "White — steady as they come.",
 ];
 
-// ── Steve Balboni Specific ──
-const BALBONI = [
-  "Balboni got all of that.",
-  "That's a long home run.",
-  "Bye-Bye Balboni strikes again.",
-  "That ball was hit a long way.",
-  "Big swing and a miss.",
-  "Balboni was looking for the long ball.",
-  "The big first baseman takes a mighty cut.",
+// ── Steve Balboni flavor ──
+const BALBONI_FLAVOR = [
+  "Bye-Bye Balboni — always a threat to leave the yard.",
+  "Balboni steps in with that big swing.",
+  "The big first baseman — power to all fields.",
   "Balboni is a threat every time he steps in.",
+  "Balboni has that light-tower power.",
 ];
 
-// ── Dan Quisenberry Specific ──
-const QUISENBERRY = [
+// ── Dan Quisenberry flavor ──
+const QUISENBERRY_FLAVOR = [
   "Here comes Quisenberry.",
   "The Royals turn it over to Quiz.",
   "One of baseball's best closers.",
-  "Quisenberry got him.",
-  "That sidearm delivery can be tough.",
-  "Ballgame.",
-  "Another save for Quisenberry.",
-  "The Royals win it.",
-  "Quisenberry drops down low.",
-  "That ball looked like it came out of the grass.",
+  "Quisenberry — that submarine delivery is so unusual.",
+  "The Royals fans rise for Quiz.",
 ];
 
 // ── Fountains ──
@@ -180,8 +129,6 @@ const FOUNTAIN_LINES = [
   "The fountains beyond the outfield are lit beautifully tonight.",
   "The water is flowing behind the fence.",
   "Few ballparks have a view quite like this.",
-  "That one nearly found the fountains.",
-  "The fountains have been getting almost as much attention as the game.",
   "The fountains are always a crowd favorite.",
 ];
 
@@ -195,49 +142,21 @@ const KC_REFERENCES = [
   "A beautiful night in the Heartland.",
   "Kansas City fans know their baseball.",
   "The Royals continue to draw some of baseball's best fans.",
-  "Kansas City has supported this club since the beginning.",
   "This ballpark remains one of baseball's showcase facilities.",
   "A beautiful baseball night in the Heartland.",
   "Baseball is alive and well in Kansas City.",
-  "You can smell barbecue somewhere beyond the ballpark tonight.",
-  "Nothing beats Kansas City barbecue.",
-  "The smoke should be rolling from barbecue pits across town tonight.",
-  "Kansas City has a rich jazz tradition.",
   "A fine crowd on hand here in Kansas City.",
 ];
 
-// ── Ken Coleman-style HR calls ──
-export const ROYALS_HR_LINES = {
-  routine: [
-    "That ball is gone.",
-    "A home run for Kansas City.",
-    "Way back and gone.",
-    "He got all of that one.",
-    "The Royals strike quickly.",
-    "Into the seats.",
-  ],
-  bigMoment: [
-    "Way back and out of here!",
-    "A big home run for Kansas City!",
-    "The Royals have the lead!",
-    "Goodbye baseball!",
-    "A big swing for the Boys in Blue!",
-  ],
-  legendary: [
-    "That'll find a fountain somewhere.",
-    "That ball may not come down until tomorrow.",
-  ],
-};
-
-// ── Rare Color Lines (1-in-500) ──
+// ── Rare Color Lines ──
 const RARE = [
   "A fine crowd on hand here in Kansas City.",
   "Not many prettier ballparks in baseball.",
   "The Royals have built a reputation on pitching and defense.",
-  "George Brett has been doing this for a long time.",
-  "Willie Wilson can change a game with his speed.",
-  "You won't find many smoother fielders than Frank White.",
   "Kansas City fans know their baseball.",
+  "You can smell barbecue somewhere beyond the ballpark tonight.",
+  "Nothing beats Kansas City barbecue.",
+  "Kansas City has a rich jazz tradition.",
 ];
 
 // ── Ultra-Rare (1-in-500 games) ──

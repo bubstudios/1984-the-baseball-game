@@ -7,7 +7,7 @@ import { pickYankeesLine } from '@/lib/yankeesBroadcastLines';
 import { pickRedSoxLine } from '@/lib/redSoxBroadcastLines';
 import { pickTigersLine } from '@/lib/tigersBroadcastLines';
 import { pickRedsLine } from '@/lib/redsBroadcastLines';
-import { pickRoyalsLine } from '@/lib/royalsBroadcastLines';
+import { pickRoyalsLine, pickRoyalsPlayerLine } from '@/lib/royalsBroadcastLines';
 
 // Player nicknames — researched from 1984 MLB lore
 const NICKNAMES = {
@@ -702,7 +702,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                   : isRedsGame && Math.random() < 0.70
                     ? pickRedsLine()
                     : isRoyalsGame && Math.random() < 0.70
-                      ? pickRoyalsLine()
+                      ? (pickRoyalsPlayerLine(batter?.name) || pickRoyalsLine())
                       : getCommentary(batter, pitcher, gameState, stadiumInfo);
   }
 
