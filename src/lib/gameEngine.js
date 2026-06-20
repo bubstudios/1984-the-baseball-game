@@ -730,28 +730,25 @@ function resolveSwing(state, swingType, pitch) {
           // Spectacular out — diving stop followed by throw
           out.text = dsResult.text;
         } else if (dsResult.type === 'knockdown') {
-          // Knocked down but batter reaches on infield single
+          // Knocked down — ball stayed in the infield, runners advance conservatively
           batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
-          for (let br = 2; br >= 0; br--) {
-            if (state.bases[br]) {
-              if (br + 1 >= 3) { state.bases[br].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[br] = null; }
-              else if (!state.bases[br + 1]) { state.bases[br + 1] = state.bases[br]; state.bases[br] = null; }
-            }
-          }
+          // Runner on 3rd: scores. Runner on 2nd: only to 3rd (ball never left infield).
+          // Runner on 1st: only to 2nd. Batter reaches 1st.
+          if (state.bases[2]) { state.bases[2].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[2] = null; }
+          if (state.bases[1]) { if (!state.bases[2]) { state.bases[2] = state.bases[1]; } else { state.bases[1].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[1] = null; }
+          if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
           state.bases[0] = batter;
           state.log.push({ type: 'single', text: dsResult.text });
           state.lastPlay = { type: 'single', text: dsResult.text };
           state.balls = 0; state.strikes = 0; advanceBatter(state);
           return;
         } else {
-          // Save a double — diving stop holds batter to single
+          // Save a double — diving stop kept ball in the infield, holds batter to single
           batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
-          for (let br = 2; br >= 0; br--) {
-            if (state.bases[br]) {
-              if (br + 1 >= 3) { state.bases[br].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[br] = null; }
-              else if (!state.bases[br + 1]) { state.bases[br + 1] = state.bases[br]; state.bases[br] = null; }
-            }
-          }
+          // Runner on 3rd: scores. Others advance at most one base (ball stayed in infield).
+          if (state.bases[2]) { state.bases[2].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[2] = null; }
+          if (state.bases[1]) { if (!state.bases[2]) { state.bases[2] = state.bases[1]; } else { state.bases[1].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[1] = null; }
+          if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
           state.bases[0] = batter;
           state.log.push({ type: 'single', text: dsResult.text });
           state.lastPlay = { type: 'single', text: dsResult.text };

@@ -589,10 +589,8 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     ...runnerSlang,
     `${lastName} digging in at the dish`,
     `The hot corner is ready — ${lastName} steps in`,
-    `Can of corn territory out there`,
     `${lastName} could use a little seeing-eye single right here`,
     `Texas Leaguer territory — bloop it in, ${lastName}`,
-    `Around the horn — let's see what develops`,
     `Warning track power out there`,
     `He's got warning track power but that's about it`,
     `Looking for a dinger here`,
@@ -615,7 +613,6 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     `He's got swing-and-miss stuff working today`,
     `The hook is on — ${pitcher?.name} dealing`,
     // In the Field
-    `Around the horn they go`,
     `${lastName}'s below the Mendoza Line — needs to get it going`,
     `${lastName} looking for his pitch to drive`,
     `Gap-to-gap hitter, this ${posName}`,
