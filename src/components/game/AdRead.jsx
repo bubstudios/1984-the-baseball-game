@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Tv, X, Clock, User } from 'lucide-react';
+import { Tv, X, Clock, User, Film } from 'lucide-react';
 import { pickSynopsis, NETWORK_LOGOS, EASTER_EGGS } from '@/lib/tvGuideData';
 import { trackSynopsisView, hasSynopsisBeenViewed } from '@/lib/tvAchievements';
+import { findMovieIndex } from '@/lib/moviePopups';
+import MoviePopup from './MoviePopup';
 
 // Map ad text to banner index — find the matching TV synopsis data
 function findBannerIndex(adText) {
@@ -25,14 +27,17 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [visible, setVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [synopsisData, setSynopsisData] = useState(null);
+  const [isMovie, setIsMovie] = useState(false);
 
-  // On mount, find the matching TV synopsis
+  // On mount, find the matching TV synopsis or movie entry
   useEffect(() => {
     if (!ad) return;
-    const idx = findBannerIndex(ad.text);
-    if (idx) {
-      const data = pickSynopsis(idx);
+    const tvIdx = findBannerIndex(ad.text);
+    if (tvIdx) {
+      const data = pickSynopsis(tvIdx);
       setSynopsisData(data);
+    } else if (findMovieIndex(ad.text) !== null) {
+      setIsMovie(true);
     }
     const showTimer = setTimeout(() => setVisible(true), 100);
     return () => clearTimeout(showTimer);
@@ -46,6 +51,11 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   }, [visible, expanded, autoDismissMs, onDismiss]);
 
   if (!ad || !visible) return null;
+
+  // ── Movie Popup ──
+  if (isMovie) {
+    return <MoviePopup ad={ad} onDismiss={() => { setVisible(false); onDismiss(); }} onAchievement={onAchievement} />;
+  }
 
   const showIcon = synopsisData?.icon || '📺';
   const networkInfo = synopsisData ? NETWORK_LOGOS[synopsisData.network] : null;
