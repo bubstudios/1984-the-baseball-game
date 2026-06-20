@@ -568,21 +568,16 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     `Double play depth — middle infielders creeping in`,
   ] : [];
   const allSlangOptions = [
-    // Hitting
+    // Hitting — aspirational & flavor only (no result descriptions)
     ...runnerSlang,
     `${lastName} digging in at the dish`,
     `The hot corner is ready — ${lastName} steps in`,
     `Can of corn territory out there`,
-    'Frozen rope — that was absolutely squared up',
-    `This one's hit on a frozen rope!`,
     `${lastName} could use a little seeing-eye single right here`,
     `Texas Leaguer territory — bloop it in, ${lastName}`,
-    `Worm burner down the line`,
-    `That's a bleeder — might find some grass`,
     `Around the horn — let's see what develops`,
     `Warning track power out there`,
     `He's got warning track power but that's about it`,
-    `No-doubter off the bat!`,
     `Looking for a dinger here`,
     `A moonshot would be something, wouldn't it?`,
     `Give it a ride, ${lastName} — send a tater out of here`,
@@ -609,7 +604,6 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     `Gap-to-gap hitter, this ${posName}`,
     `Small ball might be the play here`,
     `Hit 'em where they ain't`,
-    `Good wood on that one`,
     `He's in a groove — locked in at the plate`,
     // General
     `Pitcher's duel unfolding here at ${info.stadium || 'the ballpark'}`,

@@ -342,33 +342,34 @@ export default function Home() {
   // ── Game-over achievement processing (called from effect AND play handlers) ──
   const processGameOver = useCallback((state) => {
     if (!state || !state.gameOver) return;
+    const userSide = state.homeTeam === userTeam ? 'home' : 'away';
+    const opponentSide = userSide === 'home' ? 'away' : 'home';
+    const userWon = state.score[userSide] > state.score[opponentSide];
+    const userLineup = userSide === 'home' ? state.homeLineup : state.awayLineup;
+    const opponentLineup = userSide === 'home' ? state.awayLineup : state.homeLineup;
+
+    const userHits = [...userLineup, ...(userSide === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []))]
+      .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
+    const oppHits = [...opponentLineup, ...(userSide === 'home' ? (state.awayPlayerHistory || []) : (state.homePlayerHistory || []))]
+      .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
+
+    // Run stats tracking and achievements independently — one failure shouldn't block the other
+    try { trackGameCompleted(userWon, userTeam, null, gameStadium, userHits, oppHits); } catch (e) { console.error('trackGameCompleted failed:', e); }
+    try { trackGameEndTime(); } catch (e) { console.error('trackGameEndTime failed:', e); }
+    try { checkTeamAchievements(); } catch (e) { console.error('checkTeamAchievements failed:', e); }
+
+    if (state._managerEjected && userWon) {
+      try { unlockAchievement('earl_weaver'); } catch (e) { console.error('earl_weaver failed:', e); }
+    }
+
     try {
-      const userSide = state.homeTeam === userTeam ? 'home' : 'away';
-      const opponentSide = userSide === 'home' ? 'away' : 'home';
-      const userWon = state.score[userSide] > state.score[opponentSide];
-      const userLineup = userSide === 'home' ? state.homeLineup : state.awayLineup;
-      const opponentLineup = userSide === 'home' ? state.awayLineup : state.homeLineup;
-
-      const userHits = [...userLineup, ...(userSide === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []))]
-        .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
-      const oppHits = [...opponentLineup, ...(userSide === 'home' ? (state.awayPlayerHistory || []) : (state.homePlayerHistory || []))]
-        .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
-
-      trackGameCompleted(userWon, userTeam, null, gameStadium, userHits, oppHits);
-      trackGameEndTime();
-      checkTeamAchievements();
-
-      if (state._managerEjected && userWon) {
-        unlockAchievement('earl_weaver');
-      }
-
       const newOnes = checkGameAchievements(state, userTeam);
       if (newOnes.length > 0) {
         setNewAchievements(newOnes);
         setShowAchievementPopup(true);
       }
     } catch (e) {
-      // Silently ignore — don't crash the UI
+      console.error('checkGameAchievements failed:', e);
     }
   }, [userTeam, gameStadium]);
 

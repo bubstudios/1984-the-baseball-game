@@ -9,7 +9,7 @@ const CATEGORY_META = {
   team_promo: { icon: Calendar, label: 'TEAM PROMOTION', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
 };
 
-export default function AdRead({ ad, onDismiss, autoDismissMs = 5000 }) {
+export default function AdRead({ ad, onDismiss, autoDismissMs = 12000 }) {
   const [visible, setVisible] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const meta = CATEGORY_META[ad?.category] || CATEGORY_META.sponsor;
@@ -21,15 +21,16 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 5000 }) {
     if (!ad) return;
     setShowDetail(false);
     const showTimer = setTimeout(() => setVisible(true), 100);
+    // Only auto-dismiss when not showing the detail view
     let dismissTimer;
-    if (autoDismissMs > 0) {
+    if (autoDismissMs > 0 && !showDetail) {
       dismissTimer = setTimeout(onDismiss, autoDismissMs + 100);
     }
     return () => {
       clearTimeout(showTimer);
       if (dismissTimer) clearTimeout(dismissTimer);
     };
-  }, [ad, onDismiss, autoDismissMs]);
+  }, [ad, onDismiss, autoDismissMs, showDetail]);
 
   if (!ad || !visible) return null;
 
