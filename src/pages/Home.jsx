@@ -19,6 +19,8 @@ import ArgumentsBanner from '@/components/game/ArgumentsBanner';
 import BallparkEventBanner from '@/components/game/BallparkEventBanner';
 import InjuryBanner from '@/components/game/InjuryBanner';
 import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
+import BeanballBanner from '@/components/game/BeanballBanner';
+import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
 import { applyInjuryReplacement } from '@/lib/injuryReplacement';
 import { getArgumentSeverity, resolveArgument, getEjectionCommentary, maybeDugoutChirp } from '@/lib/umpireArguments';
@@ -68,6 +70,7 @@ export default function Home() {
   const prevHalfInning = useRef(null);
   const [showAd, setShowAd] = useState(null);
   const [showStretch, setShowStretch] = useState(null);
+  const [beanballEvent, setBeanballEvent] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -96,6 +99,7 @@ export default function Home() {
     setArgumentResult(null);
     setBallparkEvent(null);
     setInjuryResult(null);
+    setBeanballEvent(null);
     resetBallparkEvents();
     const stadium = TEAMS[home]?.stadium || null;
     setGameStadium(stadium);
@@ -150,6 +154,28 @@ export default function Home() {
         prevLastPlay.current = { type: '__win_fired__' };
         setTimeout(() => setWinTrigger(t => t + 1), 300);
       }
+    }
+
+    // ── Beanball events: HBP, warnings, bat flips ──
+    // Reuse the existing lastPlay variable (declared above at line 143)
+    if (lastPlay && lastPlay !== prevLastPlay.current) {
+      // HBP detection
+      if (lastPlay.isHBP) {
+        setBeanballEvent({ type: 'hbp', text: getHBPCall(homeTeam, lastPlay.hbpReason), subtext: lastPlay.hbpReason?.label || 'Hit by pitch' });
+      }
+      // Bat flip on HR
+      if (lastPlay.type === 'homerun' && gameState._beanball?.batFlips?.length) {
+        const lastFlip = gameState._beanball.batFlips[gameState._beanball.batFlips.length - 1];
+        if (lastFlip && lastFlip.inning === gameState.inning) {
+          setBeanballEvent({ type: 'batFlip', text: getBatFlipCall(homeTeam, lastFlip.batter), subtext: `${lastFlip.batter.split(' ').pop()} flipped his bat` });
+        }
+      }
+    }
+    // Umpire warnings
+    if (gameState._beanballWarning && !beanballEvent) {
+      // Clear the flag and show warning
+      setBeanballEvent({ type: 'warning', text: getWarningCall(homeTeam), subtext: `Tension at ${gameState._beanball?.tension || 0}% — both dugouts warned` });
+      setGameState(prev => prev ? { ...prev, _beanballWarning: false } : prev);
     }
 
     // Check for injuries — only show once per injury
@@ -552,6 +578,7 @@ export default function Home() {
     prevLogLength.current = 0;
     setShowAd(null);
     setShowStretch(null);
+    setBeanballEvent(null);
   };
 
   if (ballparkPhase) {
@@ -892,6 +919,14 @@ export default function Home() {
       {/* Fireworks */}
       <Fireworks trigger={hrTrigger} type="hr" />
       <Fireworks trigger={winTrigger} type="win" />
+
+      {/* Beanball Banner — HBP, warnings, bat flips, collisions, brawls */}
+      {beanballEvent && (
+        <BeanballBanner
+          event={beanballEvent}
+          onDismiss={() => setBeanballEvent(null)}
+        />
+      )}
 
       {/* Arguments Banner */}
       {argumentResult && (

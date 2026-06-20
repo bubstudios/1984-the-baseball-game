@@ -14,6 +14,7 @@ import { checkPitcherInjury, checkPlayInjury, getPlayerDurability } from './inju
 import { getUmpireZoneEffect, maybeMissedCall } from './umpires';
 import { pinchHit, pinchRun, defensiveSwitch, changePitcher } from './substitutions';
 import { isWallRobable, rollHRRobbery, getRobberyCall, rollDivingCatch, getDivingCatchCall, rollDivingStop, getDivingStopResult, rollRareCatchEvent, getRareCatchCall } from './defensivePlays';
+import { shouldThrowAtBatter, registerHBP, registerHomeRun, registerBigStrikeout, checkForWarning, decayTension, getBeanballContext, checkHomePlateCollision } from './beanball';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -303,6 +304,8 @@ function endHalfInning(state) {
   if (!state.innings[state.inning - 1]) state.innings[state.inning - 1] = { home: null, away: null };
   if (state.innings[state.inning - 1][half] === null) state.innings[state.inning - 1][half] = 0;
   state.outs = 0; state.balls = 0; state.strikes = 0; state.bases = [null, null, null]; state.hitAndRun = false; state.pendingSteal = null;
+  // Decay beanball tension at half-inning transitions
+  decayTension(state);
   if (state.halfInning === 'top') {
     state.halfInning = 'bottom';
     if (state.inning === 7) {
@@ -399,8 +402,11 @@ function resolvePitch(state, pitchType) {
     state.balls++;
     return { pitchType: pitchType.name, isStrike: false, location: 'wild pitch', isWildPitch: true };
   }
-  const hbpChance = Math.max(0.002, (10 - effControl) * 0.0015);
-  if (Math.random() < hbpChance) return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true };
+  // Contextual HBP — use beanball engine
+  const hbpReason = shouldThrowAtBatter(state, pitcher, getCurrentBatter(state));
+  const baseHbpChance = Math.max(0.002, (10 - effControl) * 0.0015);
+  const hbpChance = hbpReason ? Math.min(0.35, baseHbpChance + (hbpReason.baseChance || 0.05) * (1 + (state._beanball?.tension || 0) / 100)) : baseHbpChance;
+  if (Math.random() < hbpChance) return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true, hbpReason }; else if (Math.random() < baseHbpChance) return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true };
   let strikeChance = 0.35 + controlFactor * 0.28 + (pitchType.controlBonus || 0) * 0.04;
   if (state.umpire) strikeChance += getUmpireZoneEffect(state.umpire) / 100;
   const isStrike = Math.random() < Math.min(Math.max(strikeChance, 0.08), 0.92);
@@ -536,8 +542,8 @@ function resolveSwing(state, swingType, pitch) {
         // Runners do NOT advance on HR robbery — it's a flyout
         return;
       }
-      // Normal HR
-      batter.gameStats.hr++; const runnersOn = state.bases.filter(b => b !== null).length; const rbi = advanceRunners(state, 4, batter);
+      // Normal HR — register for beanball engine
+      batter.gameStats.hr++; const didFlip = registerHomeRun(state, batter, pitcher); const runnersOn = state.bases.filter(b => b !== null).length; const rbi = advanceRunners(state, 4, batter);
       const bp = BALLPARKS[stadiumName], fd = bp?.wallDesc?.[hitDirection] || `to ${hitDirection}`;
       let ht; const gs2 = runnersOn === 3;
       if (bp?.quirks?.includes('greenMonster') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Up and over the Green Monster! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} clears the 37-foot wall!`;
@@ -903,7 +909,7 @@ export function processAtBat(state, pitchType, swingType) {
   if (!newState.userPitchTypes) newState.userPitchTypes = [];
   if (!newState.userPitchTypes.includes(pitchType.name)) newState.userPitchTypes = [...newState.userPitchTypes, pitchType.name];
   if (newState.pitchResult.isWildPitch) { if (newState.balls >= 4) { const wb = getCurrentBatter(newState); wb.gameStats.bb++; getCurrentPitcher(newState).gameStats.bb++; newState.log.push({ type: 'walk', text: `${wb.name} walks on a wild pitch!` }); handleWalk(newState, wb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); } return newState; }
-  if (newState.pitchResult.isHBP) { const hb = getCurrentBatter(newState); hb.gameStats.bb++; getCurrentPitcher(newState).gameStats.bb++; newState.log.push({ type: 'walk', text: `${hb.name} is hit by the pitch!` }); newState.lastPlay = { type: 'walk', text: `${hb.name} is hit by the pitch! — takes first` }; handleWalk(newState, hb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off HBP! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); } return newState; }
+  if (newState.pitchResult.isHBP) { const hb = getCurrentBatter(newState); const hbp = getCurrentPitcher(newState); hb.gameStats.bb++; hbp.gameStats.bb++; const hbpReason = newState.pitchResult.hbpReason || null; registerHBP(newState, hbp, hb, hbpReason); const hbpText = `${hb.name} is hit by the pitch!`; newState.log.push({ type: 'walk', text: hbpText }); newState.lastPlay = { type: 'walk', text: `${hb.name} is hit by the pitch! — takes first`, isHBP: true, hbpReason }; handleWalk(newState, hb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); const warned = checkForWarning(newState); if (warned) newState._beanballWarning = true; if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off HBP! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); } return newState; }
   const bjb = getCurrentBatter(newState);
   resolveSwing(newState, swingType, newState.pitchResult);
   if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); }
