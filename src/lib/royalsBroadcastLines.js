@@ -23,14 +23,18 @@ export function pickRoyalsPlayerLine(playerName) {
   return lines[Math.floor(Math.random() * lines.length)];
 }
 
-// ── Routine flavor (between-pitch filler — NO event-specific lines) ──
+// ── Routine flavor (between-pitch filler — atmosphere only, never describes outcomes) ──
 const ROUTINE_FILLER = [
-  "Handled cleanly.",
   "No trouble there.",
-  "Right where he was supposed to be.",
   "That'll do it.",
-  "Not a difficult chance.",
   "Back to the dugout.",
+  "Easy does it.",
+  "Keep it rolling.",
+  "No damage done.",
+  "Clean inning so far.",
+  "Moving right along.",
+  "Taking it one pitch at a time.",
+  "A fine crowd on hand here in Kansas City.",
 ];
 
 // Night-only lines — filtered out during day games

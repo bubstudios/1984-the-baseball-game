@@ -35,11 +35,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000 }) {
   if (!ad || !visible) return null;
 
   const handleTap = () => {
-    if (detail) {
-      setShowDetail(true);
-    } else {
-      onDismiss();
-    }
+    // Tap always dismisses. Use the (i) button for details.
+    onDismiss();
   };
 
   return (
