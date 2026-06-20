@@ -734,6 +734,11 @@ export function checkGameAchievements(gameState, userTeam) {
   const logText = log.map(l => l.text).join(' ');
   const userNames = allUserPlayers.map(p => p.name);
 
+  // Pre-compute values used throughout (must be before any usage below)
+  const teamKey = userTeam && userTeam !== 'home' && userTeam !== 'away' ? userTeam : (userSide === 'home' ? gameState.homeTeam : gameState.awayTeam);
+  const stadium = (TEAMS[gameState.homeTeam] || {}).stadium || '';
+  const totalHR = allUserPlayers.reduce((sum, p) => sum + (p.gameStats?.hr || 0), 0);
+
   // ── FIRST-TIME ──
   u('play_ball');
   if (allUserPlayers.some(p => (p.gameStats?.hits || 0) > 0)) u('batter_up');
@@ -898,7 +903,6 @@ export function checkGameAchievements(gameState, userTeam) {
   if (allSB >= 5) u('whitey_ball');
   // The Wizard: 10+ assists by user SS
   if (userIsFielder && (logText.match(/to short/gi) || []).length >= 10) u('the_wizard');
-  const totalHR = allUserPlayers.reduce((sum, p) => sum + (p.gameStats?.hr || 0), 0);
   if (totalHR >= 4) u('power_surge');
   // Ace of the Staff: complete game (pitcher with 9+ IP)
   if (userPitchers.some(p => (p.gameStats?.ip || 0) >= 9)) u('ace_of_staff');
@@ -914,8 +918,6 @@ export function checkGameAchievements(gameState, userTeam) {
   // ───────────────────────────────────────────────────
   // ── TEAM-SPECIFIC ACHIEVEMENTS (user team only) ──
   // ───────────────────────────────────────────────────
-  const teamKey = userTeam && userTeam !== 'home' && userTeam !== 'away' ? userTeam : (userSide === 'home' ? gameState.homeTeam : gameState.awayTeam);
-  const stadium = TEAMS[gameState.homeTeam]?.stadium || '';
 
   // ── CUBS ──
   if (teamKey === 'cubs') {

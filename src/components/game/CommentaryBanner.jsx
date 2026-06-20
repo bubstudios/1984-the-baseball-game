@@ -184,8 +184,8 @@ export const STADIUM_FLAVOR = {
     ],
     loreFlavor: [
       "as the legendary Ernie Harwell used to say on foul balls: 'A fan from Dearborn caught that one!'",
-      "the 'Bless You Boys' spirit is alive in the bleachers tonight — fans still chasing that feeling from the magical '84 run",
-      "reminds me of the split-finger stuff Jack Morris used to ride to a ring back in the day",
+      "the flags are snapping in the breeze atop the left-field roof",
+      "a classic summer evening at Michigan and Trumbull — baseball the way it was meant to be",
     ],
     stretchFlavor: null,
   },

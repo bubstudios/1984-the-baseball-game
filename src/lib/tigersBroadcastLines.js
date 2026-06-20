@@ -24,7 +24,9 @@ export function pickTigersPlayerLine(playerName) {
 }
 
 const POOLS = {
-  gameAction: { weight: 35, lines: [
+  // Game-action lines are NOT used as filler — they describe specific events.
+  // Weight 0 keeps them defined but excluded from random pick.
+  gameAction: { weight: 0, lines: [
     "\"Strike three called.\"", "\"Got him looking.\"", "\"He never offered at that one.\"",
     "\"Caught him on the corner.\"", "\"Back to the dugout he goes.\"",
     "\"Long drive to left field — way back — gone. Home run.\"", "\"That ball is out of here.\"",
