@@ -21,7 +21,7 @@ export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 function getPitcherFatigue(inningsPitched, pitcher) {
   const stamina = pitcher.stamina || 5;
   const isReliever = ['RP', 'CL'].includes(pitcher.pos) || ['RP', 'CL'].includes(pitcher.assignedPos);
-  const threshold = isReliever ? stamina * 0.4 : stamina * 0.7;
+  const threshold = isReliever ? stamina * 0.4 : Math.max(4.2, stamina * 0.7);
   if (inningsPitched <= threshold) return { fatigueLevel: 0, speedPen: 0, controlPen: 0, injuryMult: 1 };
   const overThreshold = inningsPitched - threshold;
   const speedPen = Math.min(5, Math.round(overThreshold * 0.5));
@@ -380,7 +380,7 @@ function resolvePitch(state, pitchType) {
   pitcher.gameStats.pitches++;
   const controlFactor = (effectiveP.effectiveControl || effectiveP.control) / 10;
   const effControl = effectiveP.effectiveControl || effectiveP.control;
-  const wpChance = Math.max(0.003, (10 - effControl) * 0.003);
+  const wpChance = Math.max(0.002, (10 - effControl) * 0.002);
   if (Math.random() < wpChance) {
     const hasR = state.bases.some(b => b !== null);
     if (hasR) {
@@ -476,13 +476,13 @@ function resolveSwing(state, swingType, pitch) {
   const adjBatter = getSituationalBatter(state);
   const contactRating = adjBatter.contact / 10;
   const isPitcherBatting = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let contactChance = 0.38 + contactRating * 0.35;
+  let contactChance = 0.34 + contactRating * 0.35;
   if (isPitcherBatting) contactChance *= 0.55; // Pitchers are much worse hitters
   if (isPower) contactChance -= 0.10; if (isContact) contactChance += 0.12; if (!pitch.isStrike) contactChance -= 0.20;
   if (state.hitAndRun) { contactChance -= 0.08; contactChance = Math.max(0.03, contactChance); }
   const effP2 = getEffectivePitcher(state) || pitcher;
   contactChance -= (effP2.effectiveOffSpeed || effP2.offSpeed || pitcher.offSpeed) / 10 * 0.07 + (effP2.effectivePitchSpeed || effP2.pitchSpeed) / 10 * 0.05;
-  if (effP2.fatigueLevel >= 3) contactChance += 0.12;
+  if (effP2.fatigueLevel >= 3) contactChance += 0.08;
   contactChance = Math.max(0.05, Math.min(contactChance, 0.85));
   if (!(Math.random() < contactChance)) {
     if (!pitch.isStrike && !state.hitAndRun && Math.random() < 0.50 + contactRating * 0.18) { state.balls++; if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; } state.log.push({ type: 'ball', text: [`Ball ${state.balls} — just off the plate`,`Takes outside — ball ${state.balls}`,`Ball ${state.balls} — low`,`Pulled the bat back — ball ${state.balls}`,`Checked the swing — ball ${state.balls}`,`Held up — ball ${state.balls}`,`Ball ${state.balls} — high`,`Lays off — ball ${state.balls}`][Math.floor(Math.random() * 8)] }); state.lastPlay = { type: 'ball', text: `Ball ${state.balls}` }; return; }
@@ -507,12 +507,12 @@ function resolveSwing(state, swingType, pitch) {
   const hitDirection = getHitDirection(adjBatter.bats);
   const powerRating = adjBatter.power / 10;
   const isPitcherBatting2 = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let hitChance = 0.20 + (contactRating + contactWx / 10) * 0.28;
+  let hitChance = 0.17 + (contactRating + contactWx / 10) * 0.28;
   if (isPitcherBatting2) hitChance *= 0.45; // Pitchers rarely get hits
   if (isPower) hitChance -= 0.04; if (isContact) hitChance += 0.08;
   const effP3 = getEffectivePitcher(state) || pitcher;
   hitChance -= (effP3.effectiveControl || effP3.control) / 10 * 0.03;
-  if (effP3.fatigueLevel >= 3) hitChance += 0.10; if (effP3.fatigueLevel >= 4) hitChance += 0.06;
+  if (effP3.fatigueLevel >= 3) hitChance += 0.07; if (effP3.fatigueLevel >= 4) hitChance += 0.04;
   const gs = effP3.effectivePitchSpeed || effP3.pitchSpeed; if (gs <= 2 && effP3.fatigueLevel >= 3) hitChance += 0.05;
   hitChance += (adjBatter.power / 10) * 0.05;
   const defenders = getDefensivePlayers(state);
@@ -520,7 +520,7 @@ function resolveSwing(state, swingType, pitch) {
   hitChance += rp; hitChance = Math.max(0.08, Math.min(hitChance, 0.72));
   if (Math.random() < hitChance) {
     pitcher.gameStats.h++; batter.gameStats.hits++;
-    let powerMod = isPower ? 1.6 : (isContact ? 0.5 : 1.0);
+    let powerMod = isPower ? 1.50 : (isContact ? 0.5 : 1.0);
     const effPwr = powerRating * powerMod, sf2 = adjBatter.speed / 10, hr2 = Math.random();
     if (hr2 < effPwr * 0.065 * hrMod * ballparkHRMod) {
       // Check for HR robbery — rare but spectacular
@@ -546,7 +546,7 @@ function resolveSwing(state, swingType, pitch) {
       else if (bp?.quirks?.includes('ivy') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Onto Waveland Avenue! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} launches one over the ivy and out of Wrigley!`;
       else { ht = `${batter.name} sends it deep ${fd} —` + (gs2 ? ` GRAND SLAM! ${batter.name} clears the bases!` : (rbi > 1 ? ` a ${rbi}-run HOME RUN!` : ` a solo HOME RUN!`)); }
       state.log.push({ type: 'homerun', text: `💥 ${ht}` }); state.lastPlay = { type: 'homerun', text: `💥 ${ht}` };
-    } else if (hr2 < (effPwr * 0.10 + sf2 * 0.08) * doubleMod) {
+    } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.07 + sf2 * 0.16) * doubleMod) {
       const rbi = advanceRunners(state, 3, batter, true);
       let tripFlavor = '';
       const bpTrp = BALLPARKS[stadiumName];
@@ -944,6 +944,9 @@ export function getSituationalBatter(state) {
   const balls = state.balls || 0, strikes = state.strikes || 0;
   const adjContact = Math.round(adj.contact * hcm * dcm);
   const adjPower = Math.round(adj.power * hpm * dpm);
+  // Base ratings before count modifiers (for MatchupCard arrow display)
+  const baseContact = Math.max(1, Math.min(10, adjContact));
+  const basePower = Math.max(1, Math.min(10, adjPower));
   let finalContact = adjContact, finalPower = adjPower, countModReason = null;
   if (balls === 3 && strikes === 0) {
     finalPower += 2; finalContact += 1;
@@ -963,6 +966,8 @@ export function getSituationalBatter(state) {
   }
   return {
     ...adj,
+    baseContact,
+    basePower,
     contact: Math.max(1, Math.min(10, finalContact)),
     power: Math.max(1, Math.min(10, finalPower)),
     countModReason,

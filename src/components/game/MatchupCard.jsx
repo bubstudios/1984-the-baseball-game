@@ -13,6 +13,7 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
   const isPitcher = ['SP','CL','RP','SP/RP','P'].includes(batter.pos) || batter.assignedPos === 'SP';
   const isOutOfPosition = !isPitcher && batter.assignedPos && batter.assignedPos !== 'DH' && batter.assignedPos !== batter.pos;
   const isAdjusted = adjustedBatter && (adjustedBatter.contact !== batter.contact || adjustedBatter.power !== batter.power);
+  const isCountAdjusted = adjustedBatter && (adjustedBatter.baseContact !== adjustedBatter.contact || adjustedBatter.basePower !== adjustedBatter.power);
 
   return (
     <div className="flex items-center justify-between gap-3">
@@ -31,19 +32,19 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
             #{batter.order}
             {isOutOfPosition && <AlertTriangle className="w-3 h-3" />}
           </span>
-          <span className={`text-[10px] font-semibold ${isAdjusted ? 'text-primary' : 'text-primary'}`}>
+          <span className={`text-[10px] font-semibold ${isCountAdjusted ? 'text-primary' : 'text-primary'}`}>
             CON {displayBatter.contact}
-            {isAdjusted && displayBatter.contact !== batter.contact && (
-              <span className={`text-[9px] ml-0.5 ${displayBatter.contact > batter.contact ? 'text-green-400' : 'text-red-400'}`}>
-                {displayBatter.contact > batter.contact ? '▲' : '▼'}
+            {isCountAdjusted && displayBatter.contact !== displayBatter.baseContact && (
+              <span className={`text-[9px] ml-0.5 ${displayBatter.contact > displayBatter.baseContact ? 'text-green-400' : 'text-red-400'}`}>
+                {displayBatter.contact > displayBatter.baseContact ? '▲' : '▼'}
               </span>
             )}
           </span>
-          <span className={`text-[10px] font-semibold ${isAdjusted ? 'text-amber-400' : 'text-amber-400'}`}>
+          <span className={`text-[10px] font-semibold ${isCountAdjusted ? 'text-amber-400' : 'text-amber-400'}`}>
             PWR {displayBatter.power}
-            {isAdjusted && displayBatter.power !== batter.power && (
-              <span className={`text-[9px] ml-0.5 ${displayBatter.power > batter.power ? 'text-green-400' : 'text-red-400'}`}>
-                {displayBatter.power > batter.power ? '▲' : '▼'}
+            {isCountAdjusted && displayBatter.power !== displayBatter.basePower && (
+              <span className={`text-[9px] ml-0.5 ${displayBatter.power > displayBatter.basePower ? 'text-green-400' : 'text-red-400'}`}>
+                {displayBatter.power > displayBatter.basePower ? '▲' : '▼'}
               </span>
             )}
           </span>

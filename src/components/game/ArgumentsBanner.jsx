@@ -39,7 +39,7 @@ export default function ArgumentsBanner({ result, onDismiss }) {
   // ── Chirp Mode: quick bottom-toast flash ──
   if (result.isChirp) {
     return (
-      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
+      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-30 animate-in slide-in-from-bottom-4 fade-in duration-300">
         <div className="bg-card/95 border border-primary/20 rounded-xl px-4 py-2 shadow-lg flex items-center gap-2 max-w-xs">
           <Megaphone className="w-4 h-4 text-primary/70 shrink-0" />
           <span className="text-sm font-heading text-primary/90 italic">
