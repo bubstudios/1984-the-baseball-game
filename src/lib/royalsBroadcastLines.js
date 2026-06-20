@@ -5,7 +5,7 @@
 export function pickRoyalsLine(isNight = true) {
   const fountains = isNight ? FOUNTAIN_LINES : FOUNTAIN_LINES.filter(l => !NIGHT_ONLY_FOUNTAIN.includes(l));
   const kcRefs = isNight ? KC_REFERENCES : KC_REFERENCES.filter(l => !NIGHT_ONLY_KC.includes(l));
-  const all = [...ROUTINE, ...RARE, ...ULTRA_RARE, ...fountains, ...kcRefs, ...STRIKEOUT_LINES, ...PITCHING_NOTES];
+  const all = [...ROUTINE_FILLER, ...RARE, ...ULTRA_RARE, ...fountains, ...kcRefs, ...STRIKEOUT_FILLER, ...PITCHING_NOTES];
   return all[Math.floor(Math.random() * all.length)];
 }
 
@@ -23,20 +23,13 @@ export function pickRoyalsPlayerLine(playerName) {
   return lines[Math.floor(Math.random() * lines.length)];
 }
 
-// ── Routine Outs ──
-const ROUTINE = [
-  "One away.",
-  "Two down.",
-  "Side retired.",
-  "An easy play.",
+// ── Routine flavor (between-pitch filler — NO event-specific lines) ──
+const ROUTINE_FILLER = [
   "Handled cleanly.",
   "No trouble there.",
   "Right where he was supposed to be.",
-  "Routine chance.",
   "That'll do it.",
-  "A smooth play.",
   "Not a difficult chance.",
-  "That's an out.",
   "Back to the dugout.",
 ];
 
@@ -54,22 +47,12 @@ const NIGHT_ONLY_KC = [
   "A beautiful baseball night in the Heartland.",
 ];
 
-// ── Strikeouts ──
-const STRIKEOUT_LINES = [
-  "He got him.",
-  "Strike three called.",
-  "He struck him out.",
-  "That'll retire the side.",
-  "A big strikeout.",
-  "The fastball wins that battle.",
+// ── Strikeout flavor (between-pitch filler — generic only, no event-specific lines) ──
+const STRIKEOUT_FILLER = [
   "Couldn't catch up to it.",
   "Went fishing.",
   "He chased one out of the zone.",
-  "The breaking ball got him.",
   "Swing and a miss.",
-  "Right down the middle — strike three.",
-  "That's a punchout.",
-  "He froze him.",
 ];
 
 // ── Pitching notes (non-player-specific) ──
