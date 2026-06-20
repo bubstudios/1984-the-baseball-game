@@ -145,28 +145,28 @@ const DIVING_STOP_KNOCKDOWN_CALLS = [
   "He kept it in the infield — saved extra bases.",
   "Great effort — he knocked it down.",
   "He dove and kept it on the dirt — nice stop.",
-  "Saved a hit with that diving stop.",
+  "He knocked it down but couldn't make the play — infield single.",
   "He got a glove on it — saves a run.",
 ];
 
 const DIVING_STOP_SAVE_CALLS = [
   "Diving stop — but no throw! He kept it in the infield.",
   "He dove and knocked it down — the runner holds at first.",
-  "Great range to get to that — saves a base hit.",
+  "Great range to get to that — holds the runner to a single.",
   "He dove and kept it from reaching the outfield.",
 ];
 
 const DIVING_STOP_TEAM_CALLS = {
-  cubs: { out: ["HOLY COW! WHAT A PLAY! HE GOT HIM!", "He dove and fired — HOLY COW what a stop!"], knock: ["He kept it in the infield — nice play.", "Great effort — he knocked it down."], save: ["He dove and saved a hit — great range.", "He knocked it down — saves a base hit."] },
-  dodgers: { out: ["A sparkling defensive play — he dove and threw him out.", "Brilliant diving stop — and the throw to first is in time."], knock: ["He kept it in the infield — fine defensive effort.", "Knocked it down — prevented extra bases."], save: ["He dove and kept it from reaching the outfield — fine play.", "Great range — saves a hit."] },
-  yankees: { out: ["Holy Cow, what a stop — and he got the out!", "He dove, got up, and fired — OUT at first!"], knock: ["He kept it in the infield — nice effort.", "Knocked it down — saved a run."], save: ["Diving stop — he saves a base hit.", "Great range — keeps the ball in front."] },
-  tigers: { out: ["A little bit of leather there — diving stop and he throws him out!", "He dove and made the play — outstanding!"], knock: ["He knocked it down — saved a hit.", "Good effort — keeps it in the infield."], save: ["He saved a hit with that dive — great range.", "Diving stop — the runner has to hold."] },
-  padres: { out: ["Oh Doctor! He dove and threw him out!", "What a diving stop — and he got the out!"], knock: ["He kept it in the infield — oh doctor!", "Knocked it down — saved extra bases."], save: ["Diving stop — saves a base hit.", "Great effort to keep the ball in the infield."] },
-  redsox: { out: ["He dove and made the play — the Fenway faithful roar!", "Diving stop — and the throw to first is in time!"], knock: ["He knocked it down — great effort.", "Kept it on the infield — nice play."], save: ["Diving stop — saves a base hit.", "Great range at Fenway."] },
-  mets: { out: ["Diving stop — and he gets the out! Shea is on its feet!", "He dove and threw from his knees — OUT!"], knock: ["He knocked it down — good effort.", "Saved a hit — the ball stays in the infield."], save: ["Diving stop — saves a hit.", "He dove and kept it from going through."] },
-  orioles: { out: ["Diving stop — and he throws him out!", "He dove for it — great play!"], knock: ["He knocked it down — saved a run.", "Good effort to keep it in front."], save: ["Diving stop — saves a hit.", "He dove and kept it from the outfield."] },
-  reds: { out: ["Diving stop — and he fires to first! OUT!", "He dove and threw him out — great defense!"], knock: ["He knocked it down on the Riverfront turf.", "Kept it in the infield — good play."], save: ["Diving stop — saves a base hit on the artificial turf.", "Great range — keeps it in the infield."] },
-  royals: { out: ["Diving stop — and he gets the out at first!", "Great play — he dove and threw him out!"], knock: ["He knocked it down — keeps the ball in front.", "Saved extra bases with that dive."], save: ["Diving stop — saves a hit at Royals Stadium.", "He dove and kept it from reaching the outfield."] },
+  cubs: { out: ["HOLY COW! WHAT A PLAY! HE GOT HIM!", "He dove and fired — HOLY COW what a stop!"], knock: ["He kept it in the infield — nice play.", "Great effort — he knocked it down."], save: ["He dove and kept it in the infield — runner reaches with a single.", "He knocked it down — holds the batter to one."] },
+  dodgers: { out: ["A sparkling defensive play — he dove and threw him out.", "Brilliant diving stop — and the throw to first is in time."], knock: ["He kept it in the infield — fine defensive effort.", "Knocked it down — prevented extra bases."], save: ["He dove and kept it from reaching the outfield — fine play.", "Great range — holds the batter to a single."] },
+  yankees: { out: ["Holy Cow, what a stop — and he got the out!", "He dove, got up, and fired — OUT at first!"], knock: ["He kept it in the infield — nice effort.", "Knocked it down — saved a run."], save: ["Diving stop — holds the batter to a single.", "Great range — keeps the ball in front."] },
+  tigers: { out: ["A little bit of leather there — diving stop and he throws him out!", "He dove and made the play — outstanding!"], knock: ["He knocked it down — but the runner reaches on an infield single.", "Good effort — keeps it in the infield."], save: ["He dove and kept it in the infield — the runner holds at first with a single.", "Diving stop — the runner has to hold."] },
+  padres: { out: ["Oh Doctor! He dove and threw him out!", "What a diving stop — and he got the out!"], knock: ["He kept it in the infield — oh doctor!", "Knocked it down — saved extra bases."], save: ["Diving stop — holds the batter to a single.", "Great effort to keep the ball in the infield."] },
+  redsox: { out: ["He dove and made the play — the Fenway faithful roar!", "Diving stop — and the throw to first is in time!"], knock: ["He knocked it down — great effort.", "Kept it on the infield — nice play."], save: ["Diving stop — holds the batter to a single.", "Great range at Fenway."] },
+  mets: { out: ["Diving stop — and he gets the out! Shea is on its feet!", "He dove and threw from his knees — OUT!"], knock: ["He knocked it down — good effort.", "Ball stays in the infield — but it's a knock."], save: ["Diving stop — holds the runner to a single.", "He dove and kept it from going through."] },
+  orioles: { out: ["Diving stop — and he throws him out!", "He dove for it — great play!"], knock: ["He knocked it down — saved a run.", "Good effort to keep it in front."], save: ["Diving stop — holds the batter to a single.", "He dove and kept it from the outfield."] },
+  reds: { out: ["Diving stop — and he fires to first! OUT!", "He dove and threw him out — great defense!"], knock: ["He knocked it down on the Riverfront turf.", "Kept it in the infield — good play."], save: ["Diving stop — holds the batter to a single on the turf.", "Great range — keeps it in the infield."] },
+  royals: { out: ["Diving stop — and he gets the out at first!", "Great play — he dove and threw him out!"], knock: ["He knocked it down — keeps the ball in front.", "Saved extra bases with that dive."], save: ["Diving stop — holds the batter to a single.", "He dove and kept it from reaching the outfield."] },
 };
 
 export function rollDivingStop() {
