@@ -36,7 +36,7 @@ const POOLS = {
     "Excellent command of the strike zone.",
     "That's a fundamentally sound play.",
     "He's seeing the ball well this evening.",
-    "A difficult pitch to handle — he did well just to make contact.",
+    "He's been working the count well in this at-bat.",
     "The pitcher is locating his fastball where he wants it.",
     "That's how you work a count — patience rewarded.",
     "Kept the ball down — that's where the outs live.",

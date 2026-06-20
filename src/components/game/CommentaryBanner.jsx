@@ -150,11 +150,11 @@ export const STADIUM_FLAVOR = {
       "Boston's been a baseball town since the beginning",
     ],
     loreFlavor: [
-      "you look down at the grass and think of the absolute giants who played here: Teddy Ballgame, Yaz, Pedro, Papi — history baked into the dirt",
+      "you look down at the grass and think of the absolute giants who played here: Teddy Ballgame, Yaz, the Splendid Splinter — history baked into the dirt",
       "this crowd is notoriously demanding — they know the game inside and out and will let you hear it if you miss a cutoff man",
       "in New England, baseball isn't a pastime — it's a full-blown religion",
     ],
-    stretchFlavor: "the crowd belts out 'Sweet Caroline' in the middle of the eighth — tradition like no other",
+    stretchFlavor: "in the seventh, the crowd rises and sings along with the organ — a Fenway tradition",
   },
   detroitTigers: {
     announcers: ["Ernie Harwell", "Paul Carey"],
