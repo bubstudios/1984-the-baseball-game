@@ -559,6 +559,23 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     options.push(lflav);
   }
 
+  // ── Count-specific commentary ──
+  if (gameState.balls >= 2 && gameState.strikes === 0) {
+    options.push(`${lastName} is ahead in the count — can afford to be selective here`);
+    options.push(`Hitter's count — ${lastName} looking for his pitch`);
+    if (gameState.balls >= 3) options.push(`Green light for ${lastName} — 3-0 count`);
+  } else if (gameState.balls === 3 && gameState.strikes === 1) {
+    options.push(`${lastName} ahead 3-1 — he's taking a rip if it's near the zone`);
+    options.push(`In the driver's seat at 3-1 — ${pitcher?.name} has to come in with it`);
+  } else if (gameState.strikes >= 2 && gameState.balls === 0) {
+    options.push(`${lastName} is down 0-2 — choking up, just trying to put it in play`);
+    options.push(`Two strikes on ${lastName} — shorter swing, protecting the plate`);
+    if (announcer) options.push(`${announcer}: "He'll shorten up here — just battle and put the ball in play"`);
+  } else if (gameState.strikes >= 2 && gameState.balls === 1) {
+    options.push(`Behind 1-2 — ${lastName} still on the defensive`);
+    options.push(`${lastName} is at a disadvantage — ${pitcher?.name} can expand the zone`);
+  }
+
   // Classic baseball slang & sayings — filter by game context
   const anyRunners = runnersOn > 0;
   const runnerSlang = anyRunners ? [

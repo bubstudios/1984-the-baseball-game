@@ -58,6 +58,16 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
             {batter.gameStats.sb > 0 && <span className="text-amber-400">{batter.gameStats.sb} SB</span>}
           </div>
         )}
+        {/* Count modifier reason */}
+        {displayBatter.countModReason && (
+          <div className={`mt-1 text-[9px] font-heading italic px-1.5 py-0.5 rounded ${
+            displayBatter.countModReason.includes('Down') || displayBatter.countModReason.includes('Behind')
+              ? 'bg-red-500/10 text-red-400'
+              : 'bg-green-500/10 text-green-400'
+          }`}>
+            {displayBatter.countModReason}
+          </div>
+        )}
       </div>
 
       {/* VS */}

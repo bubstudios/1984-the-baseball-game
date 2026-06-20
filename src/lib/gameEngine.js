@@ -940,7 +940,33 @@ export function getSituationalBatter(state) {
   const isHome = getBattingTeam(state) === 'home'; const isDay = state.weather?.isDay ?? true;
   const hcm = isHome ? 1.03 : 0.98, hpm = isHome ? 1.03 : 0.97;
   const dcm = isDay ? 1.02 : 0.99, dpm = isDay ? 1.01 : 1.00;
-  return { ...adj, contact: Math.max(1, Math.min(10, Math.round(adj.contact * hcm * dcm))), power: Math.max(1, Math.min(10, Math.round(adj.power * hpm * dpm))) };
+  // ── Count-based modifiers (additive after base/situation multipliers) ──
+  const balls = state.balls || 0, strikes = state.strikes || 0;
+  const adjContact = Math.round(adj.contact * hcm * dcm);
+  const adjPower = Math.round(adj.power * hpm * dpm);
+  let finalContact = adjContact, finalPower = adjPower, countModReason = null;
+  if (balls === 3 && strikes === 0) {
+    finalPower += 2; finalContact += 1;
+    countModReason = 'Green light — sitting dead red';
+  } else if (balls === 2 && strikes === 0) {
+    finalPower += 1;
+    countModReason = 'Ahead in the count — looking to drive';
+  } else if (balls === 3 && strikes === 1) {
+    finalPower += 1; finalContact += 1;
+    countModReason = 'Ahead 3-1 — taking a rip';
+  } else if (balls === 0 && strikes === 2) {
+    finalPower -= 2; finalContact -= 1;
+    countModReason = 'Down 0-2 — choking up, protecting the plate';
+  } else if (balls === 1 && strikes === 2) {
+    finalPower -= 1;
+    countModReason = 'Behind 1-2 — shortening up';
+  }
+  return {
+    ...adj,
+    contact: Math.max(1, Math.min(10, finalContact)),
+    power: Math.max(1, Math.min(10, finalPower)),
+    countModReason,
+  };
 }
 
 function getSplitAdjustedPlayer(player, pitcherHand) {
