@@ -40,6 +40,24 @@ export const ACHIEVEMENTS = [
   { id: 'twin_killing', name: 'Twin Killing', desc: 'Turn a double play', icon: '✂️', category: 'defense' },
   { id: 'around_horn_dp', name: 'Around the Horn', desc: 'Turn a 5-4-3 or 6-4-3 double play', icon: '🔃', category: 'defense' },
   { id: 'web_gem', name: 'Web Gem', desc: 'Rob a home run', icon: '🕸️', category: 'defense' },
+  { id: 'fence_patrol', name: 'Fence Patrol', desc: 'Rob 5 home runs', icon: '🚧', category: 'defense', threshold: 5 },
+  { id: 'grand_theft_homer', name: 'Grand Theft Homer', desc: 'Rob a home run with runners aboard', icon: '🚨', category: 'defense' },
+  { id: 'highway_robbery', name: 'Highway Robbery', desc: 'Rob a game-tying home run', icon: '🛣️', category: 'defense' },
+  { id: 'no_souvenir', name: 'No Souvenir For You', desc: 'Rob a home run in front of fans', icon: '✋', category: 'defense' },
+  { id: 'bring_it_back', name: 'Bring It Back', desc: 'Rob a home run and win the game', icon: '🎁', category: 'defense' },
+  { id: 'gold_glove_def', name: 'Gold Glove Award', desc: 'Rob 10 home runs', icon: '🥇', category: 'defense', threshold: 10 },
+  { id: 'highlight_reel', name: 'Human Highlight Reel', desc: 'Rob a home run and hit one in the same game', icon: '🎬', category: 'defense' },
+  { id: 'web_gems_5', name: 'Web Gem Collection', desc: 'Make 10 diving catches', icon: '📸', category: 'defense', threshold: 10 },
+  { id: 'full_extension', name: 'Full Extension', desc: 'Make a diving catch', icon: '📐', category: 'defense' },
+  { id: 'lay_out', name: 'Lay Out', desc: 'Record your first diving catch', icon: '🛏️', category: 'defense' },
+  { id: 'air_traffic', name: 'Air Traffic Control', desc: 'Make 3 diving catches in one game', icon: '✈️', category: 'defense' },
+  { id: 'human_vacuum', name: 'Human Vacuum Cleaner', desc: 'Make 25 diving catches', icon: '🧹', category: 'defense', threshold: 25 },
+  { id: 'first_stop', name: 'Leather', desc: 'Make your first diving ground-ball stop', icon: '⛑️', category: 'defense' },
+  { id: 'vacuum_25', name: 'Vacuum Cleaner', desc: 'Make 25 diving stops', icon: '🪣', category: 'defense', threshold: 25 },
+  { id: 'hot_corner', name: 'Hot Corner Hero', desc: 'Make a diving stop at third base', icon: '🔥', category: 'defense' },
+  { id: 'wizardry', name: 'Wizardry', desc: 'Turn a diving stop into an out', icon: '🧙', category: 'defense' },
+  { id: 'save_the_pitcher', name: 'Save The Pitcher', desc: 'Prevent extra bases with a diving stop', icon: '🛟', category: 'defense' },
+  { id: 'gold_glove_candidate', name: 'Gold Glove Candidate', desc: 'Make 50 diving stops', icon: '🏅', category: 'defense', threshold: 50 },
 
   // ── COMEBACKS ──
   { id: 'never_quit', name: 'Never Quit', desc: 'Win after trailing by 3', icon: '🦾', category: 'comeback' },
@@ -259,6 +277,19 @@ export const ACHIEVEMENTS = [
 
   // ── HIDDEN: ROYALS EASTER EGGS ──
   { id: 'easter_fountains', name: 'The Fountains', desc: 'Hear 25 fountain references in Royals games', icon: '⛲', category: 'hidden', threshold: 25 },
+  { id: 'easter_fountain_keeper', name: 'Fountain Keeper', desc: 'Rob a home run near the fountains at Royals Stadium', icon: '⛲', category: 'hidden' },
+
+  // ── TEAM-SPECIFIC DEFENSIVE HIDDEN ──
+  { id: 'easter_ivy_league', name: 'Ivy League', desc: 'Rob a home run at Wrigley Field', icon: '🌿', category: 'hidden' },
+  { id: 'easter_big_red_defense', name: 'Big Red Defense', desc: '3 diving plays in one game as the Reds', icon: '🔴', category: 'hidden' },
+  { id: 'easter_shea_magic_rob', name: 'Shea Magic', desc: 'Rob a home run at Shea Stadium', icon: '🍎', category: 'hidden' },
+  { id: 'easter_bronx_theft', name: 'Bronx Theft', desc: 'Rob a home run in right field at Yankee Stadium', icon: '🦹', category: 'hidden' },
+  { id: 'easter_fenway_leather', name: 'Fenway Leather', desc: 'Make 5 diving catches at Fenway', icon: '🧤', category: 'hidden' },
+  { id: 'easter_motor_city_glove', name: 'Motor City Glove', desc: 'Turn a diving stop into a double play as the Tigers', icon: '🐅', category: 'hidden' },
+  { id: 'easter_oriole_magic_rob', name: 'Oriole Magic', desc: 'Rob a home run as the Orioles', icon: '🐦', category: 'hidden' },
+  { id: 'easter_mission_impossible', name: 'Mission Impossible', desc: 'Rob a home run as the Padres', icon: '✝️', category: 'hidden' },
+  { id: 'easter_hollywood_ending_rob', name: 'Hollywood Ending', desc: 'Rob a game-winning home run as the Dodgers', icon: '🎬', category: 'hidden' },
+
   { id: 'easter_barbecue_ad', name: 'Barbecue Run', desc: 'Hear a Kansas City barbecue advertisement', icon: '🍖', category: 'hidden' },
   { id: 'easter_jazz_night', name: 'Jazz Night', desc: 'Hear a jazz-related Kansas City reference', icon: '🎷', category: 'hidden' },
   { id: 'easter_quiz_save', name: 'Quiz', desc: 'Record a save with Dan Quisenberry', icon: '📊', category: 'hidden' },
@@ -644,6 +675,31 @@ export function trackGameEndTime() {
   }
 }
 
+// ── Defensive Play Tracking ──
+function trackDivingCatches(count) {
+  const stats = loadStats();
+  stats.divingCatches = (stats.divingCatches || 0) + count;
+  checkThreshold('web_gems_5', stats.divingCatches);
+  checkThreshold('human_vacuum', stats.divingCatches);
+  saveStats(stats);
+}
+
+function trackDivingStops(count) {
+  const stats = loadStats();
+  stats.divingStops = (stats.divingStops || 0) + count;
+  checkThreshold('vacuum_25', stats.divingStops);
+  checkThreshold('gold_glove_candidate', stats.divingStops);
+  saveStats(stats);
+}
+
+function trackHRRobberies(count) {
+  const stats = loadStats();
+  stats.hrRobberies = (stats.hrRobberies || 0) + count;
+  checkThreshold('fence_patrol', stats.hrRobberies);
+  checkThreshold('gold_glove_def', stats.hrRobberies);
+  saveStats(stats);
+}
+
 // ── In-game achievement checker (called when game ends) ──
 
 export function checkGameAchievements(gameState, userTeam) {
@@ -750,12 +806,67 @@ export function checkGameAchievements(gameState, userTeam) {
   // ── DEFENSE (user team fielding) ──
   const userIsFielder = userIsFielding(gameState, userSide, log);
   if (userIsFielder && (logText.includes('strike out the side') || logText.includes('struck out the side'))) u('frozen_rope');
-  if (userIsFielder && (logText.includes('diving catch') || logText.includes('dives and makes the catch') || logText.includes('lays out'))) u('leather_glove');
   if (userIsFielder && (logText.includes('thrown out at home') || logText.includes('nailed at the plate'))) u('cannon_arm');
   if (userIsFielder && logText.includes('caught stealing')) u('caught_stealing');
   if (userIsFielder && logText.includes('double play')) u('twin_killing');
   if (userIsFielder && (logText.includes('5-4-3') || logText.includes('6-4-3') || logText.includes('around the horn') || logText.includes('Around the horn'))) u('around_horn_dp');
-  if (userIsFielder && logText.includes('robs') && logText.includes('home run')) u('web_gem');
+
+  // ── DIVING CATCHES ──
+  const divingCatchCount = log.filter(l => l.type === 'flyout' && l.text && l.text.includes('🧤')).length;
+  const hasDivingCatch = divingCatchCount > 0 || (userIsFielder && (logText.includes('laid out') || logText.includes('Full extension') || logText.includes('diving catch')));
+  if (hasDivingCatch) {
+    u('leather_glove');
+    u('full_extension');
+    u('lay_out');
+    trackDivingCatches(Math.max(1, divingCatchCount));
+    if (divingCatchCount >= 3) u('air_traffic');
+  }
+
+  // ── DIVING GROUND-BALL STOPS ──
+  const divingStopLogs = log.filter(l => (l.type === 'groundout' || l.type === 'single') && l.text && l.text.includes('🧤'));
+  const divingStopCount = divingStopLogs.length;
+  const hasDivingStop = divingStopCount > 0 || (userIsFielder && (logText.includes('diving stop') || logText.includes('knocked it down')));
+  if (hasDivingStop) {
+    u('first_stop');
+    if (logText.includes('third') && logText.includes('diving stop')) u('hot_corner');
+    if (logText.includes('threw him out') || logText.includes('throws him out') || logText.includes('got the out')) u('wizardry');
+    if (logText.includes('saves extra bases') || logText.includes('saves a double') || logText.includes('Save extra bases')) u('save_the_pitcher');
+    trackDivingStops(Math.max(1, divingStopCount));
+    // Motor City Glove: diving stop turned into DP as Tigers
+    if (teamKey === 'tigers' && logText.includes('double play') && logText.includes('diving stop')) u('easter_motor_city_glove');
+  }
+
+  // ── HR ROBBERY ──
+  const hasRobbery = userIsFielder && (logText.includes('robbed a home run') || logText.includes('took a home run away') || logText.includes('TOOK A HOME RUN') || logText.includes('stole a home run') || logText.includes('stole a homer') || logText.includes('home run robbery') || logText.includes('robs') && logText.includes('home run'));
+  if (hasRobbery) {
+    u('web_gem');
+    // Check if robbery had runners aboard
+    const runnersAboard = log.some(l => l.text && l.text.includes('robbed') && (l.text.includes('with runners') || logText.includes('run hom') && !logText.includes('solo')));
+    if (runnersAboard || (gameState.bases.some(b => b !== null) && logText.includes('robbed'))) u('grand_theft_homer');
+    // Rob and win
+    if (userWon) u('bring_it_back');
+    // Human Highlight Reel: rob HR and hit one
+    if (totalHR >= 1) u('highlight_reel');
+    // Track cumulative robberies
+    trackHRRobberies(1);
+    // Team-specific
+    if (teamKey === 'mets' && stadium === 'Shea Stadium') u('easter_shea_magic_rob');
+    if (teamKey === 'yankees' && (logText.includes('right field') || logText.includes('short porch'))) u('easter_bronx_theft');
+    if (teamKey === 'orioles') u('easter_oriole_magic_rob');
+    if (teamKey === 'padres') u('easter_mission_impossible');
+    if (teamKey === 'royals') u('easter_fountain_keeper');
+    // Hollywood Ending: rob game-winning HR
+    if (teamKey === 'dodgers' && userWon && userScore - opponentScore <= 2) u('easter_hollywood_ending_rob');
+    // No Souvenir: any robbery
+    u('no_souvenir');
+    // Highway Robbery: game-tying situation (score was close)
+    if (Math.abs(userScore - opponentScore) <= 2) u('highway_robbery');
+  }
+
+  // ── Fenway Leather: 5 diving catches as Red Sox ──
+  if (teamKey === 'redsox' && userIsFielder && divingCatchCount >= 5) u('easter_fenway_leather');
+  // Big Red Defense: 3 diving plays (catches + stops) in one game as Reds
+  if (teamKey === 'reds' && userIsFielder && (divingCatchCount + divingStopCount) >= 3) u('easter_big_red_defense');
 
   // ── COMEBACKS ──
   const maxDeficit = computeMaxDeficit(gameState, userSide);

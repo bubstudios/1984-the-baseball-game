@@ -13,6 +13,7 @@ import {
 import { checkPitcherInjury, checkPlayInjury, getPlayerDurability } from './injuries';
 import { getUmpireZoneEffect, maybeMissedCall } from './umpires';
 import { pinchHit, pinchRun, defensiveSwitch, changePitcher } from './substitutions';
+import { isWallRobable, rollHRRobbery, getRobberyCall, rollDivingCatch, getDivingCatchCall, rollDivingStop, getDivingStopResult, rollRareCatchEvent, getRareCatchCall } from './defensivePlays';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -522,6 +523,20 @@ function resolveSwing(state, swingType, pitch) {
     let powerMod = isPower ? 1.6 : (isContact ? 0.5 : 1.0);
     const effPwr = powerRating * powerMod, sf2 = adjBatter.speed / 10, hr2 = Math.random();
     if (hr2 < effPwr * 0.065 * hrMod * ballparkHRMod) {
+      // Check for HR robbery — rare but spectacular
+      const isRobable = isWallRobable(stadiumName, hitDirection);
+      const isRobbed = isRobable && rollHRRobbery();
+      if (isRobbed) {
+        // HR robbed! No HR stats — this becomes a deep flyout
+        const fielder = defenders[['LF', 'CF', 'RF', 'RCF', 'LCF'][Math.floor(Math.random() * 5)]] || defenders['CF'] || { name: 'the outfielder' };
+        const robberyCall = getRobberyCall(state.homeTeam, fielder.name);
+        state.log.push({ type: 'flyout', text: robberyCall });
+        state.lastPlay = { type: 'flyout', text: robberyCall };
+        state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
+        // Runners do NOT advance on HR robbery — it's a flyout
+        return;
+      }
+      // Normal HR
       batter.gameStats.hr++; const runnersOn = state.bases.filter(b => b !== null).length; const rbi = advanceRunners(state, 4, batter);
       const bp = BALLPARKS[stadiumName], fd = bp?.wallDesc?.[hitDirection] || `to ${hitDirection}`;
       let ht; const gs2 = runnersOn === 3;
@@ -685,6 +700,67 @@ function resolveSwing(state, swingType, pitch) {
     const isOutfieldFly = isFlyBall && out.type !== 'popout' && out.type !== 'lineout' && !out.text.includes('shallow ');
     if (isOutfieldFly && state.bases[2] && state.outs < 2) { const r = state.bases[2]; const d2 = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'); const db = d2 ? 0.30 : 0.05; const sfc = 0.30 + db + (r.speed / 10) * 0.42 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.10, Math.min(sfc, 0.90))) { r.gameStats.runs++; scoreRun(state); state.bases[2] = null; batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; const sfText = `${batter.name} ${pickLine(SAC_FLY_LINES)} ${r.name} tags and scores!`; state.log.push({ type: 'sacfly', text: sfText }); state.lastPlay = { type: 'sacfly', text: sfText }; batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } }
     if (isOutfieldFly) { const r3 = state.bases[2], r2 = state.bases[1], r1 = state.bases[0]; const isDeep = out.text.includes('deep ') || out.text.includes('warning track') || out.text.includes('back at the wall'); if (r3 && state.outs < 2) { const db2 = isDeep ? 0.40 : 0.10; const htc = db2 + (r3.speed / 10) * 0.30 - (getOutfieldArm(defenders) / 10) * 0.08;         if (Math.random() < Math.max(0.05, Math.min(htc, 0.65))) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; state.bases[2] = null; const sfText = `${r3.name} tags up and scores!`; state.log.push({ type: 'sacfly', text: sfText }); state.lastPlay = { type: 'sacfly', text: sfText }; if (r2 && state.outs < 2) { const tc2 = isDeep ? (0.15 + (r2.speed / 10) * 0.40 - (getOutfieldArm(defenders) / 10) * 0.10) : (0.05 + (r2.speed / 10) * 0.25 - (getOutfieldArm(defenders) / 10) * 0.08); if (Math.random() < Math.max(0.03, Math.min(tc2, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); } } batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } } if (r1 && isDeep && !state.bases[1] && state.outs < 2) { const r1Tag = state.bases[0]; if (r1Tag) { const tc1 = 0.15 + (r1Tag.speed / 10) * 0.45 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.06, Math.min(tc1, 0.55))) { state.bases[1] = r1Tag; state.bases[0] = null; state.log.push({ type: 'info', text: `${r1Tag.name} tags up and advances to second!` }); } } } if (r2 && state.outs < 2 && !state.bases[2]) { const tc3 = 0.10 + (r2.speed / 10) * 0.35 - (getOutfieldArm(defenders) / 10) * 0.10; if (Math.random() < Math.max(0.04, Math.min(tc3, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); } } }
+    // ── Defensive Plays: Diving Catches (flyouts) & Diving Stops (groundouts) ──
+    const isDefFly = out.type === 'flyout';
+    if (isDefFly) {
+      // Rare catch event (snow cone, juggled, sliding) — very rare
+      if (rollRareCatchEvent()) {
+        const rareTypes = ['snowCone', 'juggled', 'sliding', 'overShoulder'];
+        const rareType = rareTypes[Math.floor(Math.random() * rareTypes.length)];
+        const fielder = defenders[out.pos] || { name: 'the fielder' };
+        const rareCall = getRareCatchCall(fielder.name, rareType);
+        out.text = rareCall;
+        state.log.push({ type: 'flyout', text: rareCall });
+        state.lastPlay = { type: 'flyout', text: rareCall };
+        state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
+        return;
+      }
+      // Diving catch
+      if (rollDivingCatch()) {
+        const fielder = defenders[out.pos] || { name: 'the outfielder' };
+        const dcCall = getDivingCatchCall(state.homeTeam, fielder.name, out.pos);
+        out.text = dcCall;
+      }
+    } else if (out.type === 'groundout') {
+      // Diving ground-ball stop
+      if (rollDivingStop()) {
+        const fielder = defenders[out.pos] || { name: 'the infielder' };
+        const dsResult = getDivingStopResult(state.homeTeam, fielder.name);
+        if (dsResult.type === 'out') {
+          // Spectacular out — diving stop followed by throw
+          out.text = dsResult.text;
+        } else if (dsResult.type === 'knockdown') {
+          // Knocked down but batter reaches on infield single
+          batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
+          for (let br = 2; br >= 0; br--) {
+            if (state.bases[br]) {
+              if (br + 1 >= 3) { state.bases[br].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[br] = null; }
+              else if (!state.bases[br + 1]) { state.bases[br + 1] = state.bases[br]; state.bases[br] = null; }
+            }
+          }
+          state.bases[0] = batter;
+          state.log.push({ type: 'single', text: dsResult.text });
+          state.lastPlay = { type: 'single', text: dsResult.text };
+          state.balls = 0; state.strikes = 0; advanceBatter(state);
+          return;
+        } else {
+          // Save a double — diving stop holds batter to single
+          batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
+          for (let br = 2; br >= 0; br--) {
+            if (state.bases[br]) {
+              if (br + 1 >= 3) { state.bases[br].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[br] = null; }
+              else if (!state.bases[br + 1]) { state.bases[br + 1] = state.bases[br]; state.bases[br] = null; }
+            }
+          }
+          state.bases[0] = batter;
+          state.log.push({ type: 'single', text: dsResult.text });
+          state.lastPlay = { type: 'single', text: dsResult.text };
+          state.balls = 0; state.strikes = 0; advanceBatter(state);
+          return;
+        }
+      }
+    }
+
     state.log.push({ type: isFlyBall ? 'flyout' : 'groundout', text: out.text });
     state.lastPlay = { type: isFlyBall ? 'flyout' : 'groundout', text: out.text };
     state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
