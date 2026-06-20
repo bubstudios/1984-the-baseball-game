@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Trophy, X } from 'lucide-react';
 import { ACHIEVEMENTS } from '@/lib/achievements';
+import { TV_ACHIEVEMENTS } from '@/lib/tvAchievements';
+
+const ALL_ACHIEVEMENTS = [...ACHIEVEMENTS, ...TV_ACHIEVEMENTS];
 
 const FLASH_DURATION = 4000; // total flash display before auto-dim (user can still tap to dismiss)
 const FLASH_INTERVAL = 150;   // strobe speed
@@ -12,7 +15,7 @@ export default function AchievementPopup({ achievementIds, onDismiss }) {
   const flashTimer = useRef(null);
   const audioCtx = useRef(null);
 
-  const current = ACHIEVEMENTS.find(a => a.id === achievementIds[currentIndex]);
+  const current = ALL_ACHIEVEMENTS.find(a => a.id === achievementIds[currentIndex]);
   const total = achievementIds.length;
 
   // Play "DING DING DING" using Web Audio oscillators

@@ -740,7 +740,17 @@ export default function Home() {
 
                 {/* Ad read — appears between innings / during pitching changes */}
                 {showAd && (
-                  <AdRead ad={showAd} onDismiss={() => setShowAd(null)} autoDismissMs={10000} />
+                  <AdRead
+                    ad={showAd}
+                    onDismiss={() => setShowAd(null)}
+                    autoDismissMs={12000}
+                    onAchievement={(ids) => {
+                      if (ids.length > 0) {
+                        setNewAchievements(ids);
+                        setShowAchievementPopup(true);
+                      }
+                    }}
+                  />
                 )}
 
                 {/* 7th Inning Stretch banner */}
