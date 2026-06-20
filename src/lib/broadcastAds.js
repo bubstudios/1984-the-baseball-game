@@ -1458,6 +1458,81 @@ registerTeamAds('reds', 'charity', [
   "The Reds remind fans to please recycle bottles and aluminum cans at Riverfront Stadium.",
 ]);
 
+// ── Royals / Kansas City (#551–600) ──
+
+registerTeamAds('royals', 'team_promo', [
+  "The Royals continue their homestand tomorrow night at Royals Stadium.",
+  "The first 10,000 fans this Sunday receive a commemorative Royals team poster.",
+  "Stop by souvenir stands for your official 1984 Royals yearbook.",
+  "Join the Royals for Youth Baseball Day next Saturday afternoon.",
+  "Little League Night returns to Royals Stadium next week.",
+  "Royals players will sign autographs this Saturday at Crown Center.",
+  "Don't miss Bat Day at Royals Stadium — the first 5,000 youngsters receive a free Louisville Slugger.",
+  "Team Photo Day is coming up — check the scorecard for details.",
+  "Royals Baseball Camp registration is now open for ages 8 through 14.",
+  "George Brett will appear at a special autograph event next month.",
+]);
+
+registerTeamAds('royals', 'sponsor', [
+  "Visit Gates Bar-B-Q and taste Kansas City's finest barbecue.",
+  "Arthur Bryant's Barbeque — a Kansas City tradition since the 1920s.",
+  "Stop by Jack Stack Barbecue after tonight's game.",
+  "Boulevard Beer — Kansas City's own, brewed right here in the heartland.",
+  "Russell Stover Candies — proudly made in Kansas City since 1923.",
+  "Tune in to WIBW 580 for complete Royals coverage throughout the season.",
+  "The Royals Radio Network brings you baseball all across the Midwest.",
+  "Visit your local Hallmark store — Kansas City's own — for cards and gifts.",
+  "Hallmark Cards — when you care enough to send the very best.",
+  "Worlds of Fun is now open for the summer season — ride the Orient Express if you dare.",
+  "Worlds of Fun welcomes families from across the region.",
+  "Visit your local Price Chopper for fresh produce and great deals.",
+  "Kansas City Power & Light — powering the heartland.",
+]);
+
+registerTeamAds('royals', 'community', [
+  "Visit the Country Club Plaza this weekend — Kansas City's original outdoor shopping district.",
+  "The Plaza fountains are flowing beautifully this summer.",
+  "Kansas City is the City of Fountains — over 200 throughout the metro area.",
+  "Take the family to Worlds of Fun this weekend.",
+  "The Timber Wolf and Orient Express are waiting.",
+  "Visit the Kansas City Zoo and see animals from around the world.",
+  "The Kansas City Zoo welcomes visitors all summer long.",
+  "Spend an afternoon exploring the Nelson-Atkins Museum of Art.",
+  "The giant shuttlecocks on the lawn are a Kansas City landmark.",
+  "Visit historic Union Station and experience the grand Beaux-Arts architecture.",
+  "Tour the Arabia Steamboat Museum and see treasures from the Missouri River.",
+  "Walk through the City Market on a Saturday morning.",
+  "Fresh produce and local goods every weekend at the City Market.",
+  "Take a drive through Swope Park — one of the largest urban parks in America.",
+  "Spend a summer evening at Starlight Theatre.",
+  "Baseball fans throughout the heartland are enjoying this one.",
+  "Greetings to listeners in Kansas, Missouri, Nebraska, and across the Midwest.",
+  "Thank you to our loyal Royals fans throughout the metro area.",
+  "Denny Matthews and Fred White thank you for spending your evening with us.",
+  "A gorgeous night in Kansas City for baseball.",
+]);
+
+registerTeamAds('royals', 'charity', [
+  "Support Royals Charities youth baseball programs throughout the metro area.",
+  "Registration is open for summer youth baseball leagues in Kansas City.",
+  "Consider donating to local Little League programs this summer.",
+  "Help keep youth baseball strong in the heartland.",
+  "The Royals remind fans to please recycle bottles and aluminum cans at Royals Stadium.",
+]);
+
+// ── Royals Easter Eggs ──
+
+registerTeamAds('royals', 'community', [
+  "Denny Matthews recalls a game from '77 when Brett hit three doubles in one afternoon.",
+  "The fountains are putting on a spectacular show tonight — timed perfectly to the music.",
+  "A gentleman in Section 220 has been keeping score since the first pitch of the season.",
+  "Someone in the upper deck is grilling in the parking lot on a portable hibachi.",
+  "The smell of Arthur Bryant's is drifting across the Truman Sports Complex.",
+  "Denny says this crowd reminds him of the '80 pennant race.",
+  "The Royals have some of the best fans in baseball.",
+  "Fred White notes the fountains look particularly blue tonight.",
+]);
+
 // ── Reds Easter Eggs ──
 
 registerTeamAds('reds', 'community', [
