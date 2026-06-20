@@ -76,9 +76,8 @@ const POOLS = {
     "\"The right field overhang is casting its shadow — that can make things tricky for the outfielders.\"",
   ]},
   crowd: { weight: 10, lines: [
-    "\"The fans appreciate that effort — a nice ovation from the crowd.\"",
     "\"Listen to that crowd. They're into this ballgame.\"", "\"The folks here enjoyed that one.\"",
-    "\"The crowd came to life on that play.\"", "\"A nice ovation for a job well done.\"",
+    "\"The crowd came to life on that play.\"",
     "\"The fans are on their feet here at The Corner.\"",
     "\"The folks in the upper deck are making some noise.\"",
     "\"A fine crowd here today. Good to see the ballpark full.\"",

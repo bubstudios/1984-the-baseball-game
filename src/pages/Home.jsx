@@ -255,11 +255,17 @@ export default function Home() {
     const playText = state.lastPlay?.text || '';
     const isHBP = playType === 'walk' && (playText.includes('hit by the pitch') || playText.includes('HBP'));
     // HBP: batting team argues (their player got hit)
-    // Otherwise: FIELDING_ARGS means the fielding team argues (hit/walk against them)
+    // FIELDING_ARGUES: fielding team argues (hit/walk/error went against them)
+    // OUT_ARGUES: batting team argues (their guy was called out on a disputed play)
     const FIELDING_ARGUES = isHBP ? [] : ['single', 'double', 'triple', 'homerun', 'walk', 'error'];
+    const OUT_ARGUES = ['flyout', 'groundout', 'lineout', 'strikeout', 'popout', 'doubleplay', 'sacfly'];
     const battingSide = getBattingTeam(state);
     const fieldingSide = battingSide === 'home' ? 'away' : 'home';
-    const arguingSide = isHBP ? battingSide : (FIELDING_ARGUES.includes(playType) ? fieldingSide : battingSide);
+    let arguingSide;
+    if (isHBP) arguingSide = battingSide;
+    else if (FIELDING_ARGUES.includes(playType)) arguingSide = fieldingSide;
+    else if (OUT_ARGUES.includes(playType)) arguingSide = battingSide;
+    else arguingSide = fieldingSide;
     const arguingTeamKey = arguingSide === 'home' ? homeTeam : awayTeam;
     const manager = MANAGERS[arguingTeamKey];
 
