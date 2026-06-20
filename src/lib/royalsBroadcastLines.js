@@ -5,7 +5,7 @@
 export function pickRoyalsLine(isNight = true) {
   const fountains = isNight ? FOUNTAIN_LINES : FOUNTAIN_LINES.filter(l => !NIGHT_ONLY_FOUNTAIN.includes(l));
   const kcRefs = isNight ? KC_REFERENCES : KC_REFERENCES.filter(l => !NIGHT_ONLY_KC.includes(l));
-  const all = [...ROUTINE_FILLER, ...RARE, ...ULTRA_RARE, ...fountains, ...kcRefs, ...STRIKEOUT_FILLER, ...PITCHING_NOTES];
+  const all = [...ROUTINE_FILLER, ...RARE, ...ULTRA_RARE, ...fountains, ...kcRefs, ...PITCHING_MISC, ...PITCHING_NOTES];
   return all[Math.floor(Math.random() * all.length)];
 }
 
@@ -47,12 +47,11 @@ const NIGHT_ONLY_KC = [
   "A beautiful baseball night in the Heartland.",
 ];
 
-// ── Strikeout flavor (between-pitch filler — generic only, no event-specific lines) ──
-const STRIKEOUT_FILLER = [
+// ── Pitching misc (between-pitch filler — generic only, no event-specific lines) ──
+const PITCHING_MISC = [
   "Couldn't catch up to it.",
   "Went fishing.",
   "He chased one out of the zone.",
-  "Swing and a miss.",
 ];
 
 // ── Pitching notes (non-player-specific) ──

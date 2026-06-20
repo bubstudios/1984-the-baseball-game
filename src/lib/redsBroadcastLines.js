@@ -1,5 +1,7 @@
 // Joe Nuxhall & Marty Brennaman — Cincinnati Reds 1984 broadcast lines
-// Generic pool only. Player-specific via pickRedsPlayerLine().
+// Generic pool: atmosphere, flavor, and between-pitch filler ONLY.
+// No result-describing lines (hits, HRs, strikeouts, walks, base running).
+// Player-specific via pickRedsPlayerLine() — atmosphere only, no play calls.
 
 export function pickRedsLine() {
   return GENERIC[Math.floor(Math.random() * GENERIC.length)];
@@ -9,9 +11,11 @@ export function pickRedsPlayerLine(playerName) {
   const map = {
     "Dave Concepcion": ["Concepcion makes it look easy.", "Davey still has the glove."],
     "Ron Oester": ["Oester with the sure hands.", "Nothing getting through that infield."],
-    "Dave Parker": ["Parker runs it down."],
+    "Dave Parker": ["Parker has been a great addition to this lineup.", "The Cobra brings a presence to the batter's box."],
     "Pete Rose": ["Pete grinding out there, as always.", "Charlie Hustle doing what he does.", "Number 14 — still the hardest worker in baseball.", "He's 43 years old and still playing like a kid.", "Nobody out-hustles Pete Rose.", "He may not have the power anymore, but he'll find a way on base.", "That's why he's the all-time hit king right there."],
-    "Mario Soto": ["That's the Mario Soto we know."],
+    "Mario Soto": ["Soto's had a strong year on the mound.", "When Soto's on, he's as tough as anyone."],
+    "John Franco": ["Young Franco has a bright future.", "El Presidente coming in from the pen."],
+    "Dave Concepcion": ["Concepcion makes it look easy.", "Davey still has the glove."],
   };
   const lines = map[playerName];
   if (!lines) return null;
@@ -19,21 +23,21 @@ export function pickRedsPlayerLine(playerName) {
 }
 
 const GENERIC = [
+  // ── General vibe / between-pitch filler ──
   "That'll work.",
   "Young man did a nice job there.",
   "Nothing wrong with that.",
   "You can't teach that.",
-  "Hit it right where they weren't.",
-  "He got just enough of it.",
   "That's baseball.",
   "Just a good, solid ballplayer.",
   "He knows what he's doing out there.",
   "Simple game when you execute.",
   "That's the way you draw it up.",
-  "A professional at-bat right there.",
   "He's a gamer.",
   "This young club plays hard every night.",
   "Pete has them ready to play.",
+
+  // ── Pitching — process, not outcome ──
   "He's getting ahead of hitters.",
   "He's working quickly tonight.",
   "He's keeping the ball down.",
@@ -45,40 +49,12 @@ const GENERIC = [
   "He's trusting his stuff.",
   "Good tilt on that breaking ball.",
   "He's painting the corners.",
-  "And that one's headed toward Kentucky!",
-  "Way back and gone!",
-  "That's into the seats in a hurry.",
-  "That'll make the trip.",
-  "See you later!",
-  "That one is long gone, folks.",
-  "Marty, I think that one landed in the Ohio River.",
-  "He got all of that one.",
-  "That's not coming back.",
-  "That's a base hit.",
-  "Line drive — base hit.",
-  "He'll take that.",
-  "Rattles around out there.",
-  "He'll coast into second.",
-  "A hustle double right there.",
-  "That's good baserunning.",
-  "He may not stop.",
-  "They're waving him on.",
-  "Standing up with three.",
-  "He'll make it to third easily.",
+
+  // ── Neutral / atmosphere ──
   "That's fun to watch.",
-  "Got him looking.",
-  "That's number three.",
-  "He froze him.",
-  "Good morning, good afternoon, good night.",
-  "Right down the chute — strike three.",
-  "He didn't have a chance.",
-  "Nasty pitch.",
-  "Four-pitch pass.",
-  "He'll take first.",
-  "Didn't miss by much.",
-  "Just off the plate.",
-  "Good eye, young man.",
   "That's a big league play.",
+
+  // ── Riverfront / Cincinnati atmosphere ──
   "A few barges moving down the Ohio this evening.",
   "It's another beautiful night along the river.",
   "A little haze hanging over downtown Cincinnati.",
@@ -105,6 +81,18 @@ const GENERIC = [
   "A little river fog drifting in.",
   "You can hear a towboat on the river.",
   "The turf temperature is reported near 120 degrees.",
+  "The symmetry of this stadium makes for fair baseball.",
+  "Riverfront was built for both sports but baseball always felt right here.",
+  "The downtown skyline is lighting up — Carew Tower looking grand.",
+  "Marty, I think this is going to be a good one tonight.",
+  "The Reds haven't missed a beat with this young infield.",
+  "Pete's got 'em playing aggressive baseball.",
+  "You can feel the history in this old cookie-cutter.",
+  "Across the river they can probably hear this crowd.",
+  "A towboat captain just gave us a wave.",
+  "The grounds crew keeps that turf in perfect condition.",
+  "Not a blade of artificial grass out of place.",
+  "Sun setting behind the first base side now.",
 ];
 
 export default GENERIC;
