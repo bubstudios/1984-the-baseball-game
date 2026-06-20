@@ -1,5 +1,6 @@
 // Tigers Broadcast — Ernie Harwell & Paul Carey
-// Generic pool only. Player-specific lines via pickTigersPlayerLine().
+// Generic pool + rich player-specific stats via tigersPlayerStats.js
+import { pickTigersPlayerTidbit, pickTigersComboLine } from './tigersPlayerStats';
 
 export function pickTigersLine() {
   const totalWeight = Object.values(POOLS).reduce((sum, pool) => sum + pool.weight, 0);
@@ -12,18 +13,14 @@ export function pickTigersLine() {
 }
 
 export function pickTigersPlayerLine(playerName) {
-  const map = {
-    "Alan Trammell": ["Alan Trammell — steady as they come. A fine shortstop.", "Very dependable. Trammell is one of the game's best."],
-    "Lou Whitaker": ["Lou Whitaker — smooth in the field, excellent all-around player.", "A key contributor — Whitaker does a little bit of everything well."],
-    "Kirk Gibson": ["Kirk Gibson plays hard every day. A fiery competitor.", "Gibson brings energy to this club. Dangerous hitter, too."],
-    "Jack Morris": ["Jack Morris is a workhorse. Competitive pitcher — he'll challenge hitters.", "Morris is one of the league's best. You want the ball in his hands in a big game."],
-    "Lance Parrish": ["Lance Parrish behind the plate — a rock back there."],
-    "Chet Lemon": ["Chet Lemon in center field — covers a lot of ground."],
-    "Darrell Evans": ["Darrell Evans has been a tremendous addition to this lineup."],
-  };
-  const lines = map[playerName];
-  if (!lines) return null;
-  return lines[Math.floor(Math.random() * lines.length)];
+  // Use the new rich player tidbit system
+  const tidbit = pickTigersPlayerTidbit(playerName);
+  if (tidbit) return tidbit;
+
+  // Fallback: generic combo line (fires ~12% of the time when no specific tidbit matches)
+  if (playerName && Math.random() < 0.12) return pickTigersComboLine();
+
+  return null;
 }
 
 const POOLS = {
