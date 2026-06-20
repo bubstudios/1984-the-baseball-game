@@ -205,12 +205,8 @@ export default function Home() {
     prevLogLength.current = gameState.log.length;
     prevHalfInning.current = currentHalf;
 
-    // Check achievements when game ends — this runs in the effect but we also
-    // double-check via processGameOver in the pitch/swing handlers for reliability.
-    if (gameState.gameOver && !prevGameOver.current) {
-      prevGameOver.current = true;
-      processGameOver(gameState);
-    }
+    // Game-over: handler path processes achievements via finally block.
+    // No need to double-process here — trackGameCompleted is not idempotent.
   }, [gameState]);
 
   // Argument check after a play resolves
@@ -383,7 +379,7 @@ export default function Home() {
   const handlePitch = useCallback((pitchName) => {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
-
+    let endingState = null;
     try {
       // CPU may attempt steal when user is pitching
       let updatedState = gameState;
@@ -400,10 +396,15 @@ export default function Home() {
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       const withArgs = checkForArgument(afterSubs);
+      if (withArgs.gameOver) endingState = withArgs;
       setGameState(withArgs);
-      // Run achievements immediately when game ends — don't wait for the effect
-      if (withArgs.gameOver) processGameOver(withArgs);
+    } catch (e) {
+      console.error('handlePitch error:', e);
     } finally {
+      // Process achievements if game ended — use the captured ending state
+      if (endingState) {
+        try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
+      }
       setProcessing(false);
     }
   }, [gameState, processing, userTeam, processGameOver]);
@@ -411,15 +412,21 @@ export default function Home() {
   const handleSwing = useCallback((swingIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
+    let endingState = null;
     try {
       const cpuPitch = cpuSelectPitch(gameState);
       const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       const withArgs = checkForArgument(afterSubs);
+      if (withArgs.gameOver) endingState = withArgs;
       setGameState(withArgs);
-      if (withArgs.gameOver) processGameOver(withArgs);
+    } catch (e) {
+      console.error('handleSwing error:', e);
     } finally {
+      if (endingState) {
+        try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
+      }
       setProcessing(false);
     }
   }, [gameState, processing, userTeam, processGameOver]);
@@ -427,6 +434,7 @@ export default function Home() {
   const handleSteal = useCallback((baseIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
     setProcessing(true);
+    let endingState = null;
     try {
       // Steal attempt: runner goes on the pitch, batter takes automatically
       const stealPending = { ...gameState, pendingSteal: baseIndex };
@@ -435,11 +443,17 @@ export default function Home() {
       const resultState = processAtBat(stealPending, PITCH_TYPES[cpuPitch], SWING_TYPES[3]);
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       const withArgs = checkForArgument(afterSubs);
+      if (withArgs.gameOver) endingState = withArgs;
       setGameState(withArgs);
+    } catch (e) {
+      console.error('handleSteal error:', e);
     } finally {
+      if (endingState) {
+        try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
+      }
       setProcessing(false);
     }
-  }, [gameState, processing, userTeam]);
+  }, [gameState, processing, userTeam, processGameOver]);
 
   const handleHitAndRun = useCallback(() => {
     if (!gameState || gameState.gameOver || processing) return;
@@ -449,9 +463,21 @@ export default function Home() {
 
   const handleIntBB = useCallback(() => {
     if (!gameState || gameState.gameOver || processing) return;
-    const newState = intentionalWalk(gameState);
-    setGameState(newState);
-  }, [gameState, processing]);
+    setProcessing(true);
+    let endingState = null;
+    try {
+      const newState = intentionalWalk(gameState);
+      if (newState.gameOver) endingState = newState;
+      setGameState(newState);
+    } catch (e) {
+      console.error('handleIntBB error:', e);
+    } finally {
+      if (endingState) {
+        try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
+      }
+      setProcessing(false);
+    }
+  }, [gameState, processing, processGameOver]);
 
   const handlePinchHit = useCallback((player) => {
     setGameState(prev => {
