@@ -390,6 +390,11 @@ export const ACHIEVEMENTS = [
   { id: 'phone_wars_enthusiast', name: 'Phone Wars Enthusiast', desc: 'View 15 long-distance phone war exhibits', icon: '☎️', category: 'community' },
   { id: 'phone_wars_historian', name: 'Phone Wars Historian', desc: 'View all 25 long-distance phone war exhibits', icon: '🌍', category: 'community' },
 
+  // ── FILM DEVELOPMENT & CAMERAS ──
+  { id: 'film_enthusiast', name: 'Film Enthusiast', desc: 'View 5 film & camera exhibits', icon: '📸', category: 'community' },
+  { id: 'camera_aficionado', name: 'Camera Aficionado', desc: 'View 15 film & camera exhibits', icon: '📷', category: 'community' },
+  { id: 'film_historian', name: 'Film Historian', desc: 'View all 25 film & camera exhibits', icon: '🎬', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
   { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },
