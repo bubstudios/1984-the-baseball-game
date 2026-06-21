@@ -400,6 +400,11 @@ export const ACHIEVEMENTS = [
   { id: 'scream_1984_enthusiast', name: '1984 Enthusiast', desc: 'View 15 Things That Scream 1984 exhibits', icon: '📼', category: 'community' },
   { id: 'scream_1984_historian', name: '1984 Historian', desc: 'View all 25 Things That Scream 1984 exhibits', icon: '🕰️', category: 'community' },
 
+  // ── MALL CULTURE ──
+  { id: 'mall_culture_fan', name: 'Mall Rat', desc: 'View 5 Mall Culture exhibits', icon: '🛍️', category: 'community' },
+  { id: 'mall_culture_enthusiast', name: 'Mall Regular', desc: 'View 15 Mall Culture exhibits', icon: '🏬', category: 'community' },
+  { id: 'mall_culture_historian', name: 'Mall Historian', desc: 'View all 25 Mall Culture exhibits', icon: '💰', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
   { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },
