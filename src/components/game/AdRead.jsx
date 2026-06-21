@@ -17,6 +17,7 @@ import Peak1984Popup from './Peak1984Popup';
 import Olympics1984Popup from './Olympics1984Popup';
 import OlympicsAthletes1984Popup from './OlympicsAthletes1984Popup';
 import NasaSpacePopup from './NasaSpacePopup';
+import NewspapersClassifiedsPopup from './NewspapersClassifiedsPopup';
 import { findGeneralProductsEntry, trackGeneralProductsView } from '@/lib/generalProductsPopups';
 import { findObscureTvEntry, trackObscureTvView } from '@/lib/obscureTvPopups';
 import { findMoreObscureTvEntry, trackMoreObscureTvView } from '@/lib/moreObscureTvPopups';
@@ -28,6 +29,7 @@ import { findPeak1984Entry } from '@/lib/peak1984Popups';
 import { findOlympics1984Entry } from '@/lib/olympics1984Popups';
 import { findOlympicsAthletes1984Entry } from '@/lib/olympicsAthletes1984Popups';
 import { findNasaSpaceEntry } from '@/lib/nasaSpacePopups';
+import { findNewspapersClassifiedsEntry } from '@/lib/newspapersClassifiedsPopups';
 
 // Map ad text to banner index — find the matching TV synopsis data
 function findBannerIndex(adText) {
@@ -76,6 +78,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [olympicsAthletesEntry, setOlympicsAthletesEntry] = useState(null);
   const [isNasaSpace, setIsNasaSpace] = useState(false);
   const [nasaSpaceEntry, setNasaSpaceEntry] = useState(null);
+  const [isNewspapersClassifieds, setIsNewspapersClassifieds] = useState(false);
+  const [newspapersClassifiedsEntry, setNewspapersClassifiedsEntry] = useState(null);
 
   // On mount, find the matching TV synopsis, movie, or electronics entry
   useEffect(() => {
@@ -130,22 +134,28 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
                         setIsNasaSpace(true);
                         setNasaSpaceEntry(nasaSpace);
                       } else {
-                        const tvIdx = findBannerIndex(ad.text);
-        if (tvIdx) {
-          const data = pickSynopsis(tvIdx);
-          setSynopsisData(data);
-        } else if (findMovieIndex(ad.text) !== null) {
-          setIsMovie(true);
-        } else {
-          const elec = findElectronicsEntry(ad.text);
-          if (elec) {
-            setIsElectronics(true);
-            setElecEntry(elec);
-            } else {
-              const gp = findGeneralProductsEntry(ad.text);
-              if (gp) {
-                setIsGeneralProducts(true);
-                setGpEntry(gp);
+                        const newspapersClassifieds = findNewspapersClassifiedsEntry(ad.text);
+                        if (newspapersClassifieds) {
+                          setIsNewspapersClassifieds(true);
+                          setNewspapersClassifiedsEntry(newspapersClassifieds);
+                        } else {
+                          const tvIdx = findBannerIndex(ad.text);
+                          if (tvIdx) {
+                            const data = pickSynopsis(tvIdx);
+                            setSynopsisData(data);
+                          } else if (findMovieIndex(ad.text) !== null) {
+                            setIsMovie(true);
+                          } else {
+                            const elec = findElectronicsEntry(ad.text);
+                            if (elec) {
+                              setIsElectronics(true);
+                              setElecEntry(elec);
+                            } else {
+                              const gp = findGeneralProductsEntry(ad.text);
+                              if (gp) {
+                                setIsGeneralProducts(true);
+                                setGpEntry(gp);
+                              }
                             }
                           }
                         }
@@ -233,6 +243,10 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       return;
     }
     if (isNasaSpace && nasaSpaceEntry) {
+      setExpanded(true);
+      return;
+    }
+    if (isNewspapersClassifieds && newspapersClassifiedsEntry) {
       setExpanded(true);
       return;
     }
@@ -344,6 +358,17 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     return (
       <NasaSpacePopup
         entry={nasaSpaceEntry}
+        onDismiss={() => { setExpanded(false); onDismiss(); }}
+        onAchievement={onAchievement}
+      />
+    );
+  }
+
+  // ── Newspapers & Classifieds Popup (expanded) ──
+  if (expanded && isNewspapersClassifieds && newspapersClassifiedsEntry) {
+    return (
+      <NewspapersClassifiedsPopup
+        entry={newspapersClassifiedsEntry}
         onDismiss={() => { setExpanded(false); onDismiss(); }}
         onAchievement={onAchievement}
       />
@@ -493,13 +518,13 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   // ── Compact Banner (pre-tap) ──
   return (
     <div
-      onClick={(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace) ? handleTap : onDismiss}
-      className={`animate-in slide-in-from-bottom-4 fade-in duration-300 rounded-xl px-4 py-3 text-center ${isElectronics ? 'bg-emerald-500/10 border border-emerald-500/20' : isGeneralProducts ? 'bg-sky-500/10 border border-sky-500/20' : isObscureTv ? 'bg-indigo-500/10 border border-indigo-500/20' : isMoreObscureTv ? 'bg-purple-500/10 border border-purple-500/20' : isArcade ? 'bg-yellow-500/10 border border-yellow-500/20' : isWrestling ? 'bg-red-500/10 border border-red-500/20' : isVanishedStores ? 'bg-green-500/10 border border-green-500/20' : isPeak1984 ? 'bg-orange-500/10 border border-orange-500/20' : isOlympics ? 'bg-yellow-500/10 border border-yellow-500/20' : isOlympicsAthletes ? 'bg-cyan-500/10 border border-cyan-500/20' : isNasaSpace ? 'bg-sky-500/10 border border-sky-500/20' : isTvMovie ? 'bg-rose-500/10 border border-rose-500/20' : 'bg-amber-500/10 border border-amber-500/20'} ${(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace) ? 'cursor-pointer hover:bg-amber-500/15 transition-colors' : 'cursor-pointer'}`}
+      onClick={(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds) ? handleTap : onDismiss}
+      className={`animate-in slide-in-from-bottom-4 fade-in duration-300 rounded-xl px-4 py-3 text-center ${isElectronics ? 'bg-emerald-500/10 border border-emerald-500/20' : isGeneralProducts ? 'bg-sky-500/10 border border-sky-500/20' : isObscureTv ? 'bg-indigo-500/10 border border-indigo-500/20' : isMoreObscureTv ? 'bg-purple-500/10 border border-purple-500/20' : isArcade ? 'bg-yellow-500/10 border border-yellow-500/20' : isWrestling ? 'bg-red-500/10 border border-red-500/20' : isVanishedStores ? 'bg-green-500/10 border border-green-500/20' : isPeak1984 ? 'bg-orange-500/10 border border-orange-500/20' : isOlympics ? 'bg-yellow-500/10 border border-yellow-500/20' : isOlympicsAthletes ? 'bg-cyan-500/10 border border-cyan-500/20' : isNasaSpace ? 'bg-sky-500/10 border border-sky-500/20' : isNewspapersClassifieds ? 'bg-slate-500/10 border border-slate-500/20' : isTvMovie ? 'bg-rose-500/10 border border-rose-500/20' : 'bg-amber-500/10 border border-amber-500/20'} ${(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds) ? 'cursor-pointer hover:bg-amber-500/15 transition-colors' : 'cursor-pointer'}`}
     >
       <div className="flex items-center justify-center gap-1.5 mb-1.5">
         <Tv className="w-3 h-3 text-amber-400" />
         <span className="text-[9px] font-heading uppercase tracking-[0.2em] text-amber-400">
-          {synopsisData ? 'TONIGHT ON TV' : isElectronics ? 'ELECTRONICS & COMPUTERS' : isGeneralProducts ? 'COMMERCIAL BREAK' : isObscureTv ? 'OBSCURE TV' : isMoreObscureTv ? 'MORE OBSCURE TV' : isArcade ? 'ARCADE & VIDEOGAMES' : isWrestling ? 'PROFESSIONAL WRESTLING' : isVanishedStores ? 'SHOPPING TIME' : isPeak1984 ? 'MUSEUM EXHIBIT' : isOlympics ? 'OLYMPIC EXHIBIT' : isOlympicsAthletes ? 'OLYMPIC LEGEND' : isNasaSpace ? 'SPACE EXHIBIT' : isTvMovie ? 'TV MOVIE' : 'SPONSOR MESSAGE'}
+          {synopsisData ? 'TONIGHT ON TV' : isElectronics ? 'ELECTRONICS & COMPUTERS' : isGeneralProducts ? 'COMMERCIAL BREAK' : isObscureTv ? 'OBSCURE TV' : isMoreObscureTv ? 'MORE OBSCURE TV' : isArcade ? 'ARCADE & VIDEOGAMES' : isWrestling ? 'PROFESSIONAL WRESTLING' : isVanishedStores ? 'SHOPPING TIME' : isPeak1984 ? 'MUSEUM EXHIBIT' : isOlympics ? 'OLYMPIC EXHIBIT' : isOlympicsAthletes ? 'OLYMPIC LEGEND' : isNasaSpace ? 'SPACE EXHIBIT' : isNewspapersClassifieds ? 'NEWSPAPER & CLASSIFIEDS' : isTvMovie ? 'TV MOVIE' : 'SPONSOR MESSAGE'}
         </span>
       </div>
 
@@ -516,6 +541,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
         {isOlympics && olympicsEntry && <span className="text-base">{olympicsEntry.icon}</span>}
         {isOlympicsAthletes && olympicsAthletesEntry && <span className="text-base">{olympicsAthletesEntry.icon}</span>}
         {isNasaSpace && nasaSpaceEntry && <span className="text-base">{nasaSpaceEntry.icon}</span>}
+        {isNewspapersClassifieds && newspapersClassifiedsEntry && <span className="text-base">{newspapersClassifiedsEntry.icon}</span>}
         {isTvMovie && tvMovieEntry && <span className="text-base">{tvMovieEntry.icon}</span>}
         <p className="text-sm font-heading text-foreground/85 leading-relaxed italic">
           "{ad.text}"
@@ -523,7 +549,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       </div>
 
       <p className="text-[9px] text-muted-foreground/40 mt-2 font-heading">
-        {synopsisData ? 'tap for TV Guide synopsis' : isElectronics ? 'tap for product details' : isGeneralProducts ? 'tap for commercial' : isObscureTv ? 'tap for show info' : isMoreObscureTv ? 'tap for show info' : isArcade ? 'tap for game info' : isWrestling ? 'tap for wrestling info' : isVanishedStores ? 'tap for store info' : isPeak1984 ? 'tap for exhibit' : isOlympics ? 'tap for games' : isOlympicsAthletes ? 'tap for athlete' : isNasaSpace ? 'tap for space exhibit' : isTvMovie ? 'tap for movie info' : 'tap to continue'}
+        {synopsisData ? 'tap for TV Guide synopsis' : isElectronics ? 'tap for product details' : isGeneralProducts ? 'tap for commercial' : isObscureTv ? 'tap for show info' : isMoreObscureTv ? 'tap for show info' : isArcade ? 'tap for game info' : isWrestling ? 'tap for wrestling info' : isVanishedStores ? 'tap for store info' : isPeak1984 ? 'tap for exhibit' : isOlympics ? 'tap for games' : isOlympicsAthletes ? 'tap for athlete' : isNasaSpace ? 'tap for space exhibit' : isNewspapersClassifieds ? 'tap for newspaper exhibit' : isTvMovie ? 'tap for movie info' : 'tap to continue'}
       </p>
     </div>
   );

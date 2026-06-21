@@ -380,6 +380,11 @@ export const ACHIEVEMENTS = [
   { id: 'space_devotee', name: 'Space Devotee', desc: 'View 15 NASA space exhibits', icon: '🛸', category: 'community' },
   { id: 'space_historian', name: 'Space Historian', desc: 'View all 25 NASA space exhibits', icon: '🌌', category: 'community' },
 
+  // ── NEWSPAPERS & CLASSIFIEDS ──
+  { id: 'news_reader', name: 'News Reader', desc: 'View 5 newspaper & classified exhibits', icon: '📰', category: 'community' },
+  { id: 'news_junkie', name: 'News Junkie', desc: 'View 15 newspaper & classified exhibits', icon: '🗞️', category: 'community' },
+  { id: 'print_historian', name: 'Print Historian', desc: 'View all 25 newspaper & classified exhibits', icon: '📜', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
   { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },
