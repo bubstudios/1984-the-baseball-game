@@ -8,8 +8,10 @@ import MoviePopup from './MoviePopup';
 import ElectronicsPopup from './ElectronicsPopup';
 import GeneralProductsPopup from './GeneralProductsPopup';
 import ObscureTvPopup from './ObscureTvPopup';
+import TvMoviePopup from './TvMoviePopup';
 import { findGeneralProductsEntry, trackGeneralProductsView } from '@/lib/generalProductsPopups';
 import { findObscureTvEntry, trackObscureTvView } from '@/lib/obscureTvPopups';
+import { findTvMovieEntry } from '@/lib/tvMoviePopups';
 
 // Map ad text to banner index — find the matching TV synopsis data
 function findBannerIndex(adText) {
@@ -40,6 +42,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [gpEntry, setGpEntry] = useState(null);
   const [isObscureTv, setIsObscureTv] = useState(false);
   const [obscureTvEntry, setObscureTvEntry] = useState(null);
+  const [isTvMovie, setIsTvMovie] = useState(false);
+  const [tvMovieEntry, setTvMovieEntry] = useState(null);
 
   // On mount, find the matching TV synopsis, movie, or electronics entry
   useEffect(() => {
@@ -49,22 +53,28 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setIsObscureTv(true);
       setObscureTvEntry(obscureTv);
     } else {
-      const tvIdx = findBannerIndex(ad.text);
-      if (tvIdx) {
-        const data = pickSynopsis(tvIdx);
-        setSynopsisData(data);
-      } else if (findMovieIndex(ad.text) !== null) {
-        setIsMovie(true);
+      const tvMovie = findTvMovieEntry(ad.text);
+      if (tvMovie) {
+        setIsTvMovie(true);
+        setTvMovieEntry(tvMovie);
       } else {
-        const elec = findElectronicsEntry(ad.text);
-        if (elec) {
-          setIsElectronics(true);
-          setElecEntry(elec);
+        const tvIdx = findBannerIndex(ad.text);
+        if (tvIdx) {
+          const data = pickSynopsis(tvIdx);
+          setSynopsisData(data);
+        } else if (findMovieIndex(ad.text) !== null) {
+          setIsMovie(true);
         } else {
-          const gp = findGeneralProductsEntry(ad.text);
-          if (gp) {
-            setIsGeneralProducts(true);
-            setGpEntry(gp);
+          const elec = findElectronicsEntry(ad.text);
+          if (elec) {
+            setIsElectronics(true);
+            setElecEntry(elec);
+          } else {
+            const gp = findGeneralProductsEntry(ad.text);
+            if (gp) {
+              setIsGeneralProducts(true);
+              setGpEntry(gp);
+            }
           }
         }
       }
@@ -110,6 +120,10 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
+    if (isTvMovie && tvMovieEntry) {
+      setExpanded(true);
+      return;
+    }
     if (!synopsisData) {
       onDismiss();
       return;
@@ -130,6 +144,17 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     return (
       <ElectronicsPopup
         entry={elecEntry}
+        onDismiss={() => { setExpanded(false); onDismiss(); }}
+        onAchievement={onAchievement}
+      />
+    );
+  }
+
+  // ── TV Movie Popup (expanded) ──
+  if (expanded && isTvMovie && tvMovieEntry) {
+    return (
+      <TvMoviePopup
+        entry={tvMovieEntry}
         onDismiss={() => { setExpanded(false); onDismiss(); }}
         onAchievement={onAchievement}
       />
@@ -268,13 +293,13 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   // ── Compact Banner (pre-tap) ──
   return (
     <div
-      onClick={(synopsisData || isElectronics || isGeneralProducts || isObscureTv) ? handleTap : onDismiss}
-      className={`animate-in slide-in-from-bottom-4 fade-in duration-300 rounded-xl px-4 py-3 text-center ${isElectronics ? 'bg-emerald-500/10 border border-emerald-500/20' : isGeneralProducts ? 'bg-sky-500/10 border border-sky-500/20' : isObscureTv ? 'bg-indigo-500/10 border border-indigo-500/20' : 'bg-amber-500/10 border border-amber-500/20'} ${(synopsisData || isElectronics || isGeneralProducts || isObscureTv) ? 'cursor-pointer hover:bg-amber-500/15 transition-colors' : 'cursor-pointer'}`}
+      onClick={(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isTvMovie) ? handleTap : onDismiss}
+      className={`animate-in slide-in-from-bottom-4 fade-in duration-300 rounded-xl px-4 py-3 text-center ${isElectronics ? 'bg-emerald-500/10 border border-emerald-500/20' : isGeneralProducts ? 'bg-sky-500/10 border border-sky-500/20' : isObscureTv ? 'bg-indigo-500/10 border border-indigo-500/20' : isTvMovie ? 'bg-rose-500/10 border border-rose-500/20' : 'bg-amber-500/10 border border-amber-500/20'} ${(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isTvMovie) ? 'cursor-pointer hover:bg-amber-500/15 transition-colors' : 'cursor-pointer'}`}
     >
       <div className="flex items-center justify-center gap-1.5 mb-1.5">
         <Tv className="w-3 h-3 text-amber-400" />
         <span className="text-[9px] font-heading uppercase tracking-[0.2em] text-amber-400">
-          {synopsisData ? 'TONIGHT ON TV' : isElectronics ? 'ELECTRONICS & COMPUTERS' : isGeneralProducts ? 'COMMERCIAL BREAK' : isObscureTv ? 'OBSCURE TV' : 'SPONSOR MESSAGE'}
+          {synopsisData ? 'TONIGHT ON TV' : isElectronics ? 'ELECTRONICS & COMPUTERS' : isGeneralProducts ? 'COMMERCIAL BREAK' : isObscureTv ? 'OBSCURE TV' : isTvMovie ? 'TV MOVIE' : 'SPONSOR MESSAGE'}
         </span>
       </div>
 
@@ -283,13 +308,14 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
         {isElectronics && elecEntry && <span className="text-base">{elecEntry.icon}</span>}
         {isGeneralProducts && gpEntry && <span className="text-base">{gpEntry.icon}</span>}
         {isObscureTv && obscureTvEntry && <span className="text-base">{obscureTvEntry.icon}</span>}
+        {isTvMovie && tvMovieEntry && <span className="text-base">{tvMovieEntry.icon}</span>}
         <p className="text-sm font-heading text-foreground/85 leading-relaxed italic">
           "{ad.text}"
         </p>
       </div>
 
       <p className="text-[9px] text-muted-foreground/40 mt-2 font-heading">
-        {synopsisData ? 'tap for TV Guide synopsis' : isElectronics ? 'tap for product details' : isGeneralProducts ? 'tap for commercial' : isObscureTv ? 'tap for show info' : 'tap to continue'}
+        {synopsisData ? 'tap for TV Guide synopsis' : isElectronics ? 'tap for product details' : isGeneralProducts ? 'tap for commercial' : isObscureTv ? 'tap for show info' : isTvMovie ? 'tap for movie info' : 'tap to continue'}
       </p>
     </div>
   );

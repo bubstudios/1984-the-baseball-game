@@ -335,11 +335,17 @@ export const ACHIEVEMENTS = [
   { id: 'one_season_wonder', name: 'One Season Wonder', desc: 'View 5 obscure TV show ads', icon: '📺', category: 'community' },
   { id: 'tv_guide_subscriber', name: 'TV Guide Subscriber', desc: 'Read every obscure TV popup', icon: '📖', category: 'community' },
 
+  // ── TV MOVIES ──
+  { id: 'movie_night', name: 'Movie Night', desc: 'View your first TV movie popup', icon: '🎬', category: 'community' },
+  { id: 'network_premiere', name: 'Network Premiere', desc: 'View 5 different movies from the network premiere rotation', icon: '🏆', category: 'community' },
+  { id: 'original_broadcast', name: 'Original Broadcast', desc: 'View 5 different world premiere TV movies', icon: '📡', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
   { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },
   { id: 'cult_classic', name: 'Cult Classic', desc: 'Read the Riptide advertisement 5 times', icon: '🚁', category: 'hidden' },
   { id: 'future_star_spotter', name: 'Future Star Spotter', desc: 'Discover George Clooney in E/R', icon: '⭐', category: 'hidden' },
+  { id: 'lost_broadcast', name: 'Lost Broadcast', desc: 'Encounter The Starfighter Project', icon: '🛸', category: 'hidden' },
 ];
 
 // ── Stats storage ──
