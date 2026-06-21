@@ -320,6 +320,11 @@ export const ACHIEVEMENTS = [
   { id: 'dirt_kicker', name: 'Dirt Kicker', desc: 'Kick dirt on home plate', icon: '🦶', category: 'ejection' },
   { id: 'base_thief', name: 'Base Thief', desc: 'Manager removes first base in protest', icon: '🏟️', category: 'ejection' },
   { id: 'bench_tossed', name: 'Didn\'t Even Leave the Dugout', desc: 'Manager ejected from the bench', icon: '🪑', category: 'ejection' },
+
+  // ── ELECTRONICS & COMPUTERS ──
+  { id: 'tech_enthusiast', name: 'Tech Enthusiast', desc: 'View your first electronics ad', icon: '💻', category: 'community' },
+  { id: 'gadget_guru', name: 'Gadget Guru', desc: 'View 10 electronics ads', icon: '📟', category: 'community' },
+  { id: 'computer_kid', name: 'Computer Kid', desc: 'View all 25 electronics ads', icon: '🖥️', category: 'community' },
 ];
 
 // ── Stats storage ──

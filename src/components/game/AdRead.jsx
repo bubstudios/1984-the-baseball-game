@@ -3,7 +3,9 @@ import { Tv, X, Clock, User, Film } from 'lucide-react';
 import { pickSynopsis, NETWORK_LOGOS, EASTER_EGGS } from '@/lib/tvGuideData';
 import { trackSynopsisView, hasSynopsisBeenViewed } from '@/lib/tvAchievements';
 import { findMovieIndex } from '@/lib/moviePopups';
+import { findElectronicsEntry, trackElectronicsView } from '@/lib/electronicsPopups';
 import MoviePopup from './MoviePopup';
+import ElectronicsPopup from './ElectronicsPopup';
 
 // Map ad text to banner index — find the matching TV synopsis data
 function findBannerIndex(adText) {
@@ -28,8 +30,10 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [expanded, setExpanded] = useState(false);
   const [synopsisData, setSynopsisData] = useState(null);
   const [isMovie, setIsMovie] = useState(false);
+  const [isElectronics, setIsElectronics] = useState(false);
+  const [elecEntry, setElecEntry] = useState(null);
 
-  // On mount, find the matching TV synopsis or movie entry
+  // On mount, find the matching TV synopsis, movie, or electronics entry
   useEffect(() => {
     if (!ad) return;
     const tvIdx = findBannerIndex(ad.text);
@@ -38,12 +42,18 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setSynopsisData(data);
     } else if (findMovieIndex(ad.text) !== null) {
       setIsMovie(true);
+    } else {
+      const elec = findElectronicsEntry(ad.text);
+      if (elec) {
+        setIsElectronics(true);
+        setElecEntry(elec);
+      }
     }
     const showTimer = setTimeout(() => setVisible(true), 100);
     return () => clearTimeout(showTimer);
   }, [ad]);
 
-  // Auto-dismiss only when not expanded AND not a movie (MoviePopup handles its own timing)
+  // Auto-dismiss only when not expanded AND not a movie (handles its own timing)
   useEffect(() => {
     if (!visible || expanded || autoDismissMs <= 0 || isMovie) return;
     const timer = setTimeout(onDismiss, autoDismissMs);
@@ -57,10 +67,17 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     return <MoviePopup ad={ad} onDismiss={() => { setVisible(false); onDismiss(); }} onAchievement={onAchievement} />;
   }
 
-  const showIcon = synopsisData?.icon || '📺';
+  const showIcon = synopsisData?.icon || (isElectronics ? elecEntry?.icon : '📺');
   const networkInfo = synopsisData ? NETWORK_LOGOS[synopsisData.network] : null;
 
   const handleTap = () => {
+    // Electronics: open the popup (stays until dismissed)
+    if (isElectronics && elecEntry) {
+      const unlocked = trackElectronicsView(elecEntry.id);
+      if (unlocked.length > 0 && onAchievement) onAchievement(unlocked);
+      setExpanded(true); // show popup
+      return;
+    }
     if (!synopsisData) {
       onDismiss();
       return;
@@ -75,6 +92,17 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       onDismiss();
     }
   };
+
+  // ── Electronics Popup (expanded) ──
+  if (expanded && isElectronics && elecEntry) {
+    return (
+      <ElectronicsPopup
+        entry={elecEntry}
+        onDismiss={() => { setExpanded(false); onDismiss(); }}
+        onAchievement={onAchievement}
+      />
+    );
+  }
 
   // ── TV Guide Detail View ──
   if (expanded && synopsisData) {
@@ -186,25 +214,26 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   // ── Compact Banner (pre-tap) ──
   return (
     <div
-      onClick={synopsisData ? handleTap : onDismiss}
-      className={`animate-in slide-in-from-bottom-4 fade-in duration-300 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 text-center ${synopsisData ? 'cursor-pointer hover:bg-amber-500/15 transition-colors' : 'cursor-pointer'}`}
+      onClick={(synopsisData || isElectronics) ? handleTap : onDismiss}
+      className={`animate-in slide-in-from-bottom-4 fade-in duration-300 rounded-xl px-4 py-3 text-center ${isElectronics ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-amber-500/10 border border-amber-500/20'} ${(synopsisData || isElectronics) ? 'cursor-pointer hover:bg-amber-500/15 transition-colors' : 'cursor-pointer'}`}
     >
       <div className="flex items-center justify-center gap-1.5 mb-1.5">
         <Tv className="w-3 h-3 text-amber-400" />
         <span className="text-[9px] font-heading uppercase tracking-[0.2em] text-amber-400">
-          {synopsisData ? 'TONIGHT ON TV' : 'SPONSOR MESSAGE'}
+          {synopsisData ? 'TONIGHT ON TV' : isElectronics ? 'ELECTRONICS & COMPUTERS' : 'SPONSOR MESSAGE'}
         </span>
       </div>
 
       <div className="flex items-center justify-center gap-1.5 mb-1">
         {synopsisData && <span className="text-base">{showIcon}</span>}
+        {isElectronics && elecEntry && <span className="text-base">{elecEntry.icon}</span>}
         <p className="text-sm font-heading text-foreground/85 leading-relaxed italic">
           "{ad.text}"
         </p>
       </div>
 
       <p className="text-[9px] text-muted-foreground/40 mt-2 font-heading">
-        {synopsisData ? 'tap for TV Guide synopsis' : 'tap to continue'}
+        {synopsisData ? 'tap for TV Guide synopsis' : isElectronics ? 'tap for product details' : 'tap to continue'}
       </p>
     </div>
   );
