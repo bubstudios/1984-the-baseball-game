@@ -335,6 +335,11 @@ export const ACHIEVEMENTS = [
   { id: 'one_season_wonder', name: 'One Season Wonder', desc: 'View 5 obscure TV show ads', icon: '📺', category: 'community' },
   { id: 'tv_guide_subscriber', name: 'TV Guide Subscriber', desc: 'Read every obscure TV popup', icon: '📖', category: 'community' },
 
+  // ── MORE OBSCURE TV ──
+  { id: 'prime_time_viewer', name: 'Prime Time Viewer', desc: 'View 5 More Obscure TV popups', icon: '📺', category: 'community' },
+  { id: 'couch_potato', name: 'Couch Potato', desc: 'View 15 More Obscure TV popups', icon: '🛋️', category: 'community' },
+  { id: 'tv_guide_completionist', name: 'TV Guide Completionist', desc: 'View all 25 More Obscure TV popups', icon: '📚', category: 'community' },
+
   // ── TV MOVIES ──
   { id: 'movie_night', name: 'Movie Night', desc: 'View your first TV movie popup', icon: '🎬', category: 'community' },
   { id: 'network_premiere', name: 'Network Premiere', desc: 'View 5 different movies from the network premiere rotation', icon: '🏆', category: 'community' },
@@ -346,6 +351,7 @@ export const ACHIEVEMENTS = [
   { id: 'cult_classic', name: 'Cult Classic', desc: 'Read the Riptide advertisement 5 times', icon: '🚁', category: 'hidden' },
   { id: 'future_star_spotter', name: 'Future Star Spotter', desc: 'Discover George Clooney in E/R', icon: '⭐', category: 'hidden' },
   { id: 'lost_broadcast', name: 'Lost Broadcast', desc: 'Encounter The Starfighter Project', icon: '🛸', category: 'hidden' },
+  { id: 'bull_shannon_fan', name: 'Bull Shannon Fan', desc: 'Meet Bull Shannon from Night Court', icon: '🧑‍⚖️', category: 'hidden' },
 ];
 
 // ── Stats storage ──
