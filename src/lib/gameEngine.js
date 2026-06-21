@@ -974,6 +974,10 @@ export function getSituationalBatter(state) {
     contact: Math.max(1, Math.min(10, finalContact)),
     power: Math.max(1, Math.min(10, finalPower)),
     countModReason,
+    _rawBaseContact: adjContact,
+    _rawBasePower: adjPower,
+    _rawFinalContact: finalContact,
+    _rawFinalPower: finalPower,
   };
 }
 

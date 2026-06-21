@@ -21,9 +21,10 @@ export default function BatButtons({ onSwing, disabled, situationalBatter }) {
   // Determine count-based advantage color for a stat
   const getCountColor = (statKey) => {
     if (!situationalBatter || !statKey) return '';
-    const base = situationalBatter[`base${statKey.charAt(0).toUpperCase() + statKey.slice(1)}`];
-    const current = situationalBatter[statKey];
-    if (!base || !current) return '';
+    const cap = statKey.charAt(0).toUpperCase() + statKey.slice(1);
+    const base = situationalBatter[`_rawBase${cap}`];
+    const current = situationalBatter[`_rawFinal${cap}`];
+    if (current === undefined || base === undefined) return '';
     if (current > base) return 'border-emerald-500 bg-emerald-950/40';
     if (current < base) return 'border-rose-500 bg-rose-950/40';
     return '';
