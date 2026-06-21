@@ -355,6 +355,11 @@ export const ACHIEVEMENTS = [
   { id: 'wrestling_devotee', name: 'Wrestling Devotee', desc: 'View 15 wrestling event popups', icon: '🥊', category: 'community' },
   { id: 'wrestling_legend', name: 'Wrestling Legend', desc: 'View all 25 wrestling event popups', icon: '🏆', category: 'community' },
 
+  // ── VANISHED STORES ──
+  { id: 'mall_visitor', name: 'Mall Visitor', desc: 'View 5 vanished stores popups', icon: '🛍️', category: 'community' },
+  { id: 'mall_regular', name: 'Mall Regular', desc: 'View 15 vanished stores popups', icon: '🏬', category: 'community' },
+  { id: 'mall_historian', name: 'Mall Historian', desc: 'View all 25 vanished stores popups', icon: '📚', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
   { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },
