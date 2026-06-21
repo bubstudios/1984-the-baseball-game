@@ -326,8 +326,14 @@ export const ACHIEVEMENTS = [
   { id: 'gadget_guru', name: 'Gadget Guru', desc: 'View 10 electronics ads', icon: '📟', category: 'community' },
   { id: 'computer_kid', name: 'Computer Kid', desc: 'View all 25 electronics ads', icon: '🖥️', category: 'community' },
 
+  // ── GENERAL PRODUCTS COMMERCIALS ──
+  { id: 'commercial_break', name: 'Commercial Break', desc: 'View your first general products commercial', icon: '📺', category: 'community' },
+  { id: 'channel_surfer', name: 'Channel Surfer', desc: 'View 10 general products commercials', icon: '📡', category: 'community' },
+  { id: 'prime_time', name: 'Prime Time Viewer', desc: 'View all 25 general products commercials', icon: '🎬', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
+  { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },
 ];
 
 // ── Stats storage ──
