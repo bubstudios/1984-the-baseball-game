@@ -880,6 +880,7 @@ export default function Home() {
                   pitcherSpecialty={pitcherSpecialty}
                   reachBackUses={reachBackUses}
                   reachBackMax={reachBackMax}
+                  situationalBatter={situationalBatter}
                 />
               </div>
             )}
@@ -912,6 +913,7 @@ export default function Home() {
             pitcherSpecialty={pitcherSpecialty}
             reachBackUses={reachBackUses}
             reachBackMax={reachBackMax}
+            situationalBatter={situationalBatter}
           />
         </div>
       )}

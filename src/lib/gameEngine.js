@@ -909,7 +909,7 @@ export function processAtBat(state, pitchType, swingType) {
   if (!newState.userPitchTypes) newState.userPitchTypes = [];
   if (!newState.userPitchTypes.includes(pitchType.name)) newState.userPitchTypes = [...newState.userPitchTypes, pitchType.name];
   if (newState.pitchResult.isWildPitch) { if (newState.balls >= 4) { const wb = getCurrentBatter(newState); wb.gameStats.bb++; getCurrentPitcher(newState).gameStats.bb++; newState.log.push({ type: 'walk', text: `${wb.name} walks on a wild pitch!` }); handleWalk(newState, wb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); } return newState; }
-  if (newState.pitchResult.isHBP) { const hb = getCurrentBatter(newState); const hbp = getCurrentPitcher(newState); hb.gameStats.bb++; hbp.gameStats.bb++; const hbpReason = newState.pitchResult.hbpReason || null; registerHBP(newState, hbp, hb, hbpReason); const hbpText = `${hb.name} is hit by the pitch!`; newState.log.push({ type: 'walk', text: hbpText }); newState.lastPlay = { type: 'walk', text: `${hb.name} is hit by the pitch! — takes first`, isHBP: true, hbpReason }; handleWalk(newState, hb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); const warned = checkForWarning(newState); if (warned) newState._beanballWarning = true; if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off HBP! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); } return newState; }
+  if (newState.pitchResult.isHBP) { const hb = getCurrentBatter(newState); const hbp = getCurrentPitcher(newState); hb.gameStats.bb++; hbp.gameStats.bb++; const hbpReason = newState.pitchResult.hbpReason || null; const wasWarned = newState._beanball?.warningIssued; registerHBP(newState, hbp, hb, hbpReason); const hbpText = `${hb.name} is hit by the pitch!`; newState.log.push({ type: 'walk', text: hbpText }); newState.lastPlay = { type: 'walk', text: `${hb.name} is hit by the pitch! — takes first`, isHBP: true, hbpReason }; handleWalk(newState, hb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); const warned = checkForWarning(newState); if (warned) newState._beanballWarning = true; if (wasWarned) { const pitchingSide = newState.halfInning === 'top' ? 'home' : 'away'; const ejectKey = pitchingSide === 'home' ? '_homePitcherEjected' : '_awayPitcherEjected'; const mgrEjectKey = pitchingSide === 'home' ? '_homeManagerEjected' : '_awayManagerEjected'; newState[ejectKey] = true; newState[mgrEjectKey] = true; newState._beanball.autoEjectionPitcher = hbp.name; newState._beanball.autoEjectionSide = pitchingSide; newState._forcePitchingChange = true; const tAbbr = TEAMS[newState[pitchingSide === 'home' ? 'homeTeam' : 'awayTeam']]?.abbr || ''; newState.log.push({ type: 'ejection', text: `🟥 ${hbp.name} EJECTED — hit batter after warnings! ${tAbbr} manager also ejected!` }); } if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off HBP! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); } return newState; }
   const bjb = getCurrentBatter(newState);
   resolveSwing(newState, swingType, newState.pitchResult);
   if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); }
@@ -1004,6 +1004,40 @@ export function intentionalWalk(state) {
 export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const newState = JSON.parse(JSON.stringify(state));
   if (newState.gameOver) return newState;
+
+  // ── Auto-ejection: replace pitcher immediately on both sides ──
+  if (newState._forcePitchingChange) {
+    const ejectedSide = newState._beanball?.autoEjectionSide;
+    const ejectedName = newState._beanball?.autoEjectionPitcher;
+    const bpKey = ejectedSide === 'home' ? 'homeBullpen' : 'awayBullpen';
+    const pitcherKey = ejectedSide === 'home' ? 'homePitcher' : 'awayPitcher';
+    const hk = ejectedSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
+    const lineupKey = ejectedSide === 'home' ? 'homeLineup' : 'awayLineup';
+    const oldP = newState[pitcherKey];
+    const bp = newState[bpKey];
+    if (bp && bp.length > 0) {
+      const newReliever = bp[0];
+      const newP = { ...newReliever, pitchCount: 0, pitches: newReliever.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
+      newState[pitcherKey] = newP;
+      const bpi = bp.findIndex(p => p.name === newReliever.name);
+      if (bpi >= 0) bp.splice(bpi, 1);
+      if (!newState[hk].find(p => p.name === oldP.name)) newState[hk].push({ ...oldP, ejected: true });
+      if (!newState.useDH) {
+        let si = newState[lineupKey].findIndex(p => p.name === oldP.name);
+        if (si < 0 && oldP.order) si = newState[lineupKey].findIndex(p => p.order === oldP.order);
+        if (si < 0) si = newState[lineupKey].findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
+        if (si >= 0) {
+          newState[lineupKey][si] = { ...newReliever, order: newState[lineupKey][si].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+        }
+      }
+      newState.log.push({ type: 'info', text: `🔄 ${newReliever.name} takes the mound after ${oldP.name} is ejected` });
+    }
+    delete newState._forcePitchingChange;
+    delete newState._beanball.autoEjectionPitcher;
+    delete newState._beanball.autoEjectionSide;
+    return newState;
+  }
+
   const cpuSide = newState.homeTeam === userTeam ? 'away' : 'home';
   const cpuBattingSide = newState.halfInning === 'top' ? 'away' : 'home';
   const isCpuBatting = cpuBattingSide === cpuSide;

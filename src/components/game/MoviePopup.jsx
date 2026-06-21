@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Star, Film, Popcorn, Ticket, Clapperboard } from 'lucide-react';
 import { getMovieEntry, findMovieIndex, pickBonusEntry, trackMovieView } from '@/lib/moviePopups';
 
@@ -31,6 +31,8 @@ export default function MoviePopup({ ad, onDismiss, onAchievement }) {
   const [bonusEntry, setBonusEntry] = useState(null);
   const [entry, setEntry] = useState(null);
   const [isBonus, setIsBonus] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
+  const autoDismissRef = useRef(null);
 
   useEffect(() => {
     if (!ad) return;
@@ -52,6 +54,16 @@ export default function MoviePopup({ ad, onDismiss, onAchievement }) {
     return () => clearTimeout(showTimer);
   }, [ad]);
 
+  // Auto-dismiss after 10s if user hasn't interacted
+  useEffect(() => {
+    if (!visible || userInteracted) return;
+    autoDismissRef.current = setTimeout(() => {
+      setVisible(false);
+      onDismiss();
+    }, 10000);
+    return () => clearTimeout(autoDismissRef.current);
+  }, [visible, userInteracted, onDismiss]);
+
   // Track view for achievements (must be before any early return)
   useEffect(() => {
     if (entry && visible) {
@@ -63,12 +75,20 @@ export default function MoviePopup({ ad, onDismiss, onAchievement }) {
     }
   }, [entry, bonusEntry, visible]);
 
-  if (!visible || (!entry && !bonusEntry)) return null;
-
   const handleDismiss = () => {
+    clearTimeout(autoDismissRef.current);
     setVisible(false);
     onDismiss();
   };
+
+  const markInteraction = () => {
+    if (!userInteracted) {
+      setUserInteracted(true);
+      clearTimeout(autoDismissRef.current);
+    }
+  };
+
+  if (!visible || (!entry && !bonusEntry)) return null;
 
   // ── Bonus Entry Rendering ──
   if (isBonus && bonusEntry) {
@@ -109,7 +129,7 @@ export default function MoviePopup({ ad, onDismiss, onAchievement }) {
           <div className="px-5 py-4">
             {/* Trivia challenge: question → answer (tap to reveal style) */}
             {bonusEntry.type === 'trivia_challenge' ? (
-              <TriviaChallengeCard entry={bonusEntry} />
+              <TriviaChallengeCard entry={bonusEntry} onInteract={markInteraction} />
             ) : (
               <p className="text-sm font-body text-foreground/85 leading-relaxed whitespace-pre-line">
                 {bonusEntry.text}
@@ -156,9 +176,9 @@ export default function MoviePopup({ ad, onDismiss, onAchievement }) {
 
           {/* Tab bar */}
           <div className="flex gap-1 bg-muted/30 rounded-lg p-0.5">
-            <TabButton active={tab === 'synopsis'} onClick={() => setTab('synopsis')} label="Synopsis" />
-            {hasReview && <TabButton active={tab === 'review'} onClick={() => setTab('review')} label={entry.sillyReview ? "Review" : "Review"} />}
-            {hasTrivia && <TabButton active={tab === 'trivia'} onClick={() => setTab('trivia')} label="Trivia" />}
+            <TabButton active={tab === 'synopsis'} onClick={() => { markInteraction(); setTab('synopsis'); }} label="Synopsis" />
+            {hasReview && <TabButton active={tab === 'review'} onClick={() => { markInteraction(); setTab('review'); }} label={entry.sillyReview ? "Review" : "Review"} />}
+            {hasTrivia && <TabButton active={tab === 'trivia'} onClick={() => { markInteraction(); setTab('trivia'); }} label="Trivia" />}
           </div>
         </div>
 
@@ -228,10 +248,14 @@ function TabButton({ active, onClick, label }) {
   );
 }
 
-function TriviaChallengeCard({ entry }) {
+function TriviaChallengeCard({ entry, onInteract }) {
   const [revealed, setRevealed] = useState(false);
+  const handleReveal = () => {
+    setRevealed(true);
+    if (onInteract) onInteract();
+  };
   return (
-    <div className="space-y-4" onClick={() => setRevealed(true)}>
+    <div className="space-y-4" onClick={handleReveal}>
       <div className="flex items-center gap-2">
         <span className="text-2xl">🎓</span>
         <h2 className="font-heading text-lg font-bold text-foreground">Movie Trivia Challenge</h2>

@@ -18,6 +18,7 @@ export default function ActionPanel({
   pitcherSpecialty,
   reachBackUses,
   reachBackMax,
+  situationalBatter,
 }) {
   const [activePitch, setActivePitch] = useState(null);
   const [animatingPitch, setAnimatingPitch] = useState(null);
@@ -263,7 +264,7 @@ export default function ActionPanel({
       )}
 
       {/* Swing buttons — bats */}
-      <BatButtons onSwing={onSwing} disabled={disabled} />
+      <BatButtons onSwing={onSwing} disabled={disabled} situationalBatter={situationalBatter} />
     </div>
   );
 }

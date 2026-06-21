@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
 const BAT_ACTIONS = [
-  { label: 'Swing', swingIndex: 0, desc: 'Standard swing' },
-  { label: 'Power', swingIndex: 2, desc: 'Swing for the fences' },
-  { label: 'Bunt', swingIndex: 4, desc: 'Lay one down' },
+  { label: 'Swing', swingIndex: 0, desc: 'Standard swing', statKey: 'contact' },
+  { label: 'Power', swingIndex: 2, desc: 'Swing for the fences', statKey: 'power' },
+  { label: 'Bunt', swingIndex: 4, desc: 'Lay one down', statKey: null },
 ];
 
-export default function BatButtons({ onSwing, disabled }) {
+export default function BatButtons({ onSwing, disabled, situationalBatter }) {
   const [swinging, setSwinging] = useState(null);
 
   const handleSwing = (swingIndex) => {
@@ -18,18 +18,34 @@ export default function BatButtons({ onSwing, disabled }) {
     }, 450);
   };
 
+  // Determine count-based advantage color for a stat
+  const getCountColor = (statKey) => {
+    if (!situationalBatter || !statKey) return '';
+    const base = situationalBatter[`base${statKey.charAt(0).toUpperCase() + statKey.slice(1)}`];
+    const current = situationalBatter[statKey];
+    if (!base || !current) return '';
+    if (current > base) return 'border-emerald-500 bg-emerald-950/40';
+    if (current < base) return 'border-rose-500 bg-rose-950/40';
+    return '';
+  };
+
   return (
     <div className="space-y-2">
       <div className="text-[9px] font-heading uppercase tracking-widest text-foreground/60 text-center mb-1">Choose Swing</div>
       <div className="flex items-end justify-center gap-3 sm:gap-4">
         {BAT_ACTIONS.map((action) => {
           const isActive = swinging === action.swingIndex;
+          const countColor = getCountColor(action.statKey);
           return (
             <button
               key={action.swingIndex}
               disabled={disabled || swinging !== null}
               onClick={() => handleSwing(action.swingIndex)}
-              className="flex flex-col items-center gap-1 bg-amber-950/30 hover:bg-amber-900/40 rounded-xl px-3 py-2 transition-colors border border-amber-800/20"
+              className={`flex flex-col items-center gap-1 rounded-xl px-3 py-2 transition-colors border ${
+                countColor
+                  ? `${countColor} border-2`
+                  : 'bg-amber-950/30 hover:bg-amber-900/40 border-amber-800/20'
+              }`}
             >
               {/* Bat — horizontal, arcs upward on swing */}
               <div

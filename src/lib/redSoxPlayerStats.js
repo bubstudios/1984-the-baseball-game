@@ -222,6 +222,9 @@ const PLAYERS = {
       "Hurst played in the famous 33-inning Pawtucket game.",
       "Teammates respect Bruce's calm demeanor on the mound.",
     ],
+    combo: [
+      "Bruce Hurst and Bob Ojeda give Boston two quality left-handers.",
+    ],
     rare: [
       "Bruce Hurst never seems rattled out there.",
       "The left-hander works quickly and attacks hitters.",
@@ -246,11 +249,16 @@ const PLAYERS = {
       "Oil Can Boyd throws harder than most starters in the league.",
       "Boyd's strikeout totals continue to rise.",
     ],
+    combo: [
+      "Oil Can Boyd and Bob Stanley couldn't have more different personalities.",
+      "Bob Stanley is cool as ice, and Oil Can Boyd — well, Oil Can never met a pulse he didn't raise.",
+    ],
     rare: [
       "Nobody in baseball has more personality than Oil Can Boyd.",
       "Oil Can doesn't just pitch the game — he performs it.",
       "If confidence were a pitch, Oil Can would throw it 98 miles an hour.",
       "Oil Can Boyd has never met a spotlight he didn't like.",
+      "If Oil Can Boyd is pitching tonight, there's a decent chance the umpires hear about every call.",
     ],
   },
 
@@ -269,6 +277,7 @@ const PLAYERS = {
       "The Red Sox have leaned heavily on Steamer over the years.",
       "Stanley can give you one inning or four — whatever the situation demands.",
       "If Boston has a pitching emergency, Bob Stanley is usually the answer.",
+      "When Bob Stanley gets up in the bullpen, Boston fans know help is on the way.",
     ],
   },
 
@@ -441,11 +450,7 @@ const COMBO_LINES = [
   "Boggs and Barrett may not hit a lot of homers, but they'll drive pitchers crazy.",
   "Rice, Armas, and Evans give Boston as much power as anybody in the league.",
   "Gedman is still learning from veterans like Buckner and Rice.",
-  "Oil Can Boyd and Bob Stanley couldn't have more different personalities.",
-  "Bruce Hurst and Bob Ojeda give Boston two quality left-handers.",
   "The Red Sox blend veterans, stars, and young talent as well as any club in baseball.",
-  "When Bob Stanley gets up in the bullpen, Boston fans know help is on the way.",
-  "If Oil Can Boyd is pitching tonight, there's a decent chance the umpires hear about every call.",
   "Boggs and Barrett are about as tough to strike out as any pair in baseball.",
 ];
 

@@ -43,12 +43,12 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     return () => clearTimeout(showTimer);
   }, [ad]);
 
-  // Auto-dismiss only when not expanded
+  // Auto-dismiss only when not expanded AND not a movie (MoviePopup handles its own timing)
   useEffect(() => {
-    if (!visible || expanded || autoDismissMs <= 0) return;
+    if (!visible || expanded || autoDismissMs <= 0 || isMovie) return;
     const timer = setTimeout(onDismiss, autoDismissMs);
     return () => clearTimeout(timer);
-  }, [visible, expanded, autoDismissMs, onDismiss]);
+  }, [visible, expanded, autoDismissMs, onDismiss, isMovie]);
 
   if (!ad || !visible) return null;
 
