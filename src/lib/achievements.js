@@ -345,6 +345,11 @@ export const ACHIEVEMENTS = [
   { id: 'network_premiere', name: 'Network Premiere', desc: 'View 5 different movies from the network premiere rotation', icon: '🏆', category: 'community' },
   { id: 'original_broadcast', name: 'Original Broadcast', desc: 'View 5 different world premiere TV movies', icon: '📡', category: 'community' },
 
+  // ── ARCADE & VIDEOGAMES ──
+  { id: 'arcade_enthusiast', name: 'Arcade Enthusiast', desc: 'View 5 arcade/videogame popups', icon: '🕹️', category: 'community' },
+  { id: 'high_score_hunter', name: 'High Score Hunter', desc: 'View 15 arcade/videogame popups', icon: '📊', category: 'community' },
+  { id: 'arcade_master', name: 'Arcade Master', desc: 'View all 25 arcade/videogame popups', icon: '👾', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
   { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },
