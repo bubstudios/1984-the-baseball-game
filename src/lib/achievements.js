@@ -325,6 +325,9 @@ export const ACHIEVEMENTS = [
   { id: 'tech_enthusiast', name: 'Tech Enthusiast', desc: 'View your first electronics ad', icon: '💻', category: 'community' },
   { id: 'gadget_guru', name: 'Gadget Guru', desc: 'View 10 electronics ads', icon: '📟', category: 'community' },
   { id: 'computer_kid', name: 'Computer Kid', desc: 'View all 25 electronics ads', icon: '🖥️', category: 'community' },
+
+  // ── HIDDEN / EASTER EGGS ──
+  { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
 ];
 
 // ── Stats storage ──
@@ -1053,6 +1056,9 @@ export function checkGameAchievements(gameState, userTeam) {
   // Fenway Faithful: crowd sing-along
   if ((logText.includes('Sweet Caroline') || logText.includes('crowd belts') || logText.includes('sing-along')) &&
       (stadium === 'Fenway Park' || gameState.homeTeam === 'redsox')) u('easter_fenway_faithful');
+  // Reds Streaker Easter Egg
+  if (logText.includes('sombrero') && logText.includes('Spock') && (teamKey === 'reds' || gameState.homeTeam === 'reds' || gameState.awayTeam === 'reds')) u('reds_streaker');
+
   // Birdland Bonus: multiple foul balls in Baltimore
   if ((logText.match(/foul ball/gi) || []).length >= 3 && (teamKey === 'orioles' || gameState.homeTeam === 'orioles')) u('easter_birdland');
   // Motor City Classic: vintage Tigers reference

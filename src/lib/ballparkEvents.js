@@ -117,6 +117,46 @@ export const BALLPARK_EVENTS = [
   { id: "ball_in_jersey", category: "legendary", text: "The ball got stuck inside a player's jersey! The umpire is trying to fish it out while everyone laughs.", delay: 30, rarity: "legendary", requiresContact: true },
   { id: "two_balls_field", category: "legendary", text: "There are two baseballs on the field at the same time! Someone threw one in from the bullpen by accident.", delay: 15, rarity: "legendary" },
   { id: "anthem_return", category: "legendary", text: "The national anthem singer from earlier has returned to the field — apparently there was a mix-up about the recognition ceremony.", delay: 60, rarity: "legendary" },
+
+  // ── MORE FANS & CROWD ──
+  { id: "giveaway_night", category: "fans", text: "It's giveaway night — fans are holding up replica jerseys and the crowd looks like a sea of team colors.", delay: 0, rarity: "common" },
+  { id: "coast_guard_flyover", category: "fans", text: "A Coast Guard helicopter just did a low flyover — the crowd erupted with cheers!", delay: 0, rarity: "rare" },
+  { id: "banner_plane", category: "fans", text: "A small plane is circling the stadium dragging a banner — 'HAPPY BIRTHDAY MOM' — the crowd waves at the sky.", delay: 0, rarity: "uncommon" },
+  { id: "rubber_chicken", category: "fans", text: "Someone in the bleachers is waving a rubber chicken on a fishing pole — this has been going on for three innings.", delay: 0, rarity: "uncommon" },
+  { id: "wave_starts", category: "fans", text: "The wave has broken out in the upper deck — it's making its third lap around the stadium.", delay: 0, rarity: "common" },
+  { id: "costume_contest", category: "fans", text: "A group of fans dressed as superheroes just ran onto the concourse — apparently a costume contest broke out.", delay: 0, rarity: "uncommon" },
+  { id: "twins", category: "fans", text: "The camera just found identical twins sitting side-by-side wearing matching jerseys — they're waving in perfect sync.", delay: 0, rarity: "common" },
+
+  // ── MORE STADIUM ──
+  { id: "tarp_slip", category: "stadium", text: "The grounds crew is practicing the tarp pull — they've almost got it nailed down but someone slipped on a corner.", delay: 30, rarity: "uncommon" },
+  { id: "vendors_fight", category: "stadium", text: "Two hot dog vendors are arguing over territory near the third base line — the crowd is picking sides.", delay: 15, rarity: "uncommon" },
+  { id: "net_catch", category: "stadium", text: "A foul ball has tangled itself in the backstop netting — the umpire is poking at it with a bat.", delay: 25, rarity: "uncommon" },
+  { id: "water_main", category: "stadium", text: "A water main has burst near the concessions! Stadium employees are frantically redirecting foot traffic.", delay: 45, rarity: "rare" },
+  { id: "pigeon_problem", category: "stadium", text: "Pigeons have taken over section 412 — stadium staff is attempting to relocate them with limited success.", delay: 0, rarity: "uncommon" },
+  { id: "garbage_can", category: "stadium", text: "A garbage can lid has blown onto the warning track — a ball boy is sprinting out to grab it before a ball finds it.", delay: 10, rarity: "uncommon" },
+
+  // ── MORE PLAYER ODDITIES ──
+  { id: "interference_discussion", category: "player", text: "Players from both teams are having an impromptu conference near second base — appears to be about a pickoff move.", delay: 20, rarity: "uncommon" },
+  { id: "batboy_error", category: "player", text: "The batboy just brought out the wrong bat — the batter is sending him back with very specific instructions.", delay: 15, rarity: "common" },
+  { id: "pine_tar_check", category: "player", text: "The umpire is inspecting the pitcher's glove — the opposing manager is pointing at something near the wrist.", delay: 30, rarity: "rare" },
+  { id: "runner_missed_bag", category: "player", text: "The first base coach is insisting the runner missed the bag — there's a lengthy discussion with the umpire.", delay: 20, rarity: "uncommon" },
+
+  // ── MORE RETRO 1984 ──
+  { id: "transistor_radio", category: "retro", text: "The camera just found a fan holding a transistor radio to his ear — listening to the game while watching it live, 1984 style.", delay: 0, rarity: "common" },
+  { id: "polaroid_fan", category: "retro", text: "A fan near the dugout is taking photos with a Polaroid camera — the flash keeps going off between pitches.", delay: 0, rarity: "uncommon" },
+  { id: "boombox", category: "retro", text: "Someone has brought a boombox into the bleachers — the usher is politely asking them to turn it off.", delay: 0, rarity: "uncommon" },
+  { id: "rotary_phone", category: "retro", text: "The press box phone is a rotary — a reporter just got tangled in the cord trying to file his story.", delay: 0, rarity: "rare" },
+
+  // ── TEAM-SPECIFIC ──
+  // Reds-only Easter egg: Riverfront Streaker
+  {
+    id: "reds_streaker",
+    category: "legendary",
+    text: "A streaker has vaulted the fence at Riverfront! A gentleman wearing nothing but a large sombrero and carrying a pillow and a Spock bust is sprinting across the outfield. Security is baffled. The crowd loves it.",
+    delay: 60,
+    rarity: "rare",
+    team: "reds",
+  },
 ];
 
 // ── Roll for events ──
@@ -155,6 +195,17 @@ export function rollBallparkEvent(gameState) {
   if (!hadContact) {
     pool = pool.filter(e => !e.requiresContact);
   }
+
+  // Filter team-specific events — only include when the right team is playing
+  const homeTeam = gameState.homeTeam;
+  const awayTeam = gameState.awayTeam;
+  const poolBeforeTeam = [...pool];
+  pool = pool.filter(e => {
+    if (!e.team) return true; // not team-specific — always include
+    return e.team === homeTeam || e.team === awayTeam;
+  });
+  // If the team filter eliminated everything, fall back to the original pool without team filtering
+  if (pool.length === 0) pool = poolBeforeTeam.filter(e => !e.team);
 
   if (pool.length === 0) pool = BALLPARK_EVENTS.filter(e => hadContact || !e.requiresContact);
   if (pool.length === 0) return null;
