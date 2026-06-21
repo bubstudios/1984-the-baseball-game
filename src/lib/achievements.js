@@ -385,6 +385,11 @@ export const ACHIEVEMENTS = [
   { id: 'news_junkie', name: 'News Junkie', desc: 'View 15 newspaper & classified exhibits', icon: '🗞️', category: 'community' },
   { id: 'print_historian', name: 'Print Historian', desc: 'View all 25 newspaper & classified exhibits', icon: '📜', category: 'community' },
 
+  // ── LONG-DISTANCE PHONE WARS ──
+  { id: 'phone_wars_fan', name: 'Phone Wars Fan', desc: 'View 5 long-distance phone war exhibits', icon: '📞', category: 'community' },
+  { id: 'phone_wars_enthusiast', name: 'Phone Wars Enthusiast', desc: 'View 15 long-distance phone war exhibits', icon: '☎️', category: 'community' },
+  { id: 'phone_wars_historian', name: 'Phone Wars Historian', desc: 'View all 25 long-distance phone war exhibits', icon: '🌍', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
   { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },
