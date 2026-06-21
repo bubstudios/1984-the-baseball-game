@@ -11,11 +11,13 @@ import ObscureTvPopup from './ObscureTvPopup';
 import MoreObscureTvPopup from './MoreObscureTvPopup';
 import TvMoviePopup from './TvMoviePopup';
 import ArcadePopup from './ArcadePopup';
+import WrestlingPopup from './WrestlingPopup';
 import { findGeneralProductsEntry, trackGeneralProductsView } from '@/lib/generalProductsPopups';
 import { findObscureTvEntry, trackObscureTvView } from '@/lib/obscureTvPopups';
 import { findMoreObscureTvEntry, trackMoreObscureTvView } from '@/lib/moreObscureTvPopups';
 import { findTvMovieEntry } from '@/lib/tvMoviePopups';
 import { findArcadeEntry } from '@/lib/arcadePopups';
+import { findWrestlingEntry } from '@/lib/wrestlingPopups';
 
 // Map ad text to banner index — find the matching TV synopsis data
 function findBannerIndex(adText) {
@@ -52,6 +54,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [tvMovieEntry, setTvMovieEntry] = useState(null);
   const [isArcade, setIsArcade] = useState(false);
   const [arcadeEntry, setArcadeEntry] = useState(null);
+  const [isWrestling, setIsWrestling] = useState(false);
+  const [wrestlingEntry, setWrestlingEntry] = useState(null);
 
   // On mount, find the matching TV synopsis, movie, or electronics entry
   useEffect(() => {
@@ -76,7 +80,12 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
             setIsArcade(true);
             setArcadeEntry(arcade);
           } else {
-            const tvIdx = findBannerIndex(ad.text);
+            const wrestling = findWrestlingEntry(ad.text);
+            if (wrestling) {
+              setIsWrestling(true);
+              setWrestlingEntry(wrestling);
+            } else {
+              const tvIdx = findBannerIndex(ad.text);
         if (tvIdx) {
           const data = pickSynopsis(tvIdx);
           setSynopsisData(data);
@@ -92,6 +101,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
               if (gp) {
                 setIsGeneralProducts(true);
                 setGpEntry(gp);
+                  }
                 }
               }
             }
@@ -152,6 +162,10 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
+    if (isWrestling && wrestlingEntry) {
+      setExpanded(true);
+      return;
+    }
     if (!synopsisData) {
       onDismiss();
       return;
@@ -194,6 +208,17 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     return (
       <ArcadePopup
         entry={arcadeEntry}
+        onDismiss={() => { setExpanded(false); onDismiss(); }}
+        onAchievement={onAchievement}
+      />
+    );
+  }
+
+  // ── Wrestling Popup (expanded) ──
+  if (expanded && isWrestling && wrestlingEntry) {
+    return (
+      <WrestlingPopup
+        entry={wrestlingEntry}
         onDismiss={() => { setExpanded(false); onDismiss(); }}
         onAchievement={onAchievement}
       />
@@ -343,13 +368,13 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   // ── Compact Banner (pre-tap) ──
   return (
     <div
-      onClick={(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade) ? handleTap : onDismiss}
-      className={`animate-in slide-in-from-bottom-4 fade-in duration-300 rounded-xl px-4 py-3 text-center ${isElectronics ? 'bg-emerald-500/10 border border-emerald-500/20' : isGeneralProducts ? 'bg-sky-500/10 border border-sky-500/20' : isObscureTv ? 'bg-indigo-500/10 border border-indigo-500/20' : isMoreObscureTv ? 'bg-purple-500/10 border border-purple-500/20' : isArcade ? 'bg-yellow-500/10 border border-yellow-500/20' : isTvMovie ? 'bg-rose-500/10 border border-rose-500/20' : 'bg-amber-500/10 border border-amber-500/20'} ${(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade) ? 'cursor-pointer hover:bg-amber-500/15 transition-colors' : 'cursor-pointer'}`}
+      onClick={(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade || isWrestling) ? handleTap : onDismiss}
+      className={`animate-in slide-in-from-bottom-4 fade-in duration-300 rounded-xl px-4 py-3 text-center ${isElectronics ? 'bg-emerald-500/10 border border-emerald-500/20' : isGeneralProducts ? 'bg-sky-500/10 border border-sky-500/20' : isObscureTv ? 'bg-indigo-500/10 border border-indigo-500/20' : isMoreObscureTv ? 'bg-purple-500/10 border border-purple-500/20' : isArcade ? 'bg-yellow-500/10 border border-yellow-500/20' : isWrestling ? 'bg-red-500/10 border border-red-500/20' : isTvMovie ? 'bg-rose-500/10 border border-rose-500/20' : 'bg-amber-500/10 border border-amber-500/20'} ${(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade || isWrestling) ? 'cursor-pointer hover:bg-amber-500/15 transition-colors' : 'cursor-pointer'}`}
     >
       <div className="flex items-center justify-center gap-1.5 mb-1.5">
         <Tv className="w-3 h-3 text-amber-400" />
         <span className="text-[9px] font-heading uppercase tracking-[0.2em] text-amber-400">
-          {synopsisData ? 'TONIGHT ON TV' : isElectronics ? 'ELECTRONICS & COMPUTERS' : isGeneralProducts ? 'COMMERCIAL BREAK' : isObscureTv ? 'OBSCURE TV' : isMoreObscureTv ? 'MORE OBSCURE TV' : isArcade ? 'ARCADE & VIDEOGAMES' : isTvMovie ? 'TV MOVIE' : 'SPONSOR MESSAGE'}
+          {synopsisData ? 'TONIGHT ON TV' : isElectronics ? 'ELECTRONICS & COMPUTERS' : isGeneralProducts ? 'COMMERCIAL BREAK' : isObscureTv ? 'OBSCURE TV' : isMoreObscureTv ? 'MORE OBSCURE TV' : isArcade ? 'ARCADE & VIDEOGAMES' : isWrestling ? 'PROFESSIONAL WRESTLING' : isTvMovie ? 'TV MOVIE' : 'SPONSOR MESSAGE'}
         </span>
       </div>
 
@@ -360,6 +385,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
         {isObscureTv && obscureTvEntry && <span className="text-base">{obscureTvEntry.icon}</span>}
         {isMoreObscureTv && moreObscureTvEntry && <span className="text-base">{moreObscureTvEntry.icon}</span>}
         {isArcade && arcadeEntry && <span className="text-base">{arcadeEntry.icon}</span>}
+        {isWrestling && wrestlingEntry && <span className="text-base">{wrestlingEntry.icon}</span>}
         {isTvMovie && tvMovieEntry && <span className="text-base">{tvMovieEntry.icon}</span>}
         <p className="text-sm font-heading text-foreground/85 leading-relaxed italic">
           "{ad.text}"
@@ -367,7 +393,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       </div>
 
       <p className="text-[9px] text-muted-foreground/40 mt-2 font-heading">
-        {synopsisData ? 'tap for TV Guide synopsis' : isElectronics ? 'tap for product details' : isGeneralProducts ? 'tap for commercial' : isObscureTv ? 'tap for show info' : isMoreObscureTv ? 'tap for show info' : isArcade ? 'tap for game info' : isTvMovie ? 'tap for movie info' : 'tap to continue'}
+        {synopsisData ? 'tap for TV Guide synopsis' : isElectronics ? 'tap for product details' : isGeneralProducts ? 'tap for commercial' : isObscureTv ? 'tap for show info' : isMoreObscureTv ? 'tap for show info' : isArcade ? 'tap for game info' : isWrestling ? 'tap for wrestling info' : isTvMovie ? 'tap for movie info' : 'tap to continue'}
       </p>
     </div>
   );
