@@ -349,3 +349,23 @@ export const EASTER_EGGS = {
   "Clark & Behb": { achievement: "clark_behb_client", label: "Clark & Behb Detective Agency" },
   "Carmage": { achievement: "carmage_unleashed", label: "Carmage" },
 };
+
+// Track synopsis views and achievements
+const VIEWED_SYNOPSES = new Set();
+
+export function trackSynopsisView(show, bannerIndex, easterEgg) {
+  const synKey = `${show}-${bannerIndex}`;
+  VIEWED_SYNOPSES.add(synKey);
+  const unlocked = [];
+  
+  // Check easter egg achievement
+  if (easterEgg && EASTER_EGGS[easterEgg]) {
+    const achievementId = EASTER_EGGS[easterEgg].achievement;
+    if (!localStorage.getItem(`ach_${achievementId}`)) {
+      localStorage.setItem(`ach_${achievementId}`, Date.now());
+      unlocked.push(achievementId);
+    }
+  }
+  
+  return unlocked;
+}
