@@ -331,9 +331,15 @@ export const ACHIEVEMENTS = [
   { id: 'channel_surfer', name: 'Channel Surfer', desc: 'View 10 general products commercials', icon: '📡', category: 'community' },
   { id: 'prime_time', name: 'Prime Time Viewer', desc: 'View all 25 general products commercials', icon: '🎬', category: 'community' },
 
+  // ── OBSCURE / FAILED TV SHOWS ──
+  { id: 'one_season_wonder', name: 'One Season Wonder', desc: 'View 5 obscure TV show ads', icon: '📺', category: 'community' },
+  { id: 'tv_guide_subscriber', name: 'TV Guide Subscriber', desc: 'Read every obscure TV popup', icon: '📖', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
   { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },
+  { id: 'cult_classic', name: 'Cult Classic', desc: 'Read the Riptide advertisement 5 times', icon: '🚁', category: 'hidden' },
+  { id: 'future_star_spotter', name: 'Future Star Spotter', desc: 'Discover George Clooney in E/R', icon: '⭐', category: 'hidden' },
 ];
 
 // ── Stats storage ──
