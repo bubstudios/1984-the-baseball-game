@@ -370,6 +370,11 @@ export const ACHIEVEMENTS = [
   { id: 'olympic_enthusiast', name: 'Olympic Enthusiast', desc: 'View 15 Olympic exhibits', icon: '🏆', category: 'community' },
   { id: 'olympic_devotee', name: 'Olympic Devotee', desc: 'View all 25 Olympic exhibits', icon: '🥇', category: 'community' },
 
+  // ── 1984 OLYMPIC ATHLETES ──
+  { id: 'athlete_watcher', name: 'Athlete Watcher', desc: 'View 5 Olympic athlete profiles', icon: '👀', category: 'community' },
+  { id: 'olympic_historian', name: 'Olympic Historian', desc: 'View 15 Olympic athlete profiles', icon: '📖', category: 'community' },
+  { id: '1984_legend', name: '1984 Legend', desc: 'View all 25 Olympic athlete profiles', icon: '⭐', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
   { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },
