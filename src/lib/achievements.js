@@ -395,6 +395,11 @@ export const ACHIEVEMENTS = [
   { id: 'camera_aficionado', name: 'Camera Aficionado', desc: 'View 15 film & camera exhibits', icon: '📷', category: 'community' },
   { id: 'film_historian', name: 'Film Historian', desc: 'View all 25 film & camera exhibits', icon: '🎬', category: 'community' },
 
+  // ── THINGS THAT SCREAM 1984 ──
+  { id: 'scream_1984_fan', name: '1984 Fan', desc: 'View 5 Things That Scream 1984 exhibits', icon: '✨', category: 'community' },
+  { id: 'scream_1984_enthusiast', name: '1984 Enthusiast', desc: 'View 15 Things That Scream 1984 exhibits', icon: '📼', category: 'community' },
+  { id: 'scream_1984_historian', name: '1984 Historian', desc: 'View all 25 Things That Scream 1984 exhibits', icon: '🕰️', category: 'community' },
+
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
   { id: 'broadcast_interruption', name: 'Broadcast Interruption', desc: 'Encounter technical difficulties during a broadcast', icon: '📡', category: 'hidden' },

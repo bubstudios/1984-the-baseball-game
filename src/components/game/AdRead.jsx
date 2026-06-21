@@ -20,6 +20,7 @@ import NasaSpacePopup from './NasaSpacePopup';
 import NewspapersClassifiedsPopup from './NewspapersClassifiedsPopup';
 import LongDistancePhoneWarsPopup from './LongDistancePhoneWarsPopup';
 import FilmDevelopmentCamerasPopup from './FilmDevelopmentCamerasPopup';
+import ThingsThatScream1984Popup from './ThingsThatScream1984Popup';
 import { findGeneralProductsEntry, trackGeneralProductsView } from '@/lib/generalProductsPopups';
 import { findObscureTvEntry, trackObscureTvView } from '@/lib/obscureTvPopups';
 import { findMoreObscureTvEntry, trackMoreObscureTvView } from '@/lib/moreObscureTvPopups';
@@ -34,6 +35,7 @@ import { findNasaSpaceEntry } from '@/lib/nasaSpacePopups';
 import { findNewspapersClassifiedsEntry } from '@/lib/newspapersClassifiedsPopups';
 import { findLongDistancePhoneWarsEntry } from '@/lib/longDistancePhoneWarsPopups';
 import { findFilmDevelopmentCamerasEntry } from '@/lib/filmDevelopmentCamerasPopups';
+import { findThingsThatScream1984Entry } from '@/lib/thingsThatScream1984Popups';
 
 // Map ad text to banner index — find the matching TV synopsis data
 function findBannerIndex(adText) {
@@ -88,6 +90,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [longDistancePhoneWarsEntry, setLongDistancePhoneWarsEntry] = useState(null);
   const [isFilmDevelopmentCameras, setIsFilmDevelopmentCameras] = useState(false);
   const [filmDevelopmentCamerasEntry, setFilmDevelopmentCamerasEntry] = useState(null);
+  const [isThingsThatScream1984, setIsThingsThatScream1984] = useState(false);
+  const [thingsThatScream1984Entry, setThingsThatScream1984Entry] = useState(null);
 
   // On mount, find the matching TV synopsis, movie, or electronics entry
   useEffect(() => {
@@ -157,22 +161,28 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
                               setIsFilmDevelopmentCameras(true);
                               setFilmDevelopmentCamerasEntry(filmCameras);
                             } else {
-                              const tvIdx = findBannerIndex(ad.text);
-                              if (tvIdx) {
-                                const data = pickSynopsis(tvIdx);
-                                setSynopsisData(data);
-                              } else if (findMovieIndex(ad.text) !== null) {
-                                setIsMovie(true);
+                              const scream1984 = findThingsThatScream1984Entry(ad.text);
+                              if (scream1984) {
+                                setIsThingsThatScream1984(true);
+                                setThingsThatScream1984Entry(scream1984);
                               } else {
-                                const elec = findElectronicsEntry(ad.text);
-                                if (elec) {
-                                  setIsElectronics(true);
-                                  setElecEntry(elec);
+                                const tvIdx = findBannerIndex(ad.text);
+                                if (tvIdx) {
+                                  const data = pickSynopsis(tvIdx);
+                                  setSynopsisData(data);
+                                } else if (findMovieIndex(ad.text) !== null) {
+                                  setIsMovie(true);
                                 } else {
-                                  const gp = findGeneralProductsEntry(ad.text);
-                                  if (gp) {
-                                    setIsGeneralProducts(true);
-                                    setGpEntry(gp);
+                                  const elec = findElectronicsEntry(ad.text);
+                                  if (elec) {
+                                    setIsElectronics(true);
+                                    setElecEntry(elec);
+                                  } else {
+                                    const gp = findGeneralProductsEntry(ad.text);
+                                    if (gp) {
+                                      setIsGeneralProducts(true);
+                                      setGpEntry(gp);
+                                    }
                                   }
                                 }
                               }
@@ -275,6 +285,10 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       return;
     }
     if (isFilmDevelopmentCameras && filmDevelopmentCamerasEntry) {
+      setExpanded(true);
+      return;
+    }
+    if (isThingsThatScream1984 && thingsThatScream1984Entry) {
       setExpanded(true);
       return;
     }
@@ -425,6 +439,17 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     );
   }
 
+  // ── Things That Scream 1984 Popup (expanded) ──
+  if (expanded && isThingsThatScream1984 && thingsThatScream1984Entry) {
+    return (
+      <ThingsThatScream1984Popup
+        entry={thingsThatScream1984Entry}
+        onDismiss={() => { setExpanded(false); onDismiss(); }}
+        onAchievement={onAchievement}
+      />
+    );
+  }
+
   // ── TV Movie Popup (expanded) ──
   if (expanded && isTvMovie && tvMovieEntry) {
     return (
@@ -568,13 +593,13 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   // ── Compact Banner (pre-tap) ──
   return (
     <div
-      onClick={(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds || isLongDistancePhoneWars || isFilmDevelopmentCameras) ? handleTap : onDismiss}
-      className={`animate-in slide-in-from-bottom-4 fade-in duration-300 rounded-xl px-4 py-3 text-center ${isElectronics ? 'bg-emerald-500/10 border border-emerald-500/20' : isGeneralProducts ? 'bg-sky-500/10 border border-sky-500/20' : isObscureTv ? 'bg-indigo-500/10 border border-indigo-500/20' : isMoreObscureTv ? 'bg-purple-500/10 border border-purple-500/20' : isArcade ? 'bg-yellow-500/10 border border-yellow-500/20' : isWrestling ? 'bg-red-500/10 border border-red-500/20' : isVanishedStores ? 'bg-green-500/10 border border-green-500/20' : isPeak1984 ? 'bg-orange-500/10 border border-orange-500/20' : isOlympics ? 'bg-yellow-500/10 border border-yellow-500/20' : isOlympicsAthletes ? 'bg-cyan-500/10 border border-cyan-500/20' : isNasaSpace ? 'bg-sky-500/10 border border-sky-500/20' : isNewspapersClassifieds ? 'bg-slate-500/10 border border-slate-500/20' : isLongDistancePhoneWars ? 'bg-blue-500/10 border border-blue-500/20' : isFilmDevelopmentCameras ? 'bg-purple-500/10 border border-purple-500/20' : isTvMovie ? 'bg-rose-500/10 border border-rose-500/20' : 'bg-amber-500/10 border border-amber-500/20'} ${(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds || isLongDistancePhoneWars || isFilmDevelopmentCameras) ? 'cursor-pointer hover:bg-amber-500/15 transition-colors' : 'cursor-pointer'}`}
+      onClick={(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds || isLongDistancePhoneWars || isFilmDevelopmentCameras || isThingsThatScream1984) ? handleTap : onDismiss}
+      className={`animate-in slide-in-from-bottom-4 fade-in duration-300 rounded-xl px-4 py-3 text-center ${isElectronics ? 'bg-emerald-500/10 border border-emerald-500/20' : isGeneralProducts ? 'bg-sky-500/10 border border-sky-500/20' : isObscureTv ? 'bg-indigo-500/10 border border-indigo-500/20' : isMoreObscureTv ? 'bg-purple-500/10 border border-purple-500/20' : isArcade ? 'bg-yellow-500/10 border border-yellow-500/20' : isWrestling ? 'bg-red-500/10 border border-red-500/20' : isVanishedStores ? 'bg-green-500/10 border border-green-500/20' : isPeak1984 ? 'bg-orange-500/10 border border-orange-500/20' : isOlympics ? 'bg-yellow-500/10 border border-yellow-500/20' : isOlympicsAthletes ? 'bg-cyan-500/10 border border-cyan-500/20' : isNasaSpace ? 'bg-sky-500/10 border border-sky-500/20' : isNewspapersClassifieds ? 'bg-slate-500/10 border border-slate-500/20' : isLongDistancePhoneWars ? 'bg-blue-500/10 border border-blue-500/20' : isFilmDevelopmentCameras ? 'bg-purple-500/10 border border-purple-500/20' : isThingsThatScream1984 ? 'bg-pink-500/10 border border-pink-500/20' : isTvMovie ? 'bg-rose-500/10 border border-rose-500/20' : 'bg-amber-500/10 border border-amber-500/20'} ${(synopsisData || isElectronics || isGeneralProducts || isObscureTv || isMoreObscureTv || isTvMovie || isArcade || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds || isLongDistancePhoneWars || isFilmDevelopmentCameras || isThingsThatScream1984) ? 'cursor-pointer hover:bg-amber-500/15 transition-colors' : 'cursor-pointer'}`}
     >
       <div className="flex items-center justify-center gap-1.5 mb-1.5">
         <Tv className="w-3 h-3 text-amber-400" />
         <span className="text-[9px] font-heading uppercase tracking-[0.2em] text-amber-400">
-          {synopsisData ? 'TONIGHT ON TV' : isElectronics ? 'ELECTRONICS & COMPUTERS' : isGeneralProducts ? 'COMMERCIAL BREAK' : isObscureTv ? 'OBSCURE TV' : isMoreObscureTv ? 'MORE OBSCURE TV' : isArcade ? 'ARCADE & VIDEOGAMES' : isWrestling ? 'PROFESSIONAL WRESTLING' : isVanishedStores ? 'SHOPPING TIME' : isPeak1984 ? 'MUSEUM EXHIBIT' : isOlympics ? 'OLYMPIC EXHIBIT' : isOlympicsAthletes ? 'OLYMPIC LEGEND' : isNasaSpace ? 'SPACE EXHIBIT' : isNewspapersClassifieds ? 'NEWSPAPER & CLASSIFIEDS' : isLongDistancePhoneWars ? 'PHONE WARS' : isFilmDevelopmentCameras ? 'FILM & CAMERAS' : isTvMovie ? 'TV MOVIE' : 'SPONSOR MESSAGE'}
+          {synopsisData ? 'TONIGHT ON TV' : isElectronics ? 'ELECTRONICS & COMPUTERS' : isGeneralProducts ? 'COMMERCIAL BREAK' : isObscureTv ? 'OBSCURE TV' : isMoreObscureTv ? 'MORE OBSCURE TV' : isArcade ? 'ARCADE & VIDEOGAMES' : isWrestling ? 'PROFESSIONAL WRESTLING' : isVanishedStores ? 'SHOPPING TIME' : isPeak1984 ? 'MUSEUM EXHIBIT' : isOlympics ? 'OLYMPIC EXHIBIT' : isOlympicsAthletes ? 'OLYMPIC LEGEND' : isNasaSpace ? 'SPACE EXHIBIT' : isNewspapersClassifieds ? 'NEWSPAPER & CLASSIFIEDS' : isLongDistancePhoneWars ? 'PHONE WARS' : isFilmDevelopmentCameras ? 'FILM & CAMERAS' : isThingsThatScream1984 ? 'SCREAM 1984' : isTvMovie ? 'TV MOVIE' : 'SPONSOR MESSAGE'}
         </span>
       </div>
 
@@ -594,6 +619,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
         {isNewspapersClassifieds && newspapersClassifiedsEntry && <span className="text-base">{newspapersClassifiedsEntry.icon}</span>}
         {isLongDistancePhoneWars && longDistancePhoneWarsEntry && <span className="text-base">{longDistancePhoneWarsEntry.icon}</span>}
         {isFilmDevelopmentCameras && filmDevelopmentCamerasEntry && <span className="text-base">{filmDevelopmentCamerasEntry.icon}</span>}
+        {isThingsThatScream1984 && thingsThatScream1984Entry && <span className="text-base">{thingsThatScream1984Entry.icon}</span>}
         {isTvMovie && tvMovieEntry && <span className="text-base">{tvMovieEntry.icon}</span>}
         <p className="text-sm font-heading text-foreground/85 leading-relaxed italic">
           "{ad.text}"
@@ -601,7 +627,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       </div>
 
       <p className="text-[9px] text-muted-foreground/40 mt-2 font-heading">
-        {synopsisData ? 'tap for TV Guide synopsis' : isElectronics ? 'tap for product details' : isGeneralProducts ? 'tap for commercial' : isObscureTv ? 'tap for show info' : isMoreObscureTv ? 'tap for show info' : isArcade ? 'tap for game info' : isWrestling ? 'tap for wrestling info' : isVanishedStores ? 'tap for store info' : isPeak1984 ? 'tap for exhibit' : isOlympics ? 'tap for games' : isOlympicsAthletes ? 'tap for athlete' : isNasaSpace ? 'tap for space exhibit' : isNewspapersClassifieds ? 'tap for newspaper exhibit' : isLongDistancePhoneWars ? 'tap for phone war exhibit' : isFilmDevelopmentCameras ? 'tap for film & camera exhibit' : isTvMovie ? 'tap for movie info' : 'tap to continue'}
+        {synopsisData ? 'tap for TV Guide synopsis' : isElectronics ? 'tap for product details' : isGeneralProducts ? 'tap for commercial' : isObscureTv ? 'tap for show info' : isMoreObscureTv ? 'tap for show info' : isArcade ? 'tap for game info' : isWrestling ? 'tap for wrestling info' : isVanishedStores ? 'tap for store info' : isPeak1984 ? 'tap for exhibit' : isOlympics ? 'tap for games' : isOlympicsAthletes ? 'tap for athlete' : isNasaSpace ? 'tap for space exhibit' : isNewspapersClassifieds ? 'tap for newspaper exhibit' : isLongDistancePhoneWars ? 'tap for phone war exhibit' : isFilmDevelopmentCameras ? 'tap for film & camera exhibit' : isThingsThatScream1984 ? 'tap for 1984 exhibit' : isTvMovie ? 'tap for movie info' : 'tap to continue'}
       </p>
     </div>
   );
