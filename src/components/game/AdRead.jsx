@@ -23,6 +23,7 @@ import GeneralProductsPopup from './GeneralProductsPopup';
 import RedSoxBannerPopup from './RedSoxBannerPopup';
 import NationalCharityPopup from './NationalCharityPopup';
 import NationalPromosPopup from './NationalPromosPopup';
+import NationalWrestlingPopup from './NationalWrestlingPopup';
 import AdReadPopupRenderer from './AdReadPopupRenderer';
 import { trackSynopsisView, pickSynopsis, NETWORK_LOGOS, EASTER_EGGS } from '@/lib/tvGuideData';
 import { findMovieIndex } from '@/lib/moviePopups';
@@ -47,6 +48,7 @@ import { findThingsThatScream1984Entry } from '@/lib/thingsThatScream1984Popups'
 import { findMallCultureEntry } from '@/lib/mallCulturePopups';
 import { findRedSoxBannerEntry, trackRedSoxBannerView } from '@/lib/redSoxBannerPopups';
 import { findNationalPromosEntry, trackNationalPromosView } from '@/lib/nationalPromosPopups';
+import { findNationalWrestlingEntry } from '@/lib/nationalWrestlingPopups';
 
 export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchievement }) {
   const [visible, setVisible] = useState(false);
@@ -97,6 +99,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [nationalCharityEntry, setNationalCharityEntry] = useState(null);
   const [isNationalPromos, setIsNationalPromos] = useState(false);
   const [nationalPromosEntry, setNationalPromosEntry] = useState(null);
+  const [isNationalWrestling, setIsNationalWrestling] = useState(false);
+  const [nationalWrestlingEntry, setNationalWrestlingEntry] = useState(null);
 
   // Detect ad type on mount
   useEffect(() => {
@@ -159,6 +163,9 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findNationalPromosEntry(ad.text)) {
       setIsNationalPromos(true);
       setNationalPromosEntry(findNationalPromosEntry(ad.text));
+    } else if (findNationalWrestlingEntry(ad.text)) {
+      setIsNationalWrestling(true);
+      setNationalWrestlingEntry(findNationalWrestlingEntry(ad.text));
     } else if (movie !== null) {
       setIsTvMovie(true);
     } else {
@@ -218,7 +225,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
-    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity];
+    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalWrestling];
     if (specialTypes.some(t => t)) {
       setExpanded(true);
       if (isNationalCharity && nationalCharityEntry) {
@@ -286,6 +293,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       nationalCharityEntry={nationalCharityEntry}
       isNationalPromos={isNationalPromos}
       nationalPromosEntry={nationalPromosEntry}
+      isNationalWrestling={isNationalWrestling}
+      nationalWrestlingEntry={nationalWrestlingEntry}
       isTvMovie={isTvMovie}
       tvMovieEntry={tvMovieEntry}
       isObscureTv={isObscureTv}
