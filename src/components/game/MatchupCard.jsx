@@ -12,8 +12,10 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
   const displayPos = batter.assignedPos || batter.pos;
   const isPitcher = ['SP','CL','RP','SP/RP','P'].includes(batter.pos) || batter.assignedPos === 'SP';
   const isOutOfPosition = !isPitcher && batter.assignedPos && batter.assignedPos !== 'DH' && batter.assignedPos !== batter.pos;
-  const isAdjusted = adjustedBatter && (adjustedBatter.contact !== batter.contact || adjustedBatter.power !== batter.power);
   const isCountAdjusted = adjustedBatter && (adjustedBatter.baseContact !== adjustedBatter.contact || adjustedBatter.basePower !== adjustedBatter.power);
+  // Split advantage: compare base (pre-count) adjusted rating vs raw batter rating
+  const splitContactDiff = adjustedBatter ? (adjustedBatter.baseContact ?? adjustedBatter.contact) - batter.contact : 0;
+  const splitPowerDiff = adjustedBatter ? (adjustedBatter.basePower ?? adjustedBatter.power) - batter.power : 0;
 
   return (
     <div className="flex items-center justify-between gap-3">
@@ -32,19 +34,27 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
             #{batter.order}
             {isOutOfPosition && <AlertTriangle className="w-3 h-3" />}
           </span>
-          <span className={`text-[10px] font-semibold ${isCountAdjusted ? 'text-primary' : 'text-primary'}`}>
+          <span className="text-[10px] font-semibold text-primary">
             CON {displayBatter.contact}
-            {isCountAdjusted && displayBatter.contact !== displayBatter.baseContact && (
+            {isCountAdjusted && displayBatter.contact !== displayBatter.baseContact ? (
               <span className={`text-[9px] ml-0.5 ${displayBatter.contact > displayBatter.baseContact ? 'text-green-400' : 'text-red-400'}`}>
                 {displayBatter.contact > displayBatter.baseContact ? '▲' : '▼'}
               </span>
+            ) : splitContactDiff !== 0 && (
+              <span className={`text-[9px] ml-0.5 ${splitContactDiff > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {splitContactDiff > 0 ? '▲' : '▼'}
+              </span>
             )}
           </span>
-          <span className={`text-[10px] font-semibold ${isCountAdjusted ? 'text-amber-400' : 'text-amber-400'}`}>
+          <span className="text-[10px] font-semibold text-amber-400">
             PWR {displayBatter.power}
-            {isCountAdjusted && displayBatter.power !== displayBatter.basePower && (
+            {isCountAdjusted && displayBatter.power !== displayBatter.basePower ? (
               <span className={`text-[9px] ml-0.5 ${displayBatter.power > displayBatter.basePower ? 'text-green-400' : 'text-red-400'}`}>
                 {displayBatter.power > displayBatter.basePower ? '▲' : '▼'}
+              </span>
+            ) : splitPowerDiff !== 0 && (
+              <span className={`text-[9px] ml-0.5 ${splitPowerDiff > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {splitPowerDiff > 0 ? '▲' : '▼'}
               </span>
             )}
           </span>
