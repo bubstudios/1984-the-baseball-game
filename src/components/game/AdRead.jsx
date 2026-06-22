@@ -183,9 +183,11 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
-    [isObscureTv, isMoreObscureTv, isTvMovie, isArcade, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture].forEach((_, i) => {
-      if (_ && i) setExpanded(true);
-    });
+    const specialTypes = [isObscureTv, isMoreObscureTv, isTvMovie, isArcade, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture];
+    if (specialTypes.some(t => t)) {
+      setExpanded(true);
+      return;
+    }
     if (!synopsisData) {
       onDismiss();
       return;
