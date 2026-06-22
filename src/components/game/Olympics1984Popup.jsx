@@ -15,21 +15,13 @@ export default function Olympics1984Popup({ entry, onDismiss, onAchievement }) {
     return () => clearTimeout(showTimer);
   }, [entry, onAchievement]);
 
-  useEffect(() => {
-    if (!visible || userInteracted) return;
-    autoDismissRef.current = setTimeout(() => {
-      setVisible(false);
-      onDismiss();
-    }, 10000);
-    return () => clearTimeout(autoDismissRef.current);
-  }, [visible, userInteracted, onDismiss]);
+  // No auto-dismiss — only closes when X is tapped
 
   if (!visible || !entry) return null;
 
   const handleInteract = () => {
     if (!userInteracted) {
       setUserInteracted(true);
-      clearTimeout(autoDismissRef.current);
     }
   };
 

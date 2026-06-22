@@ -100,12 +100,12 @@ Your official 1984 Red Sox Team Poster features the full roster in their home wh
 The poster measures 24" x 36" and is suitable for framing. Hang it proudly in your bedroom, dorm room, or office.
 
 Featured players include:
-• Wade Boggs — 3B
-• Jim Rice — LF
-• Dwight Evans — RF
-• Carlton Fisk — C
-• Roger Clemens — RHP
-• And the rest of the 1984 Red Sox!
+          • Wade Boggs — 3B
+          • Jim Rice — LF
+          • Dwight Evans — RF
+          • Carlton Fisk — C
+          • Dennis Boyd — RHP
+          • And the rest of the 1984 Red Sox!
 
 "First 15,000 fans only. Limit one per person. No rain checks."`,
     achievement: 'sox_poster_collector',
