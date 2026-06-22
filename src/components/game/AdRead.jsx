@@ -253,7 +253,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setIsGenericAd(true);
       setGenericAdEntry(findGenericAdEntry(ad.text));
     } else if (movie !== null) {
-      setIsTvMovie(true);
+      setIsMovie(true);
     } else {
       // Try to match synopsis by banner text (TV_SYNOPSES keys 1-25)
       for (let i = 1; i <= 25; i++) {
