@@ -402,10 +402,10 @@ function resolvePitch(state, pitchType) {
     state.balls++;
     return { pitchType: pitchType.name, isStrike: false, location: 'wild pitch', isWildPitch: true };
   }
-  // Contextual HBP — use beanball engine
+  // Contextual HBP — use beanball engine (much less frequent now)
   const hbpReason = shouldThrowAtBatter(state, pitcher, getCurrentBatter(state));
-  const baseHbpChance = Math.max(0.002, (10 - effControl) * 0.0015);
-  const hbpChance = hbpReason ? Math.min(0.35, baseHbpChance + (hbpReason.baseChance || 0.05) * (1 + (state._beanball?.tension || 0) / 100)) : baseHbpChance;
+  const baseHbpChance = Math.max(0.0008, (10 - effControl) * 0.0006);
+  const hbpChance = hbpReason ? Math.min(0.15, baseHbpChance + (hbpReason.baseChance || 0.02) * (1 + (state._beanball?.tension || 0) / 100)) : baseHbpChance;
   if (Math.random() < hbpChance) return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true, hbpReason }; else if (Math.random() < baseHbpChance) return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true };
   let strikeChance = 0.35 + controlFactor * 0.28 + (pitchType.controlBonus || 0) * 0.04;
   if (state.umpire) strikeChance += getUmpireZoneEffect(state.umpire) / 100;
@@ -513,17 +513,17 @@ function resolveSwing(state, swingType, pitch) {
   const hitDirection = getHitDirection(adjBatter.bats);
   const powerRating = adjBatter.power / 10;
   const isPitcherBatting2 = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let hitChance = 0.17 + (contactRating + contactWx / 10) * 0.28;
+  let hitChance = 0.14 + (contactRating + contactWx / 10) * 0.24;
   if (isPitcherBatting2) hitChance *= 0.45; // Pitchers rarely get hits
-  if (isPower) hitChance -= 0.04; if (isContact) hitChance += 0.08;
+  if (isPower) hitChance -= 0.04; if (isContact) hitChance += 0.06;
   const effP3 = getEffectivePitcher(state) || pitcher;
   hitChance -= (effP3.effectiveControl || effP3.control) / 10 * 0.03;
-  if (effP3.fatigueLevel >= 3) hitChance += 0.07; if (effP3.fatigueLevel >= 4) hitChance += 0.04;
-  const gs = effP3.effectivePitchSpeed || effP3.pitchSpeed; if (gs <= 2 && effP3.fatigueLevel >= 3) hitChance += 0.05;
-  hitChance += (adjBatter.power / 10) * 0.05;
+  if (effP3.fatigueLevel >= 3) hitChance += 0.05; if (effP3.fatigueLevel >= 4) hitChance += 0.03;
+  const gs = effP3.effectivePitchSpeed || effP3.pitchSpeed; if (gs <= 2 && effP3.fatigueLevel >= 3) hitChance += 0.04;
+  hitChance += (adjBatter.power / 10) * 0.03;
   const defenders = getDefensivePlayers(state);
-  let rp = 0; Object.values(defenders).forEach(d => { const adj = getAdjustedPlayer(d); if (adj.pos !== (adj.assignedPos || adj.pos)) rp += 0.015; });
-  hitChance += rp; hitChance = Math.max(0.08, Math.min(hitChance, 0.72));
+  let rp = 0; Object.values(defenders).forEach(d => { const adj = getAdjustedPlayer(d); if (adj.pos !== (adj.assignedPos || adj.pos)) rp += 0.010; });
+  hitChance += rp; hitChance = Math.max(0.07, Math.min(hitChance, 0.65));
   if (Math.random() < hitChance) {
     pitcher.gameStats.h++; batter.gameStats.hits++;
     let powerMod = isPower ? 1.50 : (isContact ? 0.5 : 1.0);
@@ -909,7 +909,7 @@ export function processAtBat(state, pitchType, swingType) {
   if (!newState.userPitchTypes) newState.userPitchTypes = [];
   if (!newState.userPitchTypes.includes(pitchType.name)) newState.userPitchTypes = [...newState.userPitchTypes, pitchType.name];
   if (newState.pitchResult.isWildPitch) { if (newState.balls >= 4) { const wb = getCurrentBatter(newState); wb.gameStats.bb++; getCurrentPitcher(newState).gameStats.bb++; newState.log.push({ type: 'walk', text: `${wb.name} walks on a wild pitch!` }); handleWalk(newState, wb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); } return newState; }
-  if (newState.pitchResult.isHBP) { const hb = getCurrentBatter(newState); const hbp = getCurrentPitcher(newState); hb.gameStats.bb++; hbp.gameStats.bb++; const hbpReason = newState.pitchResult.hbpReason || null; const wasWarned = newState._beanball?.warningIssued; registerHBP(newState, hbp, hb, hbpReason); const hbpText = `${hb.name} is hit by the pitch!`; newState.log.push({ type: 'walk', text: hbpText }); newState.lastPlay = { type: 'walk', text: `${hb.name} is hit by the pitch! — takes first`, isHBP: true, hbpReason }; handleWalk(newState, hb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); const warned = checkForWarning(newState); if (warned) newState._beanballWarning = true; if (wasWarned) { const pitchingSide = newState.halfInning === 'top' ? 'home' : 'away'; const ejectKey = pitchingSide === 'home' ? '_homePitcherEjected' : '_awayPitcherEjected'; const mgrEjectKey = pitchingSide === 'home' ? '_homeManagerEjected' : '_awayManagerEjected'; newState[ejectKey] = true; newState[mgrEjectKey] = true; newState._beanball.autoEjectionPitcher = hbp.name; newState._beanball.autoEjectionSide = pitchingSide; newState._forcePitchingChange = true; const tAbbr = TEAMS[newState[pitchingSide === 'home' ? 'homeTeam' : 'awayTeam']]?.abbr || ''; newState.log.push({ type: 'ejection', text: `🟥 ${hbp.name} EJECTED — hit batter after warnings! ${tAbbr} manager also ejected!` }); } if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off HBP! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); } return newState; }
+  if (newState.pitchResult.isHBP) { const hb = getCurrentBatter(newState); const hbp = getCurrentPitcher(newState); hb.gameStats.bb++; hbp.gameStats.bb++; const hbpReason = newState.pitchResult.hbpReason || null; const wasWarned = newState._beanball?.warningIssued; registerHBP(newState, hbp, hb, hbpReason); const hbpText = `${hb.name} is hit by the pitch!`; newState.log.push({ type: 'walk', text: hbpText }); newState.lastPlay = { type: 'walk', text: `${hb.name} is hit by the pitch! — takes first`, isHBP: true, hbpReason }; handleWalk(newState, hb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); const warned = checkForWarning(newState); if (warned) newState._beanballWarning = true; if (wasWarned) { const pitchingSide = newState.halfInning === 'top' ? 'home' : 'away'; const ejectKey = pitchingSide === 'home' ? '_homePitcherEjected' : '_awayPitcherEjected'; const mgrEjectKey = pitchingSide === 'home' ? '_homeManagerEjected' : '_awayManagerEjected'; newState[ejectKey] = true; newState[mgrEjectKey] = true; newState._beanball.autoEjectionPitcher = hbp.name; newState._beanball.autoEjectionSide = pitchingSide; newState._pendingEjectionReplacement = true; const tAbbr = TEAMS[newState[pitchingSide === 'home' ? 'homeTeam' : 'awayTeam']]?.abbr || ''; newState.log.push({ type: 'ejection', text: `🟥 ${hbp.name} EJECTED — hit batter after warnings! ${tAbbr} manager also ejected!` }); } if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off HBP! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); } return newState; }
   const bjb = getCurrentBatter(newState);
   resolveSwing(newState, swingType, newState.pitchResult);
   if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); }
@@ -1009,34 +1009,16 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const newState = JSON.parse(JSON.stringify(state));
   if (newState.gameOver) return newState;
 
-  // ── Auto-ejection: replace pitcher immediately on both sides ──
-  if (newState._forcePitchingChange) {
+  // ── Ejection: mark pitcher/manager as ejected but DO NOT auto-replace ──
+  // User will be prompted to choose a replacement in Home.jsx
+  if (newState._pendingEjectionReplacement) {
     const ejectedSide = newState._beanball?.autoEjectionSide;
-    const ejectedName = newState._beanball?.autoEjectionPitcher;
-    const bpKey = ejectedSide === 'home' ? 'homeBullpen' : 'awayBullpen';
-    const pitcherKey = ejectedSide === 'home' ? 'homePitcher' : 'awayPitcher';
+    const oldP = newState[ejectedSide === 'home' ? 'homePitcher' : 'awayPitcher'];
     const hk = ejectedSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
-    const lineupKey = ejectedSide === 'home' ? 'homeLineup' : 'awayLineup';
-    const oldP = newState[pitcherKey];
-    const bp = newState[bpKey];
-    if (bp && bp.length > 0) {
-      const newReliever = bp[0];
-      const newP = { ...newReliever, pitchCount: 0, pitches: newReliever.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
-      newState[pitcherKey] = newP;
-      const bpi = bp.findIndex(p => p.name === newReliever.name);
-      if (bpi >= 0) bp.splice(bpi, 1);
-      if (!newState[hk].find(p => p.name === oldP.name)) newState[hk].push({ ...oldP, ejected: true });
-      if (!newState.useDH) {
-        let si = newState[lineupKey].findIndex(p => p.name === oldP.name);
-        if (si < 0 && oldP.order) si = newState[lineupKey].findIndex(p => p.order === oldP.order);
-        if (si < 0) si = newState[lineupKey].findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
-        if (si >= 0) {
-          newState[lineupKey][si] = { ...newReliever, order: newState[lineupKey][si].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-        }
-      }
-      newState.log.push({ type: 'info', text: `🔄 ${newReliever.name} takes the mound after ${oldP.name} is ejected` });
+    if (!newState[hk].find(p => p.name === oldP.name)) {
+      newState[hk].push({ ...oldP, ejected: true });
     }
-    delete newState._forcePitchingChange;
+    delete newState._pendingEjectionReplacement;
     delete newState._beanball.autoEjectionPitcher;
     delete newState._beanball.autoEjectionSide;
     return newState;

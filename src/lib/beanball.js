@@ -70,40 +70,40 @@ export function shouldThrowAtBatter(state, pitcher, batter) {
   const reasons = [];
 
   // 1. Revenge: this batter homered off this pitcher earlier
-  if (ctx.lastHRBatter === batter.name && ctx.lastHRPitcher === pitcher.name) {
+  if (ctx.lastHRBatter === batter.name && ctx.lastHRPitcher === pitcher.name && Math.random() < 0.12) {
     reasons.push(HBP_REASONS.revengeHR);
   }
 
   // 2. Teammate homered: previous batter hit a HR, pitcher is fuming
-  if (ctx.lastHRPitcher === pitcher.name && ctx.lastHRBatter && ctx.lastHRBatter !== batter.name) {
+  if (ctx.lastHRPitcher === pitcher.name && ctx.lastHRBatter && ctx.lastHRBatter !== batter.name && Math.random() < 0.08) {
     reasons.push(HBP_REASONS.revengeHRTeammate);
   }
 
-  // 3. Frustration: pitcher just gave up 3+ hits in a row or lost the lead
-  if (isPitcherFrustrated(state, pitcher)) {
+  // 3. Frustration: pitcher just gave up 3+ hits in a row or lost the lead (rare)
+  if (isPitcherFrustrated(state, pitcher) && Math.random() < 0.06) {
     reasons.push(HBP_REASONS.frustration);
   }
 
   // 4. Retaliation: opposing pitcher hit one of ours earlier this game
   const battingSide = state.halfInning === 'top' ? 'away' : 'home';
   const pitchingSide = battingSide === 'top' ? 'home' : 'away';
-  if (ctx.lastHBPTeam && ctx.lastHBPTeam !== pitchingSide && ctx.lastHBPInning < state.inning) {
+  if (ctx.lastHBPTeam && ctx.lastHBPTeam !== pitchingSide && ctx.lastHBPInning < state.inning && Math.random() < 0.10) {
     reasons.push(HBP_REASONS.retaliation);
   }
 
-  // 5. Celebration revenge: batter recently did a bat flip
+  // 5. Celebration revenge: batter recently did a bat flip (very rare)
   const recentFlip = ctx.batFlips.find(f => f.batter === batter.name);
-  if (recentFlip) {
+  if (recentFlip && Math.random() < 0.08) {
     reasons.push(HBP_REASONS.celebration);
   }
 
-  // 6. Random (always possible)
+  // 6. Random (always possible but very low)
   reasons.push(HBP_REASONS.random);
 
   // Roll each reason — first one that hits triggers
   for (const reason of reasons) {
     const adjustedChance = reason.baseChance * warningMult * (1 + ctx.tension / 100);
-    if (Math.random() < Math.min(adjustedChance, 0.35)) {
+    if (Math.random() < Math.min(adjustedChance, 0.18)) {
       return reason;
     }
   }

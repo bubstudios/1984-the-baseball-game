@@ -64,6 +64,7 @@ export default function Home() {
   const [ejectionCount, setEjectionCount] = useState(0);
   const [ballparkEvent, setBallparkEvent] = useState(null);
   const [injuryResult, setInjuryResult] = useState(null);
+  const [ejectionResult, setEjectionResult] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
   const prevLogLength = useRef(0);
@@ -176,6 +177,27 @@ export default function Home() {
       // Clear the flag and show warning
       setBeanballEvent({ type: 'warning', text: getWarningCall(homeTeam), subtext: `Tension at ${gameState._beanball?.tension || 0}% — both dugouts warned` });
       setGameState(prev => prev ? { ...prev, _beanballWarning: false } : prev);
+    }
+
+    // Check for pitcher ejections — prompt user for replacement
+    if (gameState._pendingEjectionReplacement && !ejectionResult) {
+      const ejectedSide = gameState._beanball?.autoEjectionSide;
+      const isUserTeam = ejectedSide === 'home' && userTeam === gameState.homeTeam || ejectedSide === 'away' && userTeam === gameState.awayTeam;
+      if (isUserTeam) {
+        // User must pick a replacement pitcher
+        const bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
+        setEjectionResult({ ejectedSide, bullpen });
+      } else {
+        // CPU team ejection — auto-select best reliever
+        const bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
+        if (bullpen && bullpen.length > 0) {
+          const sorted = [...bullpen].sort((a, b) => b.control - a.control);
+          const newReliever = sorted[0];
+          const newState = changePitcher(gameState, newReliever, ejectedSide);
+          setGameState(prev => newState);
+        }
+      }
+      return;
     }
 
     // Check for injuries — only show once per injury
@@ -556,6 +578,13 @@ export default function Home() {
     setInjuryResult(null);
   };
 
+  const handleEjectionReplacement = (chosenPitcher) => {
+    if (!gameState || !ejectionResult) return;
+    const newState = changePitcher(gameState, chosenPitcher, ejectionResult.ejectedSide);
+    setGameState(newState);
+    setEjectionResult(null);
+  };
+
   const handleNewGame = () => {
     setGameState(null);
     setBallparkPhase(null);
@@ -579,6 +608,7 @@ export default function Home() {
     setShowAd(null);
     setShowStretch(null);
     setBeanballEvent(null);
+    setEjectionResult(null);
   };
 
   if (ballparkPhase) {
@@ -960,6 +990,32 @@ export default function Home() {
           pendingInjury={injuryResult}
           onSelect={handleInjuryReplacement}
         />
+      )}
+
+      {/* Ejection Replacement Modal — user picks replacement pitcher */}
+      {ejectionResult && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-card border border-destructive/50 rounded-xl p-6 max-w-md w-full">
+            <h2 className="font-heading text-lg font-bold text-destructive mb-3">🟥 Pitcher Ejected</h2>
+            <p className="text-sm text-foreground/80 mb-4">Choose a replacement pitcher from your bullpen:</p>
+            <div className="space-y-2 max-h-64 overflow-y-auto mb-4">
+              {ejectionResult.bullpen && ejectionResult.bullpen.length > 0 ? (
+                ejectionResult.bullpen.map((p) => (
+                  <button
+                    key={p.name}
+                    onClick={() => handleEjectionReplacement(p)}
+                    className="w-full text-left bg-muted hover:bg-muted/80 rounded-lg p-3 transition-colors"
+                  >
+                    <div className="font-heading text-sm font-bold">{p.name}</div>
+                    <div className="text-xs text-muted-foreground">Control: {p.control} | Stamina: {p.stamina}</div>
+                  </button>
+                ))
+              ) : (
+                <p className="text-xs text-muted-foreground">No relievers available in bullpen</p>
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Substitutions Panel */}
