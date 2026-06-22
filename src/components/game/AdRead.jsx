@@ -5,6 +5,7 @@ import ElectronicsPopup from './ElectronicsPopup';
 import MoreObscureTvPopup from './MoreObscureTvPopup';
 import MoreObscureTvPopup3 from './MoreObscureTvPopup3';
 import ArcadePopup from './ArcadePopup';
+import ArcadeVidGamePopup from './ArcadeVidGamePopup';
 import WrestlingPopup from './WrestlingPopup';
 import VanishedStoresPopup from './VanishedStoresPopup';
 import Peak1984Popup from './Peak1984Popup';
@@ -32,6 +33,7 @@ import { findMoreObscureTvEntry } from '@/lib/moreObscureTvPopups';
 import { findMoreObscureTvEntry3 } from '@/lib/moreObscureTvPopups3';
 import { findNationalCharityEntry, trackNationalCharityView } from '@/lib/nationalCharityPopups';
 import { findArcadeEntry } from '@/lib/arcadePopups';
+import { findArcadeVidGameEntry } from '@/lib/arcadeVidGamePopups';
 import { findWrestlingEntry } from '@/lib/wrestlingPopups';
 import { findVanishedStoresEntry } from '@/lib/vanishedStoresPopups';
 import { findPeak1984Entry } from '@/lib/peak1984Popups';
@@ -65,6 +67,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [tvMovieEntry, setTvMovieEntry] = useState(null);
   const [isArcade, setIsArcade] = useState(false);
   const [arcadeEntry, setArcadeEntry] = useState(null);
+  const [isArcadeVidGame, setIsArcadeVidGame] = useState(false);
+  const [arcadeVidGameEntry, setArcadeVidGameEntry] = useState(null);
   const [isWrestling, setIsWrestling] = useState(false);
   const [wrestlingEntry, setWrestlingEntry] = useState(null);
   const [isVanishedStores, setIsVanishedStores] = useState(false);
@@ -110,6 +114,9 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findArcadeEntry(ad.text)) {
       setIsArcade(true);
       setArcadeEntry(findArcadeEntry(ad.text));
+    } else if (findArcadeVidGameEntry(ad.text)) {
+      setIsArcadeVidGame(true);
+      setArcadeVidGameEntry(findArcadeVidGameEntry(ad.text));
     } else if (findWrestlingEntry(ad.text)) {
       setIsWrestling(true);
       setWrestlingEntry(findWrestlingEntry(ad.text));
@@ -211,7 +218,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
-    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity];
+    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity];
     if (specialTypes.some(t => t)) {
       setExpanded(true);
       if (isNationalCharity && nationalCharityEntry) {
@@ -249,6 +256,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       moreObscureTvEntry3={moreObscureTvEntry3}
       isArcade={isArcade}
       arcadeEntry={arcadeEntry}
+      isArcadeVidGame={isArcadeVidGame}
+      arcadeVidGameEntry={arcadeVidGameEntry}
       isWrestling={isWrestling}
       wrestlingEntry={wrestlingEntry}
       isVanishedStores={isVanishedStores}

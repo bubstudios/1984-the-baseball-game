@@ -4,6 +4,7 @@ import ElectronicsPopup from './ElectronicsPopup';
 import MoreObscureTvPopup from './MoreObscureTvPopup';
 import MoreObscureTvPopup3 from './MoreObscureTvPopup3';
 import ArcadePopup from './ArcadePopup';
+import ArcadeVidGamePopup from './ArcadeVidGamePopup';
 import WrestlingPopup from './WrestlingPopup';
 import VanishedStoresPopup from './VanishedStoresPopup';
 import Peak1984Popup from './Peak1984Popup';
@@ -28,6 +29,7 @@ export default function AdReadPopupRenderer({
   isMoreObscureTv, moreObscureTvEntry,
   isMoreObscureTv3, moreObscureTvEntry3,
   isArcade, arcadeEntry,
+  isArcadeVidGame, arcadeVidGameEntry,
   isWrestling, wrestlingEntry,
   isVanishedStores, vanishedStoresEntry,
   isPeak1984, peak1984Entry,
@@ -60,6 +62,9 @@ export default function AdReadPopupRenderer({
   }
   if (expanded && isArcade && arcadeEntry) {
     return <ArcadePopup entry={arcadeEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
+  }
+  if (expanded && isArcadeVidGame && arcadeVidGameEntry) {
+    return <ArcadeVidGamePopup entry={arcadeVidGameEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
   }
   if (expanded && isWrestling && wrestlingEntry) {
     return <WrestlingPopup entry={wrestlingEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
