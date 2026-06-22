@@ -1335,9 +1335,118 @@ This is how Philadelphia works.`,
 
 GENERIC_AD_ENTRIES.push(...MISSING_BANNER_ENTRIES);
 
-// Build lookup map for fast matching
-const GENERIC_AD_MAP = new Map(GENERIC_AD_ENTRIES.map(e => [e.matchText, e]));
+// ── ADDITIONAL MISSING BANNERS ──
+const ADDITIONAL_MISSING = [
+  // Phillies team promos
+  {
+    matchText: "Stop by the Phillies team store for official 1984 merchandise.",
+    title: "🔴 Phillies Team Store — Veterans Stadium",
+    icon: "🔴",
+    color: "#c0392b",
+    body: `PHILLIES TEAM STORE — VETERANS STADIUM 1984\n\nOfficial licensed merchandise from the Philadelphia Phillies.\n\nTHE MERCHANDISE\nPhillies caps in home red and road gray. T-shirts with the classic script "Phillies" across the chest — the same lettering that's been on this uniform since 1971. Pennants. Bumper stickers. Programs.\n\nTHE YEARBOOK\nThe 1984 Phillies Official Yearbook. $3.00. Contains player profiles, season preview, historical notes, and photographs taken during spring training in Clearwater. Mike Schmidt's profile alone is worth the price of admission.\n\nTHE BOBBLEHEADS\nCollectible player bobbleheads are available while supplies last. Each game has a different giveaway.\n\nTHE AUTOGRAPH CARDS\nSmall player cards are available at the team store for 50 cents each. Not authenticated. Not valuable in any monetary sense. Valuable in every other sense.\n\nWHERE TO FIND IT\nMain level, behind Section 108. Open two hours before first pitch and through the seventh inning.\n\nCARRY THE PHILLIES HOME WITH YOU TONIGHT.\nYou're at the right game. You're at the right store.`,
+  },
+  {
+    matchText: "Juan Samuel and Glenn Wilson will meet fans at a youth baseball clinic Saturday morning.",
+    title: "⚾ Juan Samuel & Glenn Wilson — Fan Meet",
+    icon: "⚾",
+    color: "#c0392b",
+    body: `JUAN SAMUEL AND GLENN WILSON\nYouth Baseball Clinic & Fan Meet — This Saturday Morning\n\nJUAN SAMUEL\nThe electric 23-year-old second baseman. 33 stolen bases in his rookie year. A bat speed that opposing pitchers discuss with something approaching concern. He arrived from San Pedro de Macoris, Dominican Republic — the same town that has produced more major league shortstops per capita than anywhere on Earth.\n\nThis Saturday, Juan Samuel will be on a baseball diamond with your kid. Showing them how to read a pitcher's move. How to get a jump. How to hit the bag and keep going.\n\nGLENN WILSON\nThe right fielder with the arm that has caused baserunners to rethink life decisions. Glenn Wilson's arm is not theoretical — it has thrown out people who had no business being thrown out.\n\nWilson will work with outfielders on positioning, routes to the ball, and throwing mechanics.\n\nTHE CLINIC\nAll ages 8-14. Free admission with registration. Limited spots available.\n\nContact your local parks and recreation department.\nThis Saturday morning.\nBring your glove and your best questions.`,
+  },
+  {
+    matchText: "Don't miss Bat Day this Sunday! The first five thousand kids through the gates receive a free Louisville Slugger.",
+    title: "🏏 Bat Day — Veterans Stadium",
+    icon: "🏏",
+    color: "#c0392b",
+    body: `BAT DAY — VETERANS STADIUM\nThis Sunday — Free Louisville Slugger for the First 5,000 Kids\n\nTHE BAT\nAn 18-inch hardwood Louisville Slugger mini-bat. Genuine ash. Phillies logo branded on the barrel. Real wood, real weight — not plastic, not a toy.\n\nLouisville Slugger has been making bats for major league players since 1884. The same company, the same factory in Louisville, Kentucky, the same process. Mike Schmidt uses a custom 35-inch, 32-ounce model. Your kid gets a version made with the same craft.\n\nTHE HISTORY OF BAT DAY\nBat Day began as a promotional idea in the 1950s and became one of baseball's most beloved giveaway traditions. A stadium full of children holding wooden bats, tapping them on the concrete in excitement — there is no better sound in baseball.\n\nARRIVE EARLY\nFirst 5,000 kids through the gates. No exceptions after supplies run out. The gates open 90 minutes before first pitch.\n\nTHIS SUNDAY. VETERANS STADIUM.\nBring a young fan.\nLeave with a Louisville Slugger.\nThat's a good Sunday.`,
+  },
+  {
+    matchText: "Group ticket packages are available for remaining Phillies homestand games.",
+    title: "🎟️ Phillies Group Tickets — Remaining Homestand",
+    icon: "🎟️",
+    color: "#c0392b",
+    body: `PHILLIES GROUP TICKET PACKAGES\nRemaining 1984 Homestand — Veterans Stadium\n\nTHE PACKAGE\nGroups of 20 or more receive discounted tickets, reserved together in the same seating section, and access to the group sales concession stand with pre-arranged food orders.\n\nWHO THIS IS FOR\nChurches. Schools. Little League teams. Corporate outings. Neighborhood groups. Anyone who has ever tried to coordinate 25 people to do anything and knows how complicated it is — the Phillies have made this part easy.\n\nTHE SECTIONS\nLower boxes are available for larger groups when reserved in advance. Club level seating available for premium packages. The 700 Level is available but the Phillies cannot be held responsible for what happens in the 700 Level.\n\nTHE EXPERIENCE\nThere is something different about watching baseball with 30 of your colleagues or congregation members versus watching it alone. The same pitch lands differently when 25 people groan together.\n\nWHAT REMAINS\nSeveral home games remain this season. Some will matter enormously in the standings. Others will be close. All of them will have hot dogs.\n\nCALL THE PHILLIES GROUP SALES OFFICE.\nThey are waiting.\nGroups of 20 or more.\nLet's fill these seats.`,
+  },
+  // Phillies charity
+  {
+    matchText: "Support the Children's Hospital of Philadelphia with your donations.",
+    title: "🏥 Children's Hospital of Philadelphia",
+    icon: "🏥",
+    color: "#2980b9",
+    body: `THE CHILDREN'S HOSPITAL OF PHILADELPHIA\nFounded 1855 — The Nation's First Children's Hospital\n\nCHOP opened in 1855. The Children's Hospital of Philadelphia was the first hospital in the United States dedicated exclusively to the care of children. One hundred and twenty-nine years later, it remains one of the finest pediatric medical centers in the world.\n\nWHAT THEY DO\nEvery day, CHOP treats children with conditions ranging from routine to extraordinarily complex. Cancer. Heart disease. Rare genetic conditions. Trauma. The staff includes some of the most accomplished pediatric specialists in medicine — people who chose to spend their careers treating sick children.\n\nWHY DONATIONS MATTER\nFederal and insurance reimbursements do not cover the full cost of pediatric care. Research programs, family support services, and specialized equipment are funded in significant part by community donations.\n\nA FACT\nIn the last year, CHOP treated children from all 50 states and 40 countries. Many of those families could not have afforded care elsewhere.\n\nHOW TO GIVE\nThe CHOP Foundation accepts donations by mail, at participating Philadelphia businesses, and through payroll deduction programs.\n\nThe children there cannot come to this game tonight.\nBut they would if they could.\nHelp them get better.`,
+  },
+  {
+    matchText: "CHOP — the Children's Hospital of Philadelphia — counts on community support.",
+    title: "🏥 CHOP — Community Support",
+    icon: "🏥",
+    color: "#2980b9",
+    body: `CHOP — CHILDREN'S HOSPITAL OF PHILADELPHIA\n\nThe Children's Hospital of Philadelphia has been treating sick children since 1855. It was the first children's hospital in America. It remains among the very best in the world.\n\nCOMMUNITY SUPPORT\nPhiladelphia has always taken care of its own. The hospital exists in part because the people of this city and region believe that children deserve specialized care and that the community has a responsibility to help provide it.\n\nThe Phillies are proud to support CHOP and encourage Phillies fans throughout the Delaware Valley to consider making a contribution.\n\nEvery dollar goes to a place where the patients are children.\nEvery dollar matters.\nPhiladelphia takes care of Philadelphia.`,
+  },
+  // Phillies sponsor
+  {
+    matchText: "Horn & Hardart — the original automat — serving Philadelphia since 1902.",
+    title: "🏪 Horn & Hardart — The Original Automat",
+    icon: "🏪",
+    color: "#8b4513",
+    body: `HORN & HARDART — THE ORIGINAL AUTOMAT\nServing Philadelphia Since 1902\n\nTHE AUTOMAT\nIn 1902, Joseph Horn and Frank Hardart opened the first automat in America on Chestnut Street in Philadelphia. The concept was revolutionary: a cafeteria where food was dispensed from glass-fronted compartments for a nickel. Drop your coin, open the door, take your food.\n\nFor decades, Horn & Hardart was where Philadelphia ate. Macaroni and cheese. Baked beans. Coffee from the famous dolphin-head spigots. Apple pie with a flaky crust that became part of the city's institutional memory.\n\nTHE COFFEE\nHorn & Hardart's coffee was made from a blend that Frank Hardart developed from New Orleans coffee culture — strong, dark, made with chicory. People came specifically for the coffee. They got the baked beans as well.\n\nTHE LEGACY\nAt its peak, Horn & Hardart operated dozens of automats in Philadelphia and New York. The automat format eventually gave way to fast food. But the name remains — a landmark of American urban dining history that belongs specifically to Philadelphia.\n\nIF YOU HAVEN'T BEEN\nThere are still Horn & Hardart locations in Philadelphia.\nThe macaroni and cheese is still excellent.\nThe coffee is still the coffee.`,
+  },
+  // National sponsor
+  {
+    matchText: "America's phone system is changing.",
+    title: "📞 America's Phone System — 1984",
+    icon: "📞",
+    color: "#1a237e",
+    body: `AMERICA'S PHONE SYSTEM IS CHANGING\n\nOn January 1, 1984, AT&T — the Bell System — was broken up by court order into seven regional "Baby Bell" companies. After nearly a century as a regulated monopoly, the telecommunications system that connected America is being restructured.\n\nTHE OLD SYSTEM\nFor most of the 20th century, if you had a telephone in America, it came from AT&T. The wires, the switching equipment, the handset on your wall — AT&T's. Long-distance calls went through AT&T. The rates were set by regulators. Competition was not part of the equation.\n\nTHE NEW LANDSCAPE\nMCI. Sprint. A dozen smaller long-distance carriers are now competing for your business. Rates are falling. For the first time in history, Americans can choose their long-distance provider.\n\nYOUR TELEPHONE\nSome things haven't changed: local service still comes from the regional Bell company in your area. The phone on your wall still works. Your number is still your number.\n\nWHAT'S COMING\nSome experts predict that competition will drive prices even lower. Others worry about the complexity of a broken-up system. Everyone agrees the telephone industry of 1990 will look very different from the telephone industry of 1983.\n\nREACH OUT AND TOUCH SOMEONE.\nWhoever you call it through.`,
+  },
+  {
+    matchText: "The Cars continue to produce hit records.",
+    title: "🎵 The Cars — 1984",
+    icon: "🎵",
+    color: "#1a237e",
+    body: `THE CARS — CONTINUING TO PRODUCE HIT RECORDS\n\nBoston, Massachusetts. Formed 1976. Ric Ocasek on vocals and rhythm guitar. Elliot Easton on lead guitar. Greg Hawkes on keyboards. Ben Orr on bass and vocals. David Robinson on drums.\n\nTHE SOUND\nNew wave pop with rock teeth. Synthesizers that don't apologize for being synthesizers. Guitar that bites. Vocals delivered with a studied detachment that somehow works perfectly. Songs that are simultaneously weird and unavoidable.\n\nTHE HITS\n"Just What I Needed." "My Best Friend's Girl." "Shake It Up." "You Might Think" — currently climbing the charts in 1984. "Drive" — one of the most beautiful things they have recorded. Ben Orr singing as though the stakes are real because they are.\n\nTHE ALBUM\nHeartbeat City was released in March 1984. It contains "You Might Think," "Magic," "Hello Again," and "Drive." It is, by any measure, an excellent album.\n\nWHY THIS MATTERS AT A BASEBALL GAME\nBecause somewhere in this stadium, someone is thinking about a Cars song. Because the summer of 1984 has a specific sound and The Cars are part of it. Because "Drive" is a genuinely good song and you know it.\n\nThe Cars continue to produce hit records.\nThat's the announcement.\nThat's all that needed to be said.`,
+  },
+  {
+    matchText: "Video rental memberships are available now.",
+    title: "📼 Video Rental Memberships — 1984",
+    icon: "📼",
+    color: "#1a237e",
+    body: `VIDEO RENTAL MEMBERSHIPS — AVAILABLE NOW\n\nYour local video rental store has memberships available.\n\nTHE MEMBERSHIP\nA one-time fee — typically between $10 and $25 depending on the store. In exchange: a laminated card with your name on it, the ability to rent any title in the store, and access to new releases on Tuesdays.\n\nWHAT THE CARD GETS YOU\nThe right to take a VHS tape home, watch it, and return it within 24 or 48 hours. The tape goes back in the same white sleeve. The sleeve goes back in the box. The box goes back to the shelf.\n\nTHE SELECTION\nThousands of titles. Every major theatrical release eventually arrives on VHS — usually six months to a year after it played in theaters. The library keeps growing every Tuesday.\n\nTHE LATE FEE\nThis is important: return the tape on time. The late fee is typically $1.00 to $2.00 per day. Some people believe the store relies on this revenue to stay in business. Some people are right.\n\nBE KIND, REWIND.\nThe sticker on every rental tape.\nThe standard that separates neighbors from people who are just renting VHS tapes.\n\nMEMBERSHIPS AVAILABLE NOW.\nAsk at the counter.`,
+  },
+  // County fair / Americana  
+  {
+    matchText: "See prize-winning livestock from across the county.",
+    title: "🐄 County Fair — Prize Livestock",
+    icon: "🐄",
+    color: "#795548",
+    body: `PRIZE-WINNING LIVESTOCK — COUNTY FAIR\n\nThis is not a figure of speech. These are real animals that have been raised, trained, groomed, and submitted for judged competition by farmers who take this seriously.\n\nTHE BLUE RIBBONS\nBest dairy cow. Best beef steer. Best hog. Best goat. Best sheep. Each category judged by an accredited agricultural judge who has spent decades developing opinions about livestock quality. These opinions are not casual. A blue ribbon at the county fair means something.\n\nTHE ANIMALS\nA 1,200-pound Holstein named Bessie who has won the dairy division three years running. A Berkshire hog whose owner will tell you, at length, about the feed regimen. A Suffolk sheep with wool that has been prepared for this moment for weeks.\n\nTHE FARMERS\nFamilies who got up before dawn this morning to prepare their animals. Who have been doing this their whole lives. Who take more pride in this blue ribbon than in almost anything else. This is their craft and their community.\n\nTHE FAIR\nLivestock barns, 4-H exhibits, the midway, the food stands, the tractor pull, the demolition derby.\n\nVisit your county fair this summer.\nSee the livestock.\nRespect the blue ribbon.`,
+  },
+  // Phillies Friday tickets
+  {
+    matchText: "The Phillies continue their homestand tomorrow night at Veterans Stadium.",
+    title: "🏟️ Phillies Homestand Continues",
+    icon: "🏟️",
+    color: "#c0392b",
+    body: `PHILLIES HOMESTAND CONTINUES\nTomorrow Night — Veterans Stadium\n\nThe homestand isn't over yet.\n\nTOMORROW'S GAME\nAnother chance to watch Mike Schmidt work third base like he's done it in his sleep, because he has. Another night for Steve Carlton or the rotation to go to work. Another evening in South Philadelphia with the Phanatic running loose somewhere in the stands.\n\nTICKETS\nAvailable at the Veterans Stadium box office. Regular hours tomorrow morning. Group packages can still be arranged with 24 hours notice.\n\nGETTING THERE\nThe SEPTA Broad Street Line to Pattison Avenue. The direct route. 75 cents. Faster than driving after the game. The Phillies strongly encourage it.\n\nIf you drove tonight and found a good parking spot: congratulations. You've earned the right to try again tomorrow.\n\nTHE ATMOSPHERE\nA Phillies crowd during a homestand in summer is a specific thing. Veterans Stadium gets loud when things are happening. The 700 Level is always prepared to offer its opinion. Harry Kalas's voice fills the park.\n\nCOME BACK TOMORROW.\nThe homestand continues.\nBring someone who hasn't been yet this season.`,
+  },
+  {
+    matchText: "Eagles season tickets are now on sale — call Veterans Stadium for information.",
+    title: "🦅 Eagles Season Tickets — On Sale",
+    icon: "🦅",
+    color: "#004C54",
+    body: `PHILADELPHIA EAGLES — 1984 SEASON TICKETS ON SALE\n\nThe Eagles play their home games at Veterans Stadium — the same venue you are currently sitting in. The same artificial turf, the same sight lines, the same 700 Level with different jerseys and a slightly different kind of cold.\n\nTHE 1984 EAGLES\nMarch 1984: the Eagles completed a significant trade. Ron Jaworski remains at quarterback. The offensive line is improved. There is optimism in the NFC East, which is either warranted or the usual preseason Eagles fan optimism — history will determine which.\n\nSEASON TICKETS\nSame seat. Every home game. Eight games plus preseason. You know your section, you know your neighbors in the adjacent seats, you know the specific post where your view of the right corner of the end zone is slightly obstructed.\n\nThere is something to be said for that continuity.\n\nCALL VETERANS STADIUM.\nAsk for the Eagles ticket office.\nTell them you heard about it at the Phillies game.\nThey will find this perfectly normal.`,
+  },
+];
+
+GENERIC_AD_ENTRIES.push(...ADDITIONAL_MISSING);
+
+// Build lookup map for fast matching — built after all entries are pushed
+function buildMap() {
+  const m = new Map();
+  GENERIC_AD_ENTRIES.forEach(e => m.set(e.matchText, e));
+  return m;
+}
 
 export function findGenericAdEntry(adText) {
-  return GENERIC_AD_MAP.get(adText) || null;
+  // Lazy-build the map on first call so it includes all pushed entries
+  if (!findGenericAdEntry._map) findGenericAdEntry._map = buildMap();
+  return findGenericAdEntry._map.get(adText) || null;
 }

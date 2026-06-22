@@ -18,23 +18,21 @@ export default function FanChirpToast({ trigger, homeTeamKey }) {
 
     const text = pickFanYell(homeTeamKey);
 
-    // Clear any existing timer and chirp before setting new one
+    // Clear any existing timers immediately
     clearTimeout(timerRef.current);
-    setVisible(false);
 
-    // Small delay so fade-out plays if replacing a stuck chirp
-    setTimeout(() => {
-      setChirp(text);
-      setVisible(true);
+    // Show new chirp immediately (replaces any stuck one)
+    setChirp(text);
+    setVisible(true);
 
-      timerRef.current = setTimeout(() => {
-        setVisible(false);
-        setTimeout(() => setChirp(null), 400);
-      }, 3800);
-    }, 50);
-
-    return () => clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      setVisible(false);
+      setTimeout(() => setChirp(null), 400);
+    }, 3500);
   }, [trigger]);
+
+  // Cleanup on unmount
+  useEffect(() => () => clearTimeout(timerRef.current), []);
 
   if (!chirp) return null;
 

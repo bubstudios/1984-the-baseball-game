@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import BaseballCard from './BaseballCard';
 
-export default function CardAwardModal({ card, isNewCard, onClose }) {
+export default function CardAwardModal({ card, isNewCard, onClose, onDismiss }) {
+  const handleClose = onClose || onDismiss;
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -15,7 +16,7 @@ export default function CardAwardModal({ card, isNewCard, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
       <div className="relative max-w-96">
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute -top-12 right-0 text-white hover:text-yellow-300 transition-colors z-10"
         >
           <X className="w-8 h-8" />
@@ -42,7 +43,7 @@ export default function CardAwardModal({ card, isNewCard, onClose }) {
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="mt-6 px-8 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 font-heading font-bold uppercase rounded-lg hover:from-yellow-300 hover:to-yellow-400 transition-all shadow-lg"
           >
             Continue Game

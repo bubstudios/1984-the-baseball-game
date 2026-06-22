@@ -295,7 +295,7 @@ export default function Home() {
         const chirpResult = resolveArgument(chirp, manager?.personality || 5, umpireObj, state.inning, scoreDiff, chirpSide === 'home');
         if (chirpResult) {
           chirpResult.managerName = manager?.name || 'The Manager';
-          setArgumentResult({ ...chirpResult, homeTeamKey: homeTeam });
+          setArgumentResult({ ...chirpResult, homeTeamKey: chirpTeamKey });
         }
       }
       return state;
@@ -363,7 +363,7 @@ export default function Home() {
 
     // If ejected, log it and check achievements
     if (result.ejected && result.whoArgues === 'manager') {
-      const cmt = getEjectionCommentary(homeTeam, result);
+      const cmt = getEjectionCommentary(arguingTeamKey, result);
       const ejectedKey = arguingSide === 'home' ? '_homeManagerEjected' : '_awayManagerEjected';
       state = {
         ...state,
@@ -384,12 +384,12 @@ export default function Home() {
       });
     } else {
       // Non-ejection argument — log it
-      const cmt = getEjectionCommentary(homeTeam, result);
+      const cmt = getEjectionCommentary(arguingTeamKey, result);
       state = { ...state, log: [...state.log, { type: 'info', text: `🗣️ ${cmt}` }] };
     }
 
-    // Show the animation
-    setArgumentResult({ ...result, homeTeamKey: homeTeam });
+    // Show the animation — use the arguing team's key for correct commentary
+    setArgumentResult({ ...result, homeTeamKey: arguingTeamKey });
 
     return state;
   }, [homeTeam, awayTeam]);

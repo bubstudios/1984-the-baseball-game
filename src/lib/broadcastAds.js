@@ -1523,13 +1523,10 @@ registerTeamAds('royals', 'charity', [
 // ── Phillies / Philadelphia (#601–650) ──
 
 registerTeamAds('phillies', 'team_promo', [
-  // Homestand banner — bobblehead rotation (click to reveal which bobblehead you received)
-  "The homestand continues tomorrow at Veterans Stadium — come out and join us.",
-  // Team poster
+  // Non-bobblehead promos (the bulk of the pool, so homestand banner is rare by dilution)
   "Free 1984 Phillies team poster — pick yours up at the main gate.",
-  // Other promos
   "Youth Baseball Day at Veterans Stadium — kids run the bases after the game.",
-  "Bat Day at Veterans Stadium — Louisville Sluggers for the kids.",
+  "Don't miss Bat Day this Sunday! The first five thousand kids through the gates receive a free Louisville Slugger.",
   "Phillies Old-Timers Day returns to Veterans Stadium this weekend.",
   "The Phillies continue their homestand tomorrow night at Veterans Stadium.",
   "Stop by the Phillies team store for official 1984 merchandise.",
@@ -1538,6 +1535,9 @@ registerTeamAds('phillies', 'team_promo', [
   "Juan Samuel and Glenn Wilson will meet fans at a youth baseball clinic Saturday morning.",
   "Group ticket packages are available for remaining Phillies homestand games.",
   "The Phillies invite Little League teams to attend a special field day at The Vet.",
+  "Eagles season tickets are now on sale — call Veterans Stadium for information.",
+  // Homestand bobblehead banner — appears once in pool (rare among 12 other entries)
+  "The homestand continues tomorrow at Veterans Stadium — come out and join us.",
 ]);
 
 registerTeamAds('phillies', 'sponsor', [
