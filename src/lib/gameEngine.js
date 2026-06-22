@@ -731,41 +731,42 @@ function resolveSwing(state, swingType, pitch) {
       // Diving ground-ball stop
       if (rollDivingStop()) {
         const fielder = defenders[out.pos] || { name: 'the infielder' };
-        const dsResult = getDivingStopResult(state.homeTeam, fielder.name);
+        const dsResult = getDivingStopResult(state.homeTeam, fielder.name, out.pos);
         if (dsResult.type === 'out') {
           // Spectacular out — diving stop followed by throw
           out.text = dsResult.text;
+          out.divingStopOut = true;
+          out.divingStopPos = dsResult.pos;
         } else if (dsResult.type === 'knockdown') {
           // Knocked down — ball stayed in the infield, runners advance conservatively
           batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
-          // Runner on 3rd: scores. Runner on 2nd: only to 3rd (ball never left infield).
-          // Runner on 1st: only to 2nd. Batter reaches 1st.
           if (state.bases[2]) { state.bases[2].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[2] = null; }
           if (state.bases[1]) { if (!state.bases[2]) { state.bases[2] = state.bases[1]; } else { state.bases[1].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[1] = null; }
           if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
           state.bases[0] = batter;
-          state.log.push({ type: 'single', text: dsResult.text });
-          state.lastPlay = { type: 'single', text: dsResult.text };
+          state.log.push({ type: 'single', text: dsResult.text, divingStopPos: dsResult.pos });
+          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos };
           state.balls = 0; state.strikes = 0; advanceBatter(state);
           return;
         } else {
           // Save a double — diving stop kept ball in the infield, holds batter to single
           batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
-          // Runner on 3rd: scores. Others advance at most one base (ball stayed in infield).
           if (state.bases[2]) { state.bases[2].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[2] = null; }
           if (state.bases[1]) { if (!state.bases[2]) { state.bases[2] = state.bases[1]; } else { state.bases[1].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[1] = null; }
           if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
           state.bases[0] = batter;
-          state.log.push({ type: 'single', text: dsResult.text });
-          state.lastPlay = { type: 'single', text: dsResult.text };
+          state.log.push({ type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true });
+          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true };
           state.balls = 0; state.strikes = 0; advanceBatter(state);
           return;
         }
       }
     }
 
-    state.log.push({ type: isFlyBall ? 'flyout' : 'groundout', text: out.text });
-    state.lastPlay = { type: isFlyBall ? 'flyout' : 'groundout', text: out.text };
+    const outExtra = {};
+    if (out.divingStopOut) { outExtra.divingStopOut = true; outExtra.divingStopPos = out.divingStopPos; }
+    state.log.push({ type: isFlyBall ? 'flyout' : 'groundout', text: out.text, ...outExtra });
+    state.lastPlay = { type: isFlyBall ? 'flyout' : 'groundout', text: out.text, ...outExtra };
     state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
   }
 }

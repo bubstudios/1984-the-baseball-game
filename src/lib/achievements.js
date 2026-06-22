@@ -1012,17 +1012,21 @@ export function checkGameAchievements(gameState, userTeam) {
   }
 
   // ── DIVING GROUND-BALL STOPS ──
-  const divingStopLogs = log.filter(l => (l.type === 'groundout' || l.type === 'single') && l.text && l.text.includes('🧤'));
+  // Detect by 🧤 emoji on groundout/single entries (stops emit these)
+  const divingStopLogs = log.filter(l => l.text && l.text.includes('🧤') && (l.type === 'groundout' || l.type === 'single'));
   const divingStopCount = divingStopLogs.length;
-  const hasDivingStop = divingStopCount > 0 || (userIsFielder && (logText.includes('diving stop') || logText.includes('knocked it down')));
+  const hasDivingStop = divingStopCount > 0;
   if (hasDivingStop) {
     u('first_stop');
-    if (logText.includes('third') && logText.includes('diving stop')) u('hot_corner');
-    if (logText.includes('threw him out') || logText.includes('throws him out') || logText.includes('got the out')) u('wizardry');
-    if (logText.includes('saves extra bases') || logText.includes('saves a double') || logText.includes('Save extra bases')) u('save_the_pitcher');
+    // Hot Corner: any diving stop where the fielder was at 3B
+    if (divingStopLogs.some(l => l.divingStopPos === '3B')) u('hot_corner');
+    // Wizardry: diving stop that resulted in an out (type='groundout' with 🧤, or divingStopOut flag)
+    if (divingStopLogs.some(l => l.type === 'groundout' || l.divingStopOut)) u('wizardry');
+    // Save the Pitcher: diving stop that saved extra bases (save type)
+    if (divingStopLogs.some(l => l.divingStopSave)) u('save_the_pitcher');
     trackDivingStops(Math.max(1, divingStopCount));
     // Motor City Glove: diving stop turned into DP as Tigers
-    if (teamKey === 'tigers' && logText.includes('double play') && logText.includes('diving stop')) u('easter_motor_city_glove');
+    if (teamKey === 'tigers' && logText.includes('double play') && divingStopLogs.length > 0) u('easter_motor_city_glove');
   }
 
   // ── HR ROBBERY ──

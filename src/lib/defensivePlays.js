@@ -173,8 +173,8 @@ export function rollDivingStop() {
   return Math.random() < 0.10;
 }
 
-// Returns { type: 'out'|'knockdown'|'save', text }
-export function getDivingStopResult(homeTeamKey, playerName) {
+// Returns { type: 'out'|'knockdown'|'save', text, pos }
+export function getDivingStopResult(homeTeamKey, playerName, pos) {
   const roll = Math.random();
   let outcomeType;
   if (roll < 0.20) outcomeType = 'out';
@@ -190,7 +190,7 @@ export function getDivingStopResult(homeTeamKey, playerName) {
     calls = outcomeType === 'out' ? DIVING_STOP_OUT_CALLS : outcomeType === 'knockdown' ? DIVING_STOP_KNOCKDOWN_CALLS : DIVING_STOP_SAVE_CALLS;
   }
   const call = calls[Math.floor(Math.random() * calls.length)];
-  return { type: outcomeType, text: `🧤 ${playerName} — ${call}` };
+  return { type: outcomeType, pos: pos || null, text: `🧤 ${playerName} — ${call}` };
 }
 
 // ── RARE DEFENSIVE EVENTS ──
