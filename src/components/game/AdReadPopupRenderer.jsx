@@ -23,6 +23,7 @@ import RedSoxBannerPopup from './RedSoxBannerPopup';
 import NationalCharityPopup from './NationalCharityPopup';
 import NationalPromosPopup from './NationalPromosPopup';
 import NationalWrestlingPopup from './NationalWrestlingPopup';
+import VhsBetamaxLaserDiscPopup from './VhsBetamaxLaserDiscPopup';
 
 export default function AdReadPopupRenderer({
   expanded, isMovie, synopsisData, onDismiss, onAchievement,
@@ -46,6 +47,7 @@ export default function AdReadPopupRenderer({
   isNationalCharity, nationalCharityEntry,
   isNationalPromos, nationalPromosEntry,
   isNationalWrestling, nationalWrestlingEntry,
+  isVhsBetamax, vhsBetamaxEntry,
   isTvMovie, tvMovieEntry,
   isObscureTv, obscureTvEntry,
   isGeneralProducts, gpEntry,
@@ -112,6 +114,9 @@ export default function AdReadPopupRenderer({
   }
   if (expanded && isNationalWrestling && nationalWrestlingEntry) {
     return <NationalWrestlingPopup entry={nationalWrestlingEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
+  }
+  if (expanded && isVhsBetamax && vhsBetamaxEntry) {
+    return <VhsBetamaxLaserDiscPopup entry={vhsBetamaxEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
   }
   if (expanded && isTvMovie && tvMovieEntry) {
     return <TvMoviePopup entry={tvMovieEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;

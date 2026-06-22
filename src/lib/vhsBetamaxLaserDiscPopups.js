@@ -232,7 +232,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
 const VIEWED_EXHIBITS = new Set();
 
 export function findVhsBetamaxLaserDiscEntry(text) {
-  return VHS_BETAMAX_LASERDISC_POPUPS.find(entry => entry.tagline === text);
+  return VHS_BETAMAX_LASERDISC_POPUPS.find(entry => entry.tagline === text) || null;
 }
 
 export function trackVhsBetamaxLaserDiscView(entryId) {
