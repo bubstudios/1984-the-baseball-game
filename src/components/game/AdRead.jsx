@@ -3,6 +3,7 @@ import { Clock, User, X, Tv } from 'lucide-react';
 import MoviePopup from './MoviePopup';
 import ElectronicsPopup from './ElectronicsPopup';
 import MoreObscureTvPopup from './MoreObscureTvPopup';
+import MoreObscureTvPopup3 from './MoreObscureTvPopup3';
 import ArcadePopup from './ArcadePopup';
 import WrestlingPopup from './WrestlingPopup';
 import VanishedStoresPopup from './VanishedStoresPopup';
@@ -28,6 +29,7 @@ import { findElectronicsEntry, trackElectronicsView } from '@/lib/electronicsPop
 import { findGeneralProductsEntry, trackGeneralProductsView } from '@/lib/generalProductsPopups';
 import { findObscureTvEntry, trackObscureTvView } from '@/lib/obscureTvPopups';
 import { findMoreObscureTvEntry } from '@/lib/moreObscureTvPopups';
+import { findMoreObscureTvEntry3 } from '@/lib/moreObscureTvPopups3';
 import { findNationalCharityEntry, trackNationalCharityView } from '@/lib/nationalCharityPopups';
 import { findArcadeEntry } from '@/lib/arcadePopups';
 import { findWrestlingEntry } from '@/lib/wrestlingPopups';
@@ -57,6 +59,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [obscureTvEntry, setObscureTvEntry] = useState(null);
   const [isMoreObscureTv, setIsMoreObscureTv] = useState(false);
   const [moreObscureTvEntry, setMoreObscureTvEntry] = useState(null);
+  const [isMoreObscureTv3, setIsMoreObscureTv3] = useState(false);
+  const [moreObscureTvEntry3, setMoreObscureTvEntry3] = useState(null);
   const [isTvMovie, setIsTvMovie] = useState(false);
   const [tvMovieEntry, setTvMovieEntry] = useState(null);
   const [isArcade, setIsArcade] = useState(false);
@@ -100,6 +104,9 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findMoreObscureTvEntry(ad.text)) {
       setIsMoreObscureTv(true);
       setMoreObscureTvEntry(findMoreObscureTvEntry(ad.text));
+    } else if (findMoreObscureTvEntry3(ad.text)) {
+      setIsMoreObscureTv3(true);
+      setMoreObscureTvEntry3(findMoreObscureTvEntry3(ad.text));
     } else if (findArcadeEntry(ad.text)) {
       setIsArcade(true);
       setArcadeEntry(findArcadeEntry(ad.text));
@@ -204,7 +211,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
-    const specialTypes = [isObscureTv, isMoreObscureTv, isTvMovie, isArcade, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity];
+    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity];
     if (specialTypes.some(t => t)) {
       setExpanded(true);
       if (isNationalCharity && nationalCharityEntry) {
@@ -238,6 +245,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       elecEntry={elecEntry}
       isMoreObscureTv={isMoreObscureTv}
       moreObscureTvEntry={moreObscureTvEntry}
+      isMoreObscureTv3={isMoreObscureTv3}
+      moreObscureTvEntry3={moreObscureTvEntry3}
       isArcade={isArcade}
       arcadeEntry={arcadeEntry}
       isWrestling={isWrestling}

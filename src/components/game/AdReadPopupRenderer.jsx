@@ -2,6 +2,7 @@ import React from 'react';
 import MoviePopup from './MoviePopup';
 import ElectronicsPopup from './ElectronicsPopup';
 import MoreObscureTvPopup from './MoreObscureTvPopup';
+import MoreObscureTvPopup3 from './MoreObscureTvPopup3';
 import ArcadePopup from './ArcadePopup';
 import WrestlingPopup from './WrestlingPopup';
 import VanishedStoresPopup from './VanishedStoresPopup';
@@ -25,6 +26,7 @@ export default function AdReadPopupRenderer({
   expanded, isMovie, synopsisData, onDismiss, onAchievement,
   isElectronics, elecEntry,
   isMoreObscureTv, moreObscureTvEntry,
+  isMoreObscureTv3, moreObscureTvEntry3,
   isArcade, arcadeEntry,
   isWrestling, wrestlingEntry,
   isVanishedStores, vanishedStoresEntry,
@@ -52,6 +54,9 @@ export default function AdReadPopupRenderer({
   }
   if (expanded && isMoreObscureTv && moreObscureTvEntry) {
     return <MoreObscureTvPopup entry={moreObscureTvEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
+  }
+  if (expanded && isMoreObscureTv3 && moreObscureTvEntry3) {
+    return <MoreObscureTvPopup3 entry={moreObscureTvEntry3} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
   }
   if (expanded && isArcade && arcadeEntry) {
     return <ArcadePopup entry={arcadeEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
