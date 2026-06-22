@@ -39,6 +39,7 @@ import FlyWFlag from '@/components/game/FlyWFlag';
 import CardAwardModal from '@/components/game/CardAwardModal';
 import { getRandomCard, addCollectedCard, loadCollectionFromStorage, saveCollectionToStorage } from '@/lib/tigersBaseballCards';
 import { getRandomPhilliesCard, addCollectedPhilliesCard, loadPhilliesCollectionFromStorage, savePhilliesCollectionToStorage } from '@/lib/philliesBaseballCards';
+import FanChirpToast from '@/components/game/FanChirpToast';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -981,6 +982,11 @@ export default function Home() {
             situationalBatter={situationalBatter}
           />
         </div>
+      )}
+
+      {/* Fan Chirp Toast — teal bubble from the stands */}
+      {gameState && !gameState.gameOver && (
+        <FanChirpToast trigger={gameState.log.length} homeTeamKey={homeTeam} />
       )}
 
       {/* Fireworks */}

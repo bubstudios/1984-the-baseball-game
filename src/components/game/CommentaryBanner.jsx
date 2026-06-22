@@ -767,10 +767,6 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
       }
     }
     if (!text) {
-    // ~15% chance to hear a fan chirp from the stands
-    if (Math.random() < 0.15) {
-      text = pickFanYell(homeTeamKey);
-    } else {
     // No play result yet (between pitches) — use team-specific or generic flavor
     text = isCubsGame && Math.random() < 0.65
       ? pickHarryLine()
@@ -791,11 +787,10 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                     : isRoyalsGame && Math.random() < 0.70
                       ? ((Math.random() < 0.5 ? pickRoyalsPlayerLine(batter?.name) : pickRoyalsPlayerLine(pitcher?.name)) || pickRoyalsLine(gameState?.weather?.isDay !== false))
                       : isPhilliesGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickPhilliesPlayerLine(batter?.name) : pickPhilliesPlayerLine(pitcher?.name)) || pickPhilliesLine())
-                        : getCommentary(batter, pitcher, gameState, stadiumInfo);
-    }
-    }
-  }
+                      ? ((Math.random() < 0.5 ? pickPhilliesPlayerLine(batter?.name) : pickPhilliesPlayerLine(pitcher?.name)) || pickPhilliesLine())
+                      : getCommentary(batter, pitcher, gameState, stadiumInfo);
+                      }
+                      }
 
   return (
     <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">

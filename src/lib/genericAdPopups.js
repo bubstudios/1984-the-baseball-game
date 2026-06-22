@@ -552,6 +552,224 @@ It's free.
 You might find something you needed.`,
   },
 
+  // ── PHILLIES COMMUNITY SPECIFIC ──
+  {
+    matchText: "Greetings to Phillies fans throughout Pennsylvania, New Jersey, and Delaware.",
+    title: "🔔 Greetings from Veterans Stadium",
+    icon: "🔔",
+    color: "#c0392b",
+    body: `GREETINGS TO PHILLIES FANS — PENNSYLVANIA, NEW JERSEY, AND DELAWARE
+
+Harry Kalas and Richie Ashburn are thinking of you specifically.
+
+THE FIVE-COUNTY REGION
+Philadelphia. Bucks. Montgomery. Delaware. Chester. Five counties. Roughly 3.5 million people. A significant percentage of them listening right now.
+
+NEW JERSEY
+The Garden State. Home to Atlantic City, the Jersey Shore, and several million people who root for the Phillies because they are geographically correct to do so. The Delaware River is not a barrier when it comes to baseball allegiance.
+
+DELAWARE
+The First State. The smallest state. Entirely within range of WCAU 1210 AM on a clear night. Delaware Phillies fans are loyal and slightly underrepresented in the conversation. Richie Ashburn wants them to know he sees them.
+
+THE BROADCAST SIGNAL
+WCAU 1210 AM covers the entire Delaware Valley on a clear night. Harry has received letters from listeners as far away as western Maryland. He finds this genuinely moving.
+
+THE POINT
+This team is yours. Wherever you're listening from — in your car on the Schuylkill, at your kitchen table in Camden, in a living room in Wilmington — this game is being played for you.
+
+Harry says hello.
+Richie says hello.
+Veterans Stadium says hello.
+
+Enjoy the game.`,
+  },
+  {
+    matchText: "The Liberty Bell and Independence Hall welcome visitors daily.",
+    title: "🔔 The Liberty Bell — Philadelphia, PA",
+    icon: "🔔",
+    color: "#b8860b",
+    body: `THE LIBERTY BELL & INDEPENDENCE HALL
+Philadelphia, Pennsylvania — Open to Visitors Daily
+
+THE LIBERTY BELL
+It weighs 2,080 pounds. It was cast in London in 1752, cracked almost immediately upon arrival, and was recast by local Philadelphia craftsmen John Pass and John Stow. Their names are still on it. It cracked again — its famous crack — sometime in the early 19th century.
+
+Nobody is entirely sure when it cracked. Nobody knows why. The bell just decided.
+
+THE INSCRIPTION
+"Proclaim LIBERTY throughout all the land unto all the inhabitants thereof." — Leviticus 25:10. This is where the name comes from. It was not called the Liberty Bell until abolitionists adopted it as a symbol in the 1830s.
+
+THE CRACK
+You will want to see the crack. Everyone does. It is on the lower left side of the bell. It goes from the rim to about halfway up. It is longer than you expect. The bell has not been rung since 1846, when they tried to ring it for George Washington's birthday and made the crack significantly worse. They decided that was enough ringing.
+
+INDEPENDENCE HALL
+The building where the Declaration of Independence was debated and signed in 1776. Also where the Constitution was drafted in 1787. This room — specifically that room, those chairs, that table — is where the country happened.
+
+It is smaller than you expect.
+That's the part that gets people.
+
+VISITING
+Both are free. Both are a short walk from each other. Both are open daily. The lines are manageable if you arrive early.
+
+Go see them. They're yours.`,
+  },
+  {
+    matchText: "South Philadelphia is the home of the original cheesesteak.",
+    title: "🥩 South Philly Cheesesteak",
+    icon: "🥩",
+    color: "#e67e22",
+    body: `SOUTH PHILADELPHIA — HOME OF THE ORIGINAL CHEESESTEAK
+
+Pat Olivieri didn't know what he was starting.
+
+THE ORIGIN
+1930. A hot dog vendor at 9th and Passyunk Avenue. Pat throws some thinly sliced beef on the grill. A cab driver smells it and wants some. Pat puts it on bread. The cab driver eats it. Word spreads at the speed of a neighborhood.
+
+PAT'S VS. GENO'S
+They are directly across the street from each other. Literally. 9th and Passyunk. Open 24 hours, 365 days a year. Pat's King of Steaks has been there since the beginning. Geno's opened in 1966 and immediately became a rival.
+
+You will be asked to choose a side. There is no neutral position in this debate. Choosing neither is not accepted.
+
+THE CHEESE OPTIONS
+• Whiz: Cheez Whiz, directly from the jar, applied warm. The purist's choice. A distinctive flavor that some describe as "processed" and others describe as "perfect."
+• American: Melted slices. The classic choice. Good. Reliable. Never offensive.
+• Provolone: For the people who want to feel sophisticated while eating a cheesesteak. Perfectly acceptable.
+
+THE ORDER
+You must know what you want when you reach the window. There is a line behind you. "Whiz wit" means Cheez Whiz with onions. "American witout" means American cheese, no onions. Hesitation disrupts the flow. South Philadelphia has no patience for hesitation.
+
+THE BREAD
+Amoroso's hoagie roll. If it's not an Amoroso's roll, it's a sandwich. It's a good sandwich. But it's not a cheesesteak.
+
+THE LOCATION
+2.7 miles from Veterans Stadium. There is no traffic reason not to stop after the game.`,
+  },
+  {
+    matchText: "Veterans Stadium — South Philadelphia's home since 1971.",
+    title: "🏟️ Veterans Stadium — The Vet",
+    icon: "🏟️",
+    color: "#c0392b",
+    body: `VETERANS STADIUM — SOUTH PHILADELPHIA, PA
+Opened April 10, 1971
+
+THE BUILDING
+Circular. 62,382 seats for baseball. The eighth wonder of the world, according to nobody, but an honest-to-goodness landmark in South Philadelphia. Artificial turf that gets hot enough in August to cook an egg. A drainage system that works inconsistently. Plumbing that the maintenance staff discusses in hushed tones.
+
+It is not beautiful. It is ours.
+
+THE UPPER DECK
+Level 700. Also known as the 700 Level. Famously, historically, legendarily passionate. Opposing players do not enjoy the 700 Level. Opposing players are aware of the 700 Level before they arrive. It is part of the game plan.
+
+THE PHANATIC
+The Phillie Phanatic was introduced in 1978. Dave Raymond is inside the costume. Green, furry, motorized cart, air-powered belly. He has ridden opposing managers. He has kissed the Dodger bullpen. He has done things that cannot be described in a family broadcast. He is beloved.
+
+THE 1980 WORLD SERIES
+Game 6. October 21, 1980. Tug McGraw throws a fastball past Willie Wilson to give Philadelphia its first World Series championship. The moment is on tape. People who were there are still talking about it. People who weren't there are also still talking about it.
+
+THE NAME
+Named in honor of American veterans of all wars. The dedication is above the main entrance. It is the least Philadelphia-sounding reason for anything in Philadelphia to be named something, and yet it is true and it matters.
+
+THIS IS THE VET.
+Your team plays here.
+You are welcome.`,
+  },
+  {
+    matchText: "A birthday greeting to young Michael Fratelli, celebrating his 10th at tonight's game.",
+    title: "🎂 Happy 10th Birthday, Michael!",
+    icon: "🎂",
+    color: "#e91e63",
+    body: `HAPPY 10TH BIRTHDAY, MICHAEL FRATELLI
+
+FROM VETERANS STADIUM AND THE PHILADELPHIA PHILLIES
+
+Michael. Tonight you are ten years old. And you are at a baseball game.
+
+This is exactly the correct way to be ten years old.
+
+THE SPECIFICS
+You are here with someone who loves you — a parent, a grandparent, an uncle, someone who looked at you and thought: this kid should be at a baseball game on his birthday. That person made a good decision. Remember who brought you.
+
+WHAT'S HAPPENING AROUND YOU
+Mike Schmidt is at third base. The same Mike Schmidt who has won three MVP awards and whose home run swing is one of the most powerful in baseball. He is right there. You can see him from where you're sitting. This is real life and it is happening.
+
+Steve Carlton may be pitching tonight. Or someone else. Either way: professional baseball players are performing fifteen feet away from a crowd that includes you, Michael, who is ten.
+
+WHAT YOU SHOULD DO
+Eat a hot dog if you haven't. Get a program and keep it. Watch every pitch. Try to keep score. If you can't keep score yet, just watch. Ask questions. The answers are the beginning of a very long education in something worth knowing.
+
+THE FUTURE
+Someday you will be older. Veterans Stadium may not be here anymore. This exact game, this exact night, this exact crowd — it will be gone. But you will remember it. Or you'll remember something about it. The smell of the place. A play you saw. The feeling of being small in a big stadium on your birthday.
+
+That's yours, Michael. Nobody can take it.
+
+HAPPY BIRTHDAY.
+From Harry, Richie, and everyone here tonight.`,
+  },
+
+  // ── HOT DOG / EASTER EGG ──
+  {
+    matchText: "The hot dog vendor appears to be winning his section by a wide margin.",
+    title: "🌭 Hot Dog Vendor — Section Report",
+    icon: "🌭",
+    color: "#e67e22",
+    body: `HOT DOG VENDOR — FIELD REPORT
+
+The hot dog vendor is, by any objective measure, having the best game in the stadium today.
+
+THE EVIDENCE
+He has been through his section twice since the third inning. He has not been in the same spot twice. His circulation pattern is tactical. He anticipates the crowd movement. When a row leans forward to watch a pitch, he slides past without incident. He has never dropped a hot dog. Not once. This is a verifiable fact within his section.
+
+THE MERCHANDISE
+Standard ballpark franks. Steamed in a heated metal carrier strapped across his chest. The carrier has been with him since 1977. It is seasoned. It has absorbed the ambient heat of approximately 400 games. This is believed to contribute to the flavor.
+
+THE CALL
+"HOT DOGS! GET YOUR HOT DOGS HERE!" — delivered at approximately 80% volume, modified for close proximity to actual people, and with a rhythm that suggests he has thought about this. The cadence is practiced. It works.
+
+THE ECONOMICS
+Each hot dog: $1.50, which represents approximately three at-bats of value at today's exchange rate.
+
+THE COMPETITION
+The peanut vendor is working the other side of the section. The peanut vendor is competent. The hot dog vendor is winning.
+
+THE WINNING MARGIN
+Difficult to quantify. But the empties tell the story.
+
+IF YOU HAVEN'T GOT ONE YET
+He will be back.
+He always comes back.
+That is the thing about a hot dog vendor who is very good at his job.`,
+  },
+  {
+    matchText: "Somewhere, a youngster is falling in love with baseball for the first time today.",
+    title: "⚾ Falling in Love with Baseball",
+    icon: "⚾",
+    color: "#27ae60",
+    body: `SOMEWHERE IN THIS STADIUM TODAY
+
+A kid is watching their first baseball game.
+
+WHAT THEY ARE NOTICING
+The size of the field. From a television, you don't understand the scale. The outfield goes on for what seems like an impossible distance. The players are far away and fast and enormous and they make things look easy that are extremely hard.
+
+The sound. The bat crack reaches the upper deck about a quarter second after the swing. This delay — sound traveling through space — is one of those things you stop noticing eventually but never quite forget the first time.
+
+The smell. Popcorn, hot dogs, grass (if there is grass), something metallic from the seats, and the specific smell of a crowd that has been sitting in the sun for two hours and is having a good time.
+
+WHAT THEY ARE THINKING
+"I want to come back."
+
+WHAT WILL HAPPEN
+They will come back. They will come back for years. They will bring their own kids someday. They will remember, imprecisely, this exact afternoon — a team, a score, a play — and feel something that doesn't have a good name.
+
+THE THING ABOUT BASEBALL
+It is not a particularly fast game. It requires patience, which children technically don't have yet and yet often find at a ballpark. There is something about the pace that allows for looking around, noticing things, asking questions, eating slowly, existing in a moment without rushing through it.
+
+It is a good sport to fall in love with.
+
+SOMEWHERE IN THIS STADIUM TODAY, SOMEONE IS DOING EXACTLY THAT.
+That's a fine thing.`,
+  },
+
   // ── GENERAL SPONSOR / FILLER ──
   {
     matchText: "Thanks for joining us today. We'll be back with more baseball right after this.",
@@ -578,6 +796,192 @@ The hot dog vendor is making another pass through the section. If you've been on
 WE'LL BE RIGHT BACK.
 More baseball is coming.
 You made the right choice being here.`,
+  },
+  {
+    matchText: "Set your VCR before leaving for work.",
+    title: "📼 Set Your VCR Before Work",
+    icon: "📼",
+    color: "#1a237e",
+    body: `SET YOUR VCR BEFORE LEAVING FOR WORK
+
+This is a public service announcement from everyone who has come home to a blank tape.
+
+THE SITUATION
+A television program you want to watch airs this evening at 8 PM. You will not be home at 8 PM. You own a VCR. The VCR can record things while you are away. This is the entire point of the VCR.
+
+THE PROBLEM
+The VCR requires programming. Programming the VCR requires consulting the manual. The manual is 47 pages long and was written by engineers who have never personally tried to set a VCR timer while running late for work. The manual is probably in a drawer. It might be the junk drawer. It might be the drawer with the old batteries and the expired coupons and the takeout menus from restaurants that have since closed.
+
+THE CLOCK
+If the power went out at any point since you set the clock, the clock is wrong. If the clock is wrong, the recording will be wrong. The VCR has been blinking "12:00" since the last thunderstorm and you have been meaning to fix it.
+
+THE TAPE
+Is there a tape in the machine? What is on the tape? Is it blank? Is it important? Was it your sister's wedding? You need to check the tape before you press record.
+
+THE ALTERNATIVE
+Write down what you want to watch. Watch it when you get home if the rerun airs. Or don't. Some things are fine to miss.
+
+BUT IF YOU REALLY WANT IT:
+Manual. Drawer. Timer. Channel. Duration. Tape.
+In that order.
+Before you leave for work.
+You can do this.`,
+  },
+  {
+    matchText: "Remember to set your VCR before leaving home.",
+    title: "📼 Remember: Set Your VCR",
+    icon: "📼",
+    color: "#1a237e",
+    body: `REMEMBER: SET YOUR VCR BEFORE LEAVING HOME
+
+You thought of this in the car. You're already halfway there. The show starts at 9.
+
+THE MATH
+Turnaround time: at minimum, 25 minutes. The show you want to record starts in 40 minutes. You could make it. You would be late. Is it worth it?
+
+WHAT'S ON TONIGHT
+Something you've been wanting to watch. A show you follow. Or possibly a movie — maybe something good, maybe something you'd watch halfway and fall asleep to anyway. You were going to record it and decide later.
+
+THE VCR AT HOME
+It is sitting on top of your television, which is a 19-inch Zenith with a wooden panel finish. The VCR is connected via a coaxial cable. There is a small red light on the front that blinks when it's in standby. It is currently in standby. It is waiting for instructions.
+
+THE TAPE SITUATION
+Hopefully there's a blank tape in there. You labeled the tapes at one point. One says "MISC" in marker. One says "MOVIES" in marker. One says nothing — just a piece of tape with the marker smeared off. That one might be fine. Might be the kids' Christmas 1982. Unknown.
+
+THE HONEST TRUTH
+You will probably miss this program. You will hear about it from someone at work on Monday. They will tell you what happened. You will nod and feel fine about it.
+
+OR — and this is the optimistic path — you remember when you get home, the show hasn't started yet, and you press record with three minutes to spare.
+
+That happens too.
+More often than you'd think.`,
+  },
+  {
+    matchText: "The Natural starring Robert Redford is now playing.",
+    title: "🎬 The Natural — Now Playing",
+    icon: "🎬",
+    color: "#8b4513",
+    body: `THE NATURAL — NOW PLAYING IN THEATERS
+
+Starring Robert Redford. Directed by Barry Levinson. Based on the novel by Bernard Malamud.
+
+THE STORY
+Roy Hobbs. A ballplayer with a bat he carved himself from a tree split by lightning. He calls it Wonderboy. He appears from nowhere at the age of 35 and plays baseball in a way that nobody can explain and nobody can stop.
+
+It is a baseball movie. It is also a movie about time, and failure, and what it means to try again after something has been taken from you.
+
+THE BAT
+Wonderboy. Carved from the heart of a lightning-struck oak tree. Roy burns "Wonderboy" into the barrel. When it finally breaks — and you already know it will break, every important thing in this kind of story eventually breaks — something happens in the crowd.
+
+THE LIGHTS
+There is a scene near the end. The stadium lights. Sparks falling like rain. Robert Redford running the bases while everything explodes above him. It is the most beautiful baseball scene ever put on film. This is not opinion. It is the consensus of everyone who has seen it.
+
+THE MUSIC
+Randy Newman composed the score. It sounds like what heroism sounds like when heroism is possible. You will hear it in your head for days.
+
+IS IT REALISTIC?
+No. Baseball doesn't work the way it works in this movie. That's not what this movie is about.
+
+GO SEE IT.
+It is playing now.
+Take someone who loves baseball.
+Or take someone who doesn't — yet.`,
+  },
+  {
+    matchText: "The Natural tells the story of a mysterious baseball hero.",
+    title: "🎬 The Natural — Roy Hobbs",
+    icon: "🎬",
+    color: "#8b4513",
+    body: `THE NATURAL — THE STORY OF ROY HOBBS
+
+Robert Redford. Glenn Close. Kim Basinger. Robert Duvall. Wilford Brimley. Directed by Barry Levinson.
+
+ROY HOBBS
+He shows up at the age of 35. No one knows where he's been. He carries a bag with a bat he carved from a lightning-struck tree. He says very little. When he swings the bat, things happen that have never happened before.
+
+This is what the movie is about: what happens when someone who should have been great finally gets the chance.
+
+WHAT YOU NEED TO KNOW BEFORE YOU GO
+The movie is about baseball but it isn't really about baseball. It's about something older — a man who was on his way to something extraordinary, had it taken from him, and survived long enough to try again.
+
+There's a woman in white in the stands. There is always a woman in white. Remember that.
+
+THE GAME SEQUENCES
+Shot at War Memorial Stadium in Buffalo, New York, which was built in 1937 and looks exactly like a stadium from the 1930s because it is one. Every detail is right. The flannel uniforms. The wooden dugout benches. The scoreboard. It doesn't feel like a movie set because it isn't one.
+
+THE FINAL SEQUENCE
+You will know it when you see it.
+We won't say more.
+
+NOW PLAYING.
+Your local theater.
+Go before it leaves.`,
+  },
+  {
+    matchText: "See The Natural this week at your local theater.",
+    title: "🎬 The Natural — See It This Week",
+    icon: "🎬",
+    color: "#8b4513",
+    body: `THE NATURAL — SEE IT THIS WEEK
+
+"Some mistakes you never stop paying for." — Roy Hobbs
+
+Robert Redford is Roy Hobbs, a ballplayer who should have been the best who ever lived. Instead, something happened. The movie begins when he arrives, at 35, to try again.
+
+WHY THIS WEEK
+The Natural opened in May 1984. If you haven't seen it yet, summer is still happening. The air conditioning in the theater is working. There is nothing else to do on a Tuesday night that will feel this complete.
+
+THE SCORE
+Randy Newman. Not the funny songs — the orchestral Randy Newman, the one that sounds like corn fields and summer evenings and second chances. You will walk out of the theater hearing it. You will hear it for a week. This is not a complaint.
+
+THE CAST
+Robert Redford as Roy Hobbs.
+Glenn Close as Iris — the woman in the white dress, in the stands, in the sunlight.
+Robert Duvall as the sports writer who knows too much.
+Wilford Brimley as the manager, Pop Fisher, who has been waiting for this his whole career.
+Kim Basinger as a woman who understands something about Roy that Roy doesn't understand about himself.
+
+THE FINAL SCENE
+We're not going to tell you about the final scene.
+You'll know it when you see it.
+It involves stadium lights.
+And a boy.
+And a bat.
+And something that can't quite be explained but doesn't need to be.
+
+SEE IT THIS WEEK.`,
+  },
+  {
+    matchText: "Back-to-school savings are now underway.",
+    title: "🎒 Back to School — 1984",
+    icon: "🎒",
+    color: "#2980b9",
+    body: `BACK-TO-SCHOOL SAVINGS — NOW UNDERWAY
+
+Summer is ending. Somewhere, in the back of your mind, you knew this was coming.
+
+THE SUPPLIES
+Number 2 pencils. A 12-pack. They will be needed. Many of them will be chewed past the eraser before the end of October.
+
+A three-ring binder. Preferably with a clear plastic sleeve on the cover so you can slide a picture of your favorite band or baseball player under it. This is considered advanced personalization.
+
+Spiral notebooks. At least five. One per subject, ideally. In practice, two subjects will share a notebook and the second one will start from the back.
+
+A ruler. Technically needed. Practically used to tap on the desk until the teacher asks you to stop.
+
+A Trapper Keeper. This is non-negotiable. It has a velcro closure that makes a satisfying sound. It comes in approximately 200 designs. There is a space shuttle one. There is an abstract design that looks like a sunset. Get the one that feels right.
+
+LUNCH SUPPLIES
+A lunchbox or a brown bag. If a lunchbox: thermos for soup, or a juice box depending on the day. If a brown bag: your name on the outside in marker, which is a good idea but seems embarrassing until you realize everyone is also doing it.
+
+THE STORES
+Montgomery Ward. Kmart. Woolworth's. JCPenney. Sears. All running back-to-school specials right now.
+
+THE TRUTH ABOUT SUMMER
+It doesn't really end until you're back in a desk.
+But today you're at a baseball game.
+So today doesn't count.
+Today is still summer.`,
   },
   {
     matchText: "Baseball. Hot dogs. Summer. It doesn't get much better than this.",
