@@ -2,24 +2,24 @@
 
 export const DETROIT_TIGERS_BANNERS = [
   {
-    id: 'tigers_bobble_miggy',
-    exhibit: 'Miguel Cabrera Bobblehead Night',
-    icon: '🎃',
-    tagline: 'Miguel Cabrera - The Hitting Machine Bobblehead',
+    id: 'tigers_bobble_fidrych',
+    exhibit: 'Mark Fidrych Bobblehead Night',
+    icon: '🐦',
+    tagline: 'Mark Fidrych - The Bird Bobblehead',
     category: 'bobblehead',
-    description: 'Miguel Cabrera, the Tigers\' most accomplished hitter of the modern era, receives his own bobblehead celebration. With two Triple Crowns and 500+ home runs, Miggy was the face of Detroit baseball for over a decade. Fans lined up to collect this iconic bobblehead commemorating his historic 2012 Triple Crown—the first in 45 years.',
-    achievement: 'miggy_collector',
-    animationTrigger: 'spin',
+    description: 'Mark Fidrych, nicknamed "The Bird," captured the hearts of Tigers fans with his electrifying presence on the mound. His 1976 rookie season was spectacular, earning him the AL Rookie of the Year award. Known for his animated personality, talking to the baseball, and his quirky superstitions, Fidrych was one of baseball\'s most beloved and entertaining personalities. His bobblehead celebrates the joy and magic he brought to Detroit.',
+    achievement: 'fidrych_collector',
+    animationTrigger: 'wiggle',
   },
   {
-    id: 'tigers_bobble_kaline',
-    exhibit: 'Al Kaline Bobblehead Night',
+    id: 'tigers_bobble_lolich',
+    exhibit: 'Mickey Lolich Bobblehead Night',
     icon: '⚾',
-    tagline: 'Al Kaline - The Gentleman Tiger Bobblehead',
+    tagline: 'Mickey Lolich - Hall of Fame Pitcher Bobblehead',
     category: 'bobblehead',
-    description: 'Al Kaline, who spent his entire 22-season Hall of Fame career with Detroit, receives bobblehead honors. "Mr. Tiger" accumulated 3,007 career hits and won the 1955 American League batting title at age 20. His bobblehead captured the grace and elegance that defined his playing style and his relationship with Tigers fans.',
-    achievement: 'kaline_collector',
-    animationTrigger: 'wiggle',
+    description: 'Mickey Lolich, one of the greatest pitchers in Tigers history, earned his bobblehead honors. Lolich won 217 games as a Tiger and was a four-time All-Star. He was the winning pitcher in Game 6 of the 1968 World Series, delivering the crucial victory that helped bring a championship to Detroit. His resilience and competitiveness made him a fan favorite.',
+    achievement: 'lolich_collector',
+    animationTrigger: 'power_nod',
   },
   {
     id: 'tigers_bobble_tycobb',
@@ -249,7 +249,7 @@ export function trackDetroitTigersBannerView(entryId) {
   }
   
   // Bobblehead collection achievement
-  const bobbleheadIds = ['tigers_bobble_miggy', 'tigers_bobble_kaline', 'tigers_bobble_tycobb', 'tigers_bobble_hgreenberg', 'tigers_bobble_whorton'];
+  const bobbleheadIds = ['tigers_bobble_fidrych', 'tigers_bobble_lolich', 'tigers_bobble_tycobb', 'tigers_bobble_hgreenberg', 'tigers_bobble_whorton'];
   const bobbleheadsCollected = bobbleheadIds.filter(id => VIEWED_EXHIBITS.has(id)).length;
   if (bobbleheadsCollected === 5 && !localStorage.getItem('ach_bobblehead_collector')) {
     localStorage.setItem('ach_bobblehead_collector', Date.now());
