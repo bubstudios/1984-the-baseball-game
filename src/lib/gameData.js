@@ -566,10 +566,10 @@ export const TEAMS = {
     ],
     bullpen: [
       { name: "Al Holland", pos: "CL", throws: "L", bats: "L", stamina: 4, pitchSpeed: 7, offSpeed: 8, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
-      { name: "Kent Tekulve", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 4, offSpeed: 8, control: 9, contact: 2, power: 1, bunting: 3, speed: 2, specialty: { name: "The Submarine", pitch: "Breaking Ball", label: "RC" } },
       { name: "Larry Andersen", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Bill Campbell", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Don Carman", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
-      { name: "Dave Rucker", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Tug McGraw", pos: "RP", throws: "L", bats: "R", stamina: 3, pitchSpeed: 6, offSpeed: 8, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 };
@@ -621,6 +621,7 @@ export const PLAYER_ERRORS = {
   "Glenn Wilson": 7, "Ozzie Virgil Jr.": 9, "Garry Maddox": 2, "Jeff Stone": 5,
   "Len Matuszek": 4, "Greg Gross": 1, "Derrel Thomas": 5, "Bo Diaz": 6, "Sixto Lezcano": 2,
   "Steve Carlton": 3, "John Denny": 4, "Kevin Gross": 5, "Charles Hudson": 6,
+  "Al Holland": 2, "Larry Andersen": 2, "Bill Campbell": 3, "Don Carman": 2, "Tug McGraw": 1,
 };
 
 // Estimate splits for bench players based on overall stats + handedness
