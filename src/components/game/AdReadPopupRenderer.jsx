@@ -24,6 +24,7 @@ import NationalCharityPopup from './NationalCharityPopup';
 import NationalPromosPopup from './NationalPromosPopup';
 import NationalWrestlingPopup from './NationalWrestlingPopup';
 import VhsBetamaxLaserDiscPopup from './VhsBetamaxLaserDiscPopup';
+import DetroitTigersBannerPopup from './DetroitTigersBannerPopup';
 
 export default function AdReadPopupRenderer({
   expanded, isMovie, synopsisData, onDismiss, onAchievement,
@@ -48,6 +49,7 @@ export default function AdReadPopupRenderer({
   isNationalPromos, nationalPromosEntry,
   isNationalWrestling, nationalWrestlingEntry,
   isVhsBetamax, vhsBetamaxEntry,
+  isDetroitTigers, detroitTigersEntry,
   isTvMovie, tvMovieEntry,
   isObscureTv, obscureTvEntry,
   isGeneralProducts, gpEntry,
@@ -117,6 +119,9 @@ export default function AdReadPopupRenderer({
   }
   if (expanded && isVhsBetamax && vhsBetamaxEntry) {
     return <VhsBetamaxLaserDiscPopup entry={vhsBetamaxEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
+  }
+  if (expanded && isDetroitTigers && detroitTigersEntry) {
+    return <DetroitTigersBannerPopup entry={detroitTigersEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
   }
   if (expanded && isTvMovie && tvMovieEntry) {
     return <TvMoviePopup entry={tvMovieEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;

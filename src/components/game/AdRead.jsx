@@ -25,6 +25,7 @@ import NationalCharityPopup from './NationalCharityPopup';
 import NationalPromosPopup from './NationalPromosPopup';
 import NationalWrestlingPopup from './NationalWrestlingPopup';
 import VhsBetamaxLaserDiscPopup from './VhsBetamaxLaserDiscPopup';
+import DetroitTigersBannerPopup from './DetroitTigersBannerPopup';
 import AdReadPopupRenderer from './AdReadPopupRenderer';
 import { trackSynopsisView, pickSynopsis, NETWORK_LOGOS, EASTER_EGGS } from '@/lib/tvGuideData';
 import { findMovieIndex } from '@/lib/moviePopups';
@@ -51,6 +52,7 @@ import { findRedSoxBannerEntry, trackRedSoxBannerView } from '@/lib/redSoxBanner
 import { findNationalPromosEntry, trackNationalPromosView } from '@/lib/nationalPromosPopups';
 import { findNationalWrestlingEntry } from '@/lib/nationalWrestlingPopups';
 import { findVhsBetamaxLaserDiscEntry } from '@/lib/vhsBetamaxLaserDiscPopups';
+import { findDetroitTigersBannerEntry, trackDetroitTigersBannerView } from '@/lib/detroitTigersBannerPopups';
 
 export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchievement }) {
   const [visible, setVisible] = useState(false);
@@ -105,6 +107,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [nationalWrestlingEntry, setNationalWrestlingEntry] = useState(null);
   const [isVhsBetamax, setIsVhsBetamax] = useState(false);
   const [vhsBetamaxEntry, setVhsBetamaxEntry] = useState(null);
+  const [isDetroitTigers, setIsDetroitTigers] = useState(false);
+  const [detroitTigersEntry, setDetroitTigersEntry] = useState(null);
 
   // Detect ad type on mount
   useEffect(() => {
@@ -173,6 +177,9 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findVhsBetamaxLaserDiscEntry(ad.text)) {
       setIsVhsBetamax(true);
       setVhsBetamaxEntry(findVhsBetamaxLaserDiscEntry(ad.text));
+    } else if (findDetroitTigersBannerEntry(ad.text)) {
+      setIsDetroitTigers(true);
+      setDetroitTigersEntry(findDetroitTigersBannerEntry(ad.text));
     } else if (movie !== null) {
       setIsTvMovie(true);
     } else {
@@ -232,11 +239,15 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
-    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalWrestling, isVhsBetamax];
+    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalWrestling, isVhsBetamax, isDetroitTigers];
     if (specialTypes.some(t => t)) {
       setExpanded(true);
       if (isNationalCharity && nationalCharityEntry) {
         const unlocked = trackNationalCharityView(nationalCharityEntry.id);
+        if (unlocked.length > 0 && onAchievement) onAchievement(unlocked);
+      }
+      if (isDetroitTigers && detroitTigersEntry) {
+        const unlocked = trackDetroitTigersBannerView(detroitTigersEntry.id);
         if (unlocked.length > 0 && onAchievement) onAchievement(unlocked);
       }
       return;
@@ -304,6 +315,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       nationalWrestlingEntry={nationalWrestlingEntry}
       isVhsBetamax={isVhsBetamax}
       vhsBetamaxEntry={vhsBetamaxEntry}
+      isDetroitTigers={isDetroitTigers}
+      detroitTigersEntry={detroitTigersEntry}
       isTvMovie={isTvMovie}
       tvMovieEntry={tvMovieEntry}
       isObscureTv={isObscureTv}
