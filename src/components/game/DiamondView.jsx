@@ -95,21 +95,21 @@ export default function DiamondView({ bases, lastPlay, isDay = false }) {
 
       {/* Runner names with speed — positioned inside diamond edges to avoid clipping */}
       {bases[0] && (
-        <div className="absolute right-1 bottom-[35%] text-[9px] text-primary font-heading font-semibold bg-card/90 px-1 py-0.5 rounded whitespace-nowrap z-20">
+        <div className="absolute right-1 bottom-[35%] text-xs text-primary font-heading font-semibold bg-card/90 px-1.5 py-0.5 rounded whitespace-nowrap z-20">
           {bases[0].name.split(' ').pop()}
-          <span className="text-[7px] text-muted-foreground ml-0.5 align-top">SPD{bases[0].speed}</span>
+          <span className="text-[9px] text-muted-foreground ml-0.5 align-top">SPD{bases[0].speed}</span>
         </div>
       )}
       {bases[1] && (
-        <div className="absolute left-1/2 -translate-x-1/2 top-3 text-[9px] text-primary font-heading font-semibold bg-card/90 px-1 py-0.5 rounded whitespace-nowrap">
+        <div className="absolute left-1/2 -translate-x-1/2 top-3 text-xs text-primary font-heading font-semibold bg-card/90 px-1.5 py-0.5 rounded whitespace-nowrap">
           {bases[1].name.split(' ').pop()}
-          <span className="text-[7px] text-muted-foreground ml-0.5 align-top">SPD{bases[1].speed}</span>
+          <span className="text-[9px] text-muted-foreground ml-0.5 align-top">SPD{bases[1].speed}</span>
         </div>
       )}
       {bases[2] && (
-        <div className="absolute left-1 top-1/2 -translate-y-1/2 text-[10px] text-primary font-heading font-semibold bg-card/95 px-1.5 py-0.5 rounded whitespace-nowrap z-20 shadow-md">
+        <div className="absolute left-1 top-1/2 -translate-y-1/2 text-[13px] text-primary font-heading font-semibold bg-card/95 px-1.5 py-0.5 rounded whitespace-nowrap z-20 shadow-md">
           {bases[2].name.split(' ').pop()}
-          <span className="text-[8px] text-muted-foreground ml-1 align-top">SPD{bases[2].speed}</span>
+          <span className="text-[10px] text-muted-foreground ml-1 align-top">SPD{bases[2].speed}</span>
         </div>
       )}
 

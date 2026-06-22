@@ -562,6 +562,290 @@ TODAY'S PRICE: 75 cents. Mustard only — Duke considers ketchup on a hot dog a 
 
 export const EASTER_EGG_COMMUNITY_ENTRIES = [
   {
+    id: 'baseball_wonderful_game',
+    matchText: 'Baseball remains a wonderful game for youngsters everywhere.',
+    title: 'Baseball: America\'s Game',
+    icon: '⚾',
+    color: '#15803d',
+    body: `BASEBALL REMAINS A WONDERFUL GAME FOR YOUNGSTERS EVERYWHERE.
+
+And for older people who absolutely should know better but can't help themselves.
+
+THE ARGUMENT FOR BASEBALL
+No clock. No buzzer. The game isn't over until it's over, and it isn't over until the last out is recorded. A team down by eight in the ninth inning still has a mathematical claim on winning. Almost no other sport can say that honestly.
+
+THE PACE
+Critics call baseball slow. Baseball fans call it thoughtful. Between every pitch, there is time to argue, to eat something, to wonder, to remember a game from twenty years ago that had a similar situation. This is not a flaw.
+
+FOR THE YOUNGSTERS
+Every child who loves baseball eventually learns the following things:
+• Failure is normal. Even the best hitters fail seven times out of ten.
+• Patience is a skill, not a weakness.
+• Statistics tell a story, but they don't tell the whole story.
+• It feels completely different watching it live than it does on television.
+• Hot dogs taste better at the ballpark. This is a scientific fact.
+
+FROM ERNIE HARWELL
+"Baseball is the greatest game ever invented, and it was invented to be played outdoors in the summer when the nights are long. Any child who grows up loving this game is going to be fine."
+
+He's right. He usually is.`,
+  },
+  {
+    id: 'womens_auxiliary_bake_sale',
+    matchText: 'The women\'s auxiliary is hosting a bake sale at the church hall this weekend. All proceeds go to the local food bank.',
+    title: 'The Church Bake Sale — A Living Institution',
+    icon: '🥧',
+    color: '#b45309',
+    body: `THE CHURCH BAKE SALE — A LIVING AMERICAN INSTITUTION
+
+Nobody has ever gone to a church bake sale intending to spend $38 on baked goods. Yet here we are.
+
+THE WOMEN'S AUXILIARY
+Founded in the 1920s by women who needed an organizational framework for doing the things they were already doing for free, the church women's auxiliary runs the bake sale, the Christmas bazaar, the Easter dinner, and — depending on the congregation — the entire facilities budget.
+
+THE ITEMS
+The standard bake sale table in 1984 features:
+• Chocolate chip cookies (quantity: always more than expected)
+• Lemon bars wrapped in wax paper with a handwritten price
+• Coffee cake from the woman who brings coffee cake to every event and whose coffee cake is extraordinary
+• Something described as "Aunt Helen's Special" — nobody is certain what this is, but it always sells out first
+• Brownies arranged in neat rows on a paper plate
+• One truly ambitious layer cake that will stay on the table until someone's husband is given the look
+
+THE PRICING
+25¢ to $1.50 per item. Nobody charges enough. The women who baked them paid that much in ingredients alone, but charging more would feel impolite, and feeling impolite is not what the bake sale is for.
+
+THE FOOD BANK
+Every dollar raised goes to feed families in the community. This is not a small thing. The local food bank quietly feeds hundreds of people every week while making very little noise about it.
+
+The church basement has smelled like coffee and frosting for forty years. Some things should never change.`,
+  },
+  {
+    id: 'tiger_stadium_historic',
+    matchText: 'Visit historic Tiger Stadium and experience one of baseball\'s great ballparks.',
+    title: 'Tiger Stadium — Michigan and Trumbull',
+    icon: '🏟️',
+    color: '#f97316',
+    body: `TIGER STADIUM — MICHIGAN AND TRUMBULL, DETROIT
+
+The corner of Michigan and Trumbull has hosted professional baseball since 1896. The current structure — opened in 1912 as Navin Field, renamed Briggs Stadium in 1938, and Tiger Stadium since 1961 — is one of baseball's great old ballparks and a genuine piece of American history.
+
+THE STRUCTURE
+Tiger Stadium is a double-decked park with a distinctive upper deck that extends over the lower deck in right field, creating one of baseball's most unusual features: seats in right field where the upper deck actually overhangs the playing field. Balls that barely clear the fence in right field can still bounce off the overhanging deck for a ground-rule double.
+
+THE FAMOUS DISTANCES
+• Left field foul line: 340 feet
+• Center field: 440 feet (one of the deepest centers in the majors)
+• Right field foul line: 325 feet
+• Right field upper deck: Overhangs playing field by 10 feet
+
+THE HISTORY
+Every great hitter from Ty Cobb to Hank Greenberg to Al Kaline has played here. Babe Ruth hit memorable home runs at this ballpark. The 1935 and 1945 World Series Champions were clinched here. The 1968 World Series saw the Tigers come from behind to beat the Cardinals in seven games on this field.
+
+THE LIGHTS
+Tiger Stadium installed lights in 1948. Ernie Harwell has called games here since 1960. The combination of Harwell's voice and these lights on a summer night is a Michigan institution.
+
+THE FEEL
+Old wood. Old concrete. Obstructed-view seats that are actually closer to the action than the unobstructed ones. The intimate distance between the stands and the field. This is what baseball felt like before anyone decided ballparks needed luxury suites.
+
+Come for the game. Stay for the building. It won't be here forever.`,
+  },
+  {
+    id: 'folks_in_detroit',
+    matchText: 'The folks here in Detroit are enjoying this one.',
+    title: 'The Detroit Baseball Fan',
+    icon: '🐯',
+    color: '#f97316',
+    body: `THE DETROIT BASEBALL FAN — A PORTRAIT
+
+Ernie Harwell says this about once a game. It sounds simple. It is not simple.
+
+WHO THEY ARE
+The people listening to Tigers baseball in 1984 are autoworkers and accountants, retirees listening on the porch, kids with transistor radios under the covers at 11 PM, truck drivers on the highway with WJR turned up loud. They are from Detroit and Dearborn and Flint and Ypsilanti and every town in Michigan with a radio signal.
+
+WHAT THEY KNOW
+Detroit baseball fans are knowledgeable in a specific, Michigan way. They know the batting order from memory. They argue about relief pitching with the authority of people who have watched relief pitching fail them personally. They remember 1968 with the clarity of eyewitnesses.
+
+THE 1984 TIGERS
+This year is special, and they know it. The Tigers started 35-5. The best start in baseball history. The city felt something different happening, and it turned out to be right. These fans have been through enough bad years to understand what a good team feels like.
+
+THE RADIO
+In 1984, for every fan in the stadium, there are ten more listening on the radio. Ernie Harwell's voice carries across the state, over Lake Huron, into Ontario. People in the Upper Peninsula listen through static. Night-shift workers have it on at the factory.
+
+WHAT ERNIE MEANS
+Harwell doesn't just describe the game. He acknowledges the people listening. "The folks here in Detroit are enjoying this one" is not a generic filler line. He's talking to specific people. They hear it and feel it.
+
+That's the relationship. That's Detroit baseball.`,
+  },
+  {
+    id: 'rewind_your_tapes',
+    matchText: 'Remember to rewind your videotapes before returning them.',
+    title: 'Please Be Kind — Rewind',
+    icon: '📼',
+    color: '#0284c7',
+    body: `PLEASE BE KIND, REWIND — THE UNWRITTEN SOCIAL CONTRACT OF 1984
+
+It is four words. It is on a sticker on the tape. It is on a sign above the counter. It is spoken by the teenage clerk with the quiet weariness of someone who has said it ten thousand times.
+
+And yet.
+
+THE PHYSICS
+When a VHS tape finishes playing, it sits fully unwound to the takeup reel. To play it again from the beginning, the tape must rewind. This takes two to four minutes on a properly functioning VCR. On some older machines, approximately a geologic era.
+
+THE PROBLEM
+Returning a tape without rewinding forces the next renter to do it. They came home, they put the kids on the couch, they made the popcorn. Now they sit watching the display count down from wherever you left off. They know someone chose not to rewind. They are thinking about you, and they are not thinking fondly.
+
+THE COUNTER ARGUMENT (from people who don't rewind)
+"The video store has a rewinding machine."
+True. But they also ask you not to do this.
+
+THE SOCIAL AGREEMENT
+Returning a rewound tape is an act of civic consideration, a contract between strangers who will never meet. You do this for someone you don't know, and somewhere, someone you don't know does it for you.
+
+This is, in miniature, how civilization works.
+
+THE CONSEQUENCE OF FAILURE
+Enough complaints and some video stores charge a $0.50 rewind fee. This is entirely deserved.
+
+There are machines specifically built to rewind tapes faster. They exist because enough people refused to press the button.
+
+Please. Press the button.`,
+  },
+  {
+    id: 'rubiks_still_trying',
+    matchText: 'Millions of Americans are still trying.',
+    title: 'The Rubik\'s Cube — Unsolved Mysteries',
+    icon: '🧊',
+    color: '#7c3aed',
+    body: `MILLIONS OF AMERICANS ARE STILL TRYING.
+
+The Rubik's Cube was invented in 1974 by Ernő Rubik, a Hungarian architecture professor who created it as a teaching tool for spatial reasoning. He did not immediately know how to solve it himself. This should make everyone feel better. It does not.
+
+THE SCOPE OF THE PROBLEM
+By 1981, approximately 100 million Rubik's Cubes had been sold worldwide. Each purchaser began with a solved cube. The vast majority of them made it worse within thirty seconds and have never fully recovered.
+
+THE STAGES OF RUBIK'S CUBE OWNERSHIP
+1. Confident: "I've always been good at puzzles."
+2. Methodical: "If I just think about this systematically..."
+3. Frustrated: [Specific language not appropriate for broadcast]
+4. Creative: Peeling stickers off and replacing them in order.
+5. Denial: "I solved it once. I just didn't write down the steps."
+6. Storage: Cube placed on shelf. Partially scrambled. Gathering dust.
+7. Acceptance: Buying one for a relative as a gift.
+
+THE PEOPLE WHO CAN SOLVE IT
+They exist. At national competitions, people solve the cube in under 20 seconds. There are methods: CFOP, Roux, ZZ. These methods involve memorizing 57 algorithms. Approximately nobody does this spontaneously.
+
+THE CULTURAL SIGNIFICANCE
+The Rubik's Cube is the defining artifact of the early 1980s not because everyone solved it, but because everyone tried and failed and kept it on the shelf anyway as a testament to ambition.
+
+Current world record: 22.95 seconds, set by Minh Thai of the USA at the 1982 World Championships.
+
+How long have you been working on yours?`,
+  },
+  {
+    id: 'pick_up_copy',
+    matchText: 'Pick up a copy today.',
+    title: 'The Local Newspaper — A Daily Ritual',
+    icon: '📰',
+    color: '#78350f',
+    body: `PICK UP A COPY TODAY.
+
+In 1984, 63 million newspapers land on American doorsteps, driveways, and front porches every weekday morning. Another 70 million on Sundays. This is near the peak. Nobody knows that yet.
+
+THE MORNING RITUAL
+The newspaper arrives before dawn. By the time the household wakes up, it sits waiting on the porch or folded under the mailbox. Someone retrieves it in a bathrobe. The day hasn't started until the paper is open.
+
+WHAT'S INSIDE
+• The previous day's baseball scores — the reason many people open it first
+• National and international news — curated by editors who decided what mattered
+• The weather map — hand-drawn, surprisingly accurate
+• The comics — negotiated at breakfast by age and preference
+• The classifieds — want ads, used cars, apartments, personals, lost dogs
+• The television listings — essential for VCR programming
+• The grocery coupons — worth actual money if clipped and used before expiration
+
+THE SPORTS SECTION
+Baseball fans read the box scores with the particular attention of accountants. Each at-bat, each hit, each out — a complete record of yesterday's game in compressed form. Men in diners argue over the scores while the paper is still warm.
+
+THE EVENING PAPER
+Some cities still publish afternoon editions. If the morning paper brought last night's news, the evening edition brings this afternoon's. By 1984, most afternoon papers are struggling. The morning paper is winning the day.
+
+A newspaper from today will tell you everything that mattered. In forty years, it will tell you something else entirely.
+
+Pick one up. You won't regret it.`,
+  },
+  {
+    id: 'harold_simmons_birthday',
+    matchText: 'Happy birthday to Mr. Harold Simmons of Dearborn, celebrating his 82nd today.',
+    title: 'Harold Simmons — Section 314, Seat 7',
+    icon: '🎂',
+    color: '#dc2626',
+    body: `HAPPY 82ND BIRTHDAY TO HAROLD SIMMONS OF DEARBORN.
+
+Ernie Harwell reads birthday announcements on the air. He reads them warmly, personally, as if he knows these people — and after 24 years in Detroit, he usually does.
+
+But Harold Simmons is a particular name.
+
+THE SCORECARD
+Tucked in a drawer in a house on Monroe Street in Dearborn, Michigan, is a battered scorecard from Game 7 of the 1968 World Series. The paper is yellowed. The ink is slightly smeared — from what might be tears. On the back, in careful pencil: "Harold Simmons, Section 314, Seat 7."
+
+He was there. October 10, 1968. 53,634 people.
+
+THE GAME
+Detroit, facing elimination, came back against Bob Gibson — the most unhittable pitcher of a generation. Jim Northrup hit a three-run triple off Gibson in the seventh inning. Mickey Lolich — pitching his third complete game of the Series — held St. Louis to one run.
+
+The Tigers won 4-1. They were World Champions.
+
+WHAT HAROLD WROTE
+In the margins of his scorecard:
+"Lolich's 3rd complete game of Series!"
+"Gibson finally beaten — what a pitcher"
+"Jim Northrup the hero!!!"
+"WE WIN!!! WE WIN!!!"
+
+The exclamation marks are abundant. This is appropriate.
+
+TODAY
+Harold is 82. He has been coming to Tiger Stadium since 1946. He has seen Kaline, Cash, McLain, Lolich, Trammell, and now this 1984 team.
+
+He is, Ernie suspects, enjoying this one.
+
+Happy birthday, Harold.`,
+  },
+  {
+    id: 'bowling_leagues',
+    matchText: 'Neighborhood bowling leagues are now forming.',
+    title: 'Neighborhood Bowling Leagues — A 1984 Institution',
+    icon: '🎳',
+    color: '#1d4ed8',
+    body: `NEIGHBORHOOD BOWLING LEAGUES ARE NOW FORMING.
+
+This is the announcement that appears in community newsletters, church bulletins, and local newspapers every September. And every September, someone who hasn't bowled since 1979 decides this is the year.
+
+THE LEAGUE STRUCTURE
+A typical neighborhood bowling league meets Tuesday or Thursday evenings at 7:00 PM. Teams of four compete against other teams on adjacent lanes. There is a league secretary who handles scheduling and a treasurer who handles the kitty. The prize money at the end of the season is never quite as much as people remember contributing. This is a mystery nobody fully investigates.
+
+THE PLAYERS
+Every league has approximately the same cast:
+• The Ringer: Actually good. Averages 210. Intimidating to look at.
+• The Enthusiast: Buys new bowling shoes every year. Still averages 140.
+• The Reluctant Spouse: Did not choose this. Surprisingly skilled.
+• The Philosopher: Offers a detailed analysis of every spare. Averages 120.
+• The One Who Brings Beer: Universally beloved regardless of average.
+
+THE SHOES
+Rented in sizes from 7 to 14. The disinfectant spray is applied by a teenager with the confidence of a surgeon. The shoes work fine. Nobody enjoys wearing them.
+
+THE BALL
+Regulars bring their own. A drilled three-hole bowling ball with your name engraved on it is a real thing that real people own and transport in a bag. This is wonderful.
+
+COSMIC BOWLING
+Friday nights, the lights go down, the black lights come on, and the lanes glow fluorescent. Strikes feel more important. This is not rational, but it is correct.
+
+The league starts in October. Registration is at the front desk. Bring your own ball if you have one. If not, lane 4 has a 12-pounder that rolls reasonably straight.`,
+  },
+  {
     id: 'walkman_hottest',
     matchText: 'The Walkman remains one of the hottest products in America.',
     title: 'The Sony Walkman',
