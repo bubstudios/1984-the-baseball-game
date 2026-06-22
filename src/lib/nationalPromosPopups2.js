@@ -691,7 +691,7 @@ export const MUSIC = [
     icon: '💿',
     color: '#8b5cf6',
     anim: 'spin',
-    matchText: 'Prince\'s Purple Rain is the album of the year.',
+    matchText: 'Enjoy the latest music from Prince.',
     type: 'music',
     body: `PRINCE - PURPLE RAIN
 Released: July 27, 1984

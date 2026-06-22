@@ -348,10 +348,223 @@ Contact your local American Red Cross chapter or check community bulletin boards
   },
 ];
 
+export const BALLPARK_COLOR_ENTRIES = [
+  {
+    id: 'fireworks_night',
+    matchText: 'Fireworks Night is this Friday after the game. Stick around for a spectacular show set to music.',
+    title: 'Fireworks Night at Tiger Stadium',
+    icon: '🎆',
+    color: '#dc2626',
+    body: `FIREWORKS NIGHT — TIGER STADIUM
+
+Post-game fireworks nights are one of baseball's most beloved traditions, and Tiger Stadium puts on a spectacular show.
+
+THE SHOW
+The pyrotechnics team sets up along the warning track and beyond the outfield walls, using synchronized music to choreograph the display. The show typically runs 20–25 minutes and is visible throughout the surrounding neighborhoods.
+
+THE MUSIC
+The 1984 fireworks program features patriotic favorites, popular songs from the charts, and a few surprises. The finale is timed to coincide with the biggest burst of the evening.
+
+THE TRADITION
+Fireworks nights draw some of the largest crowds of the season. Families arrive early to get the best sightlines, and the upper deck becomes especially popular as the sun goes down.
+
+THE VIEW
+Tiger Stadium's open roof allows fans in every section to watch the fireworks burst above the ballpark. The best views are from the upper deck along the third base line, where the angle over the outfield is unobstructed.
+
+STAYING AFTER
+Fans are encouraged to remain in their seats after the final out. The cleanup crew will have the aisles passable within a few minutes of the last out, and the fireworks begin at dusk.`,
+  },
+  {
+    id: 'youth_baseball_day',
+    matchText: 'Join the Tigers for Youth Baseball Day next weekend.',
+    title: 'Tigers Youth Baseball Day',
+    icon: '⚾',
+    color: '#15803d',
+    body: `TIGERS YOUTH BASEBALL DAY — TIGER STADIUM
+
+The Detroit Tigers invite young fans for a special afternoon celebrating youth baseball and the future of the game.
+
+THE PROGRAM
+Youth Baseball Day features pregame activities on the field, including running the bases, watching batting practice from special access areas, and meeting several Tigers players.
+
+THE PLAYERS
+Tigers players participate in Q&A sessions with young fans, sign autographs, and share advice about developing as ballplayers. Many current Tigers were once youth league players themselves.
+
+THE CLINICS
+Baseball coaches run free skill sessions in the concourse areas covering fundamentals: catching fly balls, fielding grounders, and proper batting stance.
+
+FREE EQUIPMENT
+The first 500 registered youth players receive a complimentary baseball and Tigers pencil set. Limited quantities — register early at the Tigers ticket office.
+
+THE INSPIRATION
+"Every big leaguer started in Little League," said Tigers manager Sparky Anderson. "We want these kids to know they can make it if they work hard."
+
+HOW TO REGISTER
+Contact your local parks and recreation department or call the Tigers ticket office. Groups of 10 or more receive discounted admission for Youth Baseball Day.`,
+  },
+  {
+    id: 'great_lakes_greeting',
+    matchText: 'Greetings to baseball fans across the Great Lakes region.',
+    title: 'The Great Lakes Region',
+    icon: '🌊',
+    color: '#0369a1',
+    body: `THE GREAT LAKES REGION — BASEBALL COUNTRY
+
+The Great Lakes states — Michigan, Ohio, Indiana, Wisconsin, Illinois, and Minnesota — form one of America's richest baseball territories, home to some of the sport's most passionate fans.
+
+THE LAKES
+Lake Superior, Lake Michigan, Lake Huron, Lake Erie, and Lake Ontario together hold 21% of the world's fresh surface water. The region's geography shapes its culture, climate, and communities.
+
+MICHIGAN'S BASEBALL ROOTS
+Michigan has produced numerous major league players, and Detroit has been a baseball city since the 1880s. The Tigers are woven into the fabric of the state's identity.
+
+THE RADIO REACH
+On clear summer nights, WJR's 50,000-watt signal carries Tigers baseball across the Great Lakes region and into Canada. Fans in northern Michigan's Upper Peninsula, Wisconsin, and Ontario tune in from hundreds of miles away.
+
+THE FISHING & BASEBALL CONNECTION
+It's not uncommon for Great Lakes fishermen to have a transistor radio tuned to the Tigers while casting lines. Baseball and the outdoors belong together in this part of the country.
+
+THE FANS
+Great Lakes baseball fans are knowledgeable, passionate, and loyal. They follow the game through every inning regardless of the score, understanding that baseball rewards patience.
+
+Ernie Harwell's voice drifting across the lake on a summer evening — that's a Michigan summer.`,
+  },
+  {
+    id: 'scorebook_1968',
+    matchText: 'Someone in the upper deck is keeping score the old-fashioned way.',
+    title: '1968 World Series — Game 7 Scorecard',
+    icon: '📋',
+    color: '#78350f',
+    body: `WORLD SERIES 1968 — GAME 7
+DETROIT TIGERS vs. ST. LOUIS CARDINALS
+Tiger Stadium, Detroit, Michigan — October 10, 1968
+Attendance: 53,634
+
+LINE SCORE:
+DET  000 000 103 — 4
+STL  000 000 001 — 1
+
+PITCHERS:
+DET: Mickey Lolich (W, 3-0) — Complete Game, 9 IP, 5 H, 1 R, 4 K
+STL: Bob Gibson (L) — 6 IP, 8 H, 3 R
+
+DETROIT BATTING:
+  Al Kaline      RF  3-4, 2 RBI
+  Norm Cash      1B  2-4, 1 RBI  
+  Willie Horton  LF  1-3, 1 R
+  Mickey Stanley SS  1-4
+  Bill Freehan   C   1-3, 1 R
+  Dick McAuliffe 2B  0-3
+  Jim Northrup   CF  1-4 *** 3-run triple, 7th *** ← CIRCLED
+  Don Wert       3B  0-3
+  Mickey Lolich  P   0-2
+
+SCORING SUMMARY:
+  7th: Northrup 3-run triple off Gibson — DET leads 3-0
+  8th: Kaline sac fly — 4-0
+  9th: STL — Shannon solo HR (too little, too late)
+
+NOTES scrawled in margins:
+  "Lolich's 3rd complete game of Series!"
+  "Gibson finally beaten — what a pitcher"
+  "Jim Northrup the hero!!!"
+  "WE WIN!!! WE WIN!!!"
+
+[The scorecard is well-worn, the ink slightly smeared from what might be tears of joy. The name "Harold Simmons, Section 314, Seat 7" is written on the back.]`,
+  },
+  {
+    id: 'local_bands',
+    matchText: 'Local bands will perform throughout the weekend.',
+    title: 'Local Bands of Detroit — 1984',
+    icon: '🎸',
+    color: '#7c3aed',
+    body: `LOCAL BANDS PERFORMING THIS WEEKEND
+
+The Detroit area music scene has always punched above its weight. Here's who's playing around town this weekend:
+
+FRIDAY NIGHT
+◆ ROXX — Pine Knob outdoor stage, 8 PM
+   Detroit's hardest-working bar band plays everything from Zeppelin to Sabbath. Their version of "Kashmir" has been known to cause structural damage to taverns. Bring earplugs or a sports mouth guard.
+
+◆ DREGS OF HUMANITY — Harpo's Concert Theatre, 9 PM
+   Described by the Detroit Free Press as "technically a band." They've been playing together since high school and show no signs of getting any better or any worse. Loyal following of approximately 40 people, most of whom are related to the drummer.
+
+SATURDAY AFTERNOON
+◆ The Pontiac Pawnshop AllStars — Hamtramck Blowout, 3 PM
+   Six-piece R&B outfit. The trumpet player used to sit in with the Temptations. Or so he says.
+
+◆ High Voltage — Harpo's, 11 PM
+   AC/DC tribute band. All originals. (They're not sure what this means either.)
+
+SUNDAY
+◆ The Ferndale Findings — Woodward Dream Cruise warm-up show, 2 PM
+   Acoustic originals, folk-rock. Actually quite good.
+
+OPEN MICS
+The Anchor Bar on Michigan Ave hosts an open mic every Sunday. Last week featured a man who played the harmonica while roller-skating. Detroit is something else.`,
+  },
+  {
+    id: 'parking_attendants',
+    matchText: 'Parking attendants will direct traffic.',
+    title: 'Parking at Tiger Stadium — 1984',
+    icon: '🅿️',
+    color: '#4b5563',
+    body: `PARKING AT TIGER STADIUM — THE REAL EXPERIENCE
+
+Parking near Michigan and Trumbull is a full-contact sport unto itself, and the parking attendants are the unsung heroes of every home game.
+
+THE ATTENDANTS
+The unofficial parking entrepreneurs who work the blocks surrounding Tiger Stadium are a Detroit institution. Armed with orange flashlight wands, folding chairs, and an unshakeable belief that their lot is "real close, sir," they've been directing traffic since before most fans were born.
+
+BIG FRANK (MICHIGAN AVE)
+Operates a gravel lot three blocks from the stadium. Claims it's "right around the corner." It is not. Charges $4, accepts "whatever you got." Has worked every game since 1971. Knows Ernie Harwell personally. Or so he says.
+
+THE "OFFICIAL" LOTS
+The stadium's official lots fill two hours before first pitch. Fans who arrive late take their chances with the neighborhood entrepreneurs. A handshake and $3 gets you most places.
+
+THE WALK
+Part of the Tiger Stadium experience is the walk from wherever you parked. You'll pass families grilling on sidewalks, kids selling scorecards, and the smell of bratwurst drifting from the tailgates on Cochrane Street.
+
+POST-GAME TRAFFIC
+After the final out, the neighborhood transforms into a slow-motion parade of Fords, Chevys, and Chryslers inching toward the freeway. The attendants earn their money most in the postgame hour.
+
+THE UNIVERSAL ADVICE
+Leave early if you have to be somewhere. Otherwise, stay for the fireworks.`,
+  },
+  {
+    id: 'hot_dog_vendor',
+    matchText: 'The hot dog vendor appears to be winning his section by a wide margin.',
+    title: 'The Hot Dog Vendor — A Tiger Stadium Legend',
+    icon: '🌭',
+    color: '#b45309',
+    body: `THE HOT DOG VENDOR — TIGER STADIUM ROYALTY
+
+Every great ballpark has a legendary vendor, and Tiger Stadium's hot dog man in Section 220 has achieved something approaching folk hero status.
+
+THE MAN
+He's been working this section since 1974. Nobody knows his actual name — regulars call him "The Duke." He's 58, has a voice like a foghorn, and has never once dropped a dog.
+
+THE TECHNIQUE
+"Duke" carries two full trays stacked on a custom shoulder harness of his own design. He tosses individually-wrapped dogs across four rows with the accuracy of a shortstop. He has never missed. Not once.
+
+THE RECORD
+On a particularly busy night in 1981, Duke reportedly sold 340 hot dogs in a single game — nearly one every 75 seconds for nine innings. The Tigers organization has never confirmed this. Duke has never denied it.
+
+THE PHILOSOPHY
+"You sell the dog before they know they want it," he once told a young vendor in training. "You gotta move on the emotion. Man makes a good play, that's a hot dog moment. Man strikes out — that's a hot dog moment. Rain delay? Biggest hot dog moment of all."
+
+THE COMPETITION
+Three other vendors work the adjacent sections. Their combined sales do not equal Duke's. There is no resentment. There is only respect.
+
+TODAY'S PRICE: 75 cents. Mustard only — Duke considers ketchup on a hot dog a fireable offense.`,
+  },
+];
+
 const ALL_ENTRIES = [
   ...TIGERS_COMMUNITY_ENTRIES,
   ...ERNIE_HARWELL_ENTRIES,
   ...COMMUNITY_PSA_ENTRIES,
+  ...BALLPARK_COLOR_ENTRIES,
 ];
 
 export function findTigersStadiumEntry(adText) {
