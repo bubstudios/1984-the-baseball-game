@@ -770,7 +770,7 @@ export default function Home() {
                   <AdRead
                     ad={showAd}
                     onDismiss={() => setShowAd(null)}
-                    autoDismissMs={12000}
+                    autoDismissMs={0}
                     onAchievement={(ids) => {
                       if (ids.length > 0) {
                         setNewAchievements(ids);
