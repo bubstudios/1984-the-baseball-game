@@ -732,6 +732,38 @@ The wrestling boom shows no signs of slowing, with bigger events and more mainst
 "Wrestling is everywhere!"`,
   },
   {
+    id: 'wre_generic_family',
+    title: 'Professional Wrestling Live',
+    icon: '🎭',
+    color: '#dc2626',
+    anim: 'pulse',
+    matchText: 'Bring the family out for an unforgettable evening.',
+    body: `PROFESSIONAL WRESTLING LIVE — COMING TO YOUR AREA
+
+Professional wrestling in 1984 is experiencing an unprecedented boom. Arenas that once hosted 3,000 fans are now selling out 15,000-seat buildings.
+
+THE SHOW
+A professional wrestling event is unlike anything else in sports entertainment. From the moment the first theme music hits, the crowd is transported into a world of heroes and villains, champions and challengers.
+
+THE CARD
+A typical 1984 card features:
+• Opening matches with rising stars building their characters
+• Mid-card title bouts for regional championships
+• Grudge matches between long-running rivals
+• The main event — often a championship match or blow-off to a major feud
+
+THE ATMOSPHERE
+Pyrotechnics, spotlight entrances, and elaborate ring gear make every appearance an event. The crowd noise at a peak moment — a hero making a comeback, a villain getting comeuppance — is electrifying.
+
+THE STARS
+In 1984, Hulk Hogan, Roddy Piper, Andre the Giant, Randy Savage, and Junkyard Dog are the biggest names. Seeing them live, larger than life, is a memory fans carry for decades.
+
+THE FAMILY EXPERIENCE
+Wrestling events attract families, teenagers, and adults of all ages. Children idolize the heroes; adults appreciate the athleticism; everyone goes home with a story to tell.
+
+"You had to be there."`,
+  },
+  {
     id: 'wre_700',
     title: 'Cyndi Lauper & Wrestling',
     icon: '🎤',

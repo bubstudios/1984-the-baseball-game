@@ -26,6 +26,7 @@ import NationalWrestlingPopup from './NationalWrestlingPopup';
 import VhsBetamaxLaserDiscPopup from './VhsBetamaxLaserDiscPopup';
 import DetroitTigersBannerPopup from './DetroitTigersBannerPopup';
 import TeamBannerPopup from './TeamBannerPopup';
+import TigersStadiumPopup from './TigersStadiumPopup';
 import { trackCubsBannerView } from '@/lib/cubsBannerPopups';
 import { trackTigersBannerView2 } from '@/lib/tigersBannerPopups2';
 import { trackMetsBannerView } from '@/lib/metsBannerPopups';
@@ -69,6 +70,7 @@ export default function AdReadPopupRenderer({
   isPadresBanner, padresBannerEntry,
   isRedsBanner, redsBannerEntry,
   isRoyalsBanner, royalsBannerEntry,
+  isTigersStadium, tigersStadiumEntry,
   isTvMovie, tvMovieEntry,
   isObscureTv, obscureTvEntry,
   isGeneralProducts, gpEntry,
@@ -168,6 +170,9 @@ export default function AdReadPopupRenderer({
   }
   if (expanded && isRoyalsBanner && royalsBannerEntry) {
     return <TeamBannerPopup entry={royalsBannerEntry} teamColor="#004687" teamIcon="👑" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackRoyalsBannerView} />;
+  }
+  if (expanded && isTigersStadium && tigersStadiumEntry) {
+    return <TigersStadiumPopup entry={tigersStadiumEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
   }
   if (expanded && isTvMovie && tvMovieEntry) {
     return <TvMoviePopup entry={tvMovieEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;

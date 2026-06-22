@@ -375,6 +375,41 @@ THE STRATEGY
 While not the most advanced computer, TRS-80 succeeded by prioritizing customer service and accessibility over pure technical specifications.`,
   },
   {
+    id: 'computer_software',
+    title: 'Home Computer Software',
+    icon: '💾',
+    color: '#8b5cf6',
+    anim: 'pulse',
+    matchText: 'Ask about computer software at your local electronics dealer.',
+    type: 'computer',
+    body: `HOME COMPUTER SOFTWARE — THE WILD WEST OF 1984
+
+If the hardware is the body of a home computer, software is the soul. In 1984, the software market is exploding with games, educational programs, productivity tools, and utilities of wildly varying quality.
+
+THE CATEGORIES
+
+GAMES (most popular)
+From adventure text games to arcade ports, games drive most home computer purchases. Titles like Zork, Ultima, and Karateka prove computers can be entertaining, not just productive.
+
+EDUCATIONAL SOFTWARE
+Oregon Trail (school standard), Reader Rabbit, and Math Blaster are showing parents that computers can genuinely teach their children.
+
+PRODUCTIVITY
+VisiCalc — the first spreadsheet — launched the concept of the "killer app," software so useful it justifies the hardware purchase alone. WordStar and dBASE III are business essentials.
+
+WHAT FORMATS EXIST
+Software ships on 5.25-inch floppy disks ($20–$50 per program) or cassette tapes ($10–$30 for simpler programs). Compatibility between systems is a nightmare — Commodore 64 software won't run on Apple II.
+
+WHERE TO BUY
+• Radio Shack (Tandy/TRS-80 software and some multi-platform titles)
+• Computerland stores (higher-end software for Apple and IBM)
+• Kay-Bee Toys and Toys "R" Us (game software)
+• Specialty computer stores (broadest selection, expert staff)
+
+THE ADVICE
+Before buying, confirm the software matches your specific computer model. A Commodore 64 version may run differently than an Atari version, even of the same title.`,
+  },
+  {
     id: 'computer_545',
     title: 'Home Computing',
     icon: '📱',
@@ -402,6 +437,38 @@ Software quality remains inconsistent. While some educational programs are brill
 
 // ── WEIRD TECHNOLOGY (#551-560) ──
 export const WEIRD_TECHNOLOGY = [
+  {
+    id: 'tech_innovation',
+    title: 'The Information Age',
+    icon: '💡',
+    color: '#3b82f6',
+    anim: 'pulse',
+    matchText: 'Innovation continues.',
+    type: 'technology',
+    body: `THE INFORMATION AGE — ALWAYS MOVING FORWARD
+
+"Innovation continues." Four words that capture 1984's relentless technological march.
+
+WHAT'S CHANGING RIGHT NOW
+In 1984, technology isn't something that happens once and stops. The pace of change feels unprecedented to people living through it.
+
+THE COMPUTERS
+In 1980, personal computers were hobbyist curiosities. In 1984, they sit in millions of American homes and offices. In 1990? Nobody is quite sure, but the trend is unmistakable.
+
+THE COMMUNICATIONS
+AT&T's court-ordered breakup in 1984 unleashed competition in telephone service. Long-distance rates are falling. Cellular phones exist (barely). Fax machines are spreading.
+
+THE ENTERTAINMENT
+Cable television, VCRs, and video games have fundamentally changed how Americans spend leisure time in just five years.
+
+THE FEELING
+Americans in 1984 sense they're living through something historic. The computerization of work, the miniaturization of electronics, the digitization of music — each development hints at a world just around the corner.
+
+THE UNCERTAINTY
+Nobody knows exactly what's coming, but the direction seems clear: smaller, faster, cheaper, more connected.
+
+The future has always been arriving. In 1984, it seems to be running.`,
+  },
   {
     id: 'tech_551',
     title: 'Compact Discs',

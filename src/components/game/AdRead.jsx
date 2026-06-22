@@ -53,6 +53,7 @@ import { findNationalPromosEntry, trackNationalPromosView } from '@/lib/national
 import { findNationalWrestlingEntry } from '@/lib/nationalWrestlingPopups';
 import { findVhsBetamaxLaserDiscEntry } from '@/lib/vhsBetamaxLaserDiscPopups';
 import { findDetroitTigersBannerEntry, trackDetroitTigersBannerView } from '@/lib/detroitTigersBannerPopups';
+import { findTigersStadiumEntry, trackTigersStadiumView } from '@/lib/tigersStadiumPopups';
 import { findCubsBannerEntry, trackCubsBannerView } from '@/lib/cubsBannerPopups';
 import { findTigersBannerEntry2, trackTigersBannerView2 } from '@/lib/tigersBannerPopups2';
 import { findMetsBannerEntry, trackMetsBannerView } from '@/lib/metsBannerPopups';
@@ -136,6 +137,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [redsBannerEntry, setRedsBannerEntry] = useState(null);
   const [isRoyalsBanner, setIsRoyalsBanner] = useState(false);
   const [royalsBannerEntry, setRoyalsBannerEntry] = useState(null);
+  const [isTigersStadium, setIsTigersStadium] = useState(false);
+  const [tigersStadiumEntry, setTigersStadiumEntry] = useState(null);
 
   // Detect ad type on mount
   useEffect(() => {
@@ -234,6 +237,9 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findRoyalsBannerEntry(ad.text)) {
       setIsRoyalsBanner(true);
       setRoyalsBannerEntry(findRoyalsBannerEntry(ad.text));
+    } else if (findTigersStadiumEntry(ad.text)) {
+      setIsTigersStadium(true);
+      setTigersStadiumEntry(findTigersStadiumEntry(ad.text));
     } else if (movie !== null) {
       setIsTvMovie(true);
     } else {
@@ -293,7 +299,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
-    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalWrestling, isVhsBetamax, isDetroitTigers, isCubsBanner, isTigersBanner2, isMetsBanner, isYankeesBanner, isOriolesBanner, isDodgersBanner, isPadresBanner, isRedsBanner, isRoyalsBanner];
+    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalWrestling, isVhsBetamax, isDetroitTigers, isCubsBanner, isTigersBanner2, isMetsBanner, isYankeesBanner, isOriolesBanner, isDodgersBanner, isPadresBanner, isRedsBanner, isRoyalsBanner, isTigersStadium];
     if (specialTypes.some(t => t)) {
       setExpanded(true);
       if (isNationalCharity && nationalCharityEntry) {
@@ -302,6 +308,10 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       }
       if (isDetroitTigers && detroitTigersEntry) {
         const unlocked = trackDetroitTigersBannerView(detroitTigersEntry.id);
+        if (unlocked.length > 0 && onAchievement) onAchievement(unlocked);
+      }
+      if (isTigersStadium && tigersStadiumEntry) {
+        const unlocked = trackTigersStadiumView(tigersStadiumEntry.id);
         if (unlocked.length > 0 && onAchievement) onAchievement(unlocked);
       }
       // New team banners — tracking is handled inside TeamBannerPopup via trackView prop
@@ -390,6 +400,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       redsBannerEntry={redsBannerEntry}
       isRoyalsBanner={isRoyalsBanner}
       royalsBannerEntry={royalsBannerEntry}
+      isTigersStadium={isTigersStadium}
+      tigersStadiumEntry={tigersStadiumEntry}
       isTvMovie={isTvMovie}
       tvMovieEntry={tvMovieEntry}
       isObscureTv={isObscureTv}
