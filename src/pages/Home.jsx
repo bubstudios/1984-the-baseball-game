@@ -37,7 +37,7 @@ import { pickAd } from '@/lib/broadcastAds';
 import AdRead from '@/components/game/AdRead';
 import FlyWFlag from '@/components/game/FlyWFlag';
 import CardAwardModal from '@/components/game/CardAwardModal';
-import { getRandomCardForTeam, addCard, loadFromStorage, saveToStorage, migrateLegacyStorage } from '@/lib/baseballCards';
+import { getRandomCardForTeam, addCard, loadFromStorage, saveToStorage, migrateLegacyStorage, getCollectedIds } from '@/lib/baseballCards';
 import FanChirpToast from '@/components/game/FanChirpToast';
 
 export default function Home() {
@@ -423,9 +423,10 @@ export default function Home() {
         loadFromStorage(userTeam);
         const card = getRandomCardForTeam(userTeam);
         if (card) {
+          const isNew = !getCollectedIds(userTeam).includes(card.id);
           const achievementIds = addCard(userTeam, card.id);
           saveToStorage(userTeam);
-          setCardAward(card);
+          setCardAward({ ...card, isNew });
           if (achievementIds.length > 0) {
             setNewAchievements(prev => [...prev, ...achievementIds]);
             setShowAchievementPopup(true);

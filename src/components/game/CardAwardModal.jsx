@@ -39,7 +39,7 @@ export default function CardAwardModal({ card, isNewCard, onClose, onDismiss }) 
           )}
 
           <div className="my-6">
-            <BaseballCard card={card} isNew={isNewCard} />
+            <BaseballCard card={card} isNew={card?.isNew ?? isNewCard} />
           </div>
 
           <button

@@ -362,15 +362,9 @@ export function saveToStorage(teamKey) {
 }
 
 // Migrate legacy Tigers/Phillies storage keys
+// NOTE: Old IDs don't match new roster ordering, so we clear old data to avoid mismatches
 export function migrateLegacyStorage() {
-  const tigersOld = localStorage.getItem('tigersCardCollection');
-  if (tigersOld) {
-    localStorage.setItem('tigersCards', tigersOld);
-    localStorage.removeItem('tigersCardCollection');
-  }
-  const philliesOld = localStorage.getItem('philliesCardCollection');
-  if (philliesOld) {
-    localStorage.setItem('philliesCards', philliesOld);
-    localStorage.removeItem('philliesCardCollection');
-  }
+  // Clear old keys so stale IDs don't pollute the new unified system
+  localStorage.removeItem('tigersCardCollection');
+  localStorage.removeItem('philliesCardCollection');
 }
