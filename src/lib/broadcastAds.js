@@ -1528,7 +1528,7 @@ registerTeamAds('phillies', 'team_promo', [
   "Steve Carlton Bobblehead Night at Veterans Stadium this Friday.",
   "Juan Samuel Bobblehead Night at Veterans Stadium.",
   "Garry Maddox Bobblehead Night — two-thirds of the world is covered.",
-  "Kent Tekulve Bobblehead Night — the Submarine is in the house.",
+  "Tug McGraw Bobblehead Night — Ya Gotta Believe at Veterans Stadium.",
   // Team poster
   "Free 1984 Phillies team poster — pick yours up at the main gate.",
   // Other promos

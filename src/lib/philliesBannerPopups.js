@@ -134,36 +134,33 @@ TONIGHT'S BOBBLEHEAD
 The Phillies thank Garry Maddox for everything he has given this franchise. Tonight's bobblehead is a small thank you from 10,000 fans.`,
   },
   {
-    id: 'phi_bob_tekulve',
-    matchText: 'Kent Tekulve Bobblehead Night — the Submarine is in the house.',
-    title: '🎉 Kent Tekulve Bobblehead Night',
-    icon: '🚢',
+    id: 'phi_bob_mcgraw',
+    matchText: 'Tug McGraw Bobblehead Night — Ya Gotta Believe at Veterans Stadium.',
+    title: '🎉 Tug McGraw Bobblehead Night',
+    icon: '✊',
     color: '#c0392b',
-    accentColor: '#3498db',
-    body: `KENT TEKULVE BOBBLEHEAD NIGHT — VETERANS STADIUM
+    accentColor: '#ffcc00',
+    body: `TUG McGRAW BOBBLEHEAD NIGHT — VETERANS STADIUM
 
-Tonight's bobblehead is perhaps the most unique in the Phillies' promotional series — because nobody pitches quite like Kent Tekulve.
+The first 10,000 fans tonight receive a Tug McGraw Limited-Edition Bobblehead — the lefty reliever who gave Philadelphia its most beloved rallying cry.
 
 THE BOBBLEHEAD
-Teke at the bottom of his submarine delivery — arm parallel to the ground, ball released from below the hip, body nearly horizontal. It looks impossible. It is not. Painted in Phillies colors, #27.
+Tug mid-delivery, left arm extended, glove punched toward the sky — the same gesture he made on October 21, 1980, when he struck out Willie Wilson to end Game 6. Painted in Phillies pinstripes, #45.
 
-THE DELIVERY
-The submarine. The underhand. The drop-arm. Whatever you call it, Kent Tekulve's arm slot is unique in professional baseball. He releases the ball from below knee height, creating an angle that right-handed hitters simply cannot track in their muscle memory.
+THE PHRASE
+"Ya Gotta Believe." Tug McGraw said it in 1973 as a Mets rallying cry. When he came to Philadelphia in 1975, he brought it with him. It became something else here — a way of life for a franchise that had never won anything and suddenly, in 1980, won everything.
 
-THE SINKER FROM BELOW
-A sinker thrown conventionally breaks down. A sinker thrown submarine-style breaks down and away from right-handed hitters. They see it, they swing, and they hit the ground. This has been happening since 1974.
+THE MOMENT
+Bottom of the ninth, Game 6, 1980 World Series. Kansas City Royals. The count. The crowd. Tug winds up. The screwball breaks. Wilson swings. Strike three. Pandemonium in Philadelphia. Tug leaps. The city erupts. For the first time in 97 years, the Phillies are World Champions.
 
-THE CAREER
-• Pittsburgh Pirates: part of the "We Are Family" 1979 World Series champions
-• 3 World Series saves in 1979
-• Over 800 career games pitched
-• The marathon career of a specialist who figured out a way to throw that no one else uses
+THE SCREWBALL
+McGraw's screwball — the "scroogie" — breaks away from left-handed hitters and into right-handers. It is a pitch that ages strangely; the older McGraw gets, the more batters have already learned to fear it.
 
-THE ARRIVAL IN PHILADELPHIA
-Tekulve came to the Phillies before this season. He brought his arm angle, his sinker, and his 10+ years of experience confusing right-handed hitters.
+THE CHARACTER
+Tug McGraw is one of baseball's genuinely lovable personalities. He plays hard, laughs loud, and is always the last one to leave a good time. He is the soul of this bullpen.
 
 TONIGHT
-When Teke comes in from the bullpen, watch his arm. It shouldn't work. It does.`,
+If Tug comes in, listen for the crowd. They know what he means to this city.`,
   },
 ];
 
@@ -191,7 +188,7 @@ THE ROTATION
 Steve Carlton · John Denny · Kevin Gross · Charles Hudson
 
 THE BULLPEN
-Al Holland · Kent Tekulve · Larry Andersen · Don Carman
+Al Holland · Tug McGraw · Larry Andersen · Bill Campbell · Don Carman
 
 THE SKIPPER
 Paul Owens — "The Pope" — guiding this veteran club through another strong NL East campaign.

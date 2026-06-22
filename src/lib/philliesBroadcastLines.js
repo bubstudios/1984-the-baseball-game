@@ -172,14 +172,21 @@ const PLAYER_TIDBITS = {
       "Eight consecutive Gold Gloves — that tells you everything about Garry Maddox.",
     ],
   },
-  "Kent Tekulve": {
+  "Tug McGraw": {
     lines: [
-      "Kent Tekulve throws from a submarine delivery — completely unique in professional baseball.",
-      "Tekulve came over from Pittsburgh where he was part of the We Are Family Pirates.",
-      "The submarine delivery is nearly impossible to emulate — Tekulve is one of a kind.",
-      "Teke's sinker comes at such an unusual angle that hitters rarely square it up.",
-      "Kent Tekulve has pitched in over 800 major league games in his career.",
-      "The submarine delivery puts stress on the arm — yet Tekulve has pitched for years.",
+      "Tug McGraw coined the phrase 'Ya Gotta Believe' — and this Philadelphia crowd has never forgotten it.",
+      "McGraw's scroogie — the screwball — has been baffling left-handed hitters for years.",
+      "Tug McGraw was on the mound when the Phillies won their first World Series in 1980.",
+      "Hard to believe, Harry — what Tug McGraw has meant to this franchise.",
+      "McGraw struck out Willie Wilson to end Game 6 in 1980. The city went wild.",
+      "Tug McGraw grew up in Vallejo, California. He came a long way to become a Philadelphia legend.",
+    ],
+  },
+  "Bill Campbell": {
+    lines: [
+      "Bill Campbell is a veteran presence in this bullpen — he's been around the American League for years.",
+      "Campbell came to Philadelphia to add depth to a bullpen that needed experience.",
+      "Hard to believe, Harry — the innings Bill Campbell has accumulated in his career.",
     ],
   },
   "Al Holland": {

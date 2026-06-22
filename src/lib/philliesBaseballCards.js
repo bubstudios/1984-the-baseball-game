@@ -24,10 +24,10 @@ export const PHILLIES_ROSTER = [
   { id: 17, name: 'Charles Hudson',position: 'SP', number: 45, ba: '-', hr: '-', rbi: '-', era: '4.04', role: 'Starting Pitcher',    rarity: 'common'   },
   // Bullpen (5)
   { id: 18, name: 'Al Holland',    position: 'CL', number: 47, ba: '-', hr: '-', rbi: '-', era: '5.24', role: 'Closer/Mr. T',        rarity: 'uncommon' },
-  { id: 19, name: 'Kent Tekulve',  position: 'RP', number: 27, ba: '-', hr: '-', rbi: '-', era: '5.25', role: 'Submarine Reliever',  rarity: 'uncommon' },
-  { id: 20, name: 'Larry Andersen',position: 'RP', number: 37, ba: '-', hr: '-', rbi: '-', era: '2.38', role: 'Relief Pitcher',      rarity: 'common'   },
-  { id: 21, name: 'Don Carman',    position: 'RP', number: 44, ba: '-', hr: '-', rbi: '-', era: '4.56', role: 'Relief Pitcher',      rarity: 'common'   },
-  { id: 22, name: 'Dave Rucker',   position: 'RP', number: 36, ba: '-', hr: '-', rbi: '-', era: '4.12', role: 'Relief Pitcher',      rarity: 'common'   },
+  { id: 19, name: 'Larry Andersen',position: 'RP', number: 47, ba: '-', hr: '-', rbi: '-', era: '2.38', role: 'Relief Pitcher',      rarity: 'common'   },
+  { id: 20, name: 'Bill Campbell', position: 'RP', number: 39, ba: '-', hr: '-', rbi: '-', era: '3.96', role: 'Relief Pitcher',      rarity: 'common'   },
+  { id: 21, name: 'Don Carman',    position: 'RP', number: 42, ba: '-', hr: '-', rbi: '-', era: '4.56', role: 'Relief Pitcher',      rarity: 'common'   },
+  { id: 22, name: 'Tug McGraw',    position: 'RP', number: 45, ba: '-', hr: '-', rbi: '-', era: '3.12', role: 'Ya Gotta Believe!',   rarity: 'uncommon' },
 ];
 
 const COLLECTED_CARDS = new Set();
