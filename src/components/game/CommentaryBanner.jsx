@@ -8,6 +8,8 @@ import { pickRedSoxLine, pickRedSoxPlayerLine } from '@/lib/redSoxBroadcastLines
 import { pickTigersLine, pickTigersPlayerLine } from '@/lib/tigersBroadcastLines';
 import { pickRedsLine, pickRedsPlayerLine } from '@/lib/redsBroadcastLines';
 import { pickRoyalsLine, pickRoyalsPlayerLine } from '@/lib/royalsBroadcastLines';
+import { pickPhilliesLine, pickPhilliesPlayerLine } from '@/lib/philliesBroadcastLines';
+import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
 // Track blowout activation per game session (module-level)
@@ -86,6 +88,13 @@ const NICKNAMES = {
   "Tony Perez": ["Big Dog"],
   "Johnny Bench": ["Hands"],
   "Joe Morgan": ["Little Joe"],
+  "Mike Schmidt": ["Schmitty", "Michael Jack"],
+  "Steve Carlton": ["Lefty"],
+  "Kent Tekulve": ["Teke"],
+  "Garry Maddox": ["Secretary of Defense"],
+  "Al Holland": ["Mr. T"],
+  "Jeff Stone": ["Stoney"],
+  "John Denny": ["Denny"],
 };
 
 // 1984 Announcers & Stadium Flavor — expanded with real stadium atmosphere
@@ -380,6 +389,43 @@ export const STADIUM_FLAVOR = {
     ],
     stretchFlavor: null,
   },
+  philadelphiaPhillies: {
+    announcers: ["Harry Kalas", "Richie Ashburn"],
+    stadium: "Veterans Stadium",
+    nicknames: ["The Vet"],
+    flavor: [
+      "the artificial turf here at Veterans Stadium — a ball can really get through the infield on this surface",
+      "Veterans Stadium in South Philadelphia — Phillies baseball since 1971",
+      "the Phanatic is on the dugout roof, whipping the crowd into a frenzy",
+      "the upper deck is rocking — South Philly fans are among the most passionate in baseball",
+      "a beautiful night under the lights here at The Vet",
+      "the symmetrical dimensions at Veterans Stadium — straightaway power all around",
+      "Philadelphia fans know their baseball — they'll let you know if something doesn't meet their standards",
+      "Hard to believe, Harry — what a crowd here in South Philly tonight",
+    ],
+    weatherFlavor: [
+      "a brisk Philadelphia evening — you can see your breath in the early innings here at The Vet",
+      "the heat radiating off the artificial turf this afternoon — it's warm in South Philly",
+      "a muggy summer night in Philadelphia — the ball should carry well in this air",
+    ],
+    cityFlavor: [
+      "if you're heading home down Broad Street after the game, give yourself some extra time — South Philly is busy tonight",
+      "a cheesesteak from Pat's or Geno's before the game — that's the Philadelphia way",
+      "Philadelphia has always been a tough sports town — the fans demand everything from their athletes",
+      "the passion of this city — hard to believe, Harry, how much this crowd wants it",
+    ],
+    loreFlavor: [
+      "you look around this stadium and think of the 1980 World Series — Mike Schmidt and the Phillies bringing a championship to Philadelphia",
+      "Steve Carlton won four Cy Young Awards as a Philadelphia Phillie — one of the greatest left-handers in the history of the game",
+      "Two-thirds of the world is covered by water, Harry. The other third is covered by Garry Maddox.",
+      "Watch that baby... the Phillies have a chance to do something here",
+    ],
+    neurosisFlavor: [
+      "Philly fans are getting restless — this crowd does not suffer in silence",
+      "the boos are starting to rain down from the upper deck — Philadelphia holds its teams to a very high standard",
+    ],
+    stretchFlavor: null,
+  },
   cincinnatiReds: {
     announcers: ["Joe Nuxhall", "Marty Brennaman"],
     stadium: "Riverfront Stadium",
@@ -430,6 +476,7 @@ export const TEAM_TO_FLAVOR = {
   mets: "newYorkMets",
   reds: "cincinnatiReds",
   royals: "kansasCityRoyals",
+  phillies: "philadelphiaPhillies",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -673,6 +720,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isTigersGame = homeTeamKey === 'tigers';
   const isRedsGame = homeTeamKey === 'reds';
   const isRoyalsGame = homeTeamKey === 'royals';
+  const isPhilliesGame = homeTeamKey === 'phillies';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -719,6 +767,10 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
       }
     }
     if (!text) {
+    // ~15% chance to hear a fan chirp from the stands
+    if (Math.random() < 0.15) {
+      text = pickFanYell(homeTeamKey);
+    } else {
     // No play result yet (between pitches) — use team-specific or generic flavor
     text = isCubsGame && Math.random() < 0.65
       ? pickHarryLine()
@@ -738,7 +790,10 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                     ? (pickRedsPlayerLine(batter?.name) || pickRedsLine())
                     : isRoyalsGame && Math.random() < 0.70
                       ? (pickRoyalsPlayerLine(batter?.name) || pickRoyalsLine(gameState?.weather?.isDay !== false))
-                      : getCommentary(batter, pitcher, gameState, stadiumInfo);
+                      : isPhilliesGame && Math.random() < 0.65
+                        ? (pickPhilliesPlayerLine(batter?.name) || pickPhilliesLine())
+                        : getCommentary(batter, pitcher, gameState, stadiumInfo);
+    }
     }
   }
 

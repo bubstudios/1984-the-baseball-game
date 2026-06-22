@@ -38,6 +38,7 @@ import AdRead from '@/components/game/AdRead';
 import FlyWFlag from '@/components/game/FlyWFlag';
 import CardAwardModal from '@/components/game/CardAwardModal';
 import { getRandomCard, addCollectedCard, loadCollectionFromStorage, saveCollectionToStorage } from '@/lib/tigersBaseballCards';
+import { getRandomPhilliesCard, addCollectedPhilliesCard, loadPhilliesCollectionFromStorage, savePhilliesCollectionToStorage } from '@/lib/philliesBaseballCards';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -413,6 +414,21 @@ export default function Home() {
 
     if (state._managerEjected && userWon) {
       try { unlockAchievement('earl_weaver'); } catch (e) { console.error('earl_weaver failed:', e); }
+    }
+
+    // Award a baseball card on Phillies home win
+    if (userWon && userTeam === 'phillies') {
+      try {
+        loadPhilliesCollectionFromStorage();
+        const card = getRandomPhilliesCard();
+        const achievementIds = addCollectedPhilliesCard(card.id);
+        savePhilliesCollectionToStorage();
+        setCardAward(card);
+        if (achievementIds.length > 0) {
+          setNewAchievements(prev => [...prev, ...achievementIds]);
+          setShowAchievementPopup(true);
+        }
+      } catch (e) { console.error('philliesCardAward failed:', e); }
     }
 
     // Award a baseball card on Tigers home win

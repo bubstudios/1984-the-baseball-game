@@ -521,6 +521,57 @@ export const TEAMS = {
       { name: "Burt Hooton", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 7, control: 7, contact: 4, power: 2, bunting: 4, speed: 2 },
     ],
   },
+
+  phillies: {
+    city: "Philadelphia",
+    name: "Phillies",
+    abbr: "PHI",
+    league: "NL",
+    stadium: "Veterans Stadium",
+    lineup: [
+      { name: "Juan Samuel", pos: "2B", bats: "R", contact: 7, power: 5, bunting: 5, speed: 10, defense: 6, arm: 6,
+        splits: { vsLHP: { ab: 185, ba: .289, hr: 5 }, vsRHP: { ab: 516, ba: .264, hr: 10 } } },
+      { name: "Ivan DeJesus", pos: "SS", bats: "R", contact: 6, power: 2, bunting: 5, speed: 5, defense: 7, arm: 7,
+        splits: { vsLHP: { ab: 114, ba: .272, hr: 0 }, vsRHP: { ab: 321, ba: .252, hr: 0 } } },
+      { name: "Mike Schmidt", pos: "3B", bats: "R", contact: 8, power: 10, bunting: 2, speed: 4, defense: 9, arm: 9,
+        splits: { vsLHP: { ab: 157, ba: .290, hr: 12 }, vsRHP: { ab: 390, ba: .271, hr: 24 } } },
+      { name: "Von Hayes", pos: "1B", bats: "L", contact: 7, power: 6, bunting: 4, speed: 5, defense: 6, arm: 6,
+        splits: { vsLHP: { ab: 148, ba: .250, hr: 2 }, vsRHP: { ab: 413, ba: .308, hr: 14 } } },
+      { name: "Glenn Wilson", pos: "RF", bats: "R", contact: 7, power: 6, bunting: 3, speed: 4, defense: 7, arm: 10,
+        splits: { vsLHP: { ab: 143, ba: .287, hr: 4 }, vsRHP: { ab: 329, ba: .252, hr: 10 } } },
+      { name: "Ozzie Virgil Jr.", pos: "C", bats: "R", contact: 6, power: 7, bunting: 2, speed: 2, defense: 6, arm: 7,
+        splits: { vsLHP: { ab: 142, ba: .282, hr: 6 }, vsRHP: { ab: 314, ba: .249, hr: 12 } } },
+      { name: "Garry Maddox", pos: "CF", bats: "R", contact: 6, power: 3, bunting: 5, speed: 7, defense: 10, arm: 8,
+        splits: { vsLHP: { ab: 94, ba: .276, hr: 1 }, vsRHP: { ab: 268, ba: .250, hr: 2 } } },
+      { name: "Jeff Stone", pos: "LF", bats: "L", contact: 7, power: 2, bunting: 6, speed: 9, defense: 5, arm: 5,
+        splits: { vsLHP: { ab: 28, ba: .250, hr: 0 }, vsRHP: { ab: 105, ba: .390, hr: 1 } } },
+    ],
+    bench: [
+      { name: "Len Matuszek", pos: "1B", bats: "L", contact: 6, power: 5, bunting: 3, speed: 3, defense: 5, arm: 5,
+        splits: estSplits(.268, 12, 191, 54, "L") },
+      { name: "Greg Gross", pos: "OF", bats: "L", contact: 6, power: 1, bunting: 7, speed: 4, defense: 5, arm: 5,
+        splits: estSplits(.274, 1, 134, 38, "L") },
+      { name: "Derrel Thomas", pos: "INF/OF", bats: "S", contact: 5, power: 2, bunting: 5, speed: 5, defense: 6, arm: 5,
+        splits: estSplits(.239, 3, 148, 44, "S") },
+      { name: "Bo Diaz", pos: "C", bats: "R", contact: 5, power: 4, bunting: 2, speed: 2, defense: 6, arm: 6,
+        splits: estSplits(.240, 5, 181, 52, "R") },
+      { name: "Sixto Lezcano", pos: "OF", bats: "R", contact: 5, power: 4, bunting: 3, speed: 3, defense: 5, arm: 7,
+        splits: estSplits(.237, 4, 134, 38, "R") },
+    ],
+    rotation: [
+      { name: "Steve Carlton", pos: "SP", throws: "L", bats: "L", stamina: 9, pitchSpeed: 7, offSpeed: 10, control: 8, contact: 5, power: 2, bunting: 6, speed: 2, specialty: { name: "Lefty's Slider", pitch: "Breaking Ball", label: "RC" } },
+      { name: "John Denny", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 4, power: 1, bunting: 5, speed: 2 },
+      { name: "Kevin Gross", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 4, power: 1, bunting: 5, speed: 2 },
+      { name: "Charles Hudson", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 3, power: 1, bunting: 4, speed: 2 },
+    ],
+    bullpen: [
+      { name: "Al Holland", pos: "CL", throws: "L", bats: "L", stamina: 4, pitchSpeed: 7, offSpeed: 8, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Kent Tekulve", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 4, offSpeed: 8, control: 9, contact: 2, power: 1, bunting: 3, speed: 2, specialty: { name: "The Submarine", pitch: "Breaking Ball", label: "RC" } },
+      { name: "Larry Andersen", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Don Carman", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Dave Rucker", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+    ],
+  },
 };
 
 // 1984 Error counts (estimated from real stats) — used for fielding error probability
@@ -565,6 +616,11 @@ export const PLAYER_ERRORS = {
   "Willie Wilson": 6, "Frank White": 8, "George Brett": 22, "Hal McRae": 0,
   "Steve Balboni": 17, "Pat Sheridan": 5, "Darryl Motley": 6, "Jamie Quirk": 7, "Onix Concepcion": 21,
   "Dane Iorg": 4, "Buddy Biancalana": 5, "John Wathan": 5, "Greg Pryor": 6, "Cesar Geronimo": 2,
+  // Phillies
+  "Juan Samuel": 33, "Ivan DeJesus": 22, "Mike Schmidt": 11, "Von Hayes": 8,
+  "Glenn Wilson": 7, "Ozzie Virgil Jr.": 9, "Garry Maddox": 2, "Jeff Stone": 5,
+  "Len Matuszek": 4, "Greg Gross": 1, "Derrel Thomas": 5, "Bo Diaz": 6, "Sixto Lezcano": 2,
+  "Steve Carlton": 3, "John Denny": 4, "Kevin Gross": 5, "Charles Hudson": 6,
 };
 
 // Estimate splits for bench players based on overall stats + handedness
@@ -642,4 +698,6 @@ export const MANAGERS = {
     arguesBallsStrikes: 55, arguesSafeOut: 70, protectsPlayers: 75, strategicEjections: 15 },
   royals: { name: "Dick Howser", personality: 4, coach: "Rocky Colavito",
     arguesBallsStrikes: 35, arguesSafeOut: 50, protectsPlayers: 55, strategicEjections: 10 },
+  phillies: { name: "Paul Owens", personality: 5, coach: "Bobby Wine",
+    arguesBallsStrikes: 45, arguesSafeOut: 60, protectsPlayers: 65, strategicEjections: 15 },
 };
