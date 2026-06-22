@@ -516,4 +516,523 @@ Mechanical typewriters will likely become obsolete within a decade as word proce
   },
 ];
 
-// Continue with PRODUCTS, MUSIC, PSAs in a third file...
+// ── ODD PRODUCTS (#561-575) ──
+export const ODD_PRODUCTS = [
+  {
+    id: 'product_561',
+    title: 'Pet Rocks',
+    icon: '🪨',
+    color: '#8b7355',
+    anim: 'pulse',
+    matchText: 'Pet Rocks are still available.',
+    type: 'product',
+    body: `PET ROCKS - The Novelty That Won't Die
+
+Despite being a 1970s fad, Pet Rocks continue to sell in 1984. Each rock comes with a training manual teaching owners how to care for their pet stone.
+
+THE CONCEPT
+A smooth stone selected from a beach, packaged in a box with straw bedding and accompanied by a humorous training guide featuring tips like "Housebreaking" and "Tricks."
+
+THE HUMOR
+The entire product is a joke—rocks require no care, no feeding, no attention. The training manual is filled with absurdist humor that appeals to adults and children alike.
+
+THE PHENOMENON
+Pet Rocks represent marketing genius—turning a worthless product into a cultural sensation through novelty and clever packaging.
+
+THE REALITY
+1984 buyers are mostly people reliving the fad or discovering it for the first time. The peak has passed, but the concept endures as a novelty gift.`,
+  },
+  {
+    id: 'product_562',
+    title: 'Rubik\'s Cube',
+    icon: '🧩',
+    color: '#ef4444',
+    anim: 'spin',
+    matchText: 'Rubik\'s Cube continues to challenge puzzle enthusiasts.',
+    type: 'product',
+    body: `RUBIK'S CUBE - The Unsolved Mystery
+
+Invented in 1974, Rubik's Cube remains a bestselling puzzle toy in 1984, with millions sold worldwide. The challenge: arrange all colored squares so each face is uniform.
+
+THE CHALLENGE
+Seemingly simple, solving the cube requires logic, spatial reasoning, and pattern recognition. Most people can solve one face but struggle beyond.
+
+THE SOLUTION
+Expert solvers have developed methods to solve the cube in under a minute. Championship competitions showcase these skilled puzzlers competing for speed records.
+
+THE PHENOMENON
+Rubik's Cube represents the appeal of logical puzzles to a broad audience. It's equally enjoyed by children and adults, making it one of the most successful toys ever.
+
+THE MARKET
+Nearly a decade after introduction, Rubik's Cube remains popular and continues selling at $10-15 retail price.`,
+  },
+  {
+    id: 'product_563',
+    title: 'Lite-Brite',
+    icon: '✨',
+    color: '#fbbf24',
+    anim: 'pulse',
+    matchText: 'Create light pictures with Lite-Brite.',
+    type: 'product',
+    body: `LITE-BRITE - Illuminated Creativity
+
+Lite-Brite, a classic toy still popular in 1984, allows children to create glowing images by inserting colored pegs into a backlit board.
+
+THE CONCEPT
+A flat board with thousands of small holes is backlit by a light bulb. Pegs in various colors fit into holes, creating images that glow when the light is on.
+
+THE APPEAL
+The glowing result satisfies children's desire to create something beautiful and functional. The pegs are large enough for small hands to manipulate easily.
+
+THE IMAGES
+Lite-Brite includes design templates that children can follow or create original designs using the colored pegs.
+
+THE LONGEVITY
+Despite being introduced in the 1960s, Lite-Brite remains popular because it offers open-ended creative play without electronic components or batteries.`,
+  },
+  {
+    id: 'product_564',
+    title: 'Slinky',
+    icon: '⬇️',
+    color: '#3b82f6',
+    anim: 'wave',
+    matchText: 'The classic toy Slinky never goes out of style.',
+    type: 'product',
+    body: `SLINKY - The Perpetual Motion Toy
+
+Invented in 1945, Slinky remains a bestselling toy in 1984. This simple spring creates enduring appeal through elegant physics and mesmerizing motion.
+
+THE DESIGN
+A pre-compressed helical spring made of steel, Slinky "walks" down stairs, creating the appearance of continuous motion without external power.
+
+THE MAGIC
+Children are endlessly fascinated by Slinky's fluid motion. Watching it descend stairs or move across a table never gets old.
+
+THE SCIENCE
+Slinky demonstrates gravity, momentum, and wave mechanics in a simple, visual way that engages children's curiosity about how things work.
+
+THE MARKETING
+Slinky's longevity proves that simple toys often outperform complex ones. Good design and satisfying physics create lasting appeal.`,
+  },
+];
+
+// ── MUSIC ALBUMS & CASSETTES (#576-590) ──
+export const MUSIC = [
+  {
+    id: 'music_576',
+    title: 'Prince - Purple Rain',
+    icon: '💿',
+    color: '#8b5cf6',
+    anim: 'spin',
+    matchText: 'Prince\'s Purple Rain is the album of the year.',
+    type: 'music',
+    body: `PRINCE - PURPLE RAIN
+Released: July 27, 1984
+Format: Cassette ($7.99) | Vinyl ($8.99) | Upcoming: CD (1985)
+
+TRACK LISTING
+1. Let's Pretend We're Married (4:43)
+2. Raspberry Beret (3:58)
+3. Delirious (3:29)
+4. When Doves Cry (5:23)
+5. I Would Die 4 U (2:45)
+6. Maybe This Time (3:32)
+7. The Most Beautiful Girl in the World (2:50)
+8. Purple Rain (8:42)
+9. Computer Blue (3:50)
+10. Darling Nikki (4:10)
+11. Mother Father (5:20)
+12. God Is Watching Us (2:19)
+
+THE PHENOMENON
+Purple Rain is the biggest album release of 1984. Prince's virtuosity—playing all instruments, writing all songs, producing everything—creates sonic depth unmatched by contemporary releases.
+
+THE SINGLES
+"When Doves Cry" became a #1 hit, featuring Prince's signature falsetto and minimalist production (drums and voice only on the hook).
+
+THE ARTISTRY
+Purple Rain showcases Prince's ambition to create a complete artistic vision. The album balances funk, rock, pop, and R&B, proving Prince transcends traditional genre boundaries.
+
+THE FILM
+Prince is also starring in a film of the same name, making Purple Rain a multimedia phenomenon.`,
+  },
+  {
+    id: 'music_577',
+    title: 'Michael Jackson - Thriller',
+    icon: '🎵',
+    color: '#000000',
+    anim: 'pulse',
+    matchText: 'Michael Jackson\'s Thriller continues to dominate the charts.',
+    type: 'music',
+    body: `MICHAEL JACKSON - THRILLER
+Released: November 30, 1982
+Format: Cassette ($7.99) | Vinyl ($8.99) | CD ($14.99)
+
+TRACK LISTING
+1. Billie Jean (4:54)
+2. Beat It (4:18)
+3. Billie Jean (Alternative Mix) (4:46)
+4. Human Nature (4:07)
+5. The Girl Is Mine (3:42)
+6. Thriller (5:57)
+7. Beat It (Alternate) (4:18)
+8. Wanna Be Startin' Somethin' (6:03)
+9. Lady in My Life (5:16)
+10. The Girl Is Mine (Alternative Mix) (3:39)
+11. Thriller (Alternate) (4:32)
+
+THE DOMINATION
+Nearly two years after release, Thriller remains the best-selling album in America. Sales exceed 15 million copies worldwide, making it the best-selling album of all time.
+
+THE SINGLES
+"Billie Jean," "Beat It," and "Thriller" were massive hit singles. The "Thriller" music video, featuring groundbreaking choreography and special effects, revolutionized the medium.
+
+THE ARTISTRY
+Producer Quincy Jones and Michael Jackson created an album that appeals to pop, R&B, rock, and mainstream audiences simultaneously.
+
+THE CULTURAL IMPACT
+Thriller transcended music, becoming a cultural phenomenon that influenced dance, fashion, and video production globally.`,
+  },
+  {
+    id: 'music_578',
+    title: 'Cyndi Lauper - Girls Just Want to Have Fun',
+    icon: '🎤',
+    color: '#ec4899',
+    anim: 'pulse',
+    matchText: 'Cyndi Lauper\'s debut is a colorful explosion of pop fun.',
+    type: 'music',
+    body: `CYNDI LAUPER - GIRLS JUST WANT TO HAVE FUN
+Released: February 14, 1984
+Format: Cassette ($7.99) | Vinyl ($8.99) | CD ($14.99)
+
+TRACK LISTING
+1. Girls Just Want to Have Fun (3:24)
+2. Time After Time (3:25)
+3. She's So Unusual (3:00)
+4. All Through the Night (3:42)
+5. I'll Kiss You (3:48)
+6. He's So Unusual (3:22)
+7. Money Changes Everything (3:13)
+8. Witness (3:49)
+9. I Know My Love (3:08)
+
+THE BREAKTHROUGH
+Cyndi Lauper's debut album introduces a brash, colorful personality to pop music. Her unique voice and fashion sense make her instantly recognizable.
+
+THE HIT
+"Girls Just Want to Have Fun" became the anthem for 1984, celebrating female empowerment and joy through infectious pop production.
+
+THE FOLLOW-UP
+"Time After Time" showcases Lauper's vocal range and emotional depth, proving the album contains substance alongside pop hooks.
+
+THE IMPACT
+Lauper challenged 1980s pop conformity with bold fashion, unique personality, and unapologetic femininity that influenced culture beyond music.`,
+  },
+  {
+    id: 'music_579',
+    title: 'Van Halen - 1984',
+    icon: '🎸',
+    color: '#ef4444',
+    anim: 'pulse',
+    matchText: 'Van Halen\'s self-titled 1984 is heavy rock perfection.',
+    type: 'music',
+    body: `VAN HALEN - 1984
+Released: January 9, 1984
+Format: Cassette ($7.99) | Vinyl ($8.99) | CD ($14.99)
+
+TRACK LISTING
+1. Panama (3:33)
+2. Jump (4:00)
+3. Top Jimmy (3:39)
+4. Drop Dead Legs (3:21)
+5. House of Pain (3:19)
+6. I'll Wait (5:33)
+7. Girl Gone Bad (3:34)
+8. Diver Down (5:22)
+9. secrets (4:14)
+10. Unchained (3:41)
+
+THE SOUND
+Van Halen dominates arena rock with Edward Van Halen's revolutionary guitar techniques and David Lee Roth's charismatic vocals.
+
+THE HITS
+"Panama" and "Jump" became massive rock radio staples, with "Jump" featuring a synthesizer that showcased Van Halen's willingness to experiment with new sounds.
+
+THE VIRTUOSITY
+Edward Van Halen's guitar playing reaches new heights, featuring unprecedented speed, tapping, and harmonic techniques that revolutionize rock guitar.
+
+THE PHENOMENON
+1984 proves Van Halen's continued dominance in arena rock, combining technical mastery with infectious hooks and irrepressible energy.`,
+  },
+  {
+    id: 'music_580',
+    title: 'Culture Club - Colour by Numbers',
+    icon: '🎶',
+    color: '#ec4899',
+    anim: 'pulse',
+    matchText: 'Culture Club\'s Colour by Numbers is colorful new wave.',
+    type: 'music',
+    body: `CULTURE CLUB - COLOUR BY NUMBERS
+Released: October 1, 1983
+Format: Cassette ($7.99) | Vinyl ($8.99) | CD ($14.99)
+
+TRACK LISTING
+1. Karma Chameleon (3:14)
+2. Church of the Poison Mind (3:27)
+3. Ms. Vain (3:34)
+4. Stormkeeper (4:29)
+5. Victims (3:40)
+6. White Boys Can't Dance (2:36)
+7. The Medal Song (4:17)
+8. Romance Beyond the Alphabet (4:25)
+9. Colour by Numbers (3:45)
+10. It Takes Time (3:25)
+
+THE SUCCESS
+Culture Club's colorful new wave aesthetic and Boy George's androgynous fashion captured 1984's imagination.
+
+THE HIT
+"Karma Chameleon" became a massive worldwide hit, showcasing Culture Club's ability to blend pop appeal with sophisticated production.
+
+THE PERSONALITY
+Boy George's distinctive voice and fashion choices made Culture Club stand out in a crowded pop landscape.
+
+THE INFLUENCE
+Culture Club helped normalize gender-bending fashion and alternative aesthetics in mainstream pop culture.`,
+  },
+];
+
+// ── RANDOM 1984 LIFE & CULTURE (#591-605) ──
+export const RANDOM_1984_LIFE = [
+  {
+    id: 'life_591',
+    title: 'Video Rental Stores',
+    icon: '📼',
+    color: '#06b6d4',
+    anim: 'pulse',
+    matchText: 'Rent the latest movies at your local video store.',
+    type: 'culture',
+    body: `THE VIDEO RENTAL REVOLUTION
+
+The VCR boom of 1983-84 created an explosion of video rental stores in neighborhoods nationwide. Blockbuster, Video City, and independent shops have emerged as community gathering places.
+
+THE EXPERIENCE
+Friday night video rental is now a family ritual. Parents and children browse shelves of VHS tapes, each weighing their options before selecting a movie to watch over the weekend.
+
+THE ECONOMICS
+Video rental stores charge $3-5 per rental, encouraging multiple viewings per family to justify the fee. Late fees provide additional revenue.
+
+THE SELECTION
+Stores stock hit movies, obscure films, and adult content in restricted sections. The selection varies by location and store policies.
+
+THE COMMUNITY
+Video stores become neighborhood social hubs where employees recommend films, customers discover new movies, and the store becomes a third place outside home and work.
+
+THE FUTURE
+As more families acquire VCRs, video rental stores will likely expand rapidly. Analysts predict they'll become as common as pizza places within a few years.`,
+  },
+  {
+    id: 'life_592',
+    title: 'The Boom Box Era',
+    icon: '📻',
+    color: '#fbbf24',
+    anim: 'pulse',
+    matchText: 'Bring your music anywhere with a portable boom box.',
+    type: 'culture',
+    body: `BOOM BOXES - PORTABLE AUDIO DOMINATES
+
+The Sony Walkman revolutionized personal audio in 1979, but 1984 belongs to the boom box—a large, portable stereo system with dual cassette decks and AM/FM radio.
+
+THE DEVICE
+Boom boxes are shoulder-mounted or carried in both hands, weighing 10-15 pounds. They play cassettes, FM radio, and some feature record players.
+
+THE CULTURE
+Young people carry boom boxes to parks, beaches, and street corners, using them to share music with friends and create impromptu dance parties.
+
+THE TREND
+Boom boxes become status symbols. Models with bigger speakers, more features, and better sound quality are coveted. Brands like Panasonic, JBL, and Crown dominate.
+
+THE SOUND
+Turning up the bass on a boom box while standing in a public place becomes a form of rebellion and self-expression.
+
+THE FUTURE
+Boom boxes will likely peak in the late 1980s before personal Walkmans and car stereos eventually reclaim dominance in portable audio.`,
+  },
+  {
+    id: 'life_593',
+    title: 'The Fitness Craze',
+    icon: '💪',
+    color: '#ef4444',
+    anim: 'pulse',
+    matchText: 'Join the fitness revolution and get in shape.',
+    type: 'culture',
+    body: `THE 1980S FITNESS EXPLOSION
+
+Starting with Richard Simmons' aerobics craze and Jane Fonda's workout videos, America is experiencing unprecedented interest in physical fitness.
+
+THE PHENOMENON
+Aerobics studios are opening in every mall and city center. Women flock to classes featuring rhythmic exercise set to pop music and led by enthusiastic instructors.
+
+THE VIDEOS
+Jane Fonda's workout VHS cassette is one of the best-selling videos, allowing people to exercise at home with a celebrity instructor leading them.
+
+THE FASHION
+Neon leg warmers, spandex leotards, and matching headbands become fashionable workout attire. Brands like Nike and Reebok capitalize on the fitness boom.
+
+THE MOTIVATION
+Americans embrace fitness for health, appearance, and stress relief. Gyms report record memberships and waiting lists for popular classes.
+
+THE CULTURAL SHIFT
+The 1980s fitness craze represents changing attitudes about health, body image, and self-care in American culture.`,
+  },
+  {
+    id: 'life_594',
+    title: 'MTV Music Videos',
+    icon: '📺',
+    color: '#8b5cf6',
+    anim: 'pulse',
+    matchText: 'MTV is changing how America experiences music.',
+    type: 'culture',
+    body: `MTV - MUSIC TELEVISION PHENOMENON
+
+MTV launched in August 1981, but 1984 represents its breakthrough moment as music videos become central to how songs are promoted and consumed.
+
+THE FORMAT
+MTV plays music videos 24/7, initially filling hours with videos from any artist willing to provide them. The quality and budgets increase as labels recognize videos' marketing power.
+
+THE BREAKTHROUGH VIDEOS
+Michael Jackson's "Thriller," Prince's "When Doves Cry," and David Bowie's "Let's Dance" showcase the artistic possibilities of the music video format.
+
+THE IMPACT
+Artists invest heavily in creating visually stunning videos. Directors become celebrities. Music videos become as important as the songs themselves.
+
+THE CULTURAL SHIFT
+Watching MTV becomes a social activity. Young people gather to see new videos and participate in music culture beyond radio.
+
+THE FUTURE
+MTV will likely become an even more dominant force in music promotion and consumption, potentially challenging radio's primacy.`,
+  },
+];
+
+// ── PUBLIC SERVICE ANNOUNCEMENTS (#606-625) ──
+export const PSAs = [
+  {
+    id: 'psa_606',
+    title: 'Smokey the Bear - Only YOU',
+    icon: '🔥',
+    color: '#8b5cf6',
+    anim: 'pulse',
+    matchText: 'Only YOU can prevent forest fires.',
+    type: 'psa',
+    body: `SMOKEY THE BEAR - FOREST FIRE PREVENTION
+
+Since 1944, Smokey the Bear has been America's most recognizable forest fire prevention mascot, teaching generations about responsible outdoor behavior.
+
+THE MESSAGE
+"Only YOU can prevent forest fires" is one of the most famous advertising slogans in American history, emphasizing individual responsibility.
+
+THE CAMPAIGN
+Smokey appears in billboards, television spots, radio advertisements, and print media throughout 1984, always with the same crucial message.
+
+THE IMPACT
+The Smokey campaign is credited with significantly reducing accidental forest fires through public education and awareness.
+
+THE CHARACTER
+Smokey the Bear, dressed in ranger outfit and cowboy hat, appeals to both children and adults, making forest fire prevention accessible to all ages.
+
+THE CONTINUATION
+The campaign remains active in 1984 with renewed emphasis on responsible camping and outdoor activities during fire season.`,
+  },
+  {
+    id: 'psa_607',
+    title: 'Buckle Up for Safety',
+    icon: '🚗',
+    color: '#ef4444',
+    anim: 'pulse',
+    matchText: 'Buckle up for safety. It\'s the law and it saves lives.',
+    type: 'psa',
+    body: `SEAT BELT SAFETY CAMPAIGN
+
+Throughout the 1980s, safety campaigns emphasize the importance of seat belts as automotive fatality rates rise.
+
+THE MESSAGE
+"Buckle Up for Safety" campaigns highlight the proven life-saving potential of seat belts through statistics and emotional testimonials.
+
+THE LAW
+Several states have passed mandatory seat belt laws, making buckle-up campaigns legally enforceable in addition to safety-focused.
+
+THE RESISTANCE
+Despite evidence, some Americans resist seat belt mandates, viewing them as personal freedom infringements.
+
+THE CAMPAIGN
+Public service announcements feature dramatic crash simulations, injury statistics, and survivor stories.
+
+THE ADVOCACY
+Safety organizations push for stronger enforcement and increased public awareness of seat belt effectiveness.`,
+  },
+  {
+    id: 'psa_608',
+    title: 'This Is Your Brain on Drugs',
+    icon: '🧠',
+    color: '#fbbf24',
+    anim: 'pulse',
+    matchText: 'This is your brain. This is your brain on drugs. Any questions?',
+    type: 'psa',
+    body: `THIS IS YOUR BRAIN ON DRUGS
+
+One of the most famous and memorably simple public service announcements, "This Is Your Brain on Drugs" uses a raw egg to demonstrate drug damage.
+
+THE CONCEPT
+A spokesperson holds an egg, declaring "This is your brain." Then they crack it into a hot skillet: "This is your brain on drugs."
+
+THE IMPACT
+The advertisement's simplicity and directness resonate with viewers of all ages, making it one of the most recognizable PSAs of the 1980s.
+
+THE CAMPAIGN
+The anti-drug PSA airs during primetime television, reaching millions of Americans with an anti-drug message during peak drug crisis years.
+
+THE EFFECTIVENESS
+Public health officials believe the PSA reaches young people and encourages drug avoidance through its memorable and stark visual.
+
+THE LEGACY
+The "This Is Your Brain on Drugs" PSA becomes iconic, quoted and parodied for decades after its initial broadcast.`,
+  },
+  {
+    id: 'psa_609',
+    title: 'Designated Driver Campaign',
+    icon: '🚙',
+    color: '#3b82f6',
+    anim: 'pulse',
+    matchText: 'Friends don\'t let friends drive drunk.',
+    type: 'psa',
+    body: `FRIENDS DON'T LET FRIENDS DRIVE DRUNK
+
+A relatively new campaign gaining momentum in 1984, the "Designated Driver" message encourages friends to prevent drunk driving through personal intervention.
+
+THE MESSAGE
+"Friends don't let friends drive drunk" emphasizes personal responsibility for friends' safety during social situations.
+
+THE CONCEPT
+The campaign suggests that designating a non-drinking driver before drinking begins is an effective harm-reduction strategy.
+
+THE TIMING
+As drunk driving deaths reach epidemic levels in the 1980s, awareness campaigns attempt to shift social norms around drinking and driving.
+
+THE IMPACT
+The campaign resonates especially with young adults and college-age populations where drunk driving risk is highest.
+
+THE CHALLENGE
+Changing social behaviors around alcohol consumption requires sustained campaigns and cultural shifts beyond advertising alone.`,
+  },
+];
+
+// Export all categories
+export const ALL_ENTRIES = [
+  ...ARCADE_GAMES,
+  ...HOME_COMPUTERS,
+  ...WEIRD_TECHNOLOGY,
+  ...ODD_PRODUCTS,
+  ...MUSIC,
+  ...RANDOM_1984_LIFE,
+  ...PSAs,
+];

@@ -424,6 +424,57 @@ export const ACHIEVEMENTS = [
   { id: 'charity_advocate', name: 'Charity Advocate', desc: 'View 5 national charity exhibits', icon: '🤝', category: 'community' },
   { id: 'compassion_champion', name: 'Compassion Champion', desc: 'View 10 national charity exhibits', icon: '💕', category: 'community' },
   { id: 'change_maker', name: 'Change Maker', desc: 'View all 25 national charity exhibits', icon: '🌟', category: 'community' },
+
+  // ── NATIONAL PROMOS: FAILED TV SHOWS ──
+  { id: 'failed_tv_1', name: 'One Hit Wonder', desc: 'View 1 failed TV show popup', icon: '📺', category: 'community' },
+  { id: 'failed_tv_5', name: 'Pilot Episode Fan', desc: 'View 5 failed TV show popups', icon: '🎬', category: 'community' },
+  { id: 'failed_tv_10', name: 'Cancelled Series Historian', desc: 'View 10 failed TV show popups', icon: '📼', category: 'community' },
+
+  // ── NATIONAL PROMOS: TV MOVIES ──
+  { id: 'tvmovie_viewer', name: 'Sunday Night Watcher', desc: 'View your first TV movie popup', icon: '🌙', category: 'community' },
+  { id: 'tvmovie_5', name: 'Made-for-TV Enthusiast', desc: 'View 5 TV movie popups', icon: '📺', category: 'community' },
+  { id: 'tvmovie_all', name: 'Prime Time Marathoner', desc: 'View all TV movie popups', icon: '🎭', category: 'community' },
+
+  // ── NATIONAL PROMOS: CARTOONS ──
+  { id: 'cartoon_fan', name: 'Saturday Morning Devotee', desc: 'View 5 cartoon popups', icon: '📺', category: 'community' },
+  { id: 'cartoon_collector', name: 'Cartoon Historian', desc: 'View 15 cartoon popups', icon: '🎨', category: 'community' },
+  { id: 'cartoon_master', name: 'Animated Series Champion', desc: 'View all 10 cartoon popups', icon: '👾', category: 'community' },
+
+  // ── NATIONAL PROMOS: ARCADE GAMES ──
+  { id: 'arcade_rookie', name: 'Arcade Rookie', desc: 'View your first arcade game popup', icon: '🕹️', category: 'community' },
+  { id: 'arcade_addict', name: 'Arcade Addict', desc: 'View 5 arcade game popups', icon: '🎮', category: 'community' },
+  { id: 'arcade_pro', name: 'Arcade Hall of Famer', desc: 'View all 11 arcade game popups', icon: '👾', category: 'community' },
+
+  // ── NATIONAL PROMOS: HOME COMPUTERS ──
+  { id: 'computer_enthusiast', name: 'Computer Enthusiast', desc: 'View your first home computer popup', icon: '💻', category: 'community' },
+  { id: 'computer_collector', name: 'Computer Collector', desc: 'View 5 home computer popups', icon: '🖥️', category: 'community' },
+  { id: 'computer_historian', name: 'Computing Historian', desc: 'View all 5 home computer popups', icon: '⌨️', category: 'community' },
+
+  // ── NATIONAL PROMOS: WEIRD TECHNOLOGY ──
+  { id: 'tech_explorer', name: 'Tech Explorer', desc: 'View your first weird technology popup', icon: '🔌', category: 'community' },
+  { id: 'tech_early_adopter', name: 'Early Adopter', desc: 'View 3 weird technology popups', icon: '💿', category: 'community' },
+  { id: 'tech_futurist', name: 'Tech Futurist', desc: 'View all weird technology popups', icon: '🚀', category: 'community' },
+
+  // ── NATIONAL PROMOS: ODD PRODUCTS ──
+  { id: 'product_collector', name: 'Product Collector', desc: 'View 2 odd product popups', icon: '🛍️', category: 'community' },
+  { id: 'novelty_fan', name: 'Novelty Fan', desc: 'View all odd product popups', icon: '🧩', category: 'community' },
+
+  // ── NATIONAL PROMOS: MUSIC ──
+  { id: 'album_listener', name: 'Album Listener', desc: 'View your first album/cassette popup', icon: '🎵', category: 'community' },
+  { id: 'music_aficionado', name: 'Music Aficionado', desc: 'View 3 album popups', icon: '🎶', category: 'community' },
+  { id: 'record_collector', name: 'Record Collector', desc: 'View all music album popups', icon: '💿', category: 'community' },
+
+  // ── NATIONAL PROMOS: RANDOM 1984 LIFE ──
+  { id: '1984_culture_fan', name: '1984 Culture Fan', desc: 'View a random 1984 life popup', icon: '📼', category: 'community' },
+  { id: '1984_nostalgia', name: '1984 Nostalgia Trip', desc: 'View all random 1984 life popups', icon: '🕰️', category: 'community' },
+
+  // ── NATIONAL PROMOS: PUBLIC SERVICE ANNOUNCEMENTS ──
+  { id: 'psa_awareness', name: 'PSA Awareness', desc: 'View your first public service announcement', icon: '📢', category: 'community' },
+  { id: 'psa_advocate', name: 'Public Health Advocate', desc: 'View 3 PSA popups', icon: '⚕️', category: 'community' },
+  { id: 'psa_champion', name: 'PSA Champion', desc: 'View all public service announcement popups', icon: '🌟', category: 'community' },
+
+  // ── NATIONAL PROMOS: MASTER ──
+  { id: 'national_promos_completionist', name: 'Retro Broadcast Completionist', desc: 'View 50 national promo popups', icon: '📻', category: 'community', threshold: 50 },
 ];
 
 // ── Stats storage ──

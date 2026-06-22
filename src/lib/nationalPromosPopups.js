@@ -574,11 +574,29 @@ The Pac-Man cartoon represented the animation industry's recognition that video 
 // Continue with ARCADE GAMES, COMPUTERS, TECHNOLOGY, PRODUCTS, MUSIC, and PSAs in next sections...
 // Due to length, I'll structure this file to be extensible
 
+// Import additional categories from popups2
+import {
+  ARCADE_GAMES,
+  HOME_COMPUTERS,
+  WEIRD_TECHNOLOGY,
+  ODD_PRODUCTS,
+  MUSIC,
+  RANDOM_1984_LIFE,
+  PSAs,
+  ALL_ENTRIES as ENTRIES_FROM_POPUPS2,
+} from './nationalPromosPopups2';
+
 const ENTRIES = [
   ...FAILED_TV_SHOWS,
   ...TV_MOVIES,
   ...CARTOONS,
-  // More categories will be added below
+  ...ARCADE_GAMES,
+  ...HOME_COMPUTERS,
+  ...WEIRD_TECHNOLOGY,
+  ...ODD_PRODUCTS,
+  ...MUSIC,
+  ...RANDOM_1984_LIFE,
+  ...PSAs,
 ];
 
 export function findNationalPromosEntry(adText) {
@@ -604,6 +622,13 @@ export function trackNationalPromosView(entryId) {
   if (VIEWED_PROMOS.size >= 25) {
     unlocked.push('national_promo_25');
   }
+  if (VIEWED_PROMOS.size >= 50) {
+    unlocked.push('national_promos_completionist');
+  }
 
   return unlocked;
+}
+
+export function getNationalPromosViewCount() {
+  return VIEWED_PROMOS.size;
 }
