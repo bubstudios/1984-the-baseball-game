@@ -20,6 +20,7 @@ import ObscureTvPopup from './ObscureTvPopup';
 import GeneralProductsPopup from './GeneralProductsPopup';
 import RedSoxBannerPopup from './RedSoxBannerPopup';
 import NationalCharityPopup from './NationalCharityPopup';
+import NationalPromosPopup from './NationalPromosPopup';
 import AdReadPopupRenderer from './AdReadPopupRenderer';
 import { trackSynopsisView, pickSynopsis, NETWORK_LOGOS, EASTER_EGGS } from '@/lib/tvGuideData';
 import { findMovieIndex } from '@/lib/moviePopups';
@@ -41,6 +42,7 @@ import { findFilmDevelopmentCamerasEntry } from '@/lib/filmDevelopmentCamerasPop
 import { findThingsThatScream1984Entry } from '@/lib/thingsThatScream1984Popups';
 import { findMallCultureEntry } from '@/lib/mallCulturePopups';
 import { findRedSoxBannerEntry, trackRedSoxBannerView } from '@/lib/redSoxBannerPopups';
+import { findNationalPromosEntry, trackNationalPromosView } from '@/lib/nationalPromosPopups';
 
 export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchievement }) {
   const [visible, setVisible] = useState(false);
@@ -85,6 +87,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [redSoxBannerEntry, setRedSoxBannerEntry] = useState(null);
   const [isNationalCharity, setIsNationalCharity] = useState(false);
   const [nationalCharityEntry, setNationalCharityEntry] = useState(null);
+  const [isNationalPromos, setIsNationalPromos] = useState(false);
+  const [nationalPromosEntry, setNationalPromosEntry] = useState(null);
 
   // Detect ad type on mount
   useEffect(() => {
@@ -138,6 +142,9 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findNationalCharityEntry(ad.text)) {
       setIsNationalCharity(true);
       setNationalCharityEntry(findNationalCharityEntry(ad.text));
+    } else if (findNationalPromosEntry(ad.text)) {
+      setIsNationalPromos(true);
+      setNationalPromosEntry(findNationalPromosEntry(ad.text));
     } else if (movie !== null) {
       setIsTvMovie(true);
     } else {
@@ -259,6 +266,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       redSoxBannerEntry={redSoxBannerEntry}
       isNationalCharity={isNationalCharity}
       nationalCharityEntry={nationalCharityEntry}
+      isNationalPromos={isNationalPromos}
+      nationalPromosEntry={nationalPromosEntry}
       isTvMovie={isTvMovie}
       tvMovieEntry={tvMovieEntry}
       isObscureTv={isObscureTv}

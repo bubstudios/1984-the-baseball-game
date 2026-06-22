@@ -19,6 +19,7 @@ import ObscureTvPopup from './ObscureTvPopup';
 import GeneralProductsPopup from './GeneralProductsPopup';
 import RedSoxBannerPopup from './RedSoxBannerPopup';
 import NationalCharityPopup from './NationalCharityPopup';
+import NationalPromosPopup from './NationalPromosPopup';
 
 export default function AdReadPopupRenderer({
   expanded, isMovie, synopsisData, onDismiss, onAchievement,
@@ -38,6 +39,7 @@ export default function AdReadPopupRenderer({
   isMallCulture, mallCultureEntry,
   isRedSoxBanner, redSoxBannerEntry,
   isNationalCharity, nationalCharityEntry,
+  isNationalPromos, nationalPromosEntry,
   isTvMovie, tvMovieEntry,
   isObscureTv, obscureTvEntry,
   isGeneralProducts, gpEntry,
@@ -92,6 +94,9 @@ export default function AdReadPopupRenderer({
   }
   if (expanded && isNationalCharity && nationalCharityEntry) {
     return <NationalCharityPopup entry={nationalCharityEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
+  }
+  if (expanded && isNationalPromos && nationalPromosEntry) {
+    return <NationalPromosPopup entry={nationalPromosEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
   }
   if (expanded && isTvMovie && tvMovieEntry) {
     return <TvMoviePopup entry={tvMovieEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
