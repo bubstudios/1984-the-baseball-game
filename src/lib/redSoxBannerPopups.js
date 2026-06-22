@@ -41,18 +41,18 @@ Rice is on pace for another 100+ RBI season, anchoring the Red Sox lineup.
 "He's the kind of hitter who makes pitchers nervous just stepping into the box." — Ned Martin`,
       },
       {
-        player: 'Roger Clemens',
+        player: 'Dennis Boyd',
         position: 'RHP',
         icon: '🔥',
-        body: `Tonight's giveaway: the Roger Clemens Bobblehead!
+        body: `Tonight's giveaway: the Dennis "Oil Can" Boyd Bobblehead!
 
-The Rocket is having a season for the ages, striking out batters at a historic rate.
+Dennis Boyd, known as "Oil Can" for his smooth pitching style, is one of the most exciting arms in the Red Sox rotation.
 
-The first 10,000 fans receive a Roger Clemens bobblehead, complete with his intense glare and high leg kick.
+The first 10,000 fans receive a Dennis Boyd bobblehead, complete with his signature delivery and intensity on the mound.
 
-Clemens brings pure heat to the mound every time out, and Fenway fans have embraced the young fireballer.
+Boyd brings passion and fire to the Red Sox lineup, and the Fenway faithful love his competitive spirit.
 
-"He's got the kind of arm that comes along once in a generation." — Red Sox broadcaster`,
+"Oil Can is the future of Red Sox pitching." — Red Sox broadcaster`,
       },
       {
         player: 'Dwight Evans',
