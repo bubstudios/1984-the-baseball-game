@@ -38,6 +38,7 @@ import AdRead from '@/components/game/AdRead';
 import FlyWFlag from '@/components/game/FlyWFlag';
 import CardAwardModal from '@/components/game/CardAwardModal';
 import { getRandomCard, addCollectedCard, loadCollectionFromStorage, saveCollectionToStorage } from '@/lib/tigersBaseballCards';
+import FanChirpBox from '@/components/game/FanChirpBox';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -844,6 +845,18 @@ export default function Home() {
 
                 {/* Commentary */}
                 <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} stadium={gameStadium} homeTeamKey={homeTeam} />
+
+                {/* Fan Chatter Box — green, distinct from bench chirps */}
+                <FanChirpBox
+                  homeTeamKey={homeTeam}
+                  isGameActive={!gameState.gameOver}
+                  onAchievement={(ids) => {
+                    if (ids.length > 0) {
+                      setNewAchievements(prev => [...prev, ...ids]);
+                      setShowAchievementPopup(true);
+                    }
+                  }}
+                />
 
                 {/* Matchup */}
                 <div className="bg-card border border-border rounded-lg px-2 py-1.5">

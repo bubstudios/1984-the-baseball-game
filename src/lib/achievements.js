@@ -475,6 +475,13 @@ export const ACHIEVEMENTS = [
 
   // ── NATIONAL PROMOS: MASTER ──
   { id: 'national_promos_completionist', name: 'Retro Broadcast Completionist', desc: 'View 50 national promo popups', icon: '📻', category: 'community', threshold: 50 },
+
+  // ── FAN CHATTER ──
+  { id: 'fan_chatter_10', name: 'Bleacher Bum', desc: 'Heard 10 fan yells during play', icon: '📣', category: 'fan' },
+  { id: 'fan_chatter_50', name: 'Section 36', desc: 'Heard 50 fan yells across games', icon: '🗣️', category: 'fan' },
+  { id: 'fan_chatter_100', name: 'Die-Hard', desc: 'Heard 100 fan yells — you never leave early', icon: '🏟️', category: 'fan' },
+  { id: 'fan_chatter_ump', name: 'Kill the Ump', desc: 'Heard 10 crowd complaints about the umpire', icon: '😤', category: 'fan' },
+  { id: 'fan_chatter_rally', name: 'Rally Crowd', desc: "Heard the crowd yell 'Let's start a rally!' five times", icon: '🚀', category: 'fan' },
 ];
 
 // ── Stats storage ──
