@@ -1523,12 +1523,8 @@ registerTeamAds('royals', 'charity', [
 // ── Phillies / Philadelphia (#601–650) ──
 
 registerTeamAds('phillies', 'team_promo', [
-  // Homestand — bobblehead nights (each has its own matchText for popup routing)
-  "Join us for Schmidt Bobblehead Night at Veterans Stadium.",
-  "Steve Carlton Bobblehead Night at Veterans Stadium this Friday.",
-  "Juan Samuel Bobblehead Night at Veterans Stadium.",
-  "Garry Maddox Bobblehead Night — two-thirds of the world is covered.",
-  "Tug McGraw Bobblehead Night — Ya Gotta Believe at Veterans Stadium.",
+  // Homestand banner — bobblehead rotation (click to reveal which bobblehead you received)
+  "The homestand continues tomorrow at Veterans Stadium — come out and join us.",
   // Team poster
   "Free 1984 Phillies team poster — pick yours up at the main gate.",
   // Other promos

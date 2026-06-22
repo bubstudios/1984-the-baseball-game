@@ -1041,6 +1041,300 @@ Hope it's a good one.`,
   },
 ];
 
+// ── MISSING BANNER ENTRIES ──
+
+const MISSING_BANNER_ENTRIES = [
+  {
+    matchText: "Breaker one-nine, anybody got their ears on?",
+    title: "📻 Breaker 1-9 — CB Radio Culture",
+    icon: "📻",
+    color: "#1a237e",
+    body: `BREAKER ONE-NINE, ANYBODY GOT THEIR EARS ON?
+
+CB radio — Citizens Band radio — became one of the defining cultural phenomena of the 1970s and early 1980s. What started as a communication tool for truck drivers became a craze that swept across America.
+
+THE HANDLES
+Nobody used their real name on CB. You had a "handle." Truckers had handles like "Rubber Duck," "Snowman," and "Bandit." Families had handles. Your dad had a handle. He used it seriously. You were not allowed to make fun of it.
+
+THE LANGUAGE
+"Breaker one-nine" — a request to speak on channel 19, the unofficial truckers' channel.
+"10-4" — understood, message received. You know this one.
+"What's your twenty?" — where are you?
+"Smokey" or "bear" — police officer.
+"Keep the shiny side up and the rubber side down" — drive safe.
+
+THE SMOKEY AND THE BANDIT CONNECTION
+Burt Reynolds. The Trans Am. The CB radio on the dash. The 1977 film turned CB into a full cultural explosion. By 1978, 12 million CB radios had been sold in America. Hardware stores sold out. Radio Shack ran out of stock.
+
+THE TRUCKERS
+Channel 19 was their domain. Real information about road conditions, speed traps, construction, and accidents traveled faster on CB than on any other medium available. In many ways, truckers invented real-time traffic reporting.
+
+THE DECLINE
+By 1984, the CB craze had cooled — but it never fully disappeared. The truckers kept their radios. Some families kept theirs. And somewhere on the highway tonight, somebody is still calling breaker one-nine.
+
+Copy that.`,
+  },
+  {
+    matchText: "A young fan has been trying to start the wave for three innings with limited success.",
+    title: "🌊 The Wave — A Sociological Study",
+    icon: "🌊",
+    color: "#2980b9",
+    body: `THE WAVE — A STADIUM PHENOMENON
+
+Somewhere in the upper deck, a young fan has been trying to start the wave for three innings.
+
+He started in Section 318. He stood up. He raised his arms. The gentleman to his left looked at him with mild confusion. The couple to his right were focused on their hot dogs. Nobody moved.
+
+THE SECOND ATTEMPT
+Inning seven. He recruited his younger brother. They stood simultaneously. They made eye contact with the man three seats down. The man three seats down considered participating, then declined. Progress: minimal.
+
+THE THIRD ATTEMPT
+He is now standing, arms raised, making sustained eye contact with a complete stranger in Section 319. The stranger appears to be considering it.
+
+THE HISTORY OF THE WAVE
+The wave as a crowd phenomenon is believed to have emerged at Oakland A's and University of Washington games in the early 1980s. Cheerleader "Krazy George" Henderson claims credit. The wave spread to stadiums across the country with remarkable speed.
+
+THE PHYSICS
+The wave requires a critical mass of participants to propagate. Experts estimate approximately 25-35 consecutive fans must participate for the wave to sustain itself around a stadium. Below that threshold, it dies out — usually right at the section where the young fan is standing with his arms up.
+
+THE OUTCOME
+Unknown. He is still trying.
+
+His dedication is admirable.`,
+  },
+  {
+    matchText: "Libraries across America offer summer reading programs.",
+    title: "📚 Libraries Across America",
+    icon: "📚",
+    color: "#8e44ad",
+    body: `LIBRARIES ACROSS AMERICA — SUMMER READING PROGRAMS
+
+Every summer, public libraries across the United States run reading programs for children. The goal is simple: keep kids reading during the months when school is out and television beckons.
+
+THE SETUP
+A signup sheet. A tracking chart. Usually some kind of thermometer or rocket ship graphic that fills up as you read books. The librarian checks your progress. You report your books honestly. (Mostly.)
+
+THE PRIZES
+Varies by library. Common options: a free book, a certificate, a coupon for a local ice cream shop, a small toy from a bin, the satisfaction of the librarian saying "Well done" with genuine warmth. This last one is underrated.
+
+THE BOOKS
+Any book counts. The library is not judging. Encyclopedia Brown counts. Choose Your Own Adventure counts. A book about dinosaurs counts. A very large book about trucks counts. Comic books — this varies by library. Ask. Some say yes.
+
+THE LIBRARIES THEMSELVES
+The air conditioning. The chairs. The quiet hum of a building full of books. The periodicals section where your grandfather has been reading magazines since 1958 and will continue to do so until further notice.
+
+The reference desk. A human being whose entire professional purpose is to help you find information. Any information. For free. This remains one of the genuinely remarkable things about American civic life.
+
+THIS SUMMER
+Find out what your local library is offering.
+Sign up.
+Read the books.
+Get the ice cream coupon.
+Do it.`,
+  },
+  {
+    matchText: "New releases arrive every Tuesday.",
+    title: "📼 New Releases — Every Tuesday",
+    icon: "📼",
+    color: "#1a237e",
+    body: `NEW RELEASES ARRIVE EVERY TUESDAY
+
+Tuesday. The most important day of the week at the video rental store.
+
+THE RITUAL
+Studios release new titles to video on Tuesdays. On Tuesday morning, the video store gets its shipment. The shipping boxes arrive. The clerk opens them. New titles are stickered, entered into the system, and placed on the New Releases wall. By noon, the wall looks magnificent. By 7 PM on Friday, the best titles are gone.
+
+THE NEW RELEASES WALL
+Positioned prominently near the entrance. Box art facing outward. The titles you've heard of are there: recent theatrical releases, finally available on VHS. Three copies of each, usually. Five copies for the big ones. Never enough copies.
+
+THE RESERVATION LIST
+You can put your name on a list. The store keeps a notebook. When the title you want comes back, they call you. The phone rings. "Your movie is in." You have 24 hours to pick it up. This is the 1984 version of a notification.
+
+WHAT'S COMING SOON
+Members who ask at the counter get a photocopied list of upcoming titles. Some stores post it on a corkboard. This list is studied carefully by serious customers who plan their rental schedule one to three weeks in advance.
+
+MEMBERSHIP
+Most stores require a membership. You fill out a form. They take your name, address, and a deposit on some of the more expensive tapes. The membership card lives in your wallet alongside your library card.
+
+NEW RELEASES. EVERY TUESDAY.
+Be there early for the good ones.`,
+  },
+  {
+    matchText: "A fan in the upper deck has dropped his program three times and recovered it every time.",
+    title: "📋 The Program — Upper Deck Hero",
+    icon: "📋",
+    color: "#e67e22",
+    body: `THE PROGRAM — AN UPPER DECK STORY
+
+In Section 412, a fan has dropped his program three times.
+
+THE FIRST DROP
+Reached for his hot dog. The program slid off his knee. Fell two rows. Bounced off an armrest. A woman in the row below caught it without looking up from her own scorecard. She handed it back without comment. This was impressive.
+
+THE SECOND DROP
+Leaned forward to watch a close play at second base. The program slid off his knee again. This time it tumbled four rows before coming to rest against the concrete step. He climbed down to retrieve it, excusing himself past four seated fans. Two of them understood completely.
+
+THE THIRD DROP
+A gust of wind. Nobody's fault. The program lifted, spiraled, traveled eight feet laterally, and lodged against the railing at the end of the row. The fan stood, stretched, reached, and retrieved it with one hand while bracing himself with the other.
+
+THE PROGRAM ITSELF
+$2.00 at the gate. Contains: today's starting lineups, player bios, statistics from the season so far, advertising, a crossword puzzle that is too hard, a word search that is too easy, and a photo of last year's team that is slightly better than this year's team.
+
+He has now folded the program and placed it in his back pocket.
+
+It will not fall again.
+He has learned.`,
+  },
+  {
+    matchText: "The Phillies invite Little League teams to attend a special field day at The Vet.",
+    title: "⚾ Phillies Little League Field Day",
+    icon: "⚾",
+    color: "#c0392b",
+    body: `PHILLIES LITTLE LEAGUE FIELD DAY — VETERANS STADIUM
+
+The Philadelphia Phillies are pleased to invite Little League teams throughout the Delaware Valley to a special field day at Veterans Stadium.
+
+THE INVITATION
+Youth baseball teams — ages 7 through 14 — are invited to attend a pre-game field day at The Vet. Registered teams receive reserved seating in the lower boxes, a Phillies pennant for each player, and access to the field before first pitch.
+
+ON THE FIELD
+Teams gather on the Veterans Stadium artificial turf — the same surface that Juan Samuel runs on, that Mike Schmidt fields ground balls on, that Steve Carlton has walked across for fourteen seasons in a Phillies uniform.
+
+Players warm up in the outfield. Coaches run brief fielding and baserunning drills. Several Phillies players may be available for informal interaction during batting practice.
+
+THE BASES
+After the final out, youth teams registered in the program are invited to run the bases. The line forms at the first-base bag. Players run counterclockwise. Most of them sprint the whole way.
+
+THE PHANATIC
+Dave Raymond (inside the costume) will make a special appearance for the youth groups. He will likely take someone's cap. He always takes someone's cap.
+
+REGISTRATION
+Contact the Phillies Community Relations office or your local parks and recreation department.
+
+THE PHILLIES BELIEVE
+Every professional baseball player was once a little leaguer. Today's kids at The Vet may someday wear a major league uniform.
+
+Or they may simply remember the day they ran the bases at Veterans Stadium.
+That's enough.`,
+  },
+  {
+    matchText: "Baseball and Philadelphia have always belonged together.",
+    title: "🔴 Baseball and Philadelphia",
+    icon: "🔴",
+    color: "#c0392b",
+    body: `BASEBALL AND PHILADELPHIA — A HISTORY
+
+They have always belonged together. It is not an exaggeration.
+
+THE BEGINNING
+The Philadelphia Athletics were a founding member of the American League in 1901. The Phillies were founded in 1883 — one of the oldest franchises in professional baseball. For over 100 years, Philadelphia has had professional baseball.
+
+CONNIE MACK
+Cornelius McGillicuddy — "Connie Mack" — managed the Athletics for 50 years. Fifty. He managed his final game in 1950 at the age of 87, wearing a suit and tie in the dugout, as he always had. He won nine American League pennants and five World Series. There will never be another like him.
+
+THE WHIZ KIDS
+1950. The Phillies — nicknamed the "Whiz Kids" for their youth — won the National League pennant for the first time since 1915. Dick Sisler's three-run homer on the final day of the season. Robin Roberts pitching on two days' rest. The city went wild.
+
+THE DROUGHT
+Then: 1964. The famous collapse. Nine games up with twelve to play. The city has never quite recovered from this. They discuss it at dinner tables. It is passed down through generations.
+
+1980
+October 21, 1980. Tug McGraw, Willie Wilson, strike three. Philadelphia's first World Series championship. Broad Street at midnight. Pandemonium.
+
+TODAY
+Veterans Stadium. Harry Kalas on the radio. Mike Schmidt at third base. Steve Carlton on the mound.
+
+Baseball and Philadelphia.
+They have always belonged together.
+They still do.`,
+  },
+  {
+    matchText: "Video rental stores are adding new titles every week.",
+    title: "📼 Video Rental Stores — 1984",
+    icon: "📼",
+    color: "#1a237e",
+    body: `VIDEO RENTAL STORES — AN AMERICAN INSTITUTION
+
+In 1977, there were approximately 700 video rental stores in America. By 1984, there are over 19,000.
+
+THE STORE
+Usually a converted retail space — a former dry cleaner, a former record store, a former something-else. Fluorescent lighting. Industrial carpet. A counter where someone slightly older than you is watching a portable television.
+
+THE LAYOUT
+New Releases along the front wall — the prime real estate. Action. Comedy. Horror. Drama. Each section has its own shelf. The tape boxes are hollow; the actual cassette is kept behind the counter or in a special sleeve. You bring the empty box to the counter. They hand you the tape.
+
+THE MEMBERSHIP CARD
+Required. Cost varies. Some stores charge a deposit. The card goes in your wallet. You lose it and have to explain this. They give you a new one.
+
+THE LATE FEE
+This is where video stores make a significant portion of their revenue. The rental is due back in 24 or 48 hours. The fee for returning it late is typically $1.00 to $2.00 per day. Some tapes stay out for a week. Some stay out for much longer. The stores know.
+
+THE DRAMA OF FRIDAYS
+Friday evening at the video rental store is a social event. The parking lot is full. The new releases are already gone if you arrive after 7 PM. People are browsing the Action section with genuine tension. Couples are negotiating.
+
+ADDING NEW TITLES EVERY WEEK.
+The shelves keep growing.
+More movies than you can watch in a lifetime.
+Most of them returned on time.`,
+  },
+  {
+    matchText: "Bring the arcade experience home.",
+    title: "🕹️ Bring the Arcade Home",
+    icon: "🕹️",
+    color: "#7b1fa2",
+    body: `BRING THE ARCADE EXPERIENCE HOME
+
+The year is 1984. The arcade is at the mall, or at the roller rink, or in a corner of the pizza place where the pinball machine used to be. A roll of quarters lasts 45 minutes if you're careful. Longer if you're good.
+
+THE HOME VERSIONS
+Atari 2600. ColecoVision. Intellivision. These machines have been promising to bring the arcade home since 1977. They have been partially successful. The home version of Pac-Man on the Atari 2600 is — well. It exists. It has Pac-Man in it. In the same way that a photograph of a sunset is technically a sunset.
+
+THE COMMODORE 64
+Getting closer. The C64 version of certain arcade titles is genuinely impressive. The graphics are better. The sound is better. You can see what game you're playing without squinting.
+
+COLECOVISION
+Probably the best home versions in 1984. The Donkey Kong port is legitimately close to the arcade. This matters enormously to the people for whom this matters.
+
+THE PROMISE
+Every year, the home versions get better. The processing power increases. The graphics improve. The sound chips get more sophisticated. There will come a day — it's hard to imagine but the trajectory is clear — when the home version will be indistinguishable from the arcade.
+
+UNTIL THEN
+Save your quarters.
+Head to the mall.
+Challenge the local champion.
+Some things are still best experienced in person.`,
+  },
+  {
+    matchText: "Pat's versus Geno's — Philadelphia's longest-running debate.",
+    title: "🥩 Pat's vs. Geno's — The Eternal Debate",
+    icon: "🥩",
+    color: "#e67e22",
+    body: `PAT'S VS. GENO'S — PHILADELPHIA'S LONGEST-RUNNING DEBATE
+
+They sit directly across the street from each other at the corner of 9th and Passyunk Avenue in South Philadelphia. Open 24 hours a day, 365 days a year. They have been rivals since 1966. There is no neutral position.
+
+PAT'S KING OF STEAKS
+The original. Pat Olivieri started selling chopped beef sandwiches from a cart near his hot dog stand in 1930. A cab driver smelled it and wanted some. It went from there. The current location opened in 1940. The ordering window faces the street. You order, you pay, you step aside. This is the system.
+
+GENO'S STEAKS
+Joey Vento opened Geno's in 1966, directly across the intersection from Pat's. Bright neon lights. An aggressive personality. Geno's quickly became a challenger — some say the superior product, some say a pretender.
+
+THE QUESTION
+Which one is better? This question has been debated by Philadelphia residents for 18 years. It has caused arguments at dinner tables, in bars, and at baseball games. There are people who have eaten at both many times and have a definitive answer, and people who have eaten at both many times and refuse to commit.
+
+THE HONEST ANSWER
+Both are excellent. They are different. Pat's uses a choppier meat preparation. Geno's meat is sliced thinner. The bread at both locations is Amoroso's. The atmosphere is different — Pat's is older, more worn-in; Geno's is brighter, more theatrical.
+
+YOUR JOB
+Go to both on the same night.
+Report your findings.
+Take a side.
+This is how Philadelphia works.`,
+  },
+];
+
+GENERIC_AD_ENTRIES.push(...MISSING_BANNER_ENTRIES);
+
 // Build lookup map for fast matching
 const GENERIC_AD_MAP = new Map(GENERIC_AD_ENTRIES.map(e => [e.matchText, e]));
 

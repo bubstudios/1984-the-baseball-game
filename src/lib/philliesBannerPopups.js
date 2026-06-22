@@ -1,11 +1,95 @@
 // Philadelphia Phillies Banner Popups — Veterans Stadium 1984
 // Bobbleheads, Posters, Team Promos, Community, Stadium History
 
-// ── 5 Bobblehead Night entries (rotate randomly) ──
+// ── Homestand / Bobblehead rotation banner ──
+// One banner text, rotates through 5 bobblehead players on each click
+export const PHILLIES_HOMESTAND_BOBBLEHEAD = {
+  id: 'phi_homestand_bobblehead',
+  matchText: 'The homestand continues tomorrow at Veterans Stadium — come out and join us.',
+  title: '🎉 Bobblehead Night — Veterans Stadium',
+  icon: '🎉',
+  color: '#c0392b',
+  accentColor: '#ffffff',
+  isRotation: true,
+  rotation: [
+    {
+      player: 'Mike Schmidt',
+      position: '3B',
+      icon: '💪',
+      body: `Tonight's giveaway: the Mike Schmidt Bobblehead!
+
+Michael Jack Schmidt. Third baseman. Eight-time NL home run champion. Eight-time Gold Glove winner. Three-time NL MVP. The finest third baseman in the history of the National League.
+
+The first 10,000 fans tonight receive a hand-painted Mike Schmidt Limited-Edition Bobblehead — posed mid-swing, in the classic #20 Phillies road uniform.
+
+The bat speed alone sets Schmidt apart. He doesn't flail — he waits, coils, and delivers. The ball doesn't just leave the park; it leaves quickly and far.
+
+"He hits it where they ain't — and where they ain't is usually the upper deck." — Richie Ashburn`,
+    },
+    {
+      player: 'Steve Carlton',
+      position: 'SP',
+      icon: '🎳',
+      body: `Tonight's giveaway: the Steve Carlton Bobblehead!
+
+Steve "Lefty" Carlton. Four Cy Young Awards. 329 career wins. 4,000+ strikeouts. The greatest left-handed pitcher of his generation.
+
+The first 10,000 fans tonight receive a Steve Carlton Limited-Edition Bobblehead — captured mid-delivery, that high leg kick, the arm coming through, the slider about to break off the table.
+
+Carlton's slider begins thigh-high over the plate and drops off the edge of the earth. Hitters describe it as disappearing. They are not wrong.
+
+He doesn't talk to the media. He answers with seven or eight innings of work. The numbers speak for themselves.`,
+    },
+    {
+      player: 'Juan Samuel',
+      position: '2B',
+      icon: '⚡',
+      body: `Tonight's giveaway: the Juan Samuel Bobblehead!
+
+Juan Samuel. Second baseman. 33 stolen bases in his rookie year. Bat speed that puts him in elite company.
+
+The first 10,000 fans tonight receive a Juan Samuel Limited-Edition Bobblehead — mid-sprint toward first base, bat drop beginning, because Juan Samuel doesn't waste a moment.
+
+He arrived from San Pedro de Macoris — the same town that has produced more major league shortstops per capita than anywhere on earth. Samuel brought speed, athleticism, and an energy that changes how a lineup functions.
+
+He is 23 years old. He is not a finished product. He is a beginning.`,
+    },
+    {
+      player: 'Garry Maddox',
+      position: 'CF',
+      icon: '🧤',
+      body: `Tonight's giveaway: the Garry Maddox Bobblehead!
+
+"Two-thirds of the world is covered by water. The other third is covered by Garry Maddox." — Ralph Kiner
+
+Eight consecutive Gold Gloves. Every year from 1975 through 1982. Center field at Veterans Stadium has never looked so small.
+
+The first 10,000 fans tonight receive a Garry Maddox Limited-Edition Bobblehead — full extension, glove reaching for a ball that ordinary center fielders would have watched land. Painted in the Phillies uniform, #31.
+
+Garry Maddox serves his community quietly, with the same discipline he brings to center field. He is one of the respected veterans on a veteran-laden club.`,
+    },
+    {
+      player: 'Tug McGraw',
+      position: 'RP',
+      icon: '✊',
+      body: `Tonight's giveaway: the Tug McGraw Bobblehead!
+
+"Ya Gotta Believe." Tug McGraw said it in 1973 as a Mets rallying cry. When he came to Philadelphia in 1975, he brought it with him.
+
+The first 10,000 fans tonight receive a Tug McGraw Limited-Edition Bobblehead — mid-delivery, left arm extended, glove punched toward the sky — the same gesture he made on October 21, 1980, when he struck out Willie Wilson to end Game 6.
+
+Bottom of the ninth. Kansas City Royals. The count. The crowd. Tug winds up. The screwball breaks. Wilson swings. Strike three. Pandemonium in Philadelphia. For the first time in 97 years, the Phillies are World Champions.
+
+Tug McGraw is one of baseball's genuinely lovable personalities. He is the soul of this bullpen.`,
+    },
+  ],
+};
+
+// ── 5 Bobblehead Night entries (legacy — kept for reference but no longer matched by banner text) ──
 export const PHILLIES_BOBBLEHEADS = [
   {
     id: 'phi_bob_schmidt',
-    matchText: 'Join us for Schmidt Bobblehead Night at Veterans Stadium.',
+    matchText: '__legacy_join us for Schmidt Bobblehead Night at Veterans Stadium.',
     title: '🎉 Mike Schmidt Bobblehead Night',
     icon: '🐯',
     color: '#c0392b',
@@ -390,7 +474,7 @@ The Broad Street Line subway runs directly beneath Broad Street from Fern Rock (
 
 // ── Combined lookup ──
 export const ALL_PHILLIES_ENTRIES = [
-  ...PHILLIES_BOBBLEHEADS,
+  PHILLIES_HOMESTAND_BOBBLEHEAD,
   PHILLIES_POSTER,
   ...PHILLIES_PROMO_ENTRIES,
   ...PHILLIES_COMMUNITY_ENTRIES,
