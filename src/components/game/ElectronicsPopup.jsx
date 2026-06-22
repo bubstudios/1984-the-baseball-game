@@ -52,22 +52,13 @@ export default function ElectronicsPopup({ entry, onDismiss, onAchievement }) {
     return () => clearTimeout(t);
   }, [visible, booting, bootLineIdx]);
 
-  // Auto-dismiss after 10s if user hasn't interacted
-  useEffect(() => {
-    if (!visible || userInteracted || booting) return;
-    autoDismissRef.current = setTimeout(() => {
-      setVisible(false);
-      onDismiss();
-    }, 10000);
-    return () => clearTimeout(autoDismissRef.current);
-  }, [visible, userInteracted, onDismiss, booting]);
+  // No auto-dismiss — only closes when X is tapped
 
   if (!visible || !entry) return null;
 
   const handleInteract = () => {
     if (!userInteracted) {
       setUserInteracted(true);
-      clearTimeout(autoDismissRef.current);
     }
   };
 
