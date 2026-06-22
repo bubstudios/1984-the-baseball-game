@@ -37,7 +37,7 @@ export default function AdReadPopupRenderer({
   isTvMovie, tvMovieEntry,
   isObscureTv, obscureTvEntry,
   isGeneralProducts, gpEntry,
-  handleTap, NETWORK_LOGOS, EASTER_EGGS, Clock, User, X
+  handleTap, NETWORK_LOGOS, EASTER_EGGS, Clock, User, X, ad
 }) {
   if (isMovie) return <MoviePopup ad={{ text: '' }} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
 
@@ -172,15 +172,15 @@ export default function AdReadPopupRenderer({
     );
   }
 
-  // Render clickable banner when not expanded (all ad types)
+  // Default: clickable banner for any ad type
   return (
     <div
       onClick={handleTap}
-      className="bg-card/80 border border-primary/20 rounded-xl px-4 py-3 cursor-pointer hover:bg-card hover:border-primary/40 transition-all animate-in fade-in slide-in-from-bottom-4 duration-300"
+      className="bg-card/80 border border-amber-500/30 rounded-xl px-4 py-3 cursor-pointer hover:bg-card hover:border-amber-500/50 transition-all"
     >
       <div className="text-center space-y-1">
-        <div className="text-[10px] font-heading uppercase tracking-widest text-primary/60">📢 Sponsor Message</div>
-        <p className="text-sm font-heading text-foreground/90">{synopsisData?.tagline || 'Advertisement'}</p>
+        <div className="text-[10px] font-heading uppercase tracking-widest text-amber-400/60">📻 Sponsor Message</div>
+        <p className="text-sm font-heading text-foreground/90">{synopsisData?.tagline || ad?.text || 'Advertisement'}</p>
         <p className="text-[9px] text-muted-foreground/50 font-heading">tap for details</p>
       </div>
     </div>
