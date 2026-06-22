@@ -419,6 +419,11 @@ export const ACHIEVEMENTS = [
   { id: 'sox_banner_historian', name: 'Fenway Historian', desc: 'View all 25 Red Sox banner exhibits', icon: '🏛️', category: 'community' },
   { id: 'sox_bobblehead_collector', name: 'Bobblehead Collector', desc: 'Collect a Red Sox bobblehead at Fenway', icon: '🎯', category: 'community' },
   { id: 'sox_poster_collector', name: 'Poster Collector', desc: 'Receive a Red Sox team poster', icon: '🖼️', category: 'community' },
+
+  // ── NATIONAL CHARITY & NONPROFIT EXHIBITS ──
+  { id: 'charity_advocate', name: 'Charity Advocate', desc: 'View 5 national charity exhibits', icon: '🤝', category: 'community' },
+  { id: 'compassion_champion', name: 'Compassion Champion', desc: 'View 10 national charity exhibits', icon: '💕', category: 'community' },
+  { id: 'change_maker', name: 'Change Maker', desc: 'View all 25 national charity exhibits', icon: '🌟', category: 'community' },
 ];
 
 // ── Stats storage ──
