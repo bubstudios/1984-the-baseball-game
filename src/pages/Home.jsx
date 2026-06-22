@@ -36,6 +36,8 @@ import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'l
 import { pickAd } from '@/lib/broadcastAds';
 import AdRead from '@/components/game/AdRead';
 import FlyWFlag from '@/components/game/FlyWFlag';
+import CardAwardModal from '@/components/game/CardAwardModal';
+import { getRandomCard, addCollectedCard, loadCollectionFromStorage, saveCollectionToStorage } from '@/lib/tigersBaseballCards';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -72,6 +74,7 @@ export default function Home() {
   const [showAd, setShowAd] = useState(null);
   const [showStretch, setShowStretch] = useState(null);
   const [beanballEvent, setBeanballEvent] = useState(null);
+  const [cardAward, setCardAward] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -412,6 +415,21 @@ export default function Home() {
       try { unlockAchievement('earl_weaver'); } catch (e) { console.error('earl_weaver failed:', e); }
     }
 
+    // Award a baseball card on Tigers home win
+    if (userWon && userTeam === 'tigers') {
+      try {
+        loadCollectionFromStorage();
+        const card = getRandomCard();
+        const achievementIds = addCollectedCard(card.id);
+        saveCollectionToStorage();
+        setCardAward(card);
+        if (achievementIds.length > 0) {
+          setNewAchievements(prev => [...prev, ...achievementIds]);
+          setShowAchievementPopup(true);
+        }
+      } catch (e) { console.error('cardAward failed:', e); }
+    }
+
     try {
       const newOnes = checkGameAchievements(state, userTeam);
       if (newOnes.length > 0) {
@@ -609,6 +627,7 @@ export default function Home() {
     setShowStretch(null);
     setBeanballEvent(null);
     setEjectionResult(null);
+    setCardAward(null);
   };
 
   if (ballparkPhase) {
@@ -1016,6 +1035,14 @@ export default function Home() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Card Award Modal — Tigers home win */}
+      {cardAward && (
+        <CardAwardModal
+          card={cardAward}
+          onDismiss={() => setCardAward(null)}
+        />
       )}
 
       {/* Substitutions Panel */}

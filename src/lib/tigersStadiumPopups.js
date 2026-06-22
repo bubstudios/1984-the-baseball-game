@@ -560,11 +560,227 @@ TODAY'S PRICE: 75 cents. Mustard only — Duke considers ketchup on a hot dog a 
   },
 ];
 
+export const EASTER_EGG_COMMUNITY_ENTRIES = [
+  {
+    id: 'walkman_hottest',
+    matchText: 'The Walkman remains one of the hottest products in America.',
+    title: 'The Sony Walkman',
+    icon: '🎧',
+    color: '#0284c7',
+    body: `THE SONY WALKMAN — PORTABLE MUSIC REVOLUTION
+
+Introduced in 1979 as the "Walkman TPS-L2," the Sony Walkman changed how human beings experience music by making it private, portable, and personal for the first time.
+
+THE IDEA
+Sony co-founder Masaru Ibuka wanted to listen to music on long flights. He asked Sony to modify a small tape recorder to play cassettes through headphones. What emerged became one of the defining consumer products of the 20th century.
+
+THE ORIGINAL REACTION
+The Japanese press called it a foolish idea. Who would want to listen to music while walking around? Sony's own board was skeptical. They initially predicted sales of 5,000 units per month.
+
+ACTUAL SALES
+Sony moved 50,000 Walkmans in the first two months. By 1984, over 50 million units have been sold worldwide.
+
+WHAT IT CHANGED
+Before the Walkman, music was communal. After the Walkman, it became private. For the first time, individuals created their own personal soundtracks to daily life — the commute, the jog, the lunch break.
+
+THE CULTURE
+The image of someone walking down a city street with headphones on, oblivious to the world around them, became the defining image of 1980s urban life.
+
+THE 1984 MODEL
+The current WM-70 model features auto-reverse, Dolby noise reduction, and a two-pound weight that seems impossibly light to anyone who carried a boom box.
+
+The Walkman doesn't just play music. It changes what it means to listen.`,
+  },
+  {
+    id: 'scoreboard_raise',
+    matchText: 'The scoreboard operator deserves a raise.',
+    title: 'The Scoreboard Operator',
+    icon: '📊',
+    color: '#d97706',
+    body: `THE SCOREBOARD OPERATOR — UNSUNG HERO
+
+High above the outfield at Tiger Stadium, in a small booth accessible only by a narrow stairway, sits the scoreboard operator. No one knows his name. Everyone depends on him.
+
+THE JOB
+The scoreboard operator manually updates the out-of-town scores on the manual scoreboard, receives pitch-by-pitch updates over a telephone headset, and changes the inning and run totals with hand-operated panels.
+
+THE TOOLS
+• A telephone connected to a dedicated baseball score feed
+• Large metal number plates that slide into slots by hand
+• A laminated league schedule taped to the wall
+• A transistor radio as backup
+
+THE HOURS
+The scoreboard operator arrives 90 minutes before first pitch and stays until the final out is recorded, sometimes past midnight for extra-inning games. There is no overtime.
+
+THE SATISFACTION
+He is the first person in the ballpark to know the scores from every other game. Fans below in the bleachers wait to see the numbers change. He controls time in a small but real way.
+
+THE PAY
+In 1984, scoreboard operators at major league parks earn between $8 and $15 per game. This is not a great deal of money for a job that requires total accuracy and zero tolerance for error.
+
+THE LEGACY
+When electronic scoreboards eventually replace manual ones, something will be lost. The manual scoreboard — with its metal plates and human hands — is baseball as it was meant to be: a game operated by people, not machines.
+
+He deserves a raise. He knows it. So does everyone else.`,
+  },
+  {
+    id: 'scoreboard_heard_me',
+    matchText: 'The scoreboard operator may have just heard me say that.',
+    title: 'The Scoreboard Operator',
+    icon: '📊',
+    color: '#d97706',
+    body: `THE SCOREBOARD OPERATOR — UNSUNG HERO
+
+High above the outfield at Tiger Stadium, in a small booth accessible only by a narrow stairway, sits the scoreboard operator. No one knows his name. Everyone depends on him.
+
+THE JOB
+The scoreboard operator manually updates the out-of-town scores on the manual scoreboard, receives pitch-by-pitch updates over a telephone headset, and changes the inning and run totals with hand-operated panels.
+
+THE TOOLS
+• A telephone connected to a dedicated baseball score feed
+• Large metal number plates that slide into slots by hand
+• A laminated league schedule taped to the wall
+• A transistor radio as backup
+
+THE HOURS
+The scoreboard operator arrives 90 minutes before first pitch and stays until the final out is recorded, sometimes past midnight for extra-inning games. There is no overtime.
+
+THE SATISFACTION
+He is the first person in the ballpark to know the scores from every other game. Fans below in the bleachers wait to see the numbers change. He controls time in a small but real way.
+
+THE PAY
+In 1984, scoreboard operators at major league parks earn between $8 and $15 per game. This is not a great deal of money for a job that requires total accuracy and zero tolerance for error.
+
+The booth does have a small window facing the press box. It's possible he heard that.
+
+He has heard it before. He agrees.`,
+  },
+  {
+    id: 'tigers_appreciate_support',
+    matchText: 'The Tigers appreciate your support all season long.',
+    title: 'Detroit Tigers Fan Appreciation',
+    icon: '🐯',
+    color: '#f97316',
+    body: `DETROIT TIGERS — THE FANS MAKE IT POSSIBLE
+
+Ernie Harwell has said it every year for over two decades: "Baseball is a gift, and the fans are the reason we come to the ballpark."
+
+THE FAITHFUL
+Tigers fans are among the most loyal in baseball. They've followed the team through championships and rebuilding years, through October glory and August disappointments, through the long Michigan winters that make the first game of spring feel like a resurrection.
+
+THE TRADITION
+Families who sat in the Tiger Stadium bleachers in the 1950s are bringing their own children now. The seats have changed, but the loyalty hasn't. Some fans have sat in the same section for 30 years. They know the hot dog vendor by name. They know which seats have the bad views of left field and prefer them anyway.
+
+THE RADIO CONNECTION
+For every fan in the stadium tonight, ten more are listening on WJR. Somewhere across Michigan, a family is gathered around a radio in the kitchen. A man in the Upper Peninsula is listening through static. A night-shift worker has the radio at his station. They are all here, in a way.
+
+THE APPRECIATION IS MUTUAL
+Players notice the fans. The Tigers organization is deeply rooted in this community. Detroit is not a transient city — people are from here, and they stay. That loyalty runs both directions.
+
+FROM ERNIE
+"I've worked with a lot of organizations. I'll tell you this: Detroit baseball fans are something special. They deserve everything good that comes to this team."
+
+Thank you for being here. It matters more than you know.`,
+  },
+  {
+    id: 'thank_you_fan',
+    matchText: 'Thank you for being a baseball fan.',
+    title: 'Thank You for Being a Baseball Fan',
+    icon: '⚾',
+    color: '#15803d',
+    body: `THANK YOU FOR BEING A BASEBALL FAN
+
+In 1984, roughly 45 million Americans will attend a major league baseball game. Tens of millions more will follow on radio and television. You are part of something vast and old and irreplaceable.
+
+WHY IT MATTERS
+Baseball is the oldest of America's major professional sports. The National League was founded in 1876. The rules have barely changed. The game your grandfather watched is the game you're watching now, and the game your grandchildren will watch.
+
+WHAT YOU'RE PART OF
+Every time you follow a game — in person, on radio, on television — you are part of a tradition that connects generations. The same game that DiMaggio played. The same geometry that Babe Ruth navigated. The same distance from pitcher's mound to home plate: 60 feet, 6 inches. Always.
+
+THE SOUNDS
+The crack of the bat. The pop of the catcher's mitt. The groan of the crowd on a called third strike. The eruption on a home run. These sounds haven't changed in a hundred years and they won't change.
+
+THE NUMBERS
+Baseball is a game of statistics, and every fan becomes a statistician. You know batting averages and earned run averages and on-base percentages. You carry this knowledge naturally because baseball rewards attention.
+
+THE PACE
+Baseball moves at the pace of thought. There is time between pitches to wonder, to remember, to argue, to eat a hot dog. No other sport gives you this.
+
+FROM ERNIE HARWELL
+"Baseball is the greatest game ever invented. And you — you who follows it, loves it, argues about it — you make it what it is."
+
+So. Thank you. Really.`,
+  },
+  {
+    id: 'library_reading',
+    matchText: "The public library's summer reading program kicks off next week. Kids who read ten books earn a free pass to the water park. Stop by any branch to sign up.",
+    title: 'Summer Reading Program',
+    icon: '📚',
+    color: '#7c3aed',
+    body: `PUBLIC LIBRARY SUMMER READING PROGRAM
+
+Every summer, public libraries across America run one of the most quietly successful youth programs in existence: the summer reading challenge.
+
+THE PREMISE
+Simple: read books, earn prizes. The 1984 program requires ten books for the grand prize — a free pass to the local water park. Interim prizes include bookmarks, pencils, and the pride of achievement.
+
+THE IMPACT
+Studies consistently show that children who read over summer lose significantly less academic progress than those who don't. The "summer slide" — the learning loss between June and September — is real and measurable. Summer reading programs fight it directly.
+
+THE LIBRARY IN 1984
+The local branch library is a community institution. Air-conditioned in summer (a significant amenity in the era before every home had central air), it offers:
+• Books, obviously
+• Encyclopedias (the Google of 1984)
+• Newspapers from around the country
+• A librarian who knows every book in the building
+
+THE LIBRARIAN
+The branch librarian has been working here since 1969. She knows which kids love mysteries, which ones want dinosaur books, and which ones just come in for the air conditioning. She's given more reading recommendations than a college professor and received less credit.
+
+SIGNING UP
+Any branch, any day. No fee. No appointment. Just a library card, which is itself free.
+
+Reading is the original internet. Everything you need to know is in there somewhere.`,
+  },
+  {
+    id: 'classified_ads',
+    matchText: 'Classified ads can help you find what you\'re looking for.',
+    title: 'The Classified Ads',
+    icon: '📰',
+    color: '#78350f',
+    body: `THE CLASSIFIED SECTION — AMERICA'S ORIGINAL MARKETPLACE
+
+Long before the internet, before Craig's List, before eBay, before any of it — there were the classifieds. A dense forest of tiny type in the back of every American newspaper, organized by category, full of opportunity, desperation, hope, and occasional mystery.
+
+THE CATEGORIES
+For Sale — Automobiles: Endless columns of 1978 Buick LeSabres and "runs great, minor rust, asking $850 or best offer."
+
+Help Wanted: Secretary needed, must type 60 wpm. Driver wanted, clean record. Assembly line openings. Exotic dancers (see: Adult Entertainment, page D-12).
+
+Apartments for Rent: "Cozy" means small. "Character" means old. "Convenient to transportation" means next to a bus stop that smells.
+
+Personals: This is where America gets interesting. "SWM, 34, enjoys long walks, movies, the Tigers, seeks SWF with sense of humor and patience." These are honest in their hopefulness.
+
+Lost & Found: The pets column is genuinely heartbreaking. "Lost: black Lab, answers to Duke, wearing red collar. Children are heartbroken. Please call."
+
+PLACING AN AD
+50¢ per line, three-line minimum, $1.50 per day for run-of-paper. Call the classifieds desk by 4 PM for next-day publication.
+
+THE SECRET ECONOMY
+Millions of dollars of transactions happen through the classifieds every week. Cars change hands. Apartments are filled. Jobs are found. Dogs are reunited with children.
+
+In 1984, the classifieds ARE the internet, in the way that matters most: they connect people who need something with people who have it.`,
+  },
+];
+
 const ALL_ENTRIES = [
   ...TIGERS_COMMUNITY_ENTRIES,
   ...ERNIE_HARWELL_ENTRIES,
   ...COMMUNITY_PSA_ENTRIES,
   ...BALLPARK_COLOR_ENTRIES,
+  ...EASTER_EGG_COMMUNITY_ENTRIES,
 ];
 
 export function findTigersStadiumEntry(adText) {

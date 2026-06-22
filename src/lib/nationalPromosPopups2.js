@@ -438,12 +438,80 @@ Software quality remains inconsistent. While some educational programs are brill
 // ── WEIRD TECHNOLOGY (#551-560) ──
 export const WEIRD_TECHNOLOGY = [
   {
+    id: 'tech_microwave',
+    title: 'Microwave Ovens',
+    icon: '📡',
+    color: '#f97316',
+    anim: 'pulse',
+    matchText: 'You know, I still don\'t understand microwave ovens.',
+    type: 'technology',
+    body: `MICROWAVE OVENS — COOKING FROM THE FUTURE
+
+The microwave oven has gone from a $3,000 laboratory curiosity in the 1950s to a $200 kitchen appliance that baffles and delights Americans in equal measure.
+
+HOW IT WORKS (sort of)
+Microwave ovens use electromagnetic radiation at 2.45 gigahertz to excite water molecules inside food, generating heat from the inside out rather than from an external flame. This has confused nearly every adult in America.
+
+THE QUESTION
+"But how does it know?" is the question most often asked about microwave ovens. The answer involves magnetrons, standing waves, and rotating turntables — none of which most people want to understand when they're reheating Tuesday's leftover meatloaf.
+
+THE RESULTS
+• Reheating coffee: Revolutionary
+• Popping popcorn: Borderline miraculous  
+• Defrosting chicken: Unreliable, producing one frozen corner and three cooked ones
+• Cooking a full meal: Theoretically possible; practically questionable
+
+THE METAL RULE
+Never. Ever. Put metal in the microwave. This has been explained 40 million times. It will be explained 40 million more.
+
+THE MANUAL
+The Litton microwave manual is 48 pages. Approximately 0% of American households have read it. They have, however, read the part about not putting metal in there.
+
+In 1984, 25% of American homes have a microwave oven. By 1990, that number will approach 90%. The confusion will scale accordingly.`,
+  },
+  {
+    id: 'tech_nephew_computers',
+    title: 'The Computer Future',
+    icon: '💻',
+    color: '#8b5cf6',
+    anim: 'pulse',
+    matchText: 'My nephew says computers are the future. We\'ll see.',
+    type: 'technology',
+    body: `THE NEPHEW THESIS — "COMPUTERS ARE THE FUTURE"
+
+Somewhere in America right now, a nephew is explaining computers to his uncle over pot roast, and the uncle is nodding in the way people nod when they're not listening.
+
+THE NEPHEW'S CASE
+"They can do everything. Math. Letters. Games. Eventually you'll order groceries through it."
+
+THE UNCLE'S RESPONSE
+"The refrigerator tells me when I'm out of groceries. I don't need a computer."
+
+THE NEPHEW'S COUNTER
+"It's not like that. It's — look, just trust me."
+
+WHAT THE NEPHEW IS RIGHT ABOUT
+Everything, it turns out. Though in 1984, even the nephew has no idea how right.
+
+THE REALITY IN 1984
+Approximately 7% of American homes have a personal computer. Most are used for:
+1. The word processing of documents that could be typed
+2. Games (by a wide margin the primary use)
+3. Spreadsheets by people who own small businesses
+4. Sitting in a corner looking impressive
+
+THE 20-YEAR FORECAST
+The nephew's vision will exceed even his own predictions. The uncle will eventually own a device in his pocket more powerful than a 1984 Cray supercomputer and use it mostly to watch short videos about dogs.
+
+"We'll see," said 1984. It would.`,
+  },
+  {
     id: 'tech_innovation',
     title: 'The Information Age',
     icon: '💡',
     color: '#3b82f6',
     anim: 'pulse',
-    matchText: 'Innovation continues.',
+    matchText: 'The information age is only beginning.',
     type: 'technology',
     body: `THE INFORMATION AGE — ALWAYS MOVING FORWARD
 

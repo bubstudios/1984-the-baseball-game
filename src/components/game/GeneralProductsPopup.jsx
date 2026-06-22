@@ -204,15 +204,7 @@ export default function GeneralProductsPopup({ entry, onDismiss, onAchievement }
     return () => clearTimeout(showTimer);
   }, [entry]);
 
-  // Auto-dismiss after 10s if user hasn't interacted
-  useEffect(() => {
-    if (!visible || userInteracted) return;
-    autoDismissRef.current = setTimeout(() => {
-      setVisible(false);
-      onDismiss();
-    }, 10000);
-    return () => clearTimeout(autoDismissRef.current);
-  }, [visible, userInteracted, onDismiss]);
+  // No auto-dismiss — only closes when X is tapped
 
   if (!visible || !entry) return null;
 
