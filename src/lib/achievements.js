@@ -476,6 +476,25 @@ export const ACHIEVEMENTS = [
   // ── NATIONAL PROMOS: MASTER ──
   { id: 'national_promos_completionist', name: 'Retro Broadcast Completionist', desc: 'View 50 national promo popups', icon: '📻', category: 'community', threshold: 50 },
 
+  // ── TEAM-SPECIFIC: PHILLIES ──
+  { id: 'phillies_first_win', name: 'Broad Street Believer', desc: 'Win your first Phillies game', icon: '🔴', category: 'teamSpecific', team: 'phillies' },
+  { id: 'phillies_50_wins', name: 'Citizens of Brotherly Love', desc: 'Win 50 games as Philadelphia', icon: '🏆', category: 'teamSpecific', team: 'phillies', threshold: 50 },
+  { id: 'phillies_schmidt_hr', name: 'Michael Jack', desc: 'Hit a home run with Mike Schmidt', icon: '💣', category: 'teamSpecific', team: 'phillies' },
+  { id: 'phillies_carlton_k', name: 'Lefty', desc: 'Strike out 10 batters as the Phillies', icon: '🎳', category: 'teamSpecific', team: 'phillies' },
+  { id: 'phillies_vet_win', name: 'South Philly Faithful', desc: 'Win at Veterans Stadium', icon: '🏟️', category: 'teamSpecific', team: 'phillies' },
+  { id: 'phillies_samuel_sb', name: 'Dominican Lightning', desc: 'Steal 3 bases in one game as the Phillies', icon: '⚡', category: 'teamSpecific', team: 'phillies' },
+  { id: 'phillies_15_hits', name: 'Veteran Lineup', desc: 'Record 15 hits in a game as the Phillies', icon: '📋', category: 'teamSpecific', team: 'phillies' },
+  { id: 'phillies_comeback', name: 'Ya Gotta Believe (Philly Edition)', desc: 'Win after trailing as the Phillies', icon: '💪', category: 'teamSpecific', team: 'phillies' },
+
+  // ── PHILLIES CARD COLLECTION ──
+  { id: 'phi_card_starter', name: 'Phillies Collector', desc: 'Collect 5 Phillies cards', icon: '🎴', category: 'community' },
+  { id: 'phi_card_collector', name: 'Half the Roster', desc: 'Collect 11 Phillies cards', icon: '📦', category: 'community' },
+  { id: 'phi_complete_roster', name: '1984 Phillies Complete Set', desc: 'Collect all 22 Phillies cards', icon: '🏆', category: 'community' },
+
+  // ── PHILLIES BANNER EXHIBITS ──
+  { id: 'phi_banner_fan', name: 'Vet Fan', desc: 'View 3 Phillies banner exhibits', icon: '⚾', category: 'community' },
+  { id: 'phi_banner_faithful', name: 'South Philly Faithful', desc: 'View 8 Phillies banner exhibits', icon: '🔴', category: 'community' },
+
   // ── FAN CHATTER ──
   { id: 'fan_chatter_10', name: 'Bleacher Bum', desc: 'Heard 10 fan yells during play', icon: '📣', category: 'fan' },
   { id: 'fan_chatter_50', name: 'Section 36', desc: 'Heard 50 fan yells across games', icon: '🗣️', category: 'fan' },
@@ -711,6 +730,7 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
     checkThreshold('reds_50_wins', stats.teamWins['reds'] || 0);
     checkThreshold('royals_50_wins', stats.teamWins['royals'] || 0);
     checkThreshold('royals_100_wins', stats.teamWins['royals'] || 0);
+    checkThreshold('phillies_50_wins', stats.teamWins['phillies'] || 0);
     checkThreshold('royals_25_home', stats.teamHomeGames['royals'] || 0);
 
     // Cumulative team stats
@@ -1174,6 +1194,20 @@ export function checkGameAchievements(gameState, userTeam) {
     // 5-run inning
     const had5RunInning = checkFiveRunInning(gameState, userSide);
     if (had5RunInning) u('reds_5run_inning');
+  }
+
+  // ── PHILLIES ──
+  if (teamKey === 'phillies') {
+    if (userWon) u('phillies_first_win');
+    if (userWon && stadium === 'Veterans Stadium') u('phillies_vet_win');
+    if (userWon && maxDeficit > 0) u('phillies_comeback');
+    if (userHitsAll >= 15) u('phillies_15_hits');
+    if (allSB >= 3) u('phillies_samuel_sb');
+    const schmidt = allUserPlayers.find(p => p.name === 'Mike Schmidt');
+    if (schmidt && (schmidt.gameStats?.hr || 0) > 0) u('phillies_schmidt_hr');
+    const carltonSO = userPitchers.reduce((sum, p) => sum + (p.gameStats?.so || 0), 0);
+    const oppSO = allOppPlayers.reduce((sum, p) => sum + (p.gameStats?.so || 0), 0);
+    if (carltonSO >= 10 || oppSO >= 10) u('phillies_carlton_k');
   }
 
   // ── ROYALS ──

@@ -27,6 +27,8 @@ import VhsBetamaxLaserDiscPopup from './VhsBetamaxLaserDiscPopup';
 import DetroitTigersBannerPopup from './DetroitTigersBannerPopup';
 import TeamBannerPopup from './TeamBannerPopup';
 import TigersStadiumPopup from './TigersStadiumPopup';
+import PhilliesBannerPopup from './PhilliesBannerPopup';
+import { trackPhilliesBannerView } from '@/lib/philliesBannerPopups';
 import { trackCubsBannerView } from '@/lib/cubsBannerPopups';
 import { trackTigersBannerView2 } from '@/lib/tigersBannerPopups2';
 import { trackMetsBannerView } from '@/lib/metsBannerPopups';
@@ -71,6 +73,7 @@ export default function AdReadPopupRenderer({
   isRedsBanner, redsBannerEntry,
   isRoyalsBanner, royalsBannerEntry,
   isTigersStadium, tigersStadiumEntry,
+  isPhilliesBanner, philliesBannerEntry,
   isTvMovie, tvMovieEntry,
   isObscureTv, obscureTvEntry,
   isGeneralProducts, gpEntry,
@@ -173,6 +176,9 @@ export default function AdReadPopupRenderer({
   }
   if (expanded && isTigersStadium && tigersStadiumEntry) {
     return <TigersStadiumPopup entry={tigersStadiumEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isPhilliesBanner && philliesBannerEntry) {
+    return <PhilliesBannerPopup entry={philliesBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackPhilliesBannerView} />;
   }
   if (expanded && isTvMovie && tvMovieEntry) {
     return <TvMoviePopup entry={tvMovieEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;

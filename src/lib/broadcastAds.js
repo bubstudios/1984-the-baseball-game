@@ -1520,6 +1520,76 @@ registerTeamAds('royals', 'charity', [
   "The Royals remind fans to please recycle bottles and aluminum cans at Royals Stadium.",
 ]);
 
+// ── Phillies / Philadelphia (#601–650) ──
+
+registerTeamAds('phillies', 'team_promo', [
+  // Homestand — bobblehead nights (each has its own matchText for popup routing)
+  "Join us for Schmidt Bobblehead Night at Veterans Stadium.",
+  "Steve Carlton Bobblehead Night at Veterans Stadium this Friday.",
+  "Juan Samuel Bobblehead Night at Veterans Stadium.",
+  "Garry Maddox Bobblehead Night — two-thirds of the world is covered.",
+  "Kent Tekulve Bobblehead Night — the Submarine is in the house.",
+  // Team poster
+  "Free 1984 Phillies team poster — pick yours up at the main gate.",
+  // Other promos
+  "Youth Baseball Day at Veterans Stadium — kids run the bases after the game.",
+  "Bat Day at Veterans Stadium — Louisville Sluggers for the kids.",
+  "Phillies Old-Timers Day returns to Veterans Stadium this weekend.",
+  "The Phillies continue their homestand tomorrow night at Veterans Stadium.",
+  "Stop by the Phillies team store for official 1984 merchandise.",
+  "Mike Schmidt will sign autographs this Saturday at the Gallery in Center City.",
+  "Steve Carlton will appear at a special charity event benefiting South Philadelphia youth.",
+  "Juan Samuel and Glenn Wilson will meet fans at a youth baseball clinic Saturday morning.",
+  "Group ticket packages are available for remaining Phillies homestand games.",
+  "The Phillies invite Little League teams to attend a special field day at The Vet.",
+]);
+
+registerTeamAds('phillies', 'sponsor', [
+  "Eagles season tickets are now on sale — call Veterans Stadium for information.",
+  "Tastykake — Philadelphia's own — available throughout Veterans Stadium.",
+  "Tastykake reminds you to save room for dessert.",
+  "WCAU 1210 AM brings you every Phillies broadcast, home and away.",
+  "Harry Kalas and Richie Ashburn thank you for listening on WCAU.",
+  "PHL-17 brings you Phillies baseball every night — check local listings.",
+  "Ballantine Beer — the official beer of Philadelphia baseball.",
+  "Schmidts Beer of Philadelphia — brewed right here in the city.",
+  "Frank's Black Cherry Wishniak — a South Philadelphia tradition since 1925.",
+  "Horn & Hardart — the original automat — serving Philadelphia since 1902.",
+  "Acme Markets welcomes Phillies fans throughout the Delaware Valley.",
+  "Genuardi's Family Markets — family-owned, Philadelphia-proud.",
+]);
+
+registerTeamAds('phillies', 'community', [
+  // Veterans Stadium / Philadelphia lore
+  "Veterans Stadium — South Philadelphia's home since 1971.",
+  "Broad Street — the spine of Philadelphia — runs right past The Vet.",
+  "South Philadelphia is the home of the original cheesesteak.",
+  "Pat's versus Geno's — Philadelphia's longest-running debate.",
+  "The Italian Market on 9th Street is open every morning.",
+  "Visit the Philadelphia Museum of Art this weekend — the steps are famous.",
+  "The Liberty Bell and Independence Hall welcome visitors daily.",
+  "Penn's Landing on the Delaware River offers summer entertainment all season.",
+  "The Philadelphia Zoo in Fairmount Park is one of America's oldest.",
+  "Please Drive Safely on I-95 and the Schuylkill Expressway after the game.",
+  "The SEPTA Broad Street Line runs directly to the Pattison Avenue stop.",
+  "Harry Kalas thanks everyone for coming out to Veterans Stadium tonight.",
+  "Richie Ashburn would like to wish happy birthday to Mrs. Colangelo of Cheltenham.",
+  "A birthday greeting to young Michael Fratelli, celebrating his 10th at tonight's game.",
+  "Greetings to Phillies fans throughout Pennsylvania, New Jersey, and Delaware.",
+  "South Philly, North Philly, the suburbs — welcome, all of you.",
+  "The Phillies thank the five-county region for their continued support.",
+  "Baseball and Philadelphia have always belonged together.",
+]);
+
+registerTeamAds('phillies', 'charity', [
+  "Phillies Charities supports youth baseball throughout the Delaware Valley.",
+  "Registration is open for youth baseball leagues throughout Philadelphia.",
+  "Support the Children's Hospital of Philadelphia with your donations.",
+  "CHOP — the Children's Hospital of Philadelphia — counts on community support.",
+  "The Phillies encourage fans to donate to Philabundance, the regional food bank.",
+  "Help feed families in need throughout Philadelphia through Philabundance.",
+]);
+
 // ── Royals Easter Eggs ──
 
 registerTeamAds('royals', 'community', [
