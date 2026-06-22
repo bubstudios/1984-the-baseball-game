@@ -996,9 +996,9 @@ export function checkGameAchievements(gameState, userTeam) {
   // Frozen Rope: user's pitchers struck out the side (user is PITCHING, not fielding)
   if (logText.includes('strike out the side') || logText.includes('struck out the side')) u('frozen_rope');
   if (userIsFielder && (logText.includes('thrown out at home') || logText.includes('nailed at the plate'))) u('cannon_arm');
-  if (userIsFielder && logText.includes('caught stealing')) u('caught_stealing');
+  if (userIsFielder && log.some(l => l.type === 'caughtstealing')) u('caught_stealing');
   if (userIsFielder && logText.includes('double play')) u('twin_killing');
-  if (userIsFielder && (logText.includes('5-4-3') || logText.includes('6-4-3') || logText.includes('around the horn') || logText.includes('Around the horn'))) u('around_horn_dp');
+  if (userIsFielder && (logText.includes('5-4-3') || logText.includes('6-4-3') || logText.includes('Six-four-three') || logText.includes('Around the horn for two') || logText.includes('around the horn for two'))) u('around_horn_dp');
 
   // ── DIVING CATCHES ──
   const divingCatchCount = log.filter(l => l.type === 'flyout' && l.text && l.text.includes('🧤')).length;
