@@ -25,6 +25,16 @@ import NationalPromosPopup from './NationalPromosPopup';
 import NationalWrestlingPopup from './NationalWrestlingPopup';
 import VhsBetamaxLaserDiscPopup from './VhsBetamaxLaserDiscPopup';
 import DetroitTigersBannerPopup from './DetroitTigersBannerPopup';
+import TeamBannerPopup from './TeamBannerPopup';
+import { trackCubsBannerView } from '@/lib/cubsBannerPopups';
+import { trackTigersBannerView2 } from '@/lib/tigersBannerPopups2';
+import { trackMetsBannerView } from '@/lib/metsBannerPopups';
+import { trackYankeesBannerView } from '@/lib/yankeesBannerPopups';
+import { trackOriolesBannerView } from '@/lib/oriolesBannerPopups';
+import { trackDodgersBannerView } from '@/lib/dodgersBannerPopups';
+import { trackPadresBannerView } from '@/lib/padresBannerPopups';
+import { trackRedsBannerView } from '@/lib/redsBannerPopups';
+import { trackRoyalsBannerView } from '@/lib/royalsBannerPopups';
 
 export default function AdReadPopupRenderer({
   expanded, isMovie, synopsisData, onDismiss, onAchievement,
@@ -50,6 +60,15 @@ export default function AdReadPopupRenderer({
   isNationalWrestling, nationalWrestlingEntry,
   isVhsBetamax, vhsBetamaxEntry,
   isDetroitTigers, detroitTigersEntry,
+  isCubsBanner, cubsBannerEntry,
+  isTigersBanner2, tigersBanner2Entry,
+  isMetsBanner, metsBannerEntry,
+  isYankeesBanner, yankeesBannerEntry,
+  isOriolesBanner, oriolesBannerEntry,
+  isDodgersBanner, dodgersBannerEntry,
+  isPadresBanner, padresBannerEntry,
+  isRedsBanner, redsBannerEntry,
+  isRoyalsBanner, royalsBannerEntry,
   isTvMovie, tvMovieEntry,
   isObscureTv, obscureTvEntry,
   isGeneralProducts, gpEntry,
@@ -122,6 +141,33 @@ export default function AdReadPopupRenderer({
   }
   if (expanded && isDetroitTigers && detroitTigersEntry) {
     return <DetroitTigersBannerPopup entry={detroitTigersEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
+  }
+  if (expanded && isCubsBanner && cubsBannerEntry) {
+    return <TeamBannerPopup entry={cubsBannerEntry} teamColor="#0e3386" teamIcon="🐻" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackCubsBannerView} />;
+  }
+  if (expanded && isTigersBanner2 && tigersBanner2Entry) {
+    return <TeamBannerPopup entry={tigersBanner2Entry} teamColor="#0c2340" teamIcon="🐯" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackTigersBannerView2} />;
+  }
+  if (expanded && isMetsBanner && metsBannerEntry) {
+    return <TeamBannerPopup entry={metsBannerEntry} teamColor="#002d72" teamIcon="🗽" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackMetsBannerView} />;
+  }
+  if (expanded && isYankeesBanner && yankeesBannerEntry) {
+    return <TeamBannerPopup entry={yankeesBannerEntry} teamColor="#003087" teamIcon="⚾" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackYankeesBannerView} />;
+  }
+  if (expanded && isOriolesBanner && oriolesBannerEntry) {
+    return <TeamBannerPopup entry={oriolesBannerEntry} teamColor="#df4601" teamIcon="🐦" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackOriolesBannerView} />;
+  }
+  if (expanded && isDodgersBanner && dodgersBannerEntry) {
+    return <TeamBannerPopup entry={dodgersBannerEntry} teamColor="#005a9c" teamIcon="🏟️" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackDodgersBannerView} />;
+  }
+  if (expanded && isPadresBanner && padresBannerEntry) {
+    return <TeamBannerPopup entry={padresBannerEntry} teamColor="#7f411c" teamIcon="⚾" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackPadresBannerView} />;
+  }
+  if (expanded && isRedsBanner && redsBannerEntry) {
+    return <TeamBannerPopup entry={redsBannerEntry} teamColor="#c6011f" teamIcon="🔴" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackRedsBannerView} />;
+  }
+  if (expanded && isRoyalsBanner && royalsBannerEntry) {
+    return <TeamBannerPopup entry={royalsBannerEntry} teamColor="#004687" teamIcon="👑" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackRoyalsBannerView} />;
   }
   if (expanded && isTvMovie && tvMovieEntry) {
     return <TvMoviePopup entry={tvMovieEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;

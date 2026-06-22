@@ -53,6 +53,15 @@ import { findNationalPromosEntry, trackNationalPromosView } from '@/lib/national
 import { findNationalWrestlingEntry } from '@/lib/nationalWrestlingPopups';
 import { findVhsBetamaxLaserDiscEntry } from '@/lib/vhsBetamaxLaserDiscPopups';
 import { findDetroitTigersBannerEntry, trackDetroitTigersBannerView } from '@/lib/detroitTigersBannerPopups';
+import { findCubsBannerEntry, trackCubsBannerView } from '@/lib/cubsBannerPopups';
+import { findTigersBannerEntry2, trackTigersBannerView2 } from '@/lib/tigersBannerPopups2';
+import { findMetsBannerEntry, trackMetsBannerView } from '@/lib/metsBannerPopups';
+import { findYankeesBannerEntry, trackYankeesBannerView } from '@/lib/yankeesBannerPopups';
+import { findOriolesBannerEntry, trackOriolesBannerView } from '@/lib/oriolesBannerPopups';
+import { findDodgersBannerEntry, trackDodgersBannerView } from '@/lib/dodgersBannerPopups';
+import { findPadresBannerEntry, trackPadresBannerView } from '@/lib/padresBannerPopups';
+import { findRedsBannerEntry, trackRedsBannerView } from '@/lib/redsBannerPopups';
+import { findRoyalsBannerEntry, trackRoyalsBannerView } from '@/lib/royalsBannerPopups';
 
 export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchievement }) {
   const [visible, setVisible] = useState(false);
@@ -109,6 +118,24 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [vhsBetamaxEntry, setVhsBetamaxEntry] = useState(null);
   const [isDetroitTigers, setIsDetroitTigers] = useState(false);
   const [detroitTigersEntry, setDetroitTigersEntry] = useState(null);
+  const [isCubsBanner, setIsCubsBanner] = useState(false);
+  const [cubsBannerEntry, setCubsBannerEntry] = useState(null);
+  const [isTigersBanner2, setIsTigersBanner2] = useState(false);
+  const [tigersBanner2Entry, setTigersBanner2Entry] = useState(null);
+  const [isMetsBanner, setIsMetsBanner] = useState(false);
+  const [metsBannerEntry, setMetsBannerEntry] = useState(null);
+  const [isYankeesBanner, setIsYankeesBanner] = useState(false);
+  const [yankeesBannerEntry, setYankeesBannerEntry] = useState(null);
+  const [isOriolesBanner, setIsOriolesBanner] = useState(false);
+  const [oriolesBannerEntry, setOriolesBannerEntry] = useState(null);
+  const [isDodgersBanner, setIsDodgersBanner] = useState(false);
+  const [dodgersBannerEntry, setDodgersBannerEntry] = useState(null);
+  const [isPadresBanner, setIsPadresBanner] = useState(false);
+  const [padresBannerEntry, setPadresBannerEntry] = useState(null);
+  const [isRedsBanner, setIsRedsBanner] = useState(false);
+  const [redsBannerEntry, setRedsBannerEntry] = useState(null);
+  const [isRoyalsBanner, setIsRoyalsBanner] = useState(false);
+  const [royalsBannerEntry, setRoyalsBannerEntry] = useState(null);
 
   // Detect ad type on mount
   useEffect(() => {
@@ -180,6 +207,33 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findDetroitTigersBannerEntry(ad.text)) {
       setIsDetroitTigers(true);
       setDetroitTigersEntry(findDetroitTigersBannerEntry(ad.text));
+    } else if (findCubsBannerEntry(ad.text)) {
+      setIsCubsBanner(true);
+      setCubsBannerEntry(findCubsBannerEntry(ad.text));
+    } else if (findTigersBannerEntry2(ad.text)) {
+      setIsTigersBanner2(true);
+      setTigersBanner2Entry(findTigersBannerEntry2(ad.text));
+    } else if (findMetsBannerEntry(ad.text)) {
+      setIsMetsBanner(true);
+      setMetsBannerEntry(findMetsBannerEntry(ad.text));
+    } else if (findYankeesBannerEntry(ad.text)) {
+      setIsYankeesBanner(true);
+      setYankeesBannerEntry(findYankeesBannerEntry(ad.text));
+    } else if (findOriolesBannerEntry(ad.text)) {
+      setIsOriolesBanner(true);
+      setOriolesBannerEntry(findOriolesBannerEntry(ad.text));
+    } else if (findDodgersBannerEntry(ad.text)) {
+      setIsDodgersBanner(true);
+      setDodgersBannerEntry(findDodgersBannerEntry(ad.text));
+    } else if (findPadresBannerEntry(ad.text)) {
+      setIsPadresBanner(true);
+      setPadresBannerEntry(findPadresBannerEntry(ad.text));
+    } else if (findRedsBannerEntry(ad.text)) {
+      setIsRedsBanner(true);
+      setRedsBannerEntry(findRedsBannerEntry(ad.text));
+    } else if (findRoyalsBannerEntry(ad.text)) {
+      setIsRoyalsBanner(true);
+      setRoyalsBannerEntry(findRoyalsBannerEntry(ad.text));
     } else if (movie !== null) {
       setIsTvMovie(true);
     } else {
@@ -239,7 +293,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
-    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalWrestling, isVhsBetamax, isDetroitTigers];
+    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalWrestling, isVhsBetamax, isDetroitTigers, isCubsBanner, isTigersBanner2, isMetsBanner, isYankeesBanner, isOriolesBanner, isDodgersBanner, isPadresBanner, isRedsBanner, isRoyalsBanner];
     if (specialTypes.some(t => t)) {
       setExpanded(true);
       if (isNationalCharity && nationalCharityEntry) {
@@ -250,6 +304,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
         const unlocked = trackDetroitTigersBannerView(detroitTigersEntry.id);
         if (unlocked.length > 0 && onAchievement) onAchievement(unlocked);
       }
+      // New team banners — tracking is handled inside TeamBannerPopup via trackView prop
       return;
     }
     if (!synopsisData) {
@@ -317,6 +372,24 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       vhsBetamaxEntry={vhsBetamaxEntry}
       isDetroitTigers={isDetroitTigers}
       detroitTigersEntry={detroitTigersEntry}
+      isCubsBanner={isCubsBanner}
+      cubsBannerEntry={cubsBannerEntry}
+      isTigersBanner2={isTigersBanner2}
+      tigersBanner2Entry={tigersBanner2Entry}
+      isMetsBanner={isMetsBanner}
+      metsBannerEntry={metsBannerEntry}
+      isYankeesBanner={isYankeesBanner}
+      yankeesBannerEntry={yankeesBannerEntry}
+      isOriolesBanner={isOriolesBanner}
+      oriolesBannerEntry={oriolesBannerEntry}
+      isDodgersBanner={isDodgersBanner}
+      dodgersBannerEntry={dodgersBannerEntry}
+      isPadresBanner={isPadresBanner}
+      padresBannerEntry={padresBannerEntry}
+      isRedsBanner={isRedsBanner}
+      redsBannerEntry={redsBannerEntry}
+      isRoyalsBanner={isRoyalsBanner}
+      royalsBannerEntry={royalsBannerEntry}
       isTvMovie={isTvMovie}
       tvMovieEntry={tvMovieEntry}
       isObscureTv={isObscureTv}
