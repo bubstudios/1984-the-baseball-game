@@ -215,7 +215,7 @@ export default function Home() {
 
     // Trigger ads on half-inning transition or pitching change
     const currentHalf = gameState.halfInning;
-    if (prevHalfInning.current && prevHalfInning.current !== currentHalf && !gameState.gameOver) {
+    if (prevHalfInning.current !== currentHalf && !gameState.gameOver) {
       // New half-inning started — ad break (only if no ad is currently showing)
       setShowAd(prev => prev ? prev : pickAd(homeTeam));
     } else if (gameState.log.length > prevLogLength.current) {
