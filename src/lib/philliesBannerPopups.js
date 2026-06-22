@@ -288,7 +288,6 @@ Former Phillies greats take the field in their original uniforms (or reasonable 
 
 EXPECTED ATTENDEES
 (Subject to availability and health)
-• Bob Gibson — no wait, wrong town
 • Robin Roberts — the backbone of Whiz Kids pitching
 • Richie Ashburn — beloved two-time batting champion and current Phillies broadcaster
 • Dick Allen — the most feared hitter of his generation, right here at Connie Mack Stadium

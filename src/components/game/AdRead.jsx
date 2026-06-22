@@ -55,6 +55,7 @@ import { findVhsBetamaxLaserDiscEntry } from '@/lib/vhsBetamaxLaserDiscPopups';
 import { findDetroitTigersBannerEntry, trackDetroitTigersBannerView } from '@/lib/detroitTigersBannerPopups';
 import { findTigersStadiumEntry, trackTigersStadiumView } from '@/lib/tigersStadiumPopups';
 import { findPhilliesBannerEntry, trackPhilliesBannerView } from '@/lib/philliesBannerPopups';
+import { findGenericAdEntry } from '@/lib/genericAdPopups';
 import { findCubsBannerEntry, trackCubsBannerView } from '@/lib/cubsBannerPopups';
 import { findTigersBannerEntry2, trackTigersBannerView2 } from '@/lib/tigersBannerPopups2';
 import { findMetsBannerEntry, trackMetsBannerView } from '@/lib/metsBannerPopups';
@@ -142,6 +143,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [tigersStadiumEntry, setTigersStadiumEntry] = useState(null);
   const [isPhilliesBanner, setIsPhilliesBanner] = useState(false);
   const [philliesBannerEntry, setPhilliesBannerEntry] = useState(null);
+  const [isGenericAd, setIsGenericAd] = useState(false);
+  const [genericAdEntry, setGenericAdEntry] = useState(null);
 
   // Detect ad type on mount
   useEffect(() => {
@@ -246,6 +249,9 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findPhilliesBannerEntry(ad.text)) {
       setIsPhilliesBanner(true);
       setPhilliesBannerEntry(findPhilliesBannerEntry(ad.text));
+    } else if (findGenericAdEntry(ad.text)) {
+      setIsGenericAd(true);
+      setGenericAdEntry(findGenericAdEntry(ad.text));
     } else if (movie !== null) {
       setIsTvMovie(true);
     } else {
@@ -305,7 +311,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
-    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalPromos, isNationalWrestling, isVhsBetamax, isDetroitTigers, isCubsBanner, isTigersBanner2, isMetsBanner, isYankeesBanner, isOriolesBanner, isDodgersBanner, isPadresBanner, isRedsBanner, isRoyalsBanner, isTigersStadium, isPhilliesBanner];
+    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalPromos, isNationalWrestling, isVhsBetamax, isDetroitTigers, isCubsBanner, isTigersBanner2, isMetsBanner, isYankeesBanner, isOriolesBanner, isDodgersBanner, isPadresBanner, isRedsBanner, isRoyalsBanner, isTigersStadium, isPhilliesBanner, isGenericAd];
     if (specialTypes.some(t => t)) {
       setExpanded(true);
       if (isNationalCharity && nationalCharityEntry) {
@@ -414,6 +420,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       tigersStadiumEntry={tigersStadiumEntry}
       isPhilliesBanner={isPhilliesBanner}
       philliesBannerEntry={philliesBannerEntry}
+      isGenericAd={isGenericAd}
+      genericAdEntry={genericAdEntry}
       isTvMovie={isTvMovie}
       tvMovieEntry={tvMovieEntry}
       isObscureTv={isObscureTv}

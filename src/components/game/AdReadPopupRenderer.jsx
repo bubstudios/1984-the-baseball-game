@@ -29,6 +29,7 @@ import TeamBannerPopup from './TeamBannerPopup';
 import TigersStadiumPopup from './TigersStadiumPopup';
 import PhilliesBannerPopup from './PhilliesBannerPopup';
 import { trackPhilliesBannerView } from '@/lib/philliesBannerPopups';
+import GenericAdPopup from './GenericAdPopup';
 import { trackCubsBannerView } from '@/lib/cubsBannerPopups';
 import { trackTigersBannerView2 } from '@/lib/tigersBannerPopups2';
 import { trackMetsBannerView } from '@/lib/metsBannerPopups';
@@ -77,6 +78,7 @@ export default function AdReadPopupRenderer({
   isTvMovie, tvMovieEntry,
   isObscureTv, obscureTvEntry,
   isGeneralProducts, gpEntry,
+  isGenericAd, genericAdEntry,
   handleTap, NETWORK_LOGOS, EASTER_EGGS, Clock, User, X, ad
 }) {
   if (isMovie) return <MoviePopup ad={{ text: '' }} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
@@ -188,6 +190,9 @@ export default function AdReadPopupRenderer({
   }
   if (expanded && isGeneralProducts && gpEntry) {
     return <GeneralProductsPopup entry={gpEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
+  }
+  if (expanded && isGenericAd && genericAdEntry) {
+    return <GenericAdPopup entry={genericAdEntry} onDismiss={() => { onDismiss(); }} />;
   }
 
   // TV Guide detail view
