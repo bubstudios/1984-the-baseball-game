@@ -412,6 +412,13 @@ export const ACHIEVEMENTS = [
   { id: 'future_star_spotter', name: 'Future Star Spotter', desc: 'Discover George Clooney in E/R', icon: '⭐', category: 'hidden' },
   { id: 'lost_broadcast', name: 'Lost Broadcast', desc: 'Encounter The Starfighter Project', icon: '🛸', category: 'hidden' },
   { id: 'bull_shannon_fan', name: 'Bull Shannon Fan', desc: 'Meet Bull Shannon from Night Court', icon: '🧑‍⚖️', category: 'hidden' },
+
+  // ── RED SOX BANNER EXHIBITS ──
+  { id: 'sox_banner_fan', name: 'Fenway Fan', desc: 'View 5 Red Sox banner exhibits', icon: '⚾', category: 'community' },
+  { id: 'sox_banner_enthusiast', name: 'Fenway Faithful', desc: 'View 15 Red Sox banner exhibits', icon: '❤️', category: 'community' },
+  { id: 'sox_banner_historian', name: 'Fenway Historian', desc: 'View all 25 Red Sox banner exhibits', icon: '🏛️', category: 'community' },
+  { id: 'sox_bobblehead_collector', name: 'Bobblehead Collector', desc: 'Collect a Red Sox bobblehead at Fenway', icon: '🎯', category: 'community' },
+  { id: 'sox_poster_collector', name: 'Poster Collector', desc: 'Receive a Red Sox team poster', icon: '🖼️', category: 'community' },
 ];
 
 // ── Stats storage ──
