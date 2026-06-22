@@ -66,7 +66,7 @@ export const DETROIT_TIGERS_BANNERS = [
     icon: '📜',
     tagline: 'A Century of Detroit Baseball Excellence',
     category: 'poster',
-    description: 'From the early 1900s through the modern era, the Detroit Tigers have provided some of baseball\'s greatest moments. Whether it\'s Ty Cobb\'s stolen bases, Hank Greenberg\'s home runs, Al Kaline\'s consistency, or Miguel Cabrera\'s dominance, the Tigers have always featured elite talent. This poster celebrates the franchise\'s rich heritage and legendary players.',
+    description: 'From the early 1900s through the 1984 season, the Detroit Tigers have provided some of baseball\'s greatest moments. Whether it\'s Ty Cobb\'s stolen bases, Hank Greenberg\'s home runs, Al Kaline\'s consistency, or Kirk Gibson\'s raw power, the Tigers have always featured elite talent. This poster celebrates the franchise\'s rich heritage and legendary players.',
     animation: 'heritage_shine',
   },
   {
@@ -89,11 +89,11 @@ export const DETROIT_TIGERS_BANNERS = [
   },
   {
     id: 'tigers_poster_comerica',
-    exhibit: 'Comerica Park Poster',
+    exhibit: 'Tiger Stadium - The Corner in 1984',
     icon: '🌳',
-    tagline: 'The New Home of Tigers Baseball Opens 2000',
+    tagline: 'Tiger Stadium - The Corner Is Alive in \'84',
     category: 'poster',
-    description: 'After 87 seasons at Tiger Stadium, the Tigers moved to Comerica Park in downtown Detroit in 2000. The new ballpark featured modern amenities, a beautiful natural grass field, and iconic tiger statuary at its entrance. Comerica Park became the home for a new generation of Tigers fans, from Carlos Pena to Miguel Cabrera.',
+    description: 'Tiger Stadium at Michigan and Trumbull — "The Corner" — has been the home of Tigers baseball since 1912. In 1984 the iconic park buzzes with pennant race energy, its double-decked grandstands packed with passionate Detroit fans. The ballpark\'s intimate feel and storied history make every game a connection to over 70 years of Tigers tradition.',
     animation: 'park_sparkle',
   },
   {
