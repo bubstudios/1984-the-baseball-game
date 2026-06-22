@@ -86,7 +86,7 @@ export default function AchievementsPanel() {
       </div>
 
       {/* Cards Tab */}
-      {tab === 'cards' && <CardCollection onClose={() => {}} />}
+      {tab === 'cards' && <CardCollection onClose={() => setTab('achievements')} />}
 
       {/* Achievements Tab */}
       {tab === 'achievements' && (

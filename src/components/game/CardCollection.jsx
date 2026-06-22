@@ -6,7 +6,7 @@ import { TIGERS_ROSTER, getCollectedCards, getCollectionProgress, loadCollection
 export default function CardCollection({ onClose }) {
   const [collectedCards, setCollectedCards] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
-  const [progress, setProgress] = useState({ collected: 0, total: 25, percentage: 0 });
+  const [progress, setProgress] = useState({ collected: 0, total: 0, percentage: 0 });
 
   useEffect(() => {
     loadCollectionFromStorage();
