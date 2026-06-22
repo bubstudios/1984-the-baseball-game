@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import BaseballCard from './BaseballCard';
 import { TIGERS_ROSTER, getCollectedCards, getCollectionProgress, loadCollectionFromStorage } from '@/lib/tigersBaseballCards';
 import { PHILLIES_ROSTER, getPhilliesCollectedCards, getPhilliesCollectionProgress, loadPhilliesCollectionFromStorage } from '@/lib/philliesBaseballCards';
+import { getCardImage } from '@/lib/cardImages';
 
 export default function CardCollection({ onClose }) {
   const [activeTeam, setActiveTeam] = useState('tigers');
@@ -112,17 +113,24 @@ export default function CardCollection({ onClose }) {
             <h3 className="font-heading text-xl font-bold text-green-400 mb-4 uppercase">
               ✓ Collected ({collectedDetails.length})
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {collectedDetails.map(card => (
-                <button key={card.id} onClick={() => setSelectedCard(card)} className="relative group cursor-pointer">
-                  <div className="rounded-lg p-3 border-2 h-full hover:shadow-lg transition-all" style={{ background: `${teamColor}22`, borderColor: `${teamColor}80` }}>
-                    <div className="text-3xl mb-2 text-center">{card.position?.includes('P') || card.position === 'CL' || card.position === 'RP' || card.position === 'SP' ? '⚾' : '🧢'}</div>
-                    <p className="font-heading text-xs font-bold text-white text-center truncate">{card.name.split(' ').slice(-1)[0]}</p>
-                    <p className="text-[9px] text-slate-300 text-center">#{card.number}</p>
-                  </div>
-                  <div className="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">✓</div>
-                </button>
-              ))}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {collectedDetails.map(card => {
+                const img = getCardImage(card.name);
+                return (
+                  <button key={card.id} onClick={() => setSelectedCard(card)} className="relative group cursor-pointer hover:scale-105 transition-transform">
+                    {img ? (
+                      <img src={img} alt={card.name} className="w-full rounded-lg shadow-lg border-2" style={{ borderColor: teamColor }} />
+                    ) : (
+                      <div className="rounded-lg p-3 border-2 h-full" style={{ background: `${teamColor}22`, borderColor: `${teamColor}80` }}>
+                        <div className="text-3xl mb-2 text-center">🧢</div>
+                        <p className="font-heading text-xs font-bold text-white text-center truncate">{card.name.split(' ').slice(-1)[0]}</p>
+                        <p className="text-[9px] text-slate-300 text-center">#{card.number}</p>
+                      </div>
+                    )}
+                    <div className="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">✓</div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
