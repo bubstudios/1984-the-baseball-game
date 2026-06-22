@@ -37,8 +37,7 @@ import { pickAd } from '@/lib/broadcastAds';
 import AdRead from '@/components/game/AdRead';
 import FlyWFlag from '@/components/game/FlyWFlag';
 import CardAwardModal from '@/components/game/CardAwardModal';
-import { getRandomCard, addCollectedCard, loadCollectionFromStorage, saveCollectionToStorage } from '@/lib/tigersBaseballCards';
-import { getRandomPhilliesCard, addCollectedPhilliesCard, loadPhilliesCollectionFromStorage, savePhilliesCollectionToStorage } from '@/lib/philliesBaseballCards';
+import { getRandomCardForTeam, addCard, loadFromStorage, saveToStorage, migrateLegacyStorage } from '@/lib/baseballCards';
 import FanChirpToast from '@/components/game/FanChirpToast';
 
 export default function Home() {
@@ -85,6 +84,7 @@ export default function Home() {
     }
     ensureStatsInit();
     trackSessionStart();
+    migrateLegacyStorage();
   }, []);
 
   // Robot announcer — use stadium's lead announcer voice
@@ -417,32 +417,19 @@ export default function Home() {
       try { unlockAchievement('earl_weaver'); } catch (e) { console.error('earl_weaver failed:', e); }
     }
 
-    // Award a baseball card on Phillies home win
-    if (userWon && userTeam === 'phillies') {
+    // Award a baseball card on any home win
+    if (userWon && userTeam) {
       try {
-        loadPhilliesCollectionFromStorage();
-        const card = getRandomPhilliesCard();
-        const achievementIds = addCollectedPhilliesCard(card.id);
-        savePhilliesCollectionToStorage();
-        setCardAward(card);
-        if (achievementIds.length > 0) {
-          setNewAchievements(prev => [...prev, ...achievementIds]);
-          setShowAchievementPopup(true);
-        }
-      } catch (e) { console.error('philliesCardAward failed:', e); }
-    }
-
-    // Award a baseball card on Tigers home win
-    if (userWon && userTeam === 'tigers') {
-      try {
-        loadCollectionFromStorage();
-        const card = getRandomCard();
-        const achievementIds = addCollectedCard(card.id);
-        saveCollectionToStorage();
-        setCardAward(card);
-        if (achievementIds.length > 0) {
-          setNewAchievements(prev => [...prev, ...achievementIds]);
-          setShowAchievementPopup(true);
+        loadFromStorage(userTeam);
+        const card = getRandomCardForTeam(userTeam);
+        if (card) {
+          const achievementIds = addCard(userTeam, card.id);
+          saveToStorage(userTeam);
+          setCardAward(card);
+          if (achievementIds.length > 0) {
+            setNewAchievements(prev => [...prev, ...achievementIds]);
+            setShowAchievementPopup(true);
+          }
         }
       } catch (e) { console.error('cardAward failed:', e); }
     }
