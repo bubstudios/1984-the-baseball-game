@@ -974,8 +974,9 @@ export function checkGameAchievements(gameState, userTeam) {
   if (userWon && logText.includes('Walk-off')) u('walk_off_hero');
 
   // ── PITCHING ──
-  if (userPitchers.some(p => (p.gameStats?.so || 0) > 0)) u('punchout');
-  if (userPitchers.some(p => (p.gameStats?.so || 0) >= 10)) u('k_artist');
+  const totalUserSO = userPitchers.reduce((sum, p) => sum + (p.gameStats?.so || 0), 0);
+  if (totalUserSO > 0) u('punchout');
+  if (totalUserSO >= 10) u('k_artist');
   // Total opponent hits
   const oppHits = allOppPlayers.reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
   if (oppHits <= 3) u('cruising');
@@ -992,7 +993,8 @@ export function checkGameAchievements(gameState, userTeam) {
   }
   // ── DEFENSE (user team fielding) ──
   const userIsFielder = userIsFielding(gameState, userSide, log);
-  if (userIsFielder && (logText.includes('strike out the side') || logText.includes('struck out the side'))) u('frozen_rope');
+  // Frozen Rope: user's pitchers struck out the side (user is PITCHING, not fielding)
+  if (logText.includes('strike out the side') || logText.includes('struck out the side')) u('frozen_rope');
   if (userIsFielder && (logText.includes('thrown out at home') || logText.includes('nailed at the plate'))) u('cannon_arm');
   if (userIsFielder && logText.includes('caught stealing')) u('caught_stealing');
   if (userIsFielder && logText.includes('double play')) u('twin_killing');
@@ -1205,9 +1207,7 @@ export function checkGameAchievements(gameState, userTeam) {
     if (allSB >= 3) u('phillies_samuel_sb');
     const schmidt = allUserPlayers.find(p => p.name === 'Mike Schmidt');
     if (schmidt && (schmidt.gameStats?.hr || 0) > 0) u('phillies_schmidt_hr');
-    const carltonSO = userPitchers.reduce((sum, p) => sum + (p.gameStats?.so || 0), 0);
-    const oppSO = allOppPlayers.reduce((sum, p) => sum + (p.gameStats?.so || 0), 0);
-    if (carltonSO >= 10 || oppSO >= 10) u('phillies_carlton_k');
+    if (totalUserSO >= 10) u('phillies_carlton_k');
   }
 
   // ── ROYALS ──
