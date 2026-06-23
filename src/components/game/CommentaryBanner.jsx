@@ -23,6 +23,7 @@ import { pickCardinalsLine, pickCardinalsPlayerLine } from '@/lib/cardinalsBroad
 import { pickPiratesLine, pickPiratesPlayerLine } from '@/lib/piratesBroadcastLines';
 import { pickBravesLine, pickBravesPlayerLine } from '@/lib/bravesBroadcastLines';
 import { pickAstrosLine, pickAstrosPlayerLine } from '@/lib/astrosBroadcastLines';
+import { pickGiantsLine, pickGiantsPlayerLine } from '@/lib/giantsBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -124,6 +125,9 @@ const NICKNAMES = {
   "Pascual Perez": ["Perimeter Pascual"],
   "Phil Garner": ["Scrap Iron"],
   "Jose Cruz": ["Cheo"],
+  "Jack Clark": ["Jack the Ripper"],
+  "Al Oliver": ["Scoop"],
+  "Greg Minton": ["Moon Man"],
 };
 
 // 1984 Announcers & Stadium Flavor — expanded with real stadium atmosphere
@@ -918,6 +922,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  sanfranciscoGiants: {
+    announcers: ["Hank Greenwald", "Lon Simmons"],
+    stadium: "Candlestick Park",
+    nicknames: ["The Stick", "Candlestick"],
+    flavor: [
+      "a beautiful evening here at Candlestick Park",
+      "the lights are on at the Stick — Giants baseball tonight",
+      "Candlestick Park — home of the Giants since 1960",
+      "the wind is howling off the bay tonight — this ballpark can be brutal",
+      "the stands are filling up nicely — San Francisco loves its Giants",
+      "you can feel the chill in the air — Candlestick is famous for its cold summer nights",
+      "the fog is rolling in off San Francisco Bay — classic conditions at the Stick",
+      "the wind is playing tricks with every fly ball — outfielders have to be alert",
+      "the crowd is bundled up tonight — it's cold out there by the bay",
+      "the lights are cutting through the fog — a classic San Francisco baseball night",
+      "Candlestick Park has seen some great moments — this is a historic ballpark",
+      "the wind is knocking down every deep drive — nothing leaves here easily",
+    ],
+    weatherFlavor: [
+      "the wind is howling straight in from center field — any ball hit high is going to die on the warning track",
+      "the fog is thick and heavy tonight — the air is damp and the ball is not carrying at all",
+      "the wind is actually blowing out toward right field tonight — anything elevated could sail out of here",
+    ],
+    cityFlavor: [
+      "if you're taking the 101 or the Junipero Serra home after the game, give yourself some extra time — San Francisco traffic is tough",
+      "I grabbed a bowl of clam chowder in a sourdough bread bowl before the first pitch — pure San Francisco right there",
+      "the fans are streaming in from all over — the City, the Peninsula, Marin — the whole Bay Area comes out for Giants baseball",
+      "San Francisco is one of the great baseball cities in America — the fans here have a special love for this team",
+      "there's a magic to this city that you can feel at the ballpark — by the bay, under the fog — there's nothing like it",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of Willie Mays making that catch in center field — the greatest defensive play in baseball history",
+      "this franchise has been in San Francisco since 1958 — the Giants have a rich history in this city",
+      "from New York to San Francisco — the Giants have a tradition that spans both coasts",
+      "Willie McCovey hit some of the longest home runs ever seen right here at Candlestick",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
   houstonAstros: {
     announcers: ["Gene Elston", "Milo Hamilton"],
     stadium: "Astrodome",
@@ -1064,6 +1107,7 @@ export const TEAM_TO_FLAVOR = {
   pirates: "pittsburghPirates",
   braves: "atlantaBraves",
   astros: "houstonAstros",
+  giants: "sanfranciscoGiants",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -1322,6 +1366,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isPiratesGame = homeTeamKey === 'pirates';
   const isBravesGame = homeTeamKey === 'braves';
   const isAstrosGame = homeTeamKey === 'astros';
+  const isGiantsGame = homeTeamKey === 'giants';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -1417,6 +1462,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickBravesPlayerLine(batter?.name) : pickBravesPlayerLine(pitcher?.name)) || pickBravesLine())
                       : isAstrosGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickAstrosPlayerLine(batter?.name) : pickAstrosPlayerLine(pitcher?.name)) || pickAstrosLine())
+                      : isGiantsGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickGiantsPlayerLine(batter?.name) : pickGiantsPlayerLine(pitcher?.name)) || pickGiantsLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
