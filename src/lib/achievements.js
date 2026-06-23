@@ -340,6 +340,9 @@ export const ACHIEVEMENTS = [
   { id: 'couch_potato', name: 'Couch Potato', desc: 'View 15 More Obscure TV popups', icon: '🛋️', category: 'community' },
   { id: 'tv_guide_completionist', name: 'TV Guide Completionist', desc: 'View all 25 More Obscure TV popups', icon: '📚', category: 'community' },
 
+  // ── ST. ELSEWHERE ──
+  { id: 'st_elsewhere_complete', name: 'St. Elsewhere Complete', desc: 'Read all 5 entries of the St. Elsewhere TV Guide', icon: '🏥', category: 'community' },
+
   // ── TV MOVIES ──
   { id: 'movie_night', name: 'Movie Night', desc: 'View your first TV movie popup', icon: '🎬', category: 'community' },
   { id: 'network_premiere', name: 'Network Premiere', desc: 'View 5 different movies from the network premiere rotation', icon: '🏆', category: 'community' },

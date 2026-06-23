@@ -1,5 +1,5 @@
 // More Obscure TV Shows #626-650 (1984-era) - Second batch
-// Airwolf, Blue Thunder, Riptide, Webster, Punky Brewster, etc.
+// Airwolf, Blue Thunder, Riptide, Webster, Punky Brewster, St. Elsewhere, etc.
 
 const ENTRIES = [
   {
@@ -698,6 +698,123 @@ Local stations choose which syndicated programs to air, giving communities progr
 
 THE APPEAL
 Syndication allows stations to compete with networks through specialized programming.`,
+  },
+  // ── ST. ELSEWHERE — 5-Part Rotation ──
+  {
+    id: 'st_elsewhere_rotation',
+    title: 'St. Elsewhere — MTH',
+    icon: '🏥',
+    color: '#2c3e50',
+    anim: 'pulse',
+    matchText: 'St. Elsewhere continues this week with new challenges for the staff.',
+    network: 'NBC',
+    time: 'Wednesday 10 PM',
+    isRotation: true,
+    achievementKey: 'ach_st_elsewhere_complete',
+    achievementId: 'st_elsewhere_complete',
+    rotation: [
+      {
+        id: 'st_else_1',
+        label: 'The Hospital',
+        icon: '🏥',
+        body: `ST. ELIGIUS TEACHING HOSPITAL — "ST. ELSEWHERE"
+NBC · WEDNESDAY NIGHTS AT 10 PM
+
+They call it St. Elsewhere because that's where patients end up when no other hospital will take them.
+
+St. Eligius Teaching Hospital sits in a deteriorating neighborhood in Boston. The building is old. The equipment is sometimes inadequate. The staff is stretched. The cases are the ones that show up when there's nowhere else to go.
+
+THE BUILDING
+The exterior shots use a real hospital in the Boston area. The interior is a detailed recreation on a Los Angeles soundstage that the crew has spent two seasons making feel genuinely worn-in. The coffee machine in the break room has been broken since episode three. Nobody has fixed it. This is realistic.
+
+THE PHILOSOPHY
+Most hospital shows are about triumph. St. Elsewhere is about the daily work of medicine — the cases you win and the cases you lose and the accumulation of both over time.
+
+"Every day we do the best we can. Some days that's enough." — Dr. Westphall`,
+      },
+      {
+        id: 'st_else_2',
+        label: 'Dr. Westphall',
+        icon: '👨‍⚕️',
+        body: `DR. DONALD WESTPHALL — CHIEF OF MEDICINE
+Played by Ed Flanders
+
+Donald Westphall runs St. Eligius the way a man runs something he believes in even when it exhausts him.
+
+He is not a television doctor — not the dashing surgeon who saves lives in the last two minutes with a brilliant insight. He is an administrator, a mentor, a man who attends budget meetings and argues with hospital boards and still somehow finds time to notice when a resident is falling apart.
+
+THE PERFORMANCE
+Ed Flanders won the Emmy Award for Outstanding Lead Actor in a Drama Series in 1983 for this role. It is not a showy performance. It is a precise, lived-in portrayal of institutional competence under pressure.
+
+THE CHARACTER
+Westphall's life outside the hospital is present in the show in ways that matter. He is a widower. He has a son with autism. He coaches youth sports. He is a complete person in a way that television characters are rarely allowed to be.
+
+THE SHOW'S ANCHOR
+Without Westphall, St. Elsewhere doesn't work. He is the moral and emotional center around which everyone else orbits.`,
+      },
+      {
+        id: 'st_else_3',
+        label: 'The Residents',
+        icon: '🩺',
+        body: `THE RESIDENTS OF ST. ELIGIUS
+A Generation Learning Medicine the Hard Way
+
+DR. MARK CRAIG — The cardiothoracic surgeon. Brilliant, abrasive, convinced of his own superiority, and sometimes correct about it. Played by William Daniels in a performance that makes you like a man you probably should not like.
+
+DR. WAYNE FISCUS — Emergency medicine resident. The comic relief, and then suddenly not. The show has a habit of turning its funny characters serious when you least expect it.
+
+DR. JACK MORRISON — The idealist. Arrived at St. Eligius believing medicine was about saving people. Is learning that it is about saving some people and losing others and finding a way to keep showing up anyway.
+
+DR. ANNIE CAVANERO — The first female resident in a department that isn't always sure what to do with her. She is better at the job than several of the men who outrank her. This is acknowledged, and then not acknowledged, and then acknowledged again.
+
+THE REALISM
+The show hired medical consultants who told them what actual residents sound like when they are tired and scared and trying to make good decisions. This shows.`,
+      },
+      {
+        id: 'st_else_4',
+        label: 'The Cases',
+        icon: '📋',
+        body: `THE CASES OF ST. ELSEWHERE
+Television Drama in 1984
+
+St. Elsewhere was the first network drama to air an episode centered on AIDS. This was 1983. The episode was called "AIDS and Comfort." Networks did not do this. St. Elsewhere did.
+
+THE SUBJECTS
+The show has addressed: alcoholism, sexual assault, mental illness, racism in medicine, the economics of hospitals that serve poor neighborhoods, the emotional cost of repeated loss, and what happens to a doctor who becomes addicted to the drugs he prescribes.
+
+THE FORMAT
+Episodes often run three or four storylines simultaneously, braided together without the kind of neat resolution that most television dramas provide. Cases end. Some of them end badly. The show does not pretend otherwise.
+
+THE COMEDY
+St. Elsewhere is funny. This is important. The comedy comes from the same place the drama does — from people under pressure behaving like people under pressure, which is sometimes absurd.
+
+THE AWARD COUNT
+Seventeen Emmy nominations in two seasons. This is not unusual for prestige dramas. The show won three of them. This is also not unusual. What is unusual is that all the nominations were deserved.`,
+      },
+      {
+        id: 'st_else_5',
+        label: 'The Snowglobe',
+        icon: '🔮',
+        body: `THE SNOWGLOBE — A NOTE FOR THE FUTURE
+
+This entry is for viewers who finish the series.
+
+If you are watching St. Elsewhere in 1984, the final episode is years away. You have seasons of Westphall and Craig and Fiscus ahead of you. The cases, the residents, the hospital — all of it is still unfolding.
+
+But at the very end, the series finale does something that no network drama had done before and very few have done since. It reframes everything that came before it in a single image. A boy. A snowglobe. A question about the nature of fiction and imagination and what it means for a story to be real.
+
+The snowglobe theory — which fans developed after the finale aired — proposes that the entire St. Elsewhere universe, along with every other show ever crossed over with it, exists inside the imagination of a single child. The implications, if taken seriously, are enormous.
+
+This is not confirmed. It is also not denied.
+
+You should watch the series. All of it. The finale will mean something to you.
+
+"Tommy, what are you looking at?"
+That question, and what follows it, is one of television's great endings.
+
+SERIES: 6 Seasons · 137 Episodes · 1982–1988`,
+      },
+    ],
   },
   {
     id: 'mobs_650',

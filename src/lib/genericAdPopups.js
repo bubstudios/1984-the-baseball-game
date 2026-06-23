@@ -1650,46 +1650,6 @@ Register now.`,
   },
 ];
 
-// St. Elsewhere popup — uses moreObscureTvPopups3 matchText format
-// It's in GENERAL_SPONSOR as "St. Elsewhere continues this week with new challenges for the staff."
-// We need a matchText entry for it in the more obscure TV system
-const ST_ELSEWHERE_GENERIC = {
-  matchText: "St. Elsewhere continues this week with new challenges for the staff.",
-  title: "🏥 St. Elsewhere — MTH",
-  icon: "🏥",
-  color: "#2c3e50",
-  body: `ST. ELSEWHERE — MTH (ST. ELIGIUS TEACHING HOSPITAL)
-NBC • WEDNESDAY NIGHTS AT 10 PM
-
-St. Eligius isn't like other television hospitals.
-
-Most TV hospitals are gleaming and heroic. St. Eligius — nicknamed "St. Elsewhere" by the staff who work there — is underfunded, understaffed, overcrowded, and located in a neighborhood most people in Boston prefer to avoid. It handles the cases that nobody else will take, served by doctors who are brilliant and flawed in equal measure.
-
-THE SHOW
-Created by Joshua Brand and John Falsey. Executive produced by Mark Tinker and Bruce Paltrow. NBC, Wednesday nights at 10.
-
-THE STAFF
-Dr. Donald Westphall — the chief of medicine. Ed Flanders plays him with a quiet intensity that makes every scene feel lived-in. He runs the hospital with the patience of a man who has been through this before and will go through it again and will keep showing up anyway.
-
-Drs. Craig, Samuels, Morrison, Ehrlich, Fiscus — a generation of young residents learning that medical school and actual medicine have very little in common.
-
-THE CASES
-St. Elsewhere does not shy away from difficult material. The show has aired episodes on AIDS, substance abuse, mental illness, and institutional failure at a time when most network dramas were still avoiding the subject entirely.
-
-THE WRITING
-The series is nominated for seventeen Emmy Awards in its first two seasons. This is not an accident.
-
-THE SNOWGLOBE
-You may have heard a theory about the snowglobe. If you have not, watch the series finale.
-Then think about what you just saw.
-Then watch the entire series again.
-
-"Medicine is not a business. It's a calling." — Dr. Westphall`,
-  achievement: 'st_elsewhere_fan',
-};
-
-PHILLIES_MISSING.push(ST_ELSEWHERE_GENERIC);
-
 GENERIC_AD_ENTRIES.push(...PHILLIES_MISSING);
 
 // Build lookup map for fast matching — built lazily after module finishes loading
