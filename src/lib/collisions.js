@@ -55,13 +55,34 @@ export function rollCollision(baseIndex, runnerSpeed, fielderArm) {
   const isOut = text.includes('OUT') && !ballPopped;
   const isBrawlRisk = text.includes('spikes high') || text.includes('bowls over') || text.includes('absolutely crushes');
 
+  // Who gets hurt? Runner, fielder, or both — weighted by play intensity
+  const trigger = ballPopped ? 'collision' : (isBrawlRisk ? 'plate_collision' : null);
+  let injuredParty = null;
+  if (trigger) {
+    const roll = Math.random();
+    if (isBrawlRisk) {
+      // Violent collision — fielder more likely hurt (took the blow), both possible
+      if (roll < 0.40) injuredParty = 'fielder';
+      else if (roll < 0.65) injuredParty = 'runner';
+      else if (roll < 0.75) injuredParty = 'both';
+      else injuredParty = null;
+    } else {
+      // Standard collision — runner more likely hurt (sliding in)
+      if (roll < 0.35) injuredParty = 'runner';
+      else if (roll < 0.55) injuredParty = 'fielder';
+      else if (roll < 0.60) injuredParty = 'both';
+      else injuredParty = null;
+    }
+  }
+
   return {
     text,
     base,
-    ballPopped,    // if true, runner is SAFE regardless of the play
+    ballPopped,
     isOut,
-    isBrawlRisk,   // flag to possibly trigger beanball tension
-    injuryTrigger: ballPopped ? 'collision' : (isBrawlRisk ? 'plate_collision' : null),
+    isBrawlRisk,
+    injuryTrigger: trigger,
+    injuredParty,  // 'runner' | 'fielder' | 'both' | null
   };
 }
 
@@ -79,9 +100,17 @@ export function rollTakeoutSlide(runner) {
     `Big slide at second by ${runner.name.split(' ').pop()} — the double play is broken up!`,
   ];
 
+  const roll = Math.random();
+  // Takeout slides: fielder (2B/SS) absorbs the hit — more likely to injure fielder
+  let injuredParty = null;
+  if (roll < 0.30) injuredParty = 'fielder';
+  else if (roll < 0.45) injuredParty = 'runner';
+  else if (roll < 0.50) injuredParty = 'both';
+
   return {
     text: TAKEOUT_CALLS[Math.floor(Math.random() * TAKEOUT_CALLS.length)],
     brokeUpDP: true,
     injuryTrigger: 'collision',
+    injuredParty,
   };
 }

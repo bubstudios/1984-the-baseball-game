@@ -224,7 +224,19 @@ function advanceRunners(state, bases, batter, isHit = false) {
         state.bases[i].gameStats.runs++; scoreRun(state); runsScored++;
         // Collision check for runners scoring at home
         const collision = rollCollision('home', state.bases[i].speed, 7);
-        if (collision) { state.log.push({ type: 'info', text: `💥 ${collision.text}` }); state.lastPlay = { ...state.lastPlay, collision: true }; if (collision.injuryTrigger) state._pendingCollisionInjury = { player: state.bases[i], trigger: collision.injuryTrigger }; }
+        if (collision) {
+          state.log.push({ type: 'info', text: `💥 ${collision.text}` });
+          state.lastPlay = { ...state.lastPlay, collision: true };
+          if (collision.injuryTrigger) {
+            const runner = state.bases[i];
+            const catcher = getDefensivePlayers(state)['C'] || null;
+            state._pendingCollisionInjury = {
+              runner: (collision.injuredParty === 'runner' || collision.injuredParty === 'both') ? runner : null,
+              fielder: (collision.injuredParty === 'fielder' || collision.injuredParty === 'both') ? catcher : null,
+              trigger: collision.injuryTrigger,
+            };
+          }
+        }
         state.bases[i] = null;
       }
     }
@@ -680,7 +692,15 @@ function resolveSwing(state, swingType, pitch) {
             state.log.push({ type: 'groundout', text: `${batter.name} grounds to ${out.posName || out.pos} — ${takeout.text}` });
             state.lastPlay = { type: 'groundout', text: `${batter.name} grounds — DP broken up` };
             state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
-            if (takeout.injuryTrigger) state._pendingCollisionInjury = { player: r1, trigger: takeout.injuryTrigger };
+            if (takeout.injuryTrigger) {
+              const mi = getDefensivePlayers(state);
+              const fielder2B = mi['2B'] || mi['SS'] || null;
+              state._pendingCollisionInjury = {
+                runner: (takeout.injuredParty === 'runner' || takeout.injuredParty === 'both') ? r1 : null,
+                fielder: (takeout.injuredParty === 'fielder' || takeout.injuredParty === 'both') ? fielder2B : null,
+                trigger: takeout.injuryTrigger,
+              };
+            }
             return;
           }
           if (r1 && r2 && !isMI) { const r3 = state.bases[2]; if (r3 && state.outs < 2) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[2] = null; state.bases[1] = r1 || null; state.bases[0] = null; }
@@ -947,15 +967,19 @@ export function processAtBat(state, pitchType, swingType) {
   if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); }
   if (!newState.gameOver) runInjuryChecks(newState, bjb);
   if (!newState.gameOver && !newState.lastInjury) { const pi = checkPitcherInjury(newState); if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); } }
-  // Collision injury from home plate collision or takeout slide
-  if (!newState.gameOver && !newState.lastInjury && newState._pendingCollisionInjury) {
-    const { player, trigger } = newState._pendingCollisionInjury;
+  // Collision injury from home plate collision or takeout slide — can injure runner, fielder, or both
+  if (!newState.gameOver && newState._pendingCollisionInjury) {
+    const { runner, fielder, trigger } = newState._pendingCollisionInjury;
     delete newState._pendingCollisionInjury;
     const allPlayers = [...newState.homeLineup, ...newState.awayLineup];
-    const colPlayer = allPlayers.find(p => p.name === player.name) || player;
-    if (colPlayer) {
-      const ci = checkPlayInjury(newState, trigger || 'collision', colPlayer.name);
-      if (ci) { newState.lastInjury = ci; applyInjuryState(newState, ci); newState.log.push({ type: 'injury', text: `🚑 ${ci.commentary}` }); }
+    const candidates = [runner, fielder].filter(Boolean);
+    for (const p of candidates) {
+      if (newState.lastInjury) break; // only one injury per play
+      const colPlayer = allPlayers.find(pl => pl.name === p.name) || p;
+      if (colPlayer) {
+        const ci = checkPlayInjury(newState, trigger || 'collision', colPlayer.name);
+        if (ci) { newState.lastInjury = ci; applyInjuryState(newState, ci); newState.log.push({ type: 'injury', text: `🚑 ${ci.commentary}` }); }
+      }
     }
   }
   return newState;
