@@ -891,7 +891,6 @@ export const TEAMS = {
       { name: "Odell Jones", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Dave Tobik", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Tom Henke", pos: "RP", throws: "R", bats: "R", stamina: 3, pitchSpeed: 8, offSpeed: 6, control: 4, contact: 2, power: 1, bunting: 3, speed: 2 },
-      { name: "Cecilio Guante", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 7, offSpeed: 7, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -971,7 +970,6 @@ export const TEAMS = {
     ],
     rotation: [
       { name: "Joaquin Andujar", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 8, offSpeed: 7, control: 6, contact: 4, power: 2, bunting: 6, speed: 4 },
-      { name: "John Tudor", pos: "SP", throws: "L", bats: "L", stamina: 8, pitchSpeed: 5, offSpeed: 9, control: 9, contact: 4, power: 1, bunting: 6, speed: 2 },
       { name: "Kurt Kepshire", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 3, power: 1, bunting: 5, speed: 3 },
       { name: "Dave LaPoint", pos: "SP", throws: "L", bats: "L", stamina: 7, pitchSpeed: 5, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 5, speed: 2 },
     ],
