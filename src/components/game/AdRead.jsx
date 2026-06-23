@@ -334,7 +334,16 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       return;
     }
     if (!synopsisData) {
-      onDismiss();
+      // No dedicated popup matched — generate a generic one from the ad text so it stays open until X
+      const fallbackEntry = {
+        title: '📻 Broadcast Message',
+        icon: '📻',
+        color: '#c9a84c',
+        body: ad?.text || 'Advertisement',
+      };
+      setIsGenericAd(true);
+      setGenericAdEntry(fallbackEntry);
+      setExpanded(true);
       return;
     }
     if (!expanded) {
