@@ -546,7 +546,7 @@ export const STADIUM_FLAVOR = {
     stretchFlavor: null,
   },
   chicagoWhiteSox: {
-    announcers: ["Harry Caray", "Jimmy Piersall"],
+    announcers: ["Don Drysdale", "Ken Harrelson"],
     stadium: "Comiskey Park",
     nicknames: ["Comiskey Park", "The Old Ballpark"],
     flavor: [
@@ -585,7 +585,7 @@ export const STADIUM_FLAVOR = {
     stretchFlavor: null,
   },
   californiaAngels: {
-    announcers: ["Dick Enberg", "Don Drysdale"],
+    announcers: ["Dick Enberg", "Ken Wilson"],
     stadium: "Anaheim Stadium",
     nicknames: ["The Big A", "Anaheim Stadium"],
     flavor: [

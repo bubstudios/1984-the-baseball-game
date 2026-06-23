@@ -1,5 +1,5 @@
 // Chicago White Sox Broadcast — 1984
-// Radio: Harry Caray & Jimmy Piersall (WMAQ) / TV: Don Drysdale & Ken Harrelson (WSNS)
+// Radio: Don Drysdale & Ken Harrelson (WSNS) / TV: Harry Caray & Jimmy Piersall (WMAQ — Caray moved to Cubs in 1982)
 // Comiskey Park — home of the White Sox
 // All stats cutoff: end of 1983 season
 
