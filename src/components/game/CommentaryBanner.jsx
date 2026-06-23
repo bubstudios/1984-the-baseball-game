@@ -17,6 +17,7 @@ import { pickAthleticsLine, pickAthleticsPlayerLine } from '@/lib/athleticsBroad
 import { pickAngelsLine, pickAngelsPlayerLine } from '@/lib/angelsBroadcastLines';
 import { pickWhiteSoxLine, pickWhiteSoxPlayerLine } from '@/lib/whiteSoxBroadcastLines';
 import { pickMarinersLine, pickMarinersPlayerLine } from '@/lib/marinersBroadcastLines';
+import { pickRangersLine, pickRangersPlayerLine } from '@/lib/rangersBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -546,6 +547,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  texasRangers: {
+    announcers: ["Eric Nadel", "Mark Holtz"],
+    stadium: "Arlington Stadium",
+    nicknames: ["Arlington Stadium", "The Turnpike Stadium"],
+    flavor: [
+      "a beautiful evening here at Arlington Stadium",
+      "the lights are on at the old ballpark — Rangers baseball tonight",
+      "Arlington Stadium — home of the Rangers since 1972",
+      "the warm Texas air is perfect for baseball tonight",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "the stands are filling up nicely — the fans in Arlington are excited about this club",
+      "you can feel the Texas heat radiating off the turf — it's a warm one tonight",
+      "the old ballpark has character — you can feel it the moment you walk through the gates",
+      "the faithful at Arlington Stadium are some of the most passionate fans in baseball",
+      "a crisp evening in Texas — there's nothing better than baseball at Arlington Stadium",
+      "the Dallas-Fort Worth metroplex is buzzing tonight — the fans here love their Rangers",
+      "the Texas flag is flying high above the outfield wall — God bless Texas",
+    ],
+    weatherFlavor: [
+      "the warm Texas air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
+      "a gorgeous Texas evening — not a cloud in the sky",
+      "the breeze across the metroplex is keeping things comfortable — perfect baseball weather",
+    ],
+    cityFlavor: [
+      "if you're taking I-30 or Highway 360 home after the game, give yourself some extra time — DFW traffic doesn't sleep",
+      "I grabbed a brisket sandwich before the first pitch — that is pure Texas right there, folks",
+      "the fans are streaming in from all over — Dallas, Fort Worth, Arlington, Irving — the whole metroplex comes out for Rangers baseball",
+      "Texas is one of the great baseball markets in America — everything's bigger, including the love for the game",
+      "there's a pride in the Lone Star State that you can feel at the ballpark — Texas loves its Rangers",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of the great Rangers teams of the past — Toby Harrah, Jim Sundberg, Ferguson Jenkins — there's history here",
+      "this franchise has been playing in Texas since 1972 — the fans in Arlington have seen some great players come through here",
+      "from the Washington Senators to the Texas Rangers — this franchise has grown right along with the metroplex",
+      "the Rangers are building something with this roster — the fans in Texas believe this team can contend",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
   seattleMariners: {
     announcers: ["Dave Niehaus", "Ron Fairly"],
     stadium: "Kingdome",
@@ -803,6 +843,7 @@ export const TEAM_TO_FLAVOR = {
   angels: "californiaAngels",
   whitesox: "chicagoWhiteSox",
   mariners: "seattleMariners",
+  rangers: "texasRangers",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -1055,6 +1096,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isAngelsGame = homeTeamKey === 'angels';
   const isWhiteSoxGame = homeTeamKey === 'whitesox';
   const isMarinersGame = homeTeamKey === 'mariners';
+  const isRangersGame = homeTeamKey === 'rangers';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -1138,6 +1180,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickWhiteSoxPlayerLine(batter?.name) : pickWhiteSoxPlayerLine(pitcher?.name)) || pickWhiteSoxLine())
                       : isMarinersGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickMarinersPlayerLine(batter?.name) : pickMarinersPlayerLine(pitcher?.name)) || pickMarinersLine())
+                      : isRangersGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickRangersPlayerLine(batter?.name) : pickRangersPlayerLine(pitcher?.name)) || pickRangersLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
