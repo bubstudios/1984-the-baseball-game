@@ -13,6 +13,7 @@ import { pickBlueJaysLine, pickBlueJaysPlayerLine } from '@/lib/bluejaysBroadcas
 import { pickIndiansLine, pickIndiansPlayerLine } from '@/lib/indiansBroadcastLines';
 import { pickBrewersLine, pickBrewersPlayerLine } from '@/lib/brewersBroadcastLines';
 import { pickTwinsLine, pickTwinsPlayerLine } from '@/lib/twinsBroadcastLines';
+import { pickAthleticsLine, pickAthleticsPlayerLine } from '@/lib/athleticsBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -542,6 +543,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  oaklandAthletics: {
+    announcers: ["Bill King", "Lon Simmons"],
+    stadium: "Oakland-Alameda County Coliseum",
+    nicknames: ["The Coliseum", "Oakland Coliseum"],
+    flavor: [
+      "a beautiful evening here at the Oakland-Alameda County Coliseum",
+      "the lights are on at the Coliseum — Athletics baseball tonight",
+      "the Oakland Coliseum — home of the Athletics since 1968",
+      "the warm East Bay air is perfect for baseball tonight",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "the stands are filling up nicely — Oakland fans are excited about this club",
+      "you can see the Oakland hills beyond the outfield — a beautiful backdrop on a clear night",
+      "the Coliseum has been home to some of baseball's greatest moments — three straight World Series in the '70s",
+      "there's plenty of room out there in the outfield — this is one big ballpark",
+      "the breeze off the bay keeps things comfortable on a warm evening",
+      "the faithful at the Coliseum are some of the most passionate fans in baseball",
+      "a crisp evening in the East Bay — there's nothing better than baseball at the Coliseum",
+    ],
+    weatherFlavor: [
+      "the warm East Bay air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
+      "a gorgeous California evening — not a cloud in the sky over the Oakland hills",
+      "the breeze off the bay is keeping things comfortable — perfect baseball weather at the Coliseum",
+    ],
+    cityFlavor: [
+      "if you're taking I-880 or the Nimitz Freeway home after the game, give yourself some extra time — East Bay traffic doesn't sleep",
+      "I grabbed a burrito from a truck on Coliseum Way before the first pitch — that is pure Oakland right there, folks",
+      "the fans are streaming in from all over — Berkeley, Hayward, Fremont — the whole East Bay comes out for A's baseball",
+      "Oakland is one of the great baseball towns in America — the fans here have seen three straight World Series champions and they want another",
+      "there's a pride in this city that you can feel at the ballpark — Oakland loves its Athletics",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of Catfish Hunter, Rollie Fingers and Reggie Jackson — the A's won three straight World Series right here",
+      "this franchise has a championship pedigree — five World Series titles between Philadelphia and Oakland",
+      "from Connie Mack to Charlie Finley to the current regime — the Athletics have always been a franchise of bold moves",
+      "the A's are building something with these young players — the fans in Oakland believe this team can contend again",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
   minnesotaTwins: {
     announcers: ["Herb Carneal", "John Gordon", "Ray Scott"],
     stadium: "Hubert H. Humphrey Metrodome",
@@ -639,6 +679,7 @@ export const TEAM_TO_FLAVOR = {
   indians: "clevelandIndians",
   brewers: "milwaukeeBrewers",
   twins: "minnesotaTwins",
+  athletics: "oaklandAthletics",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -887,6 +928,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isIndiansGame = homeTeamKey === 'indians';
   const isBrewersGame = homeTeamKey === 'brewers';
   const isTwinsGame = homeTeamKey === 'twins';
+  const isAthleticsGame = homeTeamKey === 'athletics';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -962,6 +1004,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickBrewersPlayerLine(batter?.name) : pickBrewersPlayerLine(pitcher?.name)) || pickBrewersLine())
                       : isTwinsGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickTwinsPlayerLine(batter?.name) : pickTwinsPlayerLine(pitcher?.name)) || pickTwinsLine())
+                      : isAthleticsGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickAthleticsPlayerLine(batter?.name) : pickAthleticsPlayerLine(pitcher?.name)) || pickAthleticsLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
