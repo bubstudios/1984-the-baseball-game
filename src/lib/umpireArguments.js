@@ -126,7 +126,8 @@ export function getArgumentSeverity(lastPlay, gameState, usedTopics) {
   // ── CHECK SWINGS (routine) ──
   if (type === "strike" && (text.includes("Swinging") || text.includes("Checked")) && r < 0.08)
     return arg("did he go? — check swing appeal", "low", 2, "checkSwing", "routine");
-  if (type === "strikeout" && r < 0.05)
+  // Check-swing strikeout argument only valid if not on first pitch (min 2 pitches in AB)
+  if (type === "strikeout" && (text.includes("Checked") || text.includes("check swing")) && gameState.balls + gameState.strikes >= 2 && r < 0.05)
     return arg("strike three — check swing called", "medium", 3, "checkSwing", "routine");
 
   // ── BALKS (major — managers went nuclear over these) ──
