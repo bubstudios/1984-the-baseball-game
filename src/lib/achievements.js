@@ -163,6 +163,21 @@ export const ACHIEVEMENTS = [
   { id: 'just_one_more', name: 'Just One More', desc: 'Play 3 games in one session', icon: '🎮', category: 'community' },
   { id: 'marathon', name: 'Marathon Session', desc: 'Play 10 games in one session', icon: '🏃‍♂️', category: 'community' },
 
+  // ── VICTORY TRADITIONS ──
+  { id: 'fly_the_w', name: 'Fly the W', desc: 'Win a home game as the Cubs and see the W flag raised', icon: '🚩', category: 'victory' },
+  { id: 'start_spreading', name: 'Start Spreading the News', desc: 'Win a home game as the Yankees and hear Sinatra', icon: '🎩', category: 'victory' },
+  { id: 'celebration_time', name: 'Celebration Time', desc: 'Win a home game as the Athletics and hear Celebration', icon: '🎉', category: 'victory' },
+  { id: 'halo_shines', name: 'The Halo Shines', desc: 'Win a game as the Angels and light the Big A halo', icon: '😇', category: 'victory' },
+  { id: 'bernie_slide', name: 'Bernie\'s Slide', desc: 'Win a home game as the Brewers and watch Bernie slide', icon: '🍺', category: 'victory' },
+  { id: 'bless_you_boys', name: 'Bless You Boys', desc: 'Win a home game as the Tigers with Motown playing', icon: '🐯', category: 'victory' },
+  { id: 'orioles_magic', name: 'Orioles Magic', desc: 'Win a dramatic game as the Orioles and hear the anthem', icon: '🪄', category: 'victory' },
+  { id: 'meet_the_mets', name: 'Meet the Mets', desc: 'Win a home game as the Mets and hear the fight song', icon: '🎵', category: 'victory' },
+  { id: 'we_are_family', name: 'We Are Family', desc: 'Win a walk-off as the Pirates and hear the anthem', icon: '🏴‍☠️', category: 'victory' },
+  { id: 'cub_busters', name: 'Cub-Busters', desc: 'Beat the Cubs as the Padres and hear Cub-Busters', icon: '👻', category: 'victory' },
+  { id: 'that_belongs_to_reds', name: 'Belongs to the Reds', desc: 'Hear Marty Brennaman\'s sign-off after a Reds win', icon: '🎙️', category: 'victory' },
+  { id: 'thats_a_winner', name: 'That\'s a Winner', desc: 'Hear Jack Buck\'s sign-off after a Cardinals win', icon: '🏆', category: 'victory' },
+  { id: 'cubs_win_cubs_win', name: 'Cubs Win! Cubs Win!', desc: 'Hear Harry Caray\'s call after a Cubs win', icon: '📣', category: 'victory' },
+
   // ── TEAM-SPECIFIC: CUBS ──
   { id: 'cubs_wrigley_win', name: 'Friendly Confines', desc: 'Win a game at Wrigley Field', icon: '🏟️', category: 'teamSpecific', team: 'cubs' },
   { id: 'cubs_3_hr', name: 'Waveland Avenue', desc: 'Hit 3 home runs in a game as the Cubs', icon: '🌊', category: 'teamSpecific', team: 'cubs' },
@@ -1213,6 +1228,22 @@ export function checkGameAchievements(gameState, userTeam) {
   // One-Pitch Wonder: completed game using only one pitch type
   const pitchTypes = gameState.userPitchTypes || [];
   if (pitchTypes.length === 1 && gameState.inning >= 5) u('one_pitch_wonder');
+
+  // ── VICTORY TRADITIONS ──
+  if (userWon && userSide === 'home') {
+    if (teamKey === 'cubs') { u('fly_the_w'); u('cubs_win_cubs_win'); }
+    if (teamKey === 'yankees') u('start_spreading');
+    if (teamKey === 'athletics') u('celebration_time');
+    if (teamKey === 'brewers') u('bernie_slide');
+    if (teamKey === 'tigers') u('bless_you_boys');
+    if (teamKey === 'mets') u('meet_the_mets');
+    if (teamKey === 'cardinals') u('thats_a_winner');
+    if (teamKey === 'reds') u('that_belongs_to_reds');
+  }
+  if (userWon && teamKey === 'angels') u('halo_shines');
+  if (userWon && teamKey === 'orioles' && (maxDeficit > 0 || logText.includes('Walk-off') || gameState.inning > 9)) u('orioles_magic');
+  if (userWon && teamKey === 'pirates' && (logText.includes('Walk-off') || logText.includes('walk-off'))) u('we_are_family');
+  if (userWon && teamKey === 'padres' && (gameState.awayTeam === 'cubs' || gameState.homeTeam === 'cubs')) u('cub_busters');
 
   // ───────────────────────────────────────────────────
   // ── TEAM-SPECIFIC ACHIEVEMENTS (user team only) ──

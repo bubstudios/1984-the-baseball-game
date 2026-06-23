@@ -39,6 +39,7 @@ import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'l
 import { pickAd } from '@/lib/broadcastAds';
 import AdRead from '@/components/game/AdRead';
 import WinCelebration from '@/components/game/WinCelebration';
+import { getVictoryCall } from '@/lib/victoryCalls';
 import CardAwardModal from '@/components/game/CardAwardModal';
 import { getRandomCardForTeam, addCard, loadFromStorage, saveToStorage, migrateLegacyStorage, getCollectedIds } from '@/lib/baseballCards';
 import FanChirpToast from '@/components/game/FanChirpToast';
@@ -157,6 +158,16 @@ export default function Home() {
       if (['homerun', 'peskyPole', 'basketHR', 'shortPorch'].includes(lastPlay.type) && battingTeam === 'home') {
         setHrTrigger(t => t + 1);
       }
+    }
+    if (gameState.gameOver && !gameState._victoryCallLogged) {
+      const isHomeWin = gameState.score.home > gameState.score.away;
+      const winningTeam = isHomeWin ? gameState.homeTeam : gameState.awayTeam;
+      const call = getVictoryCall(winningTeam, gameState, isHomeWin);
+      setGameState(prev => prev ? {
+        ...prev,
+        log: [...prev.log, { type: 'gameover', text: `🎙️ ${call}` }],
+        _victoryCallLogged: true,
+      } : prev);
     }
     if (gameState.gameOver && gameState.score.home > gameState.score.away) {
       // Only trigger once per game
@@ -887,7 +898,7 @@ export default function Home() {
                   <div className="bg-card border border-primary/30 rounded-xl p-4 text-center space-y-3">
                     {/* Home win celebration — 1984 accurate */}
                     {gameState.score.home > gameState.score.away && (
-                      <WinCelebration teamKey={homeTeam} />
+                      <WinCelebration teamKey={homeTeam} gameState={gameState} isHomeWin={true} />
                     )}
                     <Trophy className="w-8 h-8 text-primary mx-auto" />
                     <div>
