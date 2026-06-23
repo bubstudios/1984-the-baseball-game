@@ -21,6 +21,7 @@ import { pickRangersLine, pickRangersPlayerLine } from '@/lib/rangersBroadcastLi
 import { pickExposLine, pickExposPlayerLine } from '@/lib/exposBroadcastLines';
 import { pickCardinalsLine, pickCardinalsPlayerLine } from '@/lib/cardinalsBroadcastLines';
 import { pickPiratesLine, pickPiratesPlayerLine } from '@/lib/piratesBroadcastLines';
+import { pickBravesLine, pickBravesPlayerLine } from '@/lib/bravesBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -117,6 +118,9 @@ const NICKNAMES = {
   "Kent Tekulve": ["Teke"],
   "Lee Lacy": ["Lacy"],
   "Jason Thompson": ["Rooftop"],
+  "Dale Murphy": ["Murph"],
+  "Steve Bedrosian": ["Bedrock"],
+  "Pascual Perez": ["Perimeter Pascual"],
 };
 
 // 1984 Announcers & Stadium Flavor — expanded with real stadium atmosphere
@@ -911,6 +915,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  atlantaBraves: {
+    announcers: ["Skip Caray", "Pete Van Wieren", "Ernie Johnson Sr."],
+    stadium: "Atlanta-Fulton County Stadium",
+    nicknames: ["Fulton County", "The Launching Pad"],
+    flavor: [
+      "a beautiful evening here at Atlanta-Fulton County Stadium",
+      "the lights are on at Fulton County — Braves baseball tonight",
+      "Atlanta-Fulton County Stadium — home of the Braves since 1966",
+      "the warm Southern air is perfect for baseball tonight",
+      "the stands are filling up nicely — Atlanta loves its Braves",
+      "you can feel the energy in this ballpark — the fans are into this one",
+      "Fulton County Stadium is rocking tonight — the crowd is fired up",
+      "the Atlanta skyline is visible beyond the outfield — a beautiful backdrop on a clear night",
+      "the faithful at Fulton County are some of the most passionate fans in baseball",
+      "a perfect evening for baseball in the Deep South",
+      "the humidity is thick tonight — the ball should carry well in this air",
+      "baseball in the South — there's nothing quite like a summer night at Fulton County",
+    ],
+    weatherFlavor: [
+      "the warm Southern air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
+      "a gorgeous Atlanta evening — not a cloud in the sky",
+      "the breeze across the metro area is keeping things comfortable — perfect baseball weather",
+    ],
+    cityFlavor: [
+      "if you're taking I-85 or I-75 home after the game, give yourself some extra time — Atlanta traffic doesn't sleep",
+      "I grabbed a peach cobbler before the first pitch — that is pure Georgia right there, folks",
+      "the fans are streaming in from all over — Marietta, Decatur, Buckhead — the whole metro comes out for Braves baseball",
+      "Atlanta is one of the great baseball markets in the South — the fans here have taken to this team in a big way",
+      "there's a pride in the Deep South that you can feel at the ballpark — Atlanta loves its Braves",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of the great Braves teams of the past — Hank Aaron hit home run number 715 right here",
+      "this franchise has been in Atlanta since 1966 — the fans here have seen some great players come through",
+      "from Milwaukee to Atlanta — the Braves have been part of this city since the beginning",
+      "the Braves won the National League West right here in 1982 — the fans in Atlanta believe this team can contend again",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
   pittsburghPirates: {
     announcers: ["Lanny Frattare", "Milo Hamilton"],
     stadium: "Three Rivers Stadium",
@@ -977,6 +1020,7 @@ export const TEAM_TO_FLAVOR = {
   expos: "montrealExpos",
   cardinals: "stLouisCardinals",
   pirates: "pittsburghPirates",
+  braves: "atlantaBraves",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -1233,6 +1277,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isExposGame = homeTeamKey === 'expos';
   const isCardinalsGame = homeTeamKey === 'cardinals';
   const isPiratesGame = homeTeamKey === 'pirates';
+  const isBravesGame = homeTeamKey === 'braves';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -1324,6 +1369,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickCardinalsPlayerLine(batter?.name) : pickCardinalsPlayerLine(pitcher?.name)) || pickCardinalsLine())
                       : isPiratesGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickPiratesPlayerLine(batter?.name) : pickPiratesPlayerLine(pitcher?.name)) || pickPiratesLine())
+                      : isBravesGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickBravesPlayerLine(batter?.name) : pickBravesPlayerLine(pitcher?.name)) || pickBravesLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
