@@ -52,7 +52,7 @@ export const ALL_ROSTERS = {
     { id: 19, name: 'Bobby Brown',     position: 'OF',   number: 23, ba: '.258', hr: 4,  rbi: 22,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 20, name: 'Bruce Bochy',     position: 'C',    number: 8,  ba: '.234', hr: 5,  rbi: 16,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 21, name: 'Tim Flannery',    position: '2B',   number: 10, ba: '.275', hr: 3,  rbi: 22,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
-    { id: 22, name: 'Luis Salazar',    position: '3B',   number: 16, ba: '.254', hr: 5,  rbi: 35,  era: '-',    role: 'Bench Utility',        rarity: 'common'   },
+    { id: 22, name: 'Champ Summers',   position: 'OF',   number: 25, ba: '.255', hr: 6,  rbi: 20,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
   ],
 
   cubs: [
@@ -128,6 +128,7 @@ export const ALL_ROSTERS = {
     { id: 20, name: 'Ed Jurak',        position: '3B',   number: 2,  ba: '.233', hr: 2,  rbi: 11,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
     { id: 21, name: 'Rick Miller',     position: 'OF',   number: 15, ba: '.255', hr: 2,  rbi: 17,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 22, name: 'Glenn Hoffman',   position: 'SS',   number: 7,  ba: '.231', hr: 2,  rbi: 22,  era: '-',    role: 'Backup Shortstop',     rarity: 'common'   },
+    { id: 23, name: 'Jeff Newman',     position: 'C',    number: 10, ba: '.211', hr: 4,  rbi: 13,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
   ],
 
   yankees: [
@@ -277,7 +278,7 @@ export const ALL_ROSTERS = {
     { id: 17, name: 'Don Carman',      position: 'RP',   number: 42, ba: '-',    hr: '-', rbi: '-', era: '4.56', role: 'Relief Pitcher',       rarity: 'common'   },
     { id: 18, name: 'Len Matuszek',    position: '1B',   number: 17, ba: '.268', hr: 12, rbi: 43,  era: '-',    role: 'Backup First Base',    rarity: 'common'   },
     { id: 19, name: 'Greg Gross',      position: 'OF',   number: 3,  ba: '.274', hr: 1,  rbi: 14,  era: '-',    role: 'Pinch Hitter',         rarity: 'common'   },
-    { id: 20, name: 'Derrel Thomas',   position: 'UT',   number: 2,  ba: '.239', hr: 3,  rbi: 23,  era: '-',    role: 'Utility Player',       rarity: 'common'   },
+    { id: 20, name: 'John Wockenfuss', position: 'C',    number: 12, ba: '.289', hr: 6,  rbi: 16,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 21, name: 'Bo Diaz',         position: 'C',    number: 15, ba: '.240', hr: 5,  rbi: 26,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 22, name: 'Sixto Lezcano',   position: 'OF',   number: 22, ba: '.237', hr: 4,  rbi: 19,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
   ],
