@@ -9,6 +9,7 @@ import { pickTigersLine, pickTigersPlayerLine } from '@/lib/tigersBroadcastLines
 import { pickRedsLine, pickRedsPlayerLine } from '@/lib/redsBroadcastLines';
 import { pickRoyalsLine, pickRoyalsPlayerLine } from '@/lib/royalsBroadcastLines';
 import { pickPhilliesLine, pickPhilliesPlayerLine } from '@/lib/philliesBroadcastLines';
+import { pickBlueJaysLine, pickBlueJaysPlayerLine } from '@/lib/bluejaysBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -462,6 +463,43 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  torontoBlueJays: {
+    announcers: ["Don Chevrier", "Tony Kubek", "Tom Cheek", "Jerry Howarth"],
+    stadium: "Exhibition Stadium",
+    nicknames: ["The Ex", "Exhibition Stadium"],
+    flavor: [
+      "a cool breeze rolling in off Lake Ontario here at Exhibition Stadium",
+      "the seagulls are circling the outfield — they know it's game time at the Ex",
+      "the artificial turf playing fast tonight — ground balls will scoot through the infield",
+      "Exhibition Stadium on the CNE grounds — home of Blue Jays baseball since 1977",
+      "the football configuration gives this ballpark a unique feel — those seats in left are a long way from home plate",
+      "it may not be the prettiest ballpark in the league, but the fans here make it feel like home",
+      "you can see the Toronto skyline beyond the outfield — a beautiful backdrop on a summer night",
+      "the breeze off the lake can really knock a fly ball down — outfielders have to be alert",
+      "the lights are on at the Ex — the CNE grounds are lit up tonight",
+      "baseball by the lake — there's nothing quite like it",
+    ],
+    weatherFlavor: [
+      "that wind coming straight in off Lake Ontario is going to hold up every ball hit to the outfield — a lot of long outs tonight",
+      "a chilly Canadian evening — the fans in the first few rows are bundled up in jackets and blankets — that's dedication",
+      "the air is damp and heavy off the lake tonight — pitchers better keep the ball down or the dampness will make it tough to get a grip",
+    ],
+    cityFlavor: [
+      "if you're taking the Gardiner Expressway or the QEW home after the game, give yourself some extra time — Toronto traffic doesn't sleep",
+      "I grabbed a peameal bacon sandwich before the first pitch — that is pure Toronto right there, folks",
+      "the fans are streaming in from all over — Mississauga, Scarborough, North York — the whole GTA comes out for Blue Jays baseball",
+      "baseball in Canada — it's been growing on folks, and you can see why tonight with this crowd",
+      "the Canadian fans here are knowledgeable and passionate — they've taken to this team in a big way",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of opening day in 1977 — it was snowing, the fans were freezing, and the Blue Jays won anyway — that's how this franchise was born",
+      "this team had its first winning season just last year — the fans up here have waited a long time for this",
+      "from expansion afterthought to a club on the rise — the Blue Jays are building something special in Toronto",
+      "Bobby Cox has this young team believing — and when a ballclub believes in itself, anything is possible",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
 };
 
 // Team key to flavor key mapping (matches TEAMS keys from gameData.js)
@@ -477,6 +515,7 @@ export const TEAM_TO_FLAVOR = {
   reds: "cincinnatiReds",
   royals: "kansasCityRoyals",
   phillies: "philadelphiaPhillies",
+  bluejays: "torontoBlueJays",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -721,6 +760,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isRedsGame = homeTeamKey === 'reds';
   const isRoyalsGame = homeTeamKey === 'royals';
   const isPhilliesGame = homeTeamKey === 'phillies';
+  const isBlueJaysGame = homeTeamKey === 'bluejays';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -788,7 +828,9 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                       ? ((Math.random() < 0.5 ? pickRoyalsPlayerLine(batter?.name) : pickRoyalsPlayerLine(pitcher?.name)) || pickRoyalsLine(gameState?.weather?.isDay !== false))
                       : isPhilliesGame && Math.random() < 0.65
                       ? ((Math.random() < 0.5 ? pickPhilliesPlayerLine(batter?.name) : pickPhilliesPlayerLine(pitcher?.name)) || pickPhilliesLine())
-                      : getCommentary(batter, pitcher, gameState, stadiumInfo);
+                      : isBlueJaysGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickBlueJaysPlayerLine(batter?.name) : pickBlueJaysPlayerLine(pitcher?.name)) || pickBlueJaysLine())
+                        : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
 
