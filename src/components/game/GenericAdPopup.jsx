@@ -1,8 +1,11 @@
 import React from 'react';
 import { X } from 'lucide-react';
 
-export default function GenericAdPopup({ entry, onDismiss }) {
+export default function GenericAdPopup({ entry, onDismiss, questResult }) {
   if (!entry) return null;
+
+  const clue = questResult?.clue;
+  const completed = questResult?.completedQuest;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={onDismiss}>
@@ -21,6 +24,15 @@ export default function GenericAdPopup({ entry, onDismiss }) {
             <X className="w-5 h-5 text-slate-300" />
           </button>
         </div>
+
+        {/* Quest Completion Banner */}
+        {completed && (
+          <div className="mx-5 mt-4 rounded-xl px-4 py-3 bg-amber-500/20 border border-amber-400/50">
+            <p className="text-xs font-heading font-bold text-amber-400 uppercase tracking-wider mb-1">🎴 Quest Complete!</p>
+            <p className="text-sm font-body text-amber-200">{completed.completionMsg || `You completed: ${completed.name}`}</p>
+            <p className="text-xs text-amber-400/70 mt-1">A bonus baseball card has been added to your collection!</p>
+          </div>
+        )}
 
         {/* Body */}
         <div className="px-5 py-4">
@@ -41,6 +53,23 @@ export default function GenericAdPopup({ entry, onDismiss }) {
             );
           })}
         </div>
+
+        {/* Quest Clue Footer */}
+        {clue && !completed && (
+          <div className="mx-5 mb-4 rounded-xl px-4 py-3 bg-slate-800 border border-slate-600">
+            <p className="text-[10px] font-heading uppercase tracking-widest text-amber-400/70 mb-1">🗺️ {clue.questName}</p>
+            <p className="text-xs font-body text-slate-300 italic">"{clue.clue}"</p>
+            <div className="mt-2 flex items-center gap-2">
+              <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, (clue.progress / clue.goal) * 100)}%`, backgroundColor: entry.color }}
+                />
+              </div>
+              <span className="text-[10px] font-heading text-slate-400">{clue.progress}/{clue.goal}</span>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="px-5 py-3 border-t border-slate-700 flex justify-end">

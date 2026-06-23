@@ -57,6 +57,8 @@ import { findTigersStadiumEntry, trackTigersStadiumView } from '@/lib/tigersStad
 import { findPhilliesBannerEntry, trackPhilliesBannerView } from '@/lib/philliesBannerPopups';
 import { findGenericAdEntry } from '@/lib/genericAdPopups';
 import { generateFallbackEntry } from '@/lib/genericAdFallback';
+import { recordAdView, getQuestClueForAd } from '@/lib/adQuests';
+import { getRandomCardForTeam, addCard, saveToStorage } from '@/lib/baseballCards';
 import { findCubsBannerEntry, trackCubsBannerView } from '@/lib/cubsBannerPopups';
 import { findTigersBannerEntry2, trackTigersBannerView2 } from '@/lib/tigersBannerPopups2';
 import { findMetsBannerEntry, trackMetsBannerView } from '@/lib/metsBannerPopups';
@@ -146,6 +148,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [philliesBannerEntry, setPhilliesBannerEntry] = useState(null);
   const [isGenericAd, setIsGenericAd] = useState(false);
   const [genericAdEntry, setGenericAdEntry] = useState(null);
+  const [questResult, setQuestResult] = useState(null);
 
   // Detect ad type on mount
   useEffect(() => {
@@ -322,6 +325,34 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalPromos, isNationalWrestling, isVhsBetamax, isDetroitTigers, isCubsBanner, isTigersBanner2, isMetsBanner, isYankeesBanner, isOriolesBanner, isDodgersBanner, isPadresBanner, isRedsBanner, isRoyalsBanner, isTigersStadium, isPhilliesBanner, isGenericAd];
     if (specialTypes.some(t => t)) {
       setExpanded(true);
+      // ── Quest tracking ──
+      const adTypeKey = isArcade ? 'arcade' : isArcadeVidGame ? 'arcadeVidGame' : isElectronics ? 'electronics'
+        : isWrestling ? 'wrestling' : isNationalWrestling ? 'nationalWrestling'
+        : isVhsBetamax ? 'vhsBetamax' : isObscureTv ? 'obscureTv' : isMoreObscureTv ? 'moreObscureTv'
+        : isMoreObscureTv3 ? 'moreObscureTv3' : isTvMovie ? 'tvMovie' : isNationalPromos ? 'nationalPromos'
+        : isPeak1984 ? 'peak1984' : isMallCulture ? 'mallCulture' : isThingsThatScream1984 ? 'thingsThatScream1984'
+        : isVanishedStores ? 'vanishedStores' : isOlympics ? 'olympics' : isOlympicsAthletes ? 'olympicsAthletes'
+        : isNasaSpace ? 'nasaSpace' : isNationalCharity ? 'nationalCharity'
+        : isPhilliesBanner ? 'philliesBanner' : isCubsBanner ? 'cubsBanner' : isTigersBanner2 ? 'tigersBanner2'
+        : isMetsBanner ? 'metsBanner' : isYankeesBanner ? 'yankeesBanner' : isOriolesBanner ? 'oriolesBanner'
+        : isDodgersBanner ? 'dodgersBanner' : isPadresBanner ? 'padresBanner' : isRedsBanner ? 'redsBanner'
+        : isRoyalsBanner ? 'royalsBanner' : isDetroitTigers ? 'detroitTigers' : isRedSoxBanner ? 'redSoxBanner'
+        : isTigersStadium ? 'tigersStadium' : isGenericAd ? 'generic' : null;
+      if (adTypeKey) {
+        const qResults = recordAdView(adTypeKey, ad?.text);
+        const clue = getQuestClueForAd(adTypeKey, ad?.text);
+        const completed = qResults.find(r => r.justCompleted);
+        if (completed) {
+          // Award bonus card for quest completion
+          const rewardTeam = completed.quest.reward.team;
+          const card = getRandomCardForTeam(rewardTeam);
+          if (card) {
+            addCard(rewardTeam, card.id);
+            saveToStorage(rewardTeam);
+          }
+        }
+        setQuestResult({ clue, completedQuest: completed?.quest || null });
+      }
       if (isNationalCharity && nationalCharityEntry) {
         const unlocked = trackNationalCharityView(nationalCharityEntry.id);
         if (unlocked.length > 0 && onAchievement) onAchievement(unlocked);
@@ -440,6 +471,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       philliesBannerEntry={philliesBannerEntry}
       isGenericAd={isGenericAd}
       genericAdEntry={genericAdEntry}
+      questResult={questResult}
       isTvMovie={isTvMovie}
       tvMovieEntry={tvMovieEntry}
       isObscureTv={isObscureTv}

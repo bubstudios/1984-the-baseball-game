@@ -42,6 +42,7 @@ import { trackRoyalsBannerView } from '@/lib/royalsBannerPopups';
 
 export default function AdReadPopupRenderer({
   expanded, isMovie, synopsisData, onDismiss, onAchievement,
+  questResult,
   isElectronics, elecEntry,
   isMoreObscureTv, moreObscureTvEntry,
   isMoreObscureTv3, moreObscureTvEntry3,
@@ -192,7 +193,7 @@ export default function AdReadPopupRenderer({
     return <GeneralProductsPopup entry={gpEntry} onDismiss={() => { onDismiss(); }} onAchievement={onAchievement} />;
   }
   if (expanded && isGenericAd && genericAdEntry) {
-    return <GenericAdPopup entry={genericAdEntry} onDismiss={() => { onDismiss(); }} />;
+    return <GenericAdPopup entry={genericAdEntry} onDismiss={() => { onDismiss(); }} questResult={questResult} />;
   }
 
   // TV Guide detail view
