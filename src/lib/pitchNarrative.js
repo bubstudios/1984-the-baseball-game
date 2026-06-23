@@ -142,8 +142,8 @@ export function generatePitchNarrative(gameState, pitchType, swingType, result) 
   }
 
   return {
-    playByPlay: playByPlayLines.join(' '),
-    colorCommentary: colorCommentaryLines.join(' ')
+    playByPlay: playByPlayLines.join(' ') || `${batterName} steps in...`,
+    colorCommentary: colorCommentaryLines.join(' ') || `The batter watches the pitch closely.`
   };
 }
 
