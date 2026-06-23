@@ -372,16 +372,18 @@ export function resolveArgument(severityInfo, managerPersonality, umpire, inning
     whoArgues = "manager";
   } else if (severityInfo.severity === "medium") {
     if (r < 0.55 + hotheadBoost) whoArgues = "manager";
-    else if (canBatterArgue && r < 0.72) whoArgues = "batter";
-    else if (isFieldingTeamArguing && r < 0.85) whoArgues = "catcher";
+    else if (!isFieldingTeamArguing && canBatterArgue && r < 0.72) whoArgues = "batter";
+    else if (isFieldingTeamArguing && r < 0.80) whoArgues = "catcher";
     else if (isFieldingTeamArguing) whoArgues = "pitcher";
-    else whoArgues = "batter";
+    else if (!isFieldingTeamArguing) whoArgues = "batter";
+    else whoArgues = "manager";
   } else {
     if (r < 0.30 + hotheadBoost) whoArgues = "manager";
-    else if (canBatterArgue && r < 0.55) whoArgues = "batter";
+    else if (!isFieldingTeamArguing && canBatterArgue && r < 0.55) whoArgues = "batter";
     else if (isFieldingTeamArguing && r < 0.75) whoArgues = "catcher";
     else if (isFieldingTeamArguing) whoArgues = "pitcher";
-    else whoArgues = "batter";
+    else if (!isFieldingTeamArguing) whoArgues = "batter";
+    else whoArgues = "manager";
   }
 
   // ── Escalation (manager only) ──

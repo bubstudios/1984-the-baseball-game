@@ -1652,13 +1652,151 @@ Register now.`,
 
 GENERIC_AD_ENTRIES.push(...PHILLIES_MISSING);
 
+// ── ADDITIONAL ENTRIES FOR BANNERS THAT WERE NON-CLICKABLE ──
+const PREVIOUSLY_MISSING = [
+  {
+    matchText: "Help feed families in need throughout Philadelphia through Philabundance.",
+    title: "🍎 Philabundance — Fighting Hunger in Philadelphia",
+    icon: "🍎",
+    color: "#e74c3c",
+    body: `PHILABUNDANCE — FIGHTING HUNGER IN THE DELAWARE VALLEY
+Founded in Philadelphia, 1984
+
+The Delaware Valley has more restaurants than most American cities. It also has more people who aren't sure where their next meal is coming from.
+
+Philabundance was founded this year to address exactly that gap.
+
+THE MISSION
+Collect surplus food from supermarkets, food manufacturers, restaurants, and farms. Distribute it through a network of soup kitchens, food pantries, and shelters throughout Philadelphia and the surrounding counties. No food wasted. No family turned away.
+
+THE SCALE
+Roughly one in eight residents of the greater Philadelphia area faces food insecurity at some point during the year. Many of them are working families — not people who gave up. People who ran into one bad month and couldn't absorb it.
+
+HOW IT WORKS
+A supermarket has bread that expires tomorrow. Instead of discarding it, Philabundance picks it up. A church pantry in Kensington distributes it that afternoon. The bread didn't go to waste. A family had dinner.
+
+This happens hundreds of times per week.
+
+THE PHILLIES' INVOLVEMENT
+The Phillies organization supports Philabundance and encourages fans throughout the five-county region to do the same.
+
+HOW YOU CAN HELP
+Cash donations allow Philabundance to purchase specific items in bulk — protein especially.
+Non-perishable food donations are accepted at drop sites throughout the region.
+Volunteer hours at the distribution center are always needed.
+
+The concession stand hot dog you just ate was about $1.50.
+That's a day's worth of calories for a child in the food bank system.
+Please give what you can.`,
+  },
+  {
+    matchText: "Every game starts with a single quarter.",
+    title: "🕹️ Every Game Starts with a Quarter",
+    icon: "🕹️",
+    color: "#7b1fa2",
+    body: `EVERY GAME STARTS WITH A SINGLE QUARTER
+A Meditation on the American Arcade
+
+Twenty-five cents. The quarter. The coin that powers an entire culture.
+
+THE MACHINE
+A cabinet approximately five feet tall, two feet wide. A screen, a joystick, one or two buttons. The artwork on the sides promises excitement in a way that is always slightly more dramatic than what actually happens. You put the quarter in. The screen lights up. The game begins.
+
+THE SOUND
+Every arcade cabinet produces sound. Not background music — sound effects designed to be heard across a loud room. The triple-beep of Pac-Man. The explosion of Space Invaders. The warp whistle of Donkey Kong. These sounds will be recognizable thirty years from now to everyone who heard them.
+
+THE CROWD
+Arcades in 1984 are a social space in a way that hasn't been fully understood yet. You watch other people play. You give advice nobody asked for. You wait your turn. You memorize the patterns. You challenge the current high score holder, a seventeen-year-old who has been here since 3 PM on a Saturday and will still be here at closing.
+
+THE ECONOMY
+A good player can make a quarter last thirty minutes. A great player can make it last longer. A bad player can exhaust their allowance in fifteen minutes and stand there watching someone else play for the rest of the afternoon. Both are valid experiences.
+
+THE CURRENT CHAMPIONS
+Dragon's Lair. Spy Hunter. Marble Madness arriving in arcades this summer. Gauntlet changing the way people play together. Star Wars bringing vector graphics and the Force to the local mall.
+
+Every one of them starts with a single quarter.
+You have one.
+The machine is waiting.`,
+  },
+  {
+    matchText: "Richie Ashburn would like to wish happy birthday to Mrs. Colangelo of Cheltenham.",
+    title: "🎙️ Richie Ashburn — Voice of the Phillies",
+    icon: "🎙️",
+    color: "#c0392b",
+    body: `RICHIE ASHBURN — VOICE OF THE PHILADELPHIA PHILLIES
+The Man Who Knows This Town
+
+Don Richie Ashburn grew up in Tilden, Nebraska, played center field for the Phillies from 1948 through 1959, won two batting titles, and retired with a lifetime average of .308. He has been in the broadcast booth since 1963.
+
+He never really left Philadelphia.
+
+THE BIRTHDAY ANNOUNCEMENTS
+Richie reads birthday and anniversary greetings on the air. This is not embarrassing. This is not a contractual obligation. Richie genuinely wants to say hello to Mrs. Colangelo in Cheltenham, and he means it, and she knows he means it, and that is why she keeps listening.
+
+Harry Kalas has been known to gently mock the birthday announcements. Richie doesn't mind. The birthday announcements continue.
+
+THE PARTNERSHIP
+Harry Kalas arrived in Philadelphia in 1971. Richie was already there. Their chemistry is not manufactured. They genuinely like each other. Harry is elegant, the poet with the golden voice. Richie is funny — the kind of funny that comes from having watched baseball every day for thirty years and knowing exactly where the absurdity lives.
+
+THE CATCHPHRASE
+"Hard to believe, Harry." Richie says this when something remarkable happens. Sometimes it's sincere. Sometimes it's ironic. Always it's right.
+
+THE BASEBALL
+Richie Ashburn was good. In 1958 he hit .350. In 1959 he led the league in on-base percentage. The Phillies were not good during those years. Richie played hard anyway. Every day.
+
+He still does.
+He just does it from the booth now.
+
+Happy birthday, Mrs. Colangelo.
+Richie means it.`,
+  },
+  {
+    matchText: "Stop by the Phillies team store for official 1984 merchandise.",
+    title: "🔴 Phillies Team Store — 1984 Official Merchandise",
+    icon: "🔴",
+    color: "#c0392b",
+    body: `PHILLIES TEAM STORE — VETERANS STADIUM
+1984 Official Merchandise — Main Level, Section 108
+
+HATS
+Home red: $8.00. Road gray: $8.00. The one with the "P" exactly as it looks on the field, not a different "P" they made for the tourist market.
+
+T-SHIRTS
+Classic Phillies script across the chest: $7.00. Player name and number on the back: $9.00. (Available in Schmidt, Carlton, Samuel, and — for some reason — always running low on Hayes.)
+
+THE YEARBOOK
+1984 Philadelphia Phillies Official Yearbook: $3.50. Contains season preview, player profiles, spring training photography, and a letter from Paul Owens that carefully avoids predicting anything specific. Considered the honest approach.
+
+PENNANTS
+Standard: $3.00. Mini pennant for children: $1.50. The mini pennant is exactly the right size for a child's bedroom. Nobody argues this.
+
+BUMPER STICKERS
+"WE BELIEVE — PHILLIES 1984": $0.75. For vehicles that do, in fact, believe.
+
+THE ODDBALL SECTION (LIMITED QUANTITIES)
+Phillies key chain shaped like The Vet's aerial view: $2.00. Phillies pencil with an eraser that appears to be the Phanatic's head: $0.50. A Phillies calendar that was supposed to arrive in January and is now 40% off: $2.00. One (1) foam finger — green, for reasons nobody at the store has been able to explain — marked down from $4.00 to $1.25. Still available.
+
+NOT AVAILABLE
+Mike Schmidt's actual bat. We've been asked.
+
+HOURS
+Open two hours before first pitch. Closes after the seventh inning, regardless of the score. This policy has caused strong feelings.
+
+THE PHANATIC
+Dave Raymond may or may not walk through the team store during any given game. He will definitely steal someone's hat if he does.`,
+  },
+];
+GENERIC_AD_ENTRIES.push(...PREVIOUSLY_MISSING);
+
 // Build lookup map for fast matching — built lazily after module finishes loading
 let _cachedMap = null;
 
 export function findGenericAdEntry(adText) {
   if (!_cachedMap) {
     _cachedMap = new Map();
-    GENERIC_AD_ENTRIES.forEach(e => _cachedMap.set(e.matchText, e));
+    GENERIC_AD_ENTRIES.forEach(e => {
+      if (e.matchText) _cachedMap.set(e.matchText, e);
+    });
   }
   return _cachedMap.get(adText) || null;
 }

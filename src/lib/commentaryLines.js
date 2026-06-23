@@ -87,6 +87,16 @@ const SINGLE_LINES = [
   c("Single — nice stroke.", 'uncommon'),
   c("Poked it through the infield.", 'uncommon'),
   c("That's a frozen rope through the hole.", 'rare'),
+  // Universal batted-ball calls — varied contact descriptions
+  c("A clean base hit up the middle.", 'uncommon'),
+  c("A hard single through the left side.", 'uncommon'),
+  c("A line drive the other way — base hit.", 'uncommon'),
+  c("He shoots it toward right field — single.", 'uncommon'),
+  c("A ground ball that splits the middle infielders.", 'uncommon'),
+  c("A hard shot between first and second — base hit.", 'uncommon'),
+  c("A ground ball through the opposite side — he's on with a single.", 'uncommon'),
+  c("A dart toward shortstop — finds the hole.", 'rare'),
+  c("A rope into left-center — base hit.", 'rare'),
 ];
 
 // =========== DOUBLE ===========
@@ -163,6 +173,15 @@ const GROUNDOUT_LINES = [
   c("groundout — good fundamentals.", 'uncommon'),
   c("ropes a one-hopper — snared on a hop.", 'rare'),
   c("a tailor-made double play ball — but only one out.", 'rare'),
+  // Universal batted-ball calls
+  c("A high chopper toward third — got him.", 'uncommon'),
+  c("A hard one-hopper to second — routine out.", 'uncommon'),
+  c("A slow roller up the first-base line — just not fast enough.", 'uncommon'),
+  c("A little squibber toward first — he's out.", 'uncommon'),
+  c("A ground ball back through the box — pitcher makes the play.", 'uncommon'),
+  c("A sharp grounder to the left side — retires him.", 'uncommon'),
+  c("A big Baltimore chop — third baseman waits and guns him down.", 'rare'),
+  c("A wicked one-hop shot — nice play, groundout.", 'rare'),
 ];
 
 // =========== FLYOUT ===========
@@ -174,6 +193,15 @@ const FLYOUT_LINES = [
   c("easy chance for the outfielder —", 'uncommon'),
   c("fielder barely had to move —", 'uncommon'),
   c("routine fly ball —", 'uncommon'),
+  // Universal batted-ball calls
+  c("A soft fly ball — right at the center fielder.", 'uncommon'),
+  c("A medium fly ball — routine catch.", 'uncommon'),
+  c("A high fly ball — stays in the park, caught.", 'uncommon'),
+  c("A towering pop-up — fielder settles under it.", 'uncommon'),
+  c("A shallow fly — outfielder charges, makes the play.", 'uncommon'),
+  c("A fly ball hit directly at the outfielder — no play needed.", 'uncommon'),
+  c("A dying quail toward right — outfielder comes in and makes the catch.", 'rare'),
+  c("A towering fly to the warning track — caught at the wall.", 'rare'),
 ];
 
 // =========== DOUBLE PLAY ===========
@@ -212,6 +240,13 @@ const LINEOUT_LINES = [
   c("line drive — caught by", 'uncommon'),
   c("rips one right on the screws — snared by", 'uncommon'),
   c("robbed! That was smoked by", 'rare'),
+  // Universal batted-ball calls
+  c("A frozen rope — right at", 'uncommon'),
+  c("A scorching line drive — snared by", 'uncommon'),
+  c("A bullet off the bat — caught by", 'uncommon'),
+  c("A vicious liner — snagged by", 'uncommon'),
+  c("A sharp one-hopper — stabbed by", 'rare'),
+  c("A screaming drive — grabbed by", 'rare'),
 ];
 
 // =========== POPOUT ===========

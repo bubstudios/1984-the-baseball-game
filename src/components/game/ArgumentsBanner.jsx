@@ -102,9 +102,10 @@ export default function ArgumentsBanner({ result, onDismiss }) {
 
           <div className="text-sm font-heading text-foreground/80">
             {result.whoArgues === 'manager' ? `Manager: ${result.managerName || 'The Skipper'}` :
-             result.whoArgues === 'batter' ? 'Batter throws his hands up' :
-             result.whoArgues === 'catcher' ? 'Catcher stands up to discuss' :
-             result.whoArgues === 'pitcher' ? 'Pitcher stares at the umpire' : ''}
+             result.whoArgues === 'batter' ? (result.callType?.includes('safe') || result.callType?.includes('beat') ? 'Runner disputes the tag' : 'Batter argues the call') :
+             result.whoArgues === 'catcher' ? 'Catcher argues the ruling' :
+             result.whoArgues === 'pitcher' ? 'Pitcher glares at the umpire' :
+             result.whoArgues === 'dugout' ? 'Voices rising from the dugout' : ''}
           </div>
 
           <div className="text-xs text-muted-foreground italic">
