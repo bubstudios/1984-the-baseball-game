@@ -2,14 +2,24 @@
 // Tells the story of each pitch: setup, delivery, action, result
 
 export function generatePitchNarrative(gameState, pitchType, swingType, result) {
-  if (!gameState || !result) return null;
+  if (!gameState || !result) {
+    return {
+      playByPlay: 'The pitch is delivered.',
+      colorCommentary: 'And that\'s the pitch.'
+    };
+  }
 
-  const pitcher = gameState.effectivePitcher || gameState.pitchers[gameState.inning - 1];
+  const pitcher = gameState.effectivePitcher || gameState.pitchers?.[gameState.inning - 1];
   const batter = gameState.batter;
-  const bases = gameState.bases;
+  const bases = gameState.bases || [];
   const count = `${gameState.balls}-${gameState.strikes}`;
   
-  if (!pitcher || !batter) return null;
+  if (!pitcher || !batter) {
+    return {
+      playByPlay: 'The pitch is thrown.',
+      colorCommentary: 'A moment in the game.'
+    };
+  }
 
   const playByPlayLines = [];
   const colorCommentaryLines = [];
