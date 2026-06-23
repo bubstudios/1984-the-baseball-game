@@ -12,6 +12,7 @@ import { pickPhilliesLine, pickPhilliesPlayerLine } from '@/lib/philliesBroadcas
 import { pickBlueJaysLine, pickBlueJaysPlayerLine } from '@/lib/bluejaysBroadcastLines';
 import { pickIndiansLine, pickIndiansPlayerLine } from '@/lib/indiansBroadcastLines';
 import { pickBrewersLine, pickBrewersPlayerLine } from '@/lib/brewersBroadcastLines';
+import { pickTwinsLine, pickTwinsPlayerLine } from '@/lib/twinsBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -541,6 +542,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  minnesotaTwins: {
+    announcers: ["Herb Carneal", "John Gordon", "Ray Scott"],
+    stadium: "Hubert H. Humphrey Metrodome",
+    nicknames: ["The Metrodome", "The Dome", "The HHH Metrodome"],
+    flavor: [
+      "a beautiful evening indoors at the Hubert H. Humphrey Metrodome",
+      "the lights are on at the Dome — Twins baseball tonight",
+      "the Metrodome — home of the Twins since 1982 — baseball under the Teflon roof",
+      "the air conditioning is humming tonight — always 72 degrees inside the Dome",
+      "the white Teflon roof stretched above the field — there's nothing else like it in baseball",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "the seats are filling up nicely — Minnesota fans are excited about this young team",
+      "you can hear the ballgame echoing off the roof tonight — the Dome has its own sound",
+      "the baggy in right field — that's the Hank Aaron Lou Gehrig wall — it's a unique target",
+      "a comfortable evening inside the Metrodome — no rain delays here, ever",
+      "this is still a new ballpark — the fans are still getting used to baseball indoors",
+      "the Dome is hopping tonight — the crowd is into this one",
+    ],
+    weatherFlavor: [
+      "it's always 72 degrees inside the Dome — the weather outside doesn't matter one bit",
+      "a perfect evening indoors — the air conditioning is keeping things comfortable",
+      "the controlled climate of the Dome means the ball carries true tonight",
+    ],
+    cityFlavor: [
+      "if you're taking I-35W or I-94 home after the game, give yourself some extra time — Twin Cities traffic can back up",
+      "I grabbed a Juicy Lucy before the first pitch — that is pure Minnesota right there, folks",
+      "the fans are streaming in from all over — St. Paul, Bloomington, Brooklyn Center — the whole metro comes out for Twins baseball",
+      "Minnesota is one of the great baseball states in America — the fans here know their stuff",
+      "there's a pride in this state that you can feel at the ballpark — Minnesota loves its Twins",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of the great Twins teams of the past — Killebrew, Oliva, Carew — there's a lot of history here",
+      "this franchise won the World Series in 1965 — the fans in Minnesota have tasted winning baseball",
+      "from Metropolitan Stadium to the Dome — the Twins have a new home and a new era",
+      "the Twins are building something with these young players — the fans up here believe this team can contend again",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
   milwaukeeBrewers: {
     announcers: ["Bob Uecker", "Pat Hughes", "Merle Harmon"],
     stadium: "County Stadium",
@@ -598,6 +638,7 @@ export const TEAM_TO_FLAVOR = {
   bluejays: "torontoBlueJays",
   indians: "clevelandIndians",
   brewers: "milwaukeeBrewers",
+  twins: "minnesotaTwins",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -845,6 +886,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isBlueJaysGame = homeTeamKey === 'bluejays';
   const isIndiansGame = homeTeamKey === 'indians';
   const isBrewersGame = homeTeamKey === 'brewers';
+  const isTwinsGame = homeTeamKey === 'twins';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -918,6 +960,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickIndiansPlayerLine(batter?.name) : pickIndiansPlayerLine(pitcher?.name)) || pickIndiansLine())
                       : isBrewersGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickBrewersPlayerLine(batter?.name) : pickBrewersPlayerLine(pitcher?.name)) || pickBrewersLine())
+                      : isTwinsGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickTwinsPlayerLine(batter?.name) : pickTwinsPlayerLine(pitcher?.name)) || pickTwinsLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
