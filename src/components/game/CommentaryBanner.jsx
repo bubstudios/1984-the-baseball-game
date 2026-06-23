@@ -15,6 +15,7 @@ import { pickBrewersLine, pickBrewersPlayerLine } from '@/lib/brewersBroadcastLi
 import { pickTwinsLine, pickTwinsPlayerLine } from '@/lib/twinsBroadcastLines';
 import { pickAthleticsLine, pickAthleticsPlayerLine } from '@/lib/athleticsBroadcastLines';
 import { pickAngelsLine, pickAngelsPlayerLine } from '@/lib/angelsBroadcastLines';
+import { pickWhiteSoxLine, pickWhiteSoxPlayerLine } from '@/lib/whiteSoxBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -544,6 +545,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  chicagoWhiteSox: {
+    announcers: ["Harry Caray", "Jimmy Piersall"],
+    stadium: "Comiskey Park",
+    nicknames: ["Comiskey Park", "The Old Ballpark"],
+    flavor: [
+      "a beautiful evening here at Comiskey Park",
+      "the lights are on at the old ballpark — White Sox baseball tonight",
+      "Comiskey Park — home of the White Sox since 1910",
+      "the warm Midwestern air is perfect for baseball tonight",
+      "the stands are filling up nicely — the fans on the South Side are excited about this club",
+      "you can see the Chicago skyline beyond the outfield — a beautiful backdrop on a clear night",
+      "Comiskey Park has been home to some of baseball's greatest moments — the Black Sox, the Go-Go Sox — history lives here",
+      "the old ballpark has character — you can feel it the moment you walk through the gates",
+      "the upper deck at Comiskey is one of the steepest in baseball — great view from up there",
+      "the faithful at Comiskey are some of the most passionate fans in baseball",
+      "a crisp evening in Chicago — there's nothing better than baseball at Comiskey Park",
+      "the South Side is buzzing tonight — the fans here love their White Sox",
+    ],
+    weatherFlavor: [
+      "the warm air off Lake Michigan is carrying the ball well tonight — hitters will get rewarded if they elevate it",
+      "a gorgeous Chicago evening — not a cloud in the sky over the skyline",
+      "the breeze off the lake is keeping things comfortable — perfect baseball weather at Comiskey",
+    ],
+    cityFlavor: [
+      "if you're taking the Dan Ryan or the Stevenson home after the game, give yourself some extra time — Chicago traffic doesn't sleep",
+      "I grabbed a Chicago dog before the first pitch — mustard, onions, relish, sport peppers, tomato, pickle — no ketchup — that's the rule",
+      "the fans are streaming in from all over — Bridgeport, Beverly, Pilsen — the whole South Side comes out for White Sox baseball",
+      "Chicago is one of the great baseball towns in America — two teams, one city, and the South Side bleeds black and white",
+      "there's a pride on the South Side that you can feel at the ballpark — the fans here love their White Sox",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of the 1959 Go-Go Sox — Luis Aparicio, Nellie Fox, Early Wynn — the last White Sox team to win the pennant",
+      "this franchise has been playing baseball since 1901 — the fans on the South Side have seen it all",
+      "from Shoeless Joe to Carlton Fisk — the White Sox have always been a team of characters",
+      "the White Sox won the American League West last year — the fans in Chicago believe this team can win it all",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
   californiaAngels: {
     announcers: ["Dick Enberg", "Don Drysdale"],
     stadium: "Anaheim Stadium",
@@ -721,6 +761,7 @@ export const TEAM_TO_FLAVOR = {
   twins: "minnesotaTwins",
   athletics: "oaklandAthletics",
   angels: "californiaAngels",
+  whitesox: "chicagoWhiteSox",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -971,6 +1012,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isTwinsGame = homeTeamKey === 'twins';
   const isAthleticsGame = homeTeamKey === 'athletics';
   const isAngelsGame = homeTeamKey === 'angels';
+  const isWhiteSoxGame = homeTeamKey === 'whitesox';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -1050,6 +1092,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickAthleticsPlayerLine(batter?.name) : pickAthleticsPlayerLine(pitcher?.name)) || pickAthleticsLine())
                       : isAngelsGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickAngelsPlayerLine(batter?.name) : pickAngelsPlayerLine(pitcher?.name)) || pickAngelsLine())
+                      : isWhiteSoxGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickWhiteSoxPlayerLine(batter?.name) : pickWhiteSoxPlayerLine(pitcher?.name)) || pickWhiteSoxLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
