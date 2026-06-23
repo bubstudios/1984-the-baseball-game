@@ -56,6 +56,7 @@ import { findDetroitTigersBannerEntry, trackDetroitTigersBannerView } from '@/li
 import { findTigersStadiumEntry, trackTigersStadiumView } from '@/lib/tigersStadiumPopups';
 import { findPhilliesBannerEntry, trackPhilliesBannerView } from '@/lib/philliesBannerPopups';
 import { findGenericAdEntry } from '@/lib/genericAdPopups';
+import { generateFallbackEntry } from '@/lib/genericAdFallback';
 import { findCubsBannerEntry, trackCubsBannerView } from '@/lib/cubsBannerPopups';
 import { findTigersBannerEntry2, trackTigersBannerView2 } from '@/lib/tigersBannerPopups2';
 import { findMetsBannerEntry, trackMetsBannerView } from '@/lib/metsBannerPopups';
@@ -274,6 +275,13 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
           setGpEntry(gp);
         } else if (movie !== null) {
           setIsMovie(true);
+        } else {
+          // Keyword-based rich fallback for any remaining unmatched banner
+          const richFallback = generateFallbackEntry(ad.text);
+          if (richFallback) {
+            setIsGenericAd(true);
+            setGenericAdEntry(richFallback);
+          }
         }
       }
     }
@@ -334,8 +342,9 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       return;
     }
     if (!synopsisData) {
-      // No dedicated popup matched — generate a generic one from the ad text so it stays open until X
-      const fallbackEntry = {
+      // Try keyword-based rich fallback first, then bland generic
+      const richFallback = generateFallbackEntry(ad?.text);
+      const fallbackEntry = richFallback || {
         title: '📻 Broadcast Message',
         icon: '📻',
         color: '#c9a84c',
