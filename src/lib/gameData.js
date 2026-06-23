@@ -411,6 +411,8 @@ export const TEAMS = {
         splits: estSplits(.251, 4, 158, 42, "L") },
       { name: "Cesar Cedeno", pos: "OF", bats: "R", contact: 6, power: 5, bunting: 4, speed: 6, defense: 6, arm: 6,
         splits: { vsLHP: { ab: 156, ba: .288, hr: 4 }, vsRHP: { ab: 288, ba: .271, hr: 6 } } },
+      { name: "Eric Davis", pos: "OF", bats: "R", contact: 4, power: 4, bunting: 4, speed: 8, defense: 5, arm: 6,
+        splits: estSplits(.205, 2, 44, 12, "R") },
     ],
     rotation: [
       { name: "Mario Soto", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 8, offSpeed: 9, control: 7, contact: 3, power: 1, bunting: 4, speed: 2, pitches: ["Fastball", "Changeup", "Breaking Ball"] },
