@@ -715,104 +715,88 @@ Syndication allows stations to compete with networks through specialized program
     rotation: [
       {
         id: 'st_else_1',
-        label: 'The Hospital',
+        label: 'Second Opinion',
         icon: '🏥',
-        body: `ST. ELIGIUS TEACHING HOSPITAL — "ST. ELSEWHERE"
-NBC · WEDNESDAY NIGHTS AT 10 PM
+        body: `SECOND OPINION — NBC WEDNESDAY 10:00 PM
 
-They call it St. Elsewhere because that's where patients end up when no other hospital will take them.
+Westphall questions Craig's plan to perform dangerous experimental surgery on a celebrated Boston architect. Morrison struggles to tell a young patient that his condition has returned. Ehrlich accidentally invites two women to the same hospital benefit.
 
-St. Eligius Teaching Hospital sits in a deteriorating neighborhood in Boston. The building is old. The equipment is sometimes inadequate. The staff is stretched. The cases are the ones that show up when there's nowhere else to go.
+STARRING
+Ed Flanders (Westphall) · William Daniels (Craig) · David Morse (Morrison) · Ed Begley Jr. (Ehrlich)
 
-THE BUILDING
-The exterior shots use a real hospital in the Boston area. The interior is a detailed recreation on a Los Angeles soundstage that the crew has spent two seasons making feel genuinely worn-in. The coffee machine in the break room has been broken since episode three. Nobody has fixed it. This is realistic.
+GUEST STARS
+Richard Kiley · Mare Winningham
 
-THE PHILOSOPHY
-Most hospital shows are about triumph. St. Elsewhere is about the daily work of medicine — the cases you win and the cases you lose and the accumulation of both over time.
-
-"Every day we do the best we can. Some days that's enough." — Dr. Westphall`,
+THE CONFLICT
+Craig's confidence in experimental procedures threatens to override Westphall's institutional caution. The surgeon sees salvation where the administrator sees risk. Two physicians at odds over what medicine owes to a patient.`,
       },
       {
         id: 'st_else_2',
-        label: 'Dr. Westphall',
-        icon: '👨‍⚕️',
-        body: `DR. DONALD WESTPHALL — CHIEF OF MEDICINE
-Played by Ed Flanders
+        label: 'Cold Front',
+        icon: '❄️',
+        body: `COLD FRONT — NBC WEDNESDAY 10:00 PM
 
-Donald Westphall runs St. Eligius the way a man runs something he believes in even when it exhausts him.
+A severe cold snap fills St. Eligius with homeless patients suffering from exposure. Chandler searches for the family of a confused elderly woman. Fiscus becomes convinced that a quiet new orderly is stealing food from the cafeteria.
 
-He is not a television doctor — not the dashing surgeon who saves lives in the last two minutes with a brilliant insight. He is an administrator, a mentor, a man who attends budget meetings and argues with hospital boards and still somehow finds time to notice when a resident is falling apart.
+STARRING
+Denzel Washington (Chandler) · Howie Mandel (Fiscus) · Christina Pickles (Cavanero) · Norman Lloyd (Auschlander)
 
-THE PERFORMANCE
-Ed Flanders won the Emmy Award for Outstanding Lead Actor in a Drama Series in 1983 for this role. It is not a showy performance. It is a precise, lived-in portrayal of institutional competence under pressure.
+GUEST STARS
+Geraldine Page · John Glover
 
-THE CHARACTER
-Westphall's life outside the hospital is present in the show in ways that matter. He is a widower. He has a son with autism. He coaches youth sports. He is a complete person in a way that television characters are rarely allowed to be.
-
-THE SHOW'S ANCHOR
-Without Westphall, St. Elsewhere doesn't work. He is the moral and emotional center around which everyone else orbits.`,
+THE CRISIS
+The hospital's mission and its limits collide when winter brings the city's most vulnerable to St. Eligius. Chandler's compassion meets institutional capacity. Fiscus's suspicions breed workplace tension amid a health emergency.`,
       },
       {
         id: 'st_else_3',
-        label: 'The Residents',
-        icon: '🩺',
-        body: `THE RESIDENTS OF ST. ELIGIUS
-A Generation Learning Medicine the Hard Way
+        label: 'The Donor',
+        icon: '🫀',
+        body: `THE DONOR — NBC WEDNESDAY 10:00 PM
 
-DR. MARK CRAIG — The cardiothoracic surgeon. Brilliant, abrasive, convinced of his own superiority, and sometimes correct about it. Played by William Daniels in a performance that makes you like a man you probably should not like.
+A family feud threatens to prevent a lifesaving kidney transplant. Craig clashes with a determined attorney over consent. Morrison becomes emotionally involved with the frightened teenage donor. Ehrlich loses the paperwork moments before surgery.
 
-DR. WAYNE FISCUS — Emergency medicine resident. The comic relief, and then suddenly not. The show has a habit of turning its funny characters serious when you least expect it.
+STARRING
+William Daniels (Craig) · David Morse (Morrison) · Ed Begley Jr. (Ehrlich) · Ed Flanders (Westphall)
 
-DR. JACK MORRISON — The idealist. Arrived at St. Eligius believing medicine was about saving people. Is learning that it is about saving some people and losing others and finding a way to keep showing up anyway.
+GUEST STARS
+Alfre Woodard · James Cromwell
 
-DR. ANNIE CAVANERO — The first female resident in a department that isn't always sure what to do with her. She is better at the job than several of the men who outrank her. This is acknowledged, and then not acknowledged, and then acknowledged again.
-
-THE REALISM
-The show hired medical consultants who told them what actual residents sound like when they are tired and scared and trying to make good decisions. This shows.`,
+THE DILEMMA
+Family conflict, legal uncertainty, and human frailty intersect in a race against time. The surgery that saves one life depends on paperwork, consent, and a teenager's willingness to sacrifice.`,
       },
       {
         id: 'st_else_4',
-        label: 'The Cases',
-        icon: '📋',
-        body: `THE CASES OF ST. ELSEWHERE
-Television Drama in 1984
+        label: 'Night Shift',
+        icon: '🌙',
+        body: `NIGHT SHIFT — NBC WEDNESDAY 10:00 PM
 
-St. Elsewhere was the first network drama to air an episode centered on AIDS. This was 1983. The episode was called "AIDS and Comfort." Networks did not do this. St. Elsewhere did.
+A neighborhood blackout leaves St. Eligius operating on emergency power during an unusually crowded night. Chandler takes command of the emergency room. Auschlander calms a trapped elevator full of patients. Fiscus attempts surgery by flashlight.
 
-THE SUBJECTS
-The show has addressed: alcoholism, sexual assault, mental illness, racism in medicine, the economics of hospitals that serve poor neighborhoods, the emotional cost of repeated loss, and what happens to a doctor who becomes addicted to the drugs he prescribes.
+STARRING
+Denzel Washington (Chandler) · Norman Lloyd (Auschlander) · Howie Mandel (Fiscus) · Christina Pickles (Cavanero)
 
-THE FORMAT
-Episodes often run three or four storylines simultaneously, braided together without the kind of neat resolution that most television dramas provide. Cases end. Some of them end badly. The show does not pretend otherwise.
+GUEST STARS
+Piper Laurie · Michael Lerner
 
-THE COMEDY
-St. Elsewhere is funny. This is important. The comedy comes from the same place the drama does — from people under pressure behaving like people under pressure, which is sometimes absurd.
-
-THE AWARD COUNT
-Seventeen Emmy nominations in two seasons. This is not unusual for prestige dramas. The show won three of them. This is also not unusual. What is unusual is that all the nominations were deserved.`,
+THE EMERGENCY
+When infrastructure fails, the hospital's competence is tested in darkness. Chandler rises to the crisis. Auschlander's gentle authority steadies panicked patients. Fiscus's courage overcomes fear.`,
       },
       {
         id: 'st_else_5',
-        label: 'The Snowglobe',
-        icon: '🔮',
-        body: `THE SNOWGLOBE — A NOTE FOR THE FUTURE
+        label: 'Quack Practice',
+        icon: '🦆',
+        body: `QUACK PRACTICE — NBC WEDNESDAY 10:00 PM
 
-This entry is for viewers who finish the series.
+A children's entertainer arrives for routine treatment with his trained duck concealed beneath his coat. The duck escapes into the hospital. Craig blames Ehrlich. Fiscus organizes a search party. Auschlander quietly begins feeding it crackers.
 
-If you are watching St. Elsewhere in 1984, the final episode is years away. You have seasons of Westphall and Craig and Fiscus ahead of you. The cases, the residents, the hospital — all of it is still unfolding.
+STARRING
+William Daniels (Craig) · Ed Begley Jr. (Ehrlich) · Howie Mandel (Fiscus) · Norman Lloyd (Auschlander)
 
-But at the very end, the series finale does something that no network drama had done before and very few have done since. It reframes everything that came before it in a single image. A boy. A snowglobe. A question about the nature of fiction and imagination and what it means for a story to be real.
+GUEST STARS
+Dom DeLuise · Carol Kane
 
-The snowglobe theory — which fans developed after the finale aired — proposes that the entire St. Elsewhere universe, along with every other show ever crossed over with it, exists inside the imagination of a single child. The implications, if taken seriously, are enormous.
-
-This is not confirmed. It is also not denied.
-
-You should watch the series. All of it. The finale will mean something to you.
-
-"Tommy, what are you looking at?"
-That question, and what follows it, is one of television's great endings.
-
-SERIES: 6 Seasons · 137 Episodes · 1982–1988`,
+THE ABSURD
+St. Elsewhere balances comedy with consequence. A duck loose in a hospital is chaos, yes — but it also binds the staff together. Auschlander's crackers are a moment of grace amid institutional pressure.`,
       },
     ],
   },
