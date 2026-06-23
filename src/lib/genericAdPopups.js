@@ -1436,17 +1436,269 @@ const ADDITIONAL_MISSING = [
   },
 ];
 
-GENERIC_AD_ENTRIES.push(...ADDITIONAL_MISSING);
+// ── PHILLIES MISSING BANNERS ──
+const PHILLIES_MISSING = [
+  {
+    matchText: "Technology keeps moving forward.",
+    title: "💾 Technology Keeps Moving Forward",
+    icon: "💾",
+    color: "#1a237e",
+    body: `TECHNOLOGY KEEPS MOVING FORWARD
+And baseball keeps moving right along.
 
-// Build lookup map for fast matching — built after all entries are pushed
-function buildMap() {
-  const m = new Map();
-  GENERIC_AD_ENTRIES.forEach(e => m.set(e.matchText, e));
-  return m;
-}
+THE MACHINES ARRIVING IN 1984
+A personal computer now sits on the desks of more than 10 million Americans. Three years ago, almost none did. The IBM PC was introduced in 1981. Apple introduced the Macintosh in January 1984. The Macintosh has a mouse. You move it across your desk and a cursor moves on the screen. Nobody is quite sure what to make of this.
+
+THE VCR
+Last year, Americans rented 300 million movies on videocassette. The VCR was considered a luxury in 1979. In 1984, it is sitting atop televisions in 20 percent of American households.
+
+WHAT'S COMING
+Some people are predicting that in the future, you will be able to access information on any topic instantly, from any location, using a device small enough to fit in your pocket. Most people find this prediction implausible.
+
+WHAT ISN'T CHANGING
+Baseball. Nine innings. Three outs. Four bases. Ninety feet between them.
+
+Technology may keep moving forward.
+The distance from home plate to first base has been exactly ninety feet since 1845.
+There is something comforting about that.
+
+Right after this, we're back to the ballgame.`,
+  },
+  {
+    matchText: "Recording your favorite television programs has never been easier.",
+    title: "📼 Recording TV — Never Easier",
+    icon: "📼",
+    color: "#1a237e",
+    body: `RECORDING YOUR FAVORITE TELEVISION PROGRAMS
+Has Never Been Easier
+
+IN THEORY
+You own a VCR. It can record television programs while you are away from home. You set the timer. You leave. You return. The program is recorded. You watch it at your convenience.
+
+IN PRACTICE
+The VCR has a 47-page instruction manual. The instruction manual is in the junk drawer. It has been in the junk drawer since 1982. The clock on the front panel currently reads 12:00. It has read 12:00 since a thunderstorm in March.
+
+THE TIMER
+Setting the timer requires knowing: the channel number, the start time, the stop time, the tape speed, and whether you remembered to rewind the tape from last Thursday. It also requires the clock to show the correct time, which requires consulting the manual, which is in the junk drawer.
+
+WHAT ACTUALLY HAPPENS
+You are at this baseball game. Your VCR at home is either recording exactly the right thing, recording the wrong channel, recording nothing, or recording over something important.
+
+You will find out when you get home.
+
+THE GOOD NEWS
+If you succeed in recording your program, you will feel a disproportionate sense of accomplishment.
+The technology is available.
+The patience required is its own reward.`,
+  },
+  {
+    matchText: "The Philadelphia Zoo in Fairmount Park is one of America's oldest.",
+    title: "🦁 Philadelphia Zoo — America's Oldest",
+    icon: "🦁",
+    color: "#27ae60",
+    body: `THE PHILADELPHIA ZOO — AMERICA'S FIRST
+Fairmount Park, Philadelphia, Pennsylvania
+
+The Philadelphia Zoo opened on July 1, 1874. It was the first zoo in the United States. One hundred and ten years later, it remains one of the finest.
+
+THE LOCATION
+Fairmount Park on the east bank of the Schuylkill River, just northwest of downtown Philadelphia. The park itself contains more than 9,000 acres of green space — the largest urban park system in the country. The zoo occupies about 42 of those acres.
+
+THE ANIMALS
+Over 1,600 animals representing more than 200 species. The big cats. The great apes — Philadelphia has one of the finest primate collections in North America. The African elephant exhibit. The reptile house, which has been causing children to simultaneously fascinate and disturb themselves since 1874.
+
+THE VICTORIAN ARCHITECTURE
+The original zoo buildings were designed in a Victorian-era style. Some of the original structures still stand. The gatehouse at the entrance was built in 1876 and was recently listed on the National Register of Historic Places.
+
+THE CHILDREN'S ZOO
+Opened in 1957, the children's section allows younger visitors to interact with smaller, approachable animals. It remains one of the most popular sections.
+
+GETTING THERE
+Fairmount Park is accessible by car and by SEPTA bus lines throughout the year. Parking is available on-site.
+
+OPEN DAILY.
+The oldest zoo in America.
+It has been waiting 110 years for your visit.`,
+  },
+  {
+    matchText: "The Phillies encourage fans to donate to Philabundance, the regional food bank.",
+    title: "🍎 Philabundance — Regional Food Bank",
+    icon: "🍎",
+    color: "#e74c3c",
+    body: `PHILABUNDANCE — THE DELAWARE VALLEY'S HUNGER RELIEF ORGANIZATION
+
+Philabundance was founded in 1984 to address hunger in the Philadelphia region. Its mission is simple: reduce hunger and food insecurity in the Delaware Valley.
+
+THE NEED
+In the Philadelphia metropolitan area, roughly one in eight residents faces food insecurity at some point during the year. This includes working families, elderly residents on fixed incomes, children, and individuals experiencing temporary economic hardship.
+
+HOW IT WORKS
+Philabundance operates as a food bank — collecting food donations from supermarkets, manufacturers, farms, and individual donors, then distributing that food through a network of more than 600 charitable agencies throughout the region.
+
+THE SCALE
+Last year, Philabundance distributed more than 20 million pounds of food. The majority of that food — about 80 percent — was donated fresh produce, proteins, and other perishables that would otherwise have been discarded.
+
+THE FOOD
+Canned goods. Fresh produce from area farms. Surplus from supermarkets. Holiday meals. Summer food programs for children when school lunch programs are unavailable.
+
+HOW TO HELP
+Food donations are accepted at designated drop sites throughout the region. Monetary donations allow Philabundance to purchase specific items in bulk. Volunteer hours at the food bank are always needed.
+
+The Phillies are proud supporters of Philabundance.
+The team appreciates the food security that comes from a good meal before a game.
+Not everyone has that.
+Please give what you can.`,
+  },
+  {
+    matchText: "Some people can actually set those things.",
+    title: "📼 Some People Can Set Those Things",
+    icon: "📼",
+    color: "#1a237e",
+    body: `SOME PEOPLE CAN ACTUALLY SET THOSE THINGS
+A 1984 Public Service Announcement
+
+THE THING BEING SET
+A VCR timer. Specifically, the feature that allows the machine to automatically record a television program at a specified time while the user is away from home.
+
+THE PEOPLE WHO CAN DO THIS
+They exist. They are among us. You may even know one.
+
+These individuals have:
+1. Located the instruction manual
+2. Read the relevant section
+3. Correctly set the clock on the front panel
+4. Successfully programmed the channel, start time, stop time, and tape speed
+5. Verified that a blank tape was in the machine
+6. Left the house
+7. Returned to find the correct program recorded
+
+This sequence of events is technically possible. It happens.
+
+THE PEOPLE WHO CANNOT DO THIS
+The rest of us. Which is most of us. Which is why we are here at the ballgame instead of at home trying to record something.
+
+THE SILVER LINING
+Baseball was not invented to be recorded. Baseball was invented to be experienced. You are experiencing it right now.
+
+Some things are better live.
+Baseball is one of them.
+The VCR will still be blinking 12:00 when you get home.
+That's fine.`,
+  },
+  {
+    matchText: "Please Drive Safely on I-95 and the Schuylkill Expressway after the game.",
+    title: "🚗 Drive Safely — I-95 & Schuylkill",
+    icon: "🚗",
+    color: "#7f8c8d",
+    body: `PLEASE DRIVE SAFELY
+After the Game — I-95 and the Schuylkill Expressway
+
+A message from the Philadelphia Phillies and Veterans Stadium.
+
+THE ROADS
+I-95 runs along the Delaware River waterfront and connects Veterans Stadium to points north and south. The Schuylkill Expressway — I-76, locally known simply as "the Schuylkill" — runs northwest through the city to the western suburbs and beyond.
+
+After a Phillies home game, both corridors will be carrying significant traffic. Thousands of fans who came by car will be leaving at approximately the same time.
+
+THE REQUEST
+Drive the speed limit. Particularly in the stadium exit areas where pedestrians are still crossing.
+If you had beer at the game — and the Phillies appreciate that you support their concession operations — please be honest with yourself about whether you are in a condition to drive.
+
+THE HONEST TRUTH ABOUT THE SCHUYLKILL
+The Schuylkill Expressway was built in the 1950s and features ramps, curves, and merge points that require full attention at any time. After a late game, when drivers are tired and the highway is busy, full attention is especially important.
+
+THE SEPTA OPTION
+The Broad Street Line subway runs from Pattison Avenue directly into Center City. 75 cents. No parking. No traffic. No problem.
+
+GET HOME SAFE TONIGHT.
+The Phillies want to see you back for tomorrow's game.
+You can't come back if you don't get home.`,
+  },
+  {
+    matchText: "Registration is open for youth baseball leagues throughout Philadelphia.",
+    title: "⚾ Youth Baseball Registration — Philadelphia",
+    icon: "⚾",
+    color: "#c0392b",
+    body: `YOUTH BASEBALL REGISTRATION — PHILADELPHIA
+Summer Leagues Now Forming
+
+The Philadelphia Recreation Department and the Phillies Youth Foundation are pleased to announce that registration is now open for summer youth baseball leagues throughout the city.
+
+LEAGUES AVAILABLE
+T-ball (Ages 4-6): No pitching. No keeping score. Yes, running to the wrong base. This is fine and expected. All of it.
+
+Coach Pitch (Ages 7-8): A coach throws pitches. There are fewer walks. There are more balls in play. There are more opportunities for fielding to happen. Some of it will go well.
+
+Minor League (Ages 9-10): Kid pitch begins. Strikeouts happen. Walks happen. Someone will throw to the wrong base. Learn from it.
+
+Major League (Ages 11-12): Full rules. Competitive games. The lineup card. The sign from third base that nobody fully understands.
+
+WHERE TO REGISTER
+Philadelphia Recreation Department district offices. Most neighborhood libraries can also provide registration forms and locations.
+
+THE COST
+Registration fees are minimal. Financial assistance is available. No child is turned away for inability to pay.
+
+THE SEASON
+Games run from June through August with possible playoff rounds in September.
+
+THE PHILLIES' COMMITMENT
+The Phillies provide equipment donations, coaching support, and field access to Philadelphia-area leagues each season.
+
+Baseball starts here.
+Register now.`,
+  },
+];
+
+// St. Elsewhere popup — uses moreObscureTvPopups3 matchText format
+// It's in GENERAL_SPONSOR as "St. Elsewhere continues this week with new challenges for the staff."
+// We need a matchText entry for it in the more obscure TV system
+const ST_ELSEWHERE_GENERIC = {
+  matchText: "St. Elsewhere continues this week with new challenges for the staff.",
+  title: "🏥 St. Elsewhere — MTH",
+  icon: "🏥",
+  color: "#2c3e50",
+  body: `ST. ELSEWHERE — MTH (ST. ELIGIUS TEACHING HOSPITAL)
+NBC • WEDNESDAY NIGHTS AT 10 PM
+
+St. Eligius isn't like other television hospitals.
+
+Most TV hospitals are gleaming and heroic. St. Eligius — nicknamed "St. Elsewhere" by the staff who work there — is underfunded, understaffed, overcrowded, and located in a neighborhood most people in Boston prefer to avoid. It handles the cases that nobody else will take, served by doctors who are brilliant and flawed in equal measure.
+
+THE SHOW
+Created by Joshua Brand and John Falsey. Executive produced by Mark Tinker and Bruce Paltrow. NBC, Wednesday nights at 10.
+
+THE STAFF
+Dr. Donald Westphall — the chief of medicine. Ed Flanders plays him with a quiet intensity that makes every scene feel lived-in. He runs the hospital with the patience of a man who has been through this before and will go through it again and will keep showing up anyway.
+
+Drs. Craig, Samuels, Morrison, Ehrlich, Fiscus — a generation of young residents learning that medical school and actual medicine have very little in common.
+
+THE CASES
+St. Elsewhere does not shy away from difficult material. The show has aired episodes on AIDS, substance abuse, mental illness, and institutional failure at a time when most network dramas were still avoiding the subject entirely.
+
+THE WRITING
+The series is nominated for seventeen Emmy Awards in its first two seasons. This is not an accident.
+
+THE SNOWGLOBE
+You may have heard a theory about the snowglobe. If you have not, watch the series finale.
+Then think about what you just saw.
+Then watch the entire series again.
+
+"Medicine is not a business. It's a calling." — Dr. Westphall`,
+  achievement: 'st_elsewhere_fan',
+};
+
+PHILLIES_MISSING.push(ST_ELSEWHERE_GENERIC);
+
+GENERIC_AD_ENTRIES.push(...PHILLIES_MISSING);
+
+// Build lookup map for fast matching — built lazily after module finishes loading
+let _cachedMap = null;
 
 export function findGenericAdEntry(adText) {
-  // Lazy-build the map on first call so it includes all pushed entries
-  if (!findGenericAdEntry._map) findGenericAdEntry._map = buildMap();
-  return findGenericAdEntry._map.get(adText) || null;
+  if (!_cachedMap) {
+    _cachedMap = new Map();
+    GENERIC_AD_ENTRIES.forEach(e => _cachedMap.set(e.matchText, e));
+  }
+  return _cachedMap.get(adText) || null;
 }

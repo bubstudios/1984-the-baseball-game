@@ -27,12 +27,12 @@ export default function CardAwardModal({ card, isNewCard, onClose, onDismiss }) 
             ⭐ Card Awarded!
           </h2>
           
-          {isNewCard && (
+          {card?.isNew && (
             <p className="text-green-400 font-heading text-sm font-bold mb-4 uppercase">
               🎉 New Card Added to Collection!
             </p>
           )}
-          {!isNewCard && (
+          {!card?.isNew && (
             <p className="text-amber-300 font-heading text-sm font-bold mb-4 uppercase">
               Duplicate - Already in Collection
             </p>

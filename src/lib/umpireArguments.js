@@ -119,7 +119,14 @@ export function getArgumentSeverity(lastPlay, gameState, usedTopics) {
   // ── HIT BY PITCH (major) ──
   // Batting team argues (their player got hit). Calls reflect that perspective.
   if (type === "walk" && (text.includes("hit by the pitch") || text.includes("HBP"))) {
-    const hbpCalls = ["that was intentional — warnings should be issued","retaliation from earlier in the game","no warning before — that one had intent","you've got to protect your hitters","that's the second time — eject him"];
+    const hbpHits = gameState?._beanball?.beanballHits || 0;
+    const hbpCalls = [
+      "that was intentional — warnings should be issued",
+      "retaliation from earlier in the game",
+      "no warning before — that one had intent",
+      "you've got to protect your hitters",
+      ...(hbpHits > 1 ? ["that's the second time — eject him"] : []),
+    ];
     return arg(pick(hbpCalls), "medium", 5, "hbp", "major");
   }
 
@@ -278,7 +285,7 @@ export function maybeDugoutChirp(gameState) {
 }
 
 // ── Resolve the argument: who argues, how far, what happens ──
-export function resolveArgument(severityInfo, managerPersonality, umpire, inning, scoreDiff, isHomeTeam) {
+export function resolveArgument(severityInfo, managerPersonality, umpire, inning, scoreDiff, isHomeTeam, isFieldingTeamArguing = true) {
   if (!severityInfo) return null;
 
   const managerFire = (managerPersonality || 5) / 10;
@@ -366,13 +373,15 @@ export function resolveArgument(severityInfo, managerPersonality, umpire, inning
   } else if (severityInfo.severity === "medium") {
     if (r < 0.55 + hotheadBoost) whoArgues = "manager";
     else if (canBatterArgue && r < 0.72) whoArgues = "batter";
-    else if (r < 0.85) whoArgues = "catcher";
-    else whoArgues = "pitcher";
+    else if (isFieldingTeamArguing && r < 0.85) whoArgues = "catcher";
+    else if (isFieldingTeamArguing) whoArgues = "pitcher";
+    else whoArgues = "batter";
   } else {
     if (r < 0.30 + hotheadBoost) whoArgues = "manager";
     else if (canBatterArgue && r < 0.55) whoArgues = "batter";
-    else if (r < 0.75) whoArgues = "catcher";
-    else whoArgues = "pitcher";
+    else if (isFieldingTeamArguing && r < 0.75) whoArgues = "catcher";
+    else if (isFieldingTeamArguing) whoArgues = "pitcher";
+    else whoArgues = "batter";
   }
 
   // ── Escalation (manager only) ──

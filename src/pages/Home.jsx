@@ -310,8 +310,10 @@ export default function Home() {
     // HBP: batting team argues (their player got hit)
     // FIELDING_ARGUES: fielding team argues (hit/walk/error went against them)
     // OUT_ARGUES: batting team argues (their guy was called out on a disputed play)
-    const FIELDING_ARGUES = isHBP ? [] : ['single', 'double', 'triple', 'homerun', 'walk', 'error'];
-    const OUT_ARGUES = ['flyout', 'groundout', 'lineout', 'strikeout', 'popout', 'doubleplay', 'sacfly'];
+    // Fielding team argues when a hit/walk/error went against them
+    // Batting team argues when a strike/out call went against them
+    const FIELDING_ARGUES = isHBP ? [] : ['single', 'double', 'triple', 'homerun', 'walk', 'error', 'ball'];
+    const OUT_ARGUES = ['flyout', 'groundout', 'lineout', 'strikeout', 'popout', 'doubleplay', 'sacfly', 'strike', 'foul', 'caughtstealing'];
     const battingSide = getBattingTeam(state);
     const fieldingSide = battingSide === 'home' ? 'away' : 'home';
     let arguingSide;
@@ -337,7 +339,8 @@ export default function Home() {
       umpireObj,
       state.inning,
       scoreDiff,
-      arguingSide === 'home'
+      arguingSide === 'home',
+      arguingSide === fieldingSide  // isFieldingTeamArguing
     );
 
     if (!result) return state;
