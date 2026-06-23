@@ -1,4 +1,4 @@
-// Weather generation for exhibition games — April 1 to October 1
+// Weather generation for exhibition games — April 2 to September 30
 // Based on 1984 city climates, month, and day/night
 
 // Climate by city: month -> { avgHigh, avgLow, rainChance, snowChance, windChance }
@@ -98,8 +98,9 @@ export function generateWeather(city) {
     };
   }
 
-  // Random date: April 1 to October 1
-  const monthDays = { 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30 };
+  // Random date: April 2 to September 30 (1984 season accurate)
+  // April has 29 playable days (2–30), May 31, Jun 30, Jul 31, Aug 31, Sep 30 = 182 days
+  const monthDays = { 4: 29, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30 };
   const months = [4, 5, 6, 7, 8, 9];
   const totalDays = Object.values(monthDays).reduce((a, b) => a + b, 0);
   let dayOffset = randBetween(0, totalDays - 1);
@@ -109,7 +110,8 @@ export function generateWeather(city) {
     dayOffset -= monthDays[m];
     month = m;
   }
-  const day = dayOffset + 1;
+  // April starts at day 2; all other months start at day 1
+  const day = (month === 4) ? dayOffset + 2 : dayOffset + 1;
 
   const isDay = Math.random() < 0.65; // slightly more day games
 
