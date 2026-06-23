@@ -501,7 +501,7 @@ export default function Home() {
       }
       setProcessing(false);
     }
-  }, [gameState, processing, userTeam, processGameOver, checkForArgument]);
+  }, [gameState, processing, userTeam, processGameOver]);
 
   const handleSwing = useCallback((swingIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
@@ -535,7 +535,7 @@ export default function Home() {
       }
       setProcessing(false);
     }
-  }, [gameState, processing, userTeam, processGameOver, checkForArgument]);
+  }, [gameState, processing, userTeam, processGameOver]);
 
   const handleSteal = useCallback((baseIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
