@@ -14,6 +14,7 @@ import { pickIndiansLine, pickIndiansPlayerLine } from '@/lib/indiansBroadcastLi
 import { pickBrewersLine, pickBrewersPlayerLine } from '@/lib/brewersBroadcastLines';
 import { pickTwinsLine, pickTwinsPlayerLine } from '@/lib/twinsBroadcastLines';
 import { pickAthleticsLine, pickAthleticsPlayerLine } from '@/lib/athleticsBroadcastLines';
+import { pickAngelsLine, pickAngelsPlayerLine } from '@/lib/angelsBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -543,6 +544,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  californiaAngels: {
+    announcers: ["Dick Enberg", "Don Drysdale"],
+    stadium: "Anaheim Stadium",
+    nicknames: ["The Big A", "Anaheim Stadium"],
+    flavor: [
+      "a beautiful evening here at Anaheim Stadium",
+      "the lights are on at the Big A — Angels baseball tonight",
+      "Anaheim Stadium — home of the Angels since 1966",
+      "the warm Southern California air is perfect for baseball tonight",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "the stands are filling up nicely — the fans in Anaheim are excited about this club",
+      "you can see the Santa Ana Mountains beyond the outfield — a beautiful backdrop on a clear night",
+      "the Big A has been home to some great moments — the Angels won the West right here in '79 and '82",
+      "there's a festive atmosphere at the ballpark tonight — Southern California loves its baseball",
+      "the breeze off the Pacific keeps things comfortable on a warm evening",
+      "the faithful at the Big A are some of the most passionate fans in baseball",
+      "a crisp evening in Orange County — there's nothing better than baseball at Anaheim Stadium",
+    ],
+    weatherFlavor: [
+      "the warm Southern California air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
+      "a gorgeous California evening — not a cloud in the sky over the Santa Ana Mountains",
+      "the breeze off the Pacific is keeping things comfortable — perfect baseball weather at the Big A",
+    ],
+    cityFlavor: [
+      "if you're taking I-5 or the Orange Freeway home after the game, give yourself some extra time — Orange County traffic doesn't sleep",
+      "I grabbed a fish taco from a stand on Katella Avenue before the first pitch — that is pure Southern California right there, folks",
+      "the fans are streaming in from all over — Anaheim, Fullerton, Irvine, Huntington Beach — the whole county comes out for Angels baseball",
+      "California is one of the great baseball markets in America — the fans here have seen the Angels win two division titles in the last four years",
+      "there's a pride in Orange County that you can feel at the ballpark — the fans here love their Angels",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of Nolan Ryan's no-hitters — Ryan threw four of his career no-hitters right here in an Angels uniform",
+      "this franchise has been playing baseball since 1961 — the fans in Anaheim have seen some great players come through here",
+      "from the original Los Angeles Angels to the California Angels — this franchise has grown right along with Southern California",
+      "the Angels are building something with this roster — the fans in Anaheim believe this team can contend again",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
   oaklandAthletics: {
     announcers: ["Bill King", "Lon Simmons"],
     stadium: "Oakland-Alameda County Coliseum",
@@ -680,6 +720,7 @@ export const TEAM_TO_FLAVOR = {
   brewers: "milwaukeeBrewers",
   twins: "minnesotaTwins",
   athletics: "oaklandAthletics",
+  angels: "californiaAngels",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -929,6 +970,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isBrewersGame = homeTeamKey === 'brewers';
   const isTwinsGame = homeTeamKey === 'twins';
   const isAthleticsGame = homeTeamKey === 'athletics';
+  const isAngelsGame = homeTeamKey === 'angels';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -1006,6 +1048,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickTwinsPlayerLine(batter?.name) : pickTwinsPlayerLine(pitcher?.name)) || pickTwinsLine())
                       : isAthleticsGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickAthleticsPlayerLine(batter?.name) : pickAthleticsPlayerLine(pitcher?.name)) || pickAthleticsLine())
+                      : isAngelsGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickAngelsPlayerLine(batter?.name) : pickAngelsPlayerLine(pitcher?.name)) || pickAngelsLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
