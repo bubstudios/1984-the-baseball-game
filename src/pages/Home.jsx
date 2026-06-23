@@ -495,6 +495,10 @@ export default function Home() {
       setGameState(withArgs);
     } catch (e) {
       console.error('handlePitch error:', e);
+    } finally {
+      if (endingState) {
+        try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
+      }
       setProcessing(false);
     }
   }, [gameState, processing, userTeam, processGameOver, checkForArgument]);
@@ -525,6 +529,10 @@ export default function Home() {
       setGameState(withArgs);
     } catch (e) {
       console.error('handleSwing error:', e);
+    } finally {
+      if (endingState) {
+        try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
+      }
       setProcessing(false);
     }
   }, [gameState, processing, userTeam, processGameOver, checkForArgument]);
