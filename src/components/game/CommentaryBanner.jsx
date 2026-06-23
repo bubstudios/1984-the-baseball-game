@@ -10,6 +10,7 @@ import { pickRedsLine, pickRedsPlayerLine } from '@/lib/redsBroadcastLines';
 import { pickRoyalsLine, pickRoyalsPlayerLine } from '@/lib/royalsBroadcastLines';
 import { pickPhilliesLine, pickPhilliesPlayerLine } from '@/lib/philliesBroadcastLines';
 import { pickBlueJaysLine, pickBlueJaysPlayerLine } from '@/lib/bluejaysBroadcastLines';
+import { pickIndiansLine, pickIndiansPlayerLine } from '@/lib/indiansBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -500,6 +501,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  clevelandIndians: {
+    announcers: ["Herb Score", "Nev Chandler", "Bruce Drennen"],
+    stadium: "Cleveland Municipal Stadium",
+    nicknames: ["The Stadium", "Municipal Stadium", "The Mistake on the Lake"],
+    flavor: [
+      "a beautiful evening here at Cleveland Municipal Stadium",
+      "the lights are on at the old ballpark by the lake — Indians baseball tonight",
+      "Cleveland Municipal Stadium — one of the largest and most historic venues in baseball",
+      "the breeze off Lake Erie is blowing in tonight — that could knock down a few fly balls",
+      "the cavernous dimensions here make it tough on home-run hitters",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "there's plenty of room out there in the outfield — this is one big ballpark",
+      "the seats stretch far back at Cleveland Municipal Stadium — there's not a bad seat in the house",
+      "the Cleveland skyline is visible beyond the outfield walls on a clear night",
+      "the wind off the lake can be a factor all game long — outfielders have to be alert",
+      "this stadium was built for football, but it's been home to Indians baseball for decades",
+      "it may be a big ballpark, but the fans who show up love their Indians",
+    ],
+    weatherFlavor: [
+      "that wind coming straight in off Lake Erie is going to hold up every ball hit to the outfield — a lot of long outs tonight",
+      "a chilly evening on the lakefront — the fans in the first few rows are bundled up in jackets — that's dedication",
+      "the air is damp and heavy off the lake tonight — pitchers better keep the ball down or the dampness will make it tough to get a grip",
+    ],
+    cityFlavor: [
+      "if you're taking the Shoreway or I-90 home after the game, give yourself some extra time — Cleveland traffic doesn't sleep",
+      "I grabbed a Polish boy and a Stadium mustard before the first pitch — that is pure Cleveland right there, folks",
+      "the fans are streaming in from all over — Lakewood, Parma, Euclid — the whole area comes out for Indians baseball",
+      "Cleveland fans are among the most loyal in baseball — they've been through a lot and they keep coming back",
+      "there's a pride in this city that you can feel at the ballpark — Cleveland loves its Indians",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of Bob Feller and the great Cleveland teams of the past — there's a lot of history here",
+      "this franchise has been playing baseball since 1901 — the fans in Cleveland have seen it all",
+      "from the glory days of the 1940s and '50s to the young club on the field today — Indians baseball runs deep in this city",
+      "the Indians are building something with these young players — the fans up here have been waiting a long time for this",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
 };
 
 // Team key to flavor key mapping (matches TEAMS keys from gameData.js)
@@ -516,6 +556,7 @@ export const TEAM_TO_FLAVOR = {
   royals: "kansasCityRoyals",
   phillies: "philadelphiaPhillies",
   bluejays: "torontoBlueJays",
+  indians: "clevelandIndians",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -761,6 +802,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isRoyalsGame = homeTeamKey === 'royals';
   const isPhilliesGame = homeTeamKey === 'phillies';
   const isBlueJaysGame = homeTeamKey === 'bluejays';
+  const isIndiansGame = homeTeamKey === 'indians';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -830,6 +872,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                       ? ((Math.random() < 0.5 ? pickPhilliesPlayerLine(batter?.name) : pickPhilliesPlayerLine(pitcher?.name)) || pickPhilliesLine())
                       : isBlueJaysGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickBlueJaysPlayerLine(batter?.name) : pickBlueJaysPlayerLine(pitcher?.name)) || pickBlueJaysLine())
+                      : isIndiansGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickIndiansPlayerLine(batter?.name) : pickIndiansPlayerLine(pitcher?.name)) || pickIndiansLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
