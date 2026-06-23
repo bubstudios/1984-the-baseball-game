@@ -50,24 +50,26 @@ export function generatePitchNarrative(gameState, pitchType, swingType, result) 
   const location = getPitchLocation(result);
   const inZone = result.inZone;
 
-  let deliveryLine = `pitch to the plate...`;
+  let deliveryLine = ``;
   
   // Runner movement during pitch
   if (result.stolenBase !== undefined) {
     if (result.stolenBase) {
       const baseNum = gameState.pendingSteal;
       const baseNames = ['second', 'third', 'home'];
-      deliveryLine += `${firstBaseRunner.name.split(' ').pop()} breaks for ${baseNames[baseNum]}...`;
+      deliveryLine = `${firstBaseRunner.name.split(' ').pop()} breaks for ${baseNames[baseNum]} — `;
     } else if (result.caughtStealing) {
-      deliveryLine += `${firstBaseRunner.name.split(' ').pop()} breaks but the throw beats him...`;
+      deliveryLine = `${firstBaseRunner.name.split(' ').pop()} breaks but gets picked off — `;
     }
   }
 
-  deliveryLine += `${pitchName} hits ${location}`;
-  if (!inZone) deliveryLine += ` — looks out of the zone`;
+  deliveryLine += `${pitchName} ${inZone ? 'into the zone' : 'outside'}`;
 
   playByPlayLines.push(deliveryLine);
-  colorCommentaryLines.push(`${!inZone ? 'Off the corner — testing the batter.' : 'Right in the zone — a pitch he can hit.'}`);
+  
+  // Color commentary tied to pitch location and count
+  const countAnalysis = gameState.strikes >= 2 ? 'behind in the count' : gameState.balls >= 2 ? 'ahead in the count' : 'even';
+  colorCommentaryLines.push(`${inZone ? 'Strikes the zone' : 'Edges the corner'} — batter is ${countAnalysis}.`);
 
   // ── LINE 3: Batter decision + outcome ──
   const swingName = swingType?.name || 'take';
@@ -111,18 +113,32 @@ export function generatePitchNarrative(gameState, pitchType, swingType, result) 
   // ── LINE 4: Follow-up action (throws, runner advancement) ──
   if (result.caughtStealing) {
     playByPlayLines.push(`throw to second...they've got him!`);
-    colorCommentaryLines.push(`Runner caught stealing — a crucial defensive play.`);
+    colorCommentaryLines.push(`Caught stealing — excellent pitcher-catcher communication.`);
   } else if (result.stolenBase && firstBaseRunner) {
     const baseNum = gameState.pendingSteal;
     const baseNames = ['second', 'third', 'home'];
     playByPlayLines.push(`${firstBaseRunner.name.split(' ').pop()} slides into ${baseNames[baseNum]} safely.`);
-    colorCommentaryLines.push(`He had a good jump — the timing was perfect.`);
+    colorCommentaryLines.push(`Great jump and timing — now in scoring position.`);
   } else if (result.type === 'homerun') {
     playByPlayLines.push(`The crowd is on its feet!`);
-    colorCommentaryLines.push(`That ball is gone — a home run changes the game.`);
-  } else if (result.type === 'single' && firstBaseRunner) {
-    playByPlayLines.push(`The runners are moving...${firstBaseRunner.name.split(' ').pop()} advancing.`);
-    colorCommentaryLines.push(`Good contact — the runner advances without hesitation.`);
+    const numRunners = runnersOn > 0 ? ` That's a ${runnersOn + 1}-run shot!` : '';
+    colorCommentaryLines.push(`Back-to-back home run distance — game-changing swing.${numRunners}`);
+  } else if (result.type === 'single') {
+    if (runnersOn > 0) {
+      playByPlayLines.push(`The runners are moving...`);
+      colorCommentaryLines.push(`Runners in motion — a crucial hit with runners on.`);
+    }
+  } else if (result.type === 'double' || result.type === 'triple') {
+    playByPlayLines.push(`The baserunners are waving!`);
+    colorCommentaryLines.push(`Extra-base hit — runners advancing into scoring position.`);
+  } else if (result.type === 'walk') {
+    if (runnersOn > 0) {
+      colorCommentaryLines.push(`Runner forced to the next base — pitcher's control off.`);
+    } else {
+      colorCommentaryLines.push(`Free pass — can't find the zone today.`);
+    }
+  } else if (result.type === 'strikeout') {
+    colorCommentaryLines.push(`Strike three — ${pitcher.name.split(' ').pop()} gets the K.`);
   }
 
   return {
