@@ -15,6 +15,8 @@ import { getUmpireZoneEffect, maybeMissedCall } from './umpires';
 import { pinchHit, pinchRun, defensiveSwitch, changePitcher } from './substitutions';
 import { isWallRobable, rollHRRobbery, getRobberyCall, rollDivingCatch, getDivingCatchCall, rollDivingStop, getDivingStopResult, rollRareCatchEvent, getRareCatchCall } from './defensivePlays';
 import { shouldThrowAtBatter, registerHBP, registerHomeRun, registerBigStrikeout, checkForWarning, decayTension, getBeanballContext, checkHomePlateCollision } from './beanball';
+import { rollPitcherKCelebration, rollBatFlip, rollHitCelebration, rollHRAdmire, rollFielderCelebration, rollStaredown, rollPitcherRetireSide } from './celebrations';
+import { rollCollision, rollTakeoutSlide } from './collisions';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -218,7 +220,13 @@ function advanceRunners(state, bases, batter, isHit = false) {
   const pitcher = getCurrentPitcher(state);
   if (bases === 4) {
     for (let i = 2; i >= 0; i--) {
-      if (state.bases[i]) { state.bases[i].gameStats.runs++; scoreRun(state); runsScored++; state.bases[i] = null; }
+      if (state.bases[i]) {
+        state.bases[i].gameStats.runs++; scoreRun(state); runsScored++;
+        // Collision check for runners scoring at home
+        const collision = rollCollision('home', state.bases[i].speed, 7);
+        if (collision) { state.log.push({ type: 'info', text: `💥 ${collision.text}` }); state.lastPlay = { ...state.lastPlay, collision: true }; if (collision.injuryTrigger) state._pendingCollisionInjury = { player: state.bases[i], trigger: collision.injuryTrigger }; }
+        state.bases[i] = null;
+      }
     }
     batter.gameStats.runs++; batter.gameStats.rbi += runsScored + 1; scoreRun(state);
     pitcher.gameStats.r += runsScored + 1; pitcher.gameStats.er += runsScored + 1;
@@ -493,7 +501,7 @@ function resolveSwing(state, swingType, pitch) {
   if (!(Math.random() < contactChance)) {
     if (!pitch.isStrike && !state.hitAndRun && Math.random() < 0.50 + contactRating * 0.18) { state.balls++; if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; } state.log.push({ type: 'ball', text: [`Ball ${state.balls} — just off the plate`,`Takes outside — ball ${state.balls}`,`Ball ${state.balls} — low`,`Pulled the bat back — ball ${state.balls}`,`Checked the swing — ball ${state.balls}`,`Held up — ball ${state.balls}`,`Ball ${state.balls} — high`,`Lays off — ball ${state.balls}`][Math.floor(Math.random() * 8)] }); state.lastPlay = { type: 'ball', text: `Ball ${state.balls}` }; return; }
     state.strikes++;
-    if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; const isLooking = pitch.location && ['outside corner','inside corner','high strike','low strike','down the middle'].includes(pitch.location) && Math.random() < 0.45; const sl = isLooking ? pickLine(STRIKEOUT_CALLED_LINES) : pickLine(STRIKEOUT_SWINGING_LINES); const msg = sl.endsWith('!') ? `${batter.name} ${sl}` : `${batter.name} ${sl} ${pitch.pitchType}!`; state.log.push({ type: 'strikeout', text: msg }); state.lastPlay = { type: 'strikeout', text: msg }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); if (state.hitAndRun && !state.gameOver) handleHitAndRunCaught(state); return; }
+    if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; registerBigStrikeout(state, pitcher, batter); const isLooking = pitch.location && ['outside corner','inside corner','high strike','low strike','down the middle'].includes(pitch.location) && Math.random() < 0.45; const sl = isLooking ? pickLine(STRIKEOUT_CALLED_LINES) : pickLine(STRIKEOUT_SWINGING_LINES); const msg = sl.endsWith('!') ? `${batter.name} ${sl}` : `${batter.name} ${sl} ${pitch.pitchType}!`; state.log.push({ type: 'strikeout', text: msg }); state.lastPlay = { type: 'strikeout', text: msg }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); const kCelebration = rollPitcherKCelebration(pitcher); if (kCelebration) state.log.push({ type: 'info', text: `🔥 ${kCelebration}` }); if (state.hitAndRun && !state.gameOver) handleHitAndRunCaught(state); return; }
     if (state.hitAndRun && !state.gameOver) { state.hitAndRun = false; handleHitAndRunMiss(state); }
     const isChasing = !pitch.isStrike;
     const labels = isChasing ? [`Chases outside — strike ${state.strikes}`,`Waves at a ${pitch.pitchType} — strike ${state.strikes}`,`Can't lay off the ${pitch.pitchType} — strike ${state.strikes}`,`Couldn't hold up — strike ${state.strikes}`,`Swings through the ${pitch.pitchType} — strike ${state.strikes}`] : [`Swing and a miss — strike ${state.strikes}`,`Taken at the knees — strike ${state.strikes}`,`Waves at a ${pitch.pitchType} — strike ${state.strikes}`,`Just misses — strike ${state.strikes}`,`Fouled off attempt — nope, swing and a miss, strike ${state.strikes}`];
@@ -552,6 +560,7 @@ function resolveSwing(state, swingType, pitch) {
       else if (bp?.quirks?.includes('ivy') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Onto Waveland Avenue! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} launches one over the ivy and out of Wrigley!`;
       else { ht = `${batter.name} sends it deep ${fd} —` + (gs2 ? ` GRAND SLAM! ${batter.name} clears the bases!` : (rbi > 1 ? ` a ${rbi}-run HOME RUN!` : ` a solo HOME RUN!`)); }
       state.log.push({ type: 'homerun', text: `💥 ${ht}` }); state.lastPlay = { type: 'homerun', text: `💥 ${ht}` };
+      const hrAdmire = rollHRAdmire(batter); if (hrAdmire) state.log.push({ type: 'info', text: `✨ ${hrAdmire}` });
     } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.07 + sf2 * 0.16) * doubleMod) {
       const rbi = advanceRunners(state, 3, batter, true);
       let tripFlavor = '';
@@ -562,6 +571,7 @@ function resolveSwing(state, swingType, pitch) {
       const tripText = `${batter.name} ${pickLine(TRIPLE_LINES)}${tripFlavor}${rbi ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'triple', text: tripText });
       state.lastPlay = { type: 'triple', text: tripText };
+      const tripleCeleb = rollHitCelebration(batter, true); if (tripleCeleb) state.log.push({ type: 'info', text: `🔥 ${tripleCeleb}` });
     } else if (hr2 < effPwr * 0.32 * doubleMod) {
       const rbi = advanceRunners(state, 2, batter, true);
       let dblFlavor = '';
@@ -661,6 +671,18 @@ function resolveSwing(state, swingType, pitch) {
         const roll = Math.random();
         if (roll < dpc) {
           const isMI = ['2B','SS'].includes(out.pos);
+          // Check for takeout slide breaking up the DP
+          const takeout = r1 ? rollTakeoutSlide(r1) : null;
+          if (takeout) {
+            // Takeout slide — DP broken up, runner at 1B safe, but r1 is out at 2nd
+            state.bases[0] = batter; batter.gameStats.ab++;
+            state.bases[1] = null; // r1 is out at 2nd
+            state.log.push({ type: 'groundout', text: `${batter.name} grounds to ${out.posName || out.pos} — ${takeout.text}` });
+            state.lastPlay = { type: 'groundout', text: `${batter.name} grounds — DP broken up` };
+            state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
+            if (takeout.injuryTrigger) state._pendingCollisionInjury = { player: r1, trigger: takeout.injuryTrigger };
+            return;
+          }
           if (r1 && r2 && !isMI) { const r3 = state.bases[2]; if (r3 && state.outs < 2) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[2] = null; state.bases[1] = r1 || null; state.bases[0] = null; }
           else { const r3dp = state.bases[2]; if (r3dp && state.outs < 2) { r3dp.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[2] = null; } if (state.bases[1]) { state.bases[2] = state.bases[2] || state.bases[1]; state.bases[1] = null; } state.bases[0] = null; const dpLine = pickLine(DOUBLE_PLAY_LINES); const dpText = dpLine.includes('grounds into') ? `${batter.name} ${dpLine}` : `${batter.name} grounds to ${['short','second','third','the pitcher'][Math.floor(Math.random() * 4)]} — flip to ${defenders['2B']?.name?.split(' ').pop() || 'second'}, relay to first — ${dpLine}`; state.log.push({ type: 'doubleplay', text: dpText }); state.lastPlay = { type: 'doubleplay', text: dpText }; }
           state.balls = 0; state.strikes = 0; advanceBatter(state);
@@ -726,6 +748,7 @@ function resolveSwing(state, swingType, pitch) {
         const fielder = defenders[out.pos] || { name: 'the outfielder' };
         const dcCall = getDivingCatchCall(state.homeTeam, fielder.name, out.pos);
         out.text = dcCall;
+        out.isDivingCatch = true;
       }
     } else if (out.type === 'groundout') {
       // Diving ground-ball stop
@@ -768,6 +791,14 @@ function resolveSwing(state, swingType, pitch) {
     state.log.push({ type: isFlyBall ? 'flyout' : 'groundout', text: out.text, ...outExtra });
     state.lastPlay = { type: isFlyBall ? 'flyout' : 'groundout', text: out.text, ...outExtra };
     state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
+    // Celebrations on diving catch or inning-ending out
+    if (out.isDivingCatch) {
+      const fc = rollFielderCelebration(TEAMS[state.homeTeam]?.stadium); if (fc) state.log.push({ type: 'info', text: `🎉 ${fc}` });
+    }
+    if (state.outs === 0 && !state.gameOver) { // outs just reset to 0 = inning ended
+      const pitcher = getCurrentPitcher(state);
+      const rc = rollPitcherRetireSide(pitcher); if (rc) state.log.push({ type: 'info', text: `🔥 ${rc}` });
+    }
   }
 }
 
@@ -916,6 +947,17 @@ export function processAtBat(state, pitchType, swingType) {
   if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); }
   if (!newState.gameOver) runInjuryChecks(newState, bjb);
   if (!newState.gameOver && !newState.lastInjury) { const pi = checkPitcherInjury(newState); if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); } }
+  // Collision injury from home plate collision or takeout slide
+  if (!newState.gameOver && !newState.lastInjury && newState._pendingCollisionInjury) {
+    const { player, trigger } = newState._pendingCollisionInjury;
+    delete newState._pendingCollisionInjury;
+    const allPlayers = [...newState.homeLineup, ...newState.awayLineup];
+    const colPlayer = allPlayers.find(p => p.name === player.name) || player;
+    if (colPlayer) {
+      const ci = checkPlayInjury(newState, trigger || 'collision', colPlayer.name);
+      if (ci) { newState.lastInjury = ci; applyInjuryState(newState, ci); newState.log.push({ type: 'injury', text: `🚑 ${ci.commentary}` }); }
+    }
+  }
   return newState;
 }
 

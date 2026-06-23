@@ -278,9 +278,10 @@ export function rollInjury(player, trigger, gameState = {}) {
   const positionRisk = getPositionRisk(player);
 
   // ── Base Chance: very low per trigger ──
-  // Target: ~15-25% chance of any injury EVENT per game
-  // With ~40-60 plays per game, that's ~0.4-0.6% per play
-  const baseChance = 0.004;
+  // Target: ~1 DTD+ event per 8-10 games, ~1 minor per 3-4 games
+  // 162-game pace: ~1-2 season/60-day, ~4-6 IL15, ~8-12 DTD
+  // Per exhibition game: ~15% chance of minor scare, ~8% DTD, ~2% IL15, ~0.3% IL60/SEASON
+  const baseChance = 0.0015; // reduced from 0.004
 
   // Durability modifies: durability 10 → 0.2x, durability 4 → 1.5x
   const durabilityFactor = Math.max(0.1, (12 - durability) / 5);
@@ -338,10 +339,10 @@ export function rollInjury(player, trigger, gameState = {}) {
     }
   }
 
-  // ── Injury SCARE check: 80% chance it's just a scare ──
+  // ── Injury SCARE check: 85% chance it's just a scare ──
   // If the roll lands on something that would remove the player,
-  //   give it an 80% chance to be just a scare (minor cosmetic event)
-  if (severity !== "MINOR" && Math.random() < 0.80) {
+  //   give it an 85% chance to be just a scare (minor cosmetic event)
+  if (severity !== "MINOR" && Math.random() < 0.85) {
     return {
       injury: { id: "injury_scare", name: "Injury Scare", bodyPart: injury.bodyPart, category: injury.category },
       severity: "SCARE",

@@ -133,6 +133,43 @@ export function getDivingCatchCall(homeTeamKey, playerName, pos) {
 // Chance: ~10% per groundout (about 2 per game)
 // Outcomes: spectacular out (20%), knockdown (50%), save a double (30%)
 
+// ── Sub-outcomes for diving stops ──
+// outcomeType: 'out_throw' | 'out_run_to_bag' | 'out_knees_throw' | 'knockdown' | 'save'
+// 'out_throw'      — fielder dives, pops up, fires to 1B (most common out play)
+// 'out_run_to_bag' — fielder dives, scrambles to step on 1B/2B/3B themselves
+// 'out_knees_throw'— fielder stays down, fires from his knees
+
+const DIVING_STOP_OUT_THROW_CALLS = [
+  "He dove, popped up, and fired to first — GOT HIM!",
+  "Outstanding play — he dove, came up throwing, and the runner is out!",
+  "He dove and threw him out on a bang-bang play at first!",
+  "Incredible range — he dove, fired across the diamond, OUT!",
+  "He made the stop and gunned him down at first!",
+];
+
+const DIVING_STOP_OUT_RUN_CALLS = [
+  "He dove, scrambled to his feet, and beat the runner to the bag!",
+  "He dove for it — got up and ran to first himself — SAFE? NO, OUT!",
+  "He dove, popped up and stepped on first before the runner could get there!",
+  "He knocked it down and hustled to the bag — OUT!",
+];
+
+// Shortstop/2B stepping on bag to force a runner
+const DIVING_STOP_FORCE_CALLS = [
+  "He dove, scrambled up, and stepped on second for the force out!",
+  "He knocked it down, bounced up, and tagged the bag — force play!",
+  "He dove, got up in a flash, and stepped on the bag before the runner!",
+];
+
+// Throw from knees — dramatic
+const DIVING_STOP_KNEES_CALLS = [
+  "He never got up — fired it from his knees — AND HE GOT HIM!",
+  "From the ground! He threw from his knees — the runner is OUT!",
+  "Still on the turf — he launched a throw from his knees — OUT at first!",
+  "He stayed down and rifled it from his knees — what a play!",
+  "On one knee — and he fired it over — GOT HIM!",
+];
+
 const DIVING_STOP_OUT_CALLS = [
   "What a stop! He got him!",
   "How did he make that play?!",
@@ -173,24 +210,46 @@ export function rollDivingStop() {
   return Math.random() < 0.10;
 }
 
-// Returns { type: 'out'|'knockdown'|'save', text, pos }
+// Returns { type: 'out'|'knockdown'|'save', subType, pos, text }
 export function getDivingStopResult(homeTeamKey, playerName, pos) {
   const roll = Math.random();
   let outcomeType;
-  if (roll < 0.20) outcomeType = 'out';
-  else if (roll < 0.70) outcomeType = 'knockdown';
-  else outcomeType = 'save';
+
+  if (roll < 0.20) {
+    // Out scenario — pick sub-type based on position
+    const outRoll = Math.random();
+    const isMiddleIF = pos === 'SS' || pos === '2B';
+    const is3B = pos === '3B';
+    const is1B = pos === '1B';
+    if ((is3B || isMiddleIF) && outRoll < 0.30) {
+      outcomeType = 'out_force'; // step on bag for force
+    } else if (is1B && outRoll < 0.25) {
+      outcomeType = 'out_run'; // 1B scrambles to bag
+    } else if (outRoll < 0.20) {
+      outcomeType = 'out_knees'; // fires from knees
+    } else if (outRoll < 0.50) {
+      outcomeType = 'out_run';
+    } else {
+      outcomeType = 'out_throw';
+    }
+  } else if (roll < 0.65) {
+    outcomeType = 'knockdown';
+  } else {
+    outcomeType = 'save';
+  }
 
   const teamCalls = DIVING_STOP_TEAM_CALLS[homeTeamKey];
-  const useTeam = teamCalls && Math.random() < 0.50;
   let calls;
-  if (useTeam) {
-    calls = teamCalls[outcomeType];
-  } else {
-    calls = outcomeType === 'out' ? DIVING_STOP_OUT_CALLS : outcomeType === 'knockdown' ? DIVING_STOP_KNOCKDOWN_CALLS : DIVING_STOP_SAVE_CALLS;
-  }
+  if (outcomeType === 'out_throw') calls = DIVING_STOP_OUT_THROW_CALLS;
+  else if (outcomeType === 'out_run') calls = DIVING_STOP_OUT_RUN_CALLS;
+  else if (outcomeType === 'out_force') calls = DIVING_STOP_FORCE_CALLS;
+  else if (outcomeType === 'out_knees') calls = DIVING_STOP_KNEES_CALLS;
+  else if (outcomeType === 'knockdown') calls = teamCalls && Math.random() < 0.50 ? teamCalls.knock : DIVING_STOP_KNOCKDOWN_CALLS;
+  else calls = teamCalls && Math.random() < 0.50 ? teamCalls.save : DIVING_STOP_SAVE_CALLS;
+
   const call = calls[Math.floor(Math.random() * calls.length)];
-  return { type: outcomeType, pos: pos || null, text: `🧤 ${playerName} — ${call}` };
+  const isOut = outcomeType.startsWith('out');
+  return { type: isOut ? 'out' : outcomeType, subType: outcomeType, pos: pos || null, text: `🧤 ${playerName} — ${call}` };
 }
 
 // ── RARE DEFENSIVE EVENTS ──
