@@ -504,6 +504,38 @@ export const ACHIEVEMENTS = [
   { id: 'fan_chatter_100', name: 'Die-Hard', desc: 'Heard 100 fan yells — you never leave early', icon: '🏟️', category: 'fan' },
   { id: 'fan_chatter_ump', name: 'Kill the Ump', desc: 'Heard 10 crowd complaints about the umpire', icon: '😤', category: 'fan' },
   { id: 'fan_chatter_rally', name: 'Rally Crowd', desc: "Heard the crowd yell 'Let's start a rally!' five times", icon: '🚀', category: 'fan' },
+
+  // ── COMPLETIONIST: PLAY AS EVERY TEAM ──
+  { id: 'play_all_26', name: 'Around the League', desc: 'Play as all 26 teams', icon: '🗺️', category: 'completionist', threshold: 26 },
+  { id: 'win_all_26', name: 'Baseball Historian', desc: 'Win at least one game as all 26 teams', icon: '📚', category: 'completionist', threshold: 26 },
+  { id: 'play_al_all', name: 'Junior Circuit', desc: 'Play as every American League team', icon: '🇦', category: 'completionist', threshold: 14 },
+  { id: 'play_nl_all', name: 'Senior Circuit', desc: 'Play as every National League team', icon: '🇳', category: 'completionist', threshold: 12 },
+
+  // ── COMPLETIONIST: USE EVERY STARTER ──
+  { id: 'use_starters_10', name: 'Rotation Sampler', desc: 'Start 10 different pitchers across your games', icon: '⚾', category: 'completionist', threshold: 10 },
+  { id: 'use_starters_25', name: 'Mound Master', desc: 'Start 25 different pitchers across your games', icon: '🎯', category: 'completionist', threshold: 25 },
+  { id: 'use_starters_50', name: 'Arm Collector', desc: 'Start 50 different pitchers across your games', icon: '💪', category: 'completionist', threshold: 50 },
+  { id: 'use_starters_all', name: 'Every Ace in the Deck', desc: 'Start every starting pitcher in the 1984 MLB', icon: '🃏', category: 'completionist', threshold: 104 },
+
+  // ── COMPLETIONIST: USE EVERY PLAYER ──
+  { id: 'use_players_50', name: 'Deep Roster', desc: 'Use 50 different players across your games', icon: '👥', category: 'completionist', threshold: 50 },
+  { id: 'use_players_100', name: 'Roster Rover', desc: 'Use 100 different players across your games', icon: '📋', category: 'completionist', threshold: 100 },
+  { id: 'use_players_250', name: 'Encyclopedia', desc: 'Use 250 different players across your games', icon: '📖', category: 'completionist', threshold: 250 },
+  { id: 'use_players_all', name: 'The 1984 Who\'s Who', desc: 'Use every player in the 1984 MLB database', icon: '🏛️', category: 'completionist', threshold: 650 },
+
+  // ── COMPLETIONIST: CARD COLLECTION ──
+  { id: 'cards_team_5', name: 'Rookie Collector', desc: 'Complete the card set for 5 teams', icon: '🎴', category: 'completionist', threshold: 5 },
+  { id: 'cards_team_13', name: 'Half the League', desc: 'Complete the card set for 13 teams', icon: '📦', category: 'completionist', threshold: 13 },
+  { id: 'cards_team_all', name: 'The Complete 1984 Set', desc: 'Complete every card set for all 26 teams', icon: '🏆', category: 'completionist', threshold: 26 },
+  { id: 'cards_manager_5', name: 'Field Generals', desc: 'Collect 5 Manager cards', icon: '📋', category: 'completionist', threshold: 5 },
+  { id: 'cards_manager_all', name: 'Meet the Managers', desc: 'Collect all 26 Manager cards', icon: '🤝', category: 'completionist', threshold: 26 },
+  { id: 'cards_all_rare', name: 'The Rarest of the Rare', desc: 'Collect every Rare card in the set', icon: '💎', category: 'completionist' },
+
+  // ── COMPLETIONIST: BALLPARK MASTERY ──
+  { id: 'ballpark_win_all', name: 'World Traveler', desc: 'Win a game in every 1984 ballpark', icon: '✈️', category: 'completionist', threshold: 26 },
+
+  // ── COMPLETIONIST: SPECIAL MILESTONE ──
+  { id: 'the_completionist', name: 'The Completionist', desc: 'Unlock every other completionist achievement', icon: '👑', category: 'completionist' },
 ];
 
 // ── Stats storage ──
@@ -525,7 +557,9 @@ function getDefaultStats() {
     losses: 0,
     totalTimePlayed: 0,        // minutes
     teamsUsed: [],
+    teamsWon: [],              // teams where user won at least 1 game
     ballparksVisited: [],
+    ballparksWon: [],          // ballparks where user won at least 1 game
     daysPlayed: [],
     currentStreak: 0,
     bestStreak: 0,
@@ -549,6 +583,11 @@ function getDefaultStats() {
     teamWinStreak: {},         // { teamKey: current streak }
     teamBestStreak: {},        // { teamKey: best streak }
     teamStreakReset: {},       // { teamKey: lastOpponent } to detect streak resets
+    // Completionist trackers
+    pitchersUsed: [],          // unique pitcher names ever used as starter
+    playersUsed: [],           // unique player names ever used
+    completedTeamSets: [],     // teams where full card set is collected
+    managerCardsCollected: [], // teams where manager card collected
   };
 }
 
@@ -693,9 +732,11 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
   // Track teams used
   if (userTeam && !stats.teamsUsed.includes(userTeam)) stats.teamsUsed.push(userTeam);
   if (opponentTeam && !stats.teamsUsed.includes(opponentTeam)) stats.teamsUsed.push(opponentTeam);
+  if (userWon && userTeam && !stats.teamsWon.includes(userTeam)) stats.teamsWon.push(userTeam);
 
   // Track ballparks
   if (stadiumName && !stats.ballparksVisited.includes(stadiumName)) stats.ballparksVisited.push(stadiumName);
+  if (userWon && stadiumName && !stats.ballparksWon.includes(stadiumName)) stats.ballparksWon.push(stadiumName);
 
   // Per-team tracking
   if (userTeam) {
@@ -786,6 +827,18 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
   checkThreshold('teams_10', stats.teamsUsed.length);
   checkThreshold('teams_15', stats.teamsUsed.length);
 
+  // Completionist: teams played/won
+  checkThreshold('play_all_26', stats.teamsUsed.length);
+  checkThreshold('win_all_26', stats.teamsWon.length);
+  checkThreshold('ballpark_win_all', stats.ballparksWon.length);
+  // AL/NL teams played
+  const AL_TEAMS_C = ['tigers','redsox','yankees','orioles','brewers','bluejays','indians','angels','royals','twins','mariners','whitesox','rangers','athletics'];
+  const NL_TEAMS_C = ['padres','cubs','mets','dodgers','cardinals','braves','astros','expos','phillies','pirates','reds','giants'];
+  const playedAL = AL_TEAMS_C.filter(t => stats.teamsUsed.includes(t)).length;
+  const playedNL = NL_TEAMS_C.filter(t => stats.teamsUsed.includes(t)).length;
+  checkThreshold('play_al_all', playedAL);
+  checkThreshold('play_nl_all', playedNL);
+
   // Ballparks thresholds
   checkThreshold('parks_5', stats.ballparksVisited.length);
   checkThreshold('parks_10', stats.ballparksVisited.length);
@@ -810,6 +863,61 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
   checkFranchiseHopper(stats);
 
   saveStats(stats);
+}
+
+// Track which players/pitchers were used (call at game end with arrays of names)
+export function trackPlayersUsed(playerNames, starterPitcherNames) {
+  const stats = loadStats();
+  if (!stats.pitchersUsed) stats.pitchersUsed = [];
+  if (!stats.playersUsed) stats.playersUsed = [];
+
+  let changed = false;
+  (playerNames || []).forEach(n => {
+    if (n && !stats.playersUsed.includes(n)) { stats.playersUsed.push(n); changed = true; }
+  });
+  (starterPitcherNames || []).forEach(n => {
+    if (n && !stats.pitchersUsed.includes(n)) { stats.pitchersUsed.push(n); changed = true; }
+  });
+
+  if (changed) {
+    checkThreshold('use_starters_10', stats.pitchersUsed.length);
+    checkThreshold('use_starters_25', stats.pitchersUsed.length);
+    checkThreshold('use_starters_50', stats.pitchersUsed.length);
+    checkThreshold('use_starters_all', stats.pitchersUsed.length);
+    checkThreshold('use_players_50', stats.playersUsed.length);
+    checkThreshold('use_players_100', stats.playersUsed.length);
+    checkThreshold('use_players_250', stats.playersUsed.length);
+    checkThreshold('use_players_all', stats.playersUsed.length);
+    saveStats(stats);
+  }
+}
+
+// Track card collection completions
+export function trackCardSetCompleted(teamKey, isManagerCard) {
+  const stats = loadStats();
+  if (!stats.completedTeamSets) stats.completedTeamSets = [];
+  if (!stats.managerCardsCollected) stats.managerCardsCollected = [];
+
+  if (isManagerCard) {
+    if (!stats.managerCardsCollected.includes(teamKey)) {
+      stats.managerCardsCollected.push(teamKey);
+      checkThreshold('cards_manager_5', stats.managerCardsCollected.length);
+      checkThreshold('cards_manager_all', stats.managerCardsCollected.length);
+      saveStats(stats);
+    }
+  } else {
+    if (!stats.completedTeamSets.includes(teamKey)) {
+      stats.completedTeamSets.push(teamKey);
+      checkThreshold('cards_team_5', stats.completedTeamSets.length);
+      checkThreshold('cards_team_13', stats.completedTeamSets.length);
+      checkThreshold('cards_team_all', stats.completedTeamSets.length);
+      // Check super completionist
+      if (stats.completedTeamSets.length >= 26 && stats.managerCardsCollected.length >= 26) {
+        unlockAchievement('the_completionist');
+      }
+      saveStats(stats);
+    }
+  }
 }
 
 // Track time played (call every minute from a setInterval, or batch at game end)
@@ -1332,8 +1440,8 @@ function checkThreshold(baseId, value) {
 // Also check league-specific team achievements
 export function checkTeamAchievements() {
   const stats = loadStats();
-  const AL_TEAMS = ['tigers', 'redsox', 'yankees', 'orioles', 'brewers', 'bluejays', 'indians', 'angels', 'royals', 'twins', 'mariners', 'whitesox', 'rangers', 'athletics'];
-  const NL_TEAMS = ['padres', 'cubs', 'mets', 'dodgers', 'cardinals', 'braves', 'astros', 'expos', 'phillies', 'pirates', 'reds', 'giants'];
+  const AL_TEAMS = ['tigers','redsox','yankees','orioles','brewers','bluejays','indians','angels','royals','twins','mariners','whitesox','rangers','athletics'];
+  const NL_TEAMS = ['padres','cubs','mets','dodgers','cardinals','braves','astros','expos','phillies','pirates','reds','giants'];
 
   const usedAL = AL_TEAMS.filter(t => stats.teamsUsed.includes(t));
   const usedNL = NL_TEAMS.filter(t => stats.teamsUsed.includes(t));
@@ -1352,13 +1460,17 @@ export function checkTeamAchievements() {
   if (alTourTeams.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('al_tour');
 
   // Multi-team: Coast to Coast (win with every team)
-  const allTeams = ['cubs', 'mets', 'dodgers', 'padres', 'reds', 'yankees', 'redsox', 'tigers', 'orioles', 'royals'];
+  const allTeams = [...AL_TEAMS, ...NL_TEAMS];
   if (allTeams.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('coast_to_coast');
 
   // Multi-team: Frequent Flyer (play in every stadium)
   const allStadiums = [
     'Wrigley Field', 'Shea Stadium', 'Dodger Stadium', 'Jack Murphy Stadium', 'Riverfront Stadium',
     'Yankee Stadium', 'Fenway Park', 'Tiger Stadium', 'Memorial Stadium', 'Royals Stadium',
+    'Veterans Stadium', 'Exhibition Stadium', 'Cleveland Municipal Stadium', 'County Stadium',
+    'Hubert H. Humphrey Metrodome', 'Oakland-Alameda County Coliseum', 'Anaheim Stadium',
+    'Comiskey Park', 'Kingdome', 'Arlington Stadium', 'Olympic Stadium', 'Busch Stadium',
+    'Three Rivers Stadium', 'Atlanta-Fulton County Stadium', 'Astrodome', 'Candlestick Park',
   ];
   if (allStadiums.every(s => stats.ballparksVisited.includes(s))) unlockAchievement('all_stadiums');
 
@@ -1370,7 +1482,7 @@ export function checkTeamAchievements() {
 }
 
 function checkFranchiseHopper(stats) {
-  const allTeams = ['cubs', 'mets', 'dodgers', 'padres', 'reds', 'yankees', 'redsox', 'tigers', 'orioles', 'royals'];
+  const allTeams = ['tigers','redsox','yankees','orioles','brewers','bluejays','indians','angels','royals','twins','mariners','whitesox','rangers','athletics','padres','cubs','mets','dodgers','cardinals','braves','astros','expos','phillies','pirates','reds','giants'];
   if (allTeams.every(t => (stats.teamWins[t] || 0) >= 10)) unlockAchievement('franchise_hopper');
 }
 

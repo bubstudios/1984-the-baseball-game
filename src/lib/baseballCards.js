@@ -1,5 +1,6 @@
-// Unified 1984 Baseball Card Collection System — All 11 Teams
+// Unified 1984 Baseball Card Collection System — All 26 Teams + Manager Cards
 // Each team's roster mirrors gameData.js exactly
+import { EXTRA_ROSTERS, MANAGER_CARDS } from './baseballCards2';
 
 export const ALL_ROSTERS = {
 
@@ -283,20 +284,43 @@ export const ALL_ROSTERS = {
 
 };
 
+// Merge in extra rosters
+export const ALL_ROSTERS_FULL = {
+  ...ALL_ROSTERS,
+  ...EXTRA_ROSTERS,
+};
+
 // ── Team metadata for UI ──
 export const TEAM_CARD_META = {
-  tigers:  { label: '🐯 Detroit Tigers',        color: '#f97316', storageKey: 'tigersCards'    },
-  padres:  { label: '⚾ San Diego Padres',       color: '#7b5c2e', storageKey: 'padresCards'    },
-  cubs:    { label: '🐻 Chicago Cubs',           color: '#0e3386', storageKey: 'cubsCards'      },
-  mets:    { label: '🗽 New York Mets',          color: '#ff5910', storageKey: 'metsCards'      },
-  redsox:  { label: '🧦 Boston Red Sox',         color: '#bd3039', storageKey: 'redsoxCards'    },
-  yankees: { label: '🏟 New York Yankees',       color: '#1c2841', storageKey: 'yankeesCards'   },
-  orioles: { label: '🐦 Baltimore Orioles',      color: '#df4601', storageKey: 'oriolesCards'   },
-  reds:    { label: '🔴 Cincinnati Reds',        color: '#c6011f', storageKey: 'redsCards'      },
-  royals:  { label: '👑 Kansas City Royals',     color: '#004687', storageKey: 'royalsCards'    },
-  dodgers: { label: '💙 Los Angeles Dodgers',    color: '#005a9c', storageKey: 'dodgersCards'   },
-  phillies:{ label: '🔔 Philadelphia Phillies',  color: '#e81828', storageKey: 'philliesCards'  },
+  tigers:   { label: '🐯 Detroit Tigers',         color: '#f97316', storageKey: 'tigersCards'    },
+  padres:   { label: '⚾ San Diego Padres',        color: '#7b5c2e', storageKey: 'padresCards'    },
+  cubs:     { label: '🐻 Chicago Cubs',            color: '#0e3386', storageKey: 'cubsCards'      },
+  mets:     { label: '🗽 New York Mets',           color: '#ff5910', storageKey: 'metsCards'      },
+  redsox:   { label: '🧦 Boston Red Sox',          color: '#bd3039', storageKey: 'redsoxCards'    },
+  yankees:  { label: '🏟 New York Yankees',        color: '#1c2841', storageKey: 'yankeesCards'   },
+  orioles:  { label: '🐦 Baltimore Orioles',       color: '#df4601', storageKey: 'oriolesCards'   },
+  reds:     { label: '🔴 Cincinnati Reds',         color: '#c6011f', storageKey: 'redsCards'      },
+  royals:   { label: '👑 Kansas City Royals',      color: '#004687', storageKey: 'royalsCards'    },
+  dodgers:  { label: '💙 Los Angeles Dodgers',     color: '#005a9c', storageKey: 'dodgersCards'   },
+  phillies: { label: '🔔 Philadelphia Phillies',   color: '#e81828', storageKey: 'philliesCards'  },
+  bluejays: { label: '🍁 Toronto Blue Jays',       color: '#134a8e', storageKey: 'bluejaysCards'  },
+  indians:  { label: '🔴 Cleveland Indians',       color: '#cc0000', storageKey: 'indiansCards'   },
+  brewers:  { label: '🍺 Milwaukee Brewers',       color: '#12284b', storageKey: 'brewersCards'   },
+  twins:    { label: '⭐ Minnesota Twins',         color: '#002b5c', storageKey: 'twinsCards'     },
+  athletics:{ label: '🐘 Oakland Athletics',       color: '#003831', storageKey: 'athleticsCards' },
+  angels:   { label: '🌟 California Angels',       color: '#ba0021', storageKey: 'angelsCards'    },
+  whitesox: { label: '⚾ Chicago White Sox',       color: '#27251f', storageKey: 'whitesoxCards'  },
+  mariners: { label: '🌧️ Seattle Mariners',       color: '#0c2c56', storageKey: 'marinersCards'  },
+  rangers:  { label: '🤠 Texas Rangers',           color: '#003278', storageKey: 'rangersCards'   },
+  expos:    { label: '⚾ Montreal Expos',          color: '#003263', storageKey: 'exposCards'     },
+  cardinals:{ label: '🐦 St. Louis Cardinals',    color: '#c41e3a', storageKey: 'cardinalsCards' },
+  pirates:  { label: '🏴‍☠️ Pittsburgh Pirates',  color: '#fdb827', storageKey: 'piratesCards'   },
+  braves:   { label: '🗡️ Atlanta Braves',         color: '#ce1141', storageKey: 'bravesCards'    },
+  astros:   { label: '🌟 Houston Astros',          color: '#eb6e1f', storageKey: 'astrosCards'    },
+  giants:   { label: '🔥 San Francisco Giants',   color: '#fd5a1e', storageKey: 'giantsCards'    },
 };
+
+export { MANAGER_CARDS };
 
 // ── Per-team in-memory sets ──
 const _sets = {};
@@ -305,7 +329,17 @@ Object.keys(TEAM_CARD_META).forEach(t => { _sets[t] = new Set(); });
 // ── API ──
 
 export function getRoster(teamKey) {
-  return ALL_ROSTERS[teamKey] || [];
+  return ALL_ROSTERS_FULL[teamKey] || [];
+}
+
+export function getManagerCard(teamKey) {
+  const mgr = MANAGER_CARDS[teamKey];
+  if (!mgr) return null;
+  return { id: 0, ...mgr, position: 'MGR', ba: '-', hr: '-', rbi: '-', era: '-', isManager: true };
+}
+
+export function getAllTeamKeys() {
+  return Object.keys(TEAM_CARD_META);
 }
 
 export function getRandomCardForTeam(teamKey) {
