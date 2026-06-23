@@ -20,6 +20,7 @@ import { pickMarinersLine, pickMarinersPlayerLine } from '@/lib/marinersBroadcas
 import { pickRangersLine, pickRangersPlayerLine } from '@/lib/rangersBroadcastLines';
 import { pickExposLine, pickExposPlayerLine } from '@/lib/exposBroadcastLines';
 import { pickCardinalsLine, pickCardinalsPlayerLine } from '@/lib/cardinalsBroadcastLines';
+import { pickPiratesLine, pickPiratesPlayerLine } from '@/lib/piratesBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -111,6 +112,11 @@ const NICKNAMES = {
   "Al Holland": ["Mr. T"],
   "Jeff Stone": ["Stoney"],
   "John Denny": ["Denny"],
+  "Bill Madlock": ["Mad Dog"],
+  "John Candelaria": ["The Candy Man"],
+  "Kent Tekulve": ["Teke"],
+  "Lee Lacy": ["Lacy"],
+  "Jason Thompson": ["Rooftop"],
 };
 
 // 1984 Announcers & Stadium Flavor — expanded with real stadium atmosphere
@@ -905,6 +911,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  pittsburghPirates: {
+    announcers: ["Lanny Frattare", "Milo Hamilton"],
+    stadium: "Three Rivers Stadium",
+    nicknames: ["Three Rivers", "The Stadium"],
+    flavor: [
+      "a beautiful evening here at Three Rivers Stadium",
+      "the lights are on at Three Rivers — Pirates baseball tonight",
+      "Three Rivers Stadium — home of the Pirates since 1970",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "you can see the Allegheny River beyond the outfield — Pittsburgh at its finest",
+      "the stands are filling up nicely — Pittsburgh loves its Pirates",
+      "the confluence of the Allegheny and Monongahela rivers — this city was built on baseball",
+      "Three Rivers is rocking tonight — the fans are into this one",
+      "the Steel City is buzzing tonight — Pittsburgh loves its Bucs",
+      "the Roberto Clemente gate — this franchise honors its legends",
+      "a perfect evening for baseball at Three Rivers",
+      "the cavernous dimensions here make it tough on home-run hitters",
+    ],
+    weatherFlavor: [
+      "the warm summer air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
+      "a gorgeous Pittsburgh evening — not a cloud in the sky over the Point",
+      "the breeze off the Allegheny is keeping things comfortable — perfect baseball weather at Three Rivers",
+    ],
+    cityFlavor: [
+      "if you're taking the Parkway East or I-279 home after the game, give yourself some extra time — Pittsburgh traffic doesn't sleep",
+      "I grabbed a Primanti Brothers sandwich before the first pitch — french fries and coleslaw right on the sandwich — that is pure Pittsburgh right there, folks",
+      "the fans are streaming in from all over — the North Hills, the South Hills, the Strip District — the whole region comes out for Pirates baseball",
+      "Pittsburgh is one of the great baseball towns in America — the fans here bleed black and gold",
+      "there's a pride in this city that you can feel at the ballpark — Pittsburgh loves its Pirates",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of the 1979 World Series — Willie Stargell and the Pirates beating Baltimore right here at Three Rivers",
+      "this franchise has been playing since 1887 — the Pirates are one of the oldest franchises in baseball",
+      "from Honus Wagner to Roberto Clemente to Willie Stargell — the Pirates have a tradition of greatness that runs deep",
+      "the Pirates won the World Series right here in 1979 — Willie Stargell was the MVP — the whole family was part of it",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
 };
 
 // Team key to flavor key mapping (matches TEAMS keys from gameData.js)
@@ -931,6 +976,7 @@ export const TEAM_TO_FLAVOR = {
   rangers: "texasRangers",
   expos: "montrealExpos",
   cardinals: "stLouisCardinals",
+  pirates: "pittsburghPirates",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -1186,6 +1232,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isRangersGame = homeTeamKey === 'rangers';
   const isExposGame = homeTeamKey === 'expos';
   const isCardinalsGame = homeTeamKey === 'cardinals';
+  const isPiratesGame = homeTeamKey === 'pirates';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -1275,6 +1322,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickExposPlayerLine(batter?.name) : pickExposPlayerLine(pitcher?.name)) || pickExposLine())
                       : isCardinalsGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickCardinalsPlayerLine(batter?.name) : pickCardinalsPlayerLine(pitcher?.name)) || pickCardinalsLine())
+                      : isPiratesGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickPiratesPlayerLine(batter?.name) : pickPiratesPlayerLine(pitcher?.name)) || pickPiratesLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
