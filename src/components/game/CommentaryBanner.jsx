@@ -11,6 +11,7 @@ import { pickRoyalsLine, pickRoyalsPlayerLine } from '@/lib/royalsBroadcastLines
 import { pickPhilliesLine, pickPhilliesPlayerLine } from '@/lib/philliesBroadcastLines';
 import { pickBlueJaysLine, pickBlueJaysPlayerLine } from '@/lib/bluejaysBroadcastLines';
 import { pickIndiansLine, pickIndiansPlayerLine } from '@/lib/indiansBroadcastLines';
+import { pickBrewersLine, pickBrewersPlayerLine } from '@/lib/brewersBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -540,6 +541,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  milwaukeeBrewers: {
+    announcers: ["Bob Uecker", "Pat Hughes", "Merle Harmon"],
+    stadium: "County Stadium",
+    nicknames: ["County Stadium", "The ballpark on the fairgrounds"],
+    flavor: [
+      "a beautiful evening here at County Stadium, right on the Wisconsin state fairgrounds",
+      "the lights are on at County Stadium — Milwaukee baseball tonight",
+      "County Stadium — home of the Brewers since 1970, and the fans here love their baseball",
+      "the bratwursts are sizzling on the grill behind the bleachers — that's the smell of Brewers baseball",
+      "a cool Wisconsin evening — perfect baseball weather at County Stadium",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "the bleachers are packed tonight — Milwaukee fans know how to enjoy a ballgame",
+      "you can see the Milwaukee skyline beyond the outfield walls on a clear night",
+      "the faithful at County Stadium are some of the most knowledgeable fans in baseball",
+      "a crisp summer night in Wisconsin — there's nothing better than baseball at County Stadium",
+      "this ballpark has seen some great moments — the 1982 pennant clincher right here on this field",
+      "the stands are filling up nicely — Wisconsin loves its Brewers",
+    ],
+    weatherFlavor: [
+      "a cool breeze coming in off Lake Michigan tonight — the ball might not carry as well in this air",
+      "a gorgeous Wisconsin summer evening — not too hot, not too cold — perfect baseball weather",
+      "the air is damp and heavy tonight — the ball is not going to carry far in these conditions",
+    ],
+    cityFlavor: [
+      "if you're taking I-94 or the freeway home after the game, give yourself some extra time — Milwaukee traffic can back up",
+      "I grabbed a bratwurst and a beer before the first pitch — that is pure Milwaukee right there, folks",
+      "the fans are streaming in from all over — Waukesha, West Allis, Wauwatosa — the whole area comes out for Brewers baseball",
+      "Milwaukee is one of the great baseball towns in America — the fans here know their stuff",
+      "there's a pride in this city that you can feel at the ballpark — Milwaukee loves its Brewers",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of the 1982 pennant — Harvey's Wallbangers — what a team that was",
+      "this franchise went to the World Series just two years ago — the fans in Milwaukee have tasted winning baseball",
+      "from the early days of the Seattle Pilots to the Brewers of today — this franchise has come a long way",
+      "the Brewers are building toward another run — the fans up here believe this team can contend again",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
 };
 
 // Team key to flavor key mapping (matches TEAMS keys from gameData.js)
@@ -557,6 +597,7 @@ export const TEAM_TO_FLAVOR = {
   phillies: "philadelphiaPhillies",
   bluejays: "torontoBlueJays",
   indians: "clevelandIndians",
+  brewers: "milwaukeeBrewers",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -803,6 +844,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isPhilliesGame = homeTeamKey === 'phillies';
   const isBlueJaysGame = homeTeamKey === 'bluejays';
   const isIndiansGame = homeTeamKey === 'indians';
+  const isBrewersGame = homeTeamKey === 'brewers';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -874,6 +916,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickBlueJaysPlayerLine(batter?.name) : pickBlueJaysPlayerLine(pitcher?.name)) || pickBlueJaysLine())
                       : isIndiansGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickIndiansPlayerLine(batter?.name) : pickIndiansPlayerLine(pitcher?.name)) || pickIndiansLine())
+                      : isBrewersGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickBrewersPlayerLine(batter?.name) : pickBrewersPlayerLine(pitcher?.name)) || pickBrewersLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
