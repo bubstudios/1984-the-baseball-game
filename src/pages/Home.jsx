@@ -475,7 +475,9 @@ export default function Home() {
       // Handle Reach Back specialty pitch
       const isReachBack = pitchName === '__reachback__';
       const pitchObj = isReachBack ? { name: '__reachback__' } : (PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"]);
+      console.log('Processing pitch:', pitchName, 'cpuSwing:', cpuSwing);
       const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
+      console.log('After processAtBat:', resultState);
       
       // Generate pitch narrative before substitutions
       try {
@@ -489,17 +491,13 @@ export default function Home() {
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       const withArgs = checkForArgument(afterSubs);
       if (withArgs.gameOver) endingState = withArgs;
+      console.log('Setting game state with new play:', withArgs.lastPlay);
       setGameState(withArgs);
     } catch (e) {
       console.error('handlePitch error:', e);
-    } finally {
-      // Process achievements if game ended — use the captured ending state
-      if (endingState) {
-        try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
-      }
       setProcessing(false);
     }
-  }, [gameState, processing, userTeam, processGameOver]);
+  }, [gameState, processing, userTeam, processGameOver, checkForArgument]);
 
   const handleSwing = useCallback((swingIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
@@ -507,7 +505,9 @@ export default function Home() {
     let endingState = null;
     try {
       const cpuPitch = cpuSelectPitch(gameState);
+      console.log('Swing:', swingIndex, 'CPU pitch:', cpuPitch);
       const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
+      console.log('After processAtBat:', resultState);
       
       // Generate pitch narrative before substitutions
       try {
@@ -521,16 +521,13 @@ export default function Home() {
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       const withArgs = checkForArgument(afterSubs);
       if (withArgs.gameOver) endingState = withArgs;
+      console.log('Setting game state with new play:', withArgs.lastPlay);
       setGameState(withArgs);
     } catch (e) {
       console.error('handleSwing error:', e);
-    } finally {
-      if (endingState) {
-        try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
-      }
       setProcessing(false);
     }
-  }, [gameState, processing, userTeam, processGameOver]);
+  }, [gameState, processing, userTeam, processGameOver, checkForArgument]);
 
   const handleSteal = useCallback((baseIndex) => {
     if (!gameState || gameState.gameOver || processing) return;
