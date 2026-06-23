@@ -18,6 +18,8 @@ import Fireworks from '@/components/game/Fireworks';
 import ArgumentsBanner from '@/components/game/ArgumentsBanner';
 import BallparkEventBanner from '@/components/game/BallparkEventBanner';
 import InjuryBanner from '@/components/game/InjuryBanner';
+import PitchNarrative from '@/components/game/PitchNarrative';
+import { generatePitchNarrative } from '@/lib/pitchNarrative';
 import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
 import BeanballBanner from '@/components/game/BeanballBanner';
 import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
@@ -76,6 +78,7 @@ export default function Home() {
   const [showStretch, setShowStretch] = useState(null);
   const [beanballEvent, setBeanballEvent] = useState(null);
   const [cardAward, setCardAward] = useState(null);
+  const [pitchNarrative, setPitchNarrative] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -473,6 +476,11 @@ export default function Home() {
       const isReachBack = pitchName === '__reachback__';
       const pitchObj = isReachBack ? { name: '__reachback__' } : (PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"]);
       const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
+      
+      // Generate pitch narrative before substitutions
+      const narrative = generatePitchNarrative(updatedState, pitchObj, SWING_TYPES[cpuSwing], resultState.lastPlay);
+      setPitchNarrative(narrative);
+      
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       const withArgs = checkForArgument(afterSubs);
@@ -496,6 +504,11 @@ export default function Home() {
     try {
       const cpuPitch = cpuSelectPitch(gameState);
       const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
+      
+      // Generate pitch narrative before substitutions
+      const narrative = generatePitchNarrative(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex], resultState.lastPlay);
+      setPitchNarrative(narrative);
+      
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       const withArgs = checkForArgument(afterSubs);
@@ -1057,6 +1070,13 @@ export default function Home() {
           onDismiss={() => setCardAward(null)}
         />
       )}
+
+      {/* Pitch Narrative — detailed play-by-play story */}
+      <PitchNarrative
+        narrative={pitchNarrative}
+        autoDismissMs={4500}
+        onDismiss={() => setPitchNarrative(null)}
+      />
 
       {/* Substitutions Panel */}
       {showSubs && (
