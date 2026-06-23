@@ -22,6 +22,7 @@ import { pickExposLine, pickExposPlayerLine } from '@/lib/exposBroadcastLines';
 import { pickCardinalsLine, pickCardinalsPlayerLine } from '@/lib/cardinalsBroadcastLines';
 import { pickPiratesLine, pickPiratesPlayerLine } from '@/lib/piratesBroadcastLines';
 import { pickBravesLine, pickBravesPlayerLine } from '@/lib/bravesBroadcastLines';
+import { pickAstrosLine, pickAstrosPlayerLine } from '@/lib/astrosBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -121,6 +122,8 @@ const NICKNAMES = {
   "Dale Murphy": ["Murph"],
   "Steve Bedrosian": ["Bedrock"],
   "Pascual Perez": ["Perimeter Pascual"],
+  "Phil Garner": ["Scrap Iron"],
+  "Jose Cruz": ["Cheo"],
 };
 
 // 1984 Announcers & Stadium Flavor — expanded with real stadium atmosphere
@@ -915,6 +918,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  houstonAstros: {
+    announcers: ["Gene Elston", "Milo Hamilton"],
+    stadium: "Astrodome",
+    nicknames: ["The Dome", "The Eighth Wonder of the World"],
+    flavor: [
+      "a beautiful evening here at the Astrodome",
+      "the lights are on at the Dome — Astros baseball tonight",
+      "the Astrodome — the Eighth Wonder of the World — home of the Astros since 1965",
+      "the air conditioning is humming tonight — always 72 degrees inside the Dome",
+      "the white roof stretched above the field — there's nothing else like it in baseball",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "the stands are filling up nicely — Houston fans are excited about this club",
+      "you can hear the ballgame echoing off the roof tonight — the Dome has its own sound",
+      "a comfortable evening inside the Astrodome — no rain delays here, ever",
+      "the Dome is hopping tonight — the crowd is into this one",
+      "baseball indoors in the Gulf Coast — the Astrodome is home",
+      "the spacious dimensions here make it tough on home-run hitters",
+    ],
+    weatherFlavor: [
+      "it's always 72 degrees inside the Dome — the weather outside doesn't matter one bit",
+      "a perfect evening indoors — the air conditioning is keeping things comfortable",
+      "the controlled climate of the Dome means the ball carries true tonight",
+    ],
+    cityFlavor: [
+      "if you're taking I-45 or the Loop home after the game, give yourself some extra time — Houston traffic doesn't sleep",
+      "I grabbed some barbecue brisket before the first pitch — that is pure Texas right there, folks",
+      "the fans are streaming in from all over — the Heights, Bellaire, Pasadena — the whole metro comes out for Astros baseball",
+      "Houston is one of the great baseball markets in the South — the fans here have taken to this team in a big way",
+      "there's a pride in Space City that you can feel at the ballpark — Houston loves its Astros",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of the 1980 division title — the Astros' first postseason appearance",
+      "this franchise has been playing indoors since 1965 — the Astrodome changed baseball forever",
+      "from the Colt .45s to the Astros — this franchise has grown right along with the Gulf Coast",
+      "Nolan Ryan threw his fifth no-hitter right here at the Astrodome — September 26, 1981",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
   atlantaBraves: {
     announcers: ["Skip Caray", "Pete Van Wieren", "Ernie Johnson Sr."],
     stadium: "Atlanta-Fulton County Stadium",
@@ -1021,6 +1063,7 @@ export const TEAM_TO_FLAVOR = {
   cardinals: "stLouisCardinals",
   pirates: "pittsburghPirates",
   braves: "atlantaBraves",
+  astros: "houstonAstros",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -1278,6 +1321,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isCardinalsGame = homeTeamKey === 'cardinals';
   const isPiratesGame = homeTeamKey === 'pirates';
   const isBravesGame = homeTeamKey === 'braves';
+  const isAstrosGame = homeTeamKey === 'astros';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -1371,6 +1415,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickPiratesPlayerLine(batter?.name) : pickPiratesPlayerLine(pitcher?.name)) || pickPiratesLine())
                       : isBravesGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickBravesPlayerLine(batter?.name) : pickBravesPlayerLine(pitcher?.name)) || pickBravesLine())
+                      : isAstrosGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickAstrosPlayerLine(batter?.name) : pickAstrosPlayerLine(pitcher?.name)) || pickAstrosLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
