@@ -22,6 +22,7 @@ import PitchNarrative from '@/components/game/PitchNarrative';
 import { generatePitchNarrative } from '@/lib/pitchNarrative';
 import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
 import BeanballBanner from '@/components/game/BeanballBanner';
+import GameSummary from '@/components/game/GameSummary';
 import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
 import { applyInjuryReplacement } from '@/lib/injuryReplacement';
@@ -79,6 +80,7 @@ export default function Home() {
   const [beanballEvent, setBeanballEvent] = useState(null);
   const [cardAward, setCardAward] = useState(null);
   const [pitchNarrative, setPitchNarrative] = useState(null);
+  const [showSummary, setShowSummary] = useState(false);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -265,8 +267,18 @@ export default function Home() {
     // No need to double-process here — trackGameCompleted is not idempotent.
   }, [gameState]);
 
-  // Argument check after a play resolves
-  const checkForArgument = useCallback((state) => {
+  // Argument check via effect after a play resolves
+  useEffect(() => {
+    if (!gameState || gameState.gameOver || !gameState.lastPlay) return;
+    
+    // Only check once per play
+    if (gameState.lastPlay === prevLastPlay.current) return;
+    prevLastPlay.current = gameState.lastPlay;
+
+    checkForArgumentLogic(gameState);
+  }, [gameState, homeTeam, awayTeam]);
+
+  const checkForArgumentLogic = useCallback((state) => {
     if (!state || state.gameOver) return state;
 
     // Check for random ballpark event (one per game) — only between at-bats
@@ -301,7 +313,7 @@ export default function Home() {
           setArgumentResult({ ...chirpResult, homeTeamKey: chirpTeamKey });
         }
       }
-      return state;
+      return;
     }
 
     // Determine which team argues based on the play outcome
@@ -396,8 +408,6 @@ export default function Home() {
 
     // Show the animation — use the arguing team's key for correct commentary
     setArgumentResult({ ...result, homeTeamKey: arguingTeamKey });
-
-    return state;
   }, [homeTeam, awayTeam]);
 
   // ── Game-over achievement processing (called from effect AND play handlers) ──
@@ -489,10 +499,9 @@ export default function Home() {
       
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
-      const withArgs = checkForArgument(afterSubs);
-      if (withArgs.gameOver) endingState = withArgs;
-      console.log('Setting game state with new play:', withArgs.lastPlay);
-      setGameState(withArgs);
+      if (afterSubs.gameOver) endingState = afterSubs;
+      console.log('Setting game state with new play:', afterSubs.lastPlay);
+      setGameState(afterSubs);
     } catch (e) {
       console.error('handlePitch error:', e);
     } finally {
@@ -523,10 +532,9 @@ export default function Home() {
       
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
-      const withArgs = checkForArgument(afterSubs);
-      if (withArgs.gameOver) endingState = withArgs;
-      console.log('Setting game state with new play:', withArgs.lastPlay);
-      setGameState(withArgs);
+      if (afterSubs.gameOver) endingState = afterSubs;
+      console.log('Setting game state with new play:', afterSubs.lastPlay);
+      setGameState(afterSubs);
     } catch (e) {
       console.error('handleSwing error:', e);
     } finally {
@@ -548,9 +556,8 @@ export default function Home() {
       const cpuPitch = cpuSelectPitch(stealPending);
       const resultState = processAtBat(stealPending, PITCH_TYPES[cpuPitch], SWING_TYPES[3]);
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
-      const withArgs = checkForArgument(afterSubs);
-      if (withArgs.gameOver) endingState = withArgs;
-      setGameState(withArgs);
+      if (afterSubs.gameOver) endingState = afterSubs;
+      setGameState(afterSubs);
     } catch (e) {
       console.error('handleSteal error:', e);
     } finally {
@@ -662,6 +669,7 @@ export default function Home() {
     setBeanballEvent(null);
     setEjectionResult(null);
     setCardAward(null);
+    setShowSummary(false);
   };
 
   if (ballparkPhase) {
@@ -905,10 +913,16 @@ export default function Home() {
                         {gameState.score.home > gameState.score.away ? home?.name : away?.name} Win!
                       </p>
                     </div>
-                    <Button onClick={handleNewGame} className="gap-2">
-                      <RotateCcw className="w-4 h-4" />
-                      <span className="font-heading">New Game</span>
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button onClick={() => setShowSummary(true)} variant="outline" className="flex-1 gap-2">
+                        <Trophy className="w-4 h-4" />
+                        <span className="font-heading">Summary</span>
+                      </Button>
+                      <Button onClick={handleNewGame} className="flex-1 gap-2">
+                        <RotateCcw className="w-4 h-4" />
+                        <span className="font-heading">New Game</span>
+                      </Button>
+                    </div>
                   </div>
                 )}
 
@@ -1090,6 +1104,17 @@ export default function Home() {
         autoDismissMs={4500}
         onDismiss={() => setPitchNarrative(null)}
       />
+
+      {/* Game Summary Modal */}
+      {showSummary && gameState && gameState.gameOver && (
+        <GameSummary
+          gameState={gameState}
+          homeTeam={homeTeam}
+          awayTeam={awayTeam}
+          userTeam={userTeam}
+          onClose={() => setShowSummary(false)}
+        />
+      )}
 
       {/* Substitutions Panel */}
       {showSubs && (
