@@ -18,6 +18,7 @@ import { pickAngelsLine, pickAngelsPlayerLine } from '@/lib/angelsBroadcastLines
 import { pickWhiteSoxLine, pickWhiteSoxPlayerLine } from '@/lib/whiteSoxBroadcastLines';
 import { pickMarinersLine, pickMarinersPlayerLine } from '@/lib/marinersBroadcastLines';
 import { pickRangersLine, pickRangersPlayerLine } from '@/lib/rangersBroadcastLines';
+import { pickExposLine, pickExposPlayerLine } from '@/lib/exposBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -52,6 +53,7 @@ const NICKNAMES = {
   "Dwight Evans": ["Dewey"],
   "Jim Rice": ["Jim Ed"],
   "Andre Dawson": ["The Hawk"],
+  "Tim Raines": ["Rock"],
   "Eddie Murray": ["Steady Eddie"],
   "Dave Righetti": ["Rags"],
   "Ron Guidry": ["Louisiana Lightning", "Gator"],
@@ -820,6 +822,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  montrealExpos: {
+    announcers: ["Dave Van Horne", "Duke Snider"],
+    stadium: "Olympic Stadium",
+    nicknames: ["The Big O", "Olympic Stadium"],
+    flavor: [
+      "a beautiful evening here at Olympic Stadium",
+      "the lights are on at the Big O — Expos baseball tonight",
+      "Olympic Stadium — home of the Expos since 1977",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "the Montreal Tower looms above the stadium — the tallest inclined tower in the world",
+      "the cavernous dimensions here make it tough on home-run hitters",
+      "the stands are filling up nicely — the fans in Montreal are excited about this club",
+      "you can hear the bilingual announcements echoing through the stadium — Montreal baseball is unique",
+      "Youppi! is working the crowd into a frenzy — the fans love that orange furball",
+      "the roof situation at the Big O is still unresolved — but the baseball goes on",
+      "a comfortable evening at Olympic Stadium — the fans here are passionate about their Expos",
+      "the Big O is hopping tonight — the crowd is into this one",
+    ],
+    weatherFlavor: [
+      "the air inside the Big O is heavy tonight — the ball might not carry as well in these conditions",
+      "a cool Canadian evening — the fans in the first few rows are bundled up in jackets — that's dedication",
+      "the damp air off the St. Lawrence River is making the ball heavy tonight — pitchers will benefit",
+    ],
+    cityFlavor: [
+      "if you're taking the Metro home after the game, the platform at Pie-IX is going to be packed",
+      "I grabbed a smoked meat sandwich from Schwartz's before the game — that is pure Montreal right there",
+      "the fans are streaming in from all over — Westmount, Outremont, Plateau — the whole city comes out for Expos baseball",
+      "Montreal is one of the great baseball cities in North America — the fans here have a European passion for the game",
+      "there's a joie de vivre in this city that you can feel at the ballpark — Montreal loves its Expos",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of the 1981 playoff run — the Expos came so close to the World Series",
+      "this franchise has been playing since 1969 — Canada's first major-league team — and the fans here have never stopped believing",
+      "from Rusty Staub to Gary Carter to Andre Dawson — the Expos have always had stars for the fans to love",
+      "the Expos are building something with this roster — the fans in Montreal believe this team can contend in the East",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
 };
 
 // Team key to flavor key mapping (matches TEAMS keys from gameData.js)
@@ -844,6 +885,7 @@ export const TEAM_TO_FLAVOR = {
   whitesox: "chicagoWhiteSox",
   mariners: "seattleMariners",
   rangers: "texasRangers",
+  expos: "montrealExpos",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -1097,6 +1139,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isWhiteSoxGame = homeTeamKey === 'whitesox';
   const isMarinersGame = homeTeamKey === 'mariners';
   const isRangersGame = homeTeamKey === 'rangers';
+  const isExposGame = homeTeamKey === 'expos';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -1182,6 +1225,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickMarinersPlayerLine(batter?.name) : pickMarinersPlayerLine(pitcher?.name)) || pickMarinersLine())
                       : isRangersGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickRangersPlayerLine(batter?.name) : pickRangersPlayerLine(pitcher?.name)) || pickRangersLine())
+                      : isExposGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickExposPlayerLine(batter?.name) : pickExposPlayerLine(pitcher?.name)) || pickExposLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
