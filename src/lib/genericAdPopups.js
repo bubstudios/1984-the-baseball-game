@@ -1,5 +1,6 @@
 // Generic Ad Popups — fun, silly, 1984-flavored content for every "plain" broadcast ad
 // These fire when a user taps a community/charity/sponsor banner that has no other popup type.
+import { CUBS_COMMUNITY_POPUP_ENTRIES } from './cubsCommunityPopups';
 
 const GENERIC_AD_ENTRIES = [
 
@@ -1787,6 +1788,9 @@ Dave Raymond may or may not walk through the team store during any given game. H
   },
 ];
 GENERIC_AD_ENTRIES.push(...PREVIOUSLY_MISSING);
+
+// ── CUBS COMMUNITY BANNER ENTRIES ──
+GENERIC_AD_ENTRIES.push(...CUBS_COMMUNITY_POPUP_ENTRIES);
 
 // Build lookup map for fast matching — built lazily after module finishes loading
 let _cachedMap = null;
