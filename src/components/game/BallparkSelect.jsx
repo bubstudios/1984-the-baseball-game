@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
-import { generateWeather } from '@/lib/weather';
+import { generateWeather, generateIndoorWeather } from '@/lib/weather';
+import { STADIUM_WEATHER_CITIES, DOMED_STADIUMS } from '@/lib/ballparks';
 import { pickUmpire } from '@/lib/umpires';
 import { Play, MapPin, Users, RefreshCw, Sun, Moon, Thermometer, Wind, Cloud, CloudRain, CloudSnow, UserCheck } from 'lucide-react';
 
@@ -17,13 +18,25 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
   const handleSelect = (park, teamKey) => {
     setSelectedPark(park);
     setSelectedParkTeam(teamKey);
-    setWeather(generateWeather(TEAMS[teamKey].city));
+    const stadium = TEAMS[teamKey].stadium;
+    if (DOMED_STADIUMS.has(stadium)) {
+      setWeather(generateIndoorWeather());
+    } else {
+      const weatherCity = STADIUM_WEATHER_CITIES[stadium] || TEAMS[teamKey].city;
+      setWeather(generateWeather(weatherCity));
+    }
     if (!umpire) setUmpire(pickUmpire());
   };
 
   const handleRegenerateWeather = () => {
     if (selectedParkTeam) {
-      setWeather(generateWeather(TEAMS[selectedParkTeam].city));
+      const stadium = TEAMS[selectedParkTeam].stadium;
+      if (DOMED_STADIUMS.has(stadium)) {
+        setWeather(generateIndoorWeather());
+      } else {
+        const weatherCity = STADIUM_WEATHER_CITIES[stadium] || TEAMS[selectedParkTeam].city;
+        setWeather(generateWeather(weatherCity));
+      }
     }
   };
 

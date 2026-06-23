@@ -43,6 +43,126 @@ const CLIMATE = {
     8: { high: 85, low: 66, rain: 0.30, snow: 0,    wind: 0.18 },
     9: { high: 78, low: 59, rain: 0.28, snow: 0,    wind: 0.22 },
   },
+  'Toronto': {
+    4: { high: 52, low: 33, rain: 0.35, snow: 0.18, wind: 0.50 },
+    5: { high: 64, low: 43, rain: 0.30, snow: 0.03, wind: 0.42 },
+    6: { high: 74, low: 53, rain: 0.28, snow: 0,    wind: 0.35 },
+    7: { high: 80, low: 59, rain: 0.28, snow: 0,    wind: 0.30 },
+    8: { high: 78, low: 58, rain: 0.28, snow: 0,    wind: 0.30 },
+    9: { high: 70, low: 50, rain: 0.32, snow: 0.02, wind: 0.38 },
+  },
+  'Cleveland': {
+    4: { high: 56, low: 36, rain: 0.38, snow: 0.15, wind: 0.42 },
+    5: { high: 67, low: 46, rain: 0.33, snow: 0.03, wind: 0.35 },
+    6: { high: 77, low: 56, rain: 0.30, snow: 0,    wind: 0.28 },
+    7: { high: 82, low: 62, rain: 0.30, snow: 0,    wind: 0.25 },
+    8: { high: 80, low: 60, rain: 0.28, snow: 0,    wind: 0.25 },
+    9: { high: 73, low: 52, rain: 0.32, snow: 0,    wind: 0.30 },
+  },
+  'Milwaukee': {
+    4: { high: 52, low: 34, rain: 0.36, snow: 0.15, wind: 0.45 },
+    5: { high: 63, low: 43, rain: 0.33, snow: 0.03, wind: 0.38 },
+    6: { high: 73, low: 53, rain: 0.30, snow: 0,    wind: 0.32 },
+    7: { high: 80, low: 60, rain: 0.30, snow: 0,    wind: 0.28 },
+    8: { high: 78, low: 58, rain: 0.28, snow: 0,    wind: 0.28 },
+    9: { high: 70, low: 50, rain: 0.32, snow: 0.02, wind: 0.33 },
+  },
+  'Kansas City': {
+    4: { high: 63, low: 40, rain: 0.35, snow: 0.08, wind: 0.40 },
+    5: { high: 73, low: 51, rain: 0.33, snow: 0,    wind: 0.35 },
+    6: { high: 83, low: 61, rain: 0.32, snow: 0,    wind: 0.30 },
+    7: { high: 89, low: 67, rain: 0.32, snow: 0,    wind: 0.28 },
+    8: { high: 87, low: 65, rain: 0.30, snow: 0,    wind: 0.28 },
+    9: { high: 79, low: 56, rain: 0.32, snow: 0,    wind: 0.32 },
+  },
+  'Oakland': {
+    4: { high: 63, low: 48, rain: 0.18, snow: 0,    wind: 0.35 },
+    5: { high: 66, low: 51, rain: 0.08, snow: 0,    wind: 0.38 },
+    6: { high: 70, low: 55, rain: 0.03, snow: 0,    wind: 0.40 },
+    7: { high: 73, low: 57, rain: 0.01, snow: 0,    wind: 0.42 },
+    8: { high: 74, low: 58, rain: 0.02, snow: 0,    wind: 0.40 },
+    9: { high: 73, low: 56, rain: 0.05, snow: 0,    wind: 0.35 },
+  },
+  'Anaheim': {
+    4: { high: 72, low: 55, rain: 0.08, snow: 0,    wind: 0.18 },
+    5: { high: 75, low: 58, rain: 0.03, snow: 0,    wind: 0.18 },
+    6: { high: 80, low: 62, rain: 0.01, snow: 0,    wind: 0.15 },
+    7: { high: 86, low: 66, rain: 0.01, snow: 0,    wind: 0.15 },
+    8: { high: 87, low: 67, rain: 0.01, snow: 0,    wind: 0.15 },
+    9: { high: 85, low: 65, rain: 0.02, snow: 0,    wind: 0.15 },
+  },
+  'Dallas': {
+    4: { high: 72, low: 50, rain: 0.32, snow: 0,    wind: 0.35 },
+    5: { high: 80, low: 59, rain: 0.33, snow: 0,    wind: 0.32 },
+    6: { high: 89, low: 67, rain: 0.28, snow: 0,    wind: 0.28 },
+    7: { high: 95, low: 74, rain: 0.22, snow: 0,    wind: 0.25 },
+    8: { high: 95, low: 73, rain: 0.22, snow: 0,    wind: 0.25 },
+    9: { high: 87, low: 65, rain: 0.28, snow: 0,    wind: 0.28 },
+  },
+  'Philadelphia': {
+    4: { high: 62, low: 42, rain: 0.33, snow: 0.05, wind: 0.28 },
+    5: { high: 72, low: 52, rain: 0.30, snow: 0,    wind: 0.25 },
+    6: { high: 81, low: 62, rain: 0.28, snow: 0,    wind: 0.22 },
+    7: { high: 86, low: 67, rain: 0.30, snow: 0,    wind: 0.20 },
+    8: { high: 84, low: 65, rain: 0.28, snow: 0,    wind: 0.20 },
+    9: { high: 77, low: 57, rain: 0.28, snow: 0,    wind: 0.24 },
+  },
+  'Montreal': {
+    4: { high: 50, low: 32, rain: 0.33, snow: 0.22, wind: 0.40 },
+    5: { high: 63, low: 43, rain: 0.30, snow: 0.03, wind: 0.35 },
+    6: { high: 74, low: 54, rain: 0.30, snow: 0,    wind: 0.28 },
+    7: { high: 79, low: 60, rain: 0.32, snow: 0,    wind: 0.25 },
+    8: { high: 77, low: 58, rain: 0.30, snow: 0,    wind: 0.25 },
+    9: { high: 68, low: 49, rain: 0.32, snow: 0.03, wind: 0.32 },
+  },
+  'St. Louis': {
+    4: { high: 65, low: 43, rain: 0.35, snow: 0.05, wind: 0.35 },
+    5: { high: 75, low: 53, rain: 0.33, snow: 0,    wind: 0.30 },
+    6: { high: 84, low: 63, rain: 0.30, snow: 0,    wind: 0.28 },
+    7: { high: 89, low: 69, rain: 0.30, snow: 0,    wind: 0.25 },
+    8: { high: 87, low: 67, rain: 0.28, snow: 0,    wind: 0.25 },
+    9: { high: 80, low: 58, rain: 0.30, snow: 0,    wind: 0.28 },
+  },
+  'Pittsburgh': {
+    4: { high: 58, low: 38, rain: 0.38, snow: 0.10, wind: 0.30 },
+    5: { high: 69, low: 48, rain: 0.33, snow: 0.02, wind: 0.26 },
+    6: { high: 78, low: 57, rain: 0.30, snow: 0,    wind: 0.22 },
+    7: { high: 83, low: 63, rain: 0.32, snow: 0,    wind: 0.20 },
+    8: { high: 81, low: 61, rain: 0.28, snow: 0,    wind: 0.20 },
+    9: { high: 74, low: 53, rain: 0.30, snow: 0,    wind: 0.24 },
+  },
+  'Atlanta': {
+    4: { high: 70, low: 49, rain: 0.33, snow: 0,    wind: 0.25 },
+    5: { high: 78, low: 57, rain: 0.30, snow: 0,    wind: 0.22 },
+    6: { high: 85, low: 65, rain: 0.35, snow: 0,    wind: 0.20 },
+    7: { high: 89, low: 69, rain: 0.35, snow: 0,    wind: 0.18 },
+    8: { high: 88, low: 68, rain: 0.30, snow: 0,    wind: 0.18 },
+    9: { high: 82, low: 62, rain: 0.28, snow: 0,    wind: 0.20 },
+  },
+  'Cincinnati': {
+    4: { high: 63, low: 42, rain: 0.36, snow: 0.06, wind: 0.28 },
+    5: { high: 73, low: 52, rain: 0.33, snow: 0,    wind: 0.25 },
+    6: { high: 82, low: 61, rain: 0.30, snow: 0,    wind: 0.22 },
+    7: { high: 86, low: 66, rain: 0.30, snow: 0,    wind: 0.20 },
+    8: { high: 84, low: 64, rain: 0.28, snow: 0,    wind: 0.20 },
+    9: { high: 77, low: 56, rain: 0.28, snow: 0,    wind: 0.24 },
+  },
+  'Houston': {
+    4: { high: 75, low: 55, rain: 0.33, snow: 0,    wind: 0.25 },
+    5: { high: 82, low: 63, rain: 0.35, snow: 0,    wind: 0.22 },
+    6: { high: 88, low: 69, rain: 0.38, snow: 0,    wind: 0.20 },
+    7: { high: 92, low: 73, rain: 0.38, snow: 0,    wind: 0.18 },
+    8: { high: 92, low: 73, rain: 0.35, snow: 0,    wind: 0.18 },
+    9: { high: 87, low: 68, rain: 0.35, snow: 0,    wind: 0.22 },
+  },
+  'San Francisco': {
+    4: { high: 60, low: 48, rain: 0.20, snow: 0,    wind: 0.55 },
+    5: { high: 62, low: 50, rain: 0.10, snow: 0,    wind: 0.58 },
+    6: { high: 64, low: 52, rain: 0.04, snow: 0,    wind: 0.65 },
+    7: { high: 65, low: 53, rain: 0.02, snow: 0,    wind: 0.70 },
+    8: { high: 66, low: 54, rain: 0.02, snow: 0,    wind: 0.68 },
+    9: { high: 68, low: 54, rain: 0.05, snow: 0,    wind: 0.60 },
+  },
   'San Diego': {
     4: { high: 68, low: 55, rain: 0.12, snow: 0,    wind: 0.18 },
     5: { high: 69, low: 58, rain: 0.06, snow: 0,    wind: 0.18 },
@@ -76,6 +196,34 @@ const WIND_STRENGTHS = ['calm', 'light', 'moderate', 'strong'];
 
 function randBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function generateIndoorWeather() {
+  // Domed stadiums — fixed comfortable conditions, random date only
+  const monthDays = { 4: 29, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30 };
+  const months = [4, 5, 6, 7, 8, 9];
+  const totalDays = Object.values(monthDays).reduce((a, b) => a + b, 0);
+  let dayOffset = Math.floor(Math.random() * totalDays);
+  let month = 4;
+  for (const m of months) {
+    if (dayOffset < monthDays[m]) break;
+    dayOffset -= monthDays[m];
+    month = m;
+  }
+  const day = (month === 4) ? dayOffset + 2 : dayOffset + 1;
+  return {
+    date: `${MONTH_NAMES[month]} ${day}, 1984`,
+    month, day,
+    isDay: Math.random() < 0.5,
+    temperature: 72,
+    condition: 'clear',
+    windSpeed: 'calm',
+    windDirection: null,
+    windLabel: 'Dome — No Wind',
+    summary: '72°F, Dome — Climate Controlled',
+    effects: ['Domed stadium: no weather effects'],
+    isIndoor: true,
+  };
 }
 
 export function generateWeather(city) {
