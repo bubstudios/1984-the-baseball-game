@@ -5,23 +5,41 @@ import { Play, User, Cpu, Trophy } from 'lucide-react';
 import AchievementsPanel from '@/components/game/AchievementsPanel';
 import { getUnlockedCount } from '@/lib/achievements';
 
-// MLB team logo IDs for mlbstatic.com
 const TEAM_LOGOS = {
-  tigers: 'https://www.mlbstatic.com/team-logos/116.svg',
-  padres: 'https://www.mlbstatic.com/team-logos/135.svg',
-  cubs: 'https://www.mlbstatic.com/team-logos/112.svg',
-  mets: 'https://www.mlbstatic.com/team-logos/121.svg',
-  redsox: 'https://www.mlbstatic.com/team-logos/111.svg',
-  yankees: 'https://www.mlbstatic.com/team-logos/147.svg',
-  orioles: 'https://www.mlbstatic.com/team-logos/110.svg',
-  dodgers: 'https://www.mlbstatic.com/team-logos/119.svg',
-  reds: 'https://www.mlbstatic.com/team-logos/113.svg',
-  royals: 'https://www.mlbstatic.com/team-logos/118.svg',
+  tigers:   'https://www.mlbstatic.com/team-logos/116.svg',
+  padres:   'https://www.mlbstatic.com/team-logos/135.svg',
+  cubs:     'https://www.mlbstatic.com/team-logos/112.svg',
+  mets:     'https://www.mlbstatic.com/team-logos/121.svg',
+  redsox:   'https://www.mlbstatic.com/team-logos/111.svg',
+  yankees:  'https://www.mlbstatic.com/team-logos/147.svg',
+  orioles:  'https://www.mlbstatic.com/team-logos/110.svg',
+  dodgers:  'https://www.mlbstatic.com/team-logos/119.svg',
+  reds:     'https://www.mlbstatic.com/team-logos/113.svg',
+  royals:   'https://www.mlbstatic.com/team-logos/118.svg',
   phillies: 'https://www.mlbstatic.com/team-logos/143.svg',
+  bluejays: 'https://www.mlbstatic.com/team-logos/141.svg',
+  indians:  'https://www.mlbstatic.com/team-logos/114.svg',
+  brewers:  'https://www.mlbstatic.com/team-logos/158.svg',
+  twins:    'https://www.mlbstatic.com/team-logos/142.svg',
+  athletics:'https://www.mlbstatic.com/team-logos/133.svg',
+  angels:   'https://www.mlbstatic.com/team-logos/108.svg',
+  whitesox: 'https://www.mlbstatic.com/team-logos/145.svg',
+  mariners: 'https://www.mlbstatic.com/team-logos/136.svg',
+  rangers:  'https://www.mlbstatic.com/team-logos/140.svg',
+  expos:    'https://www.mlbstatic.com/team-logos/120.svg',
+  cardinals:'https://www.mlbstatic.com/team-logos/138.svg',
+  pirates:  'https://www.mlbstatic.com/team-logos/134.svg',
+  braves:   'https://www.mlbstatic.com/team-logos/144.svg',
+  astros:   'https://www.mlbstatic.com/team-logos/117.svg',
+  giants:   'https://www.mlbstatic.com/team-logos/137.svg',
 };
 
-const alTeams = Object.keys(TEAMS).filter(k => TEAMS[k].league === 'AL');
-const nlTeams = Object.keys(TEAMS).filter(k => TEAMS[k].league === 'NL');
+const DIVISIONS = [
+  { label: 'AL East', color: '#1e40af', teams: ['tigers','redsox','yankees','orioles','bluejays','indians','brewers'] },
+  { label: 'AL West', color: '#065f46', teams: ['royals','athletics','angels','whitesox','mariners','rangers','twins'] },
+  { label: 'NL East', color: '#7c2d12', teams: ['mets','phillies','expos','cardinals','pirates','cubs'] },
+  { label: 'NL West', color: '#4c1d95', teams: ['dodgers','padres','reds','braves','astros','giants'] },
+];
 
 export default function TeamSelect({ onSelect }) {
   const [userTeam, setUserTeam] = useState(null);
@@ -41,19 +59,14 @@ export default function TeamSelect({ onSelect }) {
   };
 
   const handleStart = () => {
-    if (userTeam && cpuTeam) {
-      onSelect(userTeam, cpuTeam);
-    }
+    if (userTeam && cpuTeam) onSelect(userTeam, cpuTeam);
   };
 
   const RatingPills = ({ value, max = 10 }) => (
     <div className="flex items-center gap-0.5">
       <div className="flex gap-0.5">
         {Array.from({ length: max }, (_, i) => (
-          <div
-            key={i}
-            className={`w-1.5 h-2.5 rounded-sm ${i < value ? 'bg-primary' : 'bg-muted/60'}`}
-          />
+          <div key={i} className={`w-1.5 h-2.5 rounded-sm ${i < value ? 'bg-primary' : 'bg-muted/60'}`} />
         ))}
       </div>
       <span className="text-[10px] text-foreground font-bold ml-1 w-3 text-right">{value}</span>
@@ -65,7 +78,6 @@ export default function TeamSelect({ onSelect }) {
     if (!team) return null;
     const topHitter = [...team.lineup].sort((a, b) => b.power + b.contact - (a.power + a.contact))[0];
     const topPitcher = [...team.rotation].sort((a, b) => (b.pitchSpeed + b.offSpeed) - (a.pitchSpeed + a.offSpeed))[0];
-
     const isUser = userTeam === teamKey;
     const isCpu = cpuTeam === teamKey;
     const isSelected = isUser || isCpu;
@@ -82,7 +94,6 @@ export default function TeamSelect({ onSelect }) {
         }`}
       >
         <div className="flex items-center gap-2.5 mb-2">
-          {/* Logo */}
           <div className="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center overflow-hidden flex-shrink-0">
             <img
               src={TEAM_LOGOS[teamKey]}
@@ -97,8 +108,7 @@ export default function TeamSelect({ onSelect }) {
             <div className="font-heading text-[11px] text-muted-foreground">{team.name}</div>
           </div>
           <div className="text-right flex-shrink-0">
-            <div className="text-[9px] text-primary font-heading">{team.league}</div>
-            <div className="text-[10px] text-primary/80 font-bold font-heading">{team.abbr}</div>
+            <div className="text-[9px] text-primary font-heading">{team.abbr}</div>
           </div>
         </div>
 
@@ -149,10 +159,9 @@ export default function TeamSelect({ onSelect }) {
             <h1 className="font-display text-[11px] text-primary tracking-wider">1984: THE BASEBALL SEASON</h1>
           </div>
           <p className="font-body text-sm text-muted-foreground">
-            Pick your team and an opponent. Real 1984 rosters. Ratings 1–10 from actual stats.
+            Pick your team and an opponent. All 26 teams. Real 1984 rosters.
           </p>
 
-          {/* Tab switcher */}
           <div className="grid grid-cols-2 gap-1 bg-muted rounded-lg p-1 mt-3">
             <button
               onClick={() => setShowAchievements(false)}
@@ -179,68 +188,56 @@ export default function TeamSelect({ onSelect }) {
           <AchievementsPanel />
         ) : (
           <>
+            {/* Selection status */}
+            <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center gap-1.5">
+                <div className={`w-3 h-3 rounded-full ${userTeam ? 'bg-emerald-400' : 'bg-muted'}`} />
+                <span className="text-[10px] font-heading text-muted-foreground uppercase">
+                  {userTeam ? TEAMS[userTeam].abbr : 'Your Team'}
+                </span>
+              </div>
+              <span className="text-muted-foreground/40">vs</span>
+              <div className="flex items-center gap-1.5">
+                <div className={`w-3 h-3 rounded-full ${cpuTeam ? 'bg-amber-400' : 'bg-muted'}`} />
+                <span className="text-[10px] font-heading text-muted-foreground uppercase">
+                  {cpuTeam ? TEAMS[cpuTeam].abbr : 'Opponent'}
+                </span>
+              </div>
+            </div>
 
-        {/* Selection status */}
-        <div className="flex items-center justify-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <div className={`w-3 h-3 rounded-full ${userTeam ? 'bg-emerald-400' : 'bg-muted'}`} />
-            <span className="text-[10px] font-heading text-muted-foreground uppercase">
-              {userTeam ? TEAMS[userTeam].abbr : 'Your Team'}
-            </span>
-          </div>
-          <span className="text-muted-foreground/40">vs</span>
-          <div className="flex items-center gap-1.5">
-            <div className={`w-3 h-3 rounded-full ${cpuTeam ? 'bg-amber-400' : 'bg-muted'}`} />
-            <span className="text-[10px] font-heading text-muted-foreground uppercase">
-              {cpuTeam ? TEAMS[cpuTeam].abbr : 'Opponent'}
-            </span>
-          </div>
-        </div>
-
-        {/* AL Teams */}
-        <div>
-          <h3 className="font-heading text-xs font-bold text-foreground mb-2 uppercase tracking-wider flex items-center gap-2">
-            <span className="w-1 h-4 bg-primary rounded-full inline-block" />
-            American League
-          </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {alTeams.map(key => (
-              <TeamCard key={key} teamKey={key} />
+            {/* Division sections */}
+            {DIVISIONS.map(div => (
+              <div key={div.label}>
+                <h3 className="font-heading text-xs font-bold text-foreground mb-2 uppercase tracking-wider flex items-center gap-2">
+                  <span className="w-1 h-4 rounded-full inline-block" style={{ backgroundColor: div.color }} />
+                  {div.label}
+                </h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {div.teams.filter(k => TEAMS[k]).map(key => (
+                    <TeamCard key={key} teamKey={key} />
+                  ))}
+                </div>
+              </div>
             ))}
-          </div>
-        </div>
 
-        {/* NL Teams */}
-        <div>
-          <h3 className="font-heading text-xs font-bold text-foreground mb-2 uppercase tracking-wider flex items-center gap-2">
-            <span className="w-1 h-4 bg-accent rounded-full inline-block" />
-            National League
-          </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {nlTeams.map(key => (
-              <TeamCard key={key} teamKey={key} />
-            ))}
-          </div>
-        </div>
+            {/* Play Ball */}
+            <Button
+              onClick={handleStart}
+              disabled={!userTeam || !cpuTeam}
+              className="w-full gap-2 font-heading text-sm py-5"
+              size="lg"
+            >
+              <Play className="w-5 h-5" />
+              {userTeam && cpuTeam
+                ? `Play Ball! ${TEAMS[userTeam].abbr} vs ${TEAMS[cpuTeam].abbr}`
+                : !userTeam
+                ? 'Select your team'
+                : 'Select an opponent'}
+            </Button>
 
-        {/* Play Ball */}
-        <Button
-          onClick={handleStart}
-          disabled={!userTeam || !cpuTeam}
-          className="w-full gap-2 font-heading text-sm py-5"
-          size="lg"
-        >
-          <Play className="w-5 h-5" />
-          {userTeam && cpuTeam
-            ? `Play Ball! ${TEAMS[userTeam].abbr} vs ${TEAMS[cpuTeam].abbr}`
-            : !userTeam
-            ? 'Select your team'
-            : 'Select an opponent'}
-        </Button>
-
-        <p className="text-[10px] text-muted-foreground/50 text-center font-body pb-8">
-          You control batting and pitching for your team. CPU controls the opponent.
-        </p>
+            <p className="text-[10px] text-muted-foreground/50 text-center font-body pb-8">
+              You control batting and pitching for your team. CPU controls the opponent.
+            </p>
           </>
         )}
       </div>
