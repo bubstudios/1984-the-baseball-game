@@ -16,6 +16,7 @@ import { pickTwinsLine, pickTwinsPlayerLine } from '@/lib/twinsBroadcastLines';
 import { pickAthleticsLine, pickAthleticsPlayerLine } from '@/lib/athleticsBroadcastLines';
 import { pickAngelsLine, pickAngelsPlayerLine } from '@/lib/angelsBroadcastLines';
 import { pickWhiteSoxLine, pickWhiteSoxPlayerLine } from '@/lib/whiteSoxBroadcastLines';
+import { pickMarinersLine, pickMarinersPlayerLine } from '@/lib/marinersBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -545,6 +546,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  seattleMariners: {
+    announcers: ["Dave Niehaus", "Ron Fairly"],
+    stadium: "Kingdome",
+    nicknames: ["The Kingdome", "The Dome"],
+    flavor: [
+      "a beautiful evening indoors at the Kingdome",
+      "the lights are on at the Dome — Mariners baseball tonight",
+      "the Kingdome — home of the Mariners since 1977 — baseball under the concrete roof",
+      "the air conditioning is humming tonight — always 72 degrees inside the Dome",
+      "the white concrete roof stretched above the field — there's nothing else like it in baseball",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "the seats are filling up nicely — Seattle fans are excited about this young team",
+      "you can hear the ballgame echoing off the roof tonight — the Dome has its own sound",
+      "a comfortable evening inside the Kingdome — no rain delays here, ever",
+      "this is still a young ballpark — the fans are still growing with this franchise",
+      "the Kingdome is hopping tonight — the crowd is into this one",
+      "baseball indoors in the Pacific Northwest — the Kingdome is home",
+    ],
+    weatherFlavor: [
+      "it's always 72 degrees inside the Dome — the weather outside doesn't matter one bit",
+      "a perfect evening indoors — the air conditioning is keeping things comfortable",
+      "the controlled climate of the Dome means the ball carries true tonight",
+    ],
+    cityFlavor: [
+      "if you're taking I-5 or the Alaskan Way Viaduct home after the game, give yourself some extra time — Seattle traffic can back up",
+      "I grabbed a cup of coffee before the first pitch — this is Seattle, after all, the coffee capital of America",
+      "the fans are streaming in from all over — Bellevue, Tacoma, Everett — the whole Puget Sound comes out for Mariners baseball",
+      "Seattle is one of the great baseball cities in the making — the fans here have taken to this team in a big way",
+      "there's a pride in the Pacific Northwest that you can feel at the ballpark — Seattle loves its Mariners",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of opening day in 1977 — the Mariners played their first game right here at the Kingdome",
+      "this franchise is still young — the fans in Seattle have been waiting for a winner since day one",
+      "from the expansion days to the young club on the field today — Mariners baseball is growing in this city",
+      "Dave Niehaus has been the voice of the Mariners since the very first pitch in 1977 — \"My oh my!\"",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
   chicagoWhiteSox: {
     announcers: ["Don Drysdale", "Ken Harrelson"],
     stadium: "Comiskey Park",
@@ -762,6 +802,7 @@ export const TEAM_TO_FLAVOR = {
   athletics: "oaklandAthletics",
   angels: "californiaAngels",
   whitesox: "chicagoWhiteSox",
+  mariners: "seattleMariners",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -1013,6 +1054,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isAthleticsGame = homeTeamKey === 'athletics';
   const isAngelsGame = homeTeamKey === 'angels';
   const isWhiteSoxGame = homeTeamKey === 'whitesox';
+  const isMarinersGame = homeTeamKey === 'mariners';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -1094,6 +1136,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickAngelsPlayerLine(batter?.name) : pickAngelsPlayerLine(pitcher?.name)) || pickAngelsLine())
                       : isWhiteSoxGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickWhiteSoxPlayerLine(batter?.name) : pickWhiteSoxPlayerLine(pitcher?.name)) || pickWhiteSoxLine())
+                      : isMarinersGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickMarinersPlayerLine(batter?.name) : pickMarinersPlayerLine(pitcher?.name)) || pickMarinersLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
