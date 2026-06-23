@@ -22,9 +22,10 @@ const CATEGORY_INFO = {
   ejection: { label: 'Arguments', color: 'bg-red-500/10 border-red-500/20', dot: 'bg-red-400' },
   fan: { label: 'Fan Chatter', color: 'bg-lime-500/10 border-lime-500/20', dot: 'bg-lime-400' },
   victory: { label: 'Victory Traditions', color: 'bg-amber-500/10 border-amber-500/20', dot: 'bg-amber-400' },
+  leaders: { label: '1984 Leader Challenges', color: 'bg-fuchsia-500/10 border-fuchsia-500/20', dot: 'bg-fuchsia-400' },
 };
 
-const categoryOrder = ['first', 'hitting', 'pitching', 'defense', 'comeback', 'funny', '1984', 'rare', 'milestone', 'streak', 'victory', 'community', 'fan', 'hidden', 'teamSpecific', 'multiTeam', 'ejection'];
+const categoryOrder = ['first', 'hitting', 'pitching', 'defense', 'comeback', 'funny', '1984', 'rare', 'milestone', 'streak', 'victory', 'community', 'fan', 'hidden', 'teamSpecific', 'multiTeam', 'ejection', 'leaders'];
 
 const TEAM_LABELS = {
   reds: 'CIN',

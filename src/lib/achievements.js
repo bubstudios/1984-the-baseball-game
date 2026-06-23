@@ -2,6 +2,7 @@
 // Organized by category with id, name, desc, icon, and category
 
 import { TEAMS } from './gameData';
+import { LEADER_LISTS } from './leaders1984';
 
 export const ACHIEVEMENTS = [
   // ── FIRST-TIME ──
@@ -551,6 +552,18 @@ export const ACHIEVEMENTS = [
 
   // ── COMPLETIONIST: SPECIAL MILESTONE ──
   { id: 'the_completionist', name: 'The Completionist', desc: 'Unlock every other completionist achievement', icon: '👑', category: 'completionist' },
+
+  // ── 1984 LEADER CHALLENGES ──
+  { id: 'leaders_hr', name: 'Home Run King Challenge', desc: 'Hit a home run with each of the 1984 HR Leaders (10 players)', icon: '💥', category: 'leaders' },
+  { id: 'leaders_runs', name: 'Runs Scored Challenge', desc: 'Score a run with each of the 1984 Runs Leaders (11 players)', icon: '🏃', category: 'leaders' },
+  { id: 'leaders_rbi', name: 'RBI Challenge', desc: 'Drive in a run with each of the 1984 RBI Leaders (11 players)', icon: '🎯', category: 'leaders' },
+  { id: 'leaders_hits', name: 'Hits Challenge', desc: 'Get 10 hits with each of the 1984 Hits Leaders (10 players)', icon: '⚡', category: 'leaders' },
+  { id: 'leaders_doubles', name: 'Doubles Challenge', desc: 'Hit a double with each of the 1984 Doubles Leaders (10 players)', icon: '✌️', category: 'leaders' },
+  { id: 'leaders_triples', name: 'Triples Challenge', desc: 'Hit a triple with each of the 1984 Triples Leaders (10 players)', icon: '💨', category: 'leaders' },
+  { id: 'leaders_sb', name: 'Stolen Base Challenge', desc: 'Steal a base with each of the 1984 SB Leaders (11 players)', icon: '🥷', category: 'leaders' },
+  { id: 'leaders_wins', name: 'Wins Challenge', desc: 'Earn a win with each of the 1984 Wins Leaders (10 pitchers)', icon: '🏆', category: 'leaders' },
+  { id: 'leaders_saves', name: 'Saves Challenge', desc: 'Record a save with each of the 1984 Saves Leaders (11 pitchers)', icon: '🛡️', category: 'leaders' },
+  { id: 'leaders_so', name: 'Strikeout Challenge', desc: 'Strike out 50 batters with each of the 1984 K Leaders (10 pitchers)', icon: '🎳', category: 'leaders' },
 ];
 
 // ── Stats storage ──
@@ -603,6 +616,7 @@ function getDefaultStats() {
     playersUsed: [],           // unique player names ever used
     completedTeamSets: [],     // teams where full card set is collected
     managerCardsCollected: [], // teams where manager card collected
+    leaderStats: {},           // per-player cumulative stats for 1984 leader achievements
   };
 }
 
@@ -1429,7 +1443,116 @@ export function checkGameAchievements(gameState, userTeam) {
   // Seven Innings Plus: had a lead after 7 innings
   if (!didTrailAfterInning(gameState, userSide, 7) && computeMaxDeficit(gameState, userSide) <= 0) u('seven_innings_plus');
 
+  // ── 1984 LEADER CHALLENGES (cumulative per-player tracking) ──
+  trackLeaderAchievements(allUserPlayers, userPitchers, log, userWon, userScore, opponentScore, u);
+
   return newlyUnlocked;
+}
+
+// ── 1984 Leader Achievement Tracking ──
+// Accumulates per-player stats across games and unlocks when every player on a list meets the threshold
+function trackLeaderAchievements(allUserPlayers, userPitchers, log, userWon, userScore, opponentScore, unlockFn) {
+  const stats = loadStats();
+  if (!stats.leaderStats) stats.leaderStats = {};
+  const ls = stats.leaderStats;
+
+  // Build per-player game stat map for hitters
+  const hitterGameStats = {};
+  allUserPlayers.forEach(p => {
+    if (!p || !p.name) return;
+    const gs = p.gameStats || {};
+    hitterGameStats[p.name] = {
+      hits: gs.hits || 0,
+      hr: gs.hr || 0,
+      rbi: gs.rbi || 0,
+      runs: gs.runs || 0,
+      sb: gs.sb || 0,
+      doubles: 0,
+      triples: 0,
+    };
+  });
+
+  // Count doubles and triples from log (by play type + player name)
+  (log || []).forEach(l => {
+    if (!l.text) return;
+    if (l.type === 'double') {
+      Object.keys(hitterGameStats).forEach(name => {
+        if (l.text.includes(name)) hitterGameStats[name].doubles++;
+      });
+    }
+    if (l.type === 'triple') {
+      Object.keys(hitterGameStats).forEach(name => {
+        if (l.text.includes(name)) hitterGameStats[name].triples++;
+      });
+    }
+  });
+
+  // --- Hitter stats: accumulate and check ---
+  const hitterConfigs = ['hr', 'runs', 'rbi', 'hits', 'doubles', 'triples', 'sb'];
+  hitterConfigs.forEach(statType => {
+    const config = LEADER_LISTS[statType];
+    if (!ls[config.statKey]) ls[config.statKey] = {};
+    const store = ls[config.statKey];
+
+    config.players.forEach(playerName => {
+      const gs = hitterGameStats[playerName];
+      if (!gs) return;
+      const value = gs[statType] || 0;
+      if (value > 0) {
+        store[playerName] = (store[playerName] || 0) + value;
+      }
+    });
+
+    const allMet = config.players.every(name => (store[name] || 0) >= config.threshold);
+    if (allMet) unlockFn(config.achievementId);
+  });
+
+  // --- Pitcher stats: accumulate and check ---
+  const lastPitcher = userPitchers[0];
+  const winMargin = userScore - opponentScore;
+
+  // Strikeouts: accumulate from all pitchers who appeared
+  const soConfig = LEADER_LISTS.so;
+  if (!ls[soConfig.statKey]) ls[soConfig.statKey] = {};
+  const soStore = ls[soConfig.statKey];
+  userPitchers.forEach(p => {
+    if (!p || !p.name) return;
+    const k = p.gameStats?.so || 0;
+    if (k > 0 && soConfig.players.includes(p.name)) {
+      soStore[p.name] = (soStore[p.name] || 0) + k;
+    }
+  });
+  if (soConfig.players.every(name => (soStore[name] || 0) >= soConfig.threshold)) {
+    unlockFn(soConfig.achievementId);
+  }
+
+  // Wins: if user won, last pitcher gets the win
+  const winsConfig = LEADER_LISTS.wins;
+  if (!ls[winsConfig.statKey]) ls[winsConfig.statKey] = {};
+  const winsStore = ls[winsConfig.statKey];
+  if (userWon && lastPitcher && winsConfig.players.includes(lastPitcher.name)) {
+    winsStore[lastPitcher.name] = (winsStore[lastPitcher.name] || 0) + 1;
+  }
+  if (winsConfig.players.every(name => (winsStore[name] || 0) >= winsConfig.threshold)) {
+    unlockFn(winsConfig.achievementId);
+  }
+
+  // Saves: if user won by 1-3 runs and last pitcher is a reliever
+  const savesConfig = LEADER_LISTS.saves;
+  if (!ls[savesConfig.statKey]) ls[savesConfig.statKey] = {};
+  const savesStore = ls[savesConfig.statKey];
+  if (userWon && winMargin >= 1 && winMargin <= 3 && lastPitcher) {
+    const pos = lastPitcher.pos || lastPitcher.assignedPos || '';
+    const isReliever = pos === 'CL' || pos === 'RP';
+    if (isReliever && savesConfig.players.includes(lastPitcher.name)) {
+      savesStore[lastPitcher.name] = (savesStore[lastPitcher.name] || 0) + 1;
+    }
+  }
+  if (savesConfig.players.every(name => (savesStore[name] || 0) >= savesConfig.threshold)) {
+    unlockFn(savesConfig.achievementId);
+  }
+
+  saveStats(stats);
 }
 
 // Helper: determine if the user's team was fielding when a given event happened
