@@ -18,8 +18,7 @@ import Fireworks from '@/components/game/Fireworks';
 import ArgumentsBanner from '@/components/game/ArgumentsBanner';
 import BallparkEventBanner from '@/components/game/BallparkEventBanner';
 import InjuryBanner from '@/components/game/InjuryBanner';
-import PitchNarrative from '@/components/game/PitchNarrative';
-import { generatePitchNarrative } from '@/lib/pitchNarrative';
+
 import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
 import BeanballBanner from '@/components/game/BeanballBanner';
 import GameSummary from '@/components/game/GameSummary';
@@ -79,7 +78,6 @@ export default function Home() {
   const [showStretch, setShowStretch] = useState(null);
   const [beanballEvent, setBeanballEvent] = useState(null);
   const [cardAward, setCardAward] = useState(null);
-  const [pitchNarrative, setPitchNarrative] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
 
   // Auto-show tutorial on first visit & init stats
@@ -489,14 +487,6 @@ export default function Home() {
       const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
       console.log('After processAtBat:', resultState);
       
-      // Generate pitch narrative before substitutions
-      try {
-        const narrative = generatePitchNarrative(resultState, pitchObj, SWING_TYPES[cpuSwing], resultState.lastPlay);
-        setPitchNarrative(narrative);
-      } catch (e) {
-        console.error('Narrative generation failed:', e);
-      }
-      
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       if (afterSubs.gameOver) endingState = afterSubs;
@@ -521,14 +511,6 @@ export default function Home() {
       console.log('Swing:', swingIndex, 'CPU pitch:', cpuPitch);
       const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
       console.log('After processAtBat:', resultState);
-      
-      // Generate pitch narrative before substitutions
-      try {
-        const narrative = generatePitchNarrative(resultState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex], resultState.lastPlay);
-        setPitchNarrative(narrative);
-      } catch (e) {
-        console.error('Narrative generation failed:', e);
-      }
       
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
@@ -1097,13 +1079,6 @@ export default function Home() {
           onDismiss={() => setCardAward(null)}
         />
       )}
-
-      {/* Pitch Narrative — detailed play-by-play story */}
-      <PitchNarrative
-        narrative={pitchNarrative}
-        autoDismissMs={4500}
-        onDismiss={() => setPitchNarrative(null)}
-      />
 
       {/* Game Summary Modal */}
       {showSummary && gameState && gameState.gameOver && (
