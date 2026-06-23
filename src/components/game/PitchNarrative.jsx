@@ -22,6 +22,10 @@ export default function PitchNarrative({ narrative, autoDismissMs = 4000, onDism
 
   if (!visible || !narrative) return null;
 
+  // Handle both old string format and new dual-field format
+  const playByPlay = typeof narrative === 'string' ? narrative : narrative?.playByPlay || '';
+  const colorCommentary = typeof narrative === 'object' ? narrative?.colorCommentary || '' : '';
+
   return (
     <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-40">
       <div
@@ -35,13 +39,22 @@ export default function PitchNarrative({ narrative, autoDismissMs = 4000, onDism
           </span>
         </div>
 
-        {/* Narrative text — breaks naturally at sentence boundaries */}
-        <p className="text-sm md:text-base font-body text-foreground/90 leading-relaxed italic">
-          "{narrative}"
-        </p>
+        <div className="space-y-3">
+          {/* Play-by-play: audible, orange, primary focus */}
+          <p className="text-sm md:text-base font-body text-primary/90 leading-relaxed font-semibold">
+            "{playByPlay}"
+          </p>
+
+          {/* Color commentary: silent, muted, expert analysis */}
+          {colorCommentary && (
+            <p className="text-xs md:text-sm font-body text-foreground/60 leading-relaxed italic border-l-2 border-primary/20 pl-3">
+              {colorCommentary}
+            </p>
+          )}
+        </div>
 
         {/* Progress bar — visual indicator of auto-dismiss */}
-        <div className="mt-2 h-0.5 bg-muted/50 rounded-full overflow-hidden">
+        <div className="mt-3 h-0.5 bg-muted/50 rounded-full overflow-hidden">
           <div
             className="h-full bg-primary/60 rounded-full animate-out fade-out duration-500"
             style={{
