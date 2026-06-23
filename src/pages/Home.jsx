@@ -478,8 +478,12 @@ export default function Home() {
       const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
       
       // Generate pitch narrative before substitutions
-      const narrative = generatePitchNarrative(updatedState, pitchObj, SWING_TYPES[cpuSwing], resultState.lastPlay);
-      setPitchNarrative(narrative);
+      try {
+        const narrative = generatePitchNarrative(resultState, pitchObj, SWING_TYPES[cpuSwing], resultState.lastPlay);
+        setPitchNarrative(narrative);
+      } catch (e) {
+        console.error('Narrative generation failed:', e);
+      }
       
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
@@ -506,8 +510,12 @@ export default function Home() {
       const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
       
       // Generate pitch narrative before substitutions
-      const narrative = generatePitchNarrative(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex], resultState.lastPlay);
-      setPitchNarrative(narrative);
+      try {
+        const narrative = generatePitchNarrative(resultState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex], resultState.lastPlay);
+        setPitchNarrative(narrative);
+      } catch (e) {
+        console.error('Narrative generation failed:', e);
+      }
       
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
