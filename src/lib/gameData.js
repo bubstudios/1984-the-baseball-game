@@ -947,8 +947,7 @@ export const TEAMS = {
         splits: estSplits(.267, 1, 294, 88, "S") },
       { name: "Willie McGee", pos: "CF", bats: "S", contact: 8, power: 4, bunting: 7, speed: 8, defense: 8, arm: 6,
         splits: { vsLHP: { ab: 177, ba: .290, hr: 3 }, vsRHP: { ab: 433, ba: .295, hr: 3 } } },
-      { name: "Jack Clark", pos: "RF", bats: "R", contact: 7, power: 9, bunting: 2, speed: 4, defense: 6, arm: 7,
-        splits: { vsLHP: { ab: 136, ba: .316, hr: 5 }, vsRHP: { ab: 407, ba: .320, hr: 17 } } },
+      { name: "Lonnie Smith", pos: "RF", bats: "R", contact: 7, power: 4, bunting: 5, speed: 8, defense: 5, arm: 5, splits: estSplits(.321, 8, 491, 158, "R") },
       { name: "George Hendrick", pos: "1B", bats: "R", contact: 7, power: 6, bunting: 2, speed: 3, defense: 6, arm: 6,
         splits: estSplits(.277, 9, 421, 126, "R") },
       { name: "Ken Oberkfell", pos: "3B", bats: "L", contact: 7, power: 3, bunting: 5, speed: 4, defense: 7, arm: 6,
@@ -961,8 +960,6 @@ export const TEAMS = {
         splits: { vsLHP: { ab: 68, ba: .191, hr: 2 }, vsRHP: { ab: 380, ba: .235, hr: 9 } } },
     ],
     bench: [
-      { name: "Lonnie Smith", pos: "OF", bats: "R", contact: 7, power: 4, bunting: 5, speed: 8, defense: 5, arm: 5,
-        splits: estSplits(.250, 4, 219, 66, "R") },
       { name: "Dane Iorg", pos: "OF/1B", bats: "L", contact: 6, power: 3, bunting: 3, speed: 3, defense: 5, arm: 5,
         splits: estSplits(.276, 4, 142, 40, "L") },
       { name: "Mike Jorgensen", pos: "1B", bats: "L", contact: 5, power: 3, bunting: 4, speed: 2, defense: 6, arm: 5,

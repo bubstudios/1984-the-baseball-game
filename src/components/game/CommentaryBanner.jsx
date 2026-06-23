@@ -19,6 +19,7 @@ import { pickWhiteSoxLine, pickWhiteSoxPlayerLine } from '@/lib/whiteSoxBroadcas
 import { pickMarinersLine, pickMarinersPlayerLine } from '@/lib/marinersBroadcastLines';
 import { pickRangersLine, pickRangersPlayerLine } from '@/lib/rangersBroadcastLines';
 import { pickExposLine, pickExposPlayerLine } from '@/lib/exposBroadcastLines';
+import { pickCardinalsLine, pickCardinalsPlayerLine } from '@/lib/cardinalsBroadcastLines';
 import { pickFanYell } from '@/lib/fanChatter';
 import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/blowoutCommentary';
 
@@ -54,6 +55,10 @@ const NICKNAMES = {
   "Jim Rice": ["Jim Ed"],
   "Andre Dawson": ["The Hawk"],
   "Tim Raines": ["Rock"],
+  "Ozzie Smith": ["The Wizard", "The Wizard of Oz"],
+  "George Hendrick": ["Silent George"],
+  "Lonnie Smith": ["Skates"],
+  "Bruce Sutter": ["The Riddler"],
   "Eddie Murray": ["Steady Eddie"],
   "Dave Righetti": ["Rags"],
   "Ron Guidry": ["Louisiana Lightning", "Gator"],
@@ -861,6 +866,45 @@ export const STADIUM_FLAVOR = {
     neurosisFlavor: null,
     stretchFlavor: null,
   },
+  stLouisCardinals: {
+    announcers: ["Jack Buck", "Mike Shannon"],
+    stadium: "Busch Memorial Stadium",
+    nicknames: ["Busch Stadium", "The Old Busch"],
+    flavor: [
+      "a beautiful evening here at Busch Memorial Stadium",
+      "the lights are on at Busch Stadium — Cardinals baseball tonight",
+      "Busch Memorial Stadium — home of the Cardinals since 1966",
+      "the Gateway Arch is looming beyond the outfield wall — best backdrop in baseball",
+      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
+      "the stands are filling up nicely — St. Louis loves its Cardinals",
+      "you can see the Mississippi River beyond the stadium — downtown St. Louis at its finest",
+      "Busch Stadium is rocking tonight — the best fans in baseball are here",
+      "the Cardinal Nation is out in force tonight — red as far as the eye can see",
+      "the Anheuser-Busch sign gleams above the stadium — this is St. Louis",
+      "a perfect evening for baseball at the old ballpark on the river",
+      "the defending World Series champions take the field at Busch Stadium",
+    ],
+    weatherFlavor: [
+      "the warm Midwestern air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
+      "a gorgeous St. Louis evening — not a cloud in the sky over the Arch",
+      "the breeze off the Mississippi is keeping things comfortable — perfect baseball weather at Busch",
+    ],
+    cityFlavor: [
+      "if you're taking I-64 or I-55 home after the game, give yourself some extra time — St. Louis traffic doesn't sleep",
+      "I grabbed a toasted ravioli before the first pitch — that is pure St. Louis right there, folks",
+      "the fans are streaming in from all over — St. Louis County, the Metro East, Jefferson County — the whole region comes out for Cardinals baseball",
+      "St. Louis is the best baseball city in America — the fans here live and breathe Cardinals baseball",
+      "there's a pride in this city that you can feel at the ballpark — St. Louis loves its Cardinals",
+    ],
+    loreFlavor: [
+      "you look around this ballpark and think of the 1982 World Series — the Cardinals beating Milwaukee right here at Busch",
+      "this franchise has been playing since 1892 — the Cardinals are one of the oldest and most storied franchises in baseball",
+      "from Stan Musial to Bob Gibson to Lou Brock — the Cardinals have a tradition of greatness that runs deep",
+      "the Cardinals won the World Series right here in '82 — Darrell Porter was the MVP — Bruce Sutter struck out Gorman Thomas to end it",
+    ],
+    neurosisFlavor: null,
+    stretchFlavor: null,
+  },
 };
 
 // Team key to flavor key mapping (matches TEAMS keys from gameData.js)
@@ -886,6 +930,7 @@ export const TEAM_TO_FLAVOR = {
   mariners: "seattleMariners",
   rangers: "texasRangers",
   expos: "montrealExpos",
+  cardinals: "stLouisCardinals",
 };
 
 function getCommentary(batter, pitcher, gameState, stadiumInfo) {
@@ -1140,6 +1185,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isMarinersGame = homeTeamKey === 'mariners';
   const isRangersGame = homeTeamKey === 'rangers';
   const isExposGame = homeTeamKey === 'expos';
+  const isCardinalsGame = homeTeamKey === 'cardinals';
   // When there's a play result, show it as the main call — don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
@@ -1227,6 +1273,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
                         ? ((Math.random() < 0.5 ? pickRangersPlayerLine(batter?.name) : pickRangersPlayerLine(pitcher?.name)) || pickRangersLine())
                       : isExposGame && Math.random() < 0.65
                         ? ((Math.random() < 0.5 ? pickExposPlayerLine(batter?.name) : pickExposPlayerLine(pitcher?.name)) || pickExposLine())
+                      : isCardinalsGame && Math.random() < 0.65
+                        ? ((Math.random() < 0.5 ? pickCardinalsPlayerLine(batter?.name) : pickCardinalsPlayerLine(pitcher?.name)) || pickCardinalsLine())
                         : getCommentary(batter, pitcher, gameState, stadiumInfo);
                       }
                       }
