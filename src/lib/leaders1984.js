@@ -66,7 +66,7 @@ export const LEADER_LISTS = {
     players: [
       'Juan Samuel', 'Ryne Sandberg', 'Willie Wilson', 'Brett Butler',
       'Lloyd Moseby', 'Alfredo Griffin', 'Kirk Gibson',
-      'Roberto Kelly', 'Eddie Milner', 'Dave Winfield',
+      'Eddie Milner', 'Dave Winfield',
     ],
   },
   sb: {
