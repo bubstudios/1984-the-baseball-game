@@ -19,6 +19,7 @@ import ArgumentsBanner from '@/components/game/ArgumentsBanner';
 import BallparkEventBanner from '@/components/game/BallparkEventBanner';
 import InjuryBanner from '@/components/game/InjuryBanner';
 import PitcherIsPumpedPopup from '@/components/game/PitcherIsPumpedPopup';
+import IncidentLog from '@/components/game/IncidentLog';
 
 import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
 import BeanballBanner from '@/components/game/BeanballBanner';
@@ -1048,9 +1049,12 @@ export default function Home() {
             )}
 
             {tab === 'log' && (
-              <div className="bg-card border border-border rounded-xl p-3">
-                <h3 className="font-heading text-sm font-bold text-foreground mb-2">Play-by-Play</h3>
-                <PlayLog log={gameState.log} />
+              <div className="space-y-3">
+                <IncidentLog gameState={gameState} />
+                <div className="bg-card border border-border rounded-xl p-3">
+                  <h3 className="font-heading text-sm font-bold text-foreground mb-2">Play-by-Play</h3>
+                  <PlayLog log={gameState.log} />
+                </div>
               </div>
             )}
 
