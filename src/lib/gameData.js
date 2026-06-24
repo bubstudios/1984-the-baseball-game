@@ -698,6 +698,7 @@ export const TEAMS = {
       { name: "Jim Eisenreich", pos: "OF", bats: "L", contact: 6, power: 2, bunting: 5, speed: 6, defense: 6, arm: 5, splits: estSplits(.257, 2, 12, 4, "L") },
       { name: "Lenny Faedo", pos: "SS", bats: "R", contact: 5, power: 2, bunting: 5, speed: 5, defense: 6, arm: 5, splits: estSplits(.228, 2, 142, 42, "R") },
       { name: "Greg Gagne", pos: "SS", bats: "R", contact: 5, power: 2, bunting: 5, speed: 6, defense: 7, arm: 6, splits: estSplits(.240, 2, 100, 30, "R") },
+      { name: "Darrell Brown", pos: "OF", bats: "S", contact: 6, power: 2, bunting: 5, speed: 6, defense: 6, arm: 6, splits: estSplits(.273, 1, 260, 80, "S") },
     ],
     rotation: [
       { name: "Frank Viola", pos: "SP", throws: "L", bats: "L", stamina: 8, pitchSpeed: 7, offSpeed: 8, control: 6, contact: 3, power: 1, bunting: 4, speed: 2 },
@@ -711,6 +712,7 @@ export const TEAMS = {
       { name: "Rick Lysander", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Curt Wardle", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Len Whitehouse", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Albert Williams", pos: "RP", throws: "R", bats: "R", stamina: 6, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -1291,6 +1293,7 @@ export const PLAYER_ERRORS = {
   "Kirby Puckett": 3, "Mickey Hatcher": 4, "Kent Hrbek": 5, "Tom Brunansky": 2,
   "Gary Gaetti": 8, "Randy Bush": 1, "Tim Teufel": 4, "Dave Engle": 3, "Houston Jimenez": 4,
   "Barry Bonnell": 2, "Steve Henderson": 1, "Gorman Thomas": 2, "Orlando Mercado": 2, "Domingo Ramos": 3, "Larry Milbourne": 16,
+  "Darrell Brown": 1, "Albert Williams": 2,
   "Mark Langston": 2, "Mike Moore": 2, "Jim Beattie": 2, "Matt Young": 2,
   "Mike Stanton": 1, "Dave Beard": 1, "Paul Mirabella": 1, "Edwin Nunez": 2, "Bob Stoddard": 1, "Ed Vande Berg": 1,
   // Rangers
