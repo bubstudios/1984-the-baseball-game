@@ -1413,8 +1413,20 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
       }
     }
     if (!text) {
+    // Hit occurred — show team-specific hit commentary
+    if (['single','double','triple','homerun'].includes(lastPlay?.type)) {
+      const hitType = lastPlay.type;
+      const playerName = lastPlay.batterName || batter?.name;
+      const hitLines = {
+        single: isTigersGame ? pickTigersPlayerLine(playerName) : isPadresGame ? pickPadresPlayerLine(playerName) : isYankeesGame ? pickYankeesPlayerLine(playerName) : isRedSoxGame ? pickRedSoxPlayerLine(playerName) : isRedsGame ? pickRedsPlayerLine(playerName) : isRoyalsGame ? pickRoyalsPlayerLine(playerName) : isPhilliesGame ? pickPhilliesPlayerLine(playerName) : isBlueJaysGame ? pickBlueJaysPlayerLine(playerName) : isIndiansGame ? pickIndiansPlayerLine(playerName) : isBrewersGame ? pickBrewersPlayerLine(playerName) : isTwinsGame ? pickTwinsPlayerLine(playerName) : isAthleticsGame ? pickAthleticsPlayerLine(playerName) : isAngelsGame ? pickAngelsPlayerLine(playerName) : isWhiteSoxGame ? pickWhiteSoxPlayerLine(playerName) : isMarinersGame ? pickMarinersPlayerLine(playerName) : isRangersGame ? pickRangersPlayerLine(playerName) : isExposGame ? pickExposPlayerLine(playerName) : isCardinalsGame ? pickCardinalsPlayerLine(playerName) : isPiratesGame ? pickPiratesPlayerLine(playerName) : isBravesGame ? pickBravesPlayerLine(playerName) : isAstrosGame ? pickAstrosPlayerLine(playerName) : isGiantsGame ? pickGiantsPlayerLine(playerName) : null,
+        double: null,
+        triple: null,
+        homerun: null,
+      }[hitType];
+      if (hitLines) text = hitLines;
+    }
     // No play result yet (between pitches) — use team-specific or generic flavor
-    text = isCubsGame && Math.random() < 0.65
+    if (!text) text = isCubsGame && Math.random() < 0.65
       ? pickHarryLine()
       : isPadresGame && Math.random() < 0.65
         ? ((Math.random() < 0.5 ? pickPadresPlayerLine(batter?.name) : pickPadresPlayerLine(pitcher?.name)) || pickPadresLine())
