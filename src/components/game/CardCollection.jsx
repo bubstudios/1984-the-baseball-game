@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import BaseballCard from './BaseballCard';
-import { ALL_ROSTERS, TEAM_CARD_META, getCollectedIds, getProgress, loadFromStorage } from '@/lib/baseballCards';
+import { ALL_ROSTERS_FULL as ALL_ROSTERS, TEAM_CARD_META, getCollectedIds, getProgress, loadFromStorage } from '@/lib/baseballCards';
 import { getCardImage } from '@/lib/cardImages';
 import { getAllQuestProgress } from '@/lib/adQuests';
 

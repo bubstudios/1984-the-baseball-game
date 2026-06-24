@@ -10,6 +10,7 @@
 // FanGraphs baserunning metrics, Retrosheet historical play-by-play data.
 
 import { pickLine, STRETCH_SUCCESS_LINES,
+  STRETCH_SUCCESS_DOUBLE_TRIPLE_LINES, STRETCH_SUCCESS_TRIPLE_HR_LINES,
   STRETCH_SINGLE_DOUBLE_OUT_LINES, STRETCH_DOUBLE_TRIPLE_OUT_LINES,
   STRETCH_TRIPLE_HR_OUT_LINES } from './commentaryLines';
 
@@ -34,15 +35,15 @@ export function checkBatterStretch(hitType, batter, ofArm) {
   let minSpeed, attemptChance, caughtChance;
 
   if (hitType === 'single') {
-    // Single → Double: speed 4+ attempts, ~18% caught
-    minSpeed = 4;
-    attemptChance = 0.04 + speedFactor * 0.07;
-    caughtChance = 0.10 + (ofArm / 10) * 0.18 - speedFactor * 0.12;
-  } else if (hitType === 'double') {
-    // Double → Triple: speed 5+ attempts, ~25% caught
+    // Single → Double: speed 5+ attempts (was 4+), ~18% caught
     minSpeed = 5;
-    attemptChance = 0.015 + speedFactor * 0.035;
-    caughtChance = 0.15 + (ofArm / 10) * 0.20 - speedFactor * 0.12;
+    attemptChance = 0.02 + speedFactor * 0.05; // reduced from 0.04 + sf*0.07
+    caughtChance = 0.15 + (ofArm / 10) * 0.20 - speedFactor * 0.10;
+  } else if (hitType === 'double') {
+    // Double → Triple: speed 6+ attempts (was 5+), ~25% caught
+    minSpeed = 6;
+    attemptChance = 0.008 + speedFactor * 0.025; // reduced from 0.015 + sf*0.035
+    caughtChance = 0.20 + (ofArm / 10) * 0.22 - speedFactor * 0.10;
   } else if (hitType === 'triple') {
     // Triple → Inside-the-park HR: speed 8+ only, ~40% caught
     minSpeed = 8;
@@ -66,7 +67,7 @@ export function checkBatterStretch(hitType, batter, ofArm) {
     return { type: 'safe_double', text: `${batter.name} ${pickLine(STRETCH_SUCCESS_LINES)}` };
   }
   if (hitType === 'double') {
-    return { type: 'safe_triple', text: `${batter.name} ${pickLine(STRETCH_SUCCESS_LINES)}` };
+    return { type: 'safe_triple', text: `${batter.name} ${pickLine(STRETCH_SUCCESS_DOUBLE_TRIPLE_LINES)}` };
   }
-  return { type: 'inside_park_hr', text: `🎉 ${batter.name} ${pickLine(STRETCH_SUCCESS_LINES)}` };
+  return { type: 'inside_park_hr', text: `🎉 ${batter.name} ${pickLine(STRETCH_SUCCESS_TRIPLE_HR_LINES)}` };
 }

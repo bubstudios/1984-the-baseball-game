@@ -211,6 +211,7 @@ Unlike many shows on this list, "Riptide" actually found moderate success and en
     color: '#8b5cf6',
     anim: 'pulse',
     matchText: 'Catch "Hardcastle and McCormick" following tonight\'s news.',
+    altMatchTexts: ['Hardcastle and McCormick returns with another high-speed adventure.'],
     type: 'failed_tv',
     body: `A crime-fighting duo: a retired federal judge and a reformed car thief, using cunning and custom vehicles to solve cases outside the law.
 
@@ -650,7 +651,7 @@ const ENTRIES = [
 ];
 
 export function findNationalPromosEntry(adText) {
-  return ENTRIES.find(e => e.matchText === adText) || null;
+  return ENTRIES.find(e => e.matchText === adText || (e.altMatchTexts && e.altMatchTexts.includes(adText))) || null;
 }
 
 export function getNationalPromosEntry(id) {

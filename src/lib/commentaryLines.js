@@ -955,13 +955,21 @@ const STRETCH_SUCCESS_LINES = [
   c("slides in safe at second — turned it into a double!"),
   c("stretches the single into a double — good hustle!"),
   c("turns on the speed and makes it to second!"),
-  c("stretches it into a triple — safe at third!", 'uncommon'),
-  c("makes it to third — he turned it into a triple!", 'uncommon'),
-  c("legs out the triple — safe at third standing up!", 'uncommon'),
-  c("turns the double into a triple with his speed!", 'uncommon'),
-  c("rounds the bases for an inside-the-park home run!", 'rare'),
-  c("legs it all the way home — inside-the-park homer!", 'rare'),
-  c("circles the bases — an inside-the-park home run!", 'rare'),
+];
+
+// ── Stretch double→triple success (distinct pool so single→double never says "triple") ──
+const STRETCH_SUCCESS_DOUBLE_TRIPLE_LINES = [
+  c("stretches it into a triple — safe at third!"),
+  c("makes it to third — he turned it into a triple!"),
+  c("legs out the triple — safe at third standing up!"),
+  c("turns the double into a triple with his speed!"),
+];
+
+// ── Stretch triple→HR success (inside-the-park home run) ──
+const STRETCH_SUCCESS_TRIPLE_HR_LINES = [
+  c("rounds the bases for an inside-the-park home run!"),
+  c("legs it all the way home — inside-the-park homer!"),
+  c("circles the bases — an inside-the-park home run!"),
 ];
 
 // =========== RUNNER THROWN OUT AT THIRD ===========
@@ -1209,6 +1217,7 @@ export {
   CALLED_BALL_FASTBALL_LINES, CALLED_BALL_BREAKING_LINES,
   CALLED_BALL_CHANGEUP_LINES, CALLED_BALL_GENERIC_LINES,
   STRETCH_OUT_LINES, STRETCH_SUCCESS_LINES,
+  STRETCH_SUCCESS_DOUBLE_TRIPLE_LINES, STRETCH_SUCCESS_TRIPLE_HR_LINES,
   RUNNER_OUT_AT_THIRD_LINES, RUNNER_OUT_AT_HOME_LINES,
   TAG_UP_OUT_LINES,
   STRETCH_SINGLE_DOUBLE_OUT_LINES, STRETCH_DOUBLE_TRIPLE_OUT_LINES,

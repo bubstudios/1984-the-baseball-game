@@ -373,17 +373,16 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       return;
     }
     if (!synopsisData) {
-      // Try keyword-based rich fallback first, then bland generic
+      // Try keyword-based rich fallback; if none found, just dismiss — no bland "Broadcast Message"
       const richFallback = generateFallbackEntry(ad?.text);
-      const fallbackEntry = richFallback || {
-        title: '📻 Broadcast Message',
-        icon: '📻',
-        color: '#c9a84c',
-        body: ad?.text || 'Advertisement',
-      };
-      setIsGenericAd(true);
-      setGenericAdEntry(fallbackEntry);
-      setExpanded(true);
+      if (richFallback) {
+        setIsGenericAd(true);
+        setGenericAdEntry(richFallback);
+        setExpanded(true);
+      } else {
+        setExpanded(false);
+        onDismiss();
+      }
       return;
     }
     if (!expanded) {

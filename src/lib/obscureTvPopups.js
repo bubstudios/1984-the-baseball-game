@@ -140,6 +140,7 @@ const ENTRIES = [
     day: 'Sundays',
     time: '8:00 PM',
     matchText: 'Catch "Hardcastle and McCormick" following tonight\'s news.',
+    altMatchTexts: ['Hardcastle and McCormick returns with another high-speed adventure.'],
     tagline: 'Justice never retires.',
     description: "Retired Judge Milton Hardcastle recruits race-car driver Mark McCormick to help pursue criminals who escaped punishment through legal loopholes. Together they tackle cases the system couldn't finish.",
     cast: ['Brian Keith', 'Daniel Hugh Kelly'],

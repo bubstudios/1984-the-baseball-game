@@ -356,8 +356,8 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
     const r3AdvancedToThird = r3 && preR3 !== r3;
     if (b1 && b1.name === batter.name && r3AdvancedToThird && !state.bases[1]) {
       const ofArm = getOutfieldArm(defenders);
-      const sc = 0.08 + (r3.speed / 10) * 0.28 - (ofArm / 10) * 0.06 + (batter.speed / 10) * 0.10;
-      if (Math.random() < Math.max(0.02, Math.min(sc, 0.28))) {
+      const sc = 0.04 + (r3.speed / 10) * 0.20 - (ofArm / 10) * 0.06 + (batter.speed / 10) * 0.06;
+      if (Math.random() < Math.max(0.01, Math.min(sc, 0.18))) {
         state.bases[1] = batter; state.bases[0] = null;
         const takeSecondText = `${batter.name.split(' ').pop()} takes second — defense threw to third!`;
         state.log.push({ type: 'info', text: takeSecondText });
