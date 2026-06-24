@@ -10,6 +10,7 @@ import Home from '@/pages/Home';
 import GateLogin, { isAuthenticated } from '@/components/GateLogin';
 import { useState, useEffect } from 'react';
 // Add page imports here
+import ThankYou from '@/pages/ThankYou';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -47,6 +48,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/ThankYou" element={<ThankYou />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

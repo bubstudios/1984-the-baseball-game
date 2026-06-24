@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
-import { Play, User, Cpu, Trophy, Dice5 } from 'lucide-react';
+import { Play, User, Cpu, Trophy, Dice5, Heart } from 'lucide-react';
 import AchievementsPanel from '@/components/game/AchievementsPanel';
 import { getUnlockedCount } from '@/lib/achievements';
 
@@ -231,6 +231,16 @@ export default function TeamSelect({ onSelect }) {
               </div>
             ))}
 
+            {/* Randomize */}
+            <Button
+              onClick={handleRandomize}
+              variant="outline"
+              className="w-full gap-2 font-heading text-sm py-3"
+            >
+              <Dice5 className="w-4 h-4" />
+              Surprise Me! (Random Teams)
+            </Button>
+
             {/* Play Ball */}
             <Button
               onClick={handleStart}
@@ -246,9 +256,40 @@ export default function TeamSelect({ onSelect }) {
                 : 'Select an opponent'}
             </Button>
 
-            <p className="text-[10px] text-muted-foreground/50 text-center font-body pb-8">
-              You control batting and pitching for your team. CPU controls the opponent.
-            </p>
+            {/* Donate */}
+            <div className="pt-2 pb-8 text-center space-y-2">
+              <button
+                onClick={async () => {
+                  const amounts = ['$2', '$5', '$10'];
+                  const choice = window.prompt('Choose a tip amount: 2, 5, or 10 (dollars)', '5');
+                  if (!choice) return;
+                  const amt = parseFloat(choice);
+                  if (isNaN(amt) || amt <= 0) return;
+                  try {
+                    const res = await fetch('/_base44/api/functions/create-checkout', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ amount: amt }),
+                    });
+                    const data = await res.json();
+                    if (data.redirectUrl) {
+                      window.location.href = data.redirectUrl;
+                    } else {
+                      alert('Sorry, something went wrong creating the checkout. ' + (data.error || ''));
+                    }
+                  } catch (e) {
+                    alert('Sorry, something went wrong: ' + e.message);
+                  }
+                }}
+                className="text-[11px] font-heading text-muted-foreground/60 hover:text-primary transition-colors inline-flex items-center gap-1"
+              >
+                <Heart className="w-3 h-3" />
+                Enjoying the game? Tip the developer
+              </button>
+              <p className="text-[10px] text-muted-foreground/50 text-center font-body">
+                You control batting and pitching for your team. CPU controls the opponent.
+              </p>
+            </div>
           </>
         )}
       </div>
