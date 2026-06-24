@@ -23,6 +23,12 @@ import {
   STRETCH_OUT_LINES, STRETCH_SUCCESS_LINES,
   RUNNER_OUT_AT_THIRD_LINES, RUNNER_OUT_AT_HOME_LINES,
   TAG_UP_OUT_LINES,
+  STRETCH_SINGLE_DOUBLE_OUT_LINES, STRETCH_DOUBLE_TRIPLE_OUT_LINES,
+  STRETCH_TRIPLE_HR_OUT_LINES,
+  RUNNER_FIRST_TO_THIRD_OUT_LINES, RUNNER_FIRST_TO_HOME_OUT_LINES,
+  RUNNER_SECOND_TO_HOME_OUT_LINES,
+  TAG_UP_FIRST_TO_SECOND_OUT_LINES, TAG_UP_SECOND_TO_THIRD_OUT_LINES,
+  TAG_UP_THIRD_TO_HOME_OUT_LINES,
 } from './commentaryLines';
 import { checkBatterStretch } from './aggressiveBaserunning';
 import { checkPitcherInjury, checkPlayInjury, getPlayerDurability } from './injuries';
@@ -288,7 +294,7 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
             runnerAt3rd.gameStats.cs = (runnerAt3rd.gameStats.cs || 0) + 1;
             state.bases[2] = null;
             if (!state._pendingBaseOuts) state._pendingBaseOuts = [];
-            state._pendingBaseOuts.push({ text: `❌ ${runnerAt3rd.name} ${pickLine(RUNNER_OUT_AT_HOME_LINES)}` });
+            state._pendingBaseOuts.push({ text: `❌ ${runnerAt3rd.name} — ${pickLine(RUNNER_FIRST_TO_HOME_OUT_LINES)}` });
           } else {
             runnerAt3rd.gameStats.runs++; scoreRun(state); rbi++; state.bases[2] = null;
             state.log.push({ type: 'info', text: `${runnerAt3rd.name} hustles all the way home from first!` });
@@ -310,7 +316,7 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
               runnerAt2nd.gameStats.cs = (runnerAt2nd.gameStats.cs || 0) + 1;
               state.bases[1] = null;
               if (!state._pendingBaseOuts) state._pendingBaseOuts = [];
-              state._pendingBaseOuts.push({ text: `❌ ${runnerAt2nd.name} ${pickLine(RUNNER_OUT_AT_THIRD_LINES)}` });
+              state._pendingBaseOuts.push({ text: `❌ ${runnerAt2nd.name} — ${pickLine(RUNNER_FIRST_TO_THIRD_OUT_LINES)}` });
             } else {
               state.bases[2] = runnerAt2nd; state.bases[1] = null;
               state.log.push({ type: 'info', text: `${runnerAt2nd.name} wheels to third on the single!` });
@@ -332,7 +338,7 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
             runnerAt3rd.gameStats.cs = (runnerAt3rd.gameStats.cs || 0) + 1;
             state.bases[2] = null;
             if (!state._pendingBaseOuts) state._pendingBaseOuts = [];
-            state._pendingBaseOuts.push({ text: `❌ ${runnerAt3rd.name} ${pickLine(RUNNER_OUT_AT_HOME_LINES)}` });
+            state._pendingBaseOuts.push({ text: `❌ ${runnerAt3rd.name} — ${pickLine(RUNNER_SECOND_TO_HOME_OUT_LINES)}` });
           } else {
             runnerAt3rd.gameStats.runs++; scoreRun(state); rbi++; state.bases[2] = null;
             state.log.push({ type: 'info', text: `${runnerAt3rd.name} scores from second on the single!` });
@@ -979,12 +985,12 @@ function processFlyoutTagUps(state, out, defenders, batter) {
         // Thrown out at home!
         r.gameStats.cs = (r.gameStats.cs || 0) + 1;
         state.bases[2] = null; batter.gameStats.ab--;
-        const outText = `❌ ${r.name} ${pickLine(TAG_UP_OUT_LINES)}`;
+        const outText = `❌ ${r.name} — ${pickLine(TAG_UP_THIRD_TO_HOME_OUT_LINES)}`;
         state.log.push({ type: 'info', text: outText }); state.lastPlay = { type: 'info', text: outText };
         state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
         return true;
-      }
-      // Safe — scores
+        }
+        // Safe — scores
       r.gameStats.runs++; scoreRun(state); state.bases[2] = null;
       batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++;
       const sfText = `${batter.name} ${pickLine(SAC_FLY_LINES)} ${r.name} tags and scores!`;
@@ -1002,7 +1008,7 @@ function processFlyoutTagUps(state, out, defenders, batter) {
             if (Math.random() < Math.max(0.03, Math.min(r2Caught, 0.25))) {
               r2.gameStats.cs = (r2.gameStats.cs || 0) + 1;
               state.bases[1] = null;
-              state.log.push({ type: 'info', text: `❌ ${r2.name} ${pickLine(TAG_UP_OUT_LINES)}` });
+              state.log.push({ type: 'info', text: `❌ ${r2.name} — ${pickLine(TAG_UP_SECOND_TO_THIRD_OUT_LINES)}` });
             } else {
               state.bases[2] = r2; state.bases[1] = null;
               state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` });
@@ -1027,7 +1033,7 @@ function processFlyoutTagUps(state, out, defenders, batter) {
         if (Math.random() < Math.max(0.03, Math.min(caughtChance, 0.25))) {
           r.gameStats.cs = (r.gameStats.cs || 0) + 1;
           state.bases[1] = null; batter.gameStats.ab--;
-          const outText = `❌ ${r.name} ${pickLine(TAG_UP_OUT_LINES)}`;
+          const outText = `❌ ${r.name} — ${pickLine(TAG_UP_SECOND_TO_THIRD_OUT_LINES)}`;
           state.log.push({ type: 'info', text: outText }); state.lastPlay = { type: 'info', text: outText };
           state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
           return true;
@@ -1048,12 +1054,12 @@ function processFlyoutTagUps(state, out, defenders, batter) {
       if (Math.random() < Math.max(0.05, Math.min(caughtChance, 0.35))) {
         r.gameStats.cs = (r.gameStats.cs || 0) + 1;
         state.bases[0] = null; batter.gameStats.ab--;
-        const outText = `❌ ${r.name} ${pickLine(TAG_UP_OUT_LINES)}`;
+        const outText = `❌ ${r.name} — ${pickLine(TAG_UP_FIRST_TO_SECOND_OUT_LINES)}`;
         state.log.push({ type: 'info', text: outText }); state.lastPlay = { type: 'info', text: outText };
         state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
         return true;
-      }
-      state.bases[1] = r; state.bases[0] = null;
+        }
+        state.bases[1] = r; state.bases[0] = null;
       state.log.push({ type: 'info', text: `${r.name} tags up and advances to second!` });
     }
   }

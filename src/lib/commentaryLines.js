@@ -1017,6 +1017,177 @@ const TAG_UP_OUT_LINES = [
   c("is thrown out tagging up by a mile!", 'rare'),
 ];
 
+// =========== BATTER STRETCHING SINGLE INTO DOUBLE — CAUGHT ===========
+const STRETCH_SINGLE_DOUBLE_OUT_LINES = [
+  c("He rounds first and heads for second, but the throw beats him."),
+  c("He tries to turn the single into two bases and is cut down."),
+  c("He never slows at first, but the defense is ready for him."),
+  c("He challenges the arm and loses at second."),
+  c("He takes an aggressive turn, commits to second and is tagged out."),
+  c("The hit is good for one base, but he tries for two and pays the price."),
+  c("He races toward second, but the ball arrives ahead of the slide."),
+  c("He sees a possible double, but the defense takes it away."),
+  c("He tries to stretch the play and is thrown out by a step."),
+  c("He keeps running after the single, and the gamble backfires."),
+  c("A quick throw turns his extra-base attempt into an out."),
+  c("He presses his luck beyond first and comes up short."),
+  c("He tries to manufacture a double, but the tag is waiting."),
+  c("He makes the wide turn and is erased trying for second."),
+  c("An aggressive single becomes an out on the bases."),
+];
+
+// =========== BATTER STRETCHING DOUBLE INTO TRIPLE — CAUGHT ===========
+const STRETCH_DOUBLE_TRIPLE_OUT_LINES = [
+  c("He rounds second and heads for third, but the throw beats him."),
+  c("He tries to turn the double into a triple and is cut down."),
+  c("He never slows at second, but the defense recovers in time."),
+  c("He challenges the throw and loses at third."),
+  c("He sees three bases, but the defense allows only two."),
+  c("He keeps running after the double and is tagged out at third."),
+  c("The throw arrives just ahead of his slide."),
+  c("He tries to take the extra ninety feet and comes up short."),
+  c("A strong relay ends his bid for a triple."),
+  c("He makes an aggressive turn around second and runs into an out."),
+  c("He stretches the double too far and is erased at third."),
+  c("He commits to third, but the ball gets there first."),
+  c("The hit reaches the gap, but his attempt at three bases fails."),
+  c("He presses the advantage and is thrown out trying for third."),
+  c("What began as a double ends with the runner tagged out at third."),
+];
+
+// =========== BATTER STRETCHING TRIPLE INTO INSIDE-THE-PARK HR — CAUGHT ===========
+const STRETCH_TRIPLE_HR_OUT_LINES = [
+  c("He rounds third and heads for home, but the throw beats him to the plate."),
+  c("He tries to complete the inside-the-park home run and is cut down."),
+  c("He never stops at third, but the defense denies him the run."),
+  c("He races for home and is tagged out at the plate."),
+  c("He tries to circle the bases, but the final throw arrives in time."),
+  c("The bid for an inside-the-park homer ends at home."),
+  c("He challenges the defense for all four bases and loses at the plate."),
+  c("He comes flying around third, but the ball is waiting for him."),
+  c("The relay reaches home just ahead of the runner."),
+  c("He tries to turn the triple into a home run and is erased."),
+  c("He goes for the spectacular finish, but the tag beats him."),
+  c("He makes the final turn at full speed and comes up short."),
+  c("The crowd rises as he heads home, but the defense completes the play."),
+  c("He nearly circles the bases, but the final ninety feet prove too much."),
+  c("A thrilling trip around the bases ends with an out at home."),
+];
+
+// =========== RUNNER FROM FIRST THROWN OUT AT THIRD ===========
+const RUNNER_FIRST_TO_THIRD_OUT_LINES = [
+  c("The runner goes first to third, but the throw beats him."),
+  c("He tries to take two bases and is cut down at third."),
+  c("He races around second, but the defense is ready."),
+  c("The runner challenges the arm and loses at third."),
+  c("He tries to reach third on the play, but the tag is applied in time."),
+  c("He never slows around second and runs into an out."),
+  c("The throw reaches third just ahead of the slide."),
+  c("He tries to move within ninety feet of home and is denied."),
+  c("An aggressive trip from first ends with the runner tagged out."),
+  c("He presses for third, but the defense cuts him down."),
+  c("The runner makes the turn and commits, but the ball arrives first."),
+  c("He attempts to advance two bases and comes up short."),
+  c("A strong throw erases the runner at third."),
+  c("He takes the extra base chance, and the gamble fails."),
+  c("The runner is thrown out trying to go from first to third."),
+];
+
+// =========== RUNNER FROM FIRST THROWN OUT AT HOME ===========
+const RUNNER_FIRST_TO_HOME_OUT_LINES = [
+  c("The runner comes all the way from first, but the throw beats him home."),
+  c("He tries to score from first and is cut down at the plate."),
+  c("He races around third, but the defense completes the relay."),
+  c("The runner challenges the throw home and loses."),
+  c("He tries to score from first, but the tag beats his slide."),
+  c("The relay reaches the plate just ahead of the runner."),
+  c("He comes flying around third and is erased at home."),
+  c("The runner tries to travel three bases on the play, but comes up short."),
+  c("A strong throw prevents the run from scoring."),
+  c("He is waved home from first, but the defense cuts him down."),
+  c("The runner gives it everything he has, but the ball gets there first."),
+  c("He tries to score the long way around and is tagged out."),
+  c("The defense executes the relay perfectly at the plate."),
+  c("He rounds third at full speed, but the run is denied."),
+  c("The runner is thrown out attempting to score from first."),
+];
+
+// =========== RUNNER FROM SECOND THROWN OUT AT HOME ===========
+const RUNNER_SECOND_TO_HOME_OUT_LINES = [
+  c("The runner rounds third and heads home, but the throw beats him."),
+  c("He tries to score from second and is cut down at the plate."),
+  c("The runner challenges the arm, and the defense wins."),
+  c("He races home, but the ball arrives ahead of the slide."),
+  c("The throw comes in on target, and the runner is tagged out."),
+  c("He tries to score on the hit, but the run is denied."),
+  c("The runner gets the wave around third and is erased at home."),
+  c("A strong throw cuts him down at the plate."),
+  c("He comes charging home, but the tag is waiting."),
+  c("The relay reaches home just in time."),
+  c("He tries to score from second, but the defense executes perfectly."),
+  c("The runner slides hard, but the ball beats him there."),
+  c("He is sent home and thrown out by a step."),
+  c("The defense prevents the runner from scoring from second."),
+  c("He rounds third aggressively, but the play ends at the plate."),
+];
+
+// =========== TAG UP — RUNNER FROM FIRST THROWN OUT AT SECOND ===========
+const TAG_UP_FIRST_TO_SECOND_OUT_LINES = [
+  c("The runner tags at first and heads for second, but the throw beats him."),
+  c("He tries to advance after the catch and is cut down at second."),
+  c("The runner challenges the arm on the flyout and loses."),
+  c("He tags and takes off, but the ball arrives ahead of him."),
+  c("He tries to move up on the catch and is tagged out."),
+  c("The runner attempts the unusual advance from first and comes up short."),
+  c("A strong throw turns the flyout into a double play."),
+  c("He tags at first, races for second and is erased."),
+  c("The runner tries to take advantage of the deep catch, but the defense responds."),
+  c("He advances after the catch, but the throw is right on target."),
+  c("The ball reaches second before the sliding runner."),
+  c("He tries to gain ninety feet on the flyout and is denied."),
+  c("The runner tags legally, but cannot beat the throw."),
+  c("An aggressive advance after the catch produces the second out."),
+  c("He tests the arm from first and is thrown out at second."),
+];
+
+// =========== TAG UP — RUNNER FROM SECOND THROWN OUT AT THIRD ===========
+const TAG_UP_SECOND_TO_THIRD_OUT_LINES = [
+  c("The runner tags at second and heads for third, but the throw beats him."),
+  c("He tries to advance after the catch and is cut down at third."),
+  c("The runner challenges the arm and loses by a step."),
+  c("He tags and races for third, but the ball arrives first."),
+  c("A strong throw turns the flyout into a double play."),
+  c("He tries to move within ninety feet of home and is denied."),
+  c("The runner takes off after the catch, but the tag beats him."),
+  c("He tests the defense from second and is thrown out at third."),
+  c("The throw reaches the bag just ahead of the slide."),
+  c("He tries to advance on the flyout, but the defense executes perfectly."),
+  c("The runner tags properly, but cannot outrun the throw."),
+  c("He presses for third and is erased after the catch."),
+  c("The defense cuts down the advancing runner at third."),
+  c("He tries to steal an extra ninety feet on the flyout and comes up short."),
+  c("The runner is thrown out trying to tag from second to third."),
+];
+
+// =========== TAG UP — RUNNER FROM THIRD THROWN OUT AT HOME ===========
+const TAG_UP_THIRD_TO_HOME_OUT_LINES = [
+  c("The runner tags at third and heads home, but the throw beats him."),
+  c("He tries to score on the flyout and is cut down at the plate."),
+  c("The runner challenges the arm, and the defense wins."),
+  c("He tags and races home, but the ball arrives ahead of the slide."),
+  c("A strong throw prevents the sacrifice fly."),
+  c("The catch is made, the throw comes home, and the runner is out."),
+  c("He tries to score after the catch, but the tag beats him."),
+  c("The runner comes charging toward the plate and is erased."),
+  c("He tags immediately, but the defense completes the play."),
+  c("The throw is right on target, and the run does not score."),
+  c("He tests the arm from third and loses at home."),
+  c("A perfect throw turns the flyout into a double play."),
+  c("The runner slides for the plate, but the ball gets there first."),
+  c("He tries to bring home the run, but the defense cuts him down."),
+  c("The sacrifice-fly attempt ends with the runner tagged out at home."),
+];
+
 // Export all pools
 export {
   STRIKEOUT_LINES, WALK_LINES, INTENTIONAL_WALK_LINES,
@@ -1040,4 +1211,10 @@ export {
   STRETCH_OUT_LINES, STRETCH_SUCCESS_LINES,
   RUNNER_OUT_AT_THIRD_LINES, RUNNER_OUT_AT_HOME_LINES,
   TAG_UP_OUT_LINES,
+  STRETCH_SINGLE_DOUBLE_OUT_LINES, STRETCH_DOUBLE_TRIPLE_OUT_LINES,
+  STRETCH_TRIPLE_HR_OUT_LINES,
+  RUNNER_FIRST_TO_THIRD_OUT_LINES, RUNNER_FIRST_TO_HOME_OUT_LINES,
+  RUNNER_SECOND_TO_HOME_OUT_LINES,
+  TAG_UP_FIRST_TO_SECOND_OUT_LINES, TAG_UP_SECOND_TO_THIRD_OUT_LINES,
+  TAG_UP_THIRD_TO_HOME_OUT_LINES,
 };

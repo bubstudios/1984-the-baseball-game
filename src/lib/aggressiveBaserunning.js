@@ -9,7 +9,9 @@
 // Sources: Baseball-Reference "Caught Stretching", Hardball Times baserunning data,
 // FanGraphs baserunning metrics, Retrosheet historical play-by-play data.
 
-import { pickLine, STRETCH_OUT_LINES, STRETCH_SUCCESS_LINES } from './commentaryLines';
+import { pickLine, STRETCH_SUCCESS_LINES,
+  STRETCH_SINGLE_DOUBLE_OUT_LINES, STRETCH_DOUBLE_TRIPLE_OUT_LINES,
+  STRETCH_TRIPLE_HR_OUT_LINES } from './commentaryLines';
 
 /**
  * Checks if a batter attempts to stretch a hit into an extra-base hit.
@@ -54,7 +56,10 @@ export function checkBatterStretch(hitType, batter, ofArm) {
   if (Math.random() >= attemptChance) return { type: 'none' };
 
   if (Math.random() < Math.max(0.03, Math.min(caughtChance, 0.45))) {
-    return { type: 'caught', text: `❌ ${batter.name} ${pickLine(STRETCH_OUT_LINES)}` };
+    const outPool = hitType === 'single' ? STRETCH_SINGLE_DOUBLE_OUT_LINES
+      : hitType === 'double' ? STRETCH_DOUBLE_TRIPLE_OUT_LINES
+      : STRETCH_TRIPLE_HR_OUT_LINES;
+    return { type: 'caught', text: `❌ ${batter.name} — ${pickLine(outPool)}` };
   }
 
   if (hitType === 'single') {
