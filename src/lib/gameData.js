@@ -194,12 +194,14 @@ export const TEAMS = {
         splits: estSplits(.218, 1, 125, 35, "R") },
       { name: "Kelvin Chapman", pos: "2B", bats: "R", contact: 6, power: 2, bunting: 4, speed: 5, defense: 5, arm: 4,
         splits: estSplits(.282, 1, 161, 45, "R") },
-      { name: "John Gibbons", pos: "C", bats: "R", contact: 5, power: 3, bunting: 3, speed: 2, defense: 5, arm: 6,
-        splits: estSplits(.217, 2, 78, 22, "R") },
       { name: "Danny Heep", pos: "OF/1B", bats: "L", contact: 6, power: 3, bunting: 3, speed: 3, defense: 5, arm: 5,
         splits: estSplits(.278, 4, 176, 48, "L") },
       { name: "Rusty Staub", pos: "PH", bats: "L", contact: 6, power: 4, bunting: 2, speed: 1, defense: 0, arm: 0,
         splits: estSplits(.264, 5, 98, 25, "L") },
+      { name: "Ron Hodges", pos: "C", bats: "R", contact: 5, power: 2, bunting: 4, speed: 2, defense: 7, arm: 7,
+        splits: estSplits(.264, 5, 106, 28, "R") },
+      { name: "Rafael Santana", pos: "SS", bats: "R", contact: 6, power: 1, bunting: 5, speed: 5, defense: 7, arm: 6,
+        splits: estSplits(.271, 1, 51, 25, "R") },
     ],
     rotation: [
       { name: "Dwight Gooden", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 10, offSpeed: 9, control: 7, contact: 4, power: 2, bunting: 5, speed: 4, specialty: { name: "Lord Charles", pitch: "Breaking Ball", label: "RC" } },
@@ -213,6 +215,8 @@ export const TEAMS = {
       { name: "Brent Gaff", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Tom Gorman", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Ed Lynch", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Sid Fernandez", pos: "RP", throws: "L", bats: "L", stamina: 6, pitchSpeed: 8, offSpeed: 9, control: 5, contact: 3, power: 2, bunting: 4, speed: 2 },
+      { name: "Tim Leary", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -1240,7 +1244,7 @@ export const PLAYER_ERRORS = {
   // Mets
   "Wally Backman": 13, "Mookie Wilson": 7, "Keith Hernandez": 4, "Darryl Strawberry": 8,
   "George Foster": 7, "Hubie Brooks": 29, "Mike Fitzgerald": 8, "Jose Oquendo": 12,
-  "Ron Gardenhire": 5, "Kelvin Chapman": 4, "John Gibbons": 3, "Danny Heep": 3, "Rusty Staub": 0,
+  "Ron Gardenhire": 5, "Kelvin Chapman": 4, "Danny Heep": 3, "Rusty Staub": 0, "Ron Hodges": 2, "Rafael Santana": 5, "Sid Fernandez": 1, "Tim Leary": 1,
   // Red Sox
   "Wade Boggs": 20, "Dwight Evans": 2, "Jim Rice": 6, "Tony Armas": 11, "Mike Easler": 0,
   "Bill Buckner": 12, "Rich Gedman": 9, "Marty Barrett": 11, "Jackie Gutierrez": 24,

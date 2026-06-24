@@ -102,9 +102,12 @@ export const ALL_ROSTERS = {
     { id: 17, name: 'Ed Lynch',        position: 'RP',   number: 33, ba: '-',    hr: '-', rbi: '-', era: '4.50', role: 'Relief Pitcher',       rarity: 'common'   },
     { id: 18, name: 'Ron Gardenhire',  position: 'SS',   number: 8,  ba: '.218', hr: 1,  rbi: 13,  era: '-',    role: 'Backup Infielder',     rarity: 'common'   },
     { id: 19, name: 'Kelvin Chapman',  position: '2B',   number: 3,  ba: '.282', hr: 1,  rbi: 19,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
-    { id: 20, name: 'John Gibbons',    position: 'C',    number: 9,  ba: '.217', hr: 2,  rbi: 8,   era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
-    { id: 21, name: 'Danny Heep',      position: 'OF',   number: 28, ba: '.278', hr: 4,  rbi: 36,  era: '-',    role: 'Pinch Hitter',         rarity: 'common'   },
-    { id: 22, name: 'Rusty Staub',     position: 'DH',   number: 10, ba: '.264', hr: 5,  rbi: 28,  era: '-',    role: 'Pinch Hit Legend',     rarity: 'uncommon' },
+    { id: 20, name: 'Danny Heep',      position: 'OF',   number: 28, ba: '.278', hr: 4,  rbi: 36,  era: '-',    role: 'Pinch Hitter',         rarity: 'common'   },
+    { id: 21, name: 'Rusty Staub',     position: 'DH',   number: 10, ba: '.264', hr: 5,  rbi: 28,  era: '-',    role: 'Pinch Hit Legend',     rarity: 'uncommon' },
+    { id: 22, name: 'Ron Hodges',      position: 'C',    number: 7,  ba: '.264', hr: 5,  rbi: 28,  era: '-',    role: 'Backup Catcher',      rarity: 'common'   },
+    { id: 23, name: 'Rafael Santana',  position: 'SS',   number: 16, ba: '.271', hr: 1,  rbi: 8,   era: '-',    role: 'Backup Shortstop',    rarity: 'common'   },
+    { id: 24, name: 'Sid Fernandez',   position: 'RP',   number: 50, ba: '-',    hr: '-', rbi: '-', era: '3.70', role: 'Relief Pitcher/Rookie',rarity: 'uncommon' },
+    { id: 25, name: 'Tim Leary',       position: 'RP',   number: 54, ba: '-',    hr: '-', rbi: '-', era: '4.02', role: 'Relief Pitcher',       rarity: 'common'   },
   ],
 
   redsox: [
