@@ -9,6 +9,8 @@ import {
   POPOUT_LINES, STRIKEOUT_SWINGING_LINES, STRIKEOUT_CALLED_LINES,
   BUNT_SINGLE_LINES, SACRIFICE_BUNT_LINES, SAC_FLY_LINES,
   STEAL_LINES, ERROR_LINES, FC_LINES,
+  TAKEN_STRIKE_FASTBALL_LINES, TAKEN_STRIKE_BREAKING_LINES,
+  TAKEN_STRIKE_CHANGEUP_LINES, TAKEN_STRIKE_GENERIC_LINES,
 } from './commentaryLines';
 import { checkPitcherInjury, checkPlayInjury, getPlayerDurability } from './injuries';
 import { getUmpireZoneEffect, maybeMissedCall } from './umpires';
@@ -441,8 +443,17 @@ function resolveSwing(state, swingType, pitch) {
     if (pitch.isStrike) {
       state.strikes++;
       if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; state.log.push({ type: 'strikeout', text: `${batter.name} ${pickLine(STRIKEOUT_CALLED_LINES)}` }); state.lastPlay = { type: 'strikeout', text: `${batter.name} ${pickLine(STRIKEOUT_CALLED_LINES)}` }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; }
-      state.log.push({ type: 'strike', text: `Strike ${state.strikes} — ${batter.name} takes a ${pitch.location} ${pitch.pitchType}` });
-      state.lastPlay = { type: 'strike', text: `Strike ${state.strikes} — ${batter.name} watches it` };
+      {
+        let takenLine;
+        const pt = (pitch.pitchType || '').toLowerCase();
+        if (pt.includes('fast')) takenLine = pickLine(TAKEN_STRIKE_FASTBALL_LINES);
+        else if (pt.includes('break') || pt.includes('curve') || pt.includes('slider') || pt.includes('hook')) takenLine = pickLine(TAKEN_STRIKE_BREAKING_LINES);
+        else if (pt.includes('change') || pt.includes('off') || pt.includes('split') || pt.includes('fork')) takenLine = pickLine(TAKEN_STRIKE_CHANGEUP_LINES);
+        else takenLine = pickLine(TAKEN_STRIKE_GENERIC_LINES);
+        const strikeText = `Strike ${state.strikes} — ${takenLine}`;
+        state.log.push({ type: 'strike', text: strikeText });
+        state.lastPlay = { type: 'strike', text: strikeText };
+      }
     } else {
       state.balls++;
       if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; }
