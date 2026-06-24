@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, X } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 const PRESETS = [1, 3, 5, 10, 25];
 
@@ -17,21 +18,16 @@ export default function DonateModal({ onClose }) {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/_base44/api/functions/create-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: amt }),
-      });
-      const data = await res.json();
-      if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
+      const response = await base44.functions.invoke('create-checkout', { amount: amt });
+      if (response.data?.redirectUrl) {
+        window.location.href = response.data.redirectUrl;
       } else {
-        console.error('Checkout error:', data);
-        setError(data.error || 'Something went wrong');
+        console.error('Checkout error:', response.data);
+        setError(response.data?.error || 'Something went wrong');
         setLoading(false);
       }
     } catch (e) {
-      console.error('Fetch error:', e);
+      console.error('Checkout error:', e);
       setError(e.message);
       setLoading(false);
     }
