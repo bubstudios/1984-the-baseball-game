@@ -539,6 +539,8 @@ export const TEAMS = {
         splits: estSplits(.214, 4, 178, 48, "R") },
       { name: "R.J. Reynolds", pos: "OF", bats: "S", contact: 5, power: 2, bunting: 5, speed: 6, defense: 5, arm: 5,
         splits: estSplits(.241, 3, 161, 46, "S") },
+      { name: "German Rivera", pos: "C", bats: "R", contact: 5, power: 3, bunting: 3, speed: 2, defense: 6, arm: 6,
+        splits: estSplits(.220, 4, 95, 32, "R") },
     ],
     rotation: [
       { name: "Alejandro Pena", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 8, control: 8, contact: 5, power: 2, bunting: 5, speed: 3 },
@@ -552,6 +554,8 @@ export const TEAMS = {
       { name: "Carlos Diaz", pos: "RP", throws: "L", bats: "L", stamina: 3, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Tom Niedenfuer", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 7, control: 8, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Burt Hooton", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 7, control: 7, contact: 4, power: 2, bunting: 4, speed: 2 },
+      { name: "Jerry Reuss", pos: "RP", throws: "L", bats: "L", stamina: 7, pitchSpeed: 6, offSpeed: 8, control: 7, contact: 4, power: 2, bunting: 5, speed: 2 },
+      { name: "Rick Honeycutt", pos: "RP", throws: "L", bats: "L", stamina: 5, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 2 },
     ],
   },
 
@@ -1284,7 +1288,7 @@ export const PLAYER_ERRORS = {
   // Dodgers
   "Steve Sax": 22, "Ken Landreaux": 5, "Pedro Guerrero": 27, "Mike Marshall": 7,
   "Mike Scioscia": 13, "Greg Brock": 9, "Franklin Stubbs": 4, "Dave Anderson": 14,
-  "Bill Russell": 10, "Candy Maldonado": 3, "Bob Bailor": 4, "Steve Yeager": 4, "R.J. Reynolds": 2,
+  "Bill Russell": 10, "Candy Maldonado": 3, "Bob Bailor": 4, "Steve Yeager": 4, "R.J. Reynolds": 2, "German Rivera": 3, "Jerry Reuss": 1, "Rick Honeycutt": 1,
   // Reds
   "Gary Redus": 12, "Pete Rose": 5, "Dave Parker": 9, "Cesar Cedeno": 6,
   "Dave Concepcion": 18, "Nick Esasky": 17, "Ron Oester": 14, "Dann Bilardello": 7,
