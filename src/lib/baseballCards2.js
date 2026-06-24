@@ -245,9 +245,12 @@ export const EXTRA_ROSTERS = {
     { id: 18, name: 'Dave Tobik',       position: 'RP',  number: 44, ba: '-',    hr: '-', rbi: '-', era: '5.30', role: 'Relief Pitcher',       rarity: 'common'   },
     { id: 19, name: 'George Wright',    position: 'CF',  number: 9,  ba: '.246', hr: 5,  rbi: 35,  era: '-',    role: 'Center Field',          rarity: 'common'   },
     { id: 20, name: 'Tommy Dunbar',     position: 'OF',  number: 16, ba: '.252', hr: 6,  rbi: 24,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
-    { id: 21, name: 'Toby Harrah',      position: '2B',  number: 2,  ba: '.266', hr: 9,  rbi: 58,  era: '-',    role: 'Second Base/Veteran',   rarity: 'uncommon' },
+    { id: 21, name: 'Wayne Tolleson',   position: '2B',  number: 2,  ba: '.213', hr: 1,  rbi: 18,  era: '-',    role: 'Second Base/Speed',    rarity: 'common'   },
     { id: 22, name: 'Ned Yost',         position: 'C',   number: 34, ba: '.182', hr: 2,  rbi: 7,   era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 23, name: 'Dave Hostetler',   position: '1B',  number: 21, ba: '.209', hr: 8,  rbi: 22,  era: '-',    role: 'Bench/Power',          rarity: 'common'   },
+    { id: 24, name: 'Bob Jones',        position: 'OF',  number: 34, ba: '.259', hr: 4,  rbi: 22,  era: '-',    role: 'Bench/Utility',        rarity: 'common'   },
+    { id: 25, name: 'Jeff Kunkel',      position: 'C',   number: 10, ba: '.221', hr: 2,  rbi: 7,   era: '-',    role: 'Bench/Rookie Catcher', rarity: 'uncommon' },
+    { id: 26, name: 'Jim Bibby',        position: 'RP',  number: 39, ba: '-',    hr: '-', rbi: '-', era: '4.41', role: 'Relief/Veteran',       rarity: 'uncommon' },
   ],
 
   expos: [

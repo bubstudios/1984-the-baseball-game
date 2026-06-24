@@ -897,7 +897,7 @@ export const TEAMS = {
       { name: "Larry Parrish", pos: "DH", bats: "R", contact: 6, power: 8, bunting: 2, speed: 3, defense: 5, arm: 7, splits: { vsLHP: { ab: 171, ba: .243, hr: 8 }, vsRHP: { ab: 403, ba: .285, hr: 14 } } },
       { name: "Billy Sample", pos: "LF", bats: "R", contact: 6, power: 4, bunting: 4, speed: 6, defense: 6, arm: 5, splits: estSplits(.265, 8, 250, 75, "R") },
       { name: "Gary Ward", pos: "RF", bats: "R", contact: 7, power: 6, bunting: 3, speed: 5, defense: 6, arm: 7, splits: { vsLHP: { ab: 169, ba: .307, hr: 5 }, vsRHP: { ab: 394, ba: .279, hr: 16 } } },
-      { name: "Toby Harrah", pos: "2B", bats: "S", contact: 6, power: 5, bunting: 4, speed: 5, defense: 7, arm: 6, splits: estSplits(.266, 9, 526, 140, "S") },
+      { name: "Wayne Tolleson", pos: "2B", bats: "S", contact: 5, power: 2, bunting: 6, speed: 6, defense: 6, arm: 5, splits: estSplits(.213, 1, 306, 92, "S") },
       { name: "Ned Yost", pos: "C", bats: "R", contact: 4, power: 2, bunting: 3, speed: 2, defense: 5, arm: 6, splits: estSplits(.224, 6, 196, 44, "R") },
       { name: "Curtis Wilkerson", pos: "SS", bats: "S", contact: 5, power: 2, bunting: 6, speed: 5, defense: 6, arm: 5, splits: estSplits(.236, 1, 329, 98, "S") },
     ],
@@ -906,7 +906,8 @@ export const TEAMS = {
       { name: "Donnie Scott", pos: "C", bats: "S", contact: 5, power: 3, bunting: 4, speed: 3, defense: 6, arm: 6, splits: estSplits(.229, 4, 183, 54, "S") },
       { name: "Dave Hostetler", pos: "1B/DH", bats: "R", contact: 4, power: 5, bunting: 2, speed: 2, defense: 5, arm: 4, splits: estSplits(.209, 8, 201, 60, "R") },
       { name: "Tommy Dunbar", pos: "OF", bats: "L", contact: 5, power: 4, bunting: 4, speed: 4, defense: 5, arm: 5, splits: estSplits(.252, 6, 219, 64, "L") },
-      { name: "Wayne Tolleson", pos: "2B/SS", bats: "S", contact: 5, power: 2, bunting: 6, speed: 6, defense: 6, arm: 5, splits: estSplits(.213, 1, 306, 92, "S") },
+      { name: "Bob Jones", pos: "OF/1B", bats: "L", contact: 5, power: 3, bunting: 4, speed: 3, defense: 5, arm: 4, splits: estSplits(.259, 4, 156, 55, "L") },
+      { name: "Jeff Kunkel", pos: "C", bats: "R", contact: 5, power: 3, bunting: 3, speed: 3, defense: 6, arm: 6, splits: estSplits(.221, 2, 50, 15, "R") },
     ],
     rotation: [
       { name: "Charlie Hough", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 4, offSpeed: 10, control: 7, contact: 2, power: 1, bunting: 3, speed: 2, pitches: ["Fastball", "Knuckleball", "Changeup"], specialty: { name: "Hough's Knuckler", pitch: "Knuckleball", label: "RC" } },
@@ -920,6 +921,7 @@ export const TEAMS = {
       { name: "Odell Jones", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Dave Tobik", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Tom Henke", pos: "RP", throws: "R", bats: "R", stamina: 3, pitchSpeed: 8, offSpeed: 6, control: 4, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Jim Bibby", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 2 },
     ],
   },
 
@@ -1291,6 +1293,12 @@ export const PLAYER_ERRORS = {
   "Barry Bonnell": 2, "Steve Henderson": 1, "Gorman Thomas": 2, "Orlando Mercado": 2, "Domingo Ramos": 3, "Larry Milbourne": 16,
   "Mark Langston": 2, "Mike Moore": 2, "Jim Beattie": 2, "Matt Young": 2,
   "Mike Stanton": 1, "Dave Beard": 1, "Paul Mirabella": 1, "Edwin Nunez": 2, "Bob Stoddard": 1, "Ed Vande Berg": 1,
+  // Rangers
+  "Buddy Bell": 8, "George Wright": 3, "Pete O'Brien": 8, "Larry Parrish": 6,
+  "Billy Sample": 4, "Gary Ward": 6, "Wayne Tolleson": 10, "Ned Yost": 4, "Curtis Wilkerson": 15,
+  "Mickey Rivers": 2, "Donnie Scott": 4, "Dave Hostetler": 5, "Tommy Dunbar": 2, "Bob Jones": 2, "Jeff Kunkel": 1,
+  "Charlie Hough": 5, "Frank Tanana": 3, "Danny Darwin": 3, "Mike Mason": 3,
+  "Dave Schmidt": 2, "Dave Stewart": 2, "Odell Jones": 2, "Dave Tobik": 2, "Tom Henke": 1, "Jim Bibby": 1,
 };
 
 // Estimate splits for bench players based on overall stats + handedness
