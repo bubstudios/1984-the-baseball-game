@@ -1515,8 +1515,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
         </div>
       )}
 
-      {/* Stats flash — only stats/flavor, NO hit commentary. All hits now live in orange announcer call */}
-      {lastPlay && lastPlay.text && !hasPlayResult && ['stats', 'flavor'].includes(lastPlay.statsType) && (
+      {/* Stats flash — NO hits, outs, or play results. Only flavor/stats between pitches */}
+      {lastPlay && lastPlay.text && !hasPlayResult && !['single','double','triple','homerun','groundout','flyout','lineout','popout','strikeout','walk','error','fc','doubleplay','sacfly','caughtstealing','steal'].includes(lastPlay?.type) && (
         <div className="mt-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-1.5 inline-block">
           <span className="text-sm font-heading font-bold text-primary">{lastPlay.text}</span>
         </div>
