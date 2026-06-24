@@ -721,6 +721,371 @@ It's not optional.`
   },
 };
 
+// ── Miscellaneous 1984-era ad content ──
+const MISC_ADS = {
+  'vcr': {
+    icon: '📼', color: '#2a2a2a',
+    title: '📼 The VCR Revolution',
+    body: `THE VCR — VIDEO CASSETTE RECORDER
+
+In 1984, the VCR is the most transformative consumer electronics device since the television itself. Americans are programming their VCRs before leaving for work, recording shows to watch later — a concept so novel it has its own term: "time-shifting."
+
+THE TECHNOLOGY
+VHS (Video Home System) and Betamax are the two competing formats. VHS is winning. A blank VHS tape costs $8-12 and records up to 6 hours in EP mode. The picture quality in EP is acceptable. In SP mode, it's excellent but only fits 2 hours.
+
+THE VIDEO STORE
+There are over 7,000 video rental stores in America in 1984, growing fast. You walk in, browse plastic cases on shelves, pick a movie, show your membership card, pay $2-3 per night, and take it home. Late fees are strict. Everyone has paid late fees.
+
+PROGRAMMING THE VCR
+The clock blinks 12:00 because nobody has figured out how to set it. Programming a recording requires navigating a menu system with a remote that has 30 buttons. The manual is 40 pages. Your teenager can do it. You cannot.
+
+THE IMPACT
+For the first time, television is not something you have to be home for. You watch what you want, when you want. The entertainment industry will never be the same.
+
+PROGRAM YOUR VCR.
+Before you leave for work.
+Before you miss another episode.`,
+  },
+  'future_tech': {
+    icon: '🔮', color: '#4a0080',
+    title: '🔮 The Future Is Coming',
+    body: `THE FUTURE — IT'S CLOSER THAN YOU THINK
+
+Some even predict a computer in every home. This sounds absurd. It is not absurd.
+
+THE NUMBERS
+In 1984, approximately 8% of American households own a personal computer. That number was 1% in 1981. It is doubling every two years. At this rate, a computer in every home is not a prediction — it is arithmetic.
+
+WHAT CHANGES
+A computer in the home means: word processing instead of typewriters. Spreadsheets instead of ledger paper. Games instead of board games (though board games will survive). Educational software instead of flash cards. The internet does not exist yet for consumers, but researchers at universities are already sending electronic mail to each other.
+
+THE SKEPTICS
+"This is a fad." — People said this about television in 1948. There were 4,000 televisions in America in 1948. There are 84 million in 1984. Fads don't do that.
+
+THE OPTIMISTS
+"This will change everything." — They are right. They don't know how yet. Nobody does. But the direction is clear.
+
+THE COMPUTER
+It sits on a desk. It has a screen. It has a keyboard. It does what you tell it to do, slowly, in a language that is not English. Your children will learn this language. You may not. That's okay. They'll help you.
+
+SOME EVEN PREDICT A COMPUTER IN EVERY HOME.
+They're probably right.`,
+  },
+  'telecom': {
+    icon: '☎️', color: '#003087',
+    title: '☎️ The Telephone Revolution',
+    body: `THE TELEPHONE — AMERICA'S SYSTEM IS CHANGING
+
+New services are becoming available nationwide. The telecommunications industry has been fundamentally restructured, and the effects are reaching your home.
+
+THE BREAKUP OF AT&T
+On January 1, 1984, AT&T was broken up into seven regional operating companies — the "Baby Bells." This is the largest corporate reorganization in American history. The Bell System that existed since 1885 no longer exists in the form your parents knew.
+
+WHAT IT MEANS FOR YOU
+Long-distance service is now competitive. AT&T, MCI, and Sprint are all competing for your long-distance calls. Rates are falling. The quality is improving. You can now choose your long-distance carrier, which is a sentence that would have been meaningless two years ago.
+
+THE TECHNOLOGY
+Touch-tone phones are replacing rotary phones. Cordless phones are arriving in stores. Fax machines are appearing in offices. The infrastructure for digital communication is being laid, quite literally, across the country — fiber optic cables being buried alongside highways.
+
+THE FUTURE
+Some researchers believe that someday, telephone lines will carry not just voice but data — pictures, documents, even video. This seems far-fetched. The bandwidth required is enormous. But the technology is improving faster than anyone predicted.
+
+NEW SERVICES ARE BECOMING AVAILABLE NATIONWIDE.
+The world is getting smaller.
+One call at a time.`,
+  },
+  'ballpark_food': {
+    icon: '🥨', color: '#b45309',
+    title: '🥨 Ballpark Food — An American Tradition',
+    body: `BALLPARK FOOD — A TRADITION AS OLD AS THE GAME
+
+Take a break and enjoy a soft pretzel. Or a hot dog. Or peanuts. Or all three. This is the ballpark experience.
+
+THE HOT DOG
+The ballpark frank is not the same as the hot dog you eat at home. It is larger. It costs more. It tastes better. This is not a coincidence — the concession industry has spent decades perfecting the ballpark hot dog experience. The bun is softer. The mustard is brighter yellow. The whole thing costs $1.50, which is 50 cents more than it should be, and you will pay it without complaint.
+
+THE PRETZEL
+Soft. Warm. Coarse salt. Served in wax paper. Costs $1.00. Best consumed between the 3rd and 5th innings. The pretzel vendor walks up and down the aisles shouting "PRETZELS!" in a voice that carries over 40,000 people. This is a skill.
+
+THE PEANUTS
+Sold in a small bag. Salted. You shell them and drop the shells on the ground. This is the only place in America where dropping food debris on the floor is not just acceptable but expected. The shells crunch underfoot. By the 7th inning, the concrete is covered. This is tradition.
+
+THE CRACKER JACK
+"Candy-coated popcorn, peanuts, and a prize." The prize is a small sticker or a temporary tattoo. You will be disappointed by the prize. You will buy Cracker Jack again next time. This is also tradition.
+
+THE BEER
+If you're of age. $2.50 for a cup. Served in a paper cup that says "GO [TEAM]" on it. Do not throw it in the air when your team hits a home run. People do this. It does not end well.
+
+TAKE A BREAK AND ENJOY A SOFT PRETZEL.
+You're at the ballpark.
+This is what it's for.`,
+  },
+  'fireworks': {
+    icon: '🎆', color: '#cc0000',
+    title: '🎆 Fireworks Night — Stick Around!',
+    body: `FIREWORKS NIGHT — STICK AROUND AFTER THE GAME
+
+Post-game fireworks are one of baseball's most beloved promotions. Tonight's show will be spectacular — set to music, choreographed to patriotic favorites and popular hits.
+
+THE SHOW
+The pyrotechnics team sets up along the warning track and beyond the outfield walls. Synchronized to music broadcast through the stadium PA system. The show typically runs 20-25 minutes. Visible throughout the surrounding neighborhoods.
+
+THE MUSIC
+The 1984 fireworks program features patriotic favorites (Stars and Stripes Forever, God Bless America), popular songs from the charts, and a few surprises. The finale is timed to coincide with the biggest burst of the evening. If you've never seen a fireworks finale at a ballpark, you are in for a treat.
+
+THE TRADITION
+Fireworks nights draw some of the largest crowds of the season. Families stay late. Kids who fell asleep during the 7th inning wake up for the show. The parking lot empties slowly afterward, and nobody minds.
+
+TIPS
+• Stay in your seat for the best view
+• The show starts approximately 15 minutes after the final out
+• Protect your ears if you're sensitive to loud noises
+• Don't leave early — the finale is worth the wait
+
+STICK AROUND.
+You won't regret it.`,
+  },
+  'family_night': {
+    icon: '👨‍👩‍👧‍👦', color: '#27ae60',
+    title: '👨‍👩‍👧‍👦 Family Night — Tuesday Home Games',
+    body: `FAMILY NIGHT — EVERY TUESDAY HOME GAME
+
+Four tickets, four hot dogs, four sodas — one low price. Ask at the box office.
+
+THE DEAL
+Family Night is the best value in baseball. For one flat price — typically around $20-25 — a family of four gets: four general admission tickets, four hot dogs, four medium sodas. That's the entire evening for less than the cost of taking the family to a movie.
+
+WHY TUESDAY
+Tuesday is the slowest day for baseball attendance. Weekday games struggle to draw crowds. Family Night fills the stadium on a night that would otherwise be empty. It's good business and good community relations.
+
+THE ATMOSPHERE
+Tuesday Family Nights have a different feel than weekend games. Fewer corporate types. More kids. More strollers. More parents who are just trying to give their kids a good night out without spending $100. The crowd is more relaxed. The energy is family-friendly.
+
+THE HOT DOGS
+Included in the package. They are ballpark franks. Your children will eat them. You will eat one too. The mustard is bright yellow and comes in a packet that requires manual tearing.
+
+ASK AT THE BOX OFFICE.
+Tuesday night. Bring the family.
+Make a memory.`,
+  },
+  'rubiks': {
+    icon: '🟦', color: '#cc0000',
+    title: '🟦 The Rubik\'s Cube Craze',
+    body: `THE RUBIK'S CUBE — 1984'S BIGGEST PUZZLE
+
+The Rubik's Cube shows no signs of slowing down. Over 100 million cubes have been sold worldwide since 1980. It is the best-selling puzzle toy in history.
+
+THE CUBE
+Six sides. Six colors. 43 quintillion possible combinations. One solution. You twist the rows and columns. The colors scramble. You try to get them back. You cannot.
+
+THE HISTORY
+Invented in 1974 by Ernő Rubik, a Hungarian architecture professor. He called it the "Magic Cube." It was released internationally in 1980 as the "Rubik's Cube." Within two years, one in every seven people on Earth had touched one.
+
+THE SPEED CUBERS
+There are people who can solve the cube in under 30 seconds. The world record in 1984 is 22 seconds. These people have memorized algorithms — sequences of moves that are applied based on the pattern of the cube. There are over 50 standard algorithms. Speed cubers know all of them.
+
+THE FRUSTRATION
+Most people get one side. Some people get two sides. Almost nobody gets all six without help. The cube sits on coffee tables, half-solved, mocking its owner. It has ended friendships.
+
+THE SOLUTION BOOK
+Patrick Bossert's "You Can Do the Cube" sold 1.5 million copies. It is the best-selling book of 1981. A book about how to solve a toy. This tells you something about 1981.
+
+CAN YOU SOLVE ALL SIX SIDES?
+Probably not.
+But you'll keep trying.`,
+  },
+  'bowling': {
+    icon: '🎳', color: '#1d4ed8',
+    title: '🎳 Bowling Leagues Now Forming',
+    body: `NEIGHBORHOOD BOWLING LEAGUES — NOW FORMING
+
+Bowling is America's most participated sport. Over 60 million Americans bowl at least once a year. Leagues are forming at your local lanes right now.
+
+THE LEAGUE
+A bowling league meets weekly — usually Tuesday or Wednesday nights. Teams of four. Each team bowls three games. The atmosphere is social. There is beer. There is camaraderie. The stakes are low but the bragging rights are high.
+
+THE SHOES
+You must rent bowling shoes. They are ugly. They have two different colors. One sole slides, one grips. This is the only sport where the required footwear is worse than the sport itself. Nobody complains about the shoes. That's part of bowling.
+
+THE BALL
+House balls are free. They weigh between 6 and 16 pounds. The finger holes are drilled for average-sized hands. Your hand is not average-sized. You will adapt. Serious bowlers own their own balls, drilled specifically for their fingers. This costs $80-150. You do not need to do this. But you will eventually want to.
+
+THE SCORE
+Bowling is one of the few sports where you can mathematically measure your improvement. A beginner scores 80-100. An intermediate scores 120-140. A good league bowler scores 160-180. A perfect game is 300. Nobody you know has bowled a 300. Someone at your local lanes claims they have. They have not.
+
+THE LANES
+Your local bowling alley has 24-32 lanes, a snack bar, a bar, and a row of arcade games in the back. The smell is shoe leather, lane oil, and French fries. It is one of the most comforting smells in American life.
+
+JOIN A LEAGUE.
+Make friends. Drink beer.
+Improve your average.`,
+  },
+  'board_games': {
+    icon: '🎲', color: '#8B4513',
+    title: '🎲 Family Game Night',
+    body: `FAMILY GAME NIGHT — A GREAT AMERICAN TRADITION
+
+Board games continue to bring families together. In an era of television, VCRs, and video games, the board game endures.
+
+THE CLASSICS
+Monopoly: The game that ends friendships. Two to eight players. Average game length: 2-4 hours. Someone always wants to be the banker. The banker always wins. This is suspicious.
+
+Scrabble: The word game. Seven tiles per player. The dictionary is the final authority. Arguments about whether "QI" is a real word will occur. It is. So is "ZA." Nobody knows what they mean.
+
+Risk: World domination. The game takes six hours. Alliances form and break. Betrayal is part of the game. By hour four, someone has flipped the board. This is also tradition.
+
+THE NEW GAMES
+Trivial Pursuit: Released in 1984. Six categories of trivia. The most popular party game in America. You will learn that you know less than you thought. Your friend knows more than you expected. This is humbling.
+
+THE EXPERIENCE
+Family game night means: the TV is off. The table is cleared. Snacks are served. Someone reads the rules. Nobody listens. Arguments about the rules follow. The rules are re-read. The game begins. It is louder than expected. It is more fun than expected.
+
+BOARD GAMES CONTINUE TO BRING FAMILIES TOGETHER.
+The TV can wait.
+Roll the dice.`,
+  },
+  'drive_in': {
+    icon: '🎬', color: '#2a2a2a',
+    title: '🎬 The Drive-In Theater',
+    body: `THE DRIVE-IN THEATER — AN AMERICAN ORIGINAL
+
+Take the family out for an evening at the drive-in. There are fewer than 200 drive-in theaters left in America, down from over 4,000 in 1958. But the ones that remain are worth the trip.
+
+THE EXPERIENCE
+You drive in. You find a spot. You pull up to a metal pole that has a speaker on it. You hang the speaker on your car window. You adjust the volume. The sound quality is questionable. You roll down the windows. The kids are in their pajamas in the back seat. The trunk is full of snacks you brought from home.
+
+THE MOVIES
+Drive-ins typically show double features — two movies for the price of one. The first is family-friendly. The second is more adult. By the second movie, the kids are asleep. This is the system and it works.
+
+THE CONCESSION STAND
+The drive-in concession stand is a time capsule. Popcorn. Candy. Hot dogs. Soda. The prices are reasonable — lower than indoor theaters. The hot dogs are better than they should be.
+
+THE DUSK
+Movies start at dusk. In the summer, that's around 8:45 PM. The sky fades from blue to purple to black. The screen lights up. The speaker crackles. The movie begins. It's not the same as an indoor theater. It's better. Or at least, it's different. And different is the point.
+
+WHY THEY'RE DISAPPEARING
+Land is worth more as shopping malls and housing developments than as outdoor movie theaters. The drive-in is being paved over. See one while you can.
+
+TAKE THE FAMILY TO THE DRIVE-IN.
+Bring blankets.
+Bring the kids in pajamas.`,
+  },
+  'cassette': {
+    icon: '🎵', color: '#6a0dad',
+    title: '🎵 Cassette Tapes & The Record Store',
+    body: `CASSETTE TAPES — MUSIC ON THE GO
+
+Cassette tapes remain a popular way to enjoy music. The record store is the center of musical discovery in 1984.
+
+THE CASSETTE
+A plastic shell containing magnetic tape. Two sides. 60 or 90 minutes. You flip it over halfway through. The sound quality is not as good as vinyl. It is better than nothing. It is portable. That is the point.
+
+THE WALKMAN
+Sony's Walkman, introduced in 1979, changed how Americans listen to music. A portable cassette player with headphones. You listen to your music, in your ears, while walking down the street. This was not possible before 1979. Now it is everywhere.
+
+THE MIX TAPE
+You record songs from the radio onto a blank cassette. You press "record" when the DJ stops talking. You try to avoid the DJ's voice at the beginning and end of songs. You fail. The DJ's voice is on your mix tape. You accept this. You make a cover for the tape with a marker. You give it to someone. This is a declaration of love.
+
+THE RECORD STORE
+Your neighborhood record store has bins of LPs, cassettes, and a small section of CDs. The walls are covered in posters. The staff knows more about music than you. They will recommend things. Listen to them.
+
+THE ALBUMS OF 1984
+Bruce Springsteen's "Born in the U.S.A." Prince's "Purple Soundtrack." Van Halen's "1984." Huey Lewis and the News. The Cars. Madonna. The soundtrack to Footloose. It is an extraordinary year for music.
+
+DISCOVER THE LATEST MUSIC AT YOUR NEIGHBORHOOD RECORD STORE.
+Bring a blank cassette.
+Make a mix tape.`,
+  },
+  'library': {
+    icon: '📚', color: '#2a6000',
+    title: '📚 Visit Your Local Library',
+    body: `YOUR LOCAL LIBRARY — KNOWLEDGE IS FREE
+
+Visit your local library this week. The library card is the most powerful card in your wallet, and it is free.
+
+THE LIBRARY CARD
+Free to obtain. Requires proof of address. Gives you access to: books, magazines, newspapers, records, cassettes, and in some libraries, VHS tapes. One card. No fees. This is the best deal in America.
+
+THE BOOKS
+Your library has thousands of books. Fiction. Nonfiction. Biographies. Mysteries. Romance. Science fiction. Children's books. Reference materials. Encyclopedias. If they don't have a book, they can request it from another library through interlibrary loan. This takes two weeks. It is worth the wait.
+
+THE ATMOSPHERE
+The library is quiet. This is increasingly rare in American life. You can sit and read without interruption. The chairs are not comfortable, but they are not uncomfortable. The lighting is fluorescent. The air smells like paper and binding glue. It is one of the most peaceful places in any town.
+
+THE CHILDREN'S SECTION
+Bean bag chairs. Short shelves. Picture books. The librarian knows every book by heart. Story time is Wednesday morning at 10 AM. Your child will sit in a circle and listen. This is how readers are made.
+
+THE LIBRARIAN
+The librarian has a master's degree. They know where everything is. They know what you should read next. Ask them. They have been waiting for someone to ask. They will give you three recommendations. One will change your life.
+
+READING CAN OPEN A WORLD OF POSSIBILITIES.
+Get a card.
+It's free.`,
+  },
+  'blood_donation': {
+    icon: '🩸', color: '#c0392b',
+    title: '🩸 Donate Blood — Save a Life',
+    body: `DONATE BLOOD — SAVE UP TO THREE LIVES
+
+One pint of blood can help up to three patients. The community blood supply depends on volunteer donors.
+
+THE PROCESS
+Registration. Brief health questionnaire. Mini-physical (blood pressure, pulse, iron check). The donation itself takes 8-10 minutes. You're in the chair for about 45 minutes total. Then: juice and cookies.
+
+WHO CAN DONATE
+You must be at least 17 years old, weigh at least 110 pounds, and be in good health. You can donate every 56 days. Only 5% of eligible Americans donate blood. The other 95% are needed.
+
+WHY IT MATTERS
+Blood cannot be manufactured. Every two seconds, someone in America needs blood. Accident victims. Surgery patients. Cancer patients. People with blood disorders. The blood on the shelf is the blood that saves a life — there is no time to donate after the emergency happens.
+
+THE FEELING
+After donating, you sit for 15 minutes. You eat cookies. You drink juice. You feel good — not just physically, but because you did something that matters. Someone you will never meet will receive your blood. They will live because you gave 45 minutes of your afternoon.
+
+DONATE BLOOD.
+It's the closest thing to being a superhero that an ordinary person can do.`,
+  },
+  'fire_dept': {
+    icon: '🚒', color: '#cc0000',
+    title: '🚒 Support Your Volunteer Fire Department',
+    body: `YOUR LOCAL VOLUNTEER FIRE DEPARTMENT — NEIGHBORS HELPING NEIGHBORS
+
+Over 80% of fire departments in America are volunteer or mostly volunteer. These are your neighbors — regular people with regular jobs who respond to emergencies in their spare time.
+
+WHO THEY ARE
+Your volunteer firefighter is the person who lives three houses down. They work at the hardware store, or the school, or the factory. When the pager goes off, they leave dinner on the table and go. They train for 100+ hours before they can respond to a fire. They train every month after that.
+
+WHAT THEY DO
+Fires. Car accidents. Medical emergencies. Hazardous material spills. Water rescues. Cat rescues (sometimes). They do all of this without pay. They do it because someone has to, and they decided it would be them.
+
+THE COST
+Volunteer fire departments operate on shoestring budgets. Fundraisers, bingo nights, and community donations keep the lights on and the trucks running. A new fire truck costs $200,000-400,000. The protective gear for one firefighter costs $3,000. Your support matters.
+
+SUPPORT YOUR LOCAL VOLUNTEER FIRE DEPARTMENT.
+They'll be there when you need them.
+Be there for them now.`,
+  },
+  'youngster': {
+    icon: '⚾', color: '#27ae60',
+    title: '⚾ Take a Youngster to a Ballgame',
+    body: 'TAKE A YOUNGSTER TO A BALLGAME THIS SUMMER\n\nBaseball. Hot dogs. Summer. It doesn\'t get much better than this.\n\nTHE FIRST GAME\nA child\'s first baseball game is a milestone. The scale of the stadium. The green of the field. The crack of the bat. The crowd noise. The smell of popcorn and mustard. It\'s overwhelming in the best possible way.\n\nTHE MEMORY\nThey will remember who took them. They will remember the score (approximately). They will remember the hot dog (definitely). They will remember the feeling of being in a crowd of thousands of people all watching the same thing. They will remember the seventh-inning stretch.\n\nTHE LESSON\nBaseball teaches patience. It teaches attention. It teaches that failure is part of the game — the best hitters fail 7 times out of 10. It teaches that summer has a rhythm, and the rhythm is measured in innings.\n\nTAKE A YOUNGSTER TO A BALLGAME.\nMake a memory that lasts a lifetime.\nPass it on.',
+  },
+  'keep_clean': {
+    icon: '🗑️', color: '#27ae60',
+    title: '🗑️ Keep America Beautiful',
+    body: 'HELP KEEP AMERICA\'S HIGHWAYS CLEAN\n\nThe highway is everyone\'s responsibility. Don\'t litter.\n\nTHE PROBLEM\nAmericans generate 4.3 pounds of trash per person per day. Some of it ends up on the highway. The roadside is not a trash can.\n\nTHE IRONY\nThe "Crying Indian" commercial — Iron Eyes Cody paddling a canoe through a polluted river, a single tear rolling down his cheek — is the most famous public service announcement in American history. It worked. Littering decreased significantly after it aired. But the highways still need help.\n\nTHE SOLUTION\nDon\'t throw trash out the car window. Use the rest area trash cans. Adopt a highway. Report illegal dumping. Teach your kids that the world is not their garbage can.\n\nKEEP AMERICA BEAUTIFUL.\nDon\'t litter.',
+  },
+  'drunk_driving': {
+    icon: '🚗', color: '#555555',
+    title: '🚗 Never Drink and Drive',
+    body: 'NEVER DRINK AND DRIVE\n\nIn 1984, over 24,000 Americans died in alcohol-related car accidents. This is preventable.\n\nTHE LAW\nThe drinking age is changing. The federal government has tied highway funding to a minimum drinking age of 21. States are complying. This will save lives.\n\nTHE REALITY\nIf you\'ve been drinking, your judgment is impaired. You think you can drive. You cannot. The difference between .08 and .10 blood alcohol content is the difference between a DUI and a vehicular manslaughter charge. The difference between getting home and not getting home.\n\nTHE SOLUTION\nDesignate a driver. Call a cab. Sleep on the couch. Call a friend. Walk. Take the bus. Do anything other than getting behind the wheel.\n\nNEVER DRINK AND DRIVE.\nIt\'s not worth it.\nIt\'s never worth it.',
+  },
+  'local_theater': {
+    icon: '🎬', color: '#8B4513',
+    title: '🎬 Support Your Local Movie Theater',
+    body: 'SUPPORT YOUR LOCAL MOVIE THEATER\n\nThe neighborhood movie theater is a community institution. In 1984, it faces competition from VCRs and video rental stores. It needs your support.\n\nTHE EXPERIENCE\nThere is nothing like seeing a movie on the big screen. The sound. The darkness. The shared experience of laughing or gasping with 200 strangers. Your living room cannot replicate this.\n\nTHE PRICES\nA movie ticket costs $3.50 in 1984. A large popcorn costs $2.00. A large soda costs $1.75. For under $10, you can have a complete evening out. This is one of the best entertainment values in America.\n\nTHE MOVIES OF 1984\nGhostbusters. Beverly Hills Cop. The Karate Kid. Gremlins. Indiana Jones and the Temple of Doom. Footloose. The Natural. Splash. Romancing the Stone. Star Trek III. It is one of the greatest movie years in recent memory.\n\nSUPPORT YOUR LOCAL MOVIE THEATER.\nGo this weekend.\nThe big screen is better.',
+  },
+};
+
 // Map of keyword patterns to popup generators
 const KEYWORD_PATTERNS = [
   // TV Shows
@@ -758,6 +1123,42 @@ const KEYWORD_PATTERNS = [
   { keywords: ['Pepsi', 'choice of a new generation'], data: SODAS['Pepsi'] },
   // PSA
   { keywords: ['seatbelt', 'buckle', 'wear your seat'], data: GENERAL_PSA_CONTENT['seatbelt'] },
+  // VCR / Video Rental
+  { keywords: ['vcr', 'video rental', 'renting movies', 'video store'], data: MISC_ADS['vcr'] },
+  // Future tech / Computers in every home
+  { keywords: ['computer in every home', 'some even predict'], data: MISC_ADS['future_tech'] },
+  // Telecommunications / New services
+  { keywords: ['new services', 'becoming nationwide', 'nationwide', 'telephone system is changing', 'telecommunications'], data: MISC_ADS['telecom'] },
+  // Ballpark food / Pretzel
+  { keywords: ['soft pretzel', 'pretzel', 'take a break and enjoy'], data: MISC_ADS['ballpark_food'] },
+  // Fireworks Night (generic, not Tiger Stadium)
+  { keywords: ['fireworks night', 'fireworks', 'spectacular show set to music'], data: MISC_ADS['fireworks'] },
+  // Family Night / Ballpark promotions
+  { keywords: ['family night', 'four tickets', 'four hot dogs', 'four sodas'], data: MISC_ADS['family_night'] },
+  // Rubik's Cube
+  { keywords: ["rubik's cube", 'rubik', 'six sides'], data: MISC_ADS['rubiks'] },
+  // Bowling
+  { keywords: ['bowling league', 'bowling'], data: MISC_ADS['bowling'] },
+  // Board games / Family game night
+  { keywords: ['board game', 'family game night', 'games continue to bring families'], data: MISC_ADS['board_games'] },
+  // Drive-in theater
+  { keywords: ['drive-in', 'drive in'], data: MISC_ADS['drive_in'] },
+  // Cassette tapes / Music
+  { keywords: ['cassette tape', 'cassette', 'record store', 'neighborhood record'], data: MISC_ADS['cassette'] },
+  // Library
+  { keywords: ['library', 'reading can open'], data: MISC_ADS['library'] },
+  // Blood donation
+  { keywords: ['donate blood', 'blood drive'], data: MISC_ADS['blood_donation'] },
+  // Volunteer fire department
+  { keywords: ['volunteer fire', 'fire department'], data: MISC_ADS['fire_dept'] },
+  // Take a youngster to a ballgame
+  { keywords: ['youngster', 'take a youngster', "america's pastime"], data: MISC_ADS['youngster'] },
+  // Neighborhood / community
+  { keywords: ['keep america', 'highways clean', 'litter'], data: MISC_ADS['keep_clean'] },
+  // Never drink and drive
+  { keywords: ['drink and drive', 'never drink'], data: MISC_ADS['drunk_driving'] },
+  // Support local movie theater
+  { keywords: ['local movie theater', 'support your local movie'], data: MISC_ADS['local_theater'] },
 ];
 
 /**

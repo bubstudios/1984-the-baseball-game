@@ -695,7 +695,7 @@ const GENERAL_CHARITY = [
 // Team promotions — generic
 const GENERAL_TEAM_PROMO = [
   "Don't miss Bat Day this Sunday! The first five thousand kids through the gates receive a free Louisville Slugger.",
-  "Fireworks Night is this Friday after the game. Stick around for a spectacular show set to music.",
+  "Fireworks Night is this Friday after the game — stick around for a spectacular show set to music. Ask at the box office for details.",
   "Next homestand features Cap Night and a magnetic schedule giveaway. Check the scorecard for details.",
   "Family Night tickets are available for every Tuesday home game — four tickets, four hot dogs, four sodas for one low price. Ask at the box office.",
 ];

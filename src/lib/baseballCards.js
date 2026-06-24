@@ -360,6 +360,13 @@ export function getAllTeamKeys() {
   return Object.keys(TEAM_CARD_META);
 }
 
+export function findTeamForPlayer(playerName) {
+  for (const [team, roster] of Object.entries(ALL_ROSTERS_FULL || ALL_ROSTERS || {})) {
+    if (roster.some(p => p.name === playerName)) return team;
+  }
+  return null;
+}
+
 export function getRandomCardForTeam(teamKey) {
   const roster = getRoster(teamKey);
   return roster[Math.floor(Math.random() * roster.length)];
