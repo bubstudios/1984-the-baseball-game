@@ -295,9 +295,11 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
 
   // Auto-dismiss only when not expanded AND not a movie (handles its own timing)
   // Also don't auto-dismiss if ANY rich popup type is active
+  // AND don't auto-dismiss if user hasn't tapped yet (expanded tracks first tap)
   const hasRichPopup = isElectronics || isGeneralProducts || isMoreObscureTv || isMoreObscureTv3 || isArcade || isArcadeVidGame || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds || isLongDistancePhoneWars || isFilmDevelopmentCameras || isThingsThatScream1984 || isMallCulture || isRedSoxBanner || isNationalCharity || isNationalPromos || isNationalWrestling || isVhsBetamax || isDetroitTigers || isCubsBanner || isTigersBanner2 || isMetsBanner || isYankeesBanner || isOriolesBanner || isDodgersBanner || isPadresBanner || isRedsBanner || isRoyalsBanner || isTigersStadium || isPhilliesBanner || isGenericAd;
   useEffect(() => {
-    if (!visible || expanded || hasRichPopup || autoDismissMs <= 0 || isMovie) return;
+    // Only auto-dismiss if autoDismissMs > 0 AND user has tapped (expanded=true)
+    if (!visible || !expanded || hasRichPopup || autoDismissMs <= 0 || isMovie) return;
     const timer = setTimeout(onDismiss, autoDismissMs);
     return () => clearTimeout(timer);
   }, [visible, expanded, hasRichPopup, autoDismissMs, onDismiss, isMovie]);

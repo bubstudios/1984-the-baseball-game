@@ -18,6 +18,7 @@ import Fireworks from '@/components/game/Fireworks';
 import ArgumentsBanner from '@/components/game/ArgumentsBanner';
 import BallparkEventBanner from '@/components/game/BallparkEventBanner';
 import InjuryBanner from '@/components/game/InjuryBanner';
+import PitcherIsPumpedPopup from '@/components/game/PitcherIsPumpedPopup';
 
 import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
 import BeanballBanner from '@/components/game/BeanballBanner';
@@ -85,6 +86,7 @@ export default function Home() {
   const [celebrationPopup, setCelebrationPopup] = useState(null);
   const [caughtStealingPopup, setCaughtStealingPopup] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
+  const [celebrationPumpedPopup, setCelebrationPumpedPopup] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -554,18 +556,44 @@ export default function Home() {
       }
 
       const cpuSwing = cpuSelectSwing(updatedState);
-      // Handle Reach Back specialty pitch
-      const isReachBack = pitchName === '__reachback__';
-      const pitchObj = isReachBack ? { name: '__reachback__' } : (PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"]);
-      console.log('Processing pitch:', pitchName, 'cpuSwing:', cpuSwing);
-      const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
-      console.log('After processAtBat:', resultState);
-      
-      // CPU may make substitutions after the at-bat
-      const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
-      if (afterSubs.gameOver) endingState = afterSubs;
-      console.log('Setting game state with new play:', afterSubs.lastPlay);
-      setGameState(afterSubs);
+       // Handle Reach Back specialty pitch
+       const isReachBack = pitchName === '__reachback__';
+       const pitchObj = isReachBack ? { name: '__reachback__' } : (PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"]);
+       console.log('Processing pitch:', pitchName, 'cpuSwing:', cpuSwing);
+       const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
+       console.log('After processAtBat:', resultState);
+
+       // CPU may make substitutions after the at-bat
+       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
+       if (afterSubs.gameOver) endingState = afterSubs;
+       console.log('Setting game state with new play:', afterSubs.lastPlay);
+       setGameState(afterSubs);
+
+       // Process ballpark events — check if a giveaway event occurred
+       if (afterSubs._ballparkEvent && afterSubs._ballparkEvent.awardCard) {
+         try {
+           loadFromStorage(userTeam);
+           const card = getRandomCardForTeam(userTeam);
+           if (card) {
+             const isNew = !getCollectedIds(userTeam).includes(card.id);
+             const achievementIds = addCard(userTeam, card.id);
+             saveToStorage(userTeam);
+             setCardAward({ ...card, isNew });
+             if (achievementIds.length > 0) {
+               setNewAchievements(prev => [...prev, ...achievementIds]);
+               setShowAchievementPopup(true);
+             }
+           }
+         } catch (e) { console.error('ballpark card award failed:', e); }
+       }
+
+       // Trigger celebration popup for special plays
+       if (afterSubs.lastPlay) {
+         const play = afterSubs.lastPlay;
+         if ((play.type === 'single' || play.type === 'double' || play.type === 'triple' || play.type === 'homerun') && (play.text?.includes('RBI') || play.text?.includes('scores'))) {
+           setCelebrationPumpedPopup({ message: 'Big hit right there!', playerName: play.batterName || 'Batter', isHitter: true });
+         }
+       }
     } catch (e) {
       console.error('handlePitch error:', e);
     } finally {
@@ -585,12 +613,38 @@ export default function Home() {
       console.log('Swing:', swingIndex, 'CPU pitch:', cpuPitch);
       const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
       console.log('After processAtBat:', resultState);
-      
+
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       if (afterSubs.gameOver) endingState = afterSubs;
       console.log('Setting game state with new play:', afterSubs.lastPlay);
       setGameState(afterSubs);
+
+      // Process ballpark events — check if a giveaway event occurred
+      if (afterSubs._ballparkEvent && afterSubs._ballparkEvent.awardCard) {
+        try {
+          loadFromStorage(userTeam);
+          const card = getRandomCardForTeam(userTeam);
+          if (card) {
+            const isNew = !getCollectedIds(userTeam).includes(card.id);
+            const achievementIds = addCard(userTeam, card.id);
+            saveToStorage(userTeam);
+            setCardAward({ ...card, isNew });
+            if (achievementIds.length > 0) {
+              setNewAchievements(prev => [...prev, ...achievementIds]);
+              setShowAchievementPopup(true);
+            }
+          }
+        } catch (e) { console.error('ballpark card award failed:', e); }
+      }
+
+      // Trigger celebration popup for RBI/clutch hits
+      if (afterSubs.lastPlay) {
+        const play = afterSubs.lastPlay;
+        if ((play.type === 'single' || play.type === 'double' || play.type === 'triple' || play.type === 'homerun') && (play.text?.includes('RBI') || play.text?.includes('scores'))) {
+          setCelebrationPumpedPopup({ message: 'What a clutch hit!', playerName: play.batterName || 'Batter', isHitter: true });
+        }
+      }
     } catch (e) {
       console.error('handleSwing error:', e);
     } finally {
@@ -1105,6 +1159,17 @@ export default function Home() {
         <ArgumentsBanner
           result={argumentResult}
           onDismiss={() => setArgumentResult(null)}
+        />
+      )}
+
+      {/* Universal Celebration Popup — Hitter/Fielder */}
+      {celebrationPumpedPopup && (
+        <PitcherIsPumpedPopup
+          message={celebrationPumpedPopup.message}
+          playerName={celebrationPumpedPopup.playerName}
+          isHitter={celebrationPumpedPopup.isHitter}
+          isFielder={celebrationPumpedPopup.isFielder}
+          onDismiss={() => setCelebrationPumpedPopup(null)}
         />
       )}
 
