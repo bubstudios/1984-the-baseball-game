@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
 import { Play, User, Cpu, Trophy, Dice5, Heart } from 'lucide-react';
 import AchievementsPanel from '@/components/game/AchievementsPanel';
+import DonateModal from '@/components/game/DonateModal';
 import { getUnlockedCount } from '@/lib/achievements';
 
 const TEAM_LOGOS = {
@@ -45,6 +46,7 @@ export default function TeamSelect({ onSelect }) {
   const [userTeam, setUserTeam] = useState(null);
   const [cpuTeam, setCpuTeam] = useState(null);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [showDonate, setShowDonate] = useState(false);
 
   const handleTeamClick = (teamKey) => {
     if (userTeam === teamKey) {
@@ -259,28 +261,7 @@ export default function TeamSelect({ onSelect }) {
             {/* Donate */}
             <div className="pt-2 pb-8 text-center space-y-2">
               <button
-                onClick={async () => {
-                  const amounts = ['$2', '$5', '$10'];
-                  const choice = window.prompt('Choose a tip amount: 2, 5, or 10 (dollars)', '5');
-                  if (!choice) return;
-                  const amt = parseFloat(choice);
-                  if (isNaN(amt) || amt <= 0) return;
-                  try {
-                    const res = await fetch('/_base44/api/functions/create-checkout', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ amount: amt }),
-                    });
-                    const data = await res.json();
-                    if (data.redirectUrl) {
-                      window.location.href = data.redirectUrl;
-                    } else {
-                      alert('Sorry, something went wrong creating the checkout. ' + (data.error || ''));
-                    }
-                  } catch (e) {
-                    alert('Sorry, something went wrong: ' + e.message);
-                  }
-                }}
+                onClick={() => setShowDonate(true)}
                 className="text-[11px] font-heading text-muted-foreground/60 hover:text-primary transition-colors inline-flex items-center gap-1"
               >
                 <Heart className="w-3 h-3" />
@@ -292,6 +273,8 @@ export default function TeamSelect({ onSelect }) {
             </div>
           </>
         )}
+
+        {showDonate && <DonateModal onClose={() => setShowDonate(false)} />}
       </div>
     </div>
   );
