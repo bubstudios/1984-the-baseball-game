@@ -22,38 +22,45 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Payment configuration missing' }, { status: 500 });
     }
 
+    const requestBody = {
+      cart: {
+        items: [
+          {
+            name: 'Tip the Developer — 1984: The Baseball Season',
+            quantity: 1,
+            price: parseFloat(amount).toFixed(2),
+          },
+        ],
+      },
+      returnUrls: {
+        successUrl: `${origin}/ThankYou`,
+        cancelUrl: origin,
+      },
+    };
+
+    console.log('Creating checkout with:', { amount, origin });
+    console.log('Request body:', JSON.stringify(requestBody));
+
     const response = await fetch(
-      'https://www.wixapis.com/payments/platform/v1/checkout-sessions/construct',
+      'https://www.wixapis.com/v1/payments/checkout-sessions',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': apiKey,
+          'Authorization': `Bearer ${apiKey}`,
           'wix-site-id': siteId,
         },
-        body: JSON.stringify({
-          cart: {
-            items: [
-              {
-                name: 'Tip the Developer — 1984: The Baseball Season',
-                quantity: 1,
-                price: parseFloat(amount).toFixed(2),
-              },
-            ],
-          },
-          returnUrls: {
-            successUrl: `${origin}/ThankYou`,
-            cancelUrl: origin,
-          },
-        }),
+        body: JSON.stringify(requestBody),
       }
     );
 
     const data = await response.json();
+    console.log('Wix response status:', response.status);
+    console.log('Wix response:', JSON.stringify(data));
 
     if (!response.ok) {
-      console.error('Wix checkout error:', JSON.stringify(data));
-      return Response.json({ error: data?.message || 'Checkout creation failed' }, { status: response.status });
+      console.error('Wix checkout error:', { status: response.status, error: data });
+      return Response.json({ error: data?.message || data?.errorDescription || 'Checkout creation failed' }, { status: response.status });
     }
 
     return Response.json({ redirectUrl: data.checkoutSession.redirectUrl });
