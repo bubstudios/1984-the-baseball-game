@@ -96,6 +96,8 @@ export const TEAMS = {
         splits: estSplits(.271, 3, 168, 48, "L") },
       { name: "Champ Summers", pos: "OF", bats: "L", contact: 5, power: 4, bunting: 3, speed: 3, defense: 5, arm: 5,
         splits: estSplits(.255, 6, 130, 40, "L") },
+      { name: "Luis Salazar", pos: "3B", bats: "R", contact: 6, power: 4, bunting: 3, speed: 4, defense: 6, arm: 7,
+        splits: estSplits(.268, 8, 312, 105, "R") },
     ],
     rotation: [
       { name: "Eric Show", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 8, contact: 5, power: 2, bunting: 6, speed: 3 },
@@ -109,6 +111,8 @@ export const TEAMS = {
       { name: "Dave Dravecky", pos: "RP", throws: "L", bats: "L", stamina: 5, pitchSpeed: 5, offSpeed: 7, control: 8, contact: 4, power: 2, bunting: 5, speed: 3 },
       { name: "Greg Booker", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Luis DeLeon", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Mark Thurmond", pos: "RP", throws: "L", bats: "L", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Floyd Chiffer", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 7, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -1264,7 +1268,7 @@ export const PLAYER_ERRORS = {
   // Padres
   "Alan Wiggins": 30, "Tony Gwynn": 4, "Steve Garvey": 5, "Graig Nettles": 13,
   "Terry Kennedy": 10, "Kevin McReynolds": 5, "Carmelo Martinez": 7, "Garry Templeton": 29,
-  "Kurt Bevacqua": 4, "Bobby Brown": 3, "Bruce Bochy": 4, "Tim Flannery": 7, "Luis Salazar": 14,
+  "Kurt Bevacqua": 4, "Bobby Brown": 3, "Bruce Bochy": 4, "Tim Flannery": 7, "Luis Salazar": 14, "Mark Thurmond": 1, "Floyd Chiffer": 1,
   // Cubs
   "Bob Dernier": 3, "Ryne Sandberg": 6, "Gary Matthews": 13, "Leon Durham": 11,
   "Keith Moreland": 8, "Jody Davis": 13, "Ron Cey": 18, "Larry Bowa": 12,
