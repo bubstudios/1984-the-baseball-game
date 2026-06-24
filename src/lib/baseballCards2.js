@@ -189,9 +189,11 @@ export const EXTRA_ROSTERS = {
     { id: 18, name: 'Dan Spillner',     position: 'RP',  number: 34, ba: '-',    hr: '-', rbi: '-', era: '4.33', role: 'Relief Pitcher',       rarity: 'common'   },
     { id: 19, name: 'Tom Paciorek',     position: '1B',  number: 6,  ba: '.281', hr: 8,  rbi: 49,  era: '-',    role: 'Bench/First Base',     rarity: 'common'   },
     { id: 20, name: 'Jerry Hairston',   position: 'OF',  number: 15, ba: '.267', hr: 2,  rbi: 22,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
-    { id: 21, name: 'Luis Salazar',     position: 'UT',  number: 23, ba: '.241', hr: 5,  rbi: 27,  era: '-',    role: 'Utility Player',       rarity: 'common'   },
     { id: 22, name: 'Marc Hill',        position: 'C',   number: 16, ba: '.219', hr: 4,  rbi: 14,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 23, name: 'Joel Skinner',     position: 'C',   number: 7,  ba: '.194', hr: 2,  rbi: 8,   era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
+    { id: 24, name: 'Mike Squires',      position: '1B',  number: 25, ba: '.183', hr: 1,  rbi: 6,   era: '-',    role: 'Bench/Defensive Specialist', rarity: 'common' },
+    { id: 25, name: 'Jerry Dybzinski',   position: 'SS',  number: 14, ba: '.235', hr: 1,  rbi: 10,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
+    { id: 26, name: 'Britt Burns',       position: 'RP',  number: 23, ba: '-',    hr: '-', rbi: '-', era: '5.00', role: 'Relief/Swingman',       rarity: 'uncommon' },
   ],
 
   mariners: [

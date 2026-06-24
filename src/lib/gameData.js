@@ -821,8 +821,9 @@ export const TEAMS = {
       { name: "Tom Paciorek", pos: "1B/OF", bats: "R", contact: 7, power: 5, bunting: 3, speed: 3, defense: 6, arm: 5, splits: estSplits(.281, 8, 373, 112, "R") },
       { name: "Jerry Hairston", pos: "OF", bats: "S", contact: 5, power: 2, bunting: 5, speed: 5, defense: 5, arm: 5, splits: estSplits(.267, 2, 182, 54, "S") },
       { name: "Marc Hill", pos: "C", bats: "R", contact: 4, power: 3, bunting: 3, speed: 2, defense: 5, arm: 6, splits: estSplits(.219, 4, 128, 38, "R") },
-      { name: "Luis Salazar", pos: "OF/3B", bats: "R", contact: 5, power: 3, bunting: 5, speed: 6, defense: 5, arm: 6, splits: estSplits(.241, 5, 241, 72, "R") },
       { name: "Joel Skinner", pos: "C", bats: "R", contact: 4, power: 2, bunting: 3, speed: 2, defense: 5, arm: 7, splits: estSplits(.194, 2, 96, 28, "R") },
+      { name: "Mike Squires", pos: "1B", bats: "L", contact: 5, power: 1, bunting: 5, speed: 2, defense: 8, arm: 5, splits: estSplits(.183, 1, 82, 25, "L") },
+      { name: "Jerry Dybzinski", pos: "SS", bats: "R", contact: 5, power: 1, bunting: 5, speed: 5, defense: 7, arm: 5, splits: estSplits(.235, 1, 132, 40, "R") },
     ],
     rotation: [
       { name: "LaMarr Hoyt", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 6, offSpeed: 7, control: 8, contact: 3, power: 1, bunting: 4, speed: 2 },
@@ -836,6 +837,7 @@ export const TEAMS = {
       { name: "Juan Agosto", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Gene Nelson", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Dan Spillner", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Britt Burns", pos: "RP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 2 },
     ],
   },
 
@@ -1275,6 +1277,12 @@ export const PLAYER_ERRORS = {
   "Rob Wilfong": 5, "Juan Beniquez": 2, "Daryl Sconiers": 3, "Rick Burleson": 4, "Derrel Thomas": 5, "Jerry Narron": 3,
   "Mike Witt": 2, "Ron Romanick": 2, "Geoff Zahn": 1, "Tommy John": 3,
   "Luis Sanchez": 1, "Don Aase": 2, "Doug Corbett": 2, "Bruce Kison": 2, "Curt Kaufman": 1, "Jim Slaton": 2,
+  // White Sox
+  "Rudy Law": 6, "Julio Cruz": 2, "Harold Baines": 2, "Greg Luzinski": 0,
+  "Carlton Fisk": 8, "Ron Kittle": 5, "Greg Walker": 6, "Vance Law": 8, "Scott Fletcher": 3,
+  "Tom Paciorek": 4, "Jerry Hairston": 1, "Marc Hill": 2, "Joel Skinner": 2, "Mike Squires": 2, "Jerry Dybzinski": 8,
+  "LaMarr Hoyt": 2, "Richard Dotson": 2, "Floyd Bannister": 1, "Tom Seaver": 2,
+  "Ron Reed": 1, "Salome Barojas": 1, "Juan Agosto": 1, "Gene Nelson": 2, "Dan Spillner": 1, "Britt Burns": 2,
 };
 
 // Estimate splits for bench players based on overall stats + handedness
