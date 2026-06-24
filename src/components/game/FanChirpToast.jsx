@@ -38,7 +38,7 @@ export default function FanChirpToast({ trigger, homeTeamKey }) {
 
   return (
     <div
-      className={`fixed top-32 right-3 z-20 pointer-events-none transition-all duration-400 max-w-[220px] ${
+      className={`fixed bottom-24 right-3 z-20 pointer-events-none transition-all duration-400 max-w-[220px] ${
         visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
       }`}
     >

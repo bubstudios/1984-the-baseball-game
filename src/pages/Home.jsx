@@ -508,7 +508,7 @@ export default function Home() {
       try { unlockAchievement('earl_weaver'); } catch (e) { console.error('earl_weaver failed:', e); }
     }
 
-    // Award a baseball card on any home win
+    // Award a baseball card ONLY on user wins (not CPU wins)
     if (userWon && userTeam) {
       try {
         loadFromStorage(userTeam);
@@ -1128,15 +1128,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Celebration popup — "Welch lets out a yell" etc. */}
-      {celebrationPopup && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top-4 fade-in duration-500 max-w-xs w-full px-4" onClick={() => setCelebrationPopup(null)}>
-          <div className="bg-card/95 border border-primary/40 rounded-xl px-4 py-3 shadow-xl cursor-pointer">
-            <p className="text-sm font-heading text-foreground/90 leading-snug text-center">{celebrationPopup}</p>
-            <p className="text-[9px] text-muted-foreground/40 text-center mt-1 font-heading">tap to dismiss</p>
-          </div>
-        </div>
-      )}
+
 
       {/* Fan Chirp Toast — teal bubble from the stands */}
       {gameState && !gameState.gameOver && (
