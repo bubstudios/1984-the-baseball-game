@@ -278,6 +278,9 @@ export const EXTRA_ROSTERS = {
     { id: 20, name: 'Tony Scott',       position: 'OF',  number: 18, ba: '.240', hr: 1,  rbi: 10,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 21, name: 'Bryan Little',     position: '2B',  number: 11, ba: '.248', hr: 1,  rbi: 11,  era: '-',    role: 'Backup Infielder',     rarity: 'common'   },
     { id: 22, name: 'Razor Shines',     position: '1B',  number: 27, ba: '.220', hr: 2,  rbi: 9,   era: '-',    role: 'Bench/First Base',     rarity: 'common'   },
+    { id: 23, name: 'Miguel Dilone',    position: 'OF',  number: 6,  ba: '.278', hr: 1,  rbi: 15,  era: '-',    role: 'Bench Outfielder/Speed',rarity: 'common'   },
+    { id: 24, name: 'David Palmer',     position: 'RP',  number: 46, ba: '-',    hr: '-', rbi: '-', era: '3.84', role: 'Relief Pitcher',       rarity: 'common'   },
+    { id: 25, name: 'Dan Schatzeder',   position: 'RP',  number: 45, ba: '-',    hr: '-', rbi: '-', era: '2.71', role: 'Relief Pitcher/Starter', rarity: 'common'   },
   ],
 
   cardinals: [

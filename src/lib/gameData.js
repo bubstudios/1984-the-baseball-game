@@ -955,6 +955,7 @@ export const TEAMS = {
       { name: "Tony Scott", pos: "OF", bats: "S", contact: 5, power: 2, bunting: 5, speed: 6, defense: 6, arm: 5, splits: estSplits(.240, 1, 95, 25, "S") },
       { name: "Bryan Little", pos: "2B", bats: "S", contact: 5, power: 2, bunting: 5, speed: 5, defense: 6, arm: 5, splits: estSplits(.248, 1, 105, 30, "S") },
       { name: "Razor Shines", pos: "1B", bats: "R", contact: 4, power: 3, bunting: 3, speed: 3, defense: 5, arm: 5, splits: estSplits(.220, 2, 80, 25, "R") },
+      { name: "Miguel Dilone", pos: "OF", bats: "S", contact: 7, power: 1, bunting: 6, speed: 9, defense: 6, arm: 5, splits: estSplits(.278, 1, 169, 50, "S") },
     ],
     rotation: [
       { name: "Charlie Lea", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 7, offSpeed: 7, control: 7, contact: 4, power: 1, bunting: 5, speed: 3 },
@@ -968,6 +969,8 @@ export const TEAMS = {
       { name: "Gary Lucas", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Andy McGaffigan", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Joe Hesketh", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 7, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "David Palmer", pos: "RP", throws: "R", bats: "R", stamina: 6, pitchSpeed: 6, offSpeed: 7, control: 7, contact: 3, power: 1, bunting: 4, speed: 2 },
+      { name: "Dan Schatzeder", pos: "RP", throws: "L", bats: "L", stamina: 6, pitchSpeed: 6, offSpeed: 8, control: 7, contact: 3, power: 2, bunting: 5, speed: 2 },
     ],
   },
 
@@ -1311,6 +1314,8 @@ export const PLAYER_ERRORS = {
   "Mickey Rivers": 2, "Donnie Scott": 4, "Dave Hostetler": 5, "Tommy Dunbar": 2, "Bob Jones": 2, "Jeff Kunkel": 1,
   "Charlie Hough": 5, "Frank Tanana": 3, "Danny Darwin": 3, "Mike Mason": 3,
   "Dave Schmidt": 2, "Dave Stewart": 2, "Odell Jones": 2, "Dave Tobik": 2, "Tom Henke": 1, "Jim Bibby": 1,
+  // Expos
+  "Miguel Dilone": 2, "David Palmer": 1, "Dan Schatzeder": 1,
 };
 
 // Estimate splits for bench players based on overall stats + handedness
