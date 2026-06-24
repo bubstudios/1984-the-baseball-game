@@ -2,10 +2,18 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 Deno.serve(async (req) => {
   try {
-    const origin = req.headers.get('Origin') || req.headers.get('origin') || '';
+    // Try to get origin from headers, or construct from request URL
+    let origin = req.headers.get('Origin') || req.headers.get('origin') || '';
     if (!origin) {
-      return Response.json({ error: 'Missing Origin header' }, { status: 400 });
+      // Fallback: construct origin from request URL
+      try {
+        const url = new URL(req.url);
+        origin = `${url.protocol}//${url.host}`;
+      } catch {
+        origin = 'http://localhost:3000';
+      }
     }
+    console.log('Using origin:', origin);
 
     const body = await req.json();
     const { amount } = body;
