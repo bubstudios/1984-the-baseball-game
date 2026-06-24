@@ -575,6 +575,40 @@ const TAKEN_STRIKE_GENERIC_LINES = [
   c("A quiet take and a loud strike call."),
 ];
 
+// =========== INFIELD POP-UP — GENERIC PLAY-BY-PLAY ===========
+const INFIELD_POPUP_LINES = [
+  c("Popped straight up."),
+  c("A towering pop-up."),
+  c("He gets under it and sends it high into the air."),
+  c("Popped into shallow territory."),
+  c("A mile-high pop with plenty of time underneath it."),
+  c("He gets jammed and lifts a harmless pop-up."),
+  c("Popped high near the middle of the diamond."),
+  c("A high pop drifting toward foul ground."),
+  c("He lifts it almost straight into the air."),
+  c("Popped up and playable."),
+  c("A routine pop-up with plenty of time to make the catch."),
+  c("He gets beneath that pitch and sends it skyward."),
+  c("A high pop hanging over the infield."),
+  c("Everyone looks up as the ball climbs."),
+  c("Popped into foul territory."),
+  c("A twisting pop-up sends several defenders toward it."),
+  c("He gets tied up and loops it into the air."),
+  c("The ball hangs up long enough for an easy play."),
+  c("A soft pop-up on the infield."),
+  c("He sends a lazy pop into shallow territory."),
+  c("A towering pop briefly disappears against the sky."),
+  c("Popped high near the line."),
+  c("The ball goes almost straight up off the bat."),
+  c("He fists it into the air."),
+  c("A shallow pop-up with defenders closing in."),
+  c("He sends a weak pop toward the center of the diamond."),
+  c("One defender calls everyone else away."),
+  c("A high foul pop stays within reach."),
+  c("The wind begins to carry the pop-up."),
+  c("He gets underneath the pitch, and this should be an easy out."),
+];
+
 // =========== FIELDER'S CHOICE ===========
 const FC_LINES = [
   c("grounds to"), c("bounces one to"),
@@ -589,7 +623,7 @@ export {
   DOUBLE_PLAY_LINES, END_INNING_LINES, LINEOUT_LINES,
   POPOUT_LINES, STRIKEOUT_SWINGING_LINES, STRIKEOUT_CALLED_LINES,
   BUNT_SINGLE_LINES, SACRIFICE_BUNT_LINES, SAC_FLY_LINES,
-  STEAL_LINES, ERROR_LINES, FC_LINES,
+  STEAL_LINES, ERROR_LINES, FC_LINES, INFIELD_POPUP_LINES,
   TAKEN_STRIKE_FASTBALL_LINES, TAKEN_STRIKE_BREAKING_LINES,
   TAKEN_STRIKE_CHANGEUP_LINES, TAKEN_STRIKE_GENERIC_LINES,
   SWINGING_STRIKE_FASTBALL_LINES, SWINGING_STRIKE_BREAKING_LINES,
