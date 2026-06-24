@@ -982,8 +982,6 @@ export const TEAMS = {
     division: "NL East",
     stadium: "Busch Stadium",
     lineup: [
-      { name: "Vince Coleman", pos: "LF", bats: "S", contact: 6, power: 2, bunting: 8, speed: 10, defense: 6, arm: 5,
-        splits: estSplits(.267, 1, 294, 88, "S") },
       { name: "Willie McGee", pos: "CF", bats: "S", contact: 8, power: 4, bunting: 7, speed: 8, defense: 8, arm: 6,
         splits: { vsLHP: { ab: 177, ba: .290, hr: 3 }, vsRHP: { ab: 433, ba: .295, hr: 3 } } },
       { name: "Lonnie Smith", pos: "RF", bats: "R", contact: 7, power: 4, bunting: 5, speed: 8, defense: 5, arm: 5, splits: estSplits(.321, 8, 491, 158, "R") },
@@ -1007,6 +1005,14 @@ export const TEAMS = {
         splits: estSplits(.232, 1, 148, 44, "R") },
       { name: "Tom Nieto", pos: "C", bats: "R", contact: 4, power: 2, bunting: 4, speed: 2, defense: 5, arm: 6,
         splits: estSplits(.217, 2, 96, 28, "R") },
+      { name: "Andy Van Slyke", pos: "OF", bats: "R", contact: 6, power: 4, bunting: 4, speed: 6, defense: 7, arm: 7,
+        splits: estSplits(.234, 3, 87, 40, "R") },
+      { name: "David Green", pos: "OF", bats: "R", contact: 5, power: 3, bunting: 5, speed: 6, defense: 6, arm: 6,
+        splits: estSplits(.254, 2, 126, 50, "R") },
+      { name: "Tito Landrum", pos: "OF", bats: "R", contact: 5, power: 4, bunting: 4, speed: 5, defense: 5, arm: 5,
+        splits: estSplits(.249, 5, 161, 65, "R") },
+      { name: "Terry Pendleton", pos: "3B/SS", bats: "R", contact: 6, power: 3, bunting: 5, speed: 6, defense: 6, arm: 6,
+        splits: estSplits(.228, 1, 157, 70, "R") },
     ],
     rotation: [
       { name: "Joaquin Andujar", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 8, offSpeed: 7, control: 6, contact: 4, power: 2, bunting: 6, speed: 4 },
@@ -1018,6 +1024,9 @@ export const TEAMS = {
       { name: "Neil Allen", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Jeff Lahti", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Ralph Citarella", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Danny Cox", pos: "RP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 2 },
+      { name: "John Stuper", pos: "RP", throws: "R", bats: "R", stamina: 6, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Bob Forsch", pos: "RP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 2 },
     ],
   },
 
@@ -1277,6 +1286,11 @@ export const PLAYER_ERRORS = {
   "Willie Wilson": 6, "Frank White": 8, "George Brett": 22, "Hal McRae": 0,
   "Steve Balboni": 17, "Pat Sheridan": 5, "Darryl Motley": 6, "Jamie Quirk": 7, "Onix Concepcion": 21,
   "Dane Iorg": 4, "Buddy Biancalana": 5, "John Wathan": 5, "Greg Pryor": 6, "UL Washington": 14, "Don Slaught": 5,
+  // Cardinals
+  "Willie McGee": 0, "Lonnie Smith": 0, "George Hendrick": 0,
+  "Ken Oberkfell": 0, "Ozzie Smith": 0, "Tom Herr": 0, "Darrell Porter": 0,
+  "Andy Van Slyke": 1, "David Green": 2, "Tito Landrum": 3, "Terry Pendleton": 5,
+  "Bruce Sutter": 1, "Neil Allen": 1, "Jeff Lahti": 1, "Ralph Citarella": 1, "Danny Cox": 2, "John Stuper": 2, "Bob Forsch": 2,
   // Phillies
   "Juan Samuel": 33, "Ivan DeJesus": 22, "Mike Schmidt": 11, "Von Hayes": 8,
   "Glenn Wilson": 7, "Ozzie Virgil Jr.": 9, "Garry Maddox": 2, "Jeff Stone": 5,
