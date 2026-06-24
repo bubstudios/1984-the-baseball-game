@@ -342,6 +342,62 @@ const ERROR_LINES = [
   c("Routine chance — and he drops it.", 'rare'),
 ];
 
+// =========== CALLED BALL — FASTBALL ===========
+const CALLED_BALL_FASTBALL_LINES = [
+  c("Fastball misses outside."), c("The heater sails high for a ball."), c("Fastball down and away."),
+  c("He lays off the fastball off the plate."), c("The fastball misses just below the knees."), c("High heat, but too high."),
+  c("The pitcher misses with the fastball inside."), c("That fastball runs off the outside edge."), c("The heater is up and out of the zone."),
+  c("Fastball low, and the batter lets it go."), c("He takes the fastball just off the corner."), c("The pitch misses inside and backs him away."),
+  c("A hard fastball, but it never finds the plate."), c("The heater rides above the strike zone."), c("Fastball outside, and the count moves in the hitter's favor."),
+  c("He wisely lays off the high fastball."), c("The fastball tails too far inside."), c("The pitcher tries the outside corner but misses."),
+  c("A low fastball bounces just before the plate."), c("The heater misses by a few inches."), c("Fastball at the letters, but the umpire says ball."),
+  c("He does not chase the fastball above the zone."), c("The fastball is well outside."), c("That one had plenty of speed but not enough control."),
+  c("The pitcher overthrows it and misses high."), c("Fastball down near the dirt."), c("The heater nearly clips him inside."),
+  c("He pulls back as the fastball runs in."), c("The pitch catches glove but not plate."), c("Fastball just off the black."),
+];
+
+// =========== CALLED BALL — BREAKING BALL ===========
+const CALLED_BALL_BREAKING_LINES = [
+  c("Breaking ball misses outside."), c("The curveball drops below the zone."), c("He lays off the slider in the dirt."),
+  c("The breaker sweeps too far away."), c("A curveball starts high and never drops enough."), c("The slider misses off the outside corner."),
+  c("He does not chase the breaking ball down."), c("The curve bounces in front of the plate."), c("The breaker spins harmlessly outside."),
+  c("That slider never threatened the strike zone."), c("The curveball hangs high but still misses."), c("He watches the breaking ball dive beneath the knees."),
+  c("A sweeping slider finishes well off the plate."), c("The hook misses low and away."), c("The breaker backs up and stays outside."),
+  c("He takes a tight slider just off the corner."), c("The curve slips beneath the bottom of the zone."), c("That breaking ball breaks too soon."),
+  c("He holds up as the slider disappears outside."), c("The hook finishes in the dirt."), c("A backdoor breaking ball fails to come back."),
+  c("The curve starts outside and stays there."), c("The slider misses beneath the barrel and the plate."), c("He shows good patience on the low breaker."),
+  c("The breaking ball never turns the corner."), c("The curveball misses by a narrow margin."), c("The slider dives away from both hitter and strike zone."),
+  c("He lets the breaking ball pass harmlessly."), c("The breaker nearly clips the outside edge."), c("The umpire refuses to give him the corner."),
+];
+
+// =========== CALLED BALL — CHANGEUP ===========
+const CALLED_BALL_CHANGEUP_LINES = [
+  c("Changeup misses low."), c("The changeup fades outside."), c("He lays off the off-speed pitch in the dirt."),
+  c("The pitcher takes something off but misses the zone."), c("A sinking changeup drops beneath the knees."), c("The changeup drifts off the outside corner."),
+  c("He waits and lets the soft pitch go by."), c("The off-speed offering finishes too low."), c("The changeup fades away from the plate."),
+  c("He does not chase the change below the zone."), c("The pitcher pulls the string, but the pitch misses."), c("A soft changeup settles into the dirt."),
+  c("The changeup stays high and outside."), c("That off-speed pitch never gets back to the corner."), c("He recognizes the changeup and takes it."),
+  c("The change fades just beyond the reach of the strike zone."), c("The pitch dies before reaching the plate."), c("A well-disguised changeup, but it misses low."),
+  c("He shows patience against the off-speed offering."), c("The changeup tumbles too far inside."), c("The pitcher misses down and away with the change."),
+  c("The batter keeps the bat on his shoulder."), c("The changeup floats high for a ball."), c("He refuses to offer at the fading pitch."),
+  c("The off-speed pitch finishes just beneath the zone."), c("The changeup nearly catches the corner."), c("He reads it well and lets it pass."),
+  c("The pitcher cannot quite locate the softer offering."), c("The changeup runs away from the strike zone."), c("A good take on a deceptive pitch."),
+];
+
+// =========== CALLED BALL — GENERIC ===========
+const CALLED_BALL_GENERIC_LINES = [
+  c("Ball outside."), c("The pitch misses low."), c("That one is high."), c("Inside for a ball."),
+  c("He takes it off the plate."), c("The pitch misses the outside corner."), c("Just below the knees."), c("He lays off that one."),
+  c("The umpire calls it a ball."), c("That pitch never finds the zone."), c("He takes a close one outside."), c("The offering is low and away."),
+  c("The pitch sails high."), c("He backs away from the inside pitch."), c("That one misses by a few inches."), c("The catcher reaches, but the umpire says ball."),
+  c("The pitch is just off the black."), c("He shows good discipline and takes it."), c("The count moves in the batter's favor."), c("A borderline pitch is called outside."),
+  c("The umpire will not give him the corner."), c("He refuses to chase."), c("That one is nowhere near the plate."), c("The pitch bounces in front of the catcher."),
+  c("He takes it in the dirt."), c("The offering misses up and away."), c("The pitch runs too far inside."), c("He leans back as it comes close."),
+  c("That one nearly brushes him."), c("The batter checks and lets it go."), c("The pitch is low, and the catcher blocks it."), c("He watches it sail outside."),
+  c("The pitcher misses his target."), c("The catcher has to reach across the plate."), c("A close take, and the batter gets the call."), c("The umpire shakes his head—ball."),
+  c("That pitch is off the edge."), c("He shows patience at the plate."), c("The offering never tempts him."), c("The pitcher falls behind with that miss."),
+];
+
 // =========== SWINGING STRIKE — FASTBALL ===========
 const SWINGING_STRIKE_FASTBALL_LINES = [
   c("He swings through the fastball."), c("Fastball by him for a strike."), c("He comes up empty on the heater."),
@@ -538,4 +594,6 @@ export {
   TAKEN_STRIKE_CHANGEUP_LINES, TAKEN_STRIKE_GENERIC_LINES,
   SWINGING_STRIKE_FASTBALL_LINES, SWINGING_STRIKE_BREAKING_LINES,
   SWINGING_STRIKE_CHANGEUP_LINES, SWINGING_STRIKE_GENERIC_LINES,
+  CALLED_BALL_FASTBALL_LINES, CALLED_BALL_BREAKING_LINES,
+  CALLED_BALL_CHANGEUP_LINES, CALLED_BALL_GENERIC_LINES,
 };

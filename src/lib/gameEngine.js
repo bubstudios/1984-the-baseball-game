@@ -13,6 +13,8 @@ import {
   TAKEN_STRIKE_CHANGEUP_LINES, TAKEN_STRIKE_GENERIC_LINES,
   SWINGING_STRIKE_FASTBALL_LINES, SWINGING_STRIKE_BREAKING_LINES,
   SWINGING_STRIKE_CHANGEUP_LINES, SWINGING_STRIKE_GENERIC_LINES,
+  CALLED_BALL_FASTBALL_LINES, CALLED_BALL_BREAKING_LINES,
+  CALLED_BALL_CHANGEUP_LINES, CALLED_BALL_GENERIC_LINES,
 } from './commentaryLines';
 import { checkPitcherInjury, checkPlayInjury, getPlayerDurability } from './injuries';
 import { getUmpireZoneEffect, maybeMissedCall } from './umpires';
@@ -459,8 +461,17 @@ function resolveSwing(state, swingType, pitch) {
     } else {
       state.balls++;
       if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; }
-      state.log.push({ type: 'ball', text: `Ball ${state.balls} — ${pitch.pitchType} ${pitch.location}` });
-      state.lastPlay = { type: 'ball', text: `Ball ${state.balls}` };
+      {
+        const pt = (pitch.pitchType || '').toLowerCase();
+        let ballLine;
+        if (pt.includes('fast')) ballLine = pickLine(CALLED_BALL_FASTBALL_LINES);
+        else if (pt.includes('break') || pt.includes('curve') || pt.includes('slider') || pt.includes('hook')) ballLine = pickLine(CALLED_BALL_BREAKING_LINES);
+        else if (pt.includes('change') || pt.includes('off') || pt.includes('split') || pt.includes('fork')) ballLine = pickLine(CALLED_BALL_CHANGEUP_LINES);
+        else ballLine = pickLine(CALLED_BALL_GENERIC_LINES);
+        const ballText = `Ball ${state.balls} — ${ballLine}`;
+        state.log.push({ type: 'ball', text: ballText });
+        state.lastPlay = { type: 'ball', text: ballText };
+      }
     }
     return;
   }
@@ -525,7 +536,7 @@ function resolveSwing(state, swingType, pitch) {
   if (effP2.fatigueLevel >= 3) contactChance += 0.08;
   contactChance = Math.max(0.05, Math.min(contactChance, 0.85));
   if (!(Math.random() < contactChance)) {
-    if (!pitch.isStrike && !state.hitAndRun && Math.random() < 0.50 + contactRating * 0.18) { state.balls++; if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; } state.log.push({ type: 'ball', text: [`Ball ${state.balls} — just off the plate`,`Takes outside — ball ${state.balls}`,`Ball ${state.balls} — low`,`Pulled the bat back — ball ${state.balls}`,`Checked the swing — ball ${state.balls}`,`Held up — ball ${state.balls}`,`Ball ${state.balls} — high`,`Lays off — ball ${state.balls}`][Math.floor(Math.random() * 8)] }); state.lastPlay = { type: 'ball', text: `Ball ${state.balls}` }; return; }
+    if (!pitch.isStrike && !state.hitAndRun && Math.random() < 0.50 + contactRating * 0.18) { state.balls++; if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; } const pt2 = (pitch.pitchType || '').toLowerCase(); let bl; if (pt2.includes('fast')) bl = pickLine(CALLED_BALL_FASTBALL_LINES); else if (pt2.includes('break') || pt2.includes('curve') || pt2.includes('slider') || pt2.includes('hook')) bl = pickLine(CALLED_BALL_BREAKING_LINES); else if (pt2.includes('change') || pt2.includes('off') || pt2.includes('split') || pt2.includes('fork')) bl = pickLine(CALLED_BALL_CHANGEUP_LINES); else bl = pickLine(CALLED_BALL_GENERIC_LINES); const bt = `Ball ${state.balls} — ${bl}`; state.log.push({ type: 'ball', text: bt }); state.lastPlay = { type: 'ball', text: bt }; return; }
     state.strikes++;
     if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; registerBigStrikeout(state, pitcher, batter); const isLooking = pitch.location && ['outside corner','inside corner','high strike','low strike','down the middle'].includes(pitch.location) && Math.random() < 0.45; const sl = isLooking ? pickLine(STRIKEOUT_CALLED_LINES) : pickLine(STRIKEOUT_SWINGING_LINES); const msg = sl.endsWith('!') ? `${batter.name} ${sl}` : `${batter.name} ${sl} ${pitch.pitchType}!`; state.log.push({ type: 'strikeout', text: msg }); state.lastPlay = { type: 'strikeout', text: msg }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); const kCelebration = rollPitcherKCelebration(pitcher); if (kCelebration) state.log.push({ type: 'info', text: `🔥 ${kCelebration}` }); if (state.hitAndRun && !state.gameOver) handleHitAndRunCaught(state); return; }
     if (state.hitAndRun && !state.gameOver) { state.hitAndRun = false; handleHitAndRunMiss(state); }
