@@ -54,21 +54,30 @@ Deno.serve(async (req) => {
       }
     );
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (jsonError) {
+      console.error('Failed to parse Wix response as JSON. Status:', response.status, 'Text:', await response.text());
+      return Response.json({ error: 'Invalid response from payment provider' }, { status: 500 });
+    }
+
     console.log('Wix response status:', response.status);
     console.log('Wix response:', JSON.stringify(data));
 
     if (!response.ok) {
       console.error('Wix checkout error:', { status: response.status, error: data });
-      return Response.json({ error: data?.message || data?.errorDescription || 'Checkout creation failed' }, { status: response.status });
+      const errorMsg = data?.message || data?.details?.applicationError?.description || data?.errorDescription || 'Checkout creation failed';
+      return Response.json({ error: errorMsg }, { status: response.status });
     }
 
-    const redirectUrl = data.session?.redirectUrl || data.redirectUrl || data.checkoutSession?.redirectUrl;
+    const redirectUrl = data?.checkoutSession?.redirectUrl;
     if (!redirectUrl) {
-      console.error('No redirect URL in Wix response:', data);
+      console.error('No redirect URL in Wix response:', JSON.stringify(data));
       return Response.json({ error: 'No checkout URL received from payment provider' }, { status: 500 });
     }
 
+    console.log('Checkout session created successfully:', redirectUrl);
     return Response.json({ redirectUrl });
   } catch (error) {
     console.error('create-checkout error:', error.message);
