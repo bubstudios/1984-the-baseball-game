@@ -34,7 +34,7 @@ import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
 import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
-import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement } from '@/lib/achievements';
+import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement, trackHomeRunDistance, trackGameRecords } from '@/lib/achievements';
 import AchievementPopup from '@/components/game/AchievementPopup';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 import { pickAd } from '@/lib/broadcastAds';
@@ -247,6 +247,18 @@ export default function Home() {
       setGameState(prev => prev ? { ...prev, _injuryShown: true } : prev);
     }
 
+    // Track HR distances from new log entries
+    if (gameState.log.length > prevLogLength.current) {
+      const newEntries = gameState.log.slice(prevLogLength.current);
+      newEntries.forEach(entry => {
+        if (entry.type === 'homerun' && entry.hrDistance && entry.batterName) {
+          try {
+            trackHomeRunDistance(entry.hrDistance, entry.batterName, userTeam);
+          } catch (e) { console.error('trackHomeRunDistance failed:', e); }
+        }
+      });
+    }
+
     // Detect 7th inning stretch
     if (gameState.log.length > prevLogLength.current) {
       const newEntries = gameState.log.slice(prevLogLength.current);
@@ -443,6 +455,7 @@ export default function Home() {
     try { trackGameCompleted(userWon, userTeam, null, gameStadium, userHits, oppHits); } catch (e) { console.error('trackGameCompleted failed:', e); }
     try { trackGameEndTime(); } catch (e) { console.error('trackGameEndTime failed:', e); }
     try { checkTeamAchievements(); } catch (e) { console.error('checkTeamAchievements failed:', e); }
+    try { trackGameRecords(state.score[userSide], state.score[opponentSide], userWon, userTeam, userSide === 'home' ? state.awayTeam : state.homeTeam); } catch (e) { console.error('trackGameRecords failed:', e); }
 
     if (state._managerEjected && userWon) {
       try { unlockAchievement('earl_weaver'); } catch (e) { console.error('earl_weaver failed:', e); }

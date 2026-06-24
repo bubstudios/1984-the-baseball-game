@@ -95,6 +95,10 @@ export const ACHIEVEMENTS = [
   { id: 'immaculate', name: 'Immaculate Inning', desc: '3 strikeouts on 9 pitches', icon: '😇', category: 'rare' },
   { id: 'four_bagger_frenzy', name: 'Four-Bagger Frenzy', desc: 'Hit 5 home runs in a game', icon: '💣', category: 'rare' },
   { id: 'no_doubter', name: 'No Doubter', desc: 'Hit a 500-foot home run', icon: '📏', category: 'rare' },
+  { id: 'hr_400ft', name: 'Tape Measure Shot', desc: 'Hit a home run 400+ feet', icon: '🎯', category: 'hitting' },
+  { id: 'hr_425ft', name: 'Prodigious Blast', desc: 'Hit a home run 425+ feet', icon: '⚡', category: 'hitting' },
+  { id: 'hr_450ft', name: 'Moon Shot', desc: 'Hit a home run 450+ feet', icon: '💣', category: 'hitting' },
+  { id: 'hr_475ft', name: 'Gone to Another Zip Code', desc: 'Hit a home run 475+ feet', icon: '🚀', category: 'rare' },
   { id: 'mr_perfect', name: 'Mr. Perfect', desc: 'Perfect game with 10+ strikeouts', icon: '💫', category: 'rare' },
 
   // ── BLOWOUT & MISCELLANEOUS FUN ──
@@ -627,6 +631,15 @@ function getDefaultStats() {
     completedTeamSets: [],     // teams where full card set is collected
     managerCardsCollected: [], // teams where manager card collected
     leaderStats: {},           // per-player cumulative stats for 1984 leader achievements
+    // Records
+    longestHR: 0,              // longest home run (feet) ever hit
+    longestHRBatter: '',       // who hit it
+    longestHRTeam: '',         // which team
+    mostRunsInGame: 0,         // most runs scored in a single game
+    mostRunsInGameTeam: '',
+    mostRunsInGameOpponent: '',
+    largestVictoryMargin: 0,   // biggest win margin
+    largestVictoryMarginTeam: '',
   };
 }
 
@@ -935,6 +948,47 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
   checkFranchiseHopper(stats);
 
   saveStats(stats);
+}
+
+// Track home run distance records and achievements
+export function trackHomeRunDistance(distance, batterName, teamKey) {
+  if (!distance || distance <= 0) return;
+  const stats = loadStats();
+  let newRecord = false;
+  if (distance > (stats.longestHR || 0)) {
+    stats.longestHR = distance;
+    stats.longestHRBatter = batterName || '';
+    stats.longestHRTeam = teamKey || '';
+    newRecord = true;
+  }
+  saveStats(stats);
+
+  // Unlock distance achievements
+  if (distance >= 400) unlockAchievement('hr_400ft');
+  if (distance >= 425) unlockAchievement('hr_425ft');
+  if (distance >= 450) unlockAchievement('hr_450ft');
+  if (distance >= 475) unlockAchievement('hr_475ft');
+  if (distance >= 500) unlockAchievement('no_doubter');
+
+  return newRecord;
+}
+
+// Track game-level records (runs scored, victory margin)
+export function trackGameRecords(userScore, opponentScore, userWon, userTeam, opponentTeam) {
+  const stats = loadStats();
+  let changed = false;
+  if (userScore > (stats.mostRunsInGame || 0)) {
+    stats.mostRunsInGame = userScore;
+    stats.mostRunsInGameTeam = userTeam || '';
+    stats.mostRunsInGameOpponent = opponentTeam || '';
+    changed = true;
+  }
+  if (userWon && (userScore - opponentScore) > (stats.largestVictoryMargin || 0)) {
+    stats.largestVictoryMargin = userScore - opponentScore;
+    stats.largestVictoryMarginTeam = userTeam || '';
+    changed = true;
+  }
+  if (changed) saveStats(stats);
 }
 
 // Track which players/pitchers were used (call at game end with arrays of names)

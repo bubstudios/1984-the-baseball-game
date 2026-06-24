@@ -1,7 +1,7 @@
 import React from 'react';
 import { getStats } from '@/lib/achievements';
 import { TEAMS } from '@/lib/gameData';
-import { BarChart3, Clock, MapPin, Users, Trophy, TrendingUp, Calendar, Zap } from 'lucide-react';
+import { BarChart3, Clock, MapPin, Users, Trophy, TrendingUp, Calendar, Zap, Ruler, Target, Swords } from 'lucide-react';
 
 const TEAM_LOGOS = {
   tigers: 'https://www.mlbstatic.com/team-logos/116.svg',
@@ -94,6 +94,18 @@ export default function Scorecard() {
   const mostUsedTeam = teamStats[0] || null;
   const bestTeam = [...teamStats].sort((a, b) => b.w - a.w)[0] || null;
 
+  // Records
+  const longestHR = stats.longestHR || 0;
+  const longestHRBatter = stats.longestHRBatter || '';
+  const longestHRTeam = stats.longestHRTeam || '';
+  const mostRunsInGame = stats.mostRunsInGame || 0;
+  const mostRunsInGameTeam = stats.mostRunsInGameTeam || '';
+  const mostRunsInGameOpp = stats.mostRunsInGameOpponent || '';
+  const largestVictoryMargin = stats.largestVictoryMargin || 0;
+  const largestVictoryTeam = stats.largestVictoryMarginTeam || '';
+
+  const hasRecords = longestHR > 0 || mostRunsInGame > 0 || largestVictoryMargin > 0;
+
   return (
     <div className="space-y-3">
       {/* Header */}
@@ -153,6 +165,72 @@ export default function Scorecard() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Records */}
+          {hasRecords && (
+            <div className="bg-card border border-border rounded-xl p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="w-3.5 h-3.5 text-amber-400" />
+                <span className="font-heading text-[11px] font-bold text-foreground uppercase tracking-wider">Career Records</span>
+              </div>
+              <div className="space-y-2">
+                {longestHR > 0 && (
+                  <div className="flex items-center justify-between py-1.5 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <Ruler className="w-3 h-3 text-primary shrink-0" />
+                      <div>
+                        <div className="font-heading text-[9px] text-muted-foreground uppercase tracking-wider">Longest Home Run</div>
+                        {longestHRBatter && <div className="font-heading text-[10px] text-foreground/70">{longestHRBatter}</div>}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-heading text-base font-bold text-primary">{longestHR} <span className="text-xs">ft</span></div>
+                      {longestHRTeam && TEAMS[longestHRTeam] && (
+                        <div className="flex items-center justify-end gap-1 mt-0.5">
+                          <img src={TEAM_LOGOS[longestHRTeam]} alt="" className="w-3 h-3 object-contain" onError={(e) => { e.target.style.display='none'; }} />
+                          <span className="text-[8px] text-muted-foreground">{TEAMS[longestHRTeam].abbr}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {mostRunsInGame > 0 && (
+                  <div className="flex items-center justify-between py-1.5 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="w-3 h-3 text-emerald-400 shrink-0" />
+                      <div>
+                        <div className="font-heading text-[9px] text-muted-foreground uppercase tracking-wider">Most Runs in a Game</div>
+                        {mostRunsInGameTeam && TEAMS[mostRunsInGameTeam] && (
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <img src={TEAM_LOGOS[mostRunsInGameTeam]} alt="" className="w-3 h-3 object-contain" onError={(e) => { e.target.style.display='none'; }} />
+                            <span className="text-[8px] text-muted-foreground">vs {TEAMS[mostRunsInGameOpp]?.abbr || mostRunsInGameOpp}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="font-heading text-base font-bold text-emerald-400">{mostRunsInGame} <span className="text-xs text-muted-foreground">runs</span></div>
+                  </div>
+                )}
+                {largestVictoryMargin > 0 && (
+                  <div className="flex items-center justify-between py-1.5">
+                    <div className="flex items-center gap-2">
+                      <Swords className="w-3 h-3 text-rose-400 shrink-0" />
+                      <div>
+                        <div className="font-heading text-[9px] text-muted-foreground uppercase tracking-wider">Largest Victory Margin</div>
+                        {largestVictoryTeam && TEAMS[largestVictoryTeam] && (
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <img src={TEAM_LOGOS[largestVictoryTeam]} alt="" className="w-3 h-3 object-contain" onError={(e) => { e.target.style.display='none'; }} />
+                            <span className="text-[8px] text-muted-foreground">{TEAMS[largestVictoryTeam].abbr}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="font-heading text-base font-bold text-rose-400">+{largestVictoryMargin} <span className="text-xs text-muted-foreground">runs</span></div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
