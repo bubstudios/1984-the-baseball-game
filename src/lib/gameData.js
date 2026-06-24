@@ -781,6 +781,7 @@ export const TEAMS = {
       { name: "Daryl Sconiers", pos: "1B", bats: "L", contact: 5, power: 3, bunting: 4, speed: 3, defense: 5, arm: 5, splits: estSplits(.240, 4, 120, 35, "L") },
       { name: "Rick Burleson", pos: "SS", bats: "R", contact: 5, power: 2, bunting: 5, speed: 4, defense: 6, arm: 6, splits: estSplits(.230, 2, 80, 25, "R") },
       { name: "Derrel Thomas", pos: "INF/OF", bats: "S", contact: 5, power: 2, bunting: 5, speed: 5, defense: 6, arm: 5, splits: estSplits(.239, 3, 148, 44, "S") },
+      { name: "Jerry Narron", pos: "C", bats: "L", contact: 5, power: 3, bunting: 3, speed: 2, defense: 6, arm: 6, splits: estSplits(.247, 3, 150, 45, "L") },
     ],
     rotation: [
       { name: "Mike Witt", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 7, offSpeed: 9, control: 7, contact: 3, power: 1, bunting: 4, speed: 2 },
@@ -794,6 +795,7 @@ export const TEAMS = {
       { name: "Doug Corbett", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 7, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Bruce Kison", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Curt Kaufman", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Jim Slaton", pos: "RP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 5, speed: 2 },
     ],
   },
 
@@ -1267,6 +1269,12 @@ export const PLAYER_ERRORS = {
   "Dave Lopes": 5, "Donnie Hill": 5, "Jim Essian": 3, "Jeff Burroughs": 1, "Dan Meyer": 3, "Bill Almon": 10,
   "Ray Burris": 2, "Steve McCatty": 2, "Bill Krueger": 1, "Chris Codiroli": 3,
   "Bill Caudill": 1, "Keith Atherton": 1, "Tom Burgmeier": 1, "Rick Langford": 2, "Chuck Rainey": 1, "Curt Young": 2,
+  // Angels
+  "Rod Carew": 4, "Brian Downing": 2, "Fred Lynn": 2, "Reggie Jackson": 0,
+  "Doug DeCinces": 10, "Bobby Grich": 6, "Gary Pettis": 3, "Bob Boone": 5, "Dick Schofield": 12,
+  "Rob Wilfong": 5, "Juan Beniquez": 2, "Daryl Sconiers": 3, "Rick Burleson": 4, "Derrel Thomas": 5, "Jerry Narron": 3,
+  "Mike Witt": 2, "Ron Romanick": 2, "Geoff Zahn": 1, "Tommy John": 3,
+  "Luis Sanchez": 1, "Don Aase": 2, "Doug Corbett": 2, "Bruce Kison": 2, "Curt Kaufman": 1, "Jim Slaton": 2,
 };
 
 // Estimate splits for bench players based on overall stats + handedness

@@ -164,6 +164,8 @@ export const EXTRA_ROSTERS = {
     { id: 21, name: 'Rick Burleson',    position: 'SS',  number: 1,  ba: '.230', hr: 2,  rbi: 12,  era: '-',    role: 'Backup Shortstop',     rarity: 'common'   },
     { id: 22, name: 'Daryl Sconiers',   position: '1B',  number: 21, ba: '.240', hr: 4,  rbi: 19,  era: '-',    role: 'Backup First Base',    rarity: 'common'   },
     { id: 23, name: 'Derrel Thomas',    position: 'UT',  number: 6,  ba: '.239', hr: 3,  rbi: 14,  era: '-',    role: 'Utility Player',       rarity: 'common'   },
+    { id: 24, name: 'Jerry Narron',    position: 'C',   number: 14, ba: '.247', hr: 3,  rbi: 17,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
+    { id: 25, name: 'Jim Slaton',      position: 'RP',  number: 30, ba: '-',    hr: '-', rbi: '-', era: '4.97', role: 'Relief/Veteran',        rarity: 'uncommon' },
   ],
 
   whitesox: [
