@@ -17,8 +17,10 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const { amount } = body;
+    console.log('Received body:', JSON.stringify(body), 'amount:', amount, 'type:', typeof amount);
 
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+      console.error('Amount validation failed:', { amount, parsed: parseFloat(amount), isNaN: isNaN(parseFloat(amount)) });
       return Response.json({ error: 'Invalid amount' }, { status: 400 });
     }
 
