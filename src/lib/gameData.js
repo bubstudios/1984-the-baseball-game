@@ -1195,7 +1195,8 @@ export const TEAMS = {
       { name: "Dan Gladden", pos: "OF", bats: "R", contact: 7, power: 4, bunting: 5, speed: 7, defense: 7, arm: 6, splits: estSplits(.351, 4, 188, 56, "R") },
       { name: "Brad Wellman", pos: "IF", bats: "R", contact: 4, power: 2, bunting: 5, speed: 4, defense: 6, arm: 5, splits: estSplits(.214, 2, 108, 32, "R") },
       { name: "Chris Brown", pos: "3B", bats: "R", contact: 7, power: 5, bunting: 4, speed: 4, defense: 6, arm: 7, splits: estSplits(.271, 7, 234, 70, "R") },
-      { name: "Dan Driessen", pos: "1B", bats: "L", contact: 6, power: 4, bunting: 3, speed: 3, defense: 6, arm: 5, splits: estSplits(.265, 7, 150, 40, "L") },
+      { name: "Scot Thompson", pos: "OF", bats: "R", contact: 5, power: 3, bunting: 4, speed: 5, defense: 5, arm: 5, splits: estSplits(.245, 4, 201, 60, "R") },
+      { name: "Gene Richards", pos: "OF", bats: "L", contact: 6, power: 3, bunting: 5, speed: 7, defense: 6, arm: 5, splits: estSplits(.273, 3, 281, 84, "L") },
     ],
     rotation: [
       { name: "Mark Davis", pos: "SP", throws: "L", bats: "L", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 5, contact: 3, power: 1, bunting: 4, speed: 2 },
@@ -1209,6 +1210,8 @@ export const TEAMS = {
       { name: "Scott Garrelts", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 8, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Frank Williams", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Bob Lacey", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Randy Lerch", pos: "RP", throws: "L", bats: "L", stamina: 5, pitchSpeed: 5, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 2 },
+      { name: "Mark Grant", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -1359,6 +1362,8 @@ export const PLAYER_ERRORS = {
   "Dale Murphy": 5, "Jerry Royster": 3, "Albert Hall": 3, "Rick Camp": 2, "Pete Falcone": 2,
   // Astros
   "Jim Pankovits": 4, "Mike Lacoss": 2, "Mike Madden": 1,
+  // Giants
+  "Scot Thompson": 3, "Gene Richards": 2, "Randy Lerch": 2, "Mark Grant": 1,
   };
 
 // Estimate splits for bench players based on overall stats + handedness
