@@ -311,6 +311,8 @@ export const TEAMS = {
         splits: estSplits(.238, 4, 112, 32, "R") },
       { name: "Tim Foli", pos: "SS", bats: "R", contact: 5, power: 2, bunting: 6, speed: 3, defense: 6, arm: 5,
         splits: estSplits(.249, 2, 168, 46, "R") },
+      { name: "Omar Moreno", pos: "OF", bats: "L", contact: 6, power: 3, bunting: 5, speed: 8, defense: 7, arm: 5,
+        splits: estSplits(.259, 4, 355, 120, "L") },
     ],
     rotation: [
       { name: "Phil Niekro", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 4, offSpeed: 10, control: 8, contact: 3, power: 2, bunting: 5, speed: 2, pitches: ["Fastball", "Knuckleball", "Changeup"], specialty: { name: "Knucksie Special", pitch: "Knuckleball", label: "RC" } },
@@ -324,6 +326,7 @@ export const TEAMS = {
       { name: "Mike Armstrong", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Bob Shirley", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Clay Christiansen", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Jose Rijo", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 8, offSpeed: 6, control: 4, contact: 2, power: 1, bunting: 3, speed: 3 },
     ],
   },
 
@@ -1223,7 +1226,7 @@ export const PLAYER_ERRORS = {
   // Yankees
   "Willie Randolph": 9, "Don Mattingly": 6, "Dave Winfield": 2, "Don Baylor": 0,
   "Steve Kemp": 7, "Ken Griffey Sr.": 9, "Butch Wynegar": 5, "Mike Pagliarulo": 24, "Bobby Meacham": 24,
-  "Oscar Gamble": 1, "Roy Smalley": 12, "Rick Cerone": 3, "Brian Dayett": 2, "Tim Foli": 7,
+  "Oscar Gamble": 1, "Roy Smalley": 12, "Rick Cerone": 3, "Brian Dayett": 2, "Tim Foli": 7, "Omar Moreno": 3, "Jose Rijo": 1,
   // Orioles
   "Al Bumbry": 4, "Cal Ripken Jr.": 26, "Eddie Murray": 18, "Gary Roenicke": 1,
   "Wayne Gross": 17, "Ken Singleton": 0, "Mike Young": 8, "Rich Dauer": 7, "Rick Dempsey": 3,

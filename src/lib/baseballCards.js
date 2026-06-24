@@ -159,6 +159,8 @@ export const ALL_ROSTERS = {
     { id: 21, name: 'Rick Cerone',     position: 'C',    number: 10, ba: '.242', hr: 4,  rbi: 18,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 22, name: 'Brian Dayett',    position: 'OF',   number: 22, ba: '.238', hr: 4,  rbi: 16,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 23, name: 'Tim Foli',        position: 'SS',   number: 11, ba: '.249', hr: 2,  rbi: 19,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
+    { id: 24, name: 'Omar Moreno',    position: 'OF',   number: 31, ba: '.259', hr: 4,  rbi: 38,  era: '-',    role: 'Bench Outfielder/Speed',rarity: 'uncommon' },
+    { id: 25, name: 'Jose Rijo',      position: 'RP',   number: 27, ba: '-',    hr: '-', rbi: '-', era: '4.76', role: 'Rookie/Future Star',    rarity: 'rare'     },
   ],
 
   orioles: [
