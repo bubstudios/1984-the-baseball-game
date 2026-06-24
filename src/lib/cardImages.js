@@ -78,7 +78,7 @@ export const CARD_IMAGES = {
   'Luis Salazar':     BASE + '082f2a560_generated_image.png',
 
   // ── NEW YORK METS ──
-  'Dwight Gooden':    BASE + 'd262929cf_generated_image.png',
+  'Dwight Gooden':    BASE + '603201e2b_generated_image.png',
   'Darryl Strawberry':BASE + '382a064b8_generated_image.png',
   'Keith Hernandez':  BASE + '6343a8a1d_generated_image.png',
   'Wally Backman':    BASE + 'e2953ca61_generated_image.png',
