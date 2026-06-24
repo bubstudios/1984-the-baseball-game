@@ -512,6 +512,15 @@ export const TEAM_FAN_YELLS = {
  * 50% chance of a team-specific yell (if available), 50% universal.
  */
 export function pickFanYell(homeTeamKey = null) {
+  // ── Rare friend easter eggs — roughly once every 10-12 games ──
+  // ~25 chirps per game × 0.4% ≈ 1 per 10-12 games
+  if (homeTeamKey === 'cubs' && Math.random() < 0.004) {
+    return "I ordered a pound of fries! They shorted me!";
+  }
+  if (homeTeamKey === 'reds' && Math.random() < 0.004) {
+    return "I bet I could hit .220 in the big leagues";
+  }
+
   const teamYells = homeTeamKey && TEAM_FAN_YELLS[homeTeamKey];
   const useTeam = teamYells && teamYells.length > 0 && Math.random() < 0.5;
   const pool = useTeam ? teamYells : UNIVERSAL_FAN_YELLS;

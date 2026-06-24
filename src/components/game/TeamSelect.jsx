@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
-import { Play, User, Cpu, Trophy } from 'lucide-react';
+import { Play, User, Cpu, Trophy, Dice5 } from 'lucide-react';
 import AchievementsPanel from '@/components/game/AchievementsPanel';
 import { getUnlockedCount } from '@/lib/achievements';
 
@@ -60,6 +60,17 @@ export default function TeamSelect({ onSelect }) {
 
   const handleStart = () => {
     if (userTeam && cpuTeam) onSelect(userTeam, cpuTeam);
+  };
+
+  const handleRandomize = () => {
+    const allKeys = Object.keys(TEAMS);
+    const first = allKeys[Math.floor(Math.random() * allKeys.length)];
+    let second = allKeys[Math.floor(Math.random() * allKeys.length)];
+    while (second === first) {
+      second = allKeys[Math.floor(Math.random() * allKeys.length)];
+    }
+    setUserTeam(first);
+    setCpuTeam(second);
   };
 
   const RatingPills = ({ value, max = 10 }) => (
