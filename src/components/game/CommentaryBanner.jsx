@@ -1387,8 +1387,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
       `${reachBackPitcher.name} grips it, winds, and here it comes — the legendary ${spName}`,
     ];
     text = calls[Math.floor(Math.random() * calls.length)];
-  } else if (hasPlayResult) {
-    // Play result IS the headline — show it prominently
+  } else if (hasPlayResult && !['single','double','triple','homerun','groundout','flyout','lineout','popout','strikeout','walk','error','fc','doubleplay','sacfly'].includes(lastPlay?.type)) {
+    // Only non-hit play results get top billing (strikeouts, walks, errors)
     text = lastPlay.text;
   } else if (isSteal && lastPlay?.text) {
     text = `He's going! ${lastPlay.text}`;
