@@ -248,6 +248,24 @@ export default function Home() {
       setGameState(prev => prev ? { ...prev, _injuryShown: true } : prev);
     }
 
+    // Ballpark Event Handler — Award card if bobblehead
+    if (ballparkEvent && ballparkEvent.id === 'homestand_bobblehead' && !cardAward) {
+      try {
+        loadFromStorage(homeTeam);
+        const card = getRandomCardForTeam(homeTeam);
+        if (card) {
+          const isNew = !getCollectedIds(homeTeam).includes(card.id);
+          const achievementIds = addCard(homeTeam, card.id);
+          saveToStorage(homeTeam);
+          setCardAward({ ...card, isNew });
+          if (achievementIds.length > 0) {
+            setNewAchievements(prev => [...prev, ...achievementIds]);
+            setShowAchievementPopup(true);
+          }
+        }
+      } catch (e) { console.error('bobblehead card award failed:', e); }
+    }
+
     // Track HR distances and surface celebration lines from new log entries
     if (gameState.log.length > prevLogLength.current) {
       const newEntries = gameState.log.slice(prevLogLength.current);

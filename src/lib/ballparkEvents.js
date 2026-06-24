@@ -148,6 +148,17 @@ export const BALLPARK_EVENTS = [
   { id: "rotary_phone", category: "retro", text: "The press box phone is a rotary — a reporter just got tangled in the cord trying to file his story.", delay: 0, rarity: "rare" },
 
   // ── TEAM-SPECIFIC ──
+  // Homestand giveaways — award a card
+  {
+    id: "homestand_bobblehead",
+    category: "fans",
+    text: "Bobblehead Night at home! The first 10,000 fans receive a replica bobblehead of a team legend. The stands are a sea of nodding heads!",
+    delay: 0,
+    rarity: "uncommon",
+    isHomeTeamOnly: true,
+    awardCard: true,
+  },
+
   // Reds-only Easter egg: Riverfront Streaker
   {
     id: "reds_streaker",

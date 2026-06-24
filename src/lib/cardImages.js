@@ -569,7 +569,7 @@ export const CARD_IMAGES = {
   'Milt Thompson':    BASE + '532a36d80_generated_image.png',
 
   // ── HOUSTON ASTROS ──
-  'Nolan Ryan':       BASE + 'baeba8f08_generated_image.png',
+  'Nolan Ryan':       BASE + 'e87eebb57_generated_image.png',
   'Jose Cruz':        BASE + '8298b2ee4_generated_image.png',
   'Joe Niekro':       BASE + '784d5912f_generated_image.png',
   'Enos Cabell':      BASE + '8298b2ee4_generated_image.png',
