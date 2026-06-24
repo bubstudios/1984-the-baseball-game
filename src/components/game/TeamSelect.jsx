@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
-import { Play, User, Cpu, Trophy, Dice5, Heart } from 'lucide-react';
+import { Play, User, Cpu, Trophy, Dice5, Heart, BarChart3 } from 'lucide-react';
 import AchievementsPanel from '@/components/game/AchievementsPanel';
+import Scorecard from '@/components/game/Scorecard';
 import DonateModal from '@/components/game/DonateModal';
 import { getUnlockedCount } from '@/lib/achievements';
 
@@ -46,6 +47,7 @@ export default function TeamSelect({ onSelect }) {
   const [userTeam, setUserTeam] = useState(null);
   const [cpuTeam, setCpuTeam] = useState(null);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [showScorecard, setShowScorecard] = useState(false);
   const [showDonate, setShowDonate] = useState(false);
 
   const handleTeamClick = (teamKey) => {
@@ -175,17 +177,17 @@ export default function TeamSelect({ onSelect }) {
             Pick your team and an opponent. All 26 teams. Real 1984 rosters.
           </p>
 
-          <div className="grid grid-cols-2 gap-1 bg-muted rounded-lg p-1 mt-3">
+          <div className="grid grid-cols-3 gap-1 bg-muted rounded-lg p-1 mt-3">
             <button
-              onClick={() => setShowAchievements(false)}
+              onClick={() => { setShowAchievements(false); setShowScorecard(false); }}
               className={`font-heading text-[11px] rounded-md py-1.5 transition-all ${
-                !showAchievements ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                !showAchievements && !showScorecard ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               ⚾ New Game
             </button>
             <button
-              onClick={() => setShowAchievements(true)}
+              onClick={() => { setShowAchievements(true); setShowScorecard(false); }}
               className={`font-heading text-[11px] rounded-md py-1.5 transition-all flex items-center justify-center gap-1 ${
                 showAchievements ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}
@@ -194,11 +196,22 @@ export default function TeamSelect({ onSelect }) {
               Achievements
               <span className="text-[9px] text-primary/70">({getUnlockedCount()})</span>
             </button>
+            <button
+              onClick={() => { setShowScorecard(true); setShowAchievements(false); }}
+              className={`font-heading text-[11px] rounded-md py-1.5 transition-all flex items-center justify-center gap-1 ${
+                showScorecard ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <BarChart3 className="w-3 h-3" />
+              Scorecard
+            </button>
           </div>
         </div>
 
         {showAchievements ? (
           <AchievementsPanel />
+        ) : showScorecard ? (
+          <Scorecard />
         ) : (
           <>
             {/* Selection status */}
