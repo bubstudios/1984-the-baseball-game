@@ -55,10 +55,12 @@ Deno.serve(async (req) => {
     );
 
     let data;
+    let responseText = '';
     try {
-      data = await response.json();
+      responseText = await response.text();
+      data = JSON.parse(responseText);
     } catch (jsonError) {
-      console.error('Failed to parse Wix response as JSON. Status:', response.status, 'Text:', await response.text());
+      console.error('Failed to parse Wix response. Status:', response.status, 'Raw text:', responseText, 'Error:', jsonError.message);
       return Response.json({ error: 'Invalid response from payment provider' }, { status: 500 });
     }
 
