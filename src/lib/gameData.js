@@ -41,6 +41,8 @@ export const TEAMS = {
         splits: estSplits(.233, 3, 134, 30, "R") },
       { name: "Tom Brookens", pos: "3B", bats: "R", contact: 5, power: 3, bunting: 5, speed: 5, defense: 7, arm: 6,
         splits: estSplits(.258, 6, 251, 70, "R") },
+      { name: "Ruppert Jones", pos: "OF", bats: "R", contact: 6, power: 5, bunting: 4, speed: 5, defense: 6, arm: 6,
+        splits: estSplits(.284, 6, 237, 80, "R") },
     ],
     rotation: [
       { name: "Jack Morris", pos: "SP", throws: "R", bats: "R", stamina: 10, pitchSpeed: 7, offSpeed: 8, control: 6, contact: 3, power: 1, bunting: 4, speed: 2 },
@@ -54,6 +56,7 @@ export const TEAMS = {
       { name: "Doug Bair", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Bill Scherrer", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Sid Monge", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Dave Rozema", pos: "RP", throws: "R", bats: "R", stamina: 6, pitchSpeed: 5, offSpeed: 6, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -1197,7 +1200,7 @@ export const PLAYER_ERRORS = {
   // Tigers
   "Lou Whitaker": 11, "Alan Trammell": 10, "Kirk Gibson": 8, "Lance Parrish": 5,
   "Darrell Evans": 11, "Chet Lemon": 2, "Larry Herndon": 10, "Howard Johnson": 24, "Barbaro Garbey": 0,
-  "Johnny Grubb": 2, "Dave Bergman": 2, "Rusty Kuntz": 1, "Marty Castillo": 5, "Tom Brookens": 16,
+  "Johnny Grubb": 2, "Dave Bergman": 2, "Rusty Kuntz": 1, "Marty Castillo": 5, "Tom Brookens": 16, "Ruppert Jones": 3, "Dave Rozema": 2,
   // Padres
   "Alan Wiggins": 30, "Tony Gwynn": 4, "Steve Garvey": 5, "Graig Nettles": 13,
   "Terry Kennedy": 10, "Kevin McReynolds": 5, "Carmelo Martinez": 7, "Garry Templeton": 29,

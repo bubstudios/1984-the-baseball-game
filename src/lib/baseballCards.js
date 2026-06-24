@@ -28,6 +28,8 @@ export const ALL_ROSTERS = {
     { id: 21, name: 'Rusty Kuntz',     position: 'OF',   number: 25, ba: '.239', hr: 1,  rbi: 10,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 22, name: 'Marty Castillo',  position: 'C',    number: 32, ba: '.200', hr: 3,  rbi: 18,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 23, name: 'Johnny Grubb',    position: 'OF',   number: 18, ba: '.256', hr: 3,  rbi: 21,  era: '-',    role: 'Bench/Utility',        rarity: 'common'   },
+    { id: 24, name: 'Ruppert Jones',  position: 'OF',   number: 20, ba: '.284', hr: 6,  rbi: 25,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
+    { id: 25, name: 'Dave Rozema',    position: 'RP',   number: 48, ba: '-',    hr: '-', rbi: '-', era: '3.74', role: 'Swingman/5th Starter', rarity: 'common'   },
   ],
 
   padres: [
