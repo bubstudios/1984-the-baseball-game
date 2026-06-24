@@ -56,7 +56,9 @@ import { findDetroitTigersBannerEntry, trackDetroitTigersBannerView } from '@/li
 import { findTigersStadiumEntry, trackTigersStadiumView } from '@/lib/tigersStadiumPopups';
 import { findPhilliesBannerEntry, trackPhilliesBannerView } from '@/lib/philliesBannerPopups';
 import { findGenericAdEntry } from '@/lib/genericAdPopups';
+import GenericBannerPopup from './GenericBannerPopup';
 import { generateFallbackEntry } from '@/lib/genericAdFallback';
+import { findGenericBannerEntry } from '@/lib/genericBannerMatchers';
 import { recordAdView, getQuestClueForAd } from '@/lib/adQuests';
 import { getRandomCardForTeam, addCard, saveToStorage } from '@/lib/baseballCards';
 import { findCubsBannerEntry, trackCubsBannerView } from '@/lib/cubsBannerPopups';
@@ -280,11 +282,17 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
         } else if (movie !== null) {
           setIsMovie(true);
         } else {
-          // Keyword-based rich fallback for any remaining unmatched banner
-          const richFallback = generateFallbackEntry(ad.text);
-          if (richFallback) {
+          // Try keyword-based generic banner matcher first, then fallback
+          const genericBanner = findGenericBannerEntry(ad.text);
+          if (genericBanner) {
             setIsGenericAd(true);
-            setGenericAdEntry(richFallback);
+            setGenericAdEntry(genericBanner);
+          } else {
+            const richFallback = generateFallbackEntry(ad.text);
+            if (richFallback) {
+              setIsGenericAd(true);
+              setGenericAdEntry(richFallback);
+            }
           }
         }
       }
@@ -309,6 +317,11 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   // ── Movie Popup ──
   if (isMovie) {
     return <MoviePopup ad={ad} onDismiss={() => { setVisible(false); onDismiss(); }} onAchievement={onAchievement} />;
+  }
+
+  // ── Generic Banner Popup ──
+  if (isGenericAd && genericAdEntry) {
+    return <GenericBannerPopup entry={genericAdEntry} onDismiss={() => { setVisible(false); onDismiss(); }} />;
   }
 
   const showIcon = synopsisData?.icon || (isElectronics ? elecEntry?.icon : '📺');
