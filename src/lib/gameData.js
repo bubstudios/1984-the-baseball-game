@@ -739,6 +739,7 @@ export const TEAMS = {
       { name: "Jim Essian", pos: "C", bats: "R", contact: 4, power: 3, bunting: 3, speed: 2, defense: 5, arm: 6, splits: estSplits(.219, 4, 128, 38, "R") },
       { name: "Jeff Burroughs", pos: "DH/OF", bats: "R", contact: 5, power: 5, bunting: 2, speed: 2, defense: 4, arm: 5, splits: estSplits(.245, 8, 180, 50, "R") },
       { name: "Dan Meyer", pos: "1B/OF", bats: "L", contact: 5, power: 3, bunting: 4, speed: 3, defense: 5, arm: 5, splits: estSplits(.235, 4, 140, 40, "L") },
+      { name: "Bill Almon", pos: "UT", bats: "R", contact: 5, power: 3, bunting: 4, speed: 4, defense: 5, arm: 5, splits: estSplits(.223, 7, 211, 60, "R") },
     ],
     rotation: [
       { name: "Ray Burris", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
@@ -752,6 +753,7 @@ export const TEAMS = {
       { name: "Tom Burgmeier", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Rick Langford", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Chuck Rainey", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Curt Young", pos: "RP", throws: "L", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 4, speed: 2 },
     ],
   },
 
@@ -1259,6 +1261,12 @@ export const PLAYER_ERRORS = {
   "Len Matuszek": 4, "Greg Gross": 1, "Derrel Thomas": 5, "Bo Diaz": 6, "Sixto Lezcano": 2,
   "Steve Carlton": 3, "John Denny": 4, "Kevin Gross": 5, "Charles Hudson": 6,
   "Al Holland": 2, "Larry Andersen": 2, "Bill Campbell": 3, "Don Carman": 2, "Tug McGraw": 1,
+  // Athletics
+  "Rickey Henderson": 6, "Joe Morgan": 4, "Carney Lansford": 13, "Dave Kingman": 0,
+  "Dwayne Murphy": 2, "Mike Davis": 3, "Bruce Bochte": 4, "Mike Heath": 5, "Tony Phillips": 9,
+  "Dave Lopes": 5, "Donnie Hill": 5, "Jim Essian": 3, "Jeff Burroughs": 1, "Dan Meyer": 3, "Bill Almon": 10,
+  "Ray Burris": 2, "Steve McCatty": 2, "Bill Krueger": 1, "Chris Codiroli": 3,
+  "Bill Caudill": 1, "Keith Atherton": 1, "Tom Burgmeier": 1, "Rick Langford": 2, "Chuck Rainey": 1, "Curt Young": 2,
 };
 
 // Estimate splits for bench players based on overall stats + handedness

@@ -136,6 +136,8 @@ export const EXTRA_ROSTERS = {
     { id: 21, name: 'Jeff Burroughs',   position: 'DH',  number: 30, ba: '.245', hr: 8,  rbi: 31,  era: '-',    role: 'Bench/Power',          rarity: 'common'   },
     { id: 22, name: 'Jim Essian',       position: 'C',   number: 9,  ba: '.219', hr: 4,  rbi: 16,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 23, name: 'Dan Meyer',        position: '1B',  number: 25, ba: '.235', hr: 4,  rbi: 18,  era: '-',    role: 'Utility/Bench',        rarity: 'common'   },
+    { id: 24, name: 'Bill Almon',      position: 'UT',  number: 34, ba: '.223', hr: 7,  rbi: 16,  era: '-',    role: 'Utility Player',       rarity: 'common'   },
+    { id: 25, name: 'Curt Young',     position: 'RP',  number: 38, ba: '-',    hr: '-', rbi: '-', era: '4.06', role: 'Relief/Swingman',       rarity: 'common'   },
   ],
 
   angels: [
