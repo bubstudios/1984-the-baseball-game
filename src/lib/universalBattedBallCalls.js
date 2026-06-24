@@ -686,15 +686,15 @@ export function getRandomCall(arr) {
 }
 
 export function getBattedBallCallByType(resultType) {
-  const type = resultType?.toLowerCase() || 'single';
-  
-  if (type === 'homerun') return HOME_RUNS;
-  if (type === 'triple') return TRIPLES;
-  if (type === 'double') return DOUBLES;
-  if (type === 'single') return SINGLES;
-  if (type === 'flyout' || type === 'lineout') return LINE_DRIVES;
-  if (type === 'popout') return POP_UPS;
-  if (type === 'groundout') return GROUND_BALLS;
-  
-  return GROUND_BALLS; // fallback
+   const type = resultType?.toLowerCase() || 'single';
+
+   if (type === 'homerun') return getRandomCall(HOME_RUNS);
+   if (type === 'triple') return getRandomCall(TRIPLES);
+   if (type === 'double') return getRandomCall(DOUBLES);
+   if (type === 'single') return getRandomCall(SINGLES);
+   if (type === 'flyout' || type === 'lineout') return getRandomCall(LINE_DRIVES);
+   if (type === 'popout') return getRandomCall(POP_UPS);
+   if (type === 'groundout') return getRandomCall(GROUND_BALLS);
+
+   return getRandomCall(GROUND_BALLS); // fallback
 }
