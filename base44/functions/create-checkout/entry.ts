@@ -63,7 +63,13 @@ Deno.serve(async (req) => {
       return Response.json({ error: data?.message || data?.errorDescription || 'Checkout creation failed' }, { status: response.status });
     }
 
-    return Response.json({ redirectUrl: data.checkoutSession.redirectUrl });
+    const redirectUrl = data.session?.redirectUrl || data.redirectUrl || data.checkoutSession?.redirectUrl;
+    if (!redirectUrl) {
+      console.error('No redirect URL in Wix response:', data);
+      return Response.json({ error: 'No checkout URL received from payment provider' }, { status: 500 });
+    }
+
+    return Response.json({ redirectUrl });
   } catch (error) {
     console.error('create-checkout error:', error.message);
     return Response.json({ error: error.message }, { status: 500 });
