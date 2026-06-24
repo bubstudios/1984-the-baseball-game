@@ -865,6 +865,7 @@ export const TEAMS = {
       { name: "Gorman Thomas", pos: "OF/DH", bats: "R", contact: 4, power: 9, bunting: 1, speed: 3, defense: 5, arm: 6, splits: estSplits(.215, 32, 489, 146, "R") },
       { name: "Orlando Mercado", pos: "C", bats: "R", contact: 4, power: 2, bunting: 3, speed: 2, defense: 5, arm: 6, splits: estSplits(.209, 1, 86, 26, "R") },
       { name: "Domingo Ramos", pos: "SS/2B", bats: "R", contact: 4, power: 1, bunting: 5, speed: 4, defense: 6, arm: 5, splits: estSplits(.218, 1, 116, 34, "R") },
+      { name: "Larry Milbourne", pos: "3B", bats: "S", contact: 5, power: 1, bunting: 5, speed: 3, defense: 6, arm: 5, splits: estSplits(.265, 1, 211, 100, "S") },
     ],
     rotation: [
       { name: "Mark Langston", pos: "SP", throws: "L", bats: "R", stamina: 8, pitchSpeed: 9, offSpeed: 7, control: 5, contact: 3, power: 2, bunting: 4, speed: 3 },
@@ -878,6 +879,7 @@ export const TEAMS = {
       { name: "Paul Mirabella", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Edwin Nunez", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 5, control: 4, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Bob Stoddard", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Ed Vande Berg", pos: "RP", throws: "L", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -1283,6 +1285,12 @@ export const PLAYER_ERRORS = {
   "Tom Paciorek": 4, "Jerry Hairston": 1, "Marc Hill": 2, "Joel Skinner": 2, "Mike Squires": 2, "Jerry Dybzinski": 8,
   "LaMarr Hoyt": 2, "Richard Dotson": 2, "Floyd Bannister": 1, "Tom Seaver": 2,
   "Ron Reed": 1, "Salome Barojas": 1, "Juan Agosto": 1, "Gene Nelson": 2, "Dan Spillner": 1, "Britt Burns": 2,
+  // Mariners
+  "Kirby Puckett": 3, "Mickey Hatcher": 4, "Kent Hrbek": 5, "Tom Brunansky": 2,
+  "Gary Gaetti": 8, "Randy Bush": 1, "Tim Teufel": 4, "Dave Engle": 3, "Houston Jimenez": 4,
+  "Barry Bonnell": 2, "Steve Henderson": 1, "Gorman Thomas": 2, "Orlando Mercado": 2, "Domingo Ramos": 3, "Larry Milbourne": 16,
+  "Mark Langston": 2, "Mike Moore": 2, "Jim Beattie": 2, "Matt Young": 2,
+  "Mike Stanton": 1, "Dave Beard": 1, "Paul Mirabella": 1, "Edwin Nunez": 2, "Bob Stoddard": 1, "Ed Vande Berg": 1,
 };
 
 // Estimate splits for bench players based on overall stats + handedness
