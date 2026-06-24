@@ -39,6 +39,36 @@ import { trackDodgersBannerView } from '@/lib/dodgersBannerPopups';
 import { trackPadresBannerView } from '@/lib/padresBannerPopups';
 import { trackRedsBannerView } from '@/lib/redsBannerPopups';
 import { trackRoyalsBannerView } from '@/lib/royalsBannerPopups';
+import BlueJaysBannerPopup from './BlueJaysBannerPopup';
+import IndiansBannerPopup from './IndiansBannerPopup';
+import BrewersBannerPopup from './BrewersBannerPopup';
+import AthleticsBannerPopup from './AthleticsBannerPopup';
+import AngelsBannerPopup from './AngelsBannerPopup2';
+import WhiteSoxBannerPopup from './WhiteSoxBannerPopup2';
+import MarinersBannerPopup from './MarinersBannerPopup2';
+import RangersBannerPopup from './RangersBannerPopup2';
+import TwinsBannerPopup from './TwinsBannerPopup2';
+import ExposBannerPopup from './ExposBannerPopup2';
+import CardinalsBannerPopup from './CardinalsBannerPopup2';
+import PiratesBannerPopup from './PiratesBannerPopup2';
+import BravesBannerPopup from './BravesBannerPopup2';
+import AstrosBannerPopup from './AstrosBannerPopup2';
+import GiantsBannerPopup from './GiantsBannerPopup2';
+import { trackBluejaysBannerView } from '@/lib/bluejaysBannerPopups';
+import { trackIndiansBannerView } from '@/lib/indiansBannerPopups';
+import { trackBrewersBannerView } from '@/lib/brewersBannerPopups';
+import { trackAthleticsBannerView } from '@/lib/athleticsBannerPopups';
+import { trackAngelsBannerView } from '@/lib/angelsBannerPopups2';
+import { trackWhiteSoxBannerView } from '@/lib/whiteSoxBannerPopups2';
+import { trackMarinersBannerView } from '@/lib/marinersBannerPopups2';
+import { trackRangersBannerView } from '@/lib/rangersBannerPopups2';
+import { trackTwinsBannerView } from '@/lib/twinsBannerPopups2';
+import { trackExposBannerView } from '@/lib/exposBannerPopups2';
+import { trackCardinalsBannerView } from '@/lib/cardinalsBannerPopups2';
+import { trackPiratesBannerView } from '@/lib/piratesBannerPopups2';
+import { trackBravesBannerView } from '@/lib/bravesBannerPopups2';
+import { trackAstrosBannerView } from '@/lib/astrosBannerPopups2';
+import { trackGiantsBannerView } from '@/lib/giantsBannerPopups2';
 
 export default function AdReadPopupRenderer({
   expanded, isMovie, synopsisData, onDismiss, onAchievement,
@@ -74,6 +104,21 @@ export default function AdReadPopupRenderer({
   isPadresBanner, padresBannerEntry,
   isRedsBanner, redsBannerEntry,
   isRoyalsBanner, royalsBannerEntry,
+  isBlueJaysBanner, blueJaysBannerEntry,
+  isIndiansBanner, indiansBannerEntry,
+  isBrewersBanner, brewersBannerEntry,
+  isAthleticsBanner, athleticsBannerEntry,
+  isAngelsBanner, angelsBannerEntry,
+  isWhiteSoxBanner, whiteSoxBannerEntry,
+  isMarinersBanner, marinersBannerEntry,
+  isRangersBanner, rangersBannerEntry,
+  isTwinsBanner, twinsBannerEntry,
+  isExposBanner, exposBannerEntry,
+  isCardinalsBanner, cardinalsBannerEntry,
+  isPiratesBanner, piratesBannerEntry,
+  isBravesBanner, bravesBannerEntry,
+  isAstrosBanner, astrosBannerEntry,
+  isGiantsBanner, giantsBannerEntry,
   isTigersStadium, tigersStadiumEntry,
   isPhilliesBanner, philliesBannerEntry,
   isTvMovie, tvMovieEntry,
@@ -176,6 +221,51 @@ export default function AdReadPopupRenderer({
   }
   if (expanded && isRoyalsBanner && royalsBannerEntry) {
     return <TeamBannerPopup entry={royalsBannerEntry} teamColor="#004687" teamIcon="👑" onDismiss={() => onDismiss()} onAchievement={onAchievement} trackView={trackRoyalsBannerView} />;
+  }
+  if (expanded && isBlueJaysBanner && blueJaysBannerEntry) {
+    return <BlueJaysBannerPopup entry={blueJaysBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isIndiansBanner && indiansBannerEntry) {
+    return <IndiansBannerPopup entry={indiansBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isBrewersBanner && brewersBannerEntry) {
+    return <BrewersBannerPopup entry={brewersBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isAthleticsBanner && athleticsBannerEntry) {
+    return <AthleticsBannerPopup entry={athleticsBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isAngelsBanner && angelsBannerEntry) {
+    return <AngelsBannerPopup entry={angelsBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isWhiteSoxBanner && whiteSoxBannerEntry) {
+    return <WhiteSoxBannerPopup entry={whiteSoxBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isMarinersBanner && marinersBannerEntry) {
+    return <MarinersBannerPopup entry={marinersBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isRangersBanner && rangersBannerEntry) {
+    return <RangersBannerPopup entry={rangersBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isTwinsBanner && twinsBannerEntry) {
+    return <TwinsBannerPopup entry={twinsBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isExposBanner && exposBannerEntry) {
+    return <ExposBannerPopup entry={exposBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isCardinalsBanner && cardinalsBannerEntry) {
+    return <CardinalsBannerPopup entry={cardinalsBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isPiratesBanner && piratesBannerEntry) {
+    return <PiratesBannerPopup entry={piratesBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isBravesBanner && bravesBannerEntry) {
+    return <BravesBannerPopup entry={bravesBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isAstrosBanner && astrosBannerEntry) {
+    return <AstrosBannerPopup entry={astrosBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
+  }
+  if (expanded && isGiantsBanner && giantsBannerEntry) {
+    return <GiantsBannerPopup entry={giantsBannerEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
   }
   if (expanded && isTigersStadium && tigersStadiumEntry) {
     return <TigersStadiumPopup entry={tigersStadiumEntry} onDismiss={() => onDismiss()} onAchievement={onAchievement} />;
