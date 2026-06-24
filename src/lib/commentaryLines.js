@@ -921,6 +921,102 @@ const FC_LINES = [
   c("sharply hit to"), c("taps one to"),
 ];
 
+// =========== BATTER THROWN OUT STRETCHING ===========
+const STRETCH_OUT_LINES = [
+  c("is thrown out trying to stretch it into a double!"),
+  c("is gunned down at second — too greedy!"),
+  c("tries to stretch it and gets thrown out at second!"),
+  c("is cut down trying for two!"),
+  c("gets thrown out at second — bad decision!"),
+  c("is tagged out sliding into second — tried to stretch!"),
+  c("rounds first too far and gets thrown out at second!"),
+  c("is thrown out trying to turn a single into a double!"),
+  c("pushes his luck and is thrown out at second!"),
+  c("is gunned down — the throw beats him to second!"),
+  c("tries for the extra base and pays for it!", 'uncommon'),
+  c("is caught stretching — the throw was right on the money!", 'uncommon'),
+  c("is thrown out by a step at second!", 'uncommon'),
+  c("rounds the bag and gets tagged out — caught stretching!", 'rare'),
+  c("is thrown out trying to stretch it into a triple!", 'uncommon'),
+  c("is gunned down at third — going for the triple!", 'uncommon'),
+  c("is cut down at third trying to stretch a double!"),
+  c("is thrown out at third — greed got the better of him!"),
+  c("is tagged out at third trying to turn two into three!"),
+  c("is gunned down at third — the relay was perfect!"),
+  c("is thrown out at home trying for the inside-the-parker!", 'rare'),
+  c("is cut down at the plate — just short of glory!", 'rare'),
+];
+
+// =========== BATTER STRETCH SUCCESS ===========
+const STRETCH_SUCCESS_LINES = [
+  c("stretches it into a double — safe at second!"),
+  c("takes the extra base — safe at second with a double!"),
+  c("makes it to second standing up — he stretched it!"),
+  c("slides in safe at second — turned it into a double!"),
+  c("stretches the single into a double — good hustle!"),
+  c("turns on the speed and makes it to second!"),
+  c("stretches it into a triple — safe at third!", 'uncommon'),
+  c("makes it to third — he turned it into a triple!", 'uncommon'),
+  c("legs out the triple — safe at third standing up!", 'uncommon'),
+  c("turns the double into a triple with his speed!", 'uncommon'),
+  c("rounds the bases for an inside-the-park home run!", 'rare'),
+  c("legs it all the way home — inside-the-park homer!", 'rare'),
+  c("circles the bases — an inside-the-park home run!", 'rare'),
+];
+
+// =========== RUNNER THROWN OUT AT THIRD ===========
+const RUNNER_OUT_AT_THIRD_LINES = [
+  c("is thrown out at third trying to take the extra base!"),
+  c("is gunned down at third — the throw was perfect!"),
+  c("is cut down trying for third on the single!"),
+  c("gets thrown out at third — too aggressive!"),
+  c("is tagged out sliding into third!"),
+  c("is thrown out trying to go first to third!"),
+  c("is gunned down — the outfielder's throw nails him at third!"),
+  c("is thrown out at third by a step!"),
+  c("is cut down at third — should have stayed at second!"),
+  c("is thrown out at third — the relay was on target!"),
+  c("is tagged out at third trying to be aggressive!", 'uncommon'),
+  c("is thrown out at third — the cutoff man relayed it perfectly!", 'uncommon'),
+  c("gets thrown out at third — he never should have gone!", 'rare'),
+];
+
+// =========== RUNNER THROWN OUT AT HOME ===========
+const RUNNER_OUT_AT_HOME_LINES = [
+  c("is thrown out at the plate!"),
+  c("is gunned down at home — the throw was perfect!"),
+  c("is cut down trying to score!"),
+  c("is thrown out at home — no chance!"),
+  c("is tagged out at the plate!"),
+  c("is thrown out trying to score!"),
+  c("is gunned down at home — the relay was on target!"),
+  c("is thrown out at the plate by a mile!"),
+  c("is cut down at home — the catcher blocks the plate!"),
+  c("is thrown out trying to score — the throw beat him!"),
+  c("is tagged out at the plate — he never had a chance!", 'uncommon'),
+  c("is thrown out at home — the cutoff relay was perfect!", 'uncommon'),
+  c("is gunned down at the plate — the throw was a strike!", 'uncommon'),
+  c("is thrown out at home — why did they send him?!", 'rare'),
+];
+
+// =========== TAG UP THROWN OUT ===========
+const TAG_UP_OUT_LINES = [
+  c("tags up and is thrown out at the plate!"),
+  c("is gunned down trying to tag and score!"),
+  c("is thrown out tagging up at home!"),
+  c("tags up and is cut down at the plate!"),
+  c("is thrown out trying to advance on the fly!"),
+  c("tags up and is thrown out at third!"),
+  c("is gunned down tagging up at third!"),
+  c("is thrown out trying to tag and take the extra base!"),
+  c("tags up and is thrown out at second!"),
+  c("is caught trying to advance on the catch!"),
+  c("is thrown out — the throw beat him after the tag!", 'uncommon'),
+  c("tags up and is cut down — the outfielder's arm was too strong!", 'uncommon'),
+  c("is gunned down — the relay was perfect after the catch!", 'uncommon'),
+  c("is thrown out tagging up by a mile!", 'rare'),
+];
+
 // Export all pools
 export {
   STRIKEOUT_LINES, WALK_LINES, INTENTIONAL_WALK_LINES,
@@ -941,4 +1037,7 @@ export {
   SWINGING_STRIKE_CHANGEUP_LINES, SWINGING_STRIKE_GENERIC_LINES,
   CALLED_BALL_FASTBALL_LINES, CALLED_BALL_BREAKING_LINES,
   CALLED_BALL_CHANGEUP_LINES, CALLED_BALL_GENERIC_LINES,
+  STRETCH_OUT_LINES, STRETCH_SUCCESS_LINES,
+  RUNNER_OUT_AT_THIRD_LINES, RUNNER_OUT_AT_HOME_LINES,
+  TAG_UP_OUT_LINES,
 };
