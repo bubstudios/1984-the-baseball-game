@@ -187,6 +187,8 @@ export const ALL_ROSTERS = {
     { id: 21, name: 'Floyd Rayford',   position: 'C',    number: 11, ba: '.231', hr: 5,  rbi: 20,  era: '-',    role: 'Utility/Catcher',      rarity: 'common'   },
     { id: 22, name: 'Lenn Sakata',     position: '2B',   number: 15, ba: '.223', hr: 3,  rbi: 14,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
     { id: 23, name: 'Joe Nolan',       position: 'C',    number: 10, ba: '.245', hr: 3,  rbi: 15,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
+    { id: 24, name: 'John Lowenstein', position: 'OF',   number: 38, ba: '.237', hr: 8,  rbi: 28,  era: '-',    role: 'Bench/Pinch Hitter',   rarity: 'uncommon' },
+    { id: 25, name: 'Dennis Martinez', position: 'RP',   number: 40, ba: '-',    hr: '-', rbi: '-', era: '5.02', role: 'Long Relief/Spot Start',rarity: 'uncommon' },
   ],
 
   reds: [
