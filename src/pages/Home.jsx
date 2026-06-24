@@ -45,6 +45,7 @@ import { getVictoryCall } from '@/lib/victoryCalls';
 import CardAwardModal from '@/components/game/CardAwardModal';
 import { getRandomCardForTeam, addCard, loadFromStorage, saveToStorage, migrateLegacyStorage, getCollectedIds } from '@/lib/baseballCards';
 import FanChirpToast from '@/components/game/FanChirpToast';
+import { checkAndResolveIncident } from '@/lib/incidentIntegration';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
