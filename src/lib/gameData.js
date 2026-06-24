@@ -1157,7 +1157,7 @@ export const TEAMS = {
       { name: "Jim Pankovits", pos: "2B/SS", bats: "R", contact: 5, power: 2, bunting: 5, speed: 5, defense: 6, arm: 5, splits: estSplits(.235, 2, 156, 48, "R") },
     ],
     rotation: [
-      { name: "Nolan Ryan", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 10, offSpeed: 8, control: 6, contact: 2, power: 1, bunting: 4, speed: 2, pitches: ["Fastball", "Breaking Ball", "Changeup"], specialty: { name: "The Ryan Express", pitch: "Fastball", label: "RC" } },
+      { name: "Nolan Ryan", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 10, offSpeed: 8, control: 6, contact: 2, power: 1, bunting: 4, speed: 2, specialty: { name: "The Express", pitch: "Fastball", label: "RC" } },
       { name: "Joe Niekro", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 5, offSpeed: 10, control: 7, contact: 4, power: 2, bunting: 5, speed: 2, pitches: ["Fastball", "Knuckleball", "Changeup"], specialty: { name: "Knuckle Down", pitch: "Knuckleball", label: "RC" } },
       { name: "Bob Knepper", pos: "SP", throws: "L", bats: "L", stamina: 8, pitchSpeed: 5, offSpeed: 8, control: 7, contact: 4, power: 1, bunting: 5, speed: 2 },
       { name: "Mike Scott", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 8, control: 7, contact: 3, power: 1, bunting: 4, speed: 3 },
