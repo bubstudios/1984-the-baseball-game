@@ -1053,6 +1053,7 @@ export const TEAMS = {
       { name: "Benny Distefano", pos: "1B/OF", bats: "L", contact: 5, power: 3, bunting: 4, speed: 4, defense: 5, arm: 5, splits: estSplits(.235, 2, 90, 25, "L") },
       { name: "Jim Morrison", pos: "IF", bats: "R", contact: 5, power: 4, bunting: 4, speed: 3, defense: 5, arm: 6, splits: estSplits(.252, 11, 268, 80, "R") },
       { name: "Joe Orsulak", pos: "OF", bats: "L", contact: 6, power: 2, bunting: 5, speed: 6, defense: 6, arm: 5, splits: estSplits(.249, 1, 152, 46, "L") },
+      { name: "Amos Otis", pos: "OF/DH", bats: "R", contact: 7, power: 5, bunting: 3, speed: 6, defense: 6, arm: 6, splits: estSplits(.276, 8, 272, 100, "R") },
     ],
     rotation: [
       { name: "Rick Rhoden", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 7, offSpeed: 7, control: 7, contact: 5, power: 3, bunting: 7, speed: 3 },
@@ -1066,6 +1067,8 @@ export const TEAMS = {
       { name: "Rod Scurry", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Cecilio Guante", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Lee Tunnell", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Larry McWilliams", pos: "RP", throws: "L", bats: "L", stamina: 6, pitchSpeed: 6, offSpeed: 7, control: 5, contact: 3, power: 1, bunting: 4, speed: 2 },
+      { name: "Bob Walk", pos: "RP", throws: "R", bats: "R", stamina: 6, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 3, power: 1, bunting: 4, speed: 2 },
     ],
   },
 
