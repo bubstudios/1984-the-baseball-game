@@ -10,6 +10,7 @@ import {
   INFIELD_POPUP_LINES,
   INFIELD_LINEOUT_SOFT_LINES, INFIELD_LINEOUT_HARD_LINES,
   SHALLOW_FLYOUT_LINES, MEDIUM_FLYOUT_LINES, DEEP_FLYOUT_LINES,
+  OUTFIELD_LINEOUT_LINES,
   BUNT_SINGLE_LINES, SACRIFICE_BUNT_LINES, SAC_FLY_LINES,
   STEAL_LINES, ERROR_LINES, FC_LINES,
   TAKEN_STRIKE_FASTBALL_LINES, TAKEN_STRIKE_BREAKING_LINES,
@@ -655,10 +656,12 @@ function resolveSwing(state, swingType, pitch) {
     const fts = [{ text: ftt, pos: fp, type: 'flyout', depth: flyoutDepth }];
     const loP = ['3B','SS','1B','2B']; const lp = loP[Math.floor(Math.random() * loP.length)];
     const lt = `${pickLine(Math.random() < 0.5 ? INFIELD_LINEOUT_SOFT_LINES : INFIELD_LINEOUT_HARD_LINES)} ${defenders[lp]?.name || posNames[lp]} makes the catch.`;
+    const ofLoPos = ['CF','RF','LF']; const olp = ofLoPos[Math.floor(Math.random() * ofLoPos.length)];
+    const olt = `${pickLine(OUTFIELD_LINEOUT_LINES)} ${defenders[olp]?.name || ff[olp][1]} makes the catch.`;
     const ppP = ['C','2B','3B']; const pp = ppP[Math.floor(Math.random() * ppP.length)];
     const pt = pickLine(INFIELD_POPUP_LINES);
     const pf = `${pt} ${defenders[pp]?.name || posNames[pp]} makes the catch.`;
-    const oo = [{ text: pf, pos: pp, type: 'popout' },{ text: lt, pos: lp, type: 'lineout' }];
+    const oo = [{ text: pf, pos: pp, type: 'popout' },{ text: lt, pos: lp, type: 'lineout' },{ text: olt, pos: olp, type: 'lineout' }];
     const ao = [...gts, ...fts, ...oo]; const out = ao[Math.floor(Math.random() * ao.length)];
     const isFlyBall = ['CF','RF','LF'].includes(out.pos) || out.type === 'popout' || out.type === 'lineout';
     if (isFlyBall && out.type !== 'popout') {

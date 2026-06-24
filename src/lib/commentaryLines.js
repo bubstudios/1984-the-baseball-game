@@ -306,6 +306,40 @@ const DEEP_FLYOUT_LINES = [
   c("He gives it a tremendous ride, but the defense makes the play."),
 ];
 
+// =========== OUTFIELD LINE-OUT ===========
+const OUTFIELD_LINEOUT_LINES = [
+  c("A sharp line drive is caught for the out."),
+  c("He lines it hard, but right at the defense."),
+  c("A well-struck liner finds a glove."),
+  c("He squares it up, but has nothing to show for it."),
+  c("A hard shot is taken out of the air."),
+  c("He sends a rope into the outfield, but it is caught."),
+  c("A sinking liner is grabbed before it can drop."),
+  c("He rifles the ball, but it goes directly to the defense."),
+  c("A line drive streaks into the outfield and is caught."),
+  c("He hits it on the screws, but right at somebody."),
+  c("A firm liner hangs up just long enough."),
+  c("He lashes the pitch, but there is no open ground."),
+  c("A low line drive is taken cleanly."),
+  c("He drives it on a line, but the defense has it measured."),
+  c("A frozen rope is caught for the out."),
+  c("He barrels the ball, but sends it to the wrong place."),
+  c("A crisp line drive is gathered in."),
+  c("He smokes one, but it stays within reach."),
+  c("A rising liner is caught in stride."),
+  c("He makes solid contact, but the ball finds leather."),
+  c("A hard line drive is tracked down."),
+  c("He sends a bullet into the outfield, but the play is made."),
+  c("A sharply struck ball is caught at chest height."),
+  c("He turns on the pitch and lines it directly to the defense."),
+  c("A sinking shot is caught just above the grass."),
+  c("He drills the ball, but it becomes a loud out."),
+  c("A laser comes off the bat and is caught."),
+  c("He hits it hard enough, but not where he needed to."),
+  c("A screaming line drive is hauled in."),
+  c("He could not have hit it much better, but it is still an out."),
+];
+
 // =========== DOUBLE PLAY ===========
 const DOUBLE_PLAY_LINES = [
   c("grounds into a double play."),
@@ -791,6 +825,7 @@ export {
   SINGLE_LINES, DOUBLE_LINES, TRIPLE_LINES, HOME_RUN_LINES,
   WILD_PITCH_LINES, GROUNDOUT_LINES, FLYOUT_LINES,
   SHALLOW_FLYOUT_LINES, MEDIUM_FLYOUT_LINES, DEEP_FLYOUT_LINES,
+  OUTFIELD_LINEOUT_LINES,
   DOUBLE_PLAY_LINES, END_INNING_LINES, LINEOUT_LINES,
   POPOUT_LINES, STRIKEOUT_SWINGING_LINES, STRIKEOUT_CALLED_LINES,
   BUNT_SINGLE_LINES, SACRIFICE_BUNT_LINES, SAC_FLY_LINES,
