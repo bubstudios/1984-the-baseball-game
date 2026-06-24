@@ -1154,6 +1154,7 @@ export const TEAMS = {
       { name: "Denny Walling", pos: "3B/OF", bats: "L", contact: 6, power: 4, bunting: 4, speed: 3, defense: 5, arm: 5, splits: estSplits(.286, 6, 246, 74, "L") },
       { name: "Kevin Bass", pos: "OF", bats: "S", contact: 6, power: 5, bunting: 5, speed: 7, defense: 7, arm: 7, splits: { vsLHP: { ab: 134, ba: .328, hr: 6 }, vsRHP: { ab: 347, ba: .252, hr: 10 } } },
       { name: "Ray Knight", pos: "3B/1B", bats: "R", contact: 6, power: 3, bunting: 4, speed: 2, defense: 6, arm: 6, splits: estSplits(.250, 4, 180, 50, "R") },
+      { name: "Jim Pankovits", pos: "2B/SS", bats: "R", contact: 5, power: 2, bunting: 5, speed: 5, defense: 6, arm: 5, splits: estSplits(.235, 2, 156, 48, "R") },
     ],
     rotation: [
       { name: "Nolan Ryan", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 10, offSpeed: 8, control: 6, contact: 2, power: 1, bunting: 4, speed: 2, specialty: { name: "The Ryan Express", pitch: "Fastball", label: "RC" } },
@@ -1167,6 +1168,8 @@ export const TEAMS = {
       { name: "Bill Dawley", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Vern Ruhle", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Julio Solano", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Mike Lacoss", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Mike Madden", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -1354,6 +1357,8 @@ export const PLAYER_ERRORS = {
   "Miguel Dilone": 2, "David Palmer": 1, "Dan Schatzeder": 1,
   // Braves
   "Dale Murphy": 5, "Jerry Royster": 3, "Albert Hall": 3, "Rick Camp": 2, "Pete Falcone": 2,
+  // Astros
+  "Jim Pankovits": 4, "Mike Lacoss": 2, "Mike Madden": 1,
   };
 
 // Estimate splits for bench players based on overall stats + handedness
