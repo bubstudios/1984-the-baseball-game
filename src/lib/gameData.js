@@ -476,8 +476,8 @@ export const TEAMS = {
         splits: estSplits(.249, 4, 181, 52, "R") },
       { name: "Greg Pryor", pos: "INF", bats: "R", contact: 5, power: 2, bunting: 5, speed: 4, defense: 6, arm: 5,
         splits: estSplits(.231, 2, 134, 38, "R") },
-      { name: "Cesar Geronimo", pos: "OF", bats: "L", contact: 5, power: 3, bunting: 4, speed: 4, defense: 7, arm: 7,
-        splits: estSplits(.244, 3, 168, 48, "L") },
+      { name: "UL Washington", pos: "SS", bats: "R", contact: 5, power: 2, bunting: 5, speed: 5, defense: 7, arm: 6, splits: estSplits(.224, 1, 170, 50, "R") },
+      { name: "Don Slaught", pos: "C", bats: "R", contact: 6, power: 5, bunting: 3, speed: 3, defense: 6, arm: 6, splits: estSplits(.264, 4, 409, 120, "R") },
     ],
     rotation: [
       { name: "Bret Saberhagen", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 8, control: 9, contact: 3, power: 1, bunting: 5, speed: 3 },
@@ -487,10 +487,11 @@ export const TEAMS = {
     ],
     bullpen: [
       { name: "Dan Quisenberry", pos: "CL", throws: "R", bats: "R", stamina: 4, pitchSpeed: 4, offSpeed: 9, control: 10, contact: 2, power: 1, bunting: 3, speed: 2, pitches: ["Fastball", "Breaking Ball", "Changeup"], specialty: { name: "The Submarine", pitch: "Breaking Ball", label: "RC" } },
-      { name: "Steve Farr", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Mike Jones", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Joe Beckwith", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
-      { name: "Gary Christenson", pos: "RP", throws: "L", bats: "L", stamina: 3, pitchSpeed: 5, offSpeed: 5, control: 4, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Larry Gura", pos: "RP", throws: "L", bats: "L", stamina: 7, pitchSpeed: 5, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 5, speed: 2 },
+      { name: "Mark Huismann", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Paul Splittorff", pos: "RP", throws: "L", bats: "L", stamina: 3, pitchSpeed: 4, offSpeed: 5, control: 4, contact: 3, power: 1, bunting: 4, speed: 2 },
     ],
   },
 
@@ -1251,7 +1252,7 @@ export const PLAYER_ERRORS = {
   // Royals
   "Willie Wilson": 6, "Frank White": 8, "George Brett": 22, "Hal McRae": 0,
   "Steve Balboni": 17, "Pat Sheridan": 5, "Darryl Motley": 6, "Jamie Quirk": 7, "Onix Concepcion": 21,
-  "Dane Iorg": 4, "Buddy Biancalana": 5, "John Wathan": 5, "Greg Pryor": 6, "Cesar Geronimo": 2,
+  "Dane Iorg": 4, "Buddy Biancalana": 5, "John Wathan": 5, "Greg Pryor": 6, "UL Washington": 14, "Don Slaught": 5,
   // Phillies
   "Juan Samuel": 33, "Ivan DeJesus": 22, "Mike Schmidt": 11, "Von Hayes": 8,
   "Glenn Wilson": 7, "Ozzie Virgil Jr.": 9, "Garry Maddox": 2, "Jeff Stone": 5,
