@@ -253,9 +253,16 @@ export default function Home() {
       const newEntries = gameState.log.slice(prevLogLength.current);
       newEntries.forEach(entry => {
         if (entry.type === 'homerun' && entry.hrDistance && entry.batterName) {
-          try {
-            trackHomeRunDistance(entry.hrDistance, entry.batterName, userTeam);
-          } catch (e) { console.error('trackHomeRunDistance failed:', e); }
+          // Only track HRs hit by the user's own team
+          const userSide = userTeam === gameState.homeTeam ? 'home' : 'away';
+          const userLineup = userSide === 'home' ? gameState.homeLineup : gameState.awayLineup;
+          const userHistory = userSide === 'home' ? (gameState.homePlayerHistory || []) : (gameState.awayPlayerHistory || []);
+          const isUserBatter = [...userLineup, ...userHistory].some(p => p.name === entry.batterName);
+          if (isUserBatter) {
+            try {
+              trackHomeRunDistance(entry.hrDistance, entry.batterName, userTeam);
+            } catch (e) { console.error('trackHomeRunDistance failed:', e); }
+          }
         }
         // Surface celebration lines as popups on the game tab
         if (entry.type === 'info' && entry.text && (entry.text.startsWith('🔥') || entry.text.startsWith('🎉') || entry.text.startsWith('✨'))) {
