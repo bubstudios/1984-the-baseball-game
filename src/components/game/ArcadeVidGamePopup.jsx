@@ -22,8 +22,7 @@ export default function ArcadeVidGamePopup({ entry, onDismiss, onAchievement }) 
   if (!entry) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" onClick={onDismiss}>
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onDismiss}>
       <div
         className={`relative w-full max-w-md mx-4 mb-4 sm:mb-0 bg-[#1a1a2e] border border-amber-500/30 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 ${
           visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
