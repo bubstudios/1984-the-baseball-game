@@ -157,6 +157,18 @@ export const BALLPARK_EVENTS = [
     rarity: "rare",
     team: "reds",
   },
+
+  // ── LEGENDARY: Rainbow-Mane Horse ──
+  // Rarer than all other events — only rolls into the legendary pool (5% of event rolls),
+  // and then only a fraction of legendary picks will be this one.
+  {
+    id: "rainbow_horse",
+    category: "legendary",
+    text: "A horse with a flowing rainbow-colored mane has wandered onto the field! It trots calmly across the outfield, mane shimmering in the sunlight, as players and umpires stare in disbelief. Grounds crew members approach cautiously with buckets of oats. The crowd has gone absolutely bonkers. Nobody can explain where it came from or where it's going.",
+    delay: 90,
+    rarity: "legendary",
+    weight: 0.15, // only 15% of legendary-pool picks become the rainbow horse
+  },
 ];
 
 // ── Roll for events ──
@@ -209,6 +221,30 @@ export function rollBallparkEvent(gameState) {
 
   if (pool.length === 0) pool = BALLPARK_EVENTS.filter(e => hadContact || !e.requiresContact);
   if (pool.length === 0) return null;
+
+  // ── Weighted selection: events with a `weight` property are rarer ──
+  // An event with weight 0.15 has a 15% chance of being selected from the pool
+  // (vs. equal share with all other non-weighted events).
+  const weighted = pool.filter(e => typeof e.weight === 'number');
+  const normal = pool.filter(e => typeof e.weight !== 'number');
+
+  if (weighted.length > 0 && normal.length > 0) {
+    // First decide: weighted event or normal event?
+    const totalWeight = weighted.reduce((s, e) => s + e.weight, 0);
+    const weightedShare = totalWeight / (totalWeight + normal.length);
+    if (Math.random() < weightedShare) {
+      // Pick among weighted events proportional to their weights
+      let r = Math.random() * totalWeight;
+      for (const e of weighted) {
+        r -= e.weight;
+        if (r <= 0) return e;
+      }
+      return weighted[weighted.length - 1];
+    }
+    // Otherwise pick a normal event
+    return normal[Math.floor(Math.random() * normal.length)];
+  }
+
   return pool[Math.floor(Math.random() * pool.length)];
 }
 

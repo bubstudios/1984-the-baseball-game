@@ -224,6 +224,54 @@ The show balances action, humor, and justice, with McCormick's one-liners and Ha
 SUCCESS STORY
 Unlike most on this list, "Hardcastle & McCormick" actually became successful, lasting five seasons and creating a successful formula of retired authority figures and young rogues working together.`,
   },
+  {
+    id: 'tv_511',
+    title: 'Clark & Behb Detective Agency',
+    icon: '🕵️',
+    color: '#22c55e',
+    anim: 'pulse',
+    matchText: 'Tune in for the premiere of "Clark & Behb Detective Agency" — the quirkiest investigators on television.',
+    type: 'failed_tv',
+    body: `CLARK & BEHB DETECTIVE AGENCY - The Odd Couple of Sleuthing
+
+"Clark & Behb Detective Agency" premiered in the fall of 1984, following the misadventures of two wildly mismatched private detectives sharing a rundown office above a laundromat in a nameless coastal city.
+
+THE PREMISE
+Clark is a meticulous, by-the-book investigator who files everything in color-coded folders and insists on proper chain of evidence. Behb is his polar opposite — a chaotic, improvisational wild card who solves crimes on instinct, hunches, and the occasional tarot card reading. Together they form the most unlikely detective agency in television history.
+
+THE DYNAMIC
+Each episode typically begins with a routine case — a missing parrot, a stolen ceramic cat — that spirals into something far larger and more absurd. Clark's methodical approach clashes hilariously with Behb's gonzo tactics, yet their contrasting styles somehow complement each other when the stakes get high.
+
+WHY IT FAILED
+Critics were divided. Some praised the chemistry between the leads, but network executives couldn't decide whether the show was a comedy, a drama, or something entirely new. Frequent time-slot changes confused viewers, and the show's offbeat tone never found its audience.
+
+CULT LEGACY
+"Clark & Behb" developed a small but devoted cult following after cancellation. Fans still debate whether the show was ahead of its time or simply too weird for 1984. The episode where Behb attempts to interrogate a suspect using only mime remains a fan favorite.`,
+  },
+  {
+    id: 'tv_512',
+    title: 'Carmie',
+    icon: '🎭',
+    color: '#f59e0b',
+    anim: 'pulse',
+    matchText: 'Don\'t miss "Carmie" — the heartwarming new series everyone\'s talking about.',
+    type: 'failed_tv',
+    body: `CARMIE - The Spirit of the Neighborhood
+
+"Carmie" premiered in mid-season 1984 as a half-hour comedy-drama about a larger-than-life character who becomes the unlikely heart and soul of a struggling urban neighborhood.
+
+THE CHARACTER
+Carmie is a lovable, gregarious fixture of the community — part philosopher, part gossip, part unofficial mayor of the block. Carmie knows everyone's secrets, everyone's dreams, and everyone's favorite recipes. With a warm smile and an endless supply of unsolicited advice, Carmie navigates the daily dramas of the neighborhood with charm and good humor.
+
+THE PREMISE
+Each episode centers around Carmie's attempts to solve a neighbor's problem — sometimes practical, sometimes deeply personal — through a combination of street smarts, heart-to-heart conversations, and the occasional well-intentioned scheme that inevitably goes sideways before somehow working out.
+
+WHY IT FAILED
+The show was initially well-received by critics who praised its warmth and the lead performance, but ratings declined steadily. The feel-good tone struggled to compete with flashier, action-oriented programming in the same time slot. Despite a loyal following, the network pulled the plug after one season.
+
+TRIVIA
+Fans of the show still reference Carmie's catchphrase, delivered with a knowing wink: "Honey, I've seen worse — and it turned out fine." The line became a minor cultural touchstone among devotees of short-lived 1980s television.`,
+  },
 ];
 
 // ── TV MOVIES (#511-515) ──
