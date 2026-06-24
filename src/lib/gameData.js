@@ -437,6 +437,8 @@ export const TEAMS = {
         splits: { vsLHP: { ab: 156, ba: .288, hr: 4 }, vsRHP: { ab: 288, ba: .271, hr: 6 } } },
       { name: "Eric Davis", pos: "OF", bats: "R", contact: 4, power: 4, bunting: 4, speed: 8, defense: 5, arm: 6,
         splits: estSplits(.205, 2, 44, 12, "R") },
+      { name: "Dave Van Gorder", pos: "C", bats: "R", contact: 5, power: 3, bunting: 3, speed: 2, defense: 7, arm: 7,
+        splits: estSplits(.240, 5, 120, 40, "R") },
     ],
     rotation: [
       { name: "Mario Soto", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 8, offSpeed: 9, control: 7, contact: 3, power: 1, bunting: 4, speed: 2, pitches: ["Fastball", "Changeup", "Breaking Ball"] },
@@ -449,6 +451,8 @@ export const TEAMS = {
       { name: "Ted Power", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 7, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Tom Hume", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Bob Owchinko", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Dave Pastore", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Ron Robinson", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -1296,7 +1300,7 @@ export const PLAYER_ERRORS = {
   // Reds
   "Gary Redus": 12, "Pete Rose": 5, "Dave Parker": 9, "Cesar Cedeno": 6,
   "Dave Concepcion": 18, "Nick Esasky": 17, "Ron Oester": 14, "Dann Bilardello": 7,
-  "Brad Gulden": 3, "Duane Walker": 3, "Tom Lawless": 5, "Wayne Krenchicki": 6, "Eric Davis": 2,
+  "Brad Gulden": 3, "Duane Walker": 3, "Tom Lawless": 5, "Wayne Krenchicki": 6, "Eric Davis": 2, "Dave Van Gorder": 2, "Dave Pastore": 1, "Ron Robinson": 1,
   // Royals
   "Willie Wilson": 6, "Frank White": 8, "George Brett": 22, "Hal McRae": 0,
   "Steve Balboni": 17, "Pat Sheridan": 5, "Darryl Motley": 6, "Jamie Quirk": 7, "Onix Concepcion": 21,
