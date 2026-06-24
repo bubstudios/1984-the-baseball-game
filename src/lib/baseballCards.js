@@ -295,6 +295,9 @@ export const ALL_ROSTERS = {
     { id: 20, name: 'John Wockenfuss', position: 'C',    number: 12, ba: '.289', hr: 6,  rbi: 16,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 21, name: 'Bo Diaz',         position: 'C',    number: 15, ba: '.240', hr: 5,  rbi: 26,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 22, name: 'Sixto Lezcano',   position: 'OF',   number: 22, ba: '.237', hr: 4,  rbi: 19,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
+    { id: 23, name: 'Tim Corcoran',    position: '1B',   number: 25, ba: '.341', hr: 3,  rbi: 27,  era: '-',    role: 'Bench/First Base',    rarity: 'common'   },
+    { id: 24, name: 'Steve Jeltz',     position: 'SS',   number: 37, ba: '.206', hr: 1,  rbi: 6,   era: '-',    role: 'Backup Shortstop',    rarity: 'common'   },
+    { id: 25, name: 'Jerry Koosman',   position: 'RP',   number: 36, ba: '-',    hr: '-', rbi: '-', era: '3.55', role: 'Relief Pitcher/Veteran',rarity: 'common'   },
   ],
 
 };

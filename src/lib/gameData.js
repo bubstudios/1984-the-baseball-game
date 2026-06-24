@@ -1210,6 +1210,10 @@ export const TEAMS = {
         splits: estSplits(.240, 5, 181, 52, "R") },
       { name: "Sixto Lezcano", pos: "OF", bats: "R", contact: 5, power: 4, bunting: 3, speed: 3, defense: 5, arm: 7,
         splits: estSplits(.237, 4, 134, 38, "R") },
+      { name: "Tim Corcoran", pos: "1B/OF", bats: "L", contact: 7, power: 4, bunting: 3, speed: 3, defense: 5, arm: 5,
+        splits: estSplits(.341, 3, 248, 60, "L") },
+      { name: "Steve Jeltz", pos: "SS", bats: "R", contact: 5, power: 1, bunting: 5, speed: 5, defense: 7, arm: 6,
+        splits: estSplits(.206, 1, 68, 22, "R") },
     ],
     rotation: [
       { name: "Steve Carlton", pos: "SP", throws: "L", bats: "L", stamina: 9, pitchSpeed: 7, offSpeed: 10, control: 8, contact: 5, power: 2, bunting: 6, speed: 2, specialty: { name: "Lefty's Slider", pitch: "Breaking Ball", label: "RC" } },
@@ -1223,6 +1227,7 @@ export const TEAMS = {
       { name: "Bill Campbell", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Don Carman", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Tug McGraw", pos: "RP", throws: "L", bats: "R", stamina: 3, pitchSpeed: 6, offSpeed: 8, control: 7, contact: 2, power: 1, bunting: 3, speed: 2, pitches: ["Fastball", "Breaking Ball", "Screwball"], specialty: { name: "Ya Gotta Believe", pitch: "Screwball", label: "RC" } },
+      { name: "Jerry Koosman", pos: "RP", throws: "L", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 7, contact: 3, power: 1, bunting: 4, speed: 2 },
     ],
   },
 };
@@ -1272,7 +1277,7 @@ export const PLAYER_ERRORS = {
   // Phillies
   "Juan Samuel": 33, "Ivan DeJesus": 22, "Mike Schmidt": 11, "Von Hayes": 8,
   "Glenn Wilson": 7, "Ozzie Virgil Jr.": 9, "Garry Maddox": 2, "Jeff Stone": 5,
-  "Len Matuszek": 4, "Greg Gross": 1, "Derrel Thomas": 5, "Bo Diaz": 6, "Sixto Lezcano": 2,
+  "Len Matuszek": 4, "Greg Gross": 1, "Derrel Thomas": 5, "Bo Diaz": 6, "Sixto Lezcano": 2, "Tim Corcoran": 3, "Steve Jeltz": 8, "Jerry Koosman": 2,
   "Steve Carlton": 3, "John Denny": 4, "Kevin Gross": 5, "Charles Hudson": 6,
   "Al Holland": 2, "Larry Andersen": 2, "Bill Campbell": 3, "Don Carman": 2, "Tug McGraw": 1,
   // Athletics
