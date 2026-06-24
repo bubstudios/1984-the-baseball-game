@@ -103,7 +103,7 @@ export const CARD_IMAGES = {
   'Tim Leary':        BASE + '13ee7315b_generated_image.png',
   'Ron Hodges':       BASE + 'e2953ca61_generated_image.png',
   'Rafael Santana':   BASE + 'e2953ca61_generated_image.png',
-  'Sid Fernandez':    BASE + 'd5e8c9f14_generated_image.png', // Mets pitcher
+  'Sid Fernandez':    BASE + '35c13187c_s-l1200.jpg',
 
   // ── BOSTON RED SOX ──
   'Wade Boggs':       BASE + 'a615999a5_generated_image.png',
@@ -586,7 +586,7 @@ export const CARD_IMAGES = {
   'Bill Dawley':      BASE + '784d5912f_generated_image.png',
   'Vern Ruhle':       BASE + '784d5912f_generated_image.png',
   'Julio Solano':     BASE + '784d5912f_generated_image.png',
-  'Alan Ashby':       BASE + '7c3a9b2f8_generated_image.png', // Astros catcher
+  'Alan Ashby':       BASE + 'f0f963091_24c786a0c47d4a4cbaaf27835d5c68b8_front.jpg',
   'Kevin Bass':       BASE + '8298b2ee4_generated_image.png',
   'Denny Walling':    BASE + '8298b2ee4_generated_image.png',
   'Dickie Thon':      BASE + '8298b2ee4_generated_image.png',
