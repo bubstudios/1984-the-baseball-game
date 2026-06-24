@@ -495,6 +495,40 @@ const STRIKEOUT_CALLED_LINES = [
   c("Frozen like a statue at the plate — strike three!", 'rare'),
 ];
 
+// =========== CAUGHT STEALING — PLAY-BY-PLAY ===========
+const CAUGHT_STEALING_LINES = [
+  c("The runner goes, and the throw is there in time."),
+  c("He breaks for the next bag and is cut down."),
+  c("The runner takes off, but the defense is ready."),
+  c("A strong throw beats him to the bag."),
+  c("He gets a good jump, but not a good enough one."),
+  c("The runner is thrown out trying to steal."),
+  c("He takes off and is erased on the bases."),
+  c("The pitch is handled cleanly, and the runner is nailed."),
+  c("He challenges the arm and loses."),
+  c("The runner breaks, and the tag is applied in time."),
+  c("He tries to swipe the bag, but the throw beats him."),
+  c("The runner is caught stealing by a step."),
+  c("He goes on the pitch, and the defense cuts him down."),
+  c("The throw arrives just ahead of the runner."),
+  c("He had the idea, but the defense had the answer."),
+  c("The runner takes off and runs into an out."),
+  c("A quick release produces a caught stealing."),
+  c("He tries to get aggressive and pays for it."),
+  c("The runner is out on a close play at the bag."),
+  c("He breaks late and never has a chance."),
+  c("The throw is right on the money, and the runner is gone."),
+  c("He attempts the steal, but the tag beats him."),
+  c("The runner gets a jump, but the ball gets there first."),
+  c("He is cut down trying to move into scoring position."),
+  c("The defense snuffs out the stolen-base attempt."),
+  c("He takes off, and the throw is waiting for him."),
+  c("The runner is caught leaning and thrown out."),
+  c("He tries to steal the base, but the battery wins the battle."),
+  c("The throw is strong, the tag is quick, and the runner is out."),
+  c("He gambles on the steal and comes up empty."),
+];
+
 // =========== BUNT SINGLE ===========
 const BUNT_SINGLE_LINES = [
   c("lays down a bunt single!"), c("drops a perfect bunt!"),
@@ -899,6 +933,7 @@ export {
   POPOUT_LINES, STRIKEOUT_SWINGING_LINES, STRIKEOUT_CALLED_LINES,
   BUNT_SINGLE_LINES, SACRIFICE_BUNT_LINES, SAC_FLY_LINES,
   STEAL_LINES, ERROR_LINES, FC_LINES, INFIELD_POPUP_LINES,
+  CAUGHT_STEALING_LINES,
   INFIELD_LINEOUT_SOFT_LINES, INFIELD_LINEOUT_HARD_LINES,
   TAKEN_STRIKE_FASTBALL_LINES, TAKEN_STRIKE_BREAKING_LINES,
   TAKEN_STRIKE_CHANGEUP_LINES, TAKEN_STRIKE_GENERIC_LINES,

@@ -13,7 +13,7 @@ import {
   SHALLOW_FLYOUT_LINES, MEDIUM_FLYOUT_LINES, DEEP_FLYOUT_LINES,
   OUTFIELD_LINEOUT_LINES,
   BUNT_SINGLE_LINES, SACRIFICE_BUNT_LINES, SAC_FLY_LINES,
-  STEAL_LINES, ERROR_LINES, FC_LINES,
+  STEAL_LINES, ERROR_LINES, FC_LINES, CAUGHT_STEALING_LINES,
   TAKEN_STRIKE_FASTBALL_LINES, TAKEN_STRIKE_BREAKING_LINES,
   TAKEN_STRIKE_CHANGEUP_LINES, TAKEN_STRIKE_GENERIC_LINES,
   SWINGING_STRIKE_FASTBALL_LINES, SWINGING_STRIKE_BREAKING_LINES,
@@ -377,7 +377,7 @@ export function attemptSteal(state, baseIndex) {
     else { newState.bases[baseIndex + 1] = runner; newState.bases[baseIndex] = null; const stxt = `🏃 ${runner.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, ['second','third','home'][baseIndex])}`; newState.log.push({ type: 'steal', text: stxt }); newState.lastPlay = { type: 'steal', text: stxt }; }
   } else {
     runner.gameStats.cs = (runner.gameStats.cs || 0) + 1; newState.bases[baseIndex] = null; recordOut(newState);
-    const cstxt = `❌ ${runner.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, ['second','third','home'][baseIndex])}`; newState.log.push({ type: 'caughtstealing', text: cstxt }); newState.lastPlay = { type: 'caughtstealing', text: cstxt };
+    const cstxt = `❌ ${runner.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, ['second','third','home'][baseIndex])} — ${pickLine(CAUGHT_STEALING_LINES)}`; newState.log.push({ type: 'caughtstealing', text: cstxt }); newState.lastPlay = { type: 'caughtstealing', text: cstxt };
   }
   newState.pendingSteal = null;
   return newState;
