@@ -39,6 +39,7 @@ import { shouldThrowAtBatter, registerHBP, registerHomeRun, registerBigStrikeout
 import { rollPitcherKCelebration, rollBatFlip, rollHitCelebration, rollHRAdmire, rollFielderCelebration, rollStaredown, rollPitcherRetireSide } from './celebrations';
 import { rollCollision, rollTakeoutSlide } from './collisions';
 import { maybeGetAnnouncerHRCall } from './announcerHRCalls';
+import { calculateHomeRunDistance } from './homeRunDistance';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -646,19 +647,25 @@ function resolveSwing(state, swingType, pitch) {
         return;
       }
       // Normal HR — register for beanball engine
-      batter.gameStats.hr++; const didFlip = registerHomeRun(state, batter, pitcher); const runnersOn = state.bases.filter(b => b !== null).length; const rbi = advanceRunners(state, 4, batter);
-      const bp = BALLPARKS[stadiumName], fd = bp?.wallDesc?.[hitDirection] || `to ${hitDirection}`;
-      let ht; const gs2 = runnersOn === 3;
-      if (bp?.quirks?.includes('greenMonster') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Up and over the Green Monster! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} clears the 37-foot wall!`;
-      else if (bp?.quirks?.includes('shortRF') && hitDirection === 'RF' && adjBatter.bats === 'L') ht = `Into the short porch! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} hooks one just over ${fd}!`;
-      else if (bp?.quirks?.includes('peskyPole') && hitDirection === 'RF') ht = `Around Pesky's Pole! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} wraps it inside the right field foul pole!`;
-      else if (bp?.quirks?.includes('ivy') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Onto Waveland Avenue! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} launches one over the ivy and out of Wrigley!`;
-      else { ht = `${batter.name} sends it deep ${fd} —` + (gs2 ? ` GRAND SLAM! ${batter.name} clears the bases!` : (rbi > 1 ? ` a ${rbi}-run HOME RUN!` : ` a solo HOME RUN!`)); }
-      const battingTeamKey = state.halfInning === 'top' ? state.awayTeam : state.homeTeam;
-      const hrCall = maybeGetAnnouncerHRCall(battingTeamKey, { isGrandSlam: gs2, rbi, batterName: batter.name });
-      if (hrCall) state.log.push({ type: 'homerun', text: `🎙️ ${hrCall}` });
-      state.log.push({ type: 'homerun', text: `💥 ${ht}` }); state.lastPlay = { type: 'homerun', text: `💥 ${ht}` };
-      const hrAdmire = rollHRAdmire(batter); if (hrAdmire) state.log.push({ type: 'info', text: `✨ ${hrAdmire}` });
+       batter.gameStats.hr++; const didFlip = registerHomeRun(state, batter, pitcher); const runnersOn = state.bases.filter(b => b !== null).length; const rbi = advanceRunners(state, 4, batter);
+
+       // Calculate HR distance
+       const hrDistance = calculateHomeRunDistance(batter, pitcher, state, runnersOn === 3);
+       batter.gameStats.lastHRDistance = hrDistance;
+       batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, hrDistance);
+
+       const bp = BALLPARKS[stadiumName], fd = bp?.wallDesc?.[hitDirection] || `to ${hitDirection}`;
+       let ht; const gs2 = runnersOn === 3;
+       if (bp?.quirks?.includes('greenMonster') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Up and over the Green Monster! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} clears the 37-foot wall!`;
+       else if (bp?.quirks?.includes('shortRF') && hitDirection === 'RF' && adjBatter.bats === 'L') ht = `Into the short porch! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} hooks one just over ${fd}!`;
+       else if (bp?.quirks?.includes('peskyPole') && hitDirection === 'RF') ht = `Around Pesky's Pole! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} wraps it inside the right field foul pole!`;
+       else if (bp?.quirks?.includes('ivy') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Onto Waveland Avenue! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} launches one over the ivy and out of Wrigley!`;
+       else { ht = `${batter.name} sends it deep ${fd} —` + (gs2 ? ` GRAND SLAM! ${batter.name} clears the bases!` : (rbi > 1 ? ` a ${rbi}-run HOME RUN!` : ` a solo HOME RUN!`)); }
+       const battingTeamKey = state.halfInning === 'top' ? state.awayTeam : state.homeTeam;
+       const hrCall = maybeGetAnnouncerHRCall(battingTeamKey, { isGrandSlam: gs2, rbi, batterName: batter.name });
+       if (hrCall) state.log.push({ type: 'homerun', text: `🎙️ ${hrCall}` });
+       state.log.push({ type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name };
+       const hrAdmire = rollHRAdmire(batter); if (hrAdmire) state.log.push({ type: 'info', text: `✨ ${hrAdmire}` });
     } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.07 + sf2 * 0.16) * doubleMod) {
       const rbi = advanceRunners(state, 3, batter, true, hitDirection);
       let tripFlavor = '';
