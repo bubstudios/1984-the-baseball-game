@@ -32,9 +32,9 @@ Deno.serve(async (req) => {
           },
         ],
       },
-      returnUrls: {
-        successUrl: `${origin}/ThankYou`,
-        cancelUrl: origin,
+      callbackUrls: {
+        postFlowUrl: origin,
+        thankYouPageUrl: `${origin}/ThankYou`,
       },
     };
 
@@ -42,12 +42,12 @@ Deno.serve(async (req) => {
     console.log('Request body:', JSON.stringify(requestBody));
 
     const response = await fetch(
-      'https://www.wixapis.com/v1/payments/checkout-sessions',
+      'https://www.wixapis.com/payments/platform/v1/checkout-sessions/construct',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
+          'Authorization': apiKey,
           'wix-site-id': siteId,
         },
         body: JSON.stringify(requestBody),
