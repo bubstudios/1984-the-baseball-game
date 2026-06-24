@@ -26,6 +26,8 @@ export const EXTRA_ROSTERS = {
     { id: 21, name: 'Buck Martinez',    position: 'C',   number: 10, ba: '.218', hr: 4,  rbi: 15,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 22, name: 'Garth Iorg',       position: '3B',  number: 18, ba: '.261', hr: 6,  rbi: 32,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
     { id: 23, name: 'Willie Aikens',    position: '1B',  number: 27, ba: '.205', hr: 11, rbi: 29,  era: '-',    role: 'Bench/Power',          rarity: 'common'   },
+    { id: 24, name: 'Rick Leach',      position: 'OF',  number: 25, ba: '.261', hr: 0,  rbi: 7,   era: '-',    role: 'Bench/Pinch Hitter',   rarity: 'common'   },
+    { id: 25, name: 'Jim Gott',        position: 'RP',  number: 35, ba: '-',    hr: '-', rbi: '-', era: '4.02', role: 'Relief/Swingman',       rarity: 'uncommon' },
   ],
 
   indians: [

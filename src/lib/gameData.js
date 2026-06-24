@@ -571,6 +571,7 @@ export const TEAMS = {
       { name: "Buck Martinez", pos: "C", bats: "R", contact: 4, power: 3, bunting: 3, speed: 2, defense: 6, arm: 7, splits: estSplits(.218, 4, 139, 42, "R") },
       { name: "Garth Iorg", pos: "2B/3B", bats: "R", contact: 5, power: 3, bunting: 5, speed: 4, defense: 6, arm: 5, splits: estSplits(.261, 6, 228, 68, "R") },
       { name: "Willie Aikens", pos: "1B/DH", bats: "L", contact: 5, power: 6, bunting: 2, speed: 2, defense: 4, arm: 4, splits: estSplits(.205, 11, 190, 50, "L") },
+      { name: "Rick Leach", pos: "OF/1B", bats: "L", contact: 6, power: 2, bunting: 5, speed: 4, defense: 4, arm: 4, splits: estSplits(.261, 0, 88, 28, "L") },
     ],
     rotation: [
       { name: "Dave Stieb", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 8, offSpeed: 9, control: 8, contact: 3, power: 1, bunting: 4, speed: 3 },
@@ -584,6 +585,7 @@ export const TEAMS = {
       { name: "Jimmy Key", pos: "RP", throws: "L", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 8, control: 8, contact: 3, power: 1, bunting: 4, speed: 2 },
       { name: "Jim Acker", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Bryan Clark", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Jim Gott", pos: "RP", throws: "R", bats: "R", stamina: 6, pitchSpeed: 7, offSpeed: 6, control: 4, contact: 2, power: 1, bunting: 3, speed: 3 },
     ],
   },
 
