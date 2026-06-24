@@ -82,15 +82,26 @@ export function findGenericBannerEntry(adText) {
   }
 
   // Sports/business/entertainment
-  if (adText.includes('Sports, business, entertainment') || (adText.includes('sports') && adText.includes('business') && adText.includes('entertainment'))) {
-    return {
-      id: 'news_coverage',
-      type: 'media',
-      title: 'Sports, Business, Entertainment',
-      description: 'Complete news coverage across all sections.',
-      content: 'Your local newspaper covers everything: sports box scores, business news, entertainment listings, and classified ads. Stay informed daily.',
-    };
-  }
+   if (adText.includes('Sports, business, entertainment') || (adText.includes('sports') && adText.includes('business') && adText.includes('entertainment'))) {
+     return {
+       id: 'news_coverage',
+       type: 'media',
+       title: 'Sports, Business, Entertainment',
+       description: 'Complete news coverage across all sections.',
+       content: 'Your local newspaper covers everything: sports box scores, business news, entertainment listings, and classified ads. Stay informed daily.',
+     };
+   }
 
-  return null;
-}
+   // Future/exploration sponsor messages
+   if (adText.includes('future belongs to those who explore') || adText.includes('future') && adText.includes('explore')) {
+     return {
+       id: 'future_explore',
+       type: 'service',
+       title: 'The Future Belongs to Those Who Explore',
+       description: 'Sponsor Message - Inspiring exploration and discovery.',
+       content: 'In 1984, innovation and curiosity drive progress. From cutting-edge technology to new frontiers, the spirit of exploration shapes tomorrow\'s opportunities. Take the next step. Explore what\'s possible.',
+     };
+   }
+
+   return null;
+  }
