@@ -655,6 +655,7 @@ export const TEAMS = {
       { name: "Mark Brouhard", pos: "OF", bats: "R", contact: 5, power: 4, bunting: 3, speed: 3, defense: 5, arm: 6, splits: estSplits(.249, 9, 194, 58, "R") },
       { name: "Roy Howell", pos: "3B/DH", bats: "L", contact: 5, power: 4, bunting: 3, speed: 2, defense: 5, arm: 5, splits: estSplits(.235, 4, 185, 55, "L") },
       { name: "Paul Molitor", pos: "3B/DH", bats: "R", contact: 8, power: 4, bunting: 4, speed: 7, defense: 6, arm: 6, splits: estSplits(.290, 2, 45, 12, "R") },
+      { name: "Bill Schroeder", pos: "C", bats: "R", contact: 5, power: 6, bunting: 3, speed: 3, defense: 6, arm: 6, splits: estSplits(.257, 14, 210, 60, "R") },
     ],
     rotation: [
       { name: "Mike Caldwell", pos: "SP", throws: "L", bats: "R", stamina: 7, pitchSpeed: 5, offSpeed: 7, control: 7, contact: 3, power: 1, bunting: 4, speed: 2 },
@@ -668,6 +669,7 @@ export const TEAMS = {
       { name: "Ray Searage", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Tom Tellmann", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Rick Waits", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Bob McClure", pos: "RP", throws: "L", bats: "L", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 3 },
     ],
   },
 
