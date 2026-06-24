@@ -11,6 +11,8 @@ import {
   STEAL_LINES, ERROR_LINES, FC_LINES,
   TAKEN_STRIKE_FASTBALL_LINES, TAKEN_STRIKE_BREAKING_LINES,
   TAKEN_STRIKE_CHANGEUP_LINES, TAKEN_STRIKE_GENERIC_LINES,
+  SWINGING_STRIKE_FASTBALL_LINES, SWINGING_STRIKE_BREAKING_LINES,
+  SWINGING_STRIKE_CHANGEUP_LINES, SWINGING_STRIKE_GENERIC_LINES,
 } from './commentaryLines';
 import { checkPitcherInjury, checkPlayInjury, getPlayerDurability } from './injuries';
 import { getUmpireZoneEffect, maybeMissedCall } from './umpires';
@@ -527,11 +529,17 @@ function resolveSwing(state, swingType, pitch) {
     state.strikes++;
     if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; registerBigStrikeout(state, pitcher, batter); const isLooking = pitch.location && ['outside corner','inside corner','high strike','low strike','down the middle'].includes(pitch.location) && Math.random() < 0.45; const sl = isLooking ? pickLine(STRIKEOUT_CALLED_LINES) : pickLine(STRIKEOUT_SWINGING_LINES); const msg = sl.endsWith('!') ? `${batter.name} ${sl}` : `${batter.name} ${sl} ${pitch.pitchType}!`; state.log.push({ type: 'strikeout', text: msg }); state.lastPlay = { type: 'strikeout', text: msg }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); const kCelebration = rollPitcherKCelebration(pitcher); if (kCelebration) state.log.push({ type: 'info', text: `🔥 ${kCelebration}` }); if (state.hitAndRun && !state.gameOver) handleHitAndRunCaught(state); return; }
     if (state.hitAndRun && !state.gameOver) { state.hitAndRun = false; handleHitAndRunMiss(state); }
-    const isChasing = !pitch.isStrike;
-    const labels = isChasing ? [`Chases outside — strike ${state.strikes}`,`Waves at a ${pitch.pitchType} — strike ${state.strikes}`,`Can't lay off the ${pitch.pitchType} — strike ${state.strikes}`,`Couldn't hold up — strike ${state.strikes}`,`Swings through the ${pitch.pitchType} — strike ${state.strikes}`] : [`Swing and a miss — strike ${state.strikes}`,`Taken at the knees — strike ${state.strikes}`,`Waves at a ${pitch.pitchType} — strike ${state.strikes}`,`Just misses — strike ${state.strikes}`,`Fouled off attempt — nope, swing and a miss, strike ${state.strikes}`];
-    const strikeLabel = labels[Math.floor(Math.random() * labels.length)];
-    state.log.push({ type: 'strike', text: strikeLabel });
-    state.lastPlay = { type: 'strike', text: strikeLabel };
+    {
+      const pt = (pitch.pitchType || '').toLowerCase();
+      let swingLine;
+      if (pt.includes('fast')) swingLine = pickLine(SWINGING_STRIKE_FASTBALL_LINES);
+      else if (pt.includes('break') || pt.includes('curve') || pt.includes('slider') || pt.includes('hook')) swingLine = pickLine(SWINGING_STRIKE_BREAKING_LINES);
+      else if (pt.includes('change') || pt.includes('off') || pt.includes('split') || pt.includes('fork')) swingLine = pickLine(SWINGING_STRIKE_CHANGEUP_LINES);
+      else swingLine = pickLine(SWINGING_STRIKE_GENERIC_LINES);
+      const strikeLabel = `Strike ${state.strikes} — ${swingLine}`;
+      state.log.push({ type: 'strike', text: strikeLabel });
+      state.lastPlay = { type: 'strike', text: strikeLabel };
+    }
     return;
   }
   if (state.hitAndRun) { state.hitAndRun = false; handleHitAndRunContact(state, batter, pitcher, adjBatter); return; }

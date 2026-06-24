@@ -342,6 +342,62 @@ const ERROR_LINES = [
   c("Routine chance — and he drops it.", 'rare'),
 ];
 
+// =========== SWINGING STRIKE — FASTBALL ===========
+const SWINGING_STRIKE_FASTBALL_LINES = [
+  c("He swings through the fastball."), c("Fastball by him for a strike."), c("He comes up empty on the heater."),
+  c("The fastball blows right past him."), c("He takes a healthy cut and misses."), c("High heat, and he cannot catch up."),
+  c("The pitcher reaches back and throws it by him."), c("He was late on that fastball."), c("The heater wins that battle."),
+  c("He swings underneath the fastball."), c("The fastball explodes past the bat."), c("Nothing but air against that heater."),
+  c("He could not get the bat around in time."), c("The pitcher challenges him, and he swings right through it."), c("A hard fastball beats him upstairs."),
+  c("He chases the rising fastball and misses."), c("The bat arrives after the ball is already in the mitt."), c("Straight heat, straight past him."),
+  c("He takes a full cut but cannot touch it."), c("That fastball had a little extra behind it."), c("He was geared for something slower and missed the heater."),
+  c("The fastball ties him up for a swinging strike."), c("He tries to pull the inside fastball and comes up empty."), c("The pitcher pours on the gas, and the batter cannot catch it."),
+  c("A late swing against a lively fastball."), c("He waves at the high fastball."), c("The heater runs away from the barrel."),
+  c("He swings over the fastball at the knees."), c("The fastball jumps through the zone before he can react."), c("He knew it was coming and still could not catch up."),
+];
+
+// =========== SWINGING STRIKE — BREAKING BALL ===========
+const SWINGING_STRIKE_BREAKING_LINES = [
+  c("He swings over the breaking ball."), c("The curveball gets him fishing."), c("He comes up empty on the breaker."),
+  c("A sharp slider disappears beneath the bat."), c("He chases the curve into the dirt."), c("The breaking ball bends away from his swing."),
+  c("He waves at a slider off the outside corner."), c("That curveball pulled the string on him."), c("He swings where the ball used to be."),
+  c("The breaker dives beneath the barrel."), c("He cannot hold up on the low curve."), c("The slider sweeps past the bat."),
+  c("A wicked breaking ball gets the swinging strike."), c("He reaches for the outside slider and misses."), c("The curve drops off the table."),
+  c("That breaking ball had him badly fooled."), c("He chases the hook out of the zone."), c("The slider starts at the plate and finishes beyond the bat."),
+  c("He lunges after the breaking ball and comes up empty."), c("The curveball buckles him and draws a late swing."), c("He bites on the back-foot breaking ball."),
+  c("The breaker tumbles underneath his hands."), c("He tries to check his swing but goes too far."), c("The slider darts sharply away from the barrel."),
+  c("He was looking fastball and had no chance against that curve."), c("The breaking ball leaves him reaching."), c("He swings across the top of a low slider."),
+  c("The hook has him completely out in front."), c("He offers at a pitch that never reaches the plate."), c("The curveball finishes in the dirt, and the bat follows it down."),
+];
+
+// =========== SWINGING STRIKE — CHANGEUP ===========
+const SWINGING_STRIKE_CHANGEUP_LINES = [
+  c("He swings through the changeup."), c("The change of speed has him out in front."), c("He comes up empty on the off-speed pitch."),
+  c("The pitcher pulls the string, and the batter misses."), c("He swings before the changeup arrives."), c("That changeup completely fools him."),
+  c("He is way out in front of the pitch."), c("The changeup fades beneath the bat."), c("He lunges and misses the off-speed offering."),
+  c("The batter was expecting heat and got something soft."), c("He swings over a sinking changeup."), c("The changeup leaves him reaching."),
+  c("He cannot keep his hands back."), c("The pitcher takes something off, and the batter supplies only air."), c("A beautifully disguised changeup gets the swinging strike."),
+  c("He is committed far too early."), c("The changeup tumbles away from the barrel."), c("He tries to adjust but cannot slow the bat."),
+  c("That pitch had him fooled from the moment it left the hand."), c("He swings at the fastball that never arrived."), c("The off-speed pitch dies beneath his swing."),
+  c("He chases the fading changeup outside."), c("The changeup has him leaning over the plate."), c("He reaches and comes up empty."),
+  c("The pitcher changes speeds and wins the battle."), c("He swings well ahead of the ball."), c("The changeup falls away after drawing the commitment."),
+  c("He cannot wait long enough to make contact."), c("The batter's timing is completely disrupted."), c("He was sitting fastball, and the changeup made him look foolish."),
+];
+
+// =========== SWINGING STRIKE — GENERIC ===========
+const SWINGING_STRIKE_GENERIC_LINES = [
+  c("Swing and a miss."), c("He comes up empty."), c("He takes a cut but misses."), c("Nothing but air on that swing."),
+  c("He cannot make contact."), c("The batter offers and misses."), c("He waves at that one."), c("A mighty swing, but no contact."),
+  c("He swings right through it."), c("The pitch beats the bat."), c("He takes his cut and comes up empty."), c("The catcher squeezes it after the miss."),
+  c("He misses badly on that offering."), c("The batter is unable to pull the trigger in time."), c("He chases it out of the zone."), c("A defensive swing produces nothing."),
+  c("He reaches for it and misses."), c("The pitcher gets him to offer."), c("He could not lay off that one."), c("The bat never finds the ball."),
+  c("He swings underneath it."), c("He swings over the top."), c("A late swing and a miss."), c("He is out in front and misses."),
+  c("The batter was fooled on that pitch."), c("He gets nothing but the breeze."), c("The pitch slips past the barrel."), c("He takes a big cut and finds only air."),
+  c("He tries to check the swing but cannot stop it."), c("The umpire signals that he went around."), c("He was committed and could not adjust."), c("The pitch finishes well away from the bat."),
+  c("He takes an awkward swing and misses."), c("The pitcher wins that exchange."), c("He chases a pitch he could not reach."), c("The batter guesses wrong."),
+  c("He offers at a pitcher's pitch and misses."), c("The ball is safely in the catcher's glove before the swing is finished."), c("He had the right idea but missed the execution."), c("A clean swing, but the ball avoids the barrel."),
+];
+
 // =========== TAKEN STRIKE — FASTBALL ===========
 const TAKEN_STRIKE_FASTBALL_LINES = [
   c("Fastball taken for a strike."),
@@ -480,4 +536,6 @@ export {
   STEAL_LINES, ERROR_LINES, FC_LINES,
   TAKEN_STRIKE_FASTBALL_LINES, TAKEN_STRIKE_BREAKING_LINES,
   TAKEN_STRIKE_CHANGEUP_LINES, TAKEN_STRIKE_GENERIC_LINES,
+  SWINGING_STRIKE_FASTBALL_LINES, SWINGING_STRIKE_BREAKING_LINES,
+  SWINGING_STRIKE_CHANGEUP_LINES, SWINGING_STRIKE_GENERIC_LINES,
 };
