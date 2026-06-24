@@ -474,15 +474,24 @@ export function trackNationalCharityView(entryId) {
   }
 
   const unlocked = [];
-  // Use >= so replays after the threshold don't re-fire
-  if (viewed.length >= 5) {
-    try {
-      const stored = JSON.parse(localStorage.getItem('bb84_achievements') || '{}');
-      if (!stored['charity_advocate']) unlocked.push('charity_advocate');
-      if (viewed.length >= 10 && !stored['compassion_champion']) unlocked.push('compassion_champion');
-      if (viewed.length >= 25 && !stored['change_maker']) unlocked.push('change_maker');
-    } catch (e) { /* ignore */ }
-  }
+  try {
+    const stored = JSON.parse(localStorage.getItem('bb84_achievements') || '{}');
+    if (viewed.length >= 5 && !stored['charity_advocate']) {
+      unlocked.push('charity_advocate');
+      stored['charity_advocate'] = true;
+    }
+    if (viewed.length >= 10 && !stored['compassion_champion']) {
+      unlocked.push('compassion_champion');
+      stored['compassion_champion'] = true;
+    }
+    if (viewed.length >= 25 && !stored['change_maker']) {
+      unlocked.push('change_maker');
+      stored['change_maker'] = true;
+    }
+    if (unlocked.length > 0) {
+      localStorage.setItem('bb84_achievements', JSON.stringify(stored));
+    }
+  } catch (e) { /* ignore */ }
 
   return unlocked;
 }
