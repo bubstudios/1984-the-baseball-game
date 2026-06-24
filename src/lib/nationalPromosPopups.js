@@ -1,6 +1,8 @@
 // National Promos Popups (#501-600+)
 // Failed TV shows, cartoons, arcade games, home computers, music, PSAs, and 1984 cultural phenomena
 
+import { trackGrooverSighting } from './achievements';
+
 // ── FAILED TV SHOWS (#501-510) ──
 const FAILED_TV_SHOWS = [
   {
@@ -673,6 +675,12 @@ export function trackNationalPromosView(entryId) {
   if (VIEWED_PROMOS.size >= 50) {
     unlocked.push('national_promos_completionist');
   }
+
+  // ── The Groovers: track Clark & Behb and Carmie ──
+  try {
+    if (entryId === 'tv_511') trackGrooverSighting('tv_clark_behb');
+    if (entryId === 'tv_512') trackGrooverSighting('tv_carmie');
+  } catch (e) { /* ignore */ }
 
   return unlocked;
 }

@@ -564,6 +564,16 @@ export const ACHIEVEMENTS = [
   { id: 'leaders_wins', name: 'Wins Challenge', desc: 'Earn a win with each of the 1984 Wins Leaders (10 pitchers)', icon: '🏆', category: 'leaders' },
   { id: 'leaders_saves', name: 'Saves Challenge', desc: 'Record a save with each of the 1984 Saves Leaders (11 pitchers)', icon: '🛡️', category: 'leaders' },
   { id: 'leaders_so', name: 'Strikeout Challenge', desc: 'Strike out 50 batters with each of the 1984 K Leaders (10 pitchers)', icon: '🎳', category: 'leaders' },
+
+  // ── THE GROOVERS ──
+  // Unlock by witnessing all 6 rare 1984 Easter eggs:
+  //   1. Rainbow-mane horse ballpark event
+  //   2. Reds streaker (sombrero, pillow, Spock bust)
+  //   3. "I bet I could hit .220" fan chirp (Reds)
+  //   4. "I ordered a pound of fries!" fan chirp (Cubs)
+  //   5. Clark & Behb Detective Agency TV popup
+  //   6. Carmie TV popup
+  { id: 'the_groovers', name: 'The Groovers', desc: 'Witness all 6 rare Easter eggs: the rainbow horse, the Riverfront streaker, the .220 guy, the fries guy, Clark & Behb, and Carmie', icon: '🌈', category: 'hidden' },
 ];
 
 // ── Stats storage ──
@@ -664,6 +674,39 @@ export function resetAchievements() {
   try {
     localStorage.removeItem(ACH_KEY);
   } catch (e) { /* ignore */ }
+}
+
+// ── THE GROOVERS: Track sightings of all 6 rare Easter eggs ──
+const GROOVERS_KEY = 'ach_groover_sightings';
+const GROOVER_ITEMS = [
+  'rainbow_horse',     // ballpark event
+  'reds_streaker',     // ballpark event
+  'fan_220',           // fan chirp (Reds)
+  'fan_fries',         // fan chirp (Cubs)
+  'tv_clark_behb',     // National TV popup (tv_511)
+  'tv_carmie',         // National TV popup (tv_512)
+];
+
+/**
+ * Record a sighting of one of the 6 Groover Easter eggs.
+ * Unlocks 'the_groovers' when all 6 have been seen.
+ * Returns true if the achievement was newly unlocked.
+ */
+export function trackGrooverSighting(key) {
+  if (!GROOVER_ITEMS.includes(key)) return false;
+  let sightings = [];
+  try {
+    const raw = localStorage.getItem(GROOVERS_KEY);
+    sightings = raw ? JSON.parse(raw) : [];
+  } catch (e) { sightings = []; }
+  if (!sightings.includes(key)) {
+    sightings.push(key);
+    try { localStorage.setItem(GROOVERS_KEY, JSON.stringify(sightings)); } catch (e) {}
+  }
+  if (sightings.length >= GROOVER_ITEMS.length) {
+    return unlockAchievement('the_groovers');
+  }
+  return false;
 }
 
 export function resetAllData() {

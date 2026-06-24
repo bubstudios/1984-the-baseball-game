@@ -29,6 +29,7 @@ import { applyInjuryReplacement } from '@/lib/injuryReplacement';
 import { getArgumentSeverity, resolveArgument, getEjectionCommentary, maybeDugoutChirp } from '@/lib/umpireArguments';
 import { pickUmpire, getManagerUmpireRelation } from '@/lib/umpires';
 import { rollBallparkEvent, resetBallparkEvents } from '@/lib/ballparkEvents';
+import { trackGrooverSighting } from '@/lib/achievements';
 import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
 import RetroLoading from '@/components/game/RetroLoading';
@@ -296,6 +297,10 @@ export default function Home() {
     const bpEvent = isBetweenAtBats ? rollBallparkEvent(state) : null;
     if (bpEvent && !ballparkEvent) {
       setBallparkEvent(bpEvent);
+      // Track Groover Easter eggs
+      if (bpEvent.id === 'rainbow_horse' || bpEvent.id === 'reds_streaker') {
+        trackGrooverSighting(bpEvent.id);
+      }
     }
 
     // First: check for a real play-based argument

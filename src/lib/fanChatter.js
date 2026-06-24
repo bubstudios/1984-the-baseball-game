@@ -1,6 +1,8 @@
 // Fan chatter lines — displayed in the FanChirpBox during gameplay
 // Distinct from bench/player chirps
 
+import { trackGrooverSighting } from './achievements';
+
 // ── UNIVERSAL (any ballpark) ──
 export const UNIVERSAL_FAN_YELLS = [
   // Ump complaints
@@ -617,6 +619,16 @@ export function trackFanYell(text) {
       unlocked.push('fan_chatter_rally');
     }
   }
+
+  // ── The Groovers: track rare Easter-egg chirps ──
+  try {
+    if (text === "I bet I could hit .220 in the big leagues") {
+      trackGrooverSighting('fan_220');
+    }
+    if (text === "I ordered a pound of fries! They shorted me!") {
+      trackGrooverSighting('fan_fries');
+    }
+  } catch (e) { /* ignore */ }
 
   return unlocked;
 }
