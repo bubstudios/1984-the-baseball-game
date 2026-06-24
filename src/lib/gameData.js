@@ -1112,6 +1112,7 @@ export const TEAMS = {
       { name: "Jerry Royster", pos: "IF/OF", bats: "R", contact: 6, power: 2, bunting: 5, speed: 6, defense: 6, arm: 5, splits: estSplits(.260, 2, 190, 55, "R") },
       { name: "Brad Komminsk", pos: "OF", bats: "R", contact: 5, power: 4, bunting: 4, speed: 6, defense: 5, arm: 6, splits: estSplits(.202, 8, 301, 90, "R") },
       { name: "Milt Thompson", pos: "OF", bats: "L", contact: 5, power: 2, bunting: 5, speed: 7, defense: 6, arm: 5, splits: estSplits(.257, 2, 141, 42, "L") },
+      { name: "Albert Hall", pos: "OF", bats: "L", contact: 6, power: 3, bunting: 5, speed: 6, defense: 5, arm: 5, splits: estSplits(.261, 4, 230, 70, "L") },
     ],
     rotation: [
       { name: "Pascual Perez", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 8, offSpeed: 7, control: 6, contact: 4, power: 2, bunting: 5, speed: 4 },
@@ -1125,6 +1126,8 @@ export const TEAMS = {
       { name: "Terry Forster", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Gene Garber", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Jeff Dedmon", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Rick Camp", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Pete Falcone", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -1349,7 +1352,9 @@ export const PLAYER_ERRORS = {
   "Dave Schmidt": 2, "Dave Stewart": 2, "Odell Jones": 2, "Dave Tobik": 2, "Tom Henke": 1, "Jim Bibby": 1,
   // Expos
   "Miguel Dilone": 2, "David Palmer": 1, "Dan Schatzeder": 1,
-};
+  // Braves
+  "Dale Murphy": 5, "Jerry Royster": 3, "Albert Hall": 3, "Rick Camp": 2, "Pete Falcone": 2,
+  };
 
 // Estimate splits for bench players based on overall stats + handedness
 // Same side: BA ~8% worse, HR rate ~20% worse; Opposite side: BA ~5% better, HR rate ~20% better
