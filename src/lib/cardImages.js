@@ -103,7 +103,7 @@ export const CARD_IMAGES = {
   'Tim Leary':        BASE + '13ee7315b_generated_image.png',
   'Ron Hodges':       BASE + 'e2953ca61_generated_image.png',
   'Rafael Santana':   BASE + 'e2953ca61_generated_image.png',
-  'Sid Fernandez':    BASE + 'd262929cf_generated_image.png',
+  'Sid Fernandez':    BASE + 'b71634c67_generated_image.png',
 
   // ── BOSTON RED SOX ──
   'Wade Boggs':       BASE + 'a615999a5_generated_image.png',
