@@ -6,6 +6,7 @@ import {
   SINGLE_LINES, DOUBLE_LINES, TRIPLE_LINES, HOME_RUN_LINES,
   WILD_PITCH_LINES, GROUNDOUT_LINES, FLYOUT_LINES,
   DOUBLE_PLAY_LINES, END_INNING_LINES, LINEOUT_LINES,
+  SOFT_GROUNDOUT_LINES, HARD_GROUNDOUT_LINES,
   POPOUT_LINES, STRIKEOUT_SWINGING_LINES, STRIKEOUT_CALLED_LINES,
   INFIELD_POPUP_LINES,
   INFIELD_LINEOUT_SOFT_LINES, INFIELD_LINEOUT_HARD_LINES,
@@ -644,7 +645,13 @@ function resolveSwing(state, swingType, pitch) {
     const gps = [{ pos: 'SS', posName: 'shortstop' },{ pos: '2B', posName: 'second' },{ pos: '3B', posName: 'third' },{ pos: 'SP', posName: 'the pitcher' },{ pos: '1B', posName: 'first' }];
     const gp = gps[Math.floor(Math.random() * gps.length)];
     const gt = `${batter.name} ${pickLine(GROUNDOUT_LINES)}`.replace(/grounds out to (short|second|third|the pitcher|first)/, `grounds out to ${gp.posName}`);
-    const gts = [{ text: gt, pos: gp.pos, posName: gp.posName, type: 'groundout' }];
+    const sgt = `${pickLine(SOFT_GROUNDOUT_LINES)} ${defenders[gp.pos]?.name || gp.posName} makes the play.`;
+    const hgt = `${pickLine(HARD_GROUNDOUT_LINES)} ${defenders[gp.pos]?.name || gp.posName} makes the play.`;
+    const gts = [
+      { text: gt, pos: gp.pos, posName: gp.posName, type: 'groundout' },
+      { text: sgt, pos: gp.pos, posName: gp.posName, type: 'groundout' },
+      { text: hgt, pos: gp.pos, posName: gp.posName, type: 'groundout' },
+    ];
     const ff = { CF: ['center','center field'], RF: ['right','right field'], LF: ['left','left field'] };
     const fpk = ['CF','RF','LF']; const fp = fpk[Math.floor(Math.random() * fpk.length)];
     const depthRoll = Math.random();
