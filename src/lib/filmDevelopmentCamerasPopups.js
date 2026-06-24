@@ -337,7 +337,13 @@ const VIEWED_EXHIBITS = new Set();
 const EXHIBIT_VIEW_COUNTS = {};
 
 export function findFilmDevelopmentCamerasEntry(adText) {
-  return ENTRIES.find(e => e.matchText === adText) || null;
+  // Exact match first, then keyword match for broadcast ad text like "Film processing"
+  let match = ENTRIES.find(e => e.matchText === adText) || null;
+  if (!match && adText && adText.includes('Film processing')) {
+    // Map generic "Film processing" text to Polaroid Instant Film exhibit
+    match = ENTRIES.find(e => e.id === 'polaroid_instant');
+  }
+  return match;
 }
 
 export function trackFilmDevelopmentCamerasView(entryId) {
