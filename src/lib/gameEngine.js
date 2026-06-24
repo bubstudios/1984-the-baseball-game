@@ -794,6 +794,8 @@ function resolveSwing(state, swingType, pitch) {
           const takeout = r1 ? rollTakeoutSlide(r1) : null;
           if (takeout) {
             // Takeout slide — DP broken up, runner at 1B safe, but r1 is out at 2nd
+            // r2 (runner on 2nd before the play) advances to 3rd on the slide
+            if (r2 && !state.bases[2]) { state.bases[2] = r2; }
             state.bases[0] = batter; batter.gameStats.ab++;
             state.bases[1] = null; // r1 is out at 2nd
             state.log.push({ type: 'groundout', text: `${batter.name} grounds to ${out.posName || out.pos} — ${takeout.text}` });

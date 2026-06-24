@@ -474,9 +474,15 @@ export function trackNationalCharityView(entryId) {
   }
 
   const unlocked = [];
-  if (viewed.length === 5) unlocked.push('charity_advocate');
-  if (viewed.length === 10) unlocked.push('compassion_champion');
-  if (viewed.length === 25) unlocked.push('change_maker');
+  // Use >= so replays after the threshold don't re-fire
+  if (viewed.length >= 5) {
+    try {
+      const stored = JSON.parse(localStorage.getItem('bb84_achievements') || '{}');
+      if (!stored['charity_advocate']) unlocked.push('charity_advocate');
+      if (viewed.length >= 10 && !stored['compassion_champion']) unlocked.push('compassion_champion');
+      if (viewed.length >= 25 && !stored['change_maker']) unlocked.push('change_maker');
+    } catch (e) { /* ignore */ }
+  }
 
   return unlocked;
 }

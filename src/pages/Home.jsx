@@ -82,6 +82,7 @@ export default function Home() {
   const [beanballEvent, setBeanballEvent] = useState(null);
   const [cardAward, setCardAward] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
+  const [celebrationPopup, setCelebrationPopup] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -247,7 +248,7 @@ export default function Home() {
       setGameState(prev => prev ? { ...prev, _injuryShown: true } : prev);
     }
 
-    // Track HR distances from new log entries
+    // Track HR distances and surface celebration lines from new log entries
     if (gameState.log.length > prevLogLength.current) {
       const newEntries = gameState.log.slice(prevLogLength.current);
       newEntries.forEach(entry => {
@@ -255,6 +256,11 @@ export default function Home() {
           try {
             trackHomeRunDistance(entry.hrDistance, entry.batterName, userTeam);
           } catch (e) { console.error('trackHomeRunDistance failed:', e); }
+        }
+        // Surface celebration lines as popups on the game tab
+        if (entry.type === 'info' && entry.text && (entry.text.startsWith('🔥') || entry.text.startsWith('🎉') || entry.text.startsWith('✨'))) {
+          setCelebrationPopup(entry.text);
+          setTimeout(() => setCelebrationPopup(null), 4000);
         }
       });
     }
@@ -1024,6 +1030,16 @@ export default function Home() {
             reachBackMax={reachBackMax}
             situationalBatter={situationalBatter}
           />
+        </div>
+      )}
+
+      {/* Celebration popup — "Welch lets out a yell" etc. */}
+      {celebrationPopup && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top-4 fade-in duration-500 max-w-xs w-full px-4" onClick={() => setCelebrationPopup(null)}>
+          <div className="bg-card/95 border border-primary/40 rounded-xl px-4 py-3 shadow-xl cursor-pointer">
+            <p className="text-sm font-heading text-foreground/90 leading-snug text-center">{celebrationPopup}</p>
+            <p className="text-[9px] text-muted-foreground/40 text-center mt-1 font-heading">tap to dismiss</p>
+          </div>
         </div>
       )}
 

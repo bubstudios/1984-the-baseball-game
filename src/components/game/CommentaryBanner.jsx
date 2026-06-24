@@ -1491,6 +1491,30 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
         "{text}"
       </p>
 
+      {/* RBI flash — when there's an exciting RBI hit, show a big splash */}
+      {hasPlayResult && lastPlay && (lastPlay.text?.includes('RBI') || lastPlay.type === 'sacfly') && (
+        <div className="mt-2 mb-1 bg-emerald-400/15 border border-emerald-400/40 rounded-xl px-4 py-2 animate-in fade-in zoom-in-95 duration-300">
+          {(() => {
+            const rbiMatch = lastPlay.text?.match(/(\d+)\s*RBI/);
+            const rbiCount = rbiMatch ? parseInt(rbiMatch[1]) : 1;
+            const isSacFly = lastPlay.type === 'sacfly';
+            const isMulti = rbiCount >= 2;
+            const exclamations = isMulti
+              ? ['💥 THAT CLEARS THE BASES!', '🔥 MULTI-RBI HIT!', '💥 RUNS SCORE!', '🚀 THEY\'RE SCORING!']
+              : isSacFly
+              ? ['✅ THE RUN SCORES!', '🎯 SAC FLY — RUN IN!', '✅ SCORES ON THE FLY BALL!']
+              : ['🎯 RUN BATTED IN!', '⚾ RUN SCORES!', '🙌 RBI!', '🎯 DRIVES IN A RUN!'];
+            const msg = exclamations[Math.floor(Math.random() * exclamations.length)];
+            return (
+              <div className="text-center">
+                <span className="font-heading font-bold text-emerald-300 text-sm tracking-wider">{msg}</span>
+                {rbiCount > 1 && <span className="ml-2 text-emerald-400 font-display text-xs">×{rbiCount}</span>}
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
       {/* Last play flash — only shown when main call is flavor, not play result */}
       {lastPlay && lastPlay.text && !hasPlayResult && (
         <div className="mt-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-1.5 inline-block">
