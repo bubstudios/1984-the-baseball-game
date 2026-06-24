@@ -26,10 +26,12 @@ export default function DonateModal({ onClose }) {
       if (data.redirectUrl) {
         window.location.href = data.redirectUrl;
       } else {
+        console.error('Checkout error:', data);
         setError(data.error || 'Something went wrong');
         setLoading(false);
       }
     } catch (e) {
+      console.error('Fetch error:', e);
       setError(e.message);
       setLoading(false);
     }
