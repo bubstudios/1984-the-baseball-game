@@ -1034,6 +1034,7 @@ export default function Home() {
                   reachBackUses={reachBackUses}
                   reachBackMax={reachBackMax}
                   situationalBatter={situationalBatter}
+                  lastPlay={gameState.lastPlay}
                 />
               </div>
             )}
@@ -1067,6 +1068,7 @@ export default function Home() {
             reachBackUses={reachBackUses}
             reachBackMax={reachBackMax}
             situationalBatter={situationalBatter}
+            lastPlay={gameState.lastPlay}
           />
         </div>
       )}

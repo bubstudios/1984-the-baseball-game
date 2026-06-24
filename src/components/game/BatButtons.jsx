@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const BAT_ACTIONS = [
   { label: 'Swing', swingIndex: 0, desc: 'Standard swing', statKey: 'contact' },
@@ -6,8 +6,9 @@ const BAT_ACTIONS = [
   { label: 'Bunt', swingIndex: 4, desc: 'Lay one down', statKey: null },
 ];
 
-export default function BatButtons({ onSwing, disabled, situationalBatter }) {
+export default function BatButtons({ onSwing, disabled, situationalBatter, lastPlay }) {
   const [swinging, setSwinging] = useState(null);
+  const [hitEffect, setHitEffect] = useState(null);
 
   const handleSwing = (swingIndex) => {
     if (disabled || swinging !== null) return;
@@ -17,6 +18,14 @@ export default function BatButtons({ onSwing, disabled, situationalBatter }) {
       onSwing(swingIndex);
     }, 450);
   };
+
+  // Detect hits and trigger effect
+  React.useEffect(() => {
+    if (lastPlay && ['single', 'double', 'triple', 'homerun'].includes(lastPlay.type)) {
+      setHitEffect(lastPlay.type);
+      setTimeout(() => setHitEffect(null), 2000);
+    }
+  }, [lastPlay?.type]);
 
   // Determine count-based advantage color for a stat
   const getCountColor = (statKey) => {
@@ -31,7 +40,44 @@ export default function BatButtons({ onSwing, disabled, situationalBatter }) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 relative">
+      {/* Hit effect overlay */}
+      {hitEffect && (
+        <>
+          <div className="absolute inset-0 z-10 pointer-events-none animate-in fade-out duration-500" style={{animationDelay: '1.5s'}}>
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              {hitEffect === 'homerun' ? (
+                // Ball flying out for HR
+                <>
+                  <div className="animate-[ping_1.5s_ease-out_1] absolute w-4 h-4 bg-white rounded-full left-0 top-0 shadow-lg shadow-yellow-400"></div>
+                  <div className="animate-[pulse_1.5s_ease-out_1] absolute w-6 h-6 border-2 border-yellow-400 rounded-full left--1 top-1"></div>
+                </>
+              ) : (
+                // Explosion effect for regular hits
+                <div className="animate-[bounce_1s_ease-out_1] text-5xl">
+                  💥
+                </div>
+              )}
+            </div>
+          </div>
+          {hitEffect === 'homerun' && (
+            <div className="absolute inset-0 z-5 pointer-events-none overflow-hidden rounded-xl">
+              {[...Array(8)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 bg-yellow-400 rounded-full animate-[spin_2s_linear_infinite]"
+                  style={{
+                    left: `${50 + Math.cos((i / 8) * Math.PI * 2) * 40}%`,
+                    top: `${50 + Math.sin((i / 8) * Math.PI * 2) * 40}%`,
+                    animation: `popOut 1.5s ease-out forwards`,
+                    animationDelay: `${i * 0.1}s`,
+                  }}
+                ></div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
       <div className="text-[9px] font-heading uppercase tracking-widest text-foreground/60 text-center mb-1">Choose Swing</div>
       <div className="flex items-end justify-center gap-3 sm:gap-4">
         {BAT_ACTIONS.map((action) => {
@@ -142,6 +188,10 @@ export default function BatButtons({ onSwing, disabled, situationalBatter }) {
         .animate-bat-swing {
           animation: batSwing 0.45s ease-out;
           transform-origin: right center;
+        }
+        @keyframes popOut {
+          0% { opacity: 1; transform: translate(0, 0) scale(1); }
+          100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
         }
       `}</style>
     </div>

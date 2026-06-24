@@ -1417,13 +1417,36 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
     if (['single','double','triple','homerun'].includes(lastPlay?.type)) {
       const hitType = lastPlay.type;
       const playerName = lastPlay.batterName || batter?.name;
-      const hitLines = {
-        single: isTigersGame ? pickTigersPlayerLine(playerName) : isPadresGame ? pickPadresPlayerLine(playerName) : isYankeesGame ? pickYankeesPlayerLine(playerName) : isRedSoxGame ? pickRedSoxPlayerLine(playerName) : isRedsGame ? pickRedsPlayerLine(playerName) : isRoyalsGame ? pickRoyalsPlayerLine(playerName) : isPhilliesGame ? pickPhilliesPlayerLine(playerName) : isBlueJaysGame ? pickBlueJaysPlayerLine(playerName) : isIndiansGame ? pickIndiansPlayerLine(playerName) : isBrewersGame ? pickBrewersPlayerLine(playerName) : isTwinsGame ? pickTwinsPlayerLine(playerName) : isAthleticsGame ? pickAthleticsPlayerLine(playerName) : isAngelsGame ? pickAngelsPlayerLine(playerName) : isWhiteSoxGame ? pickWhiteSoxPlayerLine(playerName) : isMarinersGame ? pickMarinersPlayerLine(playerName) : isRangersGame ? pickRangersPlayerLine(playerName) : isExposGame ? pickExposPlayerLine(playerName) : isCardinalsGame ? pickCardinalsPlayerLine(playerName) : isPiratesGame ? pickPiratesPlayerLine(playerName) : isBravesGame ? pickBravesPlayerLine(playerName) : isAstrosGame ? pickAstrosPlayerLine(playerName) : isGiantsGame ? pickGiantsPlayerLine(playerName) : null,
-        double: null,
-        triple: null,
-        homerun: null,
-      }[hitType];
-      if (hitLines) text = hitLines;
+      let hitLine = null;
+      
+      // Pick the appropriate broadcast line for the hit type
+      if (isTigersGame) hitLine = pickTigersLine();
+      else if (isPadresGame) hitLine = pickPadresLine();
+      else if (isYankeesGame) hitLine = pickYankeesLine();
+      else if (isRedSoxGame) hitLine = pickRedSoxLine();
+      else if (isRedsGame) hitLine = pickRedsLine();
+      else if (isRoyalsGame) hitLine = pickRoyalsLine();
+      else if (isPhilliesGame) hitLine = pickPhilliesLine();
+      else if (isBlueJaysGame) hitLine = pickBlueJaysLine();
+      else if (isIndiansGame) hitLine = pickIndiansLine();
+      else if (isBrewersGame) hitLine = pickBrewersLine();
+      else if (isTwinsGame) hitLine = pickTwinsLine();
+      else if (isAthleticsGame) hitLine = pickAthleticsLine();
+      else if (isAngelsGame) hitLine = pickAngelsLine();
+      else if (isWhiteSoxGame) hitLine = pickWhiteSoxLine();
+      else if (isMarinersGame) hitLine = pickMarinersLine();
+      else if (isRangersGame) hitLine = pickRangersLine();
+      else if (isExposGame) hitLine = pickExposLine();
+      else if (isCardinalsGame) hitLine = pickCardinalsLine();
+      else if (isPiratesGame) hitLine = pickPiratesLine();
+      else if (isBravesGame) hitLine = pickBravesLine();
+      else if (isAstrosGame) hitLine = pickAstrosLine();
+      else if (isGiantsGame) hitLine = pickGiantsLine();
+      else if (isCubsGame) hitLine = pickHarryLine();
+      else if (isDodgersGame) hitLine = pickVinLine();
+      else if (isMetsGame) hitLine = pickMetsLine(gameState, gameState?.pitchResult?.pitchType);
+      
+      if (hitLine) text = hitLine;
     }
     // No play result yet (between pitches) — use team-specific or generic flavor
     if (!text) text = isCubsGame && Math.random() < 0.65
