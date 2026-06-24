@@ -131,6 +131,8 @@ export const ALL_ROSTERS = {
     { id: 21, name: 'Rick Miller',     position: 'OF',   number: 15, ba: '.255', hr: 2,  rbi: 17,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 22, name: 'Glenn Hoffman',   position: 'SS',   number: 7,  ba: '.231', hr: 2,  rbi: 22,  era: '-',    role: 'Backup Shortstop',     rarity: 'common'   },
     { id: 23, name: 'Jeff Newman',     position: 'C',    number: 10, ba: '.211', hr: 4,  rbi: 13,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
+    { id: 24, name: 'Jerry Remy',      position: '2B',   number: 2,  ba: '.275', hr: 0,  rbi: 8,   era: '-',    role: 'Bench Infielder/Speed',rarity: 'uncommon' },
+    { id: 25, name: 'Roger Clemens',   position: 'RP',   number: 21, ba: '-',    hr: '-', rbi: '-', era: '4.32', role: 'Rookie/Future Ace',     rarity: 'rare'     },
   ],
 
   yankees: [

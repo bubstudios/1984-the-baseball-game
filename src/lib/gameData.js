@@ -254,6 +254,8 @@ export const TEAMS = {
         splits: estSplits(.255, 2, 141, 38, "L") },
       { name: "Glenn Hoffman", pos: "SS", bats: "R", contact: 5, power: 2, bunting: 5, speed: 4, defense: 6, arm: 6,
         splits: estSplits(.231, 2, 176, 48, "R") },
+      { name: "Jerry Remy", pos: "2B", bats: "L", contact: 7, power: 1, bunting: 6, speed: 7, defense: 8, arm: 5,
+        splits: estSplits(.275, 0, 90, 30, "L") },
     ],
     rotation: [
       { name: "Bruce Hurst", pos: "SP", throws: "L", bats: "L", stamina: 8, pitchSpeed: 7, offSpeed: 8, control: 7, contact: 3, power: 1, bunting: 4, speed: 2 },
@@ -267,6 +269,7 @@ export const TEAMS = {
       { name: "John Henry Johnson", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Steve Crawford", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Charlie Mitchell", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Roger Clemens", pos: "RP", throws: "R", bats: "R", stamina: 6, pitchSpeed: 9, offSpeed: 7, control: 5, contact: 2, power: 1, bunting: 3, speed: 3 },
     ],
   },
 
@@ -1216,7 +1219,7 @@ export const PLAYER_ERRORS = {
   // Red Sox
   "Wade Boggs": 20, "Dwight Evans": 2, "Jim Rice": 6, "Tony Armas": 11, "Mike Easler": 0,
   "Bill Buckner": 12, "Rich Gedman": 9, "Marty Barrett": 11, "Jackie Gutierrez": 24,
-  "Reid Nichols": 2, "Ed Jurak": 4, "Jeff Newman": 3, "Rick Miller": 2, "Glenn Hoffman": 8,
+  "Reid Nichols": 2, "Ed Jurak": 4, "Jeff Newman": 3, "Rick Miller": 2, "Glenn Hoffman": 8, "Jerry Remy": 4, "Roger Clemens": 3,
   // Yankees
   "Willie Randolph": 9, "Don Mattingly": 6, "Dave Winfield": 2, "Don Baylor": 0,
   "Steve Kemp": 7, "Ken Griffey Sr.": 9, "Butch Wynegar": 5, "Mike Pagliarulo": 24, "Bobby Meacham": 24,
