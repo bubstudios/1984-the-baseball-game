@@ -19,6 +19,17 @@ const STEPS = [
     text: 'Customize your batting order and defensive positions. Playing a player out of position carries defensive penalties — check the warning badges.',
   },
   {
+    title: 'Player Ratings',
+    icon: '📊',
+    text: (
+      <>
+        Every player has ratings for <strong>Contact</strong>, <strong>Power</strong>, <strong>Speed</strong>, and more. Pitchers show <strong>Speed</strong> and <strong>Control</strong>.<br />
+        <br />
+        Ratings change based on the <strong>count</strong> (balls/strikes) — some hitters are aggressive early, others improve when they\'re down in the count. Watch for advantages and disadvantages in the matchup card!
+      </>
+    ),
+  },
+  {
     title: 'When Batting',
     icon: '🏏',
     text: (
@@ -40,9 +51,14 @@ const STEPS = [
         <strong>FB</strong> Fastball · <strong>BB</strong> Breaking Ball · <strong>CU</strong> Changeup<br />
         <strong>KN</strong> Knuckleball · <strong>SC</strong> Screwball · <strong>SF</strong> Split-Finger<br />
         <br />
-        Faster pitches are harder to hit and harder to steal against — they get to the plate quicker. Breaking balls have higher strike chances.
+        Faster pitches are harder to hit and harder to steal against. Breaking balls have higher strike chances. Your pitcher gets tired — watch his stamina bar!
       </>
     ),
+  },
+  {
+    title: 'Game Speed',
+    icon: '⚡',
+    text: 'Sometimes counts jump ahead (e.g., 1-2 to a walk) to keep the game moving. This is intentional — stay focused on the matchup and the next play!',
   },
   {
     title: 'Manage the Game',
