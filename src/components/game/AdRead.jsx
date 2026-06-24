@@ -149,6 +149,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [isGenericAd, setIsGenericAd] = useState(false);
   const [genericAdEntry, setGenericAdEntry] = useState(null);
   const [questResult, setQuestResult] = useState(null);
+  const [alreadyTracked, setAlreadyTracked] = useState(false);
 
   // Detect ad type on mount
   useEffect(() => {
@@ -293,11 +294,13 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   }, [ad]);
 
   // Auto-dismiss only when not expanded AND not a movie (handles its own timing)
+  // Also don't auto-dismiss if ANY rich popup type is active
+  const hasRichPopup = isElectronics || isGeneralProducts || isMoreObscureTv || isMoreObscureTv3 || isArcade || isArcadeVidGame || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds || isLongDistancePhoneWars || isFilmDevelopmentCameras || isThingsThatScream1984 || isMallCulture || isRedSoxBanner || isNationalCharity || isNationalPromos || isNationalWrestling || isVhsBetamax || isDetroitTigers || isCubsBanner || isTigersBanner2 || isMetsBanner || isYankeesBanner || isOriolesBanner || isDodgersBanner || isPadresBanner || isRedsBanner || isRoyalsBanner || isTigersStadium || isPhilliesBanner || isGenericAd;
   useEffect(() => {
-    if (!visible || expanded || autoDismissMs <= 0 || isMovie) return;
+    if (!visible || expanded || hasRichPopup || autoDismissMs <= 0 || isMovie) return;
     const timer = setTimeout(onDismiss, autoDismissMs);
     return () => clearTimeout(timer);
-  }, [visible, expanded, autoDismissMs, onDismiss, isMovie]);
+  }, [visible, expanded, hasRichPopup, autoDismissMs, onDismiss, isMovie]);
 
   if (!ad || !visible) return null;
 
@@ -338,7 +341,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
         : isDodgersBanner ? 'dodgersBanner' : isPadresBanner ? 'padresBanner' : isRedsBanner ? 'redsBanner'
         : isRoyalsBanner ? 'royalsBanner' : isDetroitTigers ? 'detroitTigers' : isRedSoxBanner ? 'redSoxBanner'
         : isTigersStadium ? 'tigersStadium' : isGenericAd ? 'generic' : null;
-      if (adTypeKey) {
+      if (adTypeKey && !alreadyTracked) {
+        setAlreadyTracked(true);
         const qResults = recordAdView(adTypeKey, ad?.text);
         const clue = getQuestClueForAd(adTypeKey, ad?.text);
         const completed = qResults.find(r => r.justCompleted);
@@ -353,7 +357,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
         }
         setQuestResult({ clue, completedQuest: completed?.quest || null });
       }
-      if (isNationalCharity && nationalCharityEntry) {
+      if (isNationalCharity && nationalCharityEntry && !alreadyTracked) {
+        setAlreadyTracked(true);
         const unlocked = trackNationalCharityView(nationalCharityEntry.id);
         if (unlocked.length > 0 && onAchievement) onAchievement(unlocked);
       }

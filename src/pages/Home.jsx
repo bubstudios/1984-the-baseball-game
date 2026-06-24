@@ -83,6 +83,8 @@ export default function Home() {
   const [cardAward, setCardAward] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
   const [celebrationPopup, setCelebrationPopup] = useState(null);
+  const [caughtStealingPopup, setCaughtStealingPopup] = useState(null);
+  const [collisionPopup, setCollisionPopup] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -297,6 +299,17 @@ export default function Home() {
       if (stretchEntry && !gameState.gameOver) {
         setShowStretch(stretchEntry.text);
       }
+    }
+
+    // Detect caught stealing plays
+    if (lastPlay && lastPlay.type === 'caughtstealing' && lastPlay !== prevLastPlay.current) {
+      const caughtPhrases = ['Got him!', 'He\'s out!', 'Dead to rights!', 'Not this time!', 'Picked off clean!', 'No dice!'];
+      setCaughtStealingPopup(caughtPhrases[Math.floor(Math.random() * caughtPhrases.length)]);
+    }
+
+    // Detect collision plays (but not on HRs)
+    if (lastPlay && lastPlay.type !== 'homerun' && lastPlay.text?.includes('bowls over') && lastPlay !== prevLastPlay.current) {
+      setCollisionPopup(lastPlay.text);
     }
 
     // Trigger ads on half-inning transition or pitching change
@@ -1091,6 +1104,40 @@ export default function Home() {
           result={argumentResult}
           onDismiss={() => setArgumentResult(null)}
         />
+      )}
+
+      {/* Caught Stealing Popup */}
+      {caughtStealingPopup && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 animate-in zoom-in-95 fade-in duration-300">
+          <div className="bg-card border-2 border-destructive rounded-xl px-8 py-6 shadow-2xl text-center max-w-sm">
+            <div className="text-4xl mb-3">🎯</div>
+            <p className="font-heading text-xl font-bold text-destructive mb-4">{caughtStealingPopup}</p>
+            <p className="text-sm text-muted-foreground mb-4">Runner caught stealing</p>
+            <button
+              onClick={() => setCaughtStealingPopup(null)}
+              className="font-heading text-sm px-6 py-2 bg-destructive/10 hover:bg-destructive/20 text-destructive rounded-lg transition-colors"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Collision Popup */}
+      {collisionPopup && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 animate-in zoom-in-95 fade-in duration-300">
+          <div className="bg-card border-2 border-amber-400 rounded-xl px-8 py-6 shadow-2xl text-center max-w-sm">
+            <div className="text-5xl mb-3 animate-bounce">💥</div>
+            <p className="font-heading text-lg font-bold text-amber-300 mb-3">COLLISION AT THE PLATE!</p>
+            <p className="text-sm text-foreground/80 mb-4 italic">{collisionPopup}</p>
+            <button
+              onClick={() => setCollisionPopup(null)}
+              className="font-heading text-sm px-6 py-2 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 rounded-lg transition-colors"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Ballpark Event Banner */}

@@ -46,6 +46,7 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
 
   const handleConfirm = () => {
     if (selectedParkTeam && weather) {
+      // DH rules apply if the HOME team is in the AL
       const useDH = TEAMS[selectedParkTeam].league === 'AL';
       onConfirm(selectedParkTeam, useDH, weather, umpire);
     }
