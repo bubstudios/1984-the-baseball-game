@@ -54,6 +54,8 @@ export const EXTRA_ROSTERS = {
     { id: 21, name: 'Jerry Willard',    position: 'C',   number: 26, ba: '.224', hr: 6,  rbi: 37,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 22, name: 'Carmen Castillo',  position: 'OF',  number: 33, ba: '.249', hr: 10, rbi: 39,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 23, name: 'Otis Nixon',       position: 'OF',  number: 45, ba: '.154', hr: 0,  rbi: 2,   era: '-',    role: 'Speed/Future Star',    rarity: 'common'   },
+    { id: 24, name: 'Mike Fischlin',   position: 'INF', number: 16, ba: '.226', hr: 1,  rbi: 14,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
+    { id: 25, name: 'Roy Smith',       position: 'RP',  number: 30, ba: '-',    hr: '-', rbi: '-', era: '4.59', role: 'Rookie/Swingman',       rarity: 'common'   },
   ],
 
   brewers: [

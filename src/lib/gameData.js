@@ -613,6 +613,7 @@ export const TEAMS = {
       { name: "Carmen Castillo", pos: "OF", bats: "R", contact: 6, power: 5, bunting: 3, speed: 5, defense: 5, arm: 6, splits: estSplits(.249, 10, 299, 88, "R") },
       { name: "Mel Hall", pos: "OF", bats: "L", contact: 7, power: 5, bunting: 4, speed: 5, defense: 5, arm: 6, splits: { vsLHP: { ab: 78, ba: .218, hr: 1 }, vsRHP: { ab: 397, ba: .282, hr: 17 } } },
       { name: "Otis Nixon", pos: "OF", bats: "S", contact: 4, power: 1, bunting: 6, speed: 9, defense: 6, arm: 5, splits: estSplits(.154, 0, 48, 14, "S") },
+      { name: "Mike Fischlin", pos: "INF", bats: "R", contact: 4, power: 1, bunting: 6, speed: 4, defense: 7, arm: 5, splits: estSplits(.226, 1, 133, 40, "R") },
     ],
     rotation: [
       { name: "Bert Blyleven", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 7, offSpeed: 9, control: 7, contact: 3, power: 2, bunting: 4, speed: 2 },
@@ -626,6 +627,7 @@ export const TEAMS = {
       { name: "Luis Aponte", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Jamie Easterly", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Mike Jeffcoat", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Roy Smith", pos: "RP", throws: "R", bats: "R", stamina: 6, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
