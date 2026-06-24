@@ -606,16 +606,78 @@ export const TRIPLES = [
 ];
 
 export const HOME_RUNS = [
-  'Deep to left field!',
-  'Sending a shot to right!',
-  'That ball is CRUSHED!',
-  'High fly into left-center...that\'s GONE!',
-  'A rocket toward the wall...over it goes!',
-  'Deep to right field...that\'s outta here!',
-  'Long drive toward the left-field wall...HOME RUN!',
-  'A towering shot to the deepest part of the park...it\'s gone!',
-  'That ball is carrying toward the seats...and it\'s OUTTA HERE!',
-  'Into the night sky...and GONE!',
+  // Harry Caray (Cubs) signature
+  'It might be! It could be! It is! Holy cow!',
+  'There\'s a drive! Way back! It might be! It could be! It is!',
+  'Holy cow! What a shot!',
+  'That ball is gone!',
+  'A home run for the Cubs!',
+  // Vin Scully (Dodgers) signature
+  'She is gone!',
+  'A high drive into deep left field—she is gone!',
+  'He hit it a mile.',
+  'Gone—and the Dodgers take the lead.',
+  'That ball is carrying, carrying—and gone.',
+  'Forget it. That one is out of here.',
+  // Ernie Harwell (Tigers) signature
+  'That ball is long gone!',
+  'There\'s a long drive! That ball is long gone!',
+  'He stood there like the house by the side of the road and watched it go by.',
+  'That one is headed for the upper deck!',
+  'A two-run homer, and the Tigers have the lead.',
+  'He hit that one where nobody could catch it.',
+  // Bob Uecker (Brewers) signature
+  'Get up! Get up! Get outta here! Gone!',
+  'Get up! Get outta here—and gone!',
+  'That one is back—and it is gone!',
+  'He got all of that one!',
+  'Way back! Goodbye!',
+  'That ball will not be coming back.',
+  // Harry Kalas (Phillies) signature
+  'That ball is outta here!',
+  'Long drive! That ball is outta here!',
+  'It is gone! A home run!',
+  'Deep to left field—outta here!',
+  'He has just tied this ballgame!',
+  'That ball is well hit, and it is outta here!',
+  // Dave Niehaus (Mariners) signature
+  'Fly, fly away!',
+  'That ball will fly, fly away!',
+  'A deep drive—and goodbye baseball!',
+  'That one is gone!',
+  'My, oh my! What a shot!',
+  'He sends it into the seats!',
+  // Ken Harrelson (White Sox) signature
+  'You can put it on the board—yes!',
+  'You can put it on the booooard—yes!',
+  'Stretch! Stretch! Get on back there!',
+  'Mercy!',
+  'He absolutely crushed it!',
+  // Jerry Coleman (Padres) signature
+  'Oh, Doctor!',
+  'Ball going! Ball gone!',
+  'Oh, Doctor! What a drive!',
+  'You can hang a star on that baby!',
+  'That one is headed out of here!',
+  'A tremendous home run!',
+  // Phil Rizzuto (Yankees) signature
+  'Holy cow!',
+  'There it goes! Deep to left!',
+  'Holy cow, did he hit that one!',
+  'Unbelievable! A home run!',
+  // Chuck Thompson (Orioles) signature
+  'Ain\'t the beer cold!',
+  'Go to war, Miss Agnes!',
+  'That ball is out of here!',
+  'He hit that one a country mile!',
+  'The Orioles have themselves a home run!',
+  // Denny Matthews (Royals) signature
+  'That ball is gone.',
+  'A home run for George Brett.',
+  'He hit it well, and it is out of here.',
+  'The Royals have the lead.',
+  'That one clears the wall.',
+  'A two-run home run, and Kansas City moves in front.',
 ];
 
 export function getRandomCall(arr) {
