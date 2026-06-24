@@ -7,7 +7,7 @@ import {
   WILD_PITCH_LINES, GROUNDOUT_LINES, FLYOUT_LINES,
   DOUBLE_PLAY_LINES, END_INNING_LINES, LINEOUT_LINES,
   SOFT_GROUNDOUT_LINES, HARD_GROUNDOUT_LINES,
-  POPOUT_LINES, STRIKEOUT_SWINGING_LINES, STRIKEOUT_CALLED_LINES,
+  POPOUT_LINES, FOUL_BALL_LINES, STRIKEOUT_SWINGING_LINES, STRIKEOUT_CALLED_LINES,
   INFIELD_POPUP_LINES,
   INFIELD_LINEOUT_SOFT_LINES, INFIELD_LINEOUT_HARD_LINES,
   SHALLOW_FLYOUT_LINES, MEDIUM_FLYOUT_LINES, DEEP_FLYOUT_LINES,
@@ -608,7 +608,7 @@ function resolveSwing(state, swingType, pitch) {
   }
   if (state.hitAndRun) { state.hitAndRun = false; handleHitAndRunContact(state, batter, pitcher, adjBatter); return; }
   batter.gameStats.ab++;
-  if (Math.random() < 0.18) { if (state.strikes < 2) state.strikes++; state.log.push({ type: 'foul', text: `${batter.name} fouls it off — ${state.balls} and ${state.strikes}` }); state.lastPlay = { type: 'foul', text: `Foul ball` }; batter.gameStats.ab--; return; }
+  if (Math.random() < 0.18) { if (state.strikes < 2) state.strikes++; const foulLine = pickLine(FOUL_BALL_LINES); state.log.push({ type: 'foul', text: `${batter.name} — ${foulLine}` }); state.lastPlay = { type: 'foul', text: `Foul ball` }; batter.gameStats.ab--; return; }
   const wx = applyWeatherEffects(state.weather, {});
   const hrMod = wx.hrMod || 1, doubleMod = wx.doubleMod || 1, errorWx = wx.errorMult || 1, contactWx = wx.contactMod || 0;
   const stadiumName = TEAMS[state.homeTeam]?.stadium;

@@ -272,14 +272,15 @@ export default function TeamSelect({ onSelect }) {
             </Button>
 
             {/* Donate */}
-            <div className="pt-2 pb-8 text-center space-y-2">
+            <div className="pt-4 pb-8 bg-primary/5 border border-primary/20 rounded-lg px-3 py-3 text-center space-y-2">
               <button
                 onClick={() => setShowDonate(true)}
-                className="text-[11px] font-heading text-muted-foreground/60 hover:text-primary transition-colors inline-flex items-center gap-1"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-heading text-sm py-2 rounded-lg transition-colors inline-flex items-center justify-center gap-2"
               >
-                <Heart className="w-3 h-3" />
-                Enjoying the game? Tip the developer
+                <Heart className="w-4 h-4" />
+                Tip the Developer
               </button>
+              <p className="text-[9px] text-muted-foreground/70">Enjoying the game? Support development!</p>
               <p className="text-[10px] text-muted-foreground/50 text-center font-body">
                 You control batting and pitching for your team. CPU controls the opponent.
               </p>

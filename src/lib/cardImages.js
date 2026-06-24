@@ -662,7 +662,10 @@ export const CARD_IMAGES = {
   'Tom Lawless':      BASE + '8e7e9b936_generated_image.png',
   'Wayne Krenchicki': BASE + '1919ce9fc_generated_image.png',
   'Eric Davis':       BASE + '0c50af9f9_generated_image.png',
-};
+
+  // ── MISSING PLAYERS (now added) ──
+  'Jerry Koosman':    BASE + 'ee911986b_generated_image.png',  // Expos/Twins pitcher
+  };
 
 /**
  * Get the card image URL for a player by name.
