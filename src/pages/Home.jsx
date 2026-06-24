@@ -88,7 +88,6 @@ export default function Home() {
   const [celebrationPopup, setCelebrationPopup] = useState(null);
   const [caughtStealingPopup, setCaughtStealingPopup] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
-  const [celebrationPumpedPopup, setCelebrationPumpedPopup] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -352,14 +351,16 @@ export default function Home() {
   const checkForArgumentLogic = useCallback((state) => {
     if (!state || state.gameOver) return state;
 
-    // Check for random ballpark event (one per game) — only between at-bats
+    // Check for random ballpark event (one per game) — trigger between at-bats
     const isBetweenAtBats = state.balls === 0 && state.strikes === 0;
-    const bpEvent = isBetweenAtBats ? rollBallparkEvent(state) : null;
-    if (bpEvent && !ballparkEvent) {
-      setBallparkEvent(bpEvent);
-      // Track Groover Easter eggs
-      if (bpEvent.id === 'rainbow_horse' || bpEvent.id === 'reds_streaker') {
-        trackGrooverSighting(bpEvent.id);
+    if (isBetweenAtBats) {
+      const bpEvent = rollBallparkEvent(state);
+      if (bpEvent) {
+        setBallparkEvent(bpEvent);
+        // Track Groover Easter eggs
+        if (bpEvent.id === 'rainbow_horse' || bpEvent.id === 'reds_streaker') {
+          trackGrooverSighting(bpEvent.id);
+        }
       }
     }
 
@@ -589,13 +590,7 @@ export default function Home() {
          } catch (e) { console.error('ballpark card award failed:', e); }
        }
 
-       // Trigger celebration popup for special plays
-       if (afterSubs.lastPlay) {
-         const play = afterSubs.lastPlay;
-         if ((play.type === 'single' || play.type === 'double' || play.type === 'triple' || play.type === 'homerun') && (play.text?.includes('RBI') || play.text?.includes('scores'))) {
-           setCelebrationPumpedPopup({ message: 'Big hit right there!', playerName: play.batterName || 'Batter', isHitter: true });
-         }
-       }
+
     } catch (e) {
       console.error('handlePitch error:', e);
     } finally {
@@ -640,13 +635,7 @@ export default function Home() {
         } catch (e) { console.error('ballpark card award failed:', e); }
       }
 
-      // Trigger celebration popup for RBI/clutch hits
-      if (afterSubs.lastPlay) {
-        const play = afterSubs.lastPlay;
-        if ((play.type === 'single' || play.type === 'double' || play.type === 'triple' || play.type === 'homerun') && (play.text?.includes('RBI') || play.text?.includes('scores'))) {
-          setCelebrationPumpedPopup({ message: 'What a clutch hit!', playerName: play.batterName || 'Batter', isHitter: true });
-        }
-      }
+
     } catch (e) {
       console.error('handleSwing error:', e);
     } finally {
@@ -1159,16 +1148,7 @@ export default function Home() {
         />
       )}
 
-      {/* Universal Celebration Popup — Hitter/Fielder */}
-      {celebrationPumpedPopup && (
-        <PitcherIsPumpedPopup
-          message={celebrationPumpedPopup.message}
-          playerName={celebrationPumpedPopup.playerName}
-          isHitter={celebrationPumpedPopup.isHitter}
-          isFielder={celebrationPumpedPopup.isFielder}
-          onDismiss={() => setCelebrationPumpedPopup(null)}
-        />
-      )}
+
 
       {/* Caught Stealing Popup */}
       {caughtStealingPopup && (
