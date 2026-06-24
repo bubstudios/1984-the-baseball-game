@@ -148,6 +148,8 @@ export const TEAMS = {
         splits: estSplits(.231, 3, 134, 25, "R") },
       { name: "Dave Owen", pos: "SS", bats: "S", contact: 5, power: 2, bunting: 5, speed: 4, defense: 6, arm: 5,
         splits: estSplits(.215, 3, 142, 30, "S") },
+      { name: "Gary Woods", pos: "OF", bats: "R", contact: 6, power: 3, bunting: 5, speed: 6, defense: 6, arm: 5,
+        splits: estSplits(.257, 3, 145, 50, "R") },
     ],
     rotation: [
       { name: "Rick Sutcliffe", pos: "SP", throws: "R", bats: "L", stamina: 9, pitchSpeed: 8, offSpeed: 9, control: 8, contact: 6, power: 4, bunting: 6, speed: 3, specialty: { name: "Sinker-Change Combo", pitch: "Fastball", label: "RC" } },
@@ -161,6 +163,8 @@ export const TEAMS = {
       { name: "George Frazier", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Warren Brusstar", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, contact: 3, power: 1, bunting: 3, speed: 2 },
       { name: "Dickie Noles", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 4, contact: 3, power: 1, bunting: 3, speed: 2 },
+      { name: "Dick Ruthven", pos: "RP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 2 },
+      { name: "Rich Bordi", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 7, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
@@ -1260,7 +1264,7 @@ export const PLAYER_ERRORS = {
   // Cubs
   "Bob Dernier": 3, "Ryne Sandberg": 6, "Gary Matthews": 13, "Leon Durham": 11,
   "Keith Moreland": 8, "Jody Davis": 13, "Ron Cey": 18, "Larry Bowa": 12,
-  "Thad Bosley": 2, "Richie Hebner": 8, "Henry Cotto": 2, "Steve Lake": 3, "Dave Owen": 5,
+  "Thad Bosley": 2, "Richie Hebner": 8, "Henry Cotto": 2, "Steve Lake": 3, "Dave Owen": 5, "Gary Woods": 2, "Dick Ruthven": 1, "Rich Bordi": 1,
   // Mets
   "Wally Backman": 13, "Mookie Wilson": 7, "Keith Hernandez": 4, "Darryl Strawberry": 8,
   "George Foster": 7, "Hubie Brooks": 29, "Mike Fitzgerald": 8, "Jose Oquendo": 12,
