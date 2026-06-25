@@ -50,8 +50,8 @@ export const PITCHER_ARCHETYPES = {
 // Behavior zones (based on current composure %)
 export const BEHAVIOR_ZONES = {
   LOCKED_IN: { min: 80, max: 100, label: 'Locked In', effect: 'improved' },
-  NORMAL: { min: 50, max: 79, label: 'Normal', effect: 'baseline' },
-  PRESSING: { min: 25, max: 49, label: 'Pressing', effect: 'erratic' },
+  NORMAL: { min: 55, max: 79, label: 'Normal', effect: 'baseline' },
+  PRESSING: { min: 25, max: 54, label: 'Pressing', effect: 'erratic' },
   RED_ZONE: { min: 0, max: 24, label: 'Red Zone', effect: 'dangerous' },
 };
 

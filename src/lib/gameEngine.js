@@ -600,6 +600,8 @@ function resolvePitch(state, pitchType) {
                        zone === BEHAVIOR_ZONES.NORMAL ? 1.0 :
                        zone === BEHAVIOR_ZONES.PRESSING ? 0.85 : 0.65;
     controlFactor *= controlMod;
+    // DEBUG: Log effective control and modifier
+    console.log(`[COMPOSURE] ${pitcher.name} | composure=${Math.round(composure.composure)} | zone=${zone.label} | mod=${controlMod} | baseCTL=${Math.round((effectiveP.effectiveControl || effectiveP.control) * 10)}/10 | effective=${controlFactor * 10}/10`);
   }
   
   const effControl = effectiveP.effectiveControl || effectiveP.control;
