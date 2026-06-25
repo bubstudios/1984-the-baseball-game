@@ -1159,6 +1159,256 @@ const KEYWORD_PATTERNS = [
   { keywords: ['drink and drive', 'never drink'], data: MISC_ADS['drunk_driving'] },
   // Support local movie theater
   { keywords: ['local movie theater', 'support your local movie'], data: MISC_ADS['local_theater'] },
+  // Phil Rizzuto / broadcaster greeting from New Jersey
+  { keywords: ['phil says hello', 'listening from new jersey', 'says hello to everyone'], data: {
+    icon: '🎙️', color: '#003087',
+    title: '🎙️ Phil Says Hello',
+    body: `PHIL RIZZUTO — HELLO FROM THE BOOTH
+
+"Phil says hello to everyone listening from New Jersey."
+
+THE SCOOTER
+Phil Rizzuto. Yankees shortstop, 1941-1956. American League MVP, 1950. Hall of Famer. And since 1957, the voice of the Yankees — the most beloved, most chaotic, most endearing broadcaster in the history of baseball.
+
+THE BROADCAST
+Phil doesn't just call the game. He talks to the audience. He wishes people happy birthday. He mentions listeners by name — "Hello to everyone in Paramus!" He talks about what he had for dinner. He worries about the traffic on the George Washington Bridge. He gets excited about a good play and forgets what inning it is.
+
+THE NEW JERSEY CONNECTION
+A huge portion of the Yankees' radio audience lives in New Jersey. They tune in from Newark, from Paramus, from Cherry Hill, from Trenton. They listen on the drive home. They listen on the back porch. They listen with their fathers and their grandfathers. The radio is on. Phil is talking. Baseball is being played. This is summer.
+
+THE CATCHPHRASE
+"Holy cow!" — Phil's exclamation for everything. A home run? Holy cow! A great play? Holy cow! A dropped pop-up? Holy cow! It is the most versatile phrase in broadcasting.
+
+PHIL SAYS HELLO.
+To everyone listening from New Jersey.
+To everyone listening everywhere.
+Holy cow, what a game.`,
+  }},
+  // Salvation Army / charity donation
+  { keywords: ['salvation army', 'thanks you for your continued support', 'donations help families'], data: {
+    icon: '🔔', color: '#cc0000',
+    title: '🔔 The Salvation Army',
+    body: `THE SALVATION ARMY — THANK YOU
+
+"The Salvation Army thanks you for your continued support. Your donations help families in need in our community."
+
+THE ORGANIZATION
+The Salvation Army. Founded in London in 1865 by William Booth. Arrived in America in 1880. By 1984, it is one of the largest charitable organizations in the United States, serving over 3 million people annually through thrift stores, shelters, food pantries, and disaster relief.
+
+THE RED KETTLE
+The iconic red kettle and bell ringer. You see them outside every grocery store and department store during the holidays. The kettles collect millions of dollars in spare change every year. That spare change funds soup kitchens, homeless shelters, and after-school programs.
+
+THE THRIFT STORES
+Salvation Army thrift stores sell donated clothing, furniture, and household goods at affordable prices. The proceeds fund adult rehabilitation centers. The stores also provide affordable goods to families who need them. Your donations — the coat you outgrew, the toaster you replaced — become someone else's necessity.
+
+THE COMMUNITY
+In 1984, the Salvation Army operates in every major American city. They run homeless shelters. They run food pantries. They run summer camps for underprivileged kids. They show up after natural disasters. They don't ask questions. They help.
+
+THE THANK YOU
+Your continued support matters. The coat you donate keeps someone warm. The dollar you drop in the kettle becomes a meal. The furniture you give furnishes an apartment for a family starting over.
+
+THE SALVATION ARMY THANKS YOU.
+Your donations help families in need.
+In our community.`,
+  }},
+  // Free concerts in city parks
+  { keywords: ['free concerts', 'city parks', 'concerts in city parks', 'free concerts in city'], data: {
+    icon: '🎵', color: '#27ae60',
+    title: '🎵 Free Concerts in City Parks',
+    body: `FREE CONCERTS IN CITY PARKS — ALL SUMMER LONG
+
+"Enjoy free concerts in city parks throughout the summer."
+
+THE SERIES
+Every summer, cities across America transform their parks into concert venues. Free. Open to all. Bring a blanket. Bring a picnic. Bring the family. The music starts at dusk.
+
+THE MUSIC
+The 1984 summer concert series features a little of everything: jazz ensembles, concert bands, string quartets, folk singers, brass quintets. The city parks department hires local musicians and touring acts alike. Some nights it's a big band playing Glenn Miller arrangements. Some nights it's a folk singer with a guitar. Every night is different. Every night is free.
+
+THE PARK
+The park becomes a different place at concert time. The lawn fills with blankets and folding chairs. Kids run around the edges. The ice cream truck does exceptional business. The sun sets behind the trees. The stage lights come up. The music begins.
+
+THE TRADITION
+Free concerts in parks are an American tradition dating back to the bandshell era of the early 1900s. John Philip Sousa toured the country playing free concerts in parks. Cities built bandshells. Communities gathered. The tradition continues. The music is different now, but the feeling is the same.
+
+THE PRICE
+Free. That's the best price in entertainment. No tickets. No lines. No reserved seating. First come, first served on the best blanket spots. The only cost is showing up.
+
+ENJOY FREE CONCERTS IN CITY PARKS.
+Throughout the summer.
+Bring a blanket.`,
+  }},
+  // Hayden Planetarium
+  { keywords: ['hayden planetarium', 'learn about the universe', 'planetarium'], data: {
+    icon: '🔭', color: '#4a0080',
+    title: '🔭 The Hayden Planetarium',
+    body: `THE HAYDEN PLANETARIUM — NEW YORK CITY
+
+"Learn about the universe at the Hayden Planetarium."
+
+THE PLANETARIUM
+The Hayden Planetarium. Part of the American Museum of Natural History. Central Park West at 81st Street, New York City. Opened in 1935. By 1984, it has introduced millions of New Yorkers to the wonders of the cosmos.
+
+THE DOME
+The planetarium's dome is 75 feet in diameter. When the lights go down, the dome becomes the night sky. Stars. Planets. Constellations. Galaxies. The Milky Way stretches overhead. The universe, projected onto a plaster ceiling.
+
+THE SHOW
+You sit in a reclining seat. The lights dim. The star projector — a massive dumbbell-shaped instrument in the center of the room — begins to spin. The sky appears. A narrator guides you through the cosmos. You learn about Orion. About Polaris. About the phases of the moon. About light-years and parsecs and the scale of the universe.
+
+THE UNIVERSE
+The universe is large. The planetarium helps you understand how large. The closest star is 4.3 light-years away. The closest galaxy is 2.2 million light-years away. The observable universe is 13 billion light-years across. These numbers are meaningless until you see them projected on a 75-foot dome. Then they are awe-inspiring.
+
+THE MISSION
+The Hayden Planetarium exists to educate. To inspire. To remind you that the Earth is a small planet orbiting an average star in an ordinary galaxy in an unimaginably vast universe. This is humbling. It is also thrilling.
+
+LEARN ABOUT THE UNIVERSE.
+At the Hayden Planetarium.
+Central Park West at 81st Street.`,
+  }},
+  // Kiwanis charity golf tournament
+  { keywords: ['kiwanis', 'charity golf', 'golf tournament'], data: {
+    icon: '⛳', color: '#27ae60',
+    title: '⛳ Kiwanis Charity Golf Tournament',
+    body: `KIWANIS CHARITY GOLF TOURNAMENT
+
+"Kiwanis Charity Golf Tournament — supporting local youth programs."
+
+THE ORGANIZATION
+Kiwanis International. Founded in 1915 in Detroit. A service organization of volunteers dedicated to improving the world, one child and one community at a time. By 1984, there are over 8,000 Kiwanis clubs in 70+ countries. They meet weekly. They eat breakfast or lunch. They raise money. They help kids.
+
+THE TOURNAMENT
+The charity golf tournament is a Kiwanis staple. Local business leaders, civic figures, and community members form foursomes. They pay an entry fee. They play 18 holes. The entry fees and sponsorships fund youth programs — Little League, Boys & Girls Clubs, scout troops, scholarship funds.
+
+THE GOLF
+It's not the PGA Tour. The golf is... varied. Some players are excellent. Some players are there for the buffet. Foursomes compete for prizes — longest drive, closest to the pin, lowest score. The real competition is usually for the worst score, which comes with a trophy and a gentle ribbing.
+
+THE FORMAT
+Typically a scramble format: all four players tee off, the team picks the best shot, everyone plays from there. This means even the worst golfer on your team can contribute. This is the entire point of the scramble.
+
+THE CAUSE
+The money raised stays in the community. It sends kids to camp. It buys uniforms for youth sports. It funds college scholarships. It buys playground equipment. It helps local families in need.
+
+THE BREAKFAST
+Kiwanis meetings start with breakfast. Pancakes, eggs, sausage, coffee. The golf tournament includes lunch at the turn and dinner afterward. The food is always good. The company is always better.
+
+KIWANIS CHARITY GOLF TOURNAMENT.
+Supporting local youth programs.
+Fore!`,
+  }},
+  // Souvenir yearbook / Royals yearbook
+  { keywords: ['souvenir stands', 'official 1984', 'yearbook', 'royals yearbook'], data: {
+    icon: '📖', color: '#004687',
+    title: '📖 Official 1984 Yearbook',
+    body: `OFFICIAL 1984 TEAM YEARBOOK
+
+"Stop by souvenir stands for your official 1984 Royals yearbook."
+
+THE YEARBOOK
+The official team yearbook. A staple of the ballpark souvenir stand. Full color. 64 pages. Roster profiles. Action photos. Stadium history. Manager's column. Schedule. Stats. It is the definitive guide to this year's team.
+
+THE CONTENTS
+Player profiles: Every player on the roster gets a page. Photo, biographical info, career stats, and a quote from the player or manager. "George Brett: 'I just want to hit .300 and drive in 100 runs. The rest takes care of itself.'"
+
+The manager's column: A short essay by the skipper about the season so far. It is always optimistic. Even when the team is in last place.
+
+The stadium section: A guide to the ballpark — how to get there, where to park, where to eat, where the restrooms are. Useful for first-timers.
+
+The prospect report: A look at the minor league system. "Coming soon to a ballpark near you." Sometimes these prospects pan out. Sometimes they don't. The yearbook is always optimistic.
+
+THE PRICE
+$3.00-$5.00 depending on the team. A bargain. It will sit on your coffee table all season. You will flip through it during rain delays. You will show it to friends. Years from now, you'll find it in a box in the attic and remember this season.
+
+THE SOUVENIR STAND
+Located on the concourse. Caps, jerseys, pennants, foam fingers, programs, and the yearbook. The souvenir stand is the most dangerous place in the ballpark for your wallet. Everything looks better when you're at the game.
+
+STOP BY THE SOUVENIR STANDS.
+Get your official 1984 yearbook.
+A souvenir that lasts.`,
+  }},
+  // Starlight Theatre
+  { keywords: ['starlight theatre', 'summer evening', 'starlight'], data: {
+    icon: '🎭', color: '#4a0080',
+    title: '🎭 Starlight Theatre',
+    body: `STARLIGHT THEATRE — KANSAS CITY
+
+"Spend a summer evening at Starlight Theatre."
+
+THE VENUE
+Starlight Theatre. Swope Park, Kansas City, Missouri. The largest outdoor theatre in the United States. Opened in 1951. By 1984, it is a Kansas City institution — a place where the stars come out both on stage and overhead.
+
+THE EXPERIENCE
+Outdoor theatre is a different experience. The sky is your ceiling. The breeze is your air conditioning. The stars come out as the sun goes down. You bring a light jacket. You sit in the open-air auditorium. The show begins at 8:30 PM. By intermission, it's dark and the stage lights illuminate the performers against the night sky.
+
+THE SHOWS
+Starlight Theatre hosts touring Broadway productions, concerts, and special events. In 1984, the season might include a touring production of "A Chorus Line," a Kenny Rogers concert, or a night of the Kansas City Symphony. The variety is the point.
+
+THE PICNIC
+Many patrons tailgate before the show. This is a Starlight tradition. You arrive early. You set up a spread in the parking lot. Wine, cheese, sandwiches, fruit. The tailgate is half the experience. The show is the other half.
+
+THE SOUND
+The acoustics of an outdoor theatre are unique. The sound carries differently in open air. On a still night, the music floats. On a breezy night, you sit closer. Rain is always a possibility. The show goes on unless it's a downpour.
+
+SPEND A SUMMER EVENING AT STARLIGHT THEATRE.
+Swope Park, Kansas City.
+Under the stars.`,
+  }},
+  // Youth baseball heartland
+  { keywords: ['youth baseball strong', 'heartland', 'baseball strong'], data: {
+    icon: '⚾', color: '#27ae60',
+    title: '⚾ Keep Youth Baseball Strong',
+    body: `KEEP YOUTH BASEBALL STRONG — IN THE HEARTLAND
+
+"Help keep youth baseball strong in the heartland."
+
+THE HEARTLAND
+The American heartland. The Midwest. The Great Plains. Where baseball isn't just a sport — it's a way of life. In small towns across Kansas, Missouri, Iowa, Nebraska, and the surrounding states, baseball is played on diamonds carved from farmland. The lights come on at dusk. The kids take the field. The community watches.
+
+THE PROGRAMS
+Youth baseball in the heartland depends on community support. Little Leagues. American Legion teams. Babe Ruth leagues. High school programs. None of them survive on ticket sales. They survive on volunteers. On sponsorships from local businesses. On the $20 registration fee and the parent who volunteers to coach.
+
+THE DIAMOND
+Every small town has a baseball diamond. Sometimes it's the best-maintained piece of property in town. The infield is raked. The grass is cut. The backstop is patched. The bleachers are old but sturdy. The concession stand sells popcorn and soda for fifty cents. This is where kids learn the game.
+
+THE COACHES
+The coaches are volunteers. Dads. Moms. Grandpas. Former players. People who love the game and want to pass it on. They show up at 5 PM for practice. They hit ground balls until their arms hurt. They teach kids how to catch, how to throw, how to hit, how to lose with dignity and win with grace. They do this for free.
+
+THE LESSON
+Baseball teaches things you can't learn in a classroom. Teamwork. Patience. How to fail and try again. How to support a teammate. How to shake hands after a loss. These lessons carry into adulthood.
+
+HELP KEEP YOUTH BASEBALL STRONG.
+In the heartland.
+In every town with a diamond and a dream.`,
+  }},
+  // Mall food court
+  { keywords: ['food court', 'hungry shoppers', 'open and waiting for hungry'], data: {
+    icon: '🍴', color: '#cc8800',
+    title: '🍴 The Food Court',
+    body: `THE FOOD COURT — OPEN AND WAITING
+
+"The food court is open and waiting for hungry shoppers."
+
+THE MALL
+In 1984, the shopping mall is the center of American suburban life. It is where teenagers hang out. Where families spend Saturday. Where you go to buy clothes, electronics, books, records, and food. So much food.
+
+THE FOOD COURT
+The food court is the heart of the mall. A central seating area surrounded by a dozen different food vendors. Orange Julius. Sbarro. Panda Express. Chick-fil-A. Taco Bell. McDonald's. Auntie Anne's. Orange Julius. (You go to Orange Julius twice. This is normal.)
+
+THE OPTIONS
+Pizza by the slice. Egg rolls. Tacos. Burgers. Pretzels. Smoothies. Ice cream. Chinese food. Italian food. Mexican food. American food. The food court has it all. The quality ranges from "surprisingly good" to "I've made a mistake." The price is always right.
+
+THE SMELL
+The food court smells like everything at once. Grease. Cinnamon. Coffee. Teriyaki. It is overwhelming. It is wonderful. Your stomach growls before you've even decided what to eat.
+
+THE STRATEGY
+The food court requires strategy. Do you commit to one vendor, or do you graze? A slice of Sbarro here. A pretzel from Auntie Anne's there. An Orange Julius to wash it down. The grazer's approach is superior. This is a hill worth dying on.
+
+THE SOCIAL ASPECT
+The food court is where you meet your friends. You sit at a table. You share fries. You talk. You people-watch. The food court is the mall's living room. It is where the social fabric of suburban America is woven, one tray at a time.
+
+THE FOOD COURT IS OPEN.
+And waiting for hungry shoppers.
+Grab a tray.`,
+  }},
   // Tourism / Global visitors
   { keywords: ['visitors continue to arrive', 'every corner of the globe', 'corner of the globe', 'visitors from every'], data: {
     icon: '🌍', color: '#003087',

@@ -365,16 +365,23 @@ export default function AdReadPopupRenderer({
     );
   }
 
-  // Default: clickable banner for any ad type
+  // Default: attractive clickable banner for any ad type (team banners, synopsis, etc.)
   return (
-    <div
-      onClick={handleTap}
-      className="bg-card/80 border border-amber-500/30 rounded-xl px-4 py-3 cursor-pointer hover:bg-card hover:border-amber-500/50 transition-all"
-    >
-      <div className="text-center space-y-1">
-        <div className="text-[10px] font-heading uppercase tracking-widest text-amber-400/60">📻 Sponsor Message</div>
-        <p className="text-sm font-heading text-foreground/90">{synopsisData?.tagline || ad?.text || 'Advertisement'}</p>
-        <p className="text-[9px] text-muted-foreground/50 font-heading">tap for details</p>
+    <div className="animate-in slide-in-from-bottom-4 fade-in duration-300">
+      <div
+        onClick={handleTap}
+        className="w-full bg-background/80 backdrop-blur border-2 border-amber-600/40 rounded-2xl px-6 py-5 text-center transition-all hover:bg-background/95 hover:border-amber-600/60 active:scale-95 group cursor-pointer relative"
+      >
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className="text-lg animate-bounce">📻</span>
+          <span className="font-heading text-xs uppercase tracking-widest text-amber-600/70 group-hover:text-amber-500 transition-colors">
+            Sponsor Message
+          </span>
+        </div>
+        <p className="text-sm font-heading text-foreground/90 leading-snug px-2">
+          {synopsisData?.tagline || ad?.text || 'Advertisement'}
+        </p>
+        <p className="text-[9px] text-muted-foreground/50 font-heading italic mt-2">tap for details</p>
       </div>
     </div>
   );
