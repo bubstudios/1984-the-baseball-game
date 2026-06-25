@@ -110,6 +110,16 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
             CTL {pitcher.effectiveControl || pitcher.control}
             {pitcher.fatigueControlPen > 0 && <span className="text-[9px] text-red-400 ml-0.5">-{pitcher.fatigueControlPen}</span>}
           </span>
+          {pitcher._composure && (
+            <span className={`text-[10px] font-semibold ${
+              pitcher._composure.composure >= 75 ? 'text-green-400' :
+              pitcher._composure.composure >= 50 ? 'text-yellow-400' :
+              pitcher._composure.composure >= 25 ? 'text-orange-400' :
+              'text-red-400'
+            }`}>
+              CMP {Math.round(pitcher._composure.composure)}
+            </span>
+          )}
         </div>
         {pitcher.gameStats && (
           <div className="flex gap-2 mt-1 text-[10px] text-muted-foreground/70">
