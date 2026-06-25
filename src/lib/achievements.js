@@ -722,10 +722,24 @@ export function trackGrooverSighting(key) {
   return false;
 }
 
+// All secondary tracking keys used by popup-specific trackers
+const SECONDARY_TRACKING_KEYS = [
+  'nationalCharityViewed',
+  'electronicsViewed',
+  'generalProductsViewed',
+  'detroitTigersBannerViewed',
+  'tigersStadiumViewed',
+  'philliesBannerViewed',
+  'redSoxBannerViewed',
+  'cubsBannerViewed',
+  GROOVERS_KEY,
+];
+
 export function resetAllData() {
   try {
     localStorage.removeItem(ACH_KEY);
     localStorage.removeItem(STATS_KEY);
+    SECONDARY_TRACKING_KEYS.forEach(key => localStorage.removeItem(key));
   } catch (e) { /* ignore */ }
 }
 
