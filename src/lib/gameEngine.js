@@ -1412,7 +1412,11 @@ export function processAtBat(state, pitchType, swingType) {
    // CPU-CONTROLLED PITCHERS ONLY — user cannot auto-IBB
    if (newState.balls === 0 && newState.strikes === 0) {
      const pitchingSide = newState.halfInning === 'top' ? 'home' : 'away';
-     const isCpuPitching = pitchingSide === (newState.homeTeam === newState.userTeam ? 'away' : 'home');
+     const userSide = newState.homeTeam === newState.userTeam ? 'home' : 'away';
+     const cpuSide = userSide === 'home' ? 'away' : 'home';
+     const isCpuPitching = pitchingSide === cpuSide;
+
+     console.log(`[IBB GATE] User team: ${newState.homeTeam === newState.userTeam ? newState.homeTeam + ' (HOME)' : newState.awayTeam + ' (AWAY)'} | CPU team: ${cpuSide === 'home' ? newState.homeTeam + ' (HOME)' : newState.awayTeam + ' (AWAY)'} | Currently pitching: ${pitchingSide === 'home' ? newState.homeTeam + ' (HOME)' : newState.awayTeam + ' (AWAY)'} | isCpuPitching: ${isCpuPitching}`);
 
      if (isCpuPitching) {
        const batter = getCurrentBatter(newState);
