@@ -1412,96 +1412,41 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
         if (line) text = `"${line}"`;
       }
     }
+    // White color commentary: player facts, tidbits, analysis — NOT play-by-play
+    // (play results show in the orange stats flash below)
     if (!text) {
-    // Hit occurred — show team-specific hit commentary
-    if (['single','double','triple','homerun'].includes(lastPlay?.type)) {
-      const hitType = lastPlay.type;
-      const playerName = lastPlay.batterName || batter?.name;
-      let hitLine = null;
-      
-      // Pick the appropriate broadcast line for the hit type
-      if (isTigersGame) hitLine = pickTigersLine();
-      else if (isPadresGame) hitLine = pickPadresLine();
-      else if (isYankeesGame) hitLine = pickYankeesLine();
-      else if (isRedSoxGame) hitLine = pickRedSoxLine();
-      else if (isRedsGame) hitLine = pickRedsLine();
-      else if (isRoyalsGame) hitLine = pickRoyalsLine();
-      else if (isPhilliesGame) hitLine = pickPhilliesLine();
-      else if (isBlueJaysGame) hitLine = pickBlueJaysLine();
-      else if (isIndiansGame) hitLine = pickIndiansLine();
-      else if (isBrewersGame) hitLine = pickBrewersLine();
-      else if (isTwinsGame) hitLine = pickTwinsLine();
-      else if (isAthleticsGame) hitLine = pickAthleticsLine();
-      else if (isAngelsGame) hitLine = pickAngelsLine();
-      else if (isWhiteSoxGame) hitLine = pickWhiteSoxLine();
-      else if (isMarinersGame) hitLine = pickMarinersLine();
-      else if (isRangersGame) hitLine = pickRangersLine();
-      else if (isExposGame) hitLine = pickExposLine();
-      else if (isCardinalsGame) hitLine = pickCardinalsLine();
-      else if (isPiratesGame) hitLine = pickPiratesLine();
-      else if (isBravesGame) hitLine = pickBravesLine();
-      else if (isAstrosGame) hitLine = pickAstrosLine();
-      else if (isGiantsGame) hitLine = pickGiantsLine();
-      else if (isCubsGame) hitLine = pickHarryLine();
-      else if (isDodgersGame) hitLine = pickVinLine();
-      else if (isMetsGame) hitLine = pickMetsLine(gameState, gameState?.pitchResult?.pitchType);
-      
-      if (hitLine) text = hitLine;
+      // Try team-specific player lines first (actual player facts/tidbits)
+      const playerLine = isYankeesGame ? (pickYankeesPlayerLine(batter?.name) || pickYankeesPlayerLine(pitcher?.name))
+        : isRedSoxGame ? (pickRedSoxPlayerLine(batter?.name) || pickRedSoxPlayerLine(pitcher?.name))
+        : isTigersGame ? (pickTigersPlayerLine(batter?.name) || pickTigersPlayerLine(pitcher?.name))
+        : isRedsGame ? (pickRedsPlayerLine(batter?.name) || pickRedsPlayerLine(pitcher?.name))
+        : isRoyalsGame ? (pickRoyalsPlayerLine(batter?.name) || pickRoyalsPlayerLine(pitcher?.name))
+        : isPhilliesGame ? (pickPhilliesPlayerLine(batter?.name) || pickPhilliesPlayerLine(pitcher?.name))
+        : isBlueJaysGame ? (pickBlueJaysPlayerLine(batter?.name) || pickBlueJaysPlayerLine(pitcher?.name))
+        : isIndiansGame ? (pickIndiansPlayerLine(batter?.name) || pickIndiansPlayerLine(pitcher?.name))
+        : isBrewersGame ? (pickBrewersPlayerLine(batter?.name) || pickBrewersPlayerLine(pitcher?.name))
+        : isTwinsGame ? (pickTwinsPlayerLine(batter?.name) || pickTwinsPlayerLine(pitcher?.name))
+        : isAthleticsGame ? (pickAthleticsPlayerLine(batter?.name) || pickAthleticsPlayerLine(pitcher?.name))
+        : isAngelsGame ? (pickAngelsPlayerLine(batter?.name) || pickAngelsPlayerLine(pitcher?.name))
+        : isWhiteSoxGame ? (pickWhiteSoxPlayerLine(batter?.name) || pickWhiteSoxPlayerLine(pitcher?.name))
+        : isMarinersGame ? (pickMarinersPlayerLine(batter?.name) || pickMarinersPlayerLine(pitcher?.name))
+        : isRangersGame ? (pickRangersPlayerLine(batter?.name) || pickRangersPlayerLine(pitcher?.name))
+        : isExposGame ? (pickExposPlayerLine(batter?.name) || pickExposPlayerLine(pitcher?.name))
+        : isCardinalsGame ? (pickCardinalsPlayerLine(batter?.name) || pickCardinalsPlayerLine(pitcher?.name))
+        : isPiratesGame ? (pickPiratesPlayerLine(batter?.name) || pickPiratesPlayerLine(pitcher?.name))
+        : isBravesGame ? (pickBravesPlayerLine(batter?.name) || pickBravesPlayerLine(pitcher?.name))
+        : isAstrosGame ? (pickAstrosPlayerLine(batter?.name) || pickAstrosPlayerLine(pitcher?.name))
+        : isGiantsGame ? (pickGiantsPlayerLine(batter?.name) || pickGiantsPlayerLine(pitcher?.name))
+        : isPadresGame ? (pickPadresPlayerLine(batter?.name) || pickPadresPlayerLine(pitcher?.name))
+        : null;
+      // 60% chance to use player line if available; otherwise generic color commentary
+      if (playerLine && Math.random() < 0.60) {
+        text = playerLine;
+      } else {
+        text = getCommentary(batter, pitcher, gameState, stadiumInfo);
+      }
     }
-    // No play result yet (between pitches) — use team-specific or generic flavor
-    if (!text) text = isCubsGame && Math.random() < 0.65
-      ? pickHarryLine()
-      : isPadresGame && Math.random() < 0.65
-        ? ((Math.random() < 0.5 ? pickPadresPlayerLine(batter?.name) : pickPadresPlayerLine(pitcher?.name)) || pickPadresLine())
-        : isDodgersGame && Math.random() < 0.70
-          ? pickVinLine()
-          : isMetsGame && Math.random() < 0.65
-            ? pickMetsLine(gameState, gameState?.pitchResult?.pitchType)
-            : isYankeesGame && Math.random() < 0.65
-              ? ((Math.random() < 0.5 ? pickYankeesPlayerLine(batter?.name) : pickYankeesPlayerLine(pitcher?.name)) || pickYankeesLine())
-              : isRedSoxGame && Math.random() < 0.65
-                ? ((Math.random() < 0.5 ? pickRedSoxPlayerLine(batter?.name) : pickRedSoxPlayerLine(pitcher?.name)) || pickRedSoxLine())
-                : isTigersGame && Math.random() < 0.65
-                  ? ((Math.random() < 0.5 ? pickTigersPlayerLine(batter?.name) : pickTigersPlayerLine(pitcher?.name)) || pickTigersLine())
-                  : isRedsGame && Math.random() < 0.70
-                    ? ((Math.random() < 0.5 ? pickRedsPlayerLine(batter?.name) : pickRedsPlayerLine(pitcher?.name)) || pickRedsLine())
-                    : isRoyalsGame && Math.random() < 0.70
-                      ? ((Math.random() < 0.5 ? pickRoyalsPlayerLine(batter?.name) : pickRoyalsPlayerLine(pitcher?.name)) || pickRoyalsLine(gameState?.weather?.isDay !== false))
-                      : isPhilliesGame && Math.random() < 0.65
-                      ? ((Math.random() < 0.5 ? pickPhilliesPlayerLine(batter?.name) : pickPhilliesPlayerLine(pitcher?.name)) || pickPhilliesLine())
-                      : isBlueJaysGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickBlueJaysPlayerLine(batter?.name) : pickBlueJaysPlayerLine(pitcher?.name)) || pickBlueJaysLine())
-                      : isIndiansGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickIndiansPlayerLine(batter?.name) : pickIndiansPlayerLine(pitcher?.name)) || pickIndiansLine())
-                      : isBrewersGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickBrewersPlayerLine(batter?.name) : pickBrewersPlayerLine(pitcher?.name)) || pickBrewersLine())
-                      : isTwinsGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickTwinsPlayerLine(batter?.name) : pickTwinsPlayerLine(pitcher?.name)) || pickTwinsLine())
-                      : isAthleticsGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickAthleticsPlayerLine(batter?.name) : pickAthleticsPlayerLine(pitcher?.name)) || pickAthleticsLine())
-                      : isAngelsGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickAngelsPlayerLine(batter?.name) : pickAngelsPlayerLine(pitcher?.name)) || pickAngelsLine())
-                      : isWhiteSoxGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickWhiteSoxPlayerLine(batter?.name) : pickWhiteSoxPlayerLine(pitcher?.name)) || pickWhiteSoxLine())
-                      : isMarinersGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickMarinersPlayerLine(batter?.name) : pickMarinersPlayerLine(pitcher?.name)) || pickMarinersLine())
-                      : isRangersGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickRangersPlayerLine(batter?.name) : pickRangersPlayerLine(pitcher?.name)) || pickRangersLine())
-                      : isExposGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickExposPlayerLine(batter?.name) : pickExposPlayerLine(pitcher?.name)) || pickExposLine())
-                      : isCardinalsGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickCardinalsPlayerLine(batter?.name) : pickCardinalsPlayerLine(pitcher?.name)) || pickCardinalsLine())
-                      : isPiratesGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickPiratesPlayerLine(batter?.name) : pickPiratesPlayerLine(pitcher?.name)) || pickPiratesLine())
-                      : isBravesGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickBravesPlayerLine(batter?.name) : pickBravesPlayerLine(pitcher?.name)) || pickBravesLine())
-                      : isAstrosGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickAstrosPlayerLine(batter?.name) : pickAstrosPlayerLine(pitcher?.name)) || pickAstrosLine())
-                      : isGiantsGame && Math.random() < 0.65
-                        ? ((Math.random() < 0.5 ? pickGiantsPlayerLine(batter?.name) : pickGiantsPlayerLine(pitcher?.name)) || pickGiantsLine())
-                        : getCommentary(batter, pitcher, gameState, stadiumInfo);
-                      }
-                      }
+  }
 
   return (
     <div className="bg-card/80 border border-border rounded-xl px-4 py-3 text-center overflow-hidden">
