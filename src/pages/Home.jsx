@@ -44,6 +44,16 @@ import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'l
 import AttractiveAdBanner from '@/components/game/AttractiveAdBanner';
 import BannerPopup from '@/components/game/BannerPopup';
 import { PADRES_BANNERS } from '@/lib/bannerData/padresBanners';
+import { DODGERS_BANNERS } from '@/lib/bannerData/dodgersBanners';
+
+const TEAM_BANNERS = {
+  padres: PADRES_BANNERS,
+  dodgers: DODGERS_BANNERS,
+};
+
+function getBannersForTeam(teamKey) {
+  return TEAM_BANNERS[teamKey] || null;
+}
 
 import WinCelebration from '@/components/game/WinCelebration';
 import { getVictoryCall } from '@/lib/victoryCalls';
@@ -358,13 +368,9 @@ export default function Home() {
       
       // If we just finished a top inning and moving to bottom, show banner after top
       // If we just finished a bottom inning and moving to top+1, show banner after bottom
-      if (!wasTopInning && completedInning <= 8) {
-        // Just finished a bottom inning — eligible for banner
-        const randomBanner = PADRES_BANNERS[Math.floor(Math.random() * PADRES_BANNERS.length)];
-        setActiveBanner(randomBanner);
-      } else if (wasTopInning && completedInning <= 8) {
-        // Just finished a top inning — eligible for banner
-        const randomBanner = PADRES_BANNERS[Math.floor(Math.random() * PADRES_BANNERS.length)];
+      const teamBanners = getBannersForTeam(homeTeam);
+      if (teamBanners && completedInning <= 8) {
+        const randomBanner = teamBanners[Math.floor(Math.random() * teamBanners.length)];
         setActiveBanner(randomBanner);
       }
     }
