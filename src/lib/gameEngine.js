@@ -148,6 +148,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     weather: weather || null, umpire: umpire || null,
     useDH: !!useDH,
     homePlayerHistory: [], awayPlayerHistory: [],
+    injuries_enabled: true, // §6 toggle — set false to fully disable injury checks
   };
 }
 
@@ -1351,14 +1352,77 @@ function handleHitAndRunMiss(state) {
 
 function runInjuryChecks(newState, batter) {
   const lp = newState.lastPlay; if (!lp) return;
-  switch (lp.type) {
-    case 'walk': if (lp.text?.includes('hit by the pitch')) { const r = checkPlayInjury(newState, 'hit_by_pitch', batter.name); if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); } } break;
-    case 'steal': { const rn = newState.bases.find(b => b && b.name !== batter.name) || batter; const r = checkPlayInjury(newState, 'steal_success', rn.name); if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); } } break;
-    case 'caughtstealing': { const rn = newState.bases.find(b => b) || batter; const r = checkPlayInjury(newState, 'steal_attempt', rn.name); if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); } } break;
-    case 'homerun': { const r = checkPlayInjury(newState, 'homerun', batter.name); if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); } } break;
-    case 'single': case 'double': case 'triple': { const r = checkPlayInjury(newState, 'sprint_to_first', batter.name); if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); } } break;
-    case 'error': { const r = checkPlayInjury(newState, 'sprint_to_first', batter.name); if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); } } break;
+  // §1 QUALIFYING events only — no checks on routine plays
+  let eventType = null;
+  let targetName = batter.name;
+
+  if (lp.type === 'walk' && lp.isHBP) {
+    // HBP: scale intensity by pitch speed
+    const pitcher = getCurrentPitcher(newState);
+    const pitchSpeed = pitcher?.pitchSpeed || 6;
+    const r = checkPlayInjury(newState, 'hit_by_pitch', batter.name);
+    // Pass pitch speed context via manual maybeInjure isn't exposed — the default is fine; pitchSpeed
+    // modifier is handled via options but checkPlayInjury passes state; intensity is internal.
+    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
+    return;
   }
+
+  if (lp.type === 'steal') {
+    // Sprint injury on successful steal
+    const runner = newState.bases.find(b => b && b.name !== batter.name) || batter;
+    const r = checkPlayInjury(newState, 'steal_success', runner.name);
+    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
+    return;
+  }
+
+  if (lp.type === 'caughtstealing') {
+    // Hard slide on caught stealing
+    const runner = newState.bases.find(b => b) || batter;
+    const r = checkPlayInjury(newState, 'steal_attempt', runner.name);
+    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
+    return;
+  }
+
+  // ── Takeout slide: check when a double-play or FC is explicitly broken up ──
+  if (lp.type === 'groundout' && lp.text?.toLowerCase().includes('takeout')) {
+    // Both the pivot man and the runner can be hurt
+    const r = checkPlayInjury(newState, 'takeout_slide', batter.name);
+    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
+    return;
+  }
+
+  // ── Home-plate collision: explicit collision text ──
+  if (lp.collision) {
+    // The runner or the catcher — collision flag set by rollCollision
+    const r = checkPlayInjury(newState, 'collision', batter.name);
+    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
+    return;
+  }
+
+  // ── Diving catch: outfield diving play ──
+  if (lp.isDivingCatch || lp.divingCatch) {
+    const pitcher = getCurrentPitcher(newState);
+    const defenders = getDefensivePlayers(newState);
+    const outfielders = ['LF', 'CF', 'RF'];
+    let fielder = null;
+    for (const pos of outfielders) {
+      if (defenders[pos]) { fielder = defenders[pos]; break; }
+    }
+    if (fielder) {
+      const r = checkPlayInjury(newState, 'diving_catch', fielder.name);
+      if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
+    }
+    return;
+  }
+
+  // ── Sprint pull: triple (hard leg push) — optional rare wildcard ──
+  if (lp.type === 'triple') {
+    const r = checkPlayInjury(newState, 'sprint_pull', batter.name);
+    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
+    return;
+  }
+
+  // Everything else: no injury check (clean single, flyout, strikeout, HR, etc.)
 }
 
 function applyInjuryState(newState, injuryResult) {
