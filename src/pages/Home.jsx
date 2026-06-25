@@ -48,6 +48,7 @@ import CardAwardModal from '@/components/game/CardAwardModal';
 import { getRandomCardForTeam, addCard, loadFromStorage, saveToStorage, migrateLegacyStorage, getCollectedIds } from '@/lib/baseballCards';
 import FanChirpToast from '@/components/game/FanChirpToast';
 import { checkAndResolveIncident } from '@/lib/incidentIntegration';
+import CelebrationBubble from '@/components/game/CelebrationBubble';
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -1136,6 +1137,9 @@ export default function Home() {
       {gameState && !gameState.gameOver && (
         <FanChirpToast trigger={gameState.log.length} homeTeamKey={homeTeam} />
       )}
+
+      {/* Celebration Bubble — fire-themed popup for pitcher pumped moments */}
+      <CelebrationBubble celebration={celebrationPopup} />
 
       {/* Fireworks */}
       <Fireworks trigger={hrTrigger} type="hr" />
