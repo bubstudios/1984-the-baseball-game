@@ -633,6 +633,12 @@ function resolveSwing(state, swingType, pitch) {
     state.strikes++;
     if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; registerBigStrikeout(state, pitcher, batter); const isLooking = pitch.location && ['outside corner','inside corner','high strike','low strike','down the middle'].includes(pitch.location) && Math.random() < 0.45; const sl = isLooking ? pickLine(STRIKEOUT_CALLED_LINES) : pickLine(STRIKEOUT_SWINGING_LINES); const msg = sl.endsWith('!') ? `${batter.name} ${sl}` : `${batter.name} ${sl} ${pitch.pitchType}!`; state.log.push({ type: 'strikeout', text: msg }); state.lastPlay = { type: 'strikeout', text: msg }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); 
 
+    // ── Composure delta on strikeout ──
+    if (pitcher._composure) {
+      const { newComposure, delta } = applyEventDelta(pitcher._composure, 'strikeout', state.inning);
+      pitcher._composure.composure = newComposure;
+    }
+
     // ── New celebration system ──
     const situationType = getStrikeoutSituationType(state, pitcher, batter);
     const kCelebCheck = pitcherCelebration(state, situationType);

@@ -1,4 +1,5 @@
 import { TEAMS, PLAYER_ERRORS, DEFAULT_PITCHES } from './gameData';
+import { initializePitcherComposure } from './pitcherComposure';
 
 // Re-export functions that are used internally
 export function pinchHit(state, newPlayer) {
@@ -113,7 +114,9 @@ export function changePitcher(state, newPitcher, side) {
   const newState = JSON.parse(JSON.stringify(state));
   // Use explicit side if provided, otherwise fall back to half-inning logic
   const isHome = side ? side === 'home' : newState.halfInning === 'top';
-  const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
+  const archetype = newPitcher.temperament || 'PROFESSIONAL';
+  const composureState = initializePitcherComposure(newPitcher, archetype);
+  const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: composureState };
 
   const oldPitcher = isHome ? newState.homePitcher : newState.awayPitcher;
   if (isHome) {
