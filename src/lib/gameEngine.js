@@ -43,7 +43,7 @@ import { getStrikeoutSituationType, pickStrikeoutCelebration } from './strikeout
 import { rollCollision, rollTakeoutSlide } from './collisions';
 import { maybeGetAnnouncerHRCall } from './announcerHRCalls';
 import { calculateHomeRunDistance } from './homeRunDistance';
-import { initializePitcherComposure, applyEventDelta, recoverComposure, checkMinorIssue, checkMajorAction, getBehaviorZone, BEHAVIOR_ZONES } from './pitcherComposure';
+import { initializePitcherComposure, applyEventDelta, recoverComposure, calculateLeverage, applyLeadChangePenalty, checkMinorIssue, checkMajorAction, getBehaviorZone, BEHAVIOR_ZONES } from './pitcherComposure';
 import { rollComposureEvent } from './composureEvents';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
@@ -158,10 +158,11 @@ function createPitcherState(p) {
   };
 }
 
-// Centralized composure delta — uses an explicit pitcher reference (safe after half-inning flips)
+// Centralized composure delta — uses leverage multiplier based on inning & score situation
 function applyComposure(pitcher, state, eventType) {
   if (pitcher && pitcher._composure) {
-    const { composure: newComposure } = applyEventDelta(pitcher._composure, eventType, state.inning);
+    const leverage = calculateLeverage(state.inning, state);
+    const { newComposure } = applyEventDelta(pitcher._composure, eventType, leverage);
     pitcher._composure.composure = newComposure;
   }
 }
@@ -496,15 +497,15 @@ function endHalfInning(state) {
   if (state.innings[state.inning - 1][half] === null) state.innings[state.inning - 1][half] = 0;
   state.outs = 0; state.balls = 0; state.strikes = 0; state.bases = [null, null, null]; state.hitAndRun = false; state.pendingSteal = null;
   
-  // ── Pitcher composure recovery at half-inning boundary ──
-  const pitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
-  if (pitcher && pitcher._composure) {
-    pitcher._composure.composure = recoverComposure(pitcher._composure.composure, pitcher._composure);
-    // Log recovery if significant
-    if (pitcher._composure.composure > 75) {
-      state.log.push({ type: 'info', text: `🧠 ${pitcher.name}'s composure recovered to ${pitcher._composure.composure}%` });
-    }
-  }
+  // ── Pitcher composure recovery at half-inning boundary (gated by lead state) ──
+   const pitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
+   if (pitcher && pitcher._composure) {
+     recoverComposure(pitcher._composure, state);
+     // Log recovery if significant
+     if (pitcher._composure.composure > 75) {
+       state.log.push({ type: 'info', text: `🧠 ${pitcher.name}'s composure is steady at ${Math.round(pitcher._composure.composure)}%` });
+     }
+   }
   
   // Decay beanball tension at half-inning transitions
   decayTension(state);
@@ -1333,8 +1334,15 @@ function applyInjuryState(newState, injuryResult) {
 }
 
 export function processAtBat(state, pitchType, swingType) {
-  const home = TEAMS[state.homeTeam], away = TEAMS[state.awayTeam];
-  const newState = JSON.parse(JSON.stringify(state));
+   const home = TEAMS[state.homeTeam], away = TEAMS[state.awayTeam];
+   const newState = JSON.parse(JSON.stringify(state));
+
+   // Track lead state BEFORE play for lead-change penalty detection
+   const userSide = newState.homeTeam === newState.userTeam ? 'home' : 'away';
+   const userScore = newState.score[userSide];
+   const oppScore = newState.score[userSide === 'home' ? 'away' : 'home'];
+   const preLead = userScore > oppScore ? 'ahead' : userScore === oppScore ? 'tied' : 'behind';
+   newState._pitcherLeadState = preLead;
 
   // ── Reach Back: specialty pitch — near-automatic strike ──
   const isReachBack = pitchType && (pitchType.name === '__reachback__' || pitchType === '__reachback__');
@@ -1375,9 +1383,28 @@ export function processAtBat(state, pitchType, swingType) {
     if (!newState.gameOver) runInjuryChecks(newState, bjb);
     if (!newState.gameOver && !newState.lastInjury) { const pi = checkPitcherInjury(newState); if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); } }
     applyComposureFromLastPlay(newState, pitcher);
+
+    // ── Check for lead change and apply penalty if pitcher surrendered lead ──
+    const postUserScore = newState.score[userSide];
+    const postOppScore = newState.score[userSide === 'home' ? 'away' : 'home'];
+    const postLead = postUserScore > postOppScore ? 'ahead' : postUserScore === postOppScore ? 'tied' : 'behind';
+    const wasPitchingTeamAhead = preLead === 'ahead';
+    const nowPitchingTeamBehind = postLead === 'behind';
+
+    if (wasPitchingTeamAhead && nowPitchingTeamBehind) {
+      newState._just_lost_lead = true;
+      const pitchingSide = state.halfInning === 'top' ? 'home' : 'away';
+      const pitcherObj = pitchingSide === 'home' ? state.homePitcher : state.awayPitcher;
+      if (pitcherObj && pitcherObj._composure) {
+        applyLeadChangePenalty(pitcherObj._composure);
+      }
+    } else {
+      newState._just_lost_lead = false;
+    }
+
     processComposureEvents(newState, pitcher);
     return newState;
-  }
+    }
 
   if (newState.pendingSteal !== null && newState.pendingSteal !== undefined) { const sr = attemptSteal(newState, newState.pendingSteal); Object.assign(newState, sr); if (newState.gameOver) return newState; if (sr.lastPlay?.type === 'caughtstealing') { applyComposure(getCurrentPitcher(newState), newState, 'caughtstealing'); return newState; } }
   // Clear reach-back flag — it was consumed by the last render
