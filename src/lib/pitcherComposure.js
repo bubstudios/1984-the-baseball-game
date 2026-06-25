@@ -98,6 +98,7 @@ export function applyEventDelta(composure, eventType, composureState, inning) {
     strike: +3,        // Good for pitcher
     ball: -2,          // Meh
     out: +5,           // Great
+    strikeout: +6,     // Big boost
     single: -4,        // Bad
     double: -6,        // Worse
     triple: -8,        // Even worse
@@ -107,6 +108,10 @@ export function applyEventDelta(composure, eventType, composureState, inning) {
     wildpitch: -5,     // Embarrassing
     error: -4,         // Defense failed
     caughtstealing: +4, // Good
+    sacfly: -2,        // Slightly negative — run scored
+    doubleplay: +6,    // Big boost
+    foul: +1,          // Slightly positive — pitcher ahead
+    steal: -3,         // Runner swiped a base — annoying
   };
 
   delta = DELTAS[eventType] || 0;
