@@ -492,7 +492,12 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
 
 function recordOut(state) {
   state.outs++; getCurrentPitcher(state).gameStats.ip += 1/3;
-  if (state.outs >= 3) endHalfInning(state);
+  if (state.outs >= 3) {
+    // Capture pitcher name BEFORE endHalfInning potentially changes the pitcher
+    const pitcherName = getCurrentPitcher(state).name;
+    state._pitcherRetiredSideName = pitcherName;
+    endHalfInning(state);
+  }
 }
 
 function endHalfInning(state) {
@@ -1140,9 +1145,13 @@ function resolveSwing(state, swingType, pitch) {
     }
     // Only celebrate retire-side on actual inning-ending 3rd out (flagged by endHalfInning)
     if (state._inningJustEnded && !state.gameOver) {
-      const pitcher = getCurrentPitcher(state);
-      const rc = rollPitcherRetireSide(pitcher); if (rc) state.log.push({ type: 'info', text: `🔥 ${rc}` });
+      // Use the captured pitcher name from when the 3rd out was recorded (before potential substitution)
+      const pitcherObj = state._pitcherRetiredSideName 
+        ? { name: state._pitcherRetiredSideName } 
+        : getCurrentPitcher(state);
+      const rc = rollPitcherRetireSide(pitcherObj); if (rc) state.log.push({ type: 'info', text: `🔥 ${rc}` });
       state._inningJustEnded = false;
+      delete state._pitcherRetiredSideName;
     }
   }
 }
