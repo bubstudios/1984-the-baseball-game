@@ -70,6 +70,7 @@ import { findOriolesBannerEntry, trackOriolesBannerView } from '@/lib/oriolesBan
 import { findDodgersBannerEntry, trackDodgersBannerView } from '@/lib/dodgersBannerPopups';
 import { findPadresBannerEntry, trackPadresBannerView } from '@/lib/padresBannerPopups';
 import { findRedsBannerEntry, trackRedsBannerView } from '@/lib/redsBannerPopups';
+import { findExposBannerEntry } from '@/lib/exposBannerPopups';
 import { findRoyalsBannerEntry, trackRoyalsBannerView } from '@/lib/royalsBannerPopups';
 import { findInTheAirEntry, trackInTheAirView } from '@/lib/inTheAirPopups';
 import { findJCPenneyEntry, trackJCPenneyView } from '@/lib/jcpenneyPopups';
@@ -288,6 +289,9 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findRedsBannerEntry(ad.text)) {
       setIsRedsBanner(true);
       setRedsBannerEntry(findRedsBannerEntry(ad.text));
+    } else if (findExposBannerEntry(ad.text)) {
+      setIsGenericAd(true);
+      setGenericAdEntry(findExposBannerEntry(ad.text));
     } else if (findRoyalsBannerEntry(ad.text)) {
       setIsRoyalsBanner(true);
       setRoyalsBannerEntry(findRoyalsBannerEntry(ad.text));
