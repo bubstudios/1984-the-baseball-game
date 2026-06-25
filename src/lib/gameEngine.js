@@ -29,6 +29,7 @@ import {
   RUNNER_SECOND_TO_HOME_OUT_LINES,
   TAG_UP_FIRST_TO_SECOND_OUT_LINES, TAG_UP_SECOND_TO_THIRD_OUT_LINES,
   TAG_UP_THIRD_TO_HOME_OUT_LINES,
+  pickHitLine,
 } from './commentaryLines';
 import { checkBatterStretch } from './aggressiveBaserunning';
 import { checkPitcherInjury, checkPlayInjury, getPlayerDurability } from './injuries';
@@ -845,7 +846,7 @@ function resolveSwing(state, swingType, pitch) {
       if (bpTrp?.quirks?.includes('hugeOutfield') || bpTrp?.quirks?.includes('fountains')) {
         tripFlavor = ` — the spacious outfield at ${stadiumName} gives the runner time!`;
       }
-      const tripText = `${batter.name} ${pickLine(TRIPLE_LINES)}${tripFlavor}${rbi ? ` ${rbi} RBI!` : ''}`;
+      const tripText = `${pickHitLine(TRIPLE_LINES, batter.name)}${tripFlavor}${rbi ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'triple', text: tripText });
       state.lastPlay = { type: 'triple', text: tripText };
       const tripleCeleb = rollHitCelebration(batter, true); if (tripleCeleb) state.log.push({ type: 'info', text: `🔥 ${tripleCeleb}` });
@@ -856,12 +857,12 @@ function resolveSwing(state, swingType, pitch) {
       if (bpDbl?.quirks?.includes('hugeOutfield') || bpDbl?.quirks?.includes('fountains')) {
         dblFlavor = ` — the big outfield at ${stadiumName} turns a single into two!`;
       }
-      const dblText = `${batter.name} ${pickLine(DOUBLE_LINES)}${dblFlavor}${rbi ? ` ${rbi} RBI!` : ''}`;
+      const dblText = `${pickHitLine(DOUBLE_LINES, batter.name)}${dblFlavor}${rbi ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'double', text: dblText });
       state.lastPlay = { type: 'double', text: dblText };
     } else {
       const rbi = advanceRunners(state, 1, batter, true, hitDirection);
-      const singleText = `${batter.name} ${pickLine(SINGLE_LINES)}${rbi ? ` ${rbi} RBI!` : ''}`;
+      const singleText = `${pickHitLine(SINGLE_LINES, batter.name)}${rbi ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'single', text: singleText });
       state.lastPlay = { type: 'single', text: singleText };
     }

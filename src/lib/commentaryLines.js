@@ -1714,6 +1714,30 @@ const TAG_UP_THIRD_TO_HOME_OUT_LINES = [
   c("The sacrifice-fly attempt ends with the runner tagged out at home."),
 ];
 
+// ── Merge diverse sub-category lines into main pools for richer play-by-play ──
+SINGLE_LINES.push(...INFIELD_SINGLE_LINES, ...GROUNDER_SINGLE_LINES, ...LINER_SINGLE_LINES,
+  ...BLOOP_SINGLE_LINES, ...HARD_SHALLOW_SINGLE_LINES, ...HELD_AT_FIRST_SINGLE_LINES);
+DOUBLE_LINES.push(...STRETCH_SINGLE_DOUBLE_LINES, ...LINE_DOUBLE_LINES, ...GAP_DOUBLE_SHORT_LINES,
+  ...GAP_DOUBLE_LONG_LINES, ...OVER_HEAD_DOUBLE_LINES, ...WALL_DOUBLE_LINES);
+TRIPLE_LINES.push(...STRETCH_DOUBLE_TRIPLE_LINES, ...GAP_TRIPLE_WALL_LINES,
+  ...OVER_HEAD_TRIPLE_LINES, ...WALL_BOUNCE_TRIPLE_LINES);
+
+/**
+ * Smart hit-line picker: lines that start with a lowercase letter are
+ * name-prefixed templates (e.g., "lines a single to left."), so the batter
+ * name is prepended. Lines starting with uppercase are standalone sentences
+ * (e.g., "A slow roller, and he beats the throw to first.") and render as-is.
+ */
+export function pickHitLine(lines, batterName) {
+  const line = pickLine(lines);
+  if (!line) return batterName;
+  const first = line.charAt(0);
+  if (first === first.toLowerCase() && first !== first.toUpperCase()) {
+    return `${batterName} ${line}`;
+  }
+  return line;
+}
+
 // Export all pools
 export {
   STRIKEOUT_LINES, WALK_LINES, INTENTIONAL_WALK_LINES,
