@@ -1246,14 +1246,14 @@ function processFlyoutTagUps(state, out, defenders, batter) {
     }
   }
 
-  // ── Runner on 2nd tagging up to 3rd (CF/RF only, medium/deep) ──
+  // ── Runner on 2nd tagging up to 3rd (CF/RF only, medium/deep, reduced frequency) ──
   if (state.bases[1] && !state.bases[2]) {
     const r = state.bases[1];
     const isCORF = ['CF', 'RF'].includes(fieldPos);
     if (isCORF && (depth === 'medium' || depth === 'deep')) {
       const sf = r.speed / 10;
-      const attemptChance = depth === 'deep' ? 0.10 + sf * 0.35 : 0.05 + sf * 0.25;
-      if (Math.random() < Math.max(0.02, attemptChance)) {
+      const attemptChance = depth === 'deep' ? 0.04 + sf * 0.20 : 0.02 + sf * 0.10;
+      if (Math.random() < Math.max(0.008, attemptChance)) {
         const caughtChance = 0.05 + (ofArm / 10) * 0.15 - sf * 0.08;
         if (Math.random() < Math.max(0.03, Math.min(caughtChance, 0.25))) {
           r.gameStats.cs = (r.gameStats.cs || 0) + 1;
@@ -1269,22 +1269,23 @@ function processFlyoutTagUps(state, out, defenders, batter) {
     }
   }
 
-  // ── Runner on 1st tagging up to 2nd (very rare, deep only, fast runner + poor arm) ──
+  // ── Runner on 1st tagging up to 2nd (EXTREMELY rare, deep only, fast runner + poor arm) ──
   if (state.bases[0] && !state.bases[1] && depth === 'deep') {
     const r = state.bases[0];
     const sf = r.speed / 10;
-    const attemptChance = Math.max(0, (sf - 0.5) * 0.10 - (ofArm / 10) * 0.05);
-    if (Math.random() < Math.max(0.01, attemptChance)) {
-      const caughtChance = 0.10 + (ofArm / 10) * 0.20 - sf * 0.10;
-      if (Math.random() < Math.max(0.05, Math.min(caughtChance, 0.35))) {
+    // Drastically reduced: only very fast runners (8+) with poor arms, 1% base chance max
+    const attemptChance = Math.max(0, (sf - 0.6) * 0.04 - (ofArm / 10) * 0.03);
+    if (Math.random() < Math.max(0.001, Math.min(attemptChance, 0.01))) {
+      const caughedChance = 0.10 + (ofArm / 10) * 0.20 - sf * 0.10;
+      if (Math.random() < Math.max(0.05, Math.min(caughedChance, 0.35))) {
         r.gameStats.cs = (r.gameStats.cs || 0) + 1;
         state.bases[0] = null; batter.gameStats.ab--;
         const outText = `❌ ${r.name} — ${pickLine(TAG_UP_FIRST_TO_SECOND_OUT_LINES)}`;
         state.log.push({ type: 'info', text: outText }); state.lastPlay = { type: 'info', text: outText };
         state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
         return true;
-        }
-        state.bases[1] = r; state.bases[0] = null;
+      }
+      state.bases[1] = r; state.bases[0] = null;
       state.log.push({ type: 'info', text: `${r.name} tags up and advances to second!` });
     }
   }
