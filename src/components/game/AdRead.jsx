@@ -93,7 +93,7 @@ import ChurchBakeSalePopup from './ChurchBakeSalePopup';
 import OutdoorTimePopup from './OutdoorTimePopup';
 import PortableCassettePopup from './PortableCassettePopup';
 
-export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchievement }) {
+export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchievement, homeTeam = null }) {
   const [visible, setVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [synopsisData, setSynopsisData] = useState(null);
@@ -289,7 +289,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findRedsBannerEntry(ad.text)) {
       setIsRedsBanner(true);
       setRedsBannerEntry(findRedsBannerEntry(ad.text));
-    } else if (findExposBannerEntry(ad.text)) {
+    } else if (homeTeam === 'Montreal' && findExposBannerEntry(ad.text)) {
       setIsGenericAd(true);
       setGenericAdEntry(findExposBannerEntry(ad.text));
     } else if (findRoyalsBannerEntry(ad.text)) {

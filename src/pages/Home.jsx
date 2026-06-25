@@ -1009,18 +1009,19 @@ export default function Home() {
 
                 {/* Ad read — appears between innings / during pitching changes */}
                 {showAd && (
-                  <AdRead
-                    ad={showAd}
-                    onDismiss={() => setShowAd(null)}
-                    autoDismissMs={0}
-                    onAchievement={(ids) => {
-                      if (ids.length > 0) {
-                        setNewAchievements(ids);
-                        setShowAchievementPopup(true);
-                      }
-                    }}
-                  />
-                )}
+                   <AdRead
+                     ad={showAd}
+                     onDismiss={() => setShowAd(null)}
+                     autoDismissMs={0}
+                     onAchievement={(ids) => {
+                       if (ids.length > 0) {
+                         setNewAchievements(ids);
+                         setShowAchievementPopup(true);
+                       }
+                     }}
+                     homeTeam={homeTeam}
+                   />
+                 )}
 
                 {/* 7th Inning Stretch banner */}
                 {showStretch && (
