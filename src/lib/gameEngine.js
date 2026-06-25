@@ -47,6 +47,7 @@ import { initializePitcherComposure, applyEventDelta, recoverComposure, calculat
 import { rollComposureEvent } from './composureEvents';
 import { shouldBunt, resolveBunt } from './buntingDecision';
 import { shouldPinchHit, choose_pinch_hitter, resolvePinchHit } from './pinchHittingDecision';
+import { shouldIntentionalWalk, issue_ibb } from './intentionalWalkDecision';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -1348,6 +1349,93 @@ export function processAtBat(state, pitchType, swingType) {
    const oppScore = newState.score[userSide === 'home' ? 'away' : 'home'];
    const preLead = userScore > oppScore ? 'ahead' : userScore === oppScore ? 'tied' : 'behind';
    newState._pitcherLeadState = preLead;
+   
+   // ── PHASE 2.9: INTENTIONAL WALK DECISION GATE (fresh count only) ──
+   // Only evaluate at the START of a plate appearance (0-0 count)
+   if (newState.balls === 0 && newState.strikes === 0) {
+     const batter = getCurrentBatter(newState);
+     const battingTeam = getBattingTeam(newState);
+     const battingTeamIndex = battingTeam === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
+     const battingLineup = battingTeam === 'home' ? newState.homeLineup : newState.awayLineup;
+     
+     // Get on-deck batter (next in lineup)
+     const onDeckIndex = (battingTeamIndex + 1) % battingLineup.length;
+     const onDeckBatter = battingLineup[onDeckIndex];
+     
+     const ibbGate = shouldIntentionalWalk({
+       current_batter: batter,
+       on_deck_batter: onDeckBatter,
+       runner_on_1st: !!newState.bases[0],
+       runners_on_2nd: !!newState.bases[1],
+       runners_on_3rd: !!newState.bases[2],
+       bases_empty: !newState.bases.some(b => b !== null),
+       outs: newState.outs,
+       inning: newState.inning,
+       score_margin: newState.score[userSide] - newState.score[userSide === 'home' ? 'away' : 'home'],
+       batter_is_hot: newState._batter_hot_streak || false,
+       first_base_open: !newState.bases[0],
+       on_deck_gives_platoon_advantage: false,  // Optional: could add pitch hand logic
+       walk_puts_winning_run_on_base: () => {
+         // Winning run on base if: walk loads runner at scoring position in lead scenario
+         return newState.score[userSide] > newState.score[userSide === 'home' ? 'away' : 'home'] &&
+                newState.bases[2] && newState.bases[0] === null;
+       },
+     });
+     
+     if (ibbGate) {
+       const pitcher = getCurrentPitcher(newState);
+       const ibbResult = issue_ibb({
+         current_batter: batter,
+         runner_on_1st: newState.bases[0],
+         runner_on_2nd: newState.bases[1],
+         runner_on_3rd: newState.bases[2],
+       });
+       
+       // Execute the walk
+       batter.gameStats.bb++;
+       pitcher.gameStats.bb++;
+       pitcher.gameStats.pitches += 4;  // Log 4 pitches for IBB
+       
+       // Advance runners and batter
+       for (let i = 2; i >= 0; i--) {
+         if (newState.bases[i]) {
+           if (i + 1 >= 3) {
+             newState.bases[i].gameStats.runs++;
+             scoreRun(newState);
+             batter.gameStats.rbi += ibbResult.rbi;
+             pitcher.gameStats.r += ibbResult.rbi;
+             pitcher.gameStats.er += ibbResult.rbi;
+             newState.bases[i] = null;
+           } else if (!newState.bases[i + 1]) {
+             newState.bases[i + 1] = newState.bases[i];
+             newState.bases[i] = null;
+           }
+         }
+       }
+       newState.bases[0] = batter;
+       
+       // Log
+       newState.log.push({ type: 'walk', text: ibbResult.text });
+       newState.lastPlay = { type: 'walk', text: ibbResult.text, isIBB: true };
+       
+       // Composure: pitcher not penalized (managerial call)
+       // Batter walked intentionally = neutral
+       // On-deck hitter = small pressure bonus
+       applyComposure(pitcher, newState, 'ibb_issued');  // Neutral
+       
+       newState.balls = 0;
+       newState.strikes = 0;
+       advanceBatter(newState);
+       
+       if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) {
+         newState.gameOver = true;
+         newState.waitingForInput = false;
+         newState.log.push({ type: 'info', text: `🎉 Walk-off IBB! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
+       }
+       
+       return newState;
+     }
+   }
 
   // ── Reach Back: specialty pitch — near-automatic strike ──
   const isReachBack = pitchType && (pitchType.name === '__reachback__' || pitchType === '__reachback__');
