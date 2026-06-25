@@ -32,28 +32,21 @@ export default function AttractiveAdBanner({ entry, onDismiss, onClick }) {
         onClick={handleClick}
         className={`w-full bg-background/80 backdrop-blur border-2 ${accentColor} rounded-2xl px-6 py-5 text-center transition-all hover:bg-background/95 hover:border-amber-600/60 active:scale-95 group cursor-pointer relative`}
       >
-        {/* Label/Category */}
-        {entry.label && (
-          <div className="flex items-center justify-center gap-2 mb-2">
-            {entry.icon && <span className="text-lg animate-bounce">{entry.icon}</span>}
-            <span className="font-heading text-xs uppercase tracking-widest text-amber-600/70 group-hover:text-amber-500 transition-colors">
-              {entry.label}
-            </span>
-          </div>
-        )}
+        {/* Header: Sponsor Message label + icon */}
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className="text-lg animate-bounce">{entry.icon || '📻'}</span>
+          <span className="font-heading text-xs uppercase tracking-widest text-amber-600/70 group-hover:text-amber-500 transition-colors">
+            {entry.label || 'Sponsor Message'}
+          </span>
+        </div>
 
-        {/* Title */}
-        <h3 className="font-heading text-lg font-bold text-foreground mb-2 leading-tight">
-          {entry.title}
-        </h3>
-
-        {/* Description/Subtitle */}
-        {entry.description && (
-          <p className="text-sm text-muted-foreground mb-3">{entry.description}</p>
-        )}
+        {/* Main body: original ad text */}
+        <p className="text-sm font-heading text-foreground/90 leading-snug px-2">
+          {entry.matchText || entry.title}
+        </p>
 
         {/* CTA */}
-        <p className="text-xs text-muted-foreground/60 font-body italic">tap for details</p>
+        <p className="text-[9px] text-muted-foreground/50 font-heading italic mt-2">tap for details</p>
 
         {/* Close Button */}
         <button

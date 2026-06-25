@@ -1604,6 +1604,261 @@ VISIT THE GUGGENHEIM MUSEUM.
 1071 Fifth Avenue, New York City.
 Frank Lloyd Wright's gift to the city.`,
   }},
+  // Fire department open house
+  { keywords: ['fire department', 'fire safety', 'see the trucks', 'meet the firefighters', 'open house this sunday'], data: {
+    icon: '🚒', color: '#cc3300',
+    title: '🚒 Fire Department Open House',
+    body: `FIRE DEPARTMENT OPEN HOUSE — THIS SUNDAY
+
+"The local fire department is hosting an open house this Sunday. Bring the kids to see the trucks, meet the firefighters, and learn about fire safety."
+
+THE FIREHOUSE
+The firehouse is the heart of every neighborhood. The big red doors. The pole. The trucks gleaming in the bay. The boots lined up beneath the coats. The smell of diesel and coffee. This Sunday, those doors are open to you.
+
+THE TRUCKS
+The fire engine. The ladder truck. The ambulance. Kids can sit in the driver's seat. They can honk the horn. They can see the lights flash. The hose. The axes. The jaws of life. The equipment that firefighters carry into burning buildings. It is impressive. It is heavy. It is real.
+
+THE FIREFIGHTERS
+The men and women who run into buildings that everyone else is running out of. They'll shake your hand. They'll put a helmet on your kid's head. They'll let them hold the hose (with help). They'll answer every question. "How fast does the truck go?" "Have you ever been in a fire?" "Is it scary?" Yes. It's scary. They go anyway.
+
+THE SAFETY LESSON
+Stop, drop, and roll. That's the first thing every kid learns. Then: don't play with matches. Then: have a meeting place outside if there's a fire. Then: check your smoke detector batteries. These lessons save lives. The fire department teaches them because they'd rather prevent fires than fight them.
+
+THE DIAL
+9-1-1. Three numbers. Every kid should know them. Every adult should know them. The open house is a chance to reinforce it: if there's an emergency, call 9-1-1. The firefighters will come.
+
+BRING THE KIDS.
+This Sunday.
+The firehouse doors are open.`,
+  }},
+  // Royals Baseball Camp
+  { keywords: ['baseball camp', 'registration is now open', 'royals baseball camp', 'ages 8 through 14', 'baseball camp registration'], data: {
+    icon: '⚾', color: '#004687',
+    title: '⚾ Royals Baseball Camp',
+    body: `ROYALS BASEBALL CAMP — REGISTRATION NOW OPEN
+
+"Royals Baseball Camp registration is now open for ages 8 through 14."
+
+THE CAMP
+Royals Baseball Camp. One week. Every morning. At the stadium or at a local diamond. Kids ages 8-14 learn the game from instructors who know it — minor league coaches, former players, Royals organization staff. The registration fee includes a camp t-shirt, a Royals hat, and a ticket to a game.
+
+THE INSTRUCTION
+Hitting: stance, grip, swing mechanics, timing. The tee work. The soft toss. The batting cage. Every kid gets swings.
+Fielding: ground balls, fly balls, footwork, the proper way to receive and transfer. Infield play. Outfield play.
+Pitching: mechanics, balance, follow-through. NOT velocity — mechanics. Kids shouldn't be throwing curves at 12.
+Baserunning: how to take a lead, how to slide, how to read the pitcher.
+
+THE PHILOSOPHY
+The camp isn't about producing major leaguers. It's about teaching fundamentals, fostering a love of the game, and making sure kids have fun. The instructors know that most of these kids will never play past high school. That's fine. Baseball is a game for life — you can play catch at 50.
+
+THE GUEST
+Sometimes a Royals player stops by. It's not guaranteed, but it happens. A kid gets to meet George Brett or Frank White. They sign an autograph. They say "work hard." The kid remembers it forever.
+
+THE COST
+$75-$125 for the week. Financial assistance is available. No kid is turned away for inability to pay. The Royals organization sponsors this. It's an investment in the community.
+
+REGISTRATION IS NOW OPEN.
+Ages 8-14.
+Play ball.`,
+  }},
+  // United Way
+  { keywords: ['united way', 'contributions make a difference', "haven't given yet", "there's still time", 'united way reminds'], data: {
+    icon: '🤝', color: '#1a5276',
+    title: '🤝 United Way',
+    body: `UNITED WAY — YOUR CONTRIBUTIONS MAKE A DIFFERENCE
+
+"United Way reminds you that your contributions make a difference in our community. If you haven't given yet, there's still time."
+
+THE ORGANIZATION
+United Way. Founded in 1887 in Denver. By 1984, it is the largest private charity in America, raising over $1 billion annually through workplace campaigns. You know the campaign — the envelope in your mailbox at work. The pledge card. The payroll deduction. The option to give a little from each paycheck. It adds up.
+
+THE MODEL
+United Way doesn't run programs directly. It raises money and distributes it to local partner agencies — the YMCA, the Boy Scouts, the Girl Scouts, the Salvation Army, local shelters, food banks, after-school programs, crisis hotlines. One donation helps dozens of organizations. This is the efficiency of the model.
+
+THE WORKPLACE CAMPAIGN
+The United Way campaign at your office. Your manager hands out pledge cards. There's a presentation. Someone from a partner agency speaks about how United Way funding helped a family. Then you decide: give $5 a paycheck? $10? $20? It comes out before taxes. You don't miss it. It helps someone you'll never meet.
+
+THE IMPACT
+Your contribution becomes a hot meal for a senior. A safe place for a kid after school. A bed for a homeless family. Counseling for someone in crisis. Job training for someone trying to get back on their feet. The money stays in your community. It helps your neighbors.
+
+THE TIME
+"If you haven't given yet, there's still time." The campaign runs through the end of the month. The pledge card is on your desk. Fill it out. Return it. It takes two minutes. Those two minutes change lives.
+
+YOUR CONTRIBUTIONS MAKE A DIFFERENCE.
+In our community.
+There's still time.`,
+  }},
+  // Union Station (Kansas City)
+  { keywords: ['union station', 'beaux-arts', 'grand architecture', 'historic union station'], data: {
+    icon: '🏛️', color: '#8B4513',
+    title: '🏛️ Union Station',
+    body: `UNION STATION — KANSAS CITY
+
+"Visit historic Union Station and experience the grand Beaux-Arts architecture."
+
+THE BUILDING
+Union Station. Kansas City, Missouri. Opened in 1914. Beaux-Arts style. The grandest building in Kansas City. When it opened, it was the second-busiest train station in the United States, behind only Grand Central Terminal in New York.
+
+THE ARCHITECTURE
+Beaux-Arts. The style of the École des Beaux-Arts in Paris. Symmetrical. Ornate. Grand. You see it in the soaring ceilings, the arched windows, the carved stone, the chandeliers. The Grand Hall is 95 feet high. The waiting room could hold 10,000 people. This was a building designed to impress. It does.
+
+THE ERA
+In 1914, the train was how America traveled. Kansas City was a rail hub — the intersection of twelve rail lines. Millions of passengers passed through Union Station every year. Soldiers going to war. Families on vacation. Businessmen heading to meetings. The train was the artery of the nation, and Union Station was the heart.
+
+THE DECLINE
+By the 1970s, the automobile and the airplane had killed the passenger train. Union Station was empty. The paint peeled. The chandeliers gathered dust. The grand hall echoed. There was talk of demolition. Kansas City wouldn't allow it. The building was too important. Too beautiful.
+
+THE REVIVAL
+In 1984, Union Station stands as a monument to a bygone era. The building is aging but intact. Plans are being discussed — restoration, a science museum, a new life. The trains still stop here, though far fewer than before. The grandeur remains.
+
+VISIT HISTORIC UNION STATION.
+Experience the grand Beaux-Arts architecture.
+30 West Pershing Road, Kansas City.`,
+  }},
+  // Record stores
+  { keywords: ['record stores', 'record store', 'special promotions', 'vinyl', 'lp records'], data: {
+    icon: '🎵', color: '#9b59b6',
+    title: '🎵 Record Stores',
+    body: `RECORD STORES — SPECIAL PROMOTIONS THIS WEEK
+
+"Record stores are featuring special promotions this week."
+
+THE RECORD STORE
+In 1984, the record store is a cultural institution. It's where you go to buy music. It's where you go to DISCOVER music. The fluorescent lights. The bins of vinyl. The posters on the wall. The headphones at the listening station. The clerk who knows every album ever made. The record store is a place of worship for music fans.
+
+THE FORMAT
+The LP. 12 inches. 33 ⅓ RPM. Cardboard sleeve. Gatefold cover. Liner notes. Lyrics printed on the inner sleeve. The LP is an object. You hold it. You look at the cover art. You read the credits. You place it on the turntable. You lower the needle. The crackle. The music. This is an experience that cannot be replicated.
+
+THE PROMOTIONS
+This week: select LPs at reduced prices. Buy 2, get 1 free. Import pressings on sale. Cassette tapes discounted. The cutout bin — records with a notch cut in the corner, marked down to $3.99. The cutout bin is where you find the hidden gems. The albums you've never heard of. The albums that change your life.
+
+THE DISCOVERY
+The record store is about discovery. You came in for the new Springsteen. You leave with Springsteen AND a Talking Heads album you've never heard AND a jazz record the clerk recommended AND something from the cutout bin that looked interesting. The record store is an adventure.
+
+THE CLERK
+The record store clerk. A music encyclopedia in a denim jacket. Ask them anything. "What's the best Bowie album?" "Who sounds like The Police?" "What did this band do before this record?" They know. They have opinions. They will tell you. You should listen.
+
+THE FUTURE
+The compact disc is here. CD players are in the store. The sound is cleaner. But the LP persists. The format has weight, warmth, character. The record store will survive — for now.
+
+VISIT YOUR LOCAL RECORD STORE.
+Special promotions this week.
+Support the music.`,
+  }},
+  // Sony electronics
+  { keywords: ['sony electronics', 'sony', 'lead the way in innovation', 'electronics continue to lead'], data: {
+    icon: '📻', color: '#1a1a2e',
+    title: '📻 Sony Electronics',
+    body: `SONY — LEADING THE WAY IN INNOVATION
+
+"Sony electronics continue to lead the way in innovation."
+
+THE COMPANY
+Sony. Founded in 1946 in Tokyo by Masaru Ibuka and Akio Morita. Originally called Tokyo Telecommunications Engineering Corporation. The name "Sony" comes from "sonus" (Latin for sound) and "sonny" (American slang for a bright young man). By 1984, Sony is the most respected electronics brand in the world.
+
+THE WALKMAN
+The Sony Walkman. Introduced in 1979. It changed everything. For the first time, you could take your music with you — anywhere. The original Walkman was blue and silver. It weighed 14 ounces. It cost $150. It came with headphones that were light and comfortable — a radical departure from the heavy studio headphones of the era. By 1984, the Walkman is everywhere. Joggers, commuters, students — everyone has one.
+
+THE TRINITRON
+The Sony Trinitron television. Introduced in 1968. The picture quality is unmatched. The colors are vivid. The screen is flat. In 1984, a Trinitron is the television to own. It costs more than the competition. It's worth it. The picture is better. Everyone knows it.
+
+THE BETAMAX
+The Betamax VCR. Introduced in 1975. The first home video recorder. Sony pioneered the format. The picture quality is superior to VHS. But VHS won the format war — longer recording time, cheaper machines, more manufacturers. Betamax is losing. But Sony's engineering is unquestioned. They built the better machine. The market chose otherwise.
+
+THE DISCMAN
+In 1984, Sony releases the D-50 — the first portable CD player. It's called the Discman. It's the size of a CD case. It runs on batteries. It's expensive. It's the future. The CD will replace the cassette. The Discman will replace the Walkman. This won't happen overnight, but it will happen.
+
+THE PHILOSOPHY
+Sony's philosophy: "We will create products that didn't exist before." Ibuka and Morita built a company on innovation, not imitation. They didn't copy. They invented. The transistor radio. The Walkman. The Trinitron. The Betamax. The Discman. Each one changed how people lived with technology.
+
+SONY ELECTRONICS.
+Leading the way in innovation.
+Since 1946.`,
+  }},
+  // Kansas City Zoo
+  { keywords: ['kansas city zoo', 'zoo and see animals', 'animals from around the world', 'visit the zoo'], data: {
+    icon: '🦁', color: '#27ae60',
+    title: '🦁 Kansas City Zoo',
+    body: `THE KANSAS CITY ZOO — ANIMALS FROM AROUND THE WORLD
+
+"Visit the Kansas City Zoo and see animals from around the world."
+
+THE ZOO
+The Kansas City Zoo. Swope Park. Established in 1909. By 1984, it spans 202 acres and houses over 1,000 animals. It is a place where the wild meets the heartland. Where the plains of Africa and the rainforests of South America are a short drive from your living room.
+
+THE ANIMALS
+The lions. The tigers. The elephants. The giraffes. The zebras. The monkeys. The polar bears. The penguins. The reptiles. The birds. Each animal is a ambassador from a different part of the world. Each one has a story. Each one teaches you something about the planet we share.
+
+THE EXPERIENCE
+A day at the zoo. You arrive in the morning. You get a map. You plan your route. You see the big cats first — they're most active in the morning. Then the primates — always entertaining. Then the elephants — always impressive. Then the aquarium — always cool and dark. You eat lunch at the concession stand. You buy a souvenir in the gift shop. You go home tired and happy.
+
+THE MISSION
+The zoo exists for three reasons: education, conservation, and recreation. Education: kids learn about animals they've only seen in books. Conservation: the zoo participates in species survival programs, breeding endangered animals to preserve genetic diversity. Recreation: it's fun. It's a day outside. It's time with family.
+
+THE SOUNDS
+The roar of a lion. The chatter of monkeys. The trumpeting of elephants. The squawk of tropical birds. The zoo is a symphony of the natural world, played in the middle of Kansas City.
+
+THE MEMORY
+Every adult remembers their first trip to the zoo. The smell of the animals. The heat of the reptile house. The cold of the penguin exhibit. The amazement of seeing a giraffe up close — taller than you imagined. These memories last a lifetime. You'll bring your kids. They'll bring theirs.
+
+VISIT THE KANSAS CITY ZOO.
+See animals from around the world.
+Swope Park.`,
+  }},
+  // "Life moves quickly" — Kodak / photography theme
+  { keywords: ['life moves quickly', 'life moves fast', 'capture the moment', 'kodak moment'], data: {
+    icon: '📸', color: '#e74c3c',
+    title: '📸 Life Moves Quickly',
+    body: `LIFE MOVES QUICKLY
+
+"Life moves quickly."
+
+THE MOMENT
+Life moves quickly. The pitch. The swing. The catch. The cheer. The moment is here and then it's gone. In 1984, the only way to hold onto it is a photograph.
+
+THE CAMERA
+The Kodak camera. In 1984, it's everywhere. The Instamatic. The Disc camera. The 35mm point-and-shoot. Film in a yellow box. Flash cubes. Flash bars. The camera is how you stop time. You point. You click. The moment is frozen. Forever.
+
+THE PHOTOGRAPH
+The photograph is a physical object. You hold it. You pass it around. You put it in an album. You put it on the refrigerator. Years from now, you'll find it in a box and remember. The photograph outlasts the moment. The photograph outlasts the season. The photograph outlasts the decade.
+
+THE KODAK MOMENT
+Kodak's slogan: "The Kodak Moment." It's not just a marketing phrase — it's a cultural concept. A Kodak Moment is a moment worth preserving. A birthday. A vacation. A ballgame. A child's first steps. The sunset over the ballpark. The smile of someone you love.
+
+THE FILM
+In 1984, film is finite. You get 24 exposures. Or 36. Each one matters. You can't see the photo immediately. You take the roll to the drugstore. You wait three days. You pick up the envelope. You open it. Some are blurry. Some are perfect. The anticipation is part of the experience.
+
+LIFE MOVES QUICKLY.
+Capture the moment.
+Before it's gone.`,
+  }},
+  // Electronics sale (generic)
+  { keywords: ['save on electronics', 'electronics this weekend', 'electronics sale', 'save on electronics this weekend'], data: {
+    icon: '🔌', color: '#2c3e50',
+    title: '🔌 Save on Electronics',
+    body: `SAVE ON ELECTRONICS — THIS WEEKEND
+
+"Save on electronics this weekend."
+
+THE SALE
+This weekend only. The electronics store. The one with the big windows and the fluorescent lights. The one that smells like new plastic and solder. Everything is on sale. The televisions. The stereos. The radios. The calculators. The clock radios. The walkie-talkies. If it runs on electricity, it's marked down.
+
+THE STORE
+In 1984, the electronics store is a wonderland. Rows of televisions, all tuned to the same channel. The stereo section — turntables, receivers, speakers as tall as you. The radio wall — AM, FM, shortwave. The personal electronics counter — calculators, digital watches, handheld games. The back wall — VCRs and Betamax decks, still expensive but getting cheaper.
+
+THE DEALS
+A 19-inch color television: $299 (was $399). A AM/FM cassette boombox: $89 (was $129). A personal calculator with solar panel: $12 (was $19). A clock radio with dual alarm: $24 (was $34). The prices are 1984 prices. The technology is 1984 technology. The excitement is real.
+
+THE FUTURE
+In the electronics store of 1984, you can see the future. The CD player. The personal computer. The cellular phone. The VCR. Each one is a revolution. Each one will change how you live. And they're all on sale. This weekend only.
+
+THE ADVICE
+Measure your space before you buy a TV. Bring a cassette tape to test the boombox. Don't buy the extended warranty (it's not worth it). Do buy the surge protector (it is). And if you're thinking about a computer — wait. The prices are dropping fast. By next year, you'll get twice the computer for half the price.
+
+SAVE ON ELECTRONICS.
+This weekend only.
+The future is on sale.`,
+  }},
   // Take a Kid to the Ballgame (alternate phrasing)
   { keywords: ['take a kid', 'take a kid to the ballgame', "take a youngster", 'take a child'], data: MISC_ADS['youngster'] },
   // Computer in every home (alternate phrasing)
