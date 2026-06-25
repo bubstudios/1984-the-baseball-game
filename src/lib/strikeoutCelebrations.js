@@ -129,8 +129,8 @@ export function getStrikeoutSituationType(state, pitcher, batter) {
   // K immediately after HR (would need tracking)
   // if (state._justAllowedHR) return 'after_home_run';
 
-  // K with runners stranded, inning-ending
-  if (runnersStranded && state.outs === 2) return 'ended_inning_runners';
+  // K with runners stranded, inning-ending (only after 3rd out recorded)
+  if (runnersStranded && state.outs >= 3) return 'ended_inning_runners';
 
   // High-leverage fall-back
   if (isLate || basesFull || closeLead) return 'high_leverage';

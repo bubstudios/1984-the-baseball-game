@@ -90,11 +90,11 @@ export function rollPitcherKCelebration(pitcher, isStranding = false) {
   return line.replace(/{pitcher}/g, pitcher.name?.split(' ').pop() || pitcher.name);
 }
 
-// Pitcher retire side: ~40% chance
+// Pitcher retire side: ~40% chance (ONLY call this after inning ends, not mid-inning)
 export function rollPitcherRetireSide(pitcher) {
-  if (Math.random() > 0.40) return null;
-  const line = PITCHER_RETIRE_SIDE[Math.floor(Math.random() * PITCHER_RETIRE_SIDE.length)];
-  return line.replace(/{pitcher}/g, pitcher.name?.split(' ').pop() || pitcher.name);
+   if (Math.random() > 0.40) return null;
+   const line = PITCHER_RETIRE_SIDE[Math.floor(Math.random() * PITCHER_RETIRE_SIDE.length)];
+   return line.replace(/{pitcher}/g, pitcher.name?.split(' ').pop() || pitcher.name);
 }
 
 // HR bat flip: ~35% chance (separate from regular bat flip tracking)
