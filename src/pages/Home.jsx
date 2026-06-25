@@ -25,6 +25,7 @@ import IncidentLog from '@/components/game/IncidentLog';
 import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
 import BeanballBanner from '@/components/game/BeanballBanner';
 import GameSummary from '@/components/game/GameSummary';
+import HomeRunDistancePopup from '@/components/game/HomeRunDistancePopup';
 
 import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
@@ -93,7 +94,8 @@ export default function Home() {
   const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
   const [celebrationPopupBubble, setCelebrationPopupBubble] = useState(null);
-  const prevCelebrationBubble = useRef(null);
+   const [homeRunPopup, setHomeRunPopup] = useState(null);
+   const prevCelebrationBubble = useRef(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -297,12 +299,16 @@ export default function Home() {
             } catch (e) { console.error('trackHomeRunDistance failed:', e); }
           }
         }
-        // Surface celebration lines as popups on the game tab
-        if (entry.type === 'homerun' || (entry.type === 'info' && entry.text && (entry.text.startsWith('🌟') || entry.text.startsWith('🔥') || entry.text.startsWith('🎉') || entry.text.startsWith('✨')))) {
-          const displayText = entry.type === 'homerun' ? entry.text : entry.text;
-          setCelebrationPopup(displayText);
-          setTimeout(() => setCelebrationPopup(null), 4000);
-        }
+        // Show HR distance popup on home runs
+         if (entry.type === 'homerun' && entry.hrDistance && entry.batterName) {
+           setHomeRunPopup({ distance: entry.hrDistance, batterName: entry.batterName });
+         }
+         // Surface celebration lines as popups on the game tab
+         if (entry.type === 'homerun' || (entry.type === 'info' && entry.text && (entry.text.startsWith('🌟') || entry.text.startsWith('🔥') || entry.text.startsWith('🎉') || entry.text.startsWith('✨')))) {
+           const displayText = entry.type === 'homerun' ? entry.text : entry.text;
+           setCelebrationPopup(displayText);
+           setTimeout(() => setCelebrationPopup(null), 4000);
+         }
         // Trigger catcher popup on caught stealing
         if (entry.type === 'caughtstealing' && entry.text) {
           const runnerMatch = entry.text.match(/❌\s+(.+?)\s+—/);
@@ -1178,6 +1184,15 @@ export default function Home() {
       {/* Fireworks */}
       <Fireworks trigger={hrTrigger} type="hr" />
       <Fireworks trigger={winTrigger} type="win" />
+
+      {/* Home Run Distance Popup */}
+      {homeRunPopup && (
+        <HomeRunDistancePopup
+          distance={homeRunPopup.distance}
+          batterName={homeRunPopup.batterName}
+          onClose={() => setHomeRunPopup(null)}
+        />
+      )}
 
       {/* Beanball Banner — HBP, warnings, bat flips, collisions, brawls */}
       {beanballEvent && (
