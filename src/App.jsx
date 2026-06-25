@@ -56,6 +56,14 @@ const AuthenticatedApp = () => {
 
 
 function App() {
+  // Disable pull-to-refresh on Android only
+  useEffect(() => {
+    const isAndroid = /android/i.test(navigator.userAgent);
+    if (isAndroid) {
+      document.documentElement.classList.add('disable-overscroll');
+      document.body.classList.add('disable-overscroll');
+    }
+  }, []);
 
   return (
     <AuthProvider>
