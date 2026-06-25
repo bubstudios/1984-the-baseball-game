@@ -162,12 +162,14 @@ function resolveSacBunt(batter, game) {
     };
   } else if (roll < cleanSacChance + 0.15) {
     // ── BUNT SINGLE (rare, good defense slow) ──
+    // A BUNT SINGLE IS A HIT — bunt attempt failed, batter got on = pitcher allowed a hit.
+    // Composure penalty like any other hit.
     return {
       type: 'bunt_single',
       text: `${batter.name} sneaks a bunt single through the infield! Runners advance.`,
       batterOut: false,
       success: true,
-      composureDelta: 5,  // Small bonus
+      composureDelta: -8,  // Pitcher allowed a hit — negative
     };
   } else if (roll < cleanSacChance + 0.30) {
     // ── POP-UP / LINEOUT ──
@@ -210,12 +212,14 @@ function resolveBuntForHit(batter, game) {
     };
   } else {
     // ── BUNT SINGLE ──
+    // A bunt-for-hit single is still a hit allowed by the pitcher.
+    // Pitcher composure goes down like any other hit.
     return {
       type: 'bunt_for_hit_single',
       text: `${batter.name} beats out a bunt single on the infield!`,
       batterOut: false,
       success: true,
-      composureDelta: 8,  // Good bonus for getting on base
+      composureDelta: -9,  // Pitcher allowed a hit — negative
     };
   }
 }
