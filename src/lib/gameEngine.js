@@ -1450,20 +1450,22 @@ export function processAtBat(state, pitchType, swingType) {
        pitcher.gameStats.bb++;
        pitcher.gameStats.pitches += 4;  // Log 4 pitches for IBB
        
-       // Advance runners and batter
-       for (let i = 2; i >= 0; i--) {
-         if (newState.bases[i]) {
-           if (i + 1 >= 3) {
-             newState.bases[i].gameStats.runs++;
-             scoreRun(newState);
-             batter.gameStats.rbi += ibbResult.rbi;
-             pitcher.gameStats.r += ibbResult.rbi;
-             pitcher.gameStats.er += ibbResult.rbi;
-             newState.bases[i] = null;
-           } else if (!newState.bases[i + 1]) {
-             newState.bases[i + 1] = newState.bases[i];
-             newState.bases[i] = null;
-           }
+       // IBB: runners only advance if forced (when 1st base is occupied)
+       const isForce = !!newState.bases[0];
+       if (isForce) {
+         // Forced advance: move all runners up one base
+         if (newState.bases[2]) {
+           newState.bases[2].gameStats.runs++;
+           scoreRun(newState);
+           batter.gameStats.rbi++;
+           pitcher.gameStats.r++;
+           pitcher.gameStats.er++;
+         }
+         if (newState.bases[1]) {
+           newState.bases[2] = newState.bases[1];
+         }
+         if (newState.bases[0]) {
+           newState.bases[1] = newState.bases[0];
          }
        }
        newState.bases[0] = batter;
