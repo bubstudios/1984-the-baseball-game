@@ -46,6 +46,7 @@ import { calculateHomeRunDistance } from './homeRunDistance';
 import { initializePitcherComposure, applyEventDelta, recoverComposure, calculateLeverage, applyLeadChangePenalty, checkMinorIssue, checkMajorAction, getBehaviorZone, BEHAVIOR_ZONES } from './pitcherComposure';
 import { rollComposureEvent } from './composureEvents';
 import { shouldBunt, resolveBunt } from './buntingDecision';
+import { shouldPinchHit, choose_pinch_hitter, resolvePinchHit } from './pinchHittingDecision';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -1423,6 +1424,82 @@ export function processAtBat(state, pitchType, swingType) {
   if (newState.pitchResult.isWildPitch) { if (newState.balls >= 4) { const wb = getCurrentBatter(newState); wb.gameStats.bb++; getCurrentPitcher(newState).gameStats.bb++; newState.log.push({ type: 'walk', text: `${wb.name} walks on a wild pitch!` }); handleWalk(newState, wb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); } applyComposure(pitcher, newState, 'wildpitch'); return newState; }
   if (newState.pitchResult.isHBP) { const hb = getCurrentBatter(newState); const hbp = getCurrentPitcher(newState); hb.gameStats.bb++; hbp.gameStats.bb++; const hbpReason = newState.pitchResult.hbpReason || null; const wasWarned = newState._beanball?.warningIssued; registerHBP(newState, hbp, hb, hbpReason); const hbpText = `${hb.name} is hit by the pitch!`; newState.log.push({ type: 'walk', text: hbpText }); newState.lastPlay = { type: 'walk', text: `${hb.name} is hit by the pitch! — takes first`, isHBP: true, hbpReason }; handleWalk(newState, hb); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); const warned = checkForWarning(newState); if (warned) newState._beanballWarning = true; if (wasWarned) { const pitchingSide = newState.halfInning === 'top' ? 'home' : 'away'; const ejectKey = pitchingSide === 'home' ? '_homePitcherEjected' : '_awayPitcherEjected'; const mgrEjectKey = pitchingSide === 'home' ? '_homeManagerEjected' : '_awayManagerEjected'; newState[ejectKey] = true; newState[mgrEjectKey] = true; newState._beanball.autoEjectionPitcher = hbp.name; newState._beanball.autoEjectionSide = pitchingSide; newState._pendingEjectionReplacement = true; const tAbbr = TEAMS[newState[pitchingSide === 'home' ? 'homeTeam' : 'awayTeam']]?.abbr || ''; newState.log.push({ type: 'ejection', text: `🟥 ${hbp.name} EJECTED — hit batter after warnings! ${tAbbr} manager also ejected!` }); } if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off HBP! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); } applyComposure(pitcher, newState, 'hbp'); return newState; }
   const bjb = getCurrentBatter(newState);
+
+  // ── PHASE 2.8: PINCH-HIT DECISION GATE (pitcher due at bat) ──
+  const isPitcherBatting = bjb.is_pitcher || bjb.pos === 'SP' || bjb.pos === 'RP' || bjb.pos === 'CL' || (bjb.assignedPos && ['SP', 'RP', 'CL'].includes(bjb.assignedPos));
+  if (isPitcherBatting) {
+    const battingTeamSide = getBattingTeam(newState) === 'home' ? 'home' : 'away';
+    const benchTeam = battingTeamSide === 'home' ? newState.homeTeam : newState.awayTeam;
+    const benchList = TEAMS[benchTeam]?.bench || [];
+    const bullpen = battingTeamSide === 'home' ? newState.homeBullpen : newState.awayBullpen;
+
+    const phGate = shouldPinchHit({
+      runners_in_scoring_position: !!newState.bases[2] && (!!newState.bases[0] || !!newState.bases[1]),
+      runners_on: !!newState.bases[0] || !!newState.bases[1] || !!newState.bases[2],
+      outs: newState.outs,
+      inning: newState.inning,
+      score_margin: newState.score[getBattingTeam(newState)] === newState.score[getBattingTeam(newState) === 'home' ? 'away' : 'home'] ? 0 : newState.score[getBattingTeam(newState)] - newState.score[getBattingTeam(newState) === 'home' ? 'away' : 'home'],
+      available_bench: benchList,
+      current_pitcher_ip: bjb.gameStats.ip || 0,
+      bullpen: bullpen,
+      used_this_inning: [],  // Placeholder — track which relievers pitched this inning
+    });
+
+    if (phGate) {
+      const phitter = choose_pinch_hitter({
+        available_bench: benchList,
+        runners_in_scoring_position: !!newState.bases[2] && (!!newState.bases[0] || !!newState.bases[1]),
+        need_baserunner: newState.score[getBattingTeam(newState)] < newState.score[getBattingTeam(newState) === 'home' ? 'away' : 'home'],
+      });
+
+      if (phitter) {
+        // Pin-hitter substitution via the existing pinchHit function
+        const afterPH = pinchHit(newState, phitter);
+
+        // Merge substitution state
+        if (battingTeamSide === 'home') {
+          newState.homeLineup = afterPH.homeLineup;
+          newState.homeBatterIndex = afterPH.homeBatterIndex;
+          if (!newState.homePlayerHistory) newState.homePlayerHistory = [];
+          afterPH.homePlayerHistory?.forEach(p => { if (!newState.homePlayerHistory.find(h => h.name === p.name)) newState.homePlayerHistory.push(p); });
+          if (!newState.homeBenchUsed) newState.homeBenchUsed = [];
+          afterPH.homeBenchUsed?.forEach(p => { if (!newState.homeBenchUsed.find(h => h.name === p.name)) newState.homeBenchUsed.push(p); });
+        } else {
+          newState.awayLineup = afterPH.awayLineup;
+          newState.awayBatterIndex = afterPH.awayBatterIndex;
+          if (!newState.awayPlayerHistory) newState.awayPlayerHistory = [];
+          afterPH.awayPlayerHistory?.forEach(p => { if (!newState.awayPlayerHistory.find(h => h.name === p.name)) newState.awayPlayerHistory.push(p); });
+          if (!newState.awayBenchUsed) newState.awayBenchUsed = [];
+          afterPH.awayBenchUsed?.forEach(p => { if (!newState.awayBenchUsed.find(h => h.name === p.name)) newState.awayBenchUsed.push(p); });
+        }
+
+        newState.log = afterPH.log;
+
+        // Mark pitcher as out of the game — bullpen must replace him next half-inning
+        newState._pitcher_due_for_replacement = true;
+        newState.log.push({ type: 'info', text: `🔄 ${phitter.name} pinch-hits for ${bjb.name}` });
+
+        // Continue normal swing now with the pinch hitter
+        const newBatter = getCurrentBatter(newState);
+        const newPitcher = getCurrentPitcher(newState);
+
+        resolveSwing(newState, swingType, newState.pitchResult);
+
+        if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) {
+          newState.gameOver = true; newState.waitingForInput = false;
+          newState.log.push({ type: 'info', text: `🎉 Walk-off! ${TEAMS[newState.homeTeam].name} win ${newState.score.home}-${newState.score.away}!` });
+        }
+        if (!newState.gameOver) runInjuryChecks(newState, newBatter);
+        if (!newState.gameOver && !newState.lastInjury) {
+          const pi = checkPitcherInjury(newState);
+          if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); }
+        }
+        applyComposureFromLastPlay(newState, newPitcher);
+        processComposureEvents(newState, newPitcher);
+        return newState;
+      }
+    }
+  }
 
   // ── PHASE 2.7: PRE-SWING BUNTING DECISION GATE ──
   const buntDecision = shouldBunt(bjb, {
