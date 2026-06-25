@@ -1,6 +1,7 @@
 // Home run distance calculation based on realistic factors
 import { BALLPARKS } from './ballparks';
 import { applyWeatherEffects } from './weather';
+import { TEAMS } from './gameData';
 
 export function calculateHomeRunDistance(batter, pitcher, state, isGrandSlam = false) {
   const stadiumName = TEAMS[state.homeTeam]?.stadium;
@@ -92,5 +93,3 @@ export function getHomeRunAchievement(distance) {
 export function isNewRecord(distance, previousRecord) {
   return distance > (previousRecord || 0);
 }
-
-import { TEAMS } from './gameData';
