@@ -1775,6 +1775,39 @@ SONY ELECTRONICS.
 Leading the way in innovation.
 Since 1946.`,
   }},
+  // SEAWORLD — unique San Diego marine park
+  { keywords: ['seaworld', 'marine life', 'killer whale', 'shamu', 'killer whales'], data: {
+    icon: '🐳', color: '#0070c9',
+    title: '🐳 SeaWorld San Diego — Marine Life Park',
+    body: `SEAWORLD SAN DIEGO — WHERE MARINE LIFE COMES TO LIFE
+
+  Home to killer whales, dolphins, sea lions, and ocean adventures.
+
+  THE PARK
+  SeaWorld San Diego. Mission Bay. Opened in 1964. By 1984, it is one of the most popular theme parks on the West Coast — a place where you encounter marine life up close.
+
+  SHAMU — THE KILLER WHALE
+  Shamu. The iconic orca. When Shamu breaches — all 7,000 pounds clearing the water — the crowd roars. The splash soaks the first ten rows. This is the experience people come for.
+
+  THE SHOWS
+  The Shamu Show plays multiple times daily. Shamu leaps through hoops. Shamu jumps over trainers. Shamu splashes the crowd intentionally. Other shows feature dolphins, sea lions, walruses. Each showcases the intelligence and athleticism of marine mammals.
+
+  THE EDUCATIONAL MISSION
+  SeaWorld positions itself as educational. Visitors learn about marine ecology, conservation, and animal behavior. Trainers explain what you just saw. The animals are ambassadors for their species.
+
+  THE ATTRACTIONS
+  The Shamu Show: the main event. Dolphin Discovery: watching dolphins interact. Sea Lion High: comedy and athleticism. Multiple shows daily ensure you never miss the spectacle.
+
+  THE TECHNOLOGY
+  The park features state-of-the-art pools and habitats. The Shamu Stadium holds 3,000 gallons of water. The tanks are climate-controlled. The care of these massive animals is an engineering feat.
+
+  THE EMOTION
+  Watching a 7,000-pound killer whale breach is transcendent. The power. The grace. The intelligence. Visitors range from awe to tears. This is why people come.
+
+  SEAWORLD SAN DIEGO.
+  Where marine life comes to life.
+  Shamu awaits.`,
+  }},
   // Kansas City Zoo
   { keywords: ['kansas city zoo', 'zoo and see animals', 'animals from around the world', 'visit the zoo'], data: {
     icon: '🦁', color: '#27ae60',
