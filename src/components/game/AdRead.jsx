@@ -320,8 +320,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     return <MoviePopup ad={ad} onDismiss={() => { setVisible(false); onDismiss(); }} onAchievement={onAchievement} />;
   }
 
-  // ── Generic Attractive Banner ──
-  if (isGenericAd && genericAdEntry) {
+  // ── Generic Attractive Banner (collapsed state) ──
+  if (isGenericAd && genericAdEntry && !expanded) {
     return <AttractiveAdBanner entry={genericAdEntry} onDismiss={() => { setVisible(false); onDismiss(); }} onClick={handleTap} />;
   }
 
