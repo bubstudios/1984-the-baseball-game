@@ -1961,6 +1961,39 @@ The future is on sale.`,
   The Happiest Place on Earth.
   Summer is the perfect time.`,
   }},
+  // California beaches / family picnic
+  { keywords: ["california's beautiful beaches", 'family picnic', 'california beaches', 'picnic at the beach', 'beach picnic', 'beautiful beaches'], data: {
+    icon: '🏖️', color: '#0077b6',
+    title: '🏖️ California Beach Day — Sun, Sand & Family',
+    body: `PLAN A FAMILY PICNIC AT ONE OF CALIFORNIA'S BEAUTIFUL BEACHES
+
+California's coastline stretches 840 miles. From the rocky bluffs of Big Sur to the warm sands of San Diego, there is a beach for every family — and every memory.
+
+THE BEACHES OF SOUTHERN CALIFORNIA
+Mission Beach, Pacific Beach, Coronado, Laguna Beach, Malibu, Santa Monica, Zuma. Each has its own character. Some have waves. Some have calm water. Some have boardwalks and shops. Some are quiet and wild. Find yours.
+
+THE PICNIC
+Bring a blanket. Bring a cooler. Bring sandwiches — the bread will get sandy, and you will not mind. Bring sunscreen (SPF 15 is what people are using in 1984, which is not enough, but it's what's available). Bring a frisbee. Bring a kite.
+
+The ideal California beach picnic menu:
+- Sandwiches: turkey and swiss, or peanut butter and jelly if the kids insist
+- Fruit: grapes, watermelon, and peaches — all in season in summer
+- Chips: the bag will blow away. Chase it now before it reaches the water.
+- Lemonade in a thermos that keeps it cold for exactly 45 minutes
+
+THE CALIFORNIA SUN
+The summer sun sets late here — after 8 PM. You have more time than you think. The afternoon haze burns off by noon. From 12 to 5 PM, the sun is at full strength. The sand will be hot enough to cook eggs. Wear sandals.
+
+THE WAVES
+Pacific Ocean waves break in sets of 7. After a set passes, there's a moment of relative calm — that's when you swim. Experienced beach-goers know the rhythm. First-timers run in and get knocked over. This is a rite of passage. Everyone laughs. Everyone tries again.
+
+THE MEMORY
+Your children will remember this day for the rest of their lives. Not what they ate or what beach they went to, but the feeling — the sun on their faces, the cold water on their feet, the sand between their toes. California summers make memories.
+
+PLAN A FAMILY PICNIC.
+California's beautiful beaches are waiting.
+Summer doesn't last forever.`,
+  }},
   // SAN DIEGO SURF/SUNSHINE — unique dedicated entry
   { keywords: ['enjoy a day of surfing, swimming, and sunshine'], data: {
     icon: '🌊', color: '#00b4d8',
