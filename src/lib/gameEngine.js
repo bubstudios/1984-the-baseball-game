@@ -1741,12 +1741,12 @@ export function processAtBat(state, pitchType, swingType) {
 }
 
 export function cpuSelectPitch(state) {
-  const p = getCurrentPitcher(state); const pitches = p.pitches || DEFAULT_PITCHES; const rand = Math.random();
-  if (p.pitchSpeed >= 7 && rand < 0.35 && pitches.includes("Fastball")) return "Fastball";
-  const bps = pitches.filter(x => ["Breaking Ball","Knuckleball","Screwball","Split-Finger"].includes(x));
+  const p = getCurrentPitcher(state); const pitches = Array.isArray(p.pitches) ? p.pitches : DEFAULT_PITCHES; const rand = Math.random();
+  if (p.pitchSpeed >= 7 && rand < 0.35 && Array.isArray(pitches) && pitches.includes("Fastball")) return "Fastball";
+  const bps = Array.isArray(pitches) ? pitches.filter(x => ["Breaking Ball","Knuckleball","Screwball","Split-Finger"].includes(x)) : [];
   if (p.offSpeed >= 7 && rand < 0.50 && bps.length > 0) return bps[Math.floor(Math.random() * bps.length)];
-  if (p.offSpeed >= 6 && rand < 0.55 && pitches.includes("Changeup")) return "Changeup";
-  return pitches[Math.floor(Math.random() * pitches.length)] || "Fastball";
+  if (p.offSpeed >= 6 && rand < 0.55 && Array.isArray(pitches) && pitches.includes("Changeup")) return "Changeup";
+  return Array.isArray(pitches) ? (pitches[Math.floor(Math.random() * pitches.length)] || "Fastball") : "Fastball";
 }
 
 export function cpuSelectSwing(state) {
