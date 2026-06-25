@@ -180,27 +180,7 @@ export function findExposBannerEntry(adText) {
   if (!adText) return null;
   const text = adText.toLowerCase();
   
-  // Montreal cultural/city-specific keywords that should pull from Expos banners
-  const montreaKeywords = [
-    'montreal', 'quebec', 'expos', 'french', 'pride', 'mount royal',
-    'lawrence', 'poutine', 'hockey', 'habs', 'canadiens', 'vieux-montreal'
-  ];
-  
-  // If the ad text has Montreal/Quebec keywords, try to match an Expos banner entry
-  if (montreaKeywords.some(kw => text.includes(kw))) {
-    // Match generic film/entertainment keywords to Montreal cultural content
-    if (text.includes('watch your favorite') || 
-        text.includes('entertainment') ||
-        text.includes('culture') ||
-        text.includes('enjoy')) {
-      return {
-        matchText: adText,
-        ...EXPOS_BANNER_POPUPS['montreal_culture']
-      };
-    }
-  }
-  
-  // Standard keyword matching
+  // Standard keyword matching first (most specific)
   if (text.includes('poutine') || text.includes('fries')) {
     return { matchText: adText, ...EXPOS_BANNER_POPUPS['poutine_culture'] };
   }
@@ -218,6 +198,17 @@ export function findExposBannerEntry(adText) {
   }
   if (text.includes('pride') || text.includes('quebec') || text.includes('vive')) {
     return { matchText: adText, ...EXPOS_BANNER_POPUPS['quebec_pride'] };
+  }
+  
+  // Generic/vague ad text defaults to Montreal cultural content
+  // When playing Montreal, any unmatched banner gets Montreal flavor
+  // This prevents San Diego or generic fallback text from appearing
+  if (text.length > 0 && !text.includes('san diego') && !text.includes('beach') && !text.includes('surfer') && !text.includes('wave')) {
+    // Vague/generic text → Montreal culture
+    return {
+      matchText: adText,
+      ...EXPOS_BANNER_POPUPS['montreal_culture']
+    };
   }
   
   return null;
