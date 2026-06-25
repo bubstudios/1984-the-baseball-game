@@ -57,7 +57,7 @@ import { findTigersStadiumEntry, trackTigersStadiumView } from '@/lib/tigersStad
 import { findPhilliesBannerEntry, trackPhilliesBannerView } from '@/lib/philliesBannerPopups';
 import { findGenericAdEntry } from '@/lib/genericAdPopups';
 import GenericBannerPopup from './GenericBannerPopup';
-import InlineAdBanner from './InlineAdBanner';
+import AttractiveAdBanner from './AttractiveAdBanner';
 import { generateFallbackEntry } from '@/lib/genericAdFallback';
 import { findGenericBannerEntry } from '@/lib/genericBannerMatchers';
 import { recordAdView, getQuestClueForAd } from '@/lib/adQuests';
@@ -320,9 +320,9 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     return <MoviePopup ad={ad} onDismiss={() => { setVisible(false); onDismiss(); }} onAchievement={onAchievement} />;
   }
 
-  // ── Generic Inline Banner ──
+  // ── Generic Attractive Banner ──
   if (isGenericAd && genericAdEntry) {
-    return <InlineAdBanner entry={genericAdEntry} onDismiss={() => { setVisible(false); onDismiss(); }} />;
+    return <AttractiveAdBanner entry={genericAdEntry} onDismiss={() => { setVisible(false); onDismiss(); }} onClick={handleTap} />;
   }
 
   const showIcon = synopsisData?.icon || (isElectronics ? elecEntry?.icon : '📺');
