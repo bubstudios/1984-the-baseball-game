@@ -290,6 +290,31 @@ Convenience has never been easier.`,
 Turn everyday moments into lasting memories.`,
   },
   {
+    id: 'tech_changing_1',
+    brand: 'TECHNOLOGY',
+    icon: '💡',
+    color: '#4ade80',
+    matchText: 'Technology is changing the way America lives and works.',
+    title: 'Technology Reshaping America',
+    body: `Technology in 1984 is advancing at an unprecedented pace.
+
+  In just the past few years, personal computers, VCRs, digital watches, and electronic calculators have transformed daily life.
+
+  WHAT'S CHANGING
+  • Work: Word processors replace typewriters. Spreadsheets replace ledger paper.
+  • Home: VCRs let you record and watch shows on your schedule. Cordless phones let you move around the house.
+  • Entertainment: Video games bring arcade excitement home. Walkmans let you carry your music anywhere.
+  • Communication: Fax machines transmit documents instantly. Early computer networks connect offices.
+
+  THE NEXT DECADE
+  Technology experts predict even faster change. Microchips continue to double in power every 18 months. Computing will become smaller, faster, cheaper. What seems impossible today becomes routine tomorrow.
+
+  ADAPTATION
+  Americans are adapting. Kids are learning to program computers. Office workers are learning new software. Families are discovering what VCRs can do.
+
+  Technology is changing the way America lives and works. The future is arriving faster than anyone predicted.`,
+  },
+  {
     id: 'sony_1',
     brand: 'SONY',
     icon: '📺',
