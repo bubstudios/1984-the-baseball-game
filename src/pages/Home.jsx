@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS, PITCH_TYPES, SWING_TYPES, MANAGERS } from '@/lib/gameData';
-import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk } from '@/lib/gameEngine';
+import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk, getDefensivePlayers } from '@/lib/gameEngine';
 import { applyWeatherEffects } from '@/lib/weather';
 import TeamSelect from '@/components/game/TeamSelect';
 import BallparkSelect from '@/components/game/BallparkSelect';
@@ -19,6 +19,7 @@ import ArgumentsBanner from '@/components/game/ArgumentsBanner';
 import BallparkEventBanner from '@/components/game/BallparkEventBanner';
 import InjuryBanner from '@/components/game/InjuryBanner';
 import PitcherIsPumpedPopup from '@/components/game/PitcherIsPumpedPopup';
+import CatcherThrowOutPopup from '@/components/game/CatcherThrowOutPopup';
 import IncidentLog from '@/components/game/IncidentLog';
 
 import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
@@ -87,6 +88,7 @@ export default function Home() {
   const [showSummary, setShowSummary] = useState(false);
   const [celebrationPopup, setCelebrationPopup] = useState(null);
   const [caughtStealingPopup, setCaughtStealingPopup] = useState(null);
+  const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
@@ -291,6 +293,14 @@ export default function Home() {
         if (entry.type === 'info' && entry.text && (entry.text.startsWith('🔥') || entry.text.startsWith('🎉') || entry.text.startsWith('✨'))) {
           setCelebrationPopup(entry.text);
           setTimeout(() => setCelebrationPopup(null), 4000);
+        }
+        // Trigger catcher popup on caught stealing
+        if (entry.type === 'caughtstealing' && entry.text) {
+          const runnerMatch = entry.text.match(/❌\s+(.+?)\s+—/);
+          const runnerName = runnerMatch ? runnerMatch[1] : 'the runner';
+          const catcher = getDefensivePlayers(gameState)?.['C'];
+          const catcherName = catcher?.name || 'The catcher';
+          setCatcherThrowOut({ catcher: catcherName, runner: runnerName });
         }
       });
     }
@@ -1149,6 +1159,15 @@ export default function Home() {
       )}
 
 
+
+      {/* Catcher Throw-Out Popup (Caught Stealing Celebration) */}
+      {catcherThrowOut && (
+        <CatcherThrowOutPopup
+          playerName={catcherThrowOut.catcher}
+          runnerName={catcherThrowOut.runner}
+          onDismiss={() => setCatcherThrowOut(null)}
+        />
+      )}
 
       {/* Caught Stealing Popup */}
       {caughtStealingPopup && (
