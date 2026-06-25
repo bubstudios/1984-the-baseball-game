@@ -1,7 +1,7 @@
-import React from 'react';
-import { getStats } from '@/lib/achievements';
+import React, { useState } from 'react';
+import { getStats, resetAllData, ensureStatsInit } from '@/lib/achievements';
 import { TEAMS } from '@/lib/gameData';
-import { BarChart3, Clock, MapPin, Users, Trophy, TrendingUp, Calendar, Zap, Ruler, Target, Swords } from 'lucide-react';
+import { BarChart3, Clock, MapPin, Users, Trophy, TrendingUp, Calendar, Zap, Ruler, Target, Swords, RotateCcw, AlertTriangle } from 'lucide-react';
 
 const TEAM_LOGOS = {
   tigers: 'https://www.mlbstatic.com/team-logos/116.svg',
@@ -71,7 +71,8 @@ function StatCard({ icon, label, value, sub, color = 'primary' }) {
 }
 
 export default function Scorecard() {
-  const stats = getStats();
+  const [stats, setStats] = useState(getStats());
+  const [confirmReset, setConfirmReset] = useState(false);
   const games = stats.gamesCompleted || 0;
   const wins = stats.wins || 0;
   const losses = stats.losses || 0;
@@ -296,6 +297,49 @@ export default function Scorecard() {
               </div>
             </div>
           )}
+
+          {/* Reset All Career Data */}
+          <div className="pt-2">
+            {confirmReset ? (
+              <div className="bg-rose-950/30 border border-rose-500/40 rounded-xl p-3 text-center space-y-2">
+                <div className="flex items-center justify-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-rose-400" />
+                  <span className="font-heading text-xs font-bold text-rose-300">Erase Everything?</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground">All stats, achievements, and card collections will be deleted. This cannot be undone.</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setConfirmReset(false)}
+                    className="flex-1 h-8 rounded-lg border border-border hover:bg-muted/30 text-[10px] font-heading text-muted-foreground transition-colors"
+                  >Cancel</button>
+                  <button
+                    onClick={() => {
+                      resetAllData();
+                      try {
+                        Object.keys(localStorage).forEach(key => {
+                          if (key.startsWith('bb84_cards_') || key.startsWith('bb84_quests') || key.startsWith('ach_groover')) {
+                            localStorage.removeItem(key);
+                          }
+                        });
+                      } catch (e) { /* ignore */ }
+                      ensureStatsInit();
+                      setStats(getStats());
+                      setConfirmReset(false);
+                    }}
+                    className="flex-1 h-8 rounded-lg bg-rose-600 hover:bg-rose-700 text-[10px] font-heading font-bold text-white transition-colors"
+                  >Yes, Erase Everything</button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmReset(true)}
+                className="w-full h-8 rounded-lg border border-border/50 hover:border-rose-500/40 hover:bg-rose-950/20 text-[10px] font-heading text-muted-foreground hover:text-rose-400 transition-colors flex items-center justify-center gap-1.5"
+              >
+                <RotateCcw className="w-3 h-3" />
+                Reset All Career Data
+              </button>
+            )}
+          </div>
         </>
       )}
     </div>
