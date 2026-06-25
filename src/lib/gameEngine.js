@@ -1381,6 +1381,23 @@ function applyInjuryState(newState, injuryResult) {
   if (newState.awayPitcher?.name === pn && newState.awayPitcher && !newState.awayPitcher.injured) newState.awayPitcher = { ...newState.awayPitcher, injured: true, injuryType: injuryResult.severity };
 }
 
+// ── Single source of truth for control-side logic ──
+function getControllingTeam(state, context) {
+  // context: 'batting' | 'pitching' | null (either team)
+  const userSide = state.homeTeam === state.userTeam ? 'home' : 'away';
+  const cpuSide = userSide === 'home' ? 'away' : 'home';
+  
+  if (context === 'batting') {
+    const battingSide = getBattingTeam(state);
+    return battingSide === cpuSide ? 'cpu' : 'user';
+  }
+  if (context === 'pitching') {
+    const pitchingSide = state.halfInning === 'top' ? 'home' : 'away';
+    return pitchingSide === cpuSide ? 'cpu' : 'user';
+  }
+  return null;
+}
+
 export function processAtBat(state, pitchType, swingType) {
    const home = TEAMS[state.homeTeam], away = TEAMS[state.awayTeam];
    const newState = JSON.parse(JSON.stringify(state));
@@ -1416,12 +1433,7 @@ export function processAtBat(state, pitchType, swingType) {
    // Only evaluate at the START of a plate appearance (0-0 count)
    // CPU-CONTROLLED PITCHERS ONLY — user cannot auto-IBB
    if (newState.balls === 0 && newState.strikes === 0) {
-     const pitchingSide = newState.halfInning === 'top' ? 'home' : 'away';
-     const userSide = newState.homeTeam === newState.userTeam ? 'home' : 'away';
-     const cpuSide = userSide === 'home' ? 'away' : 'home';
-     const isCpuPitching = pitchingSide === cpuSide;
-
-     console.log(`[IBB GATE] User team: ${newState.homeTeam === newState.userTeam ? newState.homeTeam + ' (HOME)' : newState.awayTeam + ' (AWAY)'} | CPU team: ${cpuSide === 'home' ? newState.homeTeam + ' (HOME)' : newState.awayTeam + ' (AWAY)'} | Currently pitching: ${pitchingSide === 'home' ? newState.homeTeam + ' (HOME)' : newState.awayTeam + ' (AWAY)'} | isCpuPitching: ${isCpuPitching}`);
+     const isCpuPitching = getControllingTeam(newState, 'pitching') === 'cpu';
 
      if (isCpuPitching) {
        const batter = getCurrentBatter(newState);
@@ -1588,8 +1600,10 @@ export function processAtBat(state, pitchType, swingType) {
   const bjb = getCurrentBatter(newState);
 
   // ── PHASE 2.8: PINCH-HIT DECISION GATE (pitcher due at bat) ──
-  const isPitcherBatting = bjb.is_pitcher || bjb.pos === 'SP' || bjb.pos === 'RP' || bjb.pos === 'CL' || (bjb.assignedPos && ['SP', 'RP', 'CL'].includes(bjb.assignedPos));
-  if (isPitcherBatting) {
+   // CPU-ONLY: only the computer manager decides to pinch-hit
+   const isPitcherBatting = bjb.is_pitcher || bjb.pos === 'SP' || bjb.pos === 'RP' || bjb.pos === 'CL' || (bjb.assignedPos && ['SP', 'RP', 'CL'].includes(bjb.assignedPos));
+   const isCpuBatting = getControllingTeam(newState, 'batting') === 'cpu';
+   if (isPitcherBatting && isCpuBatting) {
     const battingTeamSide = getBattingTeam(newState) === 'home' ? 'home' : 'away';
     const benchTeam = battingTeamSide === 'home' ? newState.homeTeam : newState.awayTeam;
     const benchList = TEAMS[benchTeam]?.bench || [];
@@ -1853,63 +1867,12 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     return newState;
   }
 
-  const cpuSide = newState.homeTeam === userTeam ? 'away' : 'home';
-  const cpuBattingSide = newState.halfInning === 'top' ? 'away' : 'home';
-  const isCpuBatting = cpuBattingSide === cpuSide;
+  // Phase 2.8 (processAtBat) now handles CPU pinch-hitting for pitchers due at bat
+   // cpuDecideSubstitutions focuses on substitutions BETWEEN at-bats only
+   const cpuSide = newState.homeTeam === userTeam ? 'away' : 'home';
+   const cpuBattingSide = newState.halfInning === 'top' ? 'away' : 'home';
 
-  if (isCpuBatting) {
-    const cpuLineup = cpuSide === 'away' ? newState.awayLineup : newState.homeLineup;
-    const cpuBench = TEAMS[cpuSide === 'away' ? newState.awayTeam : newState.homeTeam]?.bench;
-    const inning = newState.inning, cpuScore = newState.score[cpuSide];
-    const otherTeam = cpuSide === 'away' ? 'home' : 'away', trailing = cpuScore < newState.score[otherTeam];
-    if (inning >= 7 && trailing && cpuBench && cpuBench.length > 0) {
-      const batterIdx = cpuSide === 'away' ? newState.awayBatterIndex : newState.homeBatterIndex;
-      const batter = cpuLineup[batterIdx % cpuLineup.length];
-      const pitcherSpot = batter.assignedPos === 'SP' || batter.pos === 'SP';
-      if (pitcherSpot) {
-        const bestHitter = [...cpuBench].sort((a, b) => b.contact - a.contact)[0];
-        const afterPH = pinchHit(newState, { ...bestHitter });
-        if (cpuSide === 'away') {
-          newState.awayLineup = afterPH.awayLineup; newState.awayBatterIndex = afterPH.awayBatterIndex;
-          if (!newState.awayPlayerHistory) newState.awayPlayerHistory = [];
-          afterPH.awayPlayerHistory?.forEach(p => { if (!newState.awayPlayerHistory.find(h => h.name === p.name)) newState.awayPlayerHistory.push(p); });
-          if (!newState.awayBenchUsed) newState.awayBenchUsed = [];
-          afterPH.awayBenchUsed?.forEach(p => { if (!newState.awayBenchUsed.find(h => h.name === p.name)) newState.awayBenchUsed.push(p); });
-          newState.log = afterPH.log;
-        } else {
-          newState.homeLineup = afterPH.homeLineup; newState.homeBatterIndex = afterPH.homeBatterIndex;
-          if (!newState.homePlayerHistory) newState.homePlayerHistory = [];
-          afterPH.homePlayerHistory?.forEach(p => { if (!newState.homePlayerHistory.find(h => h.name === p.name)) newState.homePlayerHistory.push(p); });
-          if (!newState.homeBenchUsed) newState.homeBenchUsed = [];
-          afterPH.homeBenchUsed?.forEach(p => { if (!newState.homeBenchUsed.find(h => h.name === p.name)) newState.homeBenchUsed.push(p); });
-          newState.log = afterPH.log;
-        }
-      } else if (batter.contact <= 3 && inning >= 8) {
-        const bestHitter = [...cpuBench].sort((a, b) => b.contact - a.contact)[0];
-        if (bestHitter.contact > batter.contact + 1) {
-          const afterPH2 = pinchHit(newState, { ...bestHitter });
-          if (cpuSide === 'away') {
-            newState.awayLineup = afterPH2.awayLineup; newState.awayBatterIndex = afterPH2.awayBatterIndex;
-            if (!newState.awayPlayerHistory) newState.awayPlayerHistory = [];
-            afterPH2.awayPlayerHistory?.forEach(p => { if (!newState.awayPlayerHistory.find(h => h.name === p.name)) newState.awayPlayerHistory.push(p); });
-            if (!newState.awayBenchUsed) newState.awayBenchUsed = [];
-            afterPH2.awayBenchUsed?.forEach(p => { if (!newState.awayBenchUsed.find(h => h.name === p.name)) newState.awayBenchUsed.push(p); });
-            newState.log = afterPH2.log;
-          } else {
-            newState.homeLineup = afterPH2.homeLineup; newState.homeBatterIndex = afterPH2.homeBatterIndex;
-            if (!newState.homePlayerHistory) newState.homePlayerHistory = [];
-            afterPH2.homePlayerHistory?.forEach(p => { if (!newState.homePlayerHistory.find(h => h.name === p.name)) newState.homePlayerHistory.push(p); });
-            if (!newState.homeBenchUsed) newState.homeBenchUsed = [];
-            afterPH2.homeBenchUsed?.forEach(p => { if (!newState.homeBenchUsed.find(h => h.name === p.name)) newState.homeBenchUsed.push(p); });
-            newState.log = afterPH2.log;
-          }
-        }
-      }
-    }
-    return newState;
-  }
-
-  const cpuPitchingSide = newState.halfInning === 'top' ? 'home' : 'away';
+   const cpuPitchingSide = newState.halfInning === 'top' ? 'home' : 'away';
   if (cpuPitchingSide !== cpuSide) return newState;
   const cpuBullpen = cpuSide === 'away' ? newState.awayBullpen : newState.homeBullpen;
   const cpuLineupField = cpuSide === 'away' ? newState.awayLineup : newState.homeLineup;
