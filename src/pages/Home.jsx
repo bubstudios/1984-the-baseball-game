@@ -1148,7 +1148,7 @@ export default function Home() {
       )}
 
       {/* Celebration Bubble — fire-themed popup for pitcher pumped moments */}
-      <CelebrationBubble celebration={celebrationPopupBubble} />
+      <CelebrationBubble celebration={celebrationPopupBubble || celebrationPopup} />
 
       {/* Fireworks */}
       <Fireworks trigger={hrTrigger} type="hr" />
