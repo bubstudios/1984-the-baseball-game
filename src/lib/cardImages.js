@@ -5,16 +5,16 @@ const BASE = 'https://media.base44.com/images/public/6a3075f14330dbc5dd0e91af/';
 
 export const CARD_IMAGES = {
   // ── DETROIT TIGERS ──
-  'Alan Trammell':    BASE + '92293da82_generated_image.png',
-  'Lou Whitaker':     BASE + 'e364dfced_generated_image.png',
-  'Kirk Gibson':      BASE + 'bfd491889_generated_image.png',
+  'Alan Trammell':    BASE + '089a945a5_98-510Fr.jpg',
+  'Lou Whitaker':     BASE + 'bbedfbacd_98-695Fr.jpg',
+  'Kirk Gibson':      BASE + '9cbb46002_images.jpeg',
   'Jack Morris':      BASE + 'e7ba14d37_generated_image.png',
   'Willie Hernandez': BASE + 'bfeed7aef_generated_image.png',
-  'Lance Parrish':    BASE + '6c8955118_generated_image.png',
+  'Lance Parrish':    BASE + '6a58f229c_61pc4NksxKL_AC_SL1094_.jpg',
   'Darrell Evans':    BASE + '2ade65487_generated_image.png',
-  'Chet Lemon':       BASE + '1e5737f91_generated_image.png',
-  'Larry Herndon':    BASE + '7847028b2_generated_image.png',
-  'Howard Johnson':   BASE + '4d6262bc8_generated_image.png',
+  'Chet Lemon':       BASE + '741c6bad9_images1.jpeg',
+  'Larry Herndon':    BASE + '0df9b1cfe_s-l1200.jpg',
+  'Howard Johnson':   BASE + '6130771ea_images2.jpeg',
   'Dan Petry':        BASE + 'a7f54a8b2_generated_image.png',
   'Aurelio Lopez':    BASE + 'f5e7d8ee7_generated_image.png',
   'Barbaro Garbey':   BASE + '832be5879_generated_image.png',
