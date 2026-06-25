@@ -199,6 +199,10 @@ export function findExposBannerEntry(adText) {
   if (text.includes('pride') || text.includes('quebec') || text.includes('vive')) {
     return { matchText: adText, ...EXPOS_BANNER_POPUPS['quebec_pride'] };
   }
+  // Montreal community/charity → Quebec pride angle
+  if (text.includes('volunteer') || text.includes('community') || text.includes('charity')) {
+    return { matchText: adText, ...EXPOS_BANNER_POPUPS['quebec_pride'] };
+  }
   
   // Generic/vague ad text defaults to Montreal cultural content
   // When playing Montreal, any unmatched banner gets Montreal flavor
