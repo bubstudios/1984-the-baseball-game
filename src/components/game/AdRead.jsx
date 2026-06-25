@@ -320,14 +320,6 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     return <MoviePopup ad={ad} onDismiss={() => { setVisible(false); onDismiss(); }} onAchievement={onAchievement} />;
   }
 
-  // ── Generic Attractive Banner (collapsed state) ──
-  if (isGenericAd && genericAdEntry && !expanded) {
-    return <AttractiveAdBanner entry={genericAdEntry} onDismiss={() => { setVisible(false); onDismiss(); }} onClick={handleTap} />;
-  }
-
-  const showIcon = synopsisData?.icon || (isElectronics ? elecEntry?.icon : '📺');
-  const networkInfo = synopsisData ? NETWORK_LOGOS[synopsisData.network] : null;
-
   const handleTap = () => {
     if (isElectronics && elecEntry) {
       const unlocked = trackElectronicsView(elecEntry.id);
@@ -415,6 +407,14 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       onDismiss();
     }
   };
+
+  // ── Generic Attractive Banner (collapsed state) ──
+  if (isGenericAd && genericAdEntry && !expanded) {
+    return <AttractiveAdBanner entry={genericAdEntry} onDismiss={() => { setVisible(false); onDismiss(); }} onClick={handleTap} />;
+  }
+
+  const showIcon = synopsisData?.icon || (isElectronics ? elecEntry?.icon : '📺');
+  const networkInfo = synopsisData ? NETWORK_LOGOS[synopsisData.network] : null;
 
   return (
     <AdReadPopupRenderer
