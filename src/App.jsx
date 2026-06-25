@@ -56,10 +56,10 @@ const AuthenticatedApp = () => {
 
 
 function App() {
-  // Disable pull-to-refresh on Android only
+  // Disable pull-to-refresh on iOS only
   useEffect(() => {
-    const isAndroid = /android/i.test(navigator.userAgent);
-    if (isAndroid) {
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    if (isIOS) {
       document.documentElement.classList.add('disable-overscroll');
       document.body.classList.add('disable-overscroll');
     }
