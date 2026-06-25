@@ -377,8 +377,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   // AND don't auto-dismiss if user hasn't tapped yet (expanded tracks first tap)
   const hasRichPopup = isElectronics || isGeneralProducts || isMoreObscureTv || isMoreObscureTv3 || isArcade || isArcadeVidGame || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds || isLongDistancePhoneWars || isFilmDevelopmentCameras || isThingsThatScream1984 || isMallCulture || isRedSoxBanner || isNationalCharity || isNationalPromos || isNationalWrestling || isVhsBetamax || isDetroitTigers || isCubsBanner || isTigersBanner2 || isMetsBanner || isYankeesBanner || isOriolesBanner || isDodgersBanner || isPadresBanner || isRedsBanner || isRoyalsBanner || isTigersStadium || isPhilliesBanner || isInTheAir || isJCPenney || isPepsi || isChryslerMinivan || isFireworksNight || isBowlingLeagues || isHomestandPromo || isChurchBakeSale || isOutdoorTime || isPortableCassette || isGenericAd;
   useEffect(() => {
-    // Only auto-dismiss if autoDismissMs > 0 AND user has tapped (expanded=true)
-    if (!visible || !expanded || hasRichPopup || autoDismissMs <= 0 || isMovie) return;
+    // Never auto-dismiss when popup is expanded — all popups stay open until user closes them
+    if (!visible || expanded || hasRichPopup || autoDismissMs <= 0 || isMovie) return;
     const timer = setTimeout(onDismiss, autoDismissMs);
     return () => clearTimeout(timer);
   }, [visible, expanded, hasRichPopup, autoDismissMs, onDismiss, isMovie]);
@@ -515,7 +515,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   };
 
   // ── Generic Attractive Banner (always use for generic ads) ──
-  if (isGenericAd && genericAdEntry) {
+  if (isGenericAd && genericAdEntry && !expanded) {
     return <AttractiveAdBanner entry={genericAdEntry} onDismiss={() => { setVisible(false); onDismiss(); }} onClick={handleTap} />;
   }
 

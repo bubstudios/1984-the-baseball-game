@@ -1159,6 +1159,233 @@ const KEYWORD_PATTERNS = [
   { keywords: ['drink and drive', 'never drink'], data: MISC_ADS['drunk_driving'] },
   // Support local movie theater
   { keywords: ['local movie theater', 'support your local movie'], data: MISC_ADS['local_theater'] },
+  // Tourism / Global visitors
+  { keywords: ['visitors continue to arrive', 'every corner of the globe', 'corner of the globe', 'visitors from every'], data: {
+    icon: '🌍', color: '#003087',
+    title: '🌍 Visitors From Every Corner of the Globe',
+    body: `VISITORS FROM EVERY CORNER OF THE GLOBE
+
+"Visitors continue to arrive from every corner of the globe."
+
+THE WORLD IN 1984
+It is 1984, and the world is shrinking. Jumbo jets crisscross the oceans. The Summer Olympics in Los Angeles brought athletes from 140 nations. The World's Fair in New Orleans celebrates international commerce. And baseball — America's game — draws visitors from Tokyo, from Toronto, from Santo Domingo, from Seoul.
+
+THE BALLPARK AS MELTING POT
+Walk through the turnstiles at any major league park and you'll hear a dozen languages. Japanese tourists with cameras. Canadian families on holiday. Dominican fans cheering for their compatriots. European visitors discovering a sport they've only read about.
+
+THE OLYMPICS EFFECT
+The '84 Olympics proved that Los Angeles — and America — could welcome the world. The Games were a commercial success, a sporting success, and a cultural exchange. Visitors who came for the Olympics stayed to see the country. Many found their way to a baseball game.
+
+THE UNIVERSAL LANGUAGE
+Baseball doesn't need translation. The crack of the bat. The roar of the crowd. The seventh-inning stretch. These are understood in every language.
+
+VISITORS CONTINUE TO ARRIVE.
+From every corner of the globe.
+To watch the great American pastime.`,
+  }},
+  // Atari / Home video games
+  { keywords: ['atari', 'atari baseball', 'play anytime', 'bring home atari'], data: {
+    icon: '🎮', color: '#cc0000',
+    title: '🎮 Atari — Bring the Arcade Home',
+    body: `ATARI — BRING THE ARCADE HOME
+
+"Bring home Atari baseball and play anytime."
+
+THE COMPANY
+Atari. The name that launched the video game industry. Founded in 1972 by Nolan Bushnell. Pong — the first commercially successful arcade game — was just the beginning. By 1984, Atari is a cultural force, a household name, and the reason "video game" is in the dictionary.
+
+ATARI BASEBALL
+Atari Baseball. Released in 1983 for the Atari 2600. Two players. Nine innings. Stick figures on a green field. The pitcher selects pitch type and location. The batter swings. The ball flies — sometimes fair, sometimes foul. It is rudimentary. It is revolutionary. It is baseball in your living room.
+
+THE 2600
+The Atari 2600, released in 1977, put arcade-quality gaming in the home for the first time. The console cost $199. Games came on cartridges. You collected them. By 1984, over 30 million 2600s are in American homes.
+
+THE INTELLIVISION RIVALRY
+Atari's chief rival is Mattel's Intellivision, launched in 1979. Intellivision Baseball features more detailed graphics and statistics than Atari's version. The debate over which system has the better baseball game is fierce and unresolved.
+
+THE LEGACY
+Atari showed America that sports could be simulated at home. Every baseball video game since — from RBI Baseball to MLB The Show — traces its lineage back to those blocky stick figures on a green field in 1983.
+
+BRING HOME ATARI.
+Play anytime.
+The arcade is in your living room.`,
+  }},
+  // Little League / Youth baseball registration
+  { keywords: ['little league', 'sign up now for little league', 'camps across', 'sign up now for'], data: {
+    icon: '⚾', color: '#27ae60',
+    title: '⚾ Little League — Sign Up Today',
+    body: `LITTLE LEAGUE BASEBALL — SIGN UP TODAY
+
+"Sign up now for Little League camps across the metropolitan area."
+
+THE ORGANIZATION
+Little League Baseball. Founded in 1939 by Carl Stotz in Williamsport, Pennsylvania. Three teams. A small diamond in a vacant lot. By 1984, Little League has grown to over 2.5 million participants in more than 30 countries.
+
+THE WORLD SERIES
+The Little League World Series, held every August in Williamsport, is broadcast on national television. Kids from around the world compete on the same field where it all began. The championship game draws millions of viewers. These are 12-year-olds.
+
+THE SIGN-UP
+Registration opens in spring. Boys and girls, ages 8-12, are eligible. Tryouts determine team placement. The fee is nominal — typically $20-30 — and covers a uniform, a cap, and a spot on a roster.
+
+THE METROPOLITAN AREA
+Across New York, New Jersey, and Connecticut, dozens of Little League chapters are accepting registrations. Check with your local parks department. Bring a birth certificate. Bring a glove. Bring your kid.
+
+THE LESSON
+Little League teaches more than baseball. It teaches teamwork. It teaches how to lose with dignity and win with grace. It teaches that the best part of the game is the post-game snack.
+
+SIGN UP NOW.
+Camps are forming across the metropolitan area.
+Your child will thank you.`,
+  }},
+  // Broadcast return / "Back to baseball"
+  { keywords: ['back to baseball', 'back to baseball from new york', 'now, back to baseball'], data: {
+    icon: '📺', color: '#d4a373',
+    title: '📺 And Now, Back to Baseball',
+    body: `AND NOW, BACK TO BASEBALL
+
+"And now, back to baseball from New York City."
+
+THE BROADCAST
+It's the 1980s. The commercial break is over. The voice of the announcer returns. The picture fades up from black. The ballpark. The green field. The crack of the bat. You're back.
+
+THE VOICES
+In New York, the voices are legendary. Phil Rizzuto — "Holy cow!" — calling the game with enthusiasm that borders on chaos. Bill White — steady, professional, the perfect foil. Frank Messer — the third man in the booth, keeping things on track.
+
+Across the country, every team has its voice. Vin Scully in Los Angeles. Harry Caray in Chicago. Jack Buck in St. Louis. Ernie Harwell in Detroit. These men are not just announcers. They are the sound of summer.
+
+THE SPONSOR
+"And now, back to baseball..." is more than a transition. It's a promise. The sponsor paid for the broadcast. In exchange, they get your attention during the breaks. And when the breaks end, you get the game. This is the deal.
+
+THE GAME
+The pitcher checks the runner. The batter digs in. The crowd hums. The first pitch after the break is always the best pitch — you've been waiting for it.
+
+AND NOW, BACK TO BASEBALL.
+From New York City.
+From wherever the game is being played.
+To your living room.`,
+  }},
+  // Youth baseball clinics
+  { keywords: ['youth baseball clinics', 'baseball clinics', 'clinics continue', 'clinics throughout'], data: {
+    icon: '⚾', color: '#27ae60',
+    title: '⚾ Youth Baseball Clinics',
+    body: `YOUTH BASEBALL CLINICS — CONTINUING THIS SUMMER
+
+"Youth baseball clinics continue throughout New York this summer."
+
+THE CLINICS
+All across the New York metropolitan area, youth baseball clinics are in full swing. Former players. College coaches. Local legends. They're teaching the fundamentals to the next generation.
+
+WHAT THEY TEACH
+Hitting: The stance. The grip. The stride. The swing. "Keep your eye on the ball" is easy to say and hard to do. The instructors know the difference.
+
+Fielding: The ready position. The two-hand approach. The footwork around the bag. "Catch the ball first, then worry about the runner."
+
+Pitching: The windup. The stretch. The follow-through. "Throw, don't aim." The clinics teach mechanics that prevent injuries — something that wasn't understood a generation ago.
+
+Baseball IQ: When to steal. When to take a pitch. When to swing away. The mental game is half the battle.
+
+THE INSTRUCTORS
+Many clinics feature appearances by current or former major leaguers. Imagine learning to hit from someone who hit .300 in the big leagues. The kids don't fully understand how rare that is. The parents do.
+
+THE COST
+Most clinics are affordable — $25-50 for a full day, or $100-150 for a week-long session. Some are free, sponsored by local businesses or the teams themselves.
+
+THE IMPACT
+A kid who attends a baseball clinic in 1984 might become a high school star. Might play in college. Might make the majors. Or might just carry the memory of a summer afternoon on a baseball diamond for the rest of their life.
+
+CLINICS CONTINUE THROUGHOUT THE SUMMER.
+Sign up at your local park district.
+The next great ballplayer is out there.`,
+  }},
+  // Technology never stops
+  { keywords: ['technology never stops', 'technology never stops advancing', 'never stops advancing'], data: {
+    icon: '💡', color: '#4a0080',
+    title: '💡 Technology Never Stops Advancing',
+    body: `TECHNOLOGY NEVER STOPS ADVANCING
+
+"Technology never stops advancing."
+
+THE STATE OF THE ART
+It is 1984, and technology is everywhere. The personal computer. The VCR. The compact disc. The cellular phone. The microwave. The fax machine. Each one has changed how Americans live, work, and play.
+
+THE PERSONAL COMPUTER
+8% of American households own a personal computer. The Apple Macintosh was introduced in January 1984 with a single Super Bowl commercial. IBM PCs dominate the office. The Commodore 64 is the best-selling computer in the world. And every one of them has less computing power than the calculator in your desk drawer.
+
+THE VCR
+The VCR has transformed television. Time-shifting — recording a show to watch later — was impossible five years ago. Now it's a way of life. 15% of American households own a VCR. The number is growing rapidly.
+
+THE COMPACT DISC
+The CD was introduced in 1982. By 1984, CD players are in hi-fi stores, and the sound quality is unmistakable — no hiss, no pops, no wear. A CD holds 74 minutes of music on a disc the size of a coaster. Audiophiles are ecstatic.
+
+THE CELLULAR PHONE
+The Motorola DynaTAC. It weighs 2.5 pounds. It costs $3,995. It provides 30 minutes of talk time. It is the size of a brick. And it is the future.
+
+THE FAX MACHINE
+The fax machine is appearing in offices across America. A document placed in one machine comes out of another machine across the country in minutes. This seems like magic. It is not magic. It is telephone lines and thermal paper.
+
+TECHNOLOGY NEVER STOPS ADVANCING.
+Neither should you.
+The future is arriving daily.`,
+  }},
+  // Guggenheim Museum
+  { keywords: ['guggenheim', 'guggenheim museum', 'unique architecture'], data: {
+    icon: '🏛️', color: '#8B4513',
+    title: '🏛️ The Guggenheim Museum',
+    body: `THE GUGGENHEIM MUSEUM — NEW YORK CITY
+
+"Visit the Guggenheim Museum and enjoy its unique architecture."
+
+THE BUILDING
+The Solomon R. Guggenheim Museum. 1071 Fifth Avenue, New York City. Designed by Frank Lloyd Wright. Completed in 1959, six months after Wright's death. It is the only Frank Lloyd Wright building in New York City, and it is his masterpiece.
+
+THE SHAPE
+The Guggenheim is a spiral. You enter at the bottom. You take the elevator to the top. You walk down. The ramp curves gently downward, and the art is displayed along the way. There are no separate rooms. There is no floor plan. There is only the spiral.
+
+THE CONTROVERSY
+When Wright's design was unveiled, critics were divided. Some called it a masterpiece. Others called it a washing machine. The residents of Fifth Avenue sued to stop construction. They lost. The building went up anyway. It has been a landmark ever since.
+
+THE ART
+The Guggenheim's collection includes works by Kandinsky, Picasso, Chagall, Mondrian, and Van Gogh. The rotating exhibitions bring art from around the world. The building is as much an attraction as the art inside it.
+
+THE EXPERIENCE
+Walking the spiral is unlike any other museum visit. The curve of the wall, the natural light from the skylight above, the gradual descent — it is an experience that cannot be replicated. Wright designed it this way intentionally. He wanted you to feel the space before you looked at the art.
+
+VISIT THE GUGGENHEIM MUSEUM.
+1071 Fifth Avenue, New York City.
+Frank Lloyd Wright's gift to the city.`,
+  }},
+  // Take a Kid to the Ballgame (alternate phrasing)
+  { keywords: ['take a kid', 'take a kid to the ballgame', "take a youngster", 'take a child'], data: MISC_ADS['youngster'] },
+  // Computer in every home (alternate phrasing)
+  { keywords: ['every home may one day have a computer', 'some experts believe', 'one day have a computer'], data: MISC_ADS['future_tech'] },
+  // Don Mattingly autograph signing
+  { keywords: ['don mattingly', 'mattingly will be signing', 'signing autographs'], data: {
+    icon: '✍️', color: '#003087',
+    title: '✍️ Don Mattingly — Autograph Signing',
+    body: `DON MATTINGLY — AUTOGRAPH SIGNING
+
+"Don Mattingly will be signing autographs Saturday afternoon in White Plains."
+
+THE PLAYER
+Don Mattingly. First baseman. New York Yankees. Number 23. In 1984, he is 23 years old and in his first full season. He hits for average. He hits for power. He plays defense. He is, by every measure, a ballplayer.
+
+THE RISE
+Mattingly was called up in 1982. By 1984, he's fighting for the batting title. In a few years, he'll win the American League MVP. He'll hit .352. He'll hit 53 doubles. He'll be the best hitter in baseball for a stretch. But right now, in 1984, he's just getting started.
+
+THE AUTOGRAPH
+Saturday afternoon. White Plains, New York. A shopping center or a card shop or a sporting goods store. Mattingly sits behind a table. There's a line. You wait. You bring a baseball. You bring a card. You bring a program. He signs it. He looks up. He says "thanks." You say "thanks." The moment lasts three seconds. The signature lasts forever.
+
+THE EXPERIENCE
+Meeting a ballplayer in person is different from watching on television. They're taller. Or shorter. They're human. They sign your item and hand it back, and for a moment, you and Don Mattingly have a connection — however brief — that nobody else in the world has.
+
+THE ADVICE
+Get there early. The line will be long. Bring a Sharpie. Don't ask him to sign your forehead. Do say thank you. He's giving up his Saturday afternoon to sit at a table in White Plains.
+
+DON MATTINGLY.
+Saturday afternoon.
+White Plains.
+Bring a baseball.`,
+  }},
 ];
 
 /**
@@ -1176,5 +1403,12 @@ export function generateFallbackEntry(adText) {
       };
     }
   }
-  return null;
+  // Universal fallback — always returns rich, era-appropriate content for ANY banner text
+  return {
+    matchText: adText,
+    icon: '📻',
+    color: '#d4a373',
+    title: '📻 Sponsor Message',
+    body: `${adText}\n\nThis message comes to you from the broadcast booth, 1984.\n\nTHE SPONSOR\nIn the golden age of baseball broadcasting, sponsor messages were woven seamlessly into the game. Between pitches. Between innings. Between moments of drama. The sponsors spoke, and America listened.\n\nTHE ERA\nIt is 1984. Ronald Reagan is president. The Olympics lit up Los Angeles. Apple Computer aired its legendary "1984" commercial during the Super Bowl. Bruce Springsteen released "Born in the U.S.A." The world was changing, and baseball was right there in the middle of it.\n\nTHE GAME\nTwenty-six teams. No wild cards. No instant replay. No pitch clocks. Just nine innings, three outs, and the crack of the bat. The way it was meant to be.\n\nThe sponsor asks you to enjoy the game.\n\nWe now return to the action on the field.`,
+  };
 }
