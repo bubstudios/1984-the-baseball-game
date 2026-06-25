@@ -40,7 +40,7 @@ import { rollPitcherKCelebration, rollBatFlip, rollHitCelebration, rollHRAdmire,
 import { rollCollision, rollTakeoutSlide } from './collisions';
 import { maybeGetAnnouncerHRCall } from './announcerHRCalls';
 import { calculateHomeRunDistance } from './homeRunDistance';
-import { initializePitcherComposure, applyEventDelta, recoverComposure, checkMinorIssue, checkMajorAction, getBehaviorZone } from './pitcherComposure';
+import { initializePitcherComposure, applyEventDelta, recoverComposure, checkMinorIssue, checkMajorAction, getBehaviorZone, BEHAVIOR_ZONES } from './pitcherComposure';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -393,6 +393,17 @@ function endHalfInning(state) {
   if (!state.innings[state.inning - 1]) state.innings[state.inning - 1] = { home: null, away: null };
   if (state.innings[state.inning - 1][half] === null) state.innings[state.inning - 1][half] = 0;
   state.outs = 0; state.balls = 0; state.strikes = 0; state.bases = [null, null, null]; state.hitAndRun = false; state.pendingSteal = null;
+  
+  // ── Pitcher composure recovery at half-inning boundary ──
+  const pitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
+  if (pitcher && pitcher._composure) {
+    pitcher._composure.composure = recoverComposure(pitcher._composure.composure, pitcher._composure);
+    // Log recovery if significant
+    if (pitcher._composure.composure > 75) {
+      state.log.push({ type: 'info', text: `🧠 ${pitcher.name}'s composure recovered to ${pitcher._composure.composure}%` });
+    }
+  }
+  
   // Decay beanball tension at half-inning transitions
   decayTension(state);
   if (state.halfInning === 'top') {
@@ -470,10 +481,28 @@ function resolvePitch(state, pitchType) {
   const pitcher = getCurrentPitcher(state);
   const effectiveP = getEffectivePitcher(state) || pitcher;
   pitcher.gameStats.pitches++;
-  const controlFactor = (effectiveP.effectiveControl || effectiveP.control) / 10;
+  
+  // ── Composure control modifier ──
+  const composure = pitcher._composure;
+  let controlFactor = (effectiveP.effectiveControl || effectiveP.control) / 10;
+  if (composure) {
+    const zone = getBehaviorZone(composure.composure);
+    const controlMod = zone === BEHAVIOR_ZONES.LOCKED_IN ? 1.15 : 
+                       zone === BEHAVIOR_ZONES.NORMAL ? 1.0 :
+                       zone === BEHAVIOR_ZONES.PRESSING ? 0.85 : 0.65;
+    controlFactor *= controlMod;
+  }
+  
   const effControl = effectiveP.effectiveControl || effectiveP.control;
   const wpChance = Math.max(0.002, (10 - effControl) * 0.002);
-  if (Math.random() < wpChance) {
+  
+  // ── Wild pitch chance increases in RED_ZONE ──
+  let wpAdjusted = wpChance;
+  if (composure && getBehaviorZone(composure.composure) === BEHAVIOR_ZONES.RED_ZONE) {
+    wpAdjusted *= 2.5;
+  }
+  
+  if (Math.random() < wpAdjusted) {
     const hasR = state.bases.some(b => b !== null);
     if (hasR) {
       let scored = null; const moved = [];
