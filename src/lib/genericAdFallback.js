@@ -1126,7 +1126,7 @@ const KEYWORD_PATTERNS = [
   // VCR / Video Rental
   { keywords: ['vcr', 'video rental', 'renting movies', 'video store'], data: MISC_ADS['vcr'] },
   // Future tech / Computers in every home
-  { keywords: ['computer in every home', 'some even predict'], data: MISC_ADS['future_tech'] },
+  { keywords: ['computer in every home', 'some even predict', 'secretaries', 'learning new technology'], data: MISC_ADS['future_tech'] },
   // Telecommunications / New services
   { keywords: ['new services', 'becoming nationwide', 'nationwide', 'telephone system is changing', 'telecommunications'], data: MISC_ADS['telecom'] },
   // Ballpark food / Pretzel
