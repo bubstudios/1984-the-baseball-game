@@ -39,16 +39,21 @@ export function shouldBunt(batter, game) {
  * Sacrifice bunt score — evaluated when runners are on and <2 outs.
  */
 function sac_bunt_score(batter, game) {
-  if (!game.runner_on_1st && !game.runner_on_2nd && !game.runner_on_3rd || game.outs >= 2) {
-    return 0;
-  }
-  
-  let s = 0;
-  
-  // THE HEADLINE CASE — pitcher hitting (esp. AL pitcher in NL park, no DH)
-  if (batter.is_pitcher) {
-    s += 60;  // AL pitcher bunting = near-automatic in this situation
-  }
+   if (!game.runner_on_1st && !game.runner_on_2nd && !game.runner_on_3rd || game.outs >= 2) {
+     return 0;
+   }
+
+   // HARD SUPPRESSOR: Power hitters (PWR >= 7) or cleanup/middle-order bats never sac bunt
+   if (batter.power >= 7) {
+     return 0;  // Cleanup hitters do not sacrifice
+   }
+
+   let s = 0;
+
+   // THE HEADLINE CASE — pitcher hitting (esp. AL pitcher in NL park, no DH)
+   if (batter.is_pitcher) {
+     s += 60;  // AL pitcher bunting = near-automatic in this situation
+   }
   
   // Runner advancement value
   if (game.runner_on_1st && !game.runner_on_2nd) {

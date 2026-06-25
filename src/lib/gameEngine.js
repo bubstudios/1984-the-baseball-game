@@ -1691,7 +1691,12 @@ export function processAtBat(state, pitchType, swingType) {
       newState.balls = 0;
       newState.strikes = 0;
       advanceBatter(newState);
-      return newState;
+      
+      // Check if we need to advance to next batter (e.g., after recording an out)
+      if (newState.outs >= 3) {
+        endHalfInning(newState);
+      }
+      return newState;  // CRITICAL: Return immediately — do NOT process another at-bat in this call
     }
   }
 
