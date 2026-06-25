@@ -63,7 +63,7 @@ function pinch_hit_score(game) {
   // ── THE KEY LINKAGE BONUS ──
   // If a fresh arm is available next inning, pinch-hitting is nearly free — you gain the bat AND change pitchers anyway
   if (fresh_arm_available_next_inning(game)) {
-    s += 15;  // $3 bonus: makes AI pinch-hit like a manager
+    s += 35;  // Big bonus: pitcher being replaced anyway, PH is free offense
   }
   
   // ── Reliever efficiency ──
@@ -103,15 +103,14 @@ function safe_to_pinch_hit(game) {
  * This is the KEY piece that links pinch-hitting to bullpen management.
  */
 function fresh_arm_available_next_inning(game) {
-  // Is there a reliever in the bullpen who's rested and hasn't pitched this inning?
+  // Is there any reliever in the bullpen who hasn't pitched this inning?
+  // Bullpen players don't carry a 'rested' flag — just check they exist and weren't used this inning.
   if (!game.bullpen || game.bullpen.length === 0) {
     return false;
   }
   
-  return game.bullpen.some(p => 
-    p.rested && 
-    (!game.used_this_inning || !game.used_this_inning.includes(p.name))
-  );
+  const usedThisInning = game.used_this_inning || [];
+  return game.bullpen.some(p => !usedThisInning.includes(p.name));
 }
 
 /**
