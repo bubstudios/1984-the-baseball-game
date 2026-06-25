@@ -17,16 +17,16 @@ export const CARD_IMAGES = {
   'Howard Johnson':   BASE + '6130771ea_images2.jpeg',
   'Dan Petry':        BASE + 'a7f54a8b2_generated_image.png',
   'Aurelio Lopez':    BASE + 'f5e7d8ee7_generated_image.png',
-  'Barbaro Garbey':   BASE + '832be5879_generated_image.png',
+  'Barbaro Garbey':   BASE + 'e23303856_images3.jpeg',
   'Milt Wilcox':      BASE + '235b47516_generated_image.png',
-  'Tom Brookens':     BASE + '260bfb07f_generated_image.png',
+  'Tom Brookens':     BASE + 'fcd9ce7ec_images7.jpeg',
   'Juan Berenguer':   BASE + 'f5e7d8ee7_generated_image.png', // shared reliever image
   'Doug Bair':        BASE + 'f5e7d8ee7_generated_image.png',
   'Bill Scherrer':    BASE + 'f5e7d8ee7_generated_image.png',
   'Sid Monge':        BASE + 'f5e7d8ee7_generated_image.png',
-  'Marty Castillo':   BASE + '6c8955118_generated_image.png', // shared catcher image
-  'Dave Bergman':     BASE + '2ade65487_generated_image.png',
-  'Rusty Kuntz':      BASE + '7847028b2_generated_image.png',
+  'Marty Castillo':   BASE + '2c4caf7d1_images6.jpeg',
+  'Dave Bergman':     BASE + '472b009ee_images4.jpeg',
+  'Rusty Kuntz':      BASE + '8b34102be_images5.jpeg',
   'Johnny Grubb':     BASE + '7847028b2_generated_image.png',
 
   // ── CHICAGO CUBS ──
