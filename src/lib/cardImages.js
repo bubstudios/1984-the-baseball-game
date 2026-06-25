@@ -11,7 +11,7 @@ export const CARD_IMAGES = {
   'Jack Morris':      BASE + '5f8538fdc_images9.jpeg',
   'Willie Hernandez': BASE + '819453609_images12.jpeg',
   'Lance Parrish':    BASE + '6a58f229c_61pc4NksxKL_AC_SL1094_.jpg',
-  'Darrell Evans':    BASE + '2ade65487_generated_image.png',
+  'Darrell Evans':    BASE + '62c0e766a_images.jpeg',
   'Chet Lemon':       BASE + '741c6bad9_images1.jpeg',
   'Larry Herndon':    BASE + '0df9b1cfe_s-l1200.jpg',
   'Howard Johnson':   BASE + '6130771ea_images2.jpeg',
