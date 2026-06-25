@@ -41,6 +41,9 @@ import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
 import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement, trackHomeRunDistance, trackGameRecords, trackPlayersUsed, trackTimePlayed } from '@/lib/achievements';
 import AchievementPopup from '@/components/game/AchievementPopup';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
+import AttractiveAdBanner from '@/components/game/AttractiveAdBanner';
+import BannerPopup from '@/components/game/BannerPopup';
+import { PADRES_BANNERS } from '@/lib/bannerData/padresBanners';
 
 import WinCelebration from '@/components/game/WinCelebration';
 import { getVictoryCall } from '@/lib/victoryCalls';
@@ -82,7 +85,11 @@ export default function Home() {
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
   const prevLogLength = useRef(0);
+  const prevHalfInning = useRef(null);
   const [showStretch, setShowStretch] = useState(null);
+  const [bannerQueue, setBannerQueue] = useState([]);
+  const [activeBanner, setActiveBanner] = useState(null);
+  const [bannerPopup, setBannerPopup] = useState(null);
   const [beanballEvent, setBeanballEvent] = useState(null);
   const [cardAward, setCardAward] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
@@ -340,6 +347,28 @@ export default function Home() {
     }
 
     prevLogLength.current = gameState.log.length;
+
+    // ── Trigger banner at inning end (innings 1-8 only, never 9+) ──
+    const currentHalf = gameState.halfInning;
+    if (prevHalfInning.current !== currentHalf && !gameState.gameOver) {
+      // Just transitioned to a new half-inning
+      // Show banner at the END of the just-completed half-inning (not the new one)
+      const completedInning = gameState.inning;
+      const wasTopInning = prevHalfInning.current === 'top';
+      
+      // If we just finished a top inning and moving to bottom, show banner after top
+      // If we just finished a bottom inning and moving to top+1, show banner after bottom
+      if (!wasTopInning && completedInning <= 8) {
+        // Just finished a bottom inning — eligible for banner
+        const randomBanner = PADRES_BANNERS[Math.floor(Math.random() * PADRES_BANNERS.length)];
+        setActiveBanner(randomBanner);
+      } else if (wasTopInning && completedInning <= 8) {
+        // Just finished a top inning — eligible for banner
+        const randomBanner = PADRES_BANNERS[Math.floor(Math.random() * PADRES_BANNERS.length)];
+        setActiveBanner(randomBanner);
+      }
+    }
+    prevHalfInning.current = currentHalf;
 
     // Game-over: handler path processes achievements via finally block.
     // No need to double-process here — trackGameCompleted is not idempotent.
@@ -801,7 +830,10 @@ export default function Home() {
     setInjuryResult(null);
     prevGameOver.current = false;
     prevLogLength.current = 0;
+    prevHalfInning.current = null;
     setShowStretch(null);
+    setActiveBanner(null);
+    setBannerPopup(null);
     setBeanballEvent(null);
     setEjectionResult(null);
     setCardAward(null);
@@ -1140,6 +1172,21 @@ export default function Home() {
       )}
 
 
+
+      {/* Banner and Popup */}
+      {activeBanner && (
+        <AttractiveAdBanner
+          banner={activeBanner}
+          onTap={() => setBannerPopup(activeBanner)}
+          autoHideMs={12000}
+        />
+      )}
+      {bannerPopup && (
+        <BannerPopup
+          banner={bannerPopup}
+          onClose={() => setBannerPopup(null)}
+        />
+      )}
 
       {/* Fan Chirp Toast — teal bubble from the stands */}
       {gameState && !gameState.gameOver && (
