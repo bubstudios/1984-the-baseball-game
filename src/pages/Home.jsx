@@ -153,7 +153,10 @@ export default function Home() {
 
   const handleBallparkConfirm = useCallback((parkTeam, useDHFlag, weather, umpire) => {
     setSelectedUmpire(umpire);
-    setLineupPhase({ home: ballparkPhase.home, away: ballparkPhase.away, useDH: useDHFlag, parkTeam, weather });
+    // Ballpark's team is always home; swap if needed
+    const homeTeam = parkTeam;
+    const awayTeam = parkTeam === ballparkPhase.home ? ballparkPhase.away : ballparkPhase.home;
+    setLineupPhase({ home: homeTeam, away: awayTeam, useDH: useDHFlag, parkTeam, weather });
     setBallparkPhase(null);
   }, [ballparkPhase]);
 
@@ -606,14 +609,11 @@ export default function Home() {
        // Handle Reach Back specialty pitch
        const isReachBack = pitchName === '__reachback__';
        const pitchObj = isReachBack ? { name: '__reachback__' } : (PITCH_TYPES[pitchName] || PITCH_TYPES["Fastball"]);
-       console.log('Processing pitch:', pitchName, 'cpuSwing:', cpuSwing);
        const resultState = processAtBat(updatedState, pitchObj, SWING_TYPES[cpuSwing]);
-       console.log('After processAtBat:', resultState);
 
        // CPU may make substitutions after the at-bat
        const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
        if (afterSubs.gameOver) endingState = afterSubs;
-       console.log('Setting game state with new play:', afterSubs.lastPlay);
        setGameState(afterSubs);
 
        // Process ballpark events — check if a giveaway event occurred
@@ -651,14 +651,11 @@ export default function Home() {
     let endingState = null;
     try {
       const cpuPitch = cpuSelectPitch(gameState);
-      console.log('Swing:', swingIndex, 'CPU pitch:', cpuPitch);
       const resultState = processAtBat(gameState, PITCH_TYPES[cpuPitch], SWING_TYPES[swingIndex]);
-      console.log('After processAtBat:', resultState);
 
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
       if (afterSubs.gameOver) endingState = afterSubs;
-      console.log('Setting game state with new play:', afterSubs.lastPlay);
       setGameState(afterSubs);
 
       // Process ballpark events — check if a giveaway event occurred
