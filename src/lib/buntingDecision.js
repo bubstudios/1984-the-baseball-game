@@ -153,12 +153,14 @@ function resolveSacBunt(batter, game) {
   
   if (roll < cleanSacChance) {
     // ── CLEAN SAC (SUCCESS) ──
+    // Pitcher got the out, but conceded a base advancement.
+    // Small penalty — roughly neutral, but not a positive.
     return {
       type: 'sacrifice_success',
       text: `${batter.name} lays down a perfect sacrifice bunt — runner advances, batter out.`,
       batterOut: true,
       success: true,
-      composureDelta: 0,  // ZERO penalty — he did his job!
+      composureDelta: -2,  // Small penalty for conceding base, slight morale sting
     };
   } else if (roll < cleanSacChance + 0.15) {
     // ── BUNT SINGLE (rare, good defense slow) ──
