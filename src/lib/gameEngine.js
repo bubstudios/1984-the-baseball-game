@@ -43,6 +43,7 @@ import { rollCollision, rollTakeoutSlide } from './collisions';
 import { maybeGetAnnouncerHRCall } from './announcerHRCalls';
 import { calculateHomeRunDistance } from './homeRunDistance';
 import { initializePitcherComposure, applyEventDelta, recoverComposure, checkMinorIssue, checkMajorAction, getBehaviorZone, BEHAVIOR_ZONES } from './pitcherComposure';
+import { rollComposureEvent } from './composureEvents';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -191,6 +192,66 @@ function applyComposureFromLastPlay(state, pitcher) {
   };
   const eventType = typeMap[lp.type];
   if (eventType) applyComposure(pitcher, state, eventType);
+}
+
+// ── Composure-driven events: minor issues & major actions ──
+// Called after composure updates — rolls for meltdowns based on current zone
+function processComposureEvents(state, pitcher) {
+  const event = rollComposureEvent(state, pitcher);
+  if (!event) return;
+
+  switch (event.action) {
+    case 'minor':
+      state.log.push({ type: 'info', text: `😤 ${event.text}` });
+      break;
+    case 'argument':
+      state.log.push({ type: 'ejection', text: `🟥 ${event.text}` });
+      if (event.alreadyWarned) {
+        const pitchingSide = state.homePitcher?.name === pitcher.name ? 'home' : 'away';
+        state[pitchingSide === 'home' ? '_homePitcherEjected' : '_awayPitcherEjected'] = true;
+        state[pitchingSide === 'home' ? '_homeManagerEjected' : '_awayManagerEjected'] = true;
+        state._pendingEjectionReplacement = true;
+        if (!state._beanball) state._beanball = {};
+        state._beanball.autoEjectionPitcher = pitcher.name;
+        state._beanball.autoEjectionSide = pitchingSide;
+        state.log.push({ type: 'ejection', text: `🟥 ${pitcher.name} is EJECTED for arguing! The manager is tossed too!` });
+      }
+      break;
+    case 'throwat':
+      if (!state._beanball) state._beanball = {};
+      state._beanball.tension = Math.min(100, (state._beanball.tension || 0) + 25);
+      state.log.push({ type: 'info', text: `⚡ ${event.text}` });
+      break;
+    case 'walkoff':
+      pitcher._composure.composure = Math.max(0, pitcher._composure.composure - event.dropAmount);
+      state.log.push({ type: 'info', text: `😤 ${event.text}` });
+      state._celebrationBubble = `😤 ${event.text}`;
+      break;
+    case 'wildpitch':
+      if (event.hasRunners) {
+        let scored = null;
+        for (let i = 2; i >= 0; i--) {
+          if (state.bases[i]) {
+            if (i + 1 >= 3) {
+              state.bases[i].gameStats.runs++;
+              scoreRun(state);
+              scored = state.bases[i];
+              state.bases[i] = null;
+            } else if (!state.bases[i + 1]) {
+              state.bases[i + 1] = state.bases[i];
+              state.bases[i] = null;
+            }
+          }
+        }
+        const desc = scored
+          ? `${event.text} ${scored.name.split(' ').pop()} scores!`
+          : `${event.text} Runners advance!`;
+        state.log.push({ type: 'error', text: desc });
+      } else {
+        state.log.push({ type: 'info', text: `⚡ ${pitcher.name} spikes one into the dirt — no damage done.` });
+      }
+      break;
+  }
 }
 
 export { TEAM_IDS };
@@ -1313,6 +1374,7 @@ export function processAtBat(state, pitchType, swingType) {
     if (!newState.gameOver) runInjuryChecks(newState, bjb);
     if (!newState.gameOver && !newState.lastInjury) { const pi = checkPitcherInjury(newState); if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); } }
     applyComposureFromLastPlay(newState, pitcher);
+    processComposureEvents(newState, pitcher);
     return newState;
   }
 
@@ -1349,6 +1411,7 @@ export function processAtBat(state, pitchType, swingType) {
     }
   }
   applyComposureFromLastPlay(newState, pitcher);
+  processComposureEvents(newState, pitcher);
   return newState;
 }
 
