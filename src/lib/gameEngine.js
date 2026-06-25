@@ -1726,6 +1726,17 @@ export function processAtBat(state, pitchType, swingType) {
       if (newState.outs >= 3) {
         endHalfInning(newState);
       }
+
+      // ── Run post-play checks (injury, composure, collision) — same as normal swings ──
+      if (!newState.gameOver) runInjuryChecks(newState, bjb);
+      if (!newState.gameOver && !newState.lastInjury) {
+        const pi = checkPitcherInjury(newState);
+        if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); }
+      }
+      const pitcher = getCurrentPitcher(newState);
+      applyComposureFromLastPlay(newState, pitcher);
+      processComposureEvents(newState, pitcher);
+
       return newState;  // CRITICAL: Return immediately — do NOT process another at-bat in this call
     }
   }
