@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS, PITCH_TYPES, SWING_TYPES, MANAGERS } from '@/lib/gameData';
-import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk, getDefensivePlayers } from '@/lib/gameEngine';
+import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk } from '@/lib/gameEngine';
 import { applyWeatherEffects } from '@/lib/weather';
 import TeamSelect from '@/components/game/TeamSelect';
 import BallparkSelect from '@/components/game/BallparkSelect';
@@ -298,9 +298,7 @@ export default function Home() {
         if (entry.type === 'caughtstealing' && entry.text) {
           const runnerMatch = entry.text.match(/❌\s+(.+?)\s+—/);
           const runnerName = runnerMatch ? runnerMatch[1] : 'the runner';
-          const catcher = getDefensivePlayers(gameState)?.['C'];
-          const catcherName = catcher?.name || 'The catcher';
-          setCatcherThrowOut({ catcher: catcherName, runner: runnerName });
+          setCatcherThrowOut({ catcher: 'The catcher', runner: runnerName });
         }
       });
     }
