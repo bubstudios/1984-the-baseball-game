@@ -538,10 +538,10 @@ export default function Home() {
           const isNew = !getCollectedIds(userTeam).includes(card.id);
           const achievementIds = addCard(userTeam, card.id);
           saveToStorage(userTeam);
-          setCardAward({ ...card, isNew });
+          setTimeout(() => setCardAward({ ...card, isNew }), 3000);
           if (achievementIds.length > 0) {
             setNewAchievements(prev => [...prev, ...achievementIds]);
-            setShowAchievementPopup(true);
+            setTimeout(() => setShowAchievementPopup(true), 3500);
           }
         }
       } catch (e) { console.error('cardAward failed:', e); }
@@ -551,7 +551,7 @@ export default function Home() {
       const newOnes = checkGameAchievements(state, userTeam);
       if (newOnes.length > 0) {
         setNewAchievements(newOnes);
-        setShowAchievementPopup(true);
+        setTimeout(() => setShowAchievementPopup(true), 3500);
       }
     } catch (e) {
       console.error('checkGameAchievements failed:', e);

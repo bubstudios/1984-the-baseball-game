@@ -1375,7 +1375,10 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const reachBackPitcher = wasReachBack && pitcher?.specialty ? pitcher : null;
 
   let text;
-  if (wasReachBack && reachBackPitcher) {
+  // ── Game over: show the final play text as the headline, not random color commentary ──
+  if (gameState?.gameOver && hasPlayResult) {
+    text = lastPlay.text;
+  } else if (wasReachBack && reachBackPitcher) {
     // Super pitch announcer call — mention the signature weapon
     const spName = reachBackPitcher.specialty?.name || reachBackPitcher.specialty;
     const calls = [
