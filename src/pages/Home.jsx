@@ -307,7 +307,7 @@ export default function Home() {
          if (entry.type === 'homerun' || (entry.type === 'info' && entry.text && (entry.text.startsWith('🌟') || entry.text.startsWith('🔥') || entry.text.startsWith('🎉') || entry.text.startsWith('✨')))) {
            const displayText = entry.type === 'homerun' ? entry.text : entry.text;
            setCelebrationPopup(displayText);
-           setTimeout(() => setCelebrationPopup(null), 4000);
+           setTimeout(() => setCelebrationPopup(null), 7500);
          }
         // Trigger catcher popup on caught stealing
         if (entry.type === 'caughtstealing' && entry.text) {

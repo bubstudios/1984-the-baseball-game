@@ -491,11 +491,12 @@ function recordOut(state) {
 }
 
 function endHalfInning(state) {
-  const home = TEAMS[state.homeTeam], away = TEAMS[state.awayTeam];
-  const half = state.halfInning === 'top' ? 'away' : 'home';
-  if (!state.innings[state.inning - 1]) state.innings[state.inning - 1] = { home: null, away: null };
-  if (state.innings[state.inning - 1][half] === null) state.innings[state.inning - 1][half] = 0;
-  state.outs = 0; state.balls = 0; state.strikes = 0; state.bases = [null, null, null]; state.hitAndRun = false; state.pendingSteal = null;
+   const home = TEAMS[state.homeTeam], away = TEAMS[state.awayTeam];
+   const half = state.halfInning === 'top' ? 'away' : 'home';
+   if (!state.innings[state.inning - 1]) state.innings[state.inning - 1] = { home: null, away: null };
+   if (state.innings[state.inning - 1][half] === null) state.innings[state.inning - 1][half] = 0;
+   state.outs = 0; state.balls = 0; state.strikes = 0; state.bases = [null, null, null]; state.hitAndRun = false; state.pendingSteal = null;
+   state._inningJustEnded = true;  // Flag for pitcher celebration
   
   // ── Pitcher composure recovery at half-inning boundary (gated by lead state) ──
    const pitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
@@ -1098,9 +1099,11 @@ function resolveSwing(state, swingType, pitch) {
     if (out.isDivingCatch) {
       const fc = rollFielderCelebration(TEAMS[state.homeTeam]?.stadium); if (fc) state.log.push({ type: 'info', text: `🎉 ${fc}` });
     }
-    if (state.outs === 0 && !state.gameOver) { // outs just reset to 0 = inning ended
+    // Only celebrate retire-side on actual inning-ending 3rd out (flagged by endHalfInning)
+    if (state._inningJustEnded && !state.gameOver) {
       const pitcher = getCurrentPitcher(state);
       const rc = rollPitcherRetireSide(pitcher); if (rc) state.log.push({ type: 'info', text: `🔥 ${rc}` });
+      state._inningJustEnded = false;
     }
   }
 }
