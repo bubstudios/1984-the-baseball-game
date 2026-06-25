@@ -881,7 +881,9 @@ function resolveSwing(state, swingType, pitch) {
       state.lastPlay = { type: 'single', text: singleText };
     }
     state.balls = 0; state.strikes = 0; advanceBatter(state);
-    if (state.lastPlay && ['single', 'double', 'triple'].includes(state.lastPlay.type) && !state.gameOver) {
+    // Only process aggressive base advancement on OUTFIELD hits (single to OF or beyond), not infield plays
+    const isOutfieldHit = state.lastPlay && ['single', 'double', 'triple'].includes(state.lastPlay.type) && hitDirection && (hitDirection.includes('LF') || hitDirection.includes('CF') || hitDirection.includes('RF') || hitDirection.includes('LCF') || hitDirection.includes('RCF'));
+    if (isOutfieldHit && !state.gameOver) {
       processPostHitBaserunning(state, state.lastPlay.type, batter, defenders);
     }
   } else {
