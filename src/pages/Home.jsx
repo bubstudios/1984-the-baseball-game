@@ -130,6 +130,7 @@ export default function Home() {
     setGameStadium(stadium);
     setGameWeather(weather || null);
     const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire, startingPitcher, opponentStartingPitcher);
+    state.userTeam = home; // CRITICAL: gates in getControllingTeam() read state.userTeam to distinguish CPU from user
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
