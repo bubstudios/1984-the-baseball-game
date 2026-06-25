@@ -48,6 +48,7 @@ import { rollComposureEvent } from './composureEvents';
 import { shouldBunt, resolveBunt } from './buntingDecision';
 import { shouldPinchHit, choose_pinch_hitter, resolvePinchHit } from './pinchHittingDecision';
 import { shouldIntentionalWalk, issue_ibb } from './intentionalWalkDecision';
+import { choose_alignment, apply_alignment_modifiers, expect_bunt } from './defensivePositioning';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -928,15 +929,47 @@ function resolveSwing(state, swingType, pitch) {
       if (fielder) { const adjF = getAdjustedPlayer(fielder); if (Math.random() < getErrorChance(fielder.name) * adjF.errorMult * errorWx) { batter.gameStats.ab++; pitcher.gameStats.er++; advanceRunners(state, 1, batter, false); const errText = `❌ ${fielder.name} ${pickLine(ERROR_LINES)} ${batter.name} reaches on an error!`; state.log.push({ type: 'error', text: errText }); state.lastPlay = { type: 'error', text: errText }; state.balls = 0; state.strikes = 0; advanceBatter(state); return; } }
     }
     if (isGrounder) {
+      // ── Apply alignment modifiers (Phase 3.0) ──
+      const alignmentMod = apply_alignment_modifiers(state._defensiveAlignment, {
+        type: 'grounder',
+        location: out.pos,
+        play_at_plate_available: !!state.bases[2],
+      }, {});
+      
+      // Infield single check with alignment mods
       const fielder = defenders[out.pos];
-      if (fielder) { const af = getAdjustedPlayer(fielder); const rp2 = af.pos !== (af.assignedPos || af.pos) ? 0.06 : 0; const ihc = Math.max(0, (batter.speed / 10) * 0.30 - (af.arm / 10) * 0.15 - (af.defenseAdj / 10) * 0.05 + rp2); if (Math.random() < ihc) { batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++; // Infield single: runners advance at most one base, no scoring from 2nd
-      for (let br = 2; br >= 0; br--) {
-        if (state.bases[br]) {
-          if (br + 1 >= 3) { state.bases[br].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[br] = null; }
-          else if (!state.bases[br + 1]) { state.bases[br + 1] = state.bases[br]; state.bases[br] = null; }
+      if (fielder) { 
+        const af = getAdjustedPlayer(fielder); 
+        const rp2 = af.pos !== (af.assignedPos || af.pos) ? 0.06 : 0; 
+        let ihc = Math.max(0, (batter.speed / 10) * 0.30 - (af.arm / 10) * 0.15 - (af.defenseAdj / 10) * 0.05 + rp2);
+        
+        // Apply through-infield modifier if present
+        if (alignmentMod.through_infield_for_hit_prob) {
+          ihc += alignmentMod.through_infield_for_hit_prob;
         }
+        ihc = Math.max(0, Math.min(1, ihc));
+        
+        if (Math.random() < ihc) { 
+          batter.gameStats.ab++; 
+          batter.gameStats.hits++; 
+          pitcher.gameStats.h++; 
+          // Infield single: runners advance at most one base, no scoring from 2nd
+          for (let br = 2; br >= 0; br--) {
+            if (state.bases[br]) {
+              if (br + 1 >= 3) { state.bases[br].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[br] = null; }
+              else if (!state.bases[br + 1]) { state.bases[br + 1] = state.bases[br]; state.bases[br] = null; }
+            }
+          }
+          state.bases[0] = batter; 
+          const isText = `${batter.name} beats it out — infield single past ${fielder.name}!`; 
+          state.log.push({ type: 'single', text: isText }); 
+          state.lastPlay = { type: 'single', text: isText }; 
+          state.balls = 0; 
+          state.strikes = 0; 
+          advanceBatter(state); 
+          return; 
+        } 
       }
-      state.bases[0] = batter; const isText = `${batter.name} beats it out — infield single past ${fielder.name}!`; state.log.push({ type: 'single', text: isText }); state.lastPlay = { type: 'single', text: isText }; state.balls = 0; state.strikes = 0; advanceBatter(state); return; } }
     }
     if (isGrounder) {
       const r1 = state.bases[0], r2 = state.bases[1];
@@ -1349,6 +1382,26 @@ export function processAtBat(state, pitchType, swingType) {
    const oppScore = newState.score[userSide === 'home' ? 'away' : 'home'];
    const preLead = userScore > oppScore ? 'ahead' : userScore === oppScore ? 'tied' : 'behind';
    newState._pitcherLeadState = preLead;
+   
+   // ── PHASE 3.0: DEFENSIVE POSITIONING (per plate appearance) ──
+   const defensiveAlignment = choose_alignment({
+     runner_on_3rd: !!newState.bases[2],
+     runner_on_1st: !!newState.bases[0],
+     outs: newState.outs,
+     inning: newState.inning,
+     score_margin: newState.score[userSide] - newState.score[userSide === 'home' ? 'away' : 'home'],
+     current_pitcher_leads_by: (by1, by2) => {
+       const margin = newState.score[userSide] - newState.score[userSide === 'home' ? 'away' : 'home'];
+       return margin >= by1 && margin <= by2;
+     },
+     current_batter_pwr: getCurrentBatter(newState).power || 5,
+     expect_bunt: expect_bunt({
+       batter_is_pitcher: getCurrentBatter(newState).is_pitcher || getCurrentBatter(newState).pos === 'SP',
+       runner_on_1st: !!newState.bases[0],
+       outs: newState.outs,
+     }),
+   });
+   newState._defensiveAlignment = defensiveAlignment;
    
    // ── PHASE 2.9: INTENTIONAL WALK DECISION GATE (fresh count only) ──
    // Only evaluate at the START of a plate appearance (0-0 count)
