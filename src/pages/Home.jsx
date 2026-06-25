@@ -566,7 +566,7 @@ export default function Home() {
   const isUserPitching = gameState && !isUserBatting;
 
   const handlePitch = useCallback((pitchName) => {
-    if (!gameState || gameState.gameOver || processing) return;
+    if (!gameState || gameState.gameOver) return;
     setProcessing(true);
     let endingState = null;
     try {
@@ -618,10 +618,10 @@ export default function Home() {
       }
       setProcessing(false);
     }
-  }, [gameState, processing, userTeam, processGameOver]);
+  }, [gameState, userTeam, processGameOver]);
 
   const handleSwing = useCallback((swingIndex) => {
-    if (!gameState || gameState.gameOver || processing) return;
+    if (!gameState || gameState.gameOver) return;
     setProcessing(true);
     let endingState = null;
     try {
@@ -663,10 +663,10 @@ export default function Home() {
       }
       setProcessing(false);
     }
-  }, [gameState, processing, userTeam, processGameOver]);
+  }, [gameState, userTeam, processGameOver]);
 
   const handleSteal = useCallback((baseIndex) => {
-    if (!gameState || gameState.gameOver || processing) return;
+    if (!gameState || gameState.gameOver) return;
     setProcessing(true);
     let endingState = null;
     try {
@@ -686,7 +686,7 @@ export default function Home() {
       }
       setProcessing(false);
     }
-  }, [gameState, processing, userTeam, processGameOver]);
+  }, [gameState, userTeam, processGameOver]);
 
   const handleHitAndRun = useCallback(() => {
     if (!gameState || gameState.gameOver || processing) return;
@@ -695,7 +695,7 @@ export default function Home() {
   }, [gameState, processing]);
 
   const handleIntBB = useCallback(() => {
-    if (!gameState || gameState.gameOver || processing) return;
+    if (!gameState || gameState.gameOver) return;
     setProcessing(true);
     let endingState = null;
     try {
@@ -710,7 +710,7 @@ export default function Home() {
       }
       setProcessing(false);
     }
-  }, [gameState, processing, processGameOver]);
+  }, [gameState, processGameOver]);
 
   const handlePinchHit = useCallback((player) => {
     setGameState(prev => {
@@ -1184,13 +1184,13 @@ export default function Home() {
       {/* Caught Stealing Popup */}
       {caughtStealingPopup && (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 animate-in zoom-in-95 fade-in duration-300">
-          <div className="bg-card border-2 border-destructive rounded-xl px-8 py-6 shadow-2xl text-center max-w-sm">
-            <div className="text-4xl mb-3">🎯</div>
-            <p className="font-heading text-xl font-bold text-destructive mb-4">{caughtStealingPopup}</p>
-            <p className="text-sm text-muted-foreground mb-4">Runner caught stealing</p>
+          <div className="bg-card border-2 border-destructive rounded-xl px-4 py-3 shadow-2xl text-center max-w-[200px]">
+            <div className="text-2xl mb-1.5">🎯</div>
+            <p className="font-heading text-sm font-bold text-destructive mb-2">{caughtStealingPopup}</p>
+            <p className="text-[11px] text-muted-foreground mb-2">Runner caught stealing</p>
             <button
               onClick={() => setCaughtStealingPopup(null)}
-              className="font-heading text-sm px-6 py-2 bg-destructive/10 hover:bg-destructive/20 text-destructive rounded-lg transition-colors"
+              className="font-heading text-xs px-4 py-1.5 bg-destructive/10 hover:bg-destructive/20 text-destructive rounded-lg transition-colors"
             >
               Continue
             </button>

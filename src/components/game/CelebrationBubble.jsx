@@ -19,7 +19,7 @@ export default function CelebrationBubble({ celebration }) {
       setTimeout(() => {
         prevCelebration.current = null;
       }, 400);
-    }, 6000);
+    }, 10000);
   }, [celebration]);
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
