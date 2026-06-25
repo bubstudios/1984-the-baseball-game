@@ -91,6 +91,7 @@ export default function Home() {
   const [caughtStealingPopup, setCaughtStealingPopup] = useState(null);
   const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
+  const [celebrationPopupBubble, setCelebrationPopupBubble] = useState(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -346,6 +347,14 @@ export default function Home() {
     // Game-over: handler path processes achievements via finally block.
     // No need to double-process here — trackGameCompleted is not idempotent.
   }, [gameState]);
+
+  // Celebration bubble from game engine
+  useEffect(() => {
+    if (gameState?._celebrationBubble) {
+      setCelebrationPopupBubble(gameState._celebrationBubble);
+      gameState._celebrationBubble = null;
+    }
+  }, [gameState?.log?.length]);
 
   // Argument check via effect after a play resolves
   useEffect(() => {
@@ -1139,7 +1148,7 @@ export default function Home() {
       )}
 
       {/* Celebration Bubble — fire-themed popup for pitcher pumped moments */}
-      <CelebrationBubble celebration={celebrationPopup} />
+      <CelebrationBubble celebration={celebrationPopupBubble} />
 
       {/* Fireworks */}
       <Fireworks trigger={hrTrigger} type="hr" />

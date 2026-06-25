@@ -37,6 +37,8 @@ import { pinchHit, pinchRun, defensiveSwitch, changePitcher } from './substituti
 import { isWallRobable, rollHRRobbery, getRobberyCall, rollDivingCatch, getDivingCatchCall, rollDivingStop, getDivingStopResult, rollRareCatchEvent, getRareCatchCall } from './defensivePlays';
 import { shouldThrowAtBatter, registerHBP, registerHomeRun, registerBigStrikeout, checkForWarning, decayTension, getBeanballContext, checkHomePlateCollision } from './beanball';
 import { rollPitcherKCelebration, rollBatFlip, rollHitCelebration, rollHRAdmire, rollFielderCelebration, rollStaredown, rollPitcherRetireSide } from './celebrations';
+import { pitcherCelebration } from './celebrationSystem';
+import { getStrikeoutSituationType, pickStrikeoutCelebration } from './strikeoutCelebrations';
 import { rollCollision, rollTakeoutSlide } from './collisions';
 import { maybeGetAnnouncerHRCall } from './announcerHRCalls';
 import { calculateHomeRunDistance } from './homeRunDistance';
@@ -629,7 +631,24 @@ function resolveSwing(state, swingType, pitch) {
   if (!(Math.random() < contactChance)) {
     if (!pitch.isStrike && !state.hitAndRun && Math.random() < 0.50 + contactRating * 0.18) { state.balls++; if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; } const pt2 = (pitch.pitchType || '').toLowerCase(); let bl; if (pt2.includes('fast')) bl = pickLine(CALLED_BALL_FASTBALL_LINES); else if (pt2.includes('break') || pt2.includes('curve') || pt2.includes('slider') || pt2.includes('hook')) bl = pickLine(CALLED_BALL_BREAKING_LINES); else if (pt2.includes('change') || pt2.includes('off') || pt2.includes('split') || pt2.includes('fork')) bl = pickLine(CALLED_BALL_CHANGEUP_LINES); else bl = pickLine(CALLED_BALL_GENERIC_LINES); const bt = `Ball ${state.balls} — ${bl}`; state.log.push({ type: 'ball', text: bt }); state.lastPlay = { type: 'ball', text: bt }; return; }
     state.strikes++;
-    if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; registerBigStrikeout(state, pitcher, batter); const isLooking = pitch.location && ['outside corner','inside corner','high strike','low strike','down the middle'].includes(pitch.location) && Math.random() < 0.45; const sl = isLooking ? pickLine(STRIKEOUT_CALLED_LINES) : pickLine(STRIKEOUT_SWINGING_LINES); const msg = sl.endsWith('!') ? `${batter.name} ${sl}` : `${batter.name} ${sl} ${pitch.pitchType}!`; state.log.push({ type: 'strikeout', text: msg }); state.lastPlay = { type: 'strikeout', text: msg }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); const kCelebration = rollPitcherKCelebration(pitcher); if (kCelebration) state.log.push({ type: 'info', text: `🔥 ${kCelebration}` }); if (state.hitAndRun && !state.gameOver) handleHitAndRunCaught(state); return; }
+    if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; registerBigStrikeout(state, pitcher, batter); const isLooking = pitch.location && ['outside corner','inside corner','high strike','low strike','down the middle'].includes(pitch.location) && Math.random() < 0.45; const sl = isLooking ? pickLine(STRIKEOUT_CALLED_LINES) : pickLine(STRIKEOUT_SWINGING_LINES); const msg = sl.endsWith('!') ? `${batter.name} ${sl}` : `${batter.name} ${sl} ${pitch.pitchType}!`; state.log.push({ type: 'strikeout', text: msg }); state.lastPlay = { type: 'strikeout', text: msg }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); 
+
+    // ── New celebration system ──
+    const situationType = getStrikeoutSituationType(state, pitcher, batter);
+    const kCelebCheck = pitcherCelebration(state, situationType);
+    if (kCelebCheck) {
+      const celebText = pickStrikeoutCelebration(situationType) || rollPitcherKCelebration(pitcher);
+      if (celebText) {
+        state._celebrationBubble = celebText;
+        state.log.push({ type: 'info', text: celebText });
+      }
+    } else if (Math.random() < 0.15) {
+      // Legacy fallback for other K moments
+      const kCelebration = rollPitcherKCelebration(pitcher);
+      if (kCelebration) state.log.push({ type: 'info', text: `🔥 ${kCelebration}` });
+    }
+
+    if (state.hitAndRun && !state.gameOver) handleHitAndRunCaught(state); return; }
     if (state.hitAndRun && !state.gameOver) { state.hitAndRun = false; handleHitAndRunMiss(state); }
     {
       const pt = (pitch.pitchType || '').toLowerCase();
