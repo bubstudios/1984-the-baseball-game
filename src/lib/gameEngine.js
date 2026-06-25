@@ -40,6 +40,7 @@ import { rollPitcherKCelebration, rollBatFlip, rollHitCelebration, rollHRAdmire,
 import { rollCollision, rollTakeoutSlide } from './collisions';
 import { maybeGetAnnouncerHRCall } from './announcerHRCalls';
 import { calculateHomeRunDistance } from './homeRunDistance';
+import { initializePitcherComposure, applyEventDelta, recoverComposure, checkMinorIssue, checkMajorAction, getBehaviorZone } from './pitcherComposure';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -142,7 +143,15 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
 }
 
 function createPitcherState(p) {
-  return { ...p, pitchCount: 0, pitches: p.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } };
+  const archetype = p.temperament || 'PROFESSIONAL';  // Default archetype if not specified
+  const composureState = initializePitcherComposure(p, archetype);
+  return { 
+    ...p, 
+    pitchCount: 0, 
+    pitches: p.pitches || DEFAULT_PITCHES, 
+    gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 },
+    _composure: composureState,
+  };
 }
 
 export { TEAM_IDS };
