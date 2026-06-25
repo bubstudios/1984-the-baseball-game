@@ -329,7 +329,8 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
               state.bases[1] = null;
               if (!state._pendingBaseOuts) state._pendingBaseOuts = [];
               state._pendingBaseOuts.push({ text: `❌ ${runnerAt2nd.name} — ${pickLine(RUNNER_FIRST_TO_THIRD_OUT_LINES)}` });
-            } else {
+            } else if (!state.bases[2]) {
+              // Only move to 3rd if the base isn't already occupied (e.g., runner from 2nd stayed)
               state.bases[2] = runnerAt2nd; state.bases[1] = null;
               state.log.push({ type: 'info', text: `${runnerAt2nd.name} wheels to third on the single!` });
             }
