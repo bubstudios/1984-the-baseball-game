@@ -613,7 +613,23 @@ function resolveSwing(state, swingType, pitch) {
     const buntingSkill = (batter.bunting || 3) / 10;
     const sf = batter.speed / 10;
     const pp = isPH ? 0.02 : 1.0;
-    if (Math.random() < ((0.12 + buntingSkill * 0.30 + sf * 0.18) * pp)) { batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++; const rbiB = advanceRunners(state, 1, batter, true); state.log.push({ type: 'single', text: `${batter.name} ${pickLine(BUNT_SINGLE_LINES)}${rbiB ? ` ${rbiB} RBI!` : ''}` }); state.lastPlay = { type: 'single', text: `${batter.name} ${pickLine(BUNT_SINGLE_LINES)}${rbiB ? ` ${rbiB} RBI!` : ''}` }; state.balls = 0; state.strikes = 0; advanceBatter(state); return; }
+    if (Math.random() < ((0.06 + buntingSkill * 0.15 + sf * 0.09) * pp)) {
+      batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
+      // Bunt single: runners advance at most one base — no scoring from 2nd (infield hit)
+      let rbiB = 0;
+      for (let br = 2; br >= 0; br--) {
+        if (state.bases[br]) {
+          if (br + 1 >= 3) { state.bases[br].gameStats.runs++; scoreRun(state); rbiB++; state.bases[br] = null; }
+          else if (!state.bases[br + 1]) { state.bases[br + 1] = state.bases[br]; state.bases[br] = null; }
+        }
+      }
+      state.bases[0] = batter;
+      batter.gameStats.rbi += rbiB; pitcher.gameStats.r += rbiB; pitcher.gameStats.er += rbiB;
+      const buntText = `${batter.name} ${pickLine(BUNT_SINGLE_LINES)}${rbiB ? ` ${rbiB} RBI!` : ''}`;
+      state.log.push({ type: 'single', text: buntText });
+      state.lastPlay = { type: 'single', text: buntText };
+      state.balls = 0; state.strikes = 0; advanceBatter(state); return;
+    }
     else { state.strikes++; if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; state.log.push({ type: 'strikeout', text: `${batter.name} bunts foul for strike three!` }); state.lastPlay = { type: 'strikeout', text: `${batter.name} bunts foul for strike three!` }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } state.log.push({ type: 'foul', text: `${batter.name} fouls off the bunt — strike ${state.strikes}` }); state.lastPlay = { type: 'foul', text: `Foul bunt — strike ${state.strikes}` }; return; }
   }
   const isPower = swingType.name === 'Power Swing', isContact = swingType.name === 'Contact Swing';
