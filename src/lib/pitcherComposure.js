@@ -1,8 +1,11 @@
 /**
- * Pitcher Temperament & Composure System
+ * Pitcher Temperament & Composure System (Phase 2.5)
  * 
- * Tracks emotional state during a game, affecting pitcher behavior and performance.
- * Composure drives volatile outcomes (wild pitches, HBP, errors) and behavior choices.
+ * Tracks emotional state during a game on a 0–100 scale.
+ * - Events have base deltas (scaled 0–100)
+ * - Situational leverage multiplies deltas: inning_weight × score_situation_weight
+ * - Recovery is gated: no healing after blowing a lead
+ * - Carryover cap prevents full reset after blown leads (damage lingers)
  */
 
 // Pitcher archetypes (personality-based volatility & recovery profiles)
@@ -58,20 +61,21 @@ export const BEHAVIOR_ZONES = {
 export function initializePitcherComposure(pitcher, archetype = 'PROFESSIONAL') {
   const arch = PITCHER_ARCHETYPES[archetype] || PITCHER_ARCHETYPES.PROFESSIONAL;
   return {
-    composure: 100,  // Start at 100% composure
+    composure: 100,  // Start at 100 (0–100 scale)
+    baseline: 100,   // Original composure (for gated recovery checks)
+    recovery_cap: 100,  // Max recovery ceiling after blown lead (ratchets down)
     archetype: archetype,
     volatility: arch.volatility,
     recovery: arch.recovery,
     minorIssueChance: arch.minorIssueChance,
     majorActionChance: arch.majorActionChance,
-    // Event counters (for recovery logic)
     strikeCount: 0,
     ballCount: 0,
     hitCount: 0,
     walkCount: 0,
     hbpCount: 0,
     wildPitchCount: 0,
-    lastDeltaInning: 0,  // Track when last delta occurred
+    lastDeltaInning: 0,
   };
 }
 
@@ -86,40 +90,48 @@ export function getBehaviorZone(composure) {
 }
 
 /**
- * Apply an event delta to composure (strike, ball, hit, walk, HBP, etc.)
- * Returns delta object with newComposure and changeAmount
+ * Apply an event delta to composure (0–100 scale).
+ * Leverage multiplier = inning_weight × score_situation_weight
+ * Returns { newComposure, delta, changeAmount }
  */
-export function applyEventDelta(composureState, eventType, inning) {
+export function applyEventDelta(composureState, eventType, leverage = 1.0) {
    let delta = 0;
    const composure = composureState.composure;
    const { volatility } = composureState;
 
-  // Event deltas (negative = losing composure, positive = gaining)
-  const DELTAS = {
-    strike: +3,        // Good for pitcher
-    ball: -2,          // Meh
-    out: +5,           // Great
-    strikeout: +6,     // Big boost
-    single: -4,        // Bad
-    double: -6,        // Worse
-    triple: -8,        // Even worse
-    homerun: -10,      // Worst case
-    walk: -3,          // Annoying
-    hbp: -8,           // Lost control
-    wildpitch: -5,     // Embarrassing
-    error: -4,         // Defense failed
-    caughtstealing: +4, // Good
-    sacfly: -2,        // Slightly negative — run scored
-    doubleplay: +6,    // Big boost
-    foul: +1,          // Slightly positive — pitcher ahead
-    steal: -3,         // Runner swiped a base — annoying
-  };
+  // Base deltas on 0–100 scale (before leverage)
+   const DELTAS = {
+     strikeout: +5,     // Good
+     out: +3,           // Decent
+     foul: +1,          // Minor
+     caughtstealing: +4, // Good
+     walk: -7,          // Bad
+     walk_after_0_2: -12, // Worse (walks after 0–2 count)
+     single: -5,        // Bad
+     double: -6,        // Worse
+     triple: -8,        // Even worse
+     homerun: -15,      // Solo HR
+     homerun_big: -30,  // Go-ahead/grand slam/late & close
+     hbp: -10,          // Lost control
+     wildpitch: -5,     // Embarrassing
+     error: -10,        // Defense failed (pitcher's fault)
+     steal: -3,         // Runner got away
+     sacfly: -2,        // Run scored
+     blownCall: -15,    // Umpire screwed him
+     inning_1_3: +10,   // Clean 1–3 innings
+   };
 
-  delta = DELTAS[eventType] || 0;
+   delta = DELTAS[eventType] || 0;
 
-  // Volatility amplifies both gains and losses
-  const volMult = 1 + (volatility - 5) * 0.05;  // -0.25 to +0.25
-  delta = Math.round(delta * volMult);
+   // Sensitivity: volatility scaling (before leverage)
+   const sensitivity = volatility / 5.0;  // 0.2–2.0x
+   let applied = delta * sensitivity;
+
+   // Apply leverage multiplier (situational scaling)
+   applied = applied * leverage;
+
+   // Clamp to ±100 per swing
+   applied = Math.max(-100, Math.min(100, applied));
 
   // Track event in composure state
   switch (eventType) {
@@ -148,30 +160,93 @@ export function applyEventDelta(composureState, eventType, inning) {
       break;
   }
 
-  composureState.lastDeltaInning = inning;
+  const newComposure = Math.max(0, Math.min(100, composure + applied));
+  return { newComposure, delta: applied, changeAmount: applied };
+  }
 
-  const newComposure = Math.max(0, Math.min(100, composure + delta));
-  return { newComposure, delta, composure: newComposure };
-}
+  /**
+  * Calculate situational leverage multiplier
+  * leverage = inning_weight × score_situation_weight
+  */
+  export function calculateLeverage(inning, gameState) {
+  // Inning weight: late innings matter more
+  const inningWeights = {
+   1: 1.0, 2: 1.0, 3: 1.0,
+   4: 1.1, 5: 1.1,
+   6: 1.25,
+   7: 1.5,
+   8: 1.8,
+   9: 2.2,
+  };
+  const inningWeight = inningWeights[Math.min(inning, 9)] || 2.2;
+
+  // Score situation weight: evaluated AFTER the event resolves
+  // gameState should have updated score
+  const userSide = gameState.homeTeam === gameState.userTeam ? 'home' : 'away';
+  const userScore = gameState.score[userSide];
+  const oppScore = gameState.score[userSide === 'home' ? 'away' : 'home'];
+  const diff = oppScore - userScore;  // negative = user ahead, positive = user behind
+
+  let scoreSitWeight = 1.0;
+  if (diff >= 2) {
+   scoreSitWeight = 2.5;  // Surrenders LEAD (was ahead/tied, now behind)
+  } else if (diff === 1) {
+   scoreSitWeight = 2.5;  // Surrenders LEAD from a tie
+  } else if (diff === 0) {
+   scoreSitWeight = 2.0;  // Ties the game (was ahead)
+  } else if (diff === -1) {
+   scoreSitWeight = 1.2;  // Extends deficit by 1
+  } else {
+   scoreSitWeight = 0.5;  // Garbage time
+  }
+
+  return inningWeight * scoreSitWeight;
+  }
+
+  /**
+  * Apply penalty when pitcher surrenders a lead
+  * Permanently lowers recovery ceiling
+  */
+  export function applyLeadChangePenalty(composureState) {
+  // Lower recovery_cap: can't return to 100 after this
+  composureState.recovery_cap = Math.min(composureState.recovery_cap, 70);
+  // Stack penalty if happens twice
+  if (composureState.recovery_cap <= 70) {
+   composureState.recovery_cap = Math.max(55, composureState.recovery_cap - 10);
+  }
+  }
 
 /**
- * Recovery: each inning, pitcher recovers based on their recovery rating
- * Also resets event counters
+ * Recovery: gated by game state (no healing after blowing lead).
+ * Called end-of-batter AND end-of-inning (both use same gating, NOT a reset).
  */
-export function recoverComposure(composure, composureState) {
-  const { recovery } = composureState;
+export function recoverComposure(composureState, gameState) {
+  const { recovery, recovery_cap } = composureState;
   
-  // Base recovery: 2-8 points per inning depending on recovery rating
-  const baseRecovery = recovery * 0.8;
+  // Gate 1: Check if pitcher just blew the lead
+  const recoveryMode = getRecoveryMode(composureState, gameState);
   
-  // Bonus recovery if pitcher had a clean inning (few events)
-  const recentEvents = (composureState.strikeCount || 0) 
-    + (composureState.ballCount || 0) 
-    + (composureState.hitCount || 0);
+  if (recoveryMode === 'none') {
+    // Blew lead, no recovery, maybe decline
+    if (composureState.composure < composureState.baseline) {
+      composureState.composure = Math.max(0, composureState.composure - 2.0);
+    }
+    return composureState.composure;
+  }
   
-  const cleanInningBonus = recentEvents === 0 ? 5 : 0;
+  // Gate 2: Determine recovery amount
+  let baseRecovery = 0;
+  if (recoveryMode === 'normal') {
+    // Ahead or tied: normal recovery
+    baseRecovery = recovery / 5.0;  // e.g., recovery=6 → 1.2 per cycle
+  } else if (recoveryMode === 'muted') {
+    // Trailing: limited recovery
+    baseRecovery = recovery / 10.0;  // Half speed
+  }
   
-  const recovered = Math.min(100, composure + baseRecovery + cleanInningBonus);
+  // Apply recovery capped at recovery_cap
+  const newComposure = Math.min(recovery_cap, composureState.composure + baseRecovery);
+  composureState.composure = newComposure;
   
   // Reset counters
   composureState.strikeCount = 0;
@@ -179,7 +254,23 @@ export function recoverComposure(composure, composureState) {
   composureState.hitCount = 0;
   composureState.walkCount = 0;
   
-  return recovered;
+  return composureState.composure;
+}
+
+/**
+ * Determine if pitcher can recover this cycle
+ */
+function getRecoveryMode(composureState, gameState) {
+  const userSide = gameState.homeTeam === gameState.userTeam ? 'home' : 'away';
+  const leadState = gameState._pitcherLeadState || 'ahead';  // 'ahead', 'tied', 'behind'
+  
+  if (leadState === 'behind' && gameState._just_lost_lead) {
+    return 'none';  // Just blew it — no recovery
+  }
+  if (leadState === 'behind') {
+    return 'muted';  // Trailing — slow recovery
+  }
+  return 'normal';  // Ahead or tied
 }
 
 /**
