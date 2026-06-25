@@ -501,7 +501,7 @@ function endHalfInning(state) {
   // ── Pitcher composure recovery at half-inning boundary (gated by lead state) ──
    const pitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
    if (pitcher && pitcher._composure) {
-     recoverComposure(pitcher._composure, state);
+     recoverComposure(pitcher._composure, state, 'inning_end');
      // Log recovery if significant
      if (pitcher._composure.composure > 75) {
        state.log.push({ type: 'info', text: `🧠 ${pitcher.name}'s composure is steady at ${Math.round(pitcher._composure.composure)}%` });

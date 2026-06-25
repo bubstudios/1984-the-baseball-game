@@ -108,8 +108,8 @@ export function applyEventDelta(composureState, eventType, leverage = 1.0) {
      walk: -7,          // Bad
      walk_after_0_2: -12, // Worse (walks after 0–2 count)
      single: -5,        // Bad
-     double: -6,        // Worse
-     triple: -8,        // Even worse
+     double: -9,        // Extra-base hit
+     triple: -13,       // Extra-base hit (bigger damage)
      homerun: -15,      // Solo HR
      homerun_big: -30,  // Go-ahead/grand slam/late & close
      hbp: -10,          // Lost control
@@ -127,8 +127,11 @@ export function applyEventDelta(composureState, eventType, leverage = 1.0) {
    const sensitivity = volatility / 5.0;  // 0.2–2.0x
    let applied = delta * sensitivity;
 
-   // Apply leverage multiplier (situational scaling)
+   // Apply leverage multiplier (situational scaling) — ALL negative events
    applied = applied * leverage;
+
+   // Debug logging (set pitcher.debug=true to enable)
+   _log_event(eventType, delta, sensitivity, leverage, applied, composureState.composure);
 
    // Clamp to ±100 per swing
    applied = Math.max(-100, Math.min(100, applied));
@@ -217,22 +220,27 @@ export function applyEventDelta(composureState, eventType, leverage = 1.0) {
   }
 
 /**
- * Recovery: gated by game state (no healing after blowing lead).
- * Called end-of-batter AND end-of-inning (both use same gating, NOT a reset).
- */
-export function recoverComposure(composureState, gameState) {
-  const { recovery, recovery_cap } = composureState;
-  
-  // Gate 1: Check if pitcher just blew the lead
-  const recoveryMode = getRecoveryMode(composureState, gameState);
-  
-  if (recoveryMode === 'none') {
-    // Blew lead, no recovery, maybe decline
-    if (composureState.composure < composureState.baseline) {
-      composureState.composure = Math.max(0, composureState.composure - 2.0);
-    }
-    return composureState.composure;
-  }
+  * Recovery: gated by game state (no healing after blowing lead).
+  * CRITICAL: Recovery ONLY fires on outs or inning-end, NEVER between baserunners.
+  */
+export function recoverComposure(composureState, gameState, outcome = null) {
+   const { recovery, recovery_cap } = composureState;
+
+   // Fix 1: Recovery ONLY on outs or inning-end
+   if (outcome && !['out', 'inning_end'].includes(outcome)) {
+     return composureState.composure;  // hits, walks, runs: NO recovery
+   }
+
+   // Gate 1: Check if pitcher just blew the lead
+   const recoveryMode = getRecoveryMode(composureState, gameState);
+
+   if (recoveryMode === 'none') {
+     // Blew lead, no recovery, maybe decline
+     if (composureState.composure < composureState.baseline) {
+       composureState.composure = Math.max(0, composureState.composure - 2.0);
+     }
+     return composureState.composure;
+   }
   
   // Gate 2: Determine recovery amount
   let baseRecovery = 0;
@@ -311,6 +319,19 @@ export function checkMajorAction(composure, composureState) {
     const actions = ['argument', 'throwat', 'walkoff', 'wildpitch'];
     return actions[Math.floor(Math.random() * actions.length)];
   }
-  
+
   return null;
-}
+  }
+
+  /**
+  * Debug logger: prints per-event delta breakdown (Fix 4)
+  * Enable with pitcher.debug = true during playtesting
+  */
+  function _log_event(eventType, base, sensitivity, leverage, applied, currentComposure) {
+  if (!globalThis.pitcher?.debug) return;
+  const newComp = currentComposure + applied;
+  console.log(
+   `{${eventType}} base=${base.toFixed(1)} sens=${sensitivity.toFixed(2)} ` +
+   `lev=${leverage.toFixed(2)} applied=${applied.toFixed(2)} → comp=${newComp.toFixed(2)}`
+  );
+  }
