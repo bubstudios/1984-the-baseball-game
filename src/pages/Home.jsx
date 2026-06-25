@@ -290,8 +290,9 @@ export default function Home() {
           }
         }
         // Surface celebration lines as popups on the game tab
-        if (entry.type === 'info' && entry.text && (entry.text.startsWith('🔥') || entry.text.startsWith('🎉') || entry.text.startsWith('✨'))) {
-          setCelebrationPopup(entry.text);
+        if (entry.type === 'homerun' || (entry.type === 'info' && entry.text && (entry.text.startsWith('🌟') || entry.text.startsWith('🔥') || entry.text.startsWith('🎉') || entry.text.startsWith('✨')))) {
+          const displayText = entry.type === 'homerun' ? entry.text : entry.text;
+          setCelebrationPopup(displayText);
           setTimeout(() => setCelebrationPopup(null), 4000);
         }
         // Trigger catcher popup on caught stealing
