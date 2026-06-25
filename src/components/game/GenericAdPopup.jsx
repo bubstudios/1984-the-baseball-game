@@ -8,20 +8,20 @@ export default function GenericAdPopup({ entry, onDismiss, questResult }) {
   const completed = questResult?.completedQuest;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={onDismiss}>
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300" onClick={onDismiss}>
       <div
-        className="bg-slate-900 rounded-2xl border-2 max-w-md w-full max-h-[85vh] overflow-y-auto"
-        style={{ borderColor: entry.color }}
+        className="bg-card rounded-2xl border-2 max-w-md w-full max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom-8 shadow-2xl"
+        style={{ borderColor: entry.color || '#f59e0b' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 px-5 py-4 flex items-start justify-between" style={{ background: entry.color + '22', borderBottom: `2px solid ${entry.color}44` }}>
+        <div className="sticky top-0 px-5 py-4 flex items-start justify-between" style={{ background: (entry.color || '#f59e0b') + '22', borderBottom: `2px solid ${(entry.color || '#f59e0b')}44` }}>
           <div className="flex items-center gap-3">
-            <span className="text-3xl">{entry.icon}</span>
-            <h2 className="font-heading text-lg font-bold text-white leading-tight">{entry.title}</h2>
+            <span className="text-4xl animate-bounce">{entry.icon || '🎪'}</span>
+            <h2 className="font-heading text-lg font-bold text-foreground leading-tight">{entry.title}</h2>
           </div>
-          <button onClick={onDismiss} className="p-1 rounded-full hover:bg-white/10 transition-colors ml-2 shrink-0">
-            <X className="w-5 h-5 text-slate-300" />
+          <button onClick={onDismiss} className="p-1 rounded-full hover:bg-foreground/10 transition-colors ml-2 shrink-0">
+            <X className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
 
@@ -35,19 +35,19 @@ export default function GenericAdPopup({ entry, onDismiss, questResult }) {
         )}
 
         {/* Body */}
-        <div className="px-5 py-4">
+        <div className="px-5 py-4 space-y-3">
           {entry.body.split('\n').map((line, i) => {
             const isHeader = line === line.toUpperCase() && line.trim().length > 2 && !line.startsWith('•') && !line.startsWith('-');
             if (!line.trim()) return <div key={i} className="h-2" />;
             if (isHeader) {
               return (
-                <p key={i} className="font-heading text-xs font-bold tracking-widest uppercase mt-3 mb-1" style={{ color: entry.color }}>
+                <p key={i} className="font-heading text-xs font-bold tracking-widest uppercase mt-3 mb-1 text-primary" style={{ color: entry.color || undefined }}>
                   {line}
                 </p>
               );
             }
             return (
-              <p key={i} className="text-sm text-slate-200 font-body leading-relaxed">
+              <p key={i} className="text-sm text-foreground/85 font-body leading-relaxed">
                 {line}
               </p>
             );
@@ -56,24 +56,24 @@ export default function GenericAdPopup({ entry, onDismiss, questResult }) {
 
         {/* Quest Clue Footer */}
         {clue && !completed && (
-          <div className="mx-5 mb-4 rounded-xl px-4 py-3 bg-slate-800 border border-slate-600">
-            <p className="text-[10px] font-heading uppercase tracking-widest text-amber-400/70 mb-1">🗺️ {clue.questName}</p>
-            <p className="text-xs font-body text-slate-300 italic">"{clue.clue}"</p>
+          <div className="mx-5 mb-4 rounded-xl px-4 py-3 bg-muted border border-border">
+            <p className="text-[10px] font-heading uppercase tracking-widest text-primary/70 mb-1">🗺️ {clue.questName}</p>
+            <p className="text-xs font-body text-foreground/80 italic">"{clue.clue}"</p>
             <div className="mt-2 flex items-center gap-2">
-              <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, (clue.progress / clue.goal) * 100)}%`, backgroundColor: entry.color }}
+                  style={{ width: `${Math.min(100, (clue.progress / clue.goal) * 100)}%`, backgroundColor: entry.color || '#f59e0b' }}
                 />
               </div>
-              <span className="text-[10px] font-heading text-slate-400">{clue.progress}/{clue.goal}</span>
+              <span className="text-[10px] font-heading text-muted-foreground">{clue.progress}/{clue.goal}</span>
             </div>
           </div>
         )}
 
         {/* Footer */}
-        <div className="px-5 py-3 border-t border-slate-700 flex justify-end">
-          <button onClick={onDismiss} className="text-xs font-heading text-slate-400 hover:text-white transition-colors">
+        <div className="px-5 py-3 border-t border-border flex justify-end">
+          <button onClick={onDismiss} className="text-xs font-heading text-muted-foreground hover:text-foreground transition-colors">
             tap to close
           </button>
         </div>
