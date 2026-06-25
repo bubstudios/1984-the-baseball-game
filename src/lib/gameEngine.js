@@ -1143,14 +1143,10 @@ function resolveSwing(state, swingType, pitch) {
     if (out.isDivingCatch) {
       const fc = rollFielderCelebration(TEAMS[state.homeTeam]?.stadium); if (fc) state.log.push({ type: 'info', text: `🎉 ${fc}` });
     }
-    // Only celebrate retire-side on actual inning-ending 3rd out (flagged by endHalfInning)
-    if (state._inningJustEnded && !state.gameOver) {
-      // Use the captured pitcher name from when the 3rd out was recorded (before potential substitution)
-      const pitcherObj = state._pitcherRetiredSideName 
-        ? { name: state._pitcherRetiredSideName } 
-        : getCurrentPitcher(state);
+    // Only celebrate retire-side on actual inning-ending 3rd out — check AFTER recordOut
+    if (state.outs >= 3 && state._pitcherRetiredSideName && !state.gameOver) {
+      const pitcherObj = { name: state._pitcherRetiredSideName };
       const rc = rollPitcherRetireSide(pitcherObj); if (rc) state.log.push({ type: 'info', text: `🔥 ${rc}` });
-      state._inningJustEnded = false;
       delete state._pitcherRetiredSideName;
     }
   }
