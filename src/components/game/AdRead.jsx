@@ -409,8 +409,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     }
   };
 
-  // ── Generic Attractive Banner (collapsed state) ──
-  if (isGenericAd && genericAdEntry && !expanded) {
+  // ── Generic Attractive Banner (always use for generic ads) ──
+  if (isGenericAd && genericAdEntry) {
     return <AttractiveAdBanner entry={genericAdEntry} onDismiss={() => { setVisible(false); onDismiss(); }} onClick={handleTap} />;
   }
 
