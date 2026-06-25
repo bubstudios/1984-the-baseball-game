@@ -829,19 +829,17 @@ export default function Home() {
       <>
         <div className="fixed top-4 right-4 z-40 flex gap-2">
           <Button
-            variant="outline"
             size="sm"
             onClick={() => { if (!retroAudio) unlockAudio(); setRetroAudio(!retroAudio); }}
-            className={`h-8 w-8 p-0 rounded-full border-muted-foreground/30 hover:border-primary/50 ${retroAudio ? 'bg-primary/10 border-primary/50' : ''}`}
+            className={`h-9 w-9 p-0 rounded-full ${retroAudio ? 'bg-primary/15 text-primary border-2 border-primary/50' : 'bg-card text-primary border-2 border-primary/40 hover:bg-primary/10'}`}
             title={retroAudio ? 'Retro audio on' : 'Retro audio off'}
           >
             <Radio className="w-4 h-4" />
           </Button>
           <Button
-            variant="outline"
             size="sm"
             onClick={() => setShowTutorial(true)}
-            className="h-8 w-8 p-0 rounded-full border-muted-foreground/30 hover:border-primary/50"
+            className="h-9 w-9 p-0 rounded-full bg-card text-primary border-2 border-primary/40 hover:bg-primary/10 transition-colors"
             title="How to play"
           >
             <HelpCircle className="w-4 h-4" />
