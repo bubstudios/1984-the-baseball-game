@@ -1408,90 +1408,96 @@ export function processAtBat(state, pitchType, swingType) {
    
    // ── PHASE 2.9: INTENTIONAL WALK DECISION GATE (fresh count only) ──
    // Only evaluate at the START of a plate appearance (0-0 count)
+   // CPU-CONTROLLED PITCHERS ONLY — user cannot auto-IBB
    if (newState.balls === 0 && newState.strikes === 0) {
-     const batter = getCurrentBatter(newState);
-     const battingTeam = getBattingTeam(newState);
-     const battingTeamIndex = battingTeam === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
-     const battingLineup = battingTeam === 'home' ? newState.homeLineup : newState.awayLineup;
-     
-     // Get on-deck batter (next in lineup)
-     const onDeckIndex = (battingTeamIndex + 1) % battingLineup.length;
-     const onDeckBatter = battingLineup[onDeckIndex];
-     
-     const ibbGate = shouldIntentionalWalk({
-       current_batter: batter,
-       on_deck_batter: onDeckBatter,
-       runner_on_1st: !!newState.bases[0],
-       runners_on_2nd: !!newState.bases[1],
-       runners_on_3rd: !!newState.bases[2],
-       bases_empty: !newState.bases.some(b => b !== null),
-       outs: newState.outs,
-       inning: newState.inning,
-       score_margin: newState.score[userSide] - newState.score[userSide === 'home' ? 'away' : 'home'],
-       batter_is_hot: newState._batter_hot_streak || false,
-       first_base_open: !newState.bases[0],
-       on_deck_gives_platoon_advantage: false,  // Optional: could add pitch hand logic
-       walk_puts_winning_run_on_base: () => {
-         // Winning run on base if: walk loads runner at scoring position in lead scenario
-         return newState.score[userSide] > newState.score[userSide === 'home' ? 'away' : 'home'] &&
-                newState.bases[2] && newState.bases[0] === null;
-       },
-     });
-     
-     if (ibbGate) {
-       const pitcher = getCurrentPitcher(newState);
-       const ibbResult = issue_ibb({
+     const pitchingSide = newState.halfInning === 'top' ? 'home' : 'away';
+     const isCpuPitching = pitchingSide === (newState.homeTeam === newState.userTeam ? 'away' : 'home');
+
+     if (isCpuPitching) {
+       const batter = getCurrentBatter(newState);
+       const battingTeam = getBattingTeam(newState);
+       const battingTeamIndex = battingTeam === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
+       const battingLineup = battingTeam === 'home' ? newState.homeLineup : newState.awayLineup;
+
+       // Get on-deck batter (next in lineup)
+       const onDeckIndex = (battingTeamIndex + 1) % battingLineup.length;
+       const onDeckBatter = battingLineup[onDeckIndex];
+
+       const ibbGate = shouldIntentionalWalk({
          current_batter: batter,
-         runner_on_1st: newState.bases[0],
-         runner_on_2nd: newState.bases[1],
-         runner_on_3rd: newState.bases[2],
+         on_deck_batter: onDeckBatter,
+         runner_on_1st: !!newState.bases[0],
+         runners_on_2nd: !!newState.bases[1],
+         runners_on_3rd: !!newState.bases[2],
+         bases_empty: !newState.bases.some(b => b !== null),
+         outs: newState.outs,
+         inning: newState.inning,
+         score_margin: newState.score[userSide] - newState.score[userSide === 'home' ? 'away' : 'home'],
+         batter_is_hot: newState._batter_hot_streak || false,
+         first_base_open: !newState.bases[0],
+         on_deck_gives_platoon_advantage: false,  // Optional: could add pitch hand logic
+         walk_puts_winning_run_on_base: () => {
+           // Winning run on base if: walk loads runner at scoring position in lead scenario
+           return newState.score[userSide] > newState.score[userSide === 'home' ? 'away' : 'home'] &&
+                  newState.bases[2] && newState.bases[0] === null;
+         },
        });
-       
-       // Execute the walk
-       batter.gameStats.bb++;
-       pitcher.gameStats.bb++;
-       pitcher.gameStats.pitches += 4;  // Log 4 pitches for IBB
-       
-       // IBB: runners only advance if forced (when 1st base is occupied)
-       const isForce = !!newState.bases[0];
-       if (isForce) {
-         // Forced advance: move all runners up one base
-         if (newState.bases[2]) {
-           newState.bases[2].gameStats.runs++;
-           scoreRun(newState);
-           batter.gameStats.rbi++;
-           pitcher.gameStats.r++;
-           pitcher.gameStats.er++;
+
+       if (ibbGate) {
+         const pitcher = getCurrentPitcher(newState);
+         const ibbResult = issue_ibb({
+           current_batter: batter,
+           runner_on_1st: newState.bases[0],
+           runner_on_2nd: newState.bases[1],
+           runner_on_3rd: newState.bases[2],
+         });
+
+         // Execute the walk
+         batter.gameStats.bb++;
+         pitcher.gameStats.bb++;
+         pitcher.gameStats.pitches += 4;  // Log 4 pitches for IBB
+
+         // IBB: runners only advance if forced (when 1st base is occupied)
+         const isForce = !!newState.bases[0];
+         if (isForce) {
+           // Forced advance: move all runners up one base
+           if (newState.bases[2]) {
+             newState.bases[2].gameStats.runs++;
+             scoreRun(newState);
+             batter.gameStats.rbi++;
+             pitcher.gameStats.r++;
+             pitcher.gameStats.er++;
+           }
+           if (newState.bases[1]) {
+             newState.bases[2] = newState.bases[1];
+           }
+           if (newState.bases[0]) {
+             newState.bases[1] = newState.bases[0];
+           }
          }
-         if (newState.bases[1]) {
-           newState.bases[2] = newState.bases[1];
+         newState.bases[0] = batter;
+
+         // Log
+         newState.log.push({ type: 'walk', text: ibbResult.text });
+         newState.lastPlay = { type: 'walk', text: ibbResult.text, isIBB: true };
+
+         // Composure: pitcher not penalized (managerial call)
+         // Batter walked intentionally = neutral
+         // On-deck hitter = small pressure bonus
+         applyComposure(pitcher, newState, 'ibb_issued');  // Neutral
+
+         newState.balls = 0;
+         newState.strikes = 0;
+         advanceBatter(newState);
+
+         if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) {
+           newState.gameOver = true;
+           newState.waitingForInput = false;
+           newState.log.push({ type: 'info', text: `🎉 Walk-off IBB! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
          }
-         if (newState.bases[0]) {
-           newState.bases[1] = newState.bases[0];
-         }
+
+         return newState;
        }
-       newState.bases[0] = batter;
-       
-       // Log
-       newState.log.push({ type: 'walk', text: ibbResult.text });
-       newState.lastPlay = { type: 'walk', text: ibbResult.text, isIBB: true };
-       
-       // Composure: pitcher not penalized (managerial call)
-       // Batter walked intentionally = neutral
-       // On-deck hitter = small pressure bonus
-       applyComposure(pitcher, newState, 'ibb_issued');  // Neutral
-       
-       newState.balls = 0;
-       newState.strikes = 0;
-       advanceBatter(newState);
-       
-       if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) {
-         newState.gameOver = true;
-         newState.waitingForInput = false;
-         newState.log.push({ type: 'info', text: `🎉 Walk-off IBB! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
-       }
-       
-       return newState;
      }
    }
 
