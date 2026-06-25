@@ -49,6 +49,7 @@ import { shouldBunt, resolveBunt } from './buntingDecision';
 import { shouldPinchHit, choose_pinch_hitter, resolvePinchHit } from './pinchHittingDecision';
 import { shouldIntentionalWalk, issue_ibb } from './intentionalWalkDecision';
 import { choose_alignment, apply_alignment_modifiers, expect_bunt } from './defensivePositioning';
+import { should_double_switch, find_double_switch_partner, execute_double_switch } from './doubleSwitch';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -1804,6 +1805,13 @@ export function intentionalWalk(state) {
 export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const newState = JSON.parse(JSON.stringify(state));
   if (newState.gameOver) return newState;
+  
+  // ── PHASE 3.1: DOUBLE SWITCH (NL parks only, when changing pitchers) ──
+  const ballpark = TEAMS[newState.homeTeam]?.stadium;
+  const has_dh = newState.useDH;
+  const making_pitching_change = false;  // Will be set true if we decide to change pitchers below
+  
+  // (Double switch evaluated later in the pitcher-change section)
 
   // ── Ejection: mark pitcher/manager as ejected but DO NOT auto-replace ──
   // User will be prompted to choose a replacement in Home.jsx
@@ -1937,6 +1945,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
   const shouldChange = (severeFatigue || fatiguePull || walksPull || blowupPull || lateClose) && cpuBullpen.length > 0;
   if (shouldChange) {
+    making_pitching_change = true;  // Flag for double-switch evaluation
     // Bullpen management: closers only in 8th+, mop-up guys in blowouts
     const trailing = cpuScore < userScore;
     const bigDeficit = Math.abs(cpuScore - userScore) >= 4;
@@ -1973,6 +1982,25 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     }
     const reason = severeFatigue ? 'completely gassed' : fatiguePull ? `${ip} innings — arm is tiring` : walksPull ? 'lost command' : blowupPull ? 'rough outing' : 'high-leverage situation';
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
+    
+    // ── PHASE 3.1: Double switch evaluation (NL parks only) ──
+    if (!has_dh && should_double_switch({
+      park_has_dh: has_dh,
+      making_pitcher_change: true,
+      pitcher_lineup_slot: oldPitcher.order || 0,
+      current_batter_lineup_slot: cpuPitchingSide === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex,
+      lineup: cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup,
+    })) {
+      const partner = find_double_switch_partner({
+        position_players_on_field: (cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup).filter(p => !['SP', 'RP', 'CL'].includes(p.assignedPos)),
+        pitcher_lineup_slot: oldPitcher.order || 0,
+        available_bench: TEAMS[cpuPitchingSide === 'home' ? newState.homeTeam : newState.awayTeam]?.bench || [],
+      });
+      
+      if (partner) {
+        execute_double_switch(newState, newPitcher, partner.fielder, partner.bench_replacement, cpuPitchingSide);
+      }
+    }
   }
   return newState;
 }

@@ -152,56 +152,60 @@ function can_play_position(player, position) {
  * Swaps the pitcher and fielder's lineup slots + brings in bench replacement.
  */
 export function execute_double_switch(
-  game,
+  gameState,
   new_pitcher,
   outgoing_fielder,
-  new_fielder
+  new_fielder,
+  pitching_side
 ) {
-  const old_pitcher_slot = game.pitcher_lineup_slot;
-  const fielder_slot = outgoing_fielder.lineup_slot;
+  // Identify which lineup to modify
+  const lineup = pitching_side === 'home' ? gameState.homeLineup : gameState.awayLineup;
+  const bullpen = pitching_side === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
+  const pitcher_obj = pitching_side === 'home' ? gameState.homePitcher : gameState.awayPitcher;
   
-  // Remove old pitcher, add new pitcher to fielder's slot
-  remove_pitcher(game, game.current_pitcher);
-  add_pitcher(game, new_pitcher);
-  new_pitcher.lineup_slot = fielder_slot;
+  // Find positions in lineup
+  const old_pitcher_order = pitcher_obj.order;
+  const fielder_order = outgoing_fielder.order;
   
-  // Remove outgoing fielder, add bench replacement to pitcher's old slot
-  remove_fielder(game, outgoing_fielder);
-  add_fielder(game, new_fielder);
-  new_fielder.lineup_slot = old_pitcher_slot;
+  // Swap: new pitcher takes fielder's order slot, new fielder takes pitcher's order slot
+  new_pitcher.order = fielder_order;
+  new_fielder.order = old_pitcher_order;
+  
+  // Remove old pitcher from lineup if present
+  const pitcher_idx = lineup.findIndex(p => p.name === pitcher_obj.name);
+  if (pitcher_idx >= 0) {
+    lineup[pitcher_idx] = { ...new_pitcher, order: fielder_order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+  }
+  
+  // Remove outgoing fielder, insert new fielder in pitcher's old order slot
+  const fielder_idx = lineup.findIndex(p => p.name === outgoing_fielder.name);
+  if (fielder_idx >= 0) {
+    const fielder_pos = outgoing_fielder.assignedPos || outgoing_fielder.pos;
+    lineup[fielder_idx] = { ...new_fielder, order: old_pitcher_order, assignedPos: fielder_pos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+  }
+  
+  // Update pitcher reference
+  const new_p = { ...new_pitcher, pitchCount: 0, pitches: new_pitcher.pitches || [], gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: { composure: 100, baseline: 100, recovery_cap: 100 } };
+  if (pitching_side === 'home') {
+    gameState.homePitcher = new_p;
+  } else {
+    gameState.awayPitcher = new_p;
+  }
+  
+  // Remove old pitcher from bullpen
+  const bullpen_idx = bullpen.findIndex(p => p.name === pitcher_obj.name);
+  if (bullpen_idx >= 0) {
+    bullpen.splice(bullpen_idx, 1);
+  }
+  
+  // Track history
+  const history_key = pitching_side === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
+  if (!gameState[history_key]) gameState[history_key] = [];
+  if (!gameState[history_key].find(p => p.name === pitcher_obj.name)) {
+    gameState[history_key].push({ ...pitcher_obj });
+  }
   
   // Log the move
-  log_double_switch(
-    game,
-    new_pitcher,
-    new_fielder,
-    old_pitcher_slot,
-    fielder_slot
-  );
-}
-
-/**
- * Log the double switch for commentary + game history.
- */
-function log_double_switch(game, new_pitcher, new_fielder, old_pitcher_slot, fielder_slot) {
-  const msg = `🔄 Double switch: ${new_pitcher.name} comes in to pitch, takes position #${fielder_slot + 1}. ${new_fielder.name} replaces him in the field at slot #${old_pitcher_slot + 1}.`;
-  game.log.push({ type: 'info', text: msg });
-}
-
-// Stub functions for game state manipulation
-// (These would be wired into the actual game state in gameEngine.js)
-function remove_pitcher(game, pitcher) {
-  // Implementation in gameEngine
-}
-
-function add_pitcher(game, pitcher) {
-  // Implementation in gameEngine
-}
-
-function remove_fielder(game, fielder) {
-  // Implementation in gameEngine
-}
-
-function add_fielder(game, fielder) {
-  // Implementation in gameEngine
+  const msg = `🔄 Double switch: ${new_pitcher.name} comes in to pitch (takes #${fielder_order} spot). ${new_fielder.name} replaces him in the field (takes #${old_pitcher_order} spot).`;
+  gameState.log.push({ type: 'info', text: msg });
 }
