@@ -1599,6 +1599,104 @@ registerTeamAds('royals', 'community', [
   "Fred White notes the fountains look particularly blue tonight.",
 ]);
 
+// ── Expos / Montreal (#651–700) ──
+
+registerTeamAds('expos', 'team_promo', [
+  "The Expos continue their homestand tomorrow night at Olympic Stadium.",
+  "Les Expos de Montréal vous remercient de votre soutien — thank you, Montreal!",
+  "The first 10,000 fans this Sunday receive a commemorative Expos team poster.",
+  "Stop by souvenir stands for your official 1984 Expos yearbook.",
+  "Join the Expos for Youth Baseball Day next Saturday afternoon.",
+  "Little League Night returns to Olympic Stadium next week.",
+  "Tim Raines and Gary Carter will appear at a special fan event this weekend.",
+  "Don't miss Bat Day at Olympic Stadium — the first 5,000 youngsters receive a free Louisville Slugger.",
+  "Team Photo Day is coming up — check the scorecard for details.",
+  "Expos Baseball Camp registration is now open for ages 8 through 14.",
+  "Gary Carter will sign autographs this Saturday at Place Bonaventure.",
+  "Group ticket packages are available for remaining Expos homestand games.",
+  "Bring your Little League team out to Olympic Stadium this summer.",
+]);
+
+registerTeamAds('expos', 'sponsor', [
+  "CKAC Radio Montreal — la voix francophone des Expos.",
+  "Dave Van Horne and Duke Snider thank you for listening to Expos baseball.",
+  "Stay tuned to CJAD 800 for complete Expos coverage throughout the season.",
+  "The Expos Radio Network brings baseball to fans across Quebec and the Maritimes.",
+  "Molson Canadian — fière commanditaire des Expos de Montréal.",
+  "Dow Brewery — brassée ici à Montréal depuis 1790.",
+  "La Brasserie Molson vous invite à profiter du match avec un Molson Canadian.",
+  "Les Ailes de la Mode — pour les vrais partisans des Expos.",
+  "Steinberg's Supermarkets — proudly serving Montreal since 1917.",
+  "Eaton's of Montreal invites you to browse their summer collections.",
+  "Pascal Hardware — everything you need for your Montreal home.",
+  "La Caisse Desjardins — la banque coopérative du Québec.",
+]);
+
+registerTeamAds('expos', 'community', [
+  // Olympic Stadium and local landmarks
+  "Bienvenue au Stade Olympique — welcome to Olympic Stadium, home of the Montreal Expos.",
+  "Olympic Stadium stands as a testament to Montreal's 1976 Summer Games.",
+  "The tower of Olympic Stadium is the world's largest inclined tower at 175 meters.",
+  "Visit the Olympic Park complex and discover world-class facilities for all ages.",
+  "The Biodôme — soon to open inside the velodrome — will showcase four ecosystems.",
+  // Montreal neighborhoods and culture
+  "Spend a Sunday morning in Le Plateau-Mont-Royal — the heart of Montreal's artistic soul.",
+  "Stroll through Vieux-Montréal this weekend and experience 350 years of history.",
+  "Visit the Basilique Notre-Dame de Montréal — one of North America's finest churches.",
+  "Place Jacques-Cartier in Old Montreal is the city's outdoor living room in summer.",
+  "The Jean-Talon Market in Little Italy is open six days a week — best produce in the city.",
+  "Atwater Market offers fresh Quebec produce, cheeses, and local specialties.",
+  "Take a walk along Rue Sherbrooke and admire Montreal's architectural heritage.",
+  "Crescent Street is alive with patios, music, and Montreal's famous summer energy.",
+  "Saint-Denis Street in the Quartier Latin — cafés, bookshops, and Quebec culture.",
+  // Quebec pride
+  "Les Québécois sont fiers de leurs Expos — a bilingual city and a bilingual team.",
+  "Baseball in two languages — only in Montreal.",
+  "The Expos represent Quebec on the continental stage. Allez les Expos!",
+  "Tim Raines, Gary Carter, Andre Dawson — this team belongs to Montreal.",
+  // Community events and local flavor
+  "The International Jazz Festival returns to Montreal this July — free outdoor concerts all week.",
+  "Just for Laughs comedy festival is coming — Montreal becomes the comedy capital of the world.",
+  "Montreal's film festival is one of the world's oldest — celebrating the art of cinema.",
+  "Enjoy free outdoor concerts at Parc Lafontaine this summer.",
+  "The Festival des Films du Monde celebrates international cinema right here in Montreal.",
+  "Visit the Musée des Beaux-Arts de Montréal and discover Quebec's artistic tradition.",
+  "The McCord Museum on Sherbrooke Street tells the story of Montreal through the ages.",
+  "Take the metro to any station — Montreal's underground city keeps you cool all summer.",
+  "The Montreal Underground City connects 60 blocks of shops, restaurants, and offices.",
+  "La Main — boulevard Saint-Laurent — divides east and west Montreal and unites them.",
+  // Broadcasters and fan culture
+  "Dave Van Horne calls the play — un jeu magnifique pour les partisans des Expos!",
+  "Expos fans know their baseball. This city has lived and breathed the team since 1969.",
+  "Greetings to Expos fans listening across Quebec, Ontario, and the Maritimes.",
+  "From Laval to Longueuil, from Quebec City to Sherbrooke — merci aux partisans!",
+  "Another beautiful Montreal evening for baseball at the Big Owe.",
+  "The Big O — as some call it — is one of baseball's most distinctive stadiums.",
+  "Denny's of Montreal — open late for Expos fans heading home from the game.",
+  "The traffic on Autoroute 20 is reportedly moving well tonight.",
+  "Take the Pie-IX metro station directly to Olympic Stadium — fast and efficient.",
+  "Bienvenue à tous les partisans — welcome to all fans joining us tonight.",
+  // Quebec food culture
+  "After the game, try a classic Montreal smoked meat sandwich at Schwartz's on Saint-Laurent.",
+  "Fairmount Bagel — open 24 hours — makes the best wood-fired bagels in the world.",
+  "St-Viateur Bagels — the great Montreal bagel debate continues. Either way, you win.",
+  "Poutine at La Banquise on Rachel — the classic Quebec comfort food done right.",
+  "A Montreal-style hot dog — steamed bun, fried sausage, coleslaw — is a thing of beauty.",
+]);
+
+registerTeamAds('expos', 'charity', [
+  "Les Expos de Montréal soutiennent les jeunes de la communauté — supporting youth in Quebec.",
+  "Youth baseball registration is open across the island of Montreal this summer.",
+  "Support Little League programs across Quebec this summer.",
+  "Expos Community Foundation helps youth baseball thrive across the province.",
+  "Volunteer opportunities with Montreal youth sports programs are available this summer — call your local ligue de baseball.",
+  "Help keep baseball strong in Quebec. Sign up to coach a local youth team.",
+  "Donate to your local Montreal community center — keeping youth off the streets and on the diamond.",
+  "The Expos encourage fans to support community organizations throughout Quebec.",
+  "La Croix-Rouge canadienne remercie les bénévoles de Montréal pour leur soutien.",
+  "Montreal's food banks need your support — contact Moisson Montréal to donate.",
+]);
+
 // ── Reds Easter Eggs ──
 
 registerTeamAds('reds', 'community', [
