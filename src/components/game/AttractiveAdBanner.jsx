@@ -26,10 +26,9 @@ export default function AttractiveAdBanner({ entry, onDismiss, onClick }) {
   const accentColor = accentColors[entry.type] || 'border-amber-600/40';
 
   return (
-    <div className="animate-in slide-in-from-bottom-4 fade-in duration-300">
-      <button
-        onClick={handleClick}
-        className={`w-full bg-background/80 backdrop-blur border-2 ${accentColor} rounded-2xl px-6 py-5 text-center transition-all hover:bg-background/95 hover:border-amber-600/60 active:scale-95 group`}
+    <div className="animate-in slide-in-from-bottom-4 fade-in duration-300" onClick={handleClick}>
+      <div
+        className={`w-full bg-background/80 backdrop-blur border-2 ${accentColor} rounded-2xl px-6 py-5 text-center transition-all hover:bg-background/95 hover:border-amber-600/60 active:scale-95 group cursor-pointer`}
       >
         {/* Label/Category */}
         {entry.label && (
@@ -56,6 +55,7 @@ export default function AttractiveAdBanner({ entry, onDismiss, onClick }) {
 
         {/* Close Button */}
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             handleDismiss();
@@ -65,7 +65,7 @@ export default function AttractiveAdBanner({ entry, onDismiss, onClick }) {
         >
           <X className="w-4 h-4" />
         </button>
-      </button>
+      </div>
     </div>
   );
 }
