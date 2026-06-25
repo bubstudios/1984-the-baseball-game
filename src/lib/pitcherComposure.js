@@ -89,9 +89,10 @@ export function getBehaviorZone(composure) {
  * Apply an event delta to composure (strike, ball, hit, walk, HBP, etc.)
  * Returns delta object with newComposure and changeAmount
  */
-export function applyEventDelta(composure, eventType, composureState, inning) {
-  let delta = 0;
-  const { volatility } = composureState;
+export function applyEventDelta(composureState, eventType, inning) {
+   let delta = 0;
+   const composure = composureState.composure;
+   const { volatility } = composureState;
 
   // Event deltas (negative = losing composure, positive = gaining)
   const DELTAS = {
@@ -150,7 +151,7 @@ export function applyEventDelta(composure, eventType, composureState, inning) {
   composureState.lastDeltaInning = inning;
 
   const newComposure = Math.max(0, Math.min(100, composure + delta));
-  return { newComposure, delta };
+  return { newComposure, delta, composure: newComposure };
 }
 
 /**

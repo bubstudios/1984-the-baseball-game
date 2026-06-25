@@ -161,7 +161,7 @@ function createPitcherState(p) {
 // Centralized composure delta — uses an explicit pitcher reference (safe after half-inning flips)
 function applyComposure(pitcher, state, eventType) {
   if (pitcher && pitcher._composure) {
-    const { newComposure } = applyEventDelta(pitcher._composure, eventType, state.inning);
+    const { composure: newComposure } = applyEventDelta(pitcher._composure, eventType, state.inning);
     pitcher._composure.composure = newComposure;
   }
 }
