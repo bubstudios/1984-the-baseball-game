@@ -45,10 +45,12 @@ import AttractiveAdBanner from '@/components/game/AttractiveAdBanner';
 import BannerPopup from '@/components/game/BannerPopup';
 import { PADRES_BANNERS } from '@/lib/bannerData/padresBanners';
 import { DODGERS_BANNERS } from '@/lib/bannerData/dodgersBanners';
+import { REDS_BANNERS } from '@/lib/bannerData/redsBanners';
 
 const TEAM_BANNERS = {
   padres: PADRES_BANNERS,
   dodgers: DODGERS_BANNERS,
+  reds: REDS_BANNERS,
 };
 
 function getBannersForTeam(teamKey) {
