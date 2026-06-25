@@ -41,8 +41,7 @@ import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
 import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement, trackHomeRunDistance, trackGameRecords, trackPlayersUsed, trackTimePlayed } from '@/lib/achievements';
 import AchievementPopup from '@/components/game/AchievementPopup';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
-import { pickAd } from '@/lib/broadcastAds';
-import AdRead from '@/components/game/AdRead';
+
 import WinCelebration from '@/components/game/WinCelebration';
 import { getVictoryCall } from '@/lib/victoryCalls';
 import CardAwardModal from '@/components/game/CardAwardModal';
@@ -83,8 +82,6 @@ export default function Home() {
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
   const prevLogLength = useRef(0);
-  const prevHalfInning = useRef(null);
-  const [showAd, setShowAd] = useState(null);
   const [showStretch, setShowStretch] = useState(null);
   const [beanballEvent, setBeanballEvent] = useState(null);
   const [cardAward, setCardAward] = useState(null);
@@ -342,23 +339,7 @@ export default function Home() {
       setCollisionPopup(lastPlay.text);
     }
 
-    // Trigger ads on half-inning transition or pitching change
-    const currentHalf = gameState.halfInning;
-    if (prevHalfInning.current !== currentHalf && !gameState.gameOver) {
-      // New half-inning started — ad break (only if no ad is currently showing)
-      setShowAd(prev => prev ? prev : pickAd(homeTeam));
-    } else if (gameState.log.length > prevLogLength.current) {
-      // Check newest log entries for pitching changes
-      const newEntries = gameState.log.slice(prevLogLength.current);
-      const hasPitchingChange = newEntries.some(l =>
-        l.type === 'info' && l.text && l.text.includes('replaces') && l.text.includes('on the mound')
-      );
-      if (hasPitchingChange && !gameState.gameOver) {
-        setShowAd(prev => prev ? prev : pickAd(homeTeam));
-      }
-    }
     prevLogLength.current = gameState.log.length;
-    prevHalfInning.current = currentHalf;
 
     // Game-over: handler path processes achievements via finally block.
     // No need to double-process here — trackGameCompleted is not idempotent.
@@ -819,9 +800,7 @@ export default function Home() {
     setSelectedUmpire(null);
     setInjuryResult(null);
     prevGameOver.current = false;
-    prevHalfInning.current = null;
     prevLogLength.current = 0;
-    setShowAd(null);
     setShowStretch(null);
     setBeanballEvent(null);
     setEjectionResult(null);
@@ -1010,22 +989,6 @@ export default function Home() {
                     isDay={gameWeather?.isDay}
                   />
                 </div>
-
-                {/* Ad read — appears between innings / during pitching changes */}
-                {showAd && (
-                   <AdRead
-                     ad={showAd}
-                     onDismiss={() => setShowAd(null)}
-                     autoDismissMs={0}
-                     onAchievement={(ids) => {
-                       if (ids.length > 0) {
-                         setNewAchievements(ids);
-                         setShowAchievementPopup(true);
-                       }
-                     }}
-                     homeTeam={homeTeam}
-                   />
-                 )}
 
                 {/* 7th Inning Stretch banner */}
                 {showStretch && (
