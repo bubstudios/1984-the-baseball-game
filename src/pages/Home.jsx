@@ -637,6 +637,8 @@ export default function Home() {
 
     } catch (e) {
       console.error('handlePitch error:', e);
+      console.error('Stack:', e.stack);
+      alert(`Pitch error: ${e.message}`);
     } finally {
       if (endingState) {
         try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
@@ -679,6 +681,8 @@ export default function Home() {
 
     } catch (e) {
       console.error('handleSwing error:', e);
+      console.error('Stack:', e.stack);
+      alert(`Swing error: ${e.message}`);
     } finally {
       if (endingState) {
         try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
