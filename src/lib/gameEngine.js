@@ -627,12 +627,12 @@ function resolveSwing(state, swingType, pitch) {
   hitChance += (adjBatter.power / 10) * 0.03;
   const defenders = getDefensivePlayers(state);
   let rp = 0; Object.values(defenders).forEach(d => { const adj = getAdjustedPlayer(d); if (adj.pos !== (adj.assignedPos || adj.pos)) rp += 0.010; });
-  hitChance += rp; hitChance = Math.max(0.07, Math.min(hitChance, 0.65));
+  hitChance += rp; hitChance = Math.max(0.11, Math.min(hitChance, 0.75));
   if (Math.random() < hitChance) {
-    pitcher.gameStats.h++; batter.gameStats.hits++;
-    let powerMod = isPower ? 1.50 : (isContact ? 0.5 : 1.0);
-    const effPwr = powerRating * powerMod, sf2 = adjBatter.speed / 10, hr2 = Math.random();
-    if (hr2 < effPwr * 0.065 * hrMod * ballparkHRMod) {
+     pitcher.gameStats.h++; batter.gameStats.hits++;
+     let powerMod = isPower ? 1.50 : (isContact ? 0.5 : 1.0);
+     const effPwr = powerRating * powerMod, sf2 = adjBatter.speed / 10, hr2 = Math.random();
+     if (hr2 < effPwr * 0.085 * hrMod * ballparkHRMod) {
       // Check for HR robbery — rare but spectacular
       const isRobable = isWallRobable(stadiumName, hitDirection);
       const isRobbed = isRobable && rollHRRobbery();
@@ -666,7 +666,7 @@ function resolveSwing(state, swingType, pitch) {
        if (hrCall) state.log.push({ type: 'homerun', text: `🎙️ ${hrCall}` });
        state.log.push({ type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name };
        const hrAdmire = rollHRAdmire(batter); if (hrAdmire) state.log.push({ type: 'info', text: `✨ ${hrAdmire}` });
-    } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.07 + sf2 * 0.16) * doubleMod) {
+    } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.10 + sf2 * 0.18) * doubleMod) {
       const rbi = advanceRunners(state, 3, batter, true, hitDirection);
       let tripFlavor = '';
       const bpTrp = BALLPARKS[stadiumName];
@@ -677,7 +677,7 @@ function resolveSwing(state, swingType, pitch) {
       state.log.push({ type: 'triple', text: tripText });
       state.lastPlay = { type: 'triple', text: tripText };
       const tripleCeleb = rollHitCelebration(batter, true); if (tripleCeleb) state.log.push({ type: 'info', text: `🔥 ${tripleCeleb}` });
-    } else if (hr2 < effPwr * 0.32 * doubleMod) {
+    } else if (hr2 < effPwr * 0.38 * doubleMod) {
       const rbi = advanceRunners(state, 2, batter, true, hitDirection);
       let dblFlavor = '';
       const bpDbl = BALLPARKS[stadiumName];
