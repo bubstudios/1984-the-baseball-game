@@ -183,24 +183,25 @@ export function applyEventDelta(composureState, eventType, leverage = 1.0) {
   };
   const inningWeight = inningWeights[Math.min(inning, 9)] || 2.2;
 
-  // Score situation weight: evaluated AFTER the event resolves
-  // gameState should have updated score
-  const userSide = gameState.homeTeam === gameState.userTeam ? 'home' : 'away';
-  const userScore = gameState.score[userSide];
-  const oppScore = gameState.score[userSide === 'home' ? 'away' : 'home'];
-  const diff = oppScore - userScore;  // negative = user ahead, positive = user behind
+  // Score situation weight: evaluated AFTER the event resolves, from the PITCHING TEAM's perspective.
+  // We identify which side is currently pitching and whether they are ahead/behind/tied.
+  const pitchingSide = gameState.halfInning === 'top' ? 'home' : 'away';
+  const pitcherScore = gameState.score[pitchingSide];
+  const batterScore = gameState.score[pitchingSide === 'home' ? 'away' : 'home'];
+  // diff > 0 = pitching team is ahead, diff < 0 = pitching team is behind, 0 = tied
+  const diff = pitcherScore - batterScore;
 
   let scoreSitWeight = 1.0;
-  if (diff >= 2) {
-   scoreSitWeight = 2.5;  // Surrenders LEAD (was ahead/tied, now behind)
-  } else if (diff === 1) {
-   scoreSitWeight = 2.5;  // Surrenders LEAD from a tie
-  } else if (diff === 0) {
-   scoreSitWeight = 2.0;  // Ties the game (was ahead)
+  if (diff <= -2) {
+    scoreSitWeight = 0.5;  // Pitching team already well behind — garbage time
   } else if (diff === -1) {
-   scoreSitWeight = 1.2;  // Extends deficit by 1
-  } else {
-   scoreSitWeight = 0.5;  // Garbage time
+    scoreSitWeight = 0.9;  // Pitching team down by 1 — muted (already trailing)
+  } else if (diff === 0) {
+    scoreSitWeight = 2.0;  // Just tied the game (pitching team was ahead) — high leverage
+  } else if (diff === 1) {
+    scoreSitWeight = 0.9;  // Pitching team STILL ahead by 1 — sting, but muted
+  } else if (diff >= 2) {
+    scoreSitWeight = 0.6;  // Pitching team comfortably ahead — low leverage
   }
 
   return inningWeight * scoreSitWeight;
