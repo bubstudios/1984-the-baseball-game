@@ -1869,29 +1869,99 @@ The future is on sale.`,
     title: '✍️ Don Mattingly — Autograph Signing',
     body: `DON MATTINGLY — AUTOGRAPH SIGNING
 
-"Don Mattingly will be signing autographs Saturday afternoon in White Plains."
+  "Don Mattingly will be signing autographs Saturday afternoon in White Plains."
 
-THE PLAYER
-Don Mattingly. First baseman. New York Yankees. Number 23. In 1984, he is 23 years old and in his first full season. He hits for average. He hits for power. He plays defense. He is, by every measure, a ballplayer.
+  THE PLAYER
+  Don Mattingly. First baseman. New York Yankees. Number 23. In 1984, he is 23 years old and in his first full season. He hits for average. He hits for power. He plays defense. He is, by every measure, a ballplayer.
 
-THE RISE
-Mattingly was called up in 1982. By 1984, he's fighting for the batting title. In a few years, he'll win the American League MVP. He'll hit .352. He'll hit 53 doubles. He'll be the best hitter in baseball for a stretch. But right now, in 1984, he's just getting started.
+  THE RISE
+  Mattingly was called up in 1982. By 1984, he's fighting for the batting title. In a few years, he'll win the American League MVP. He'll hit .352. He'll hit 53 doubles. He'll be the best hitter in baseball for a stretch. But right now, in 1984, he's just getting started.
 
-THE AUTOGRAPH
-Saturday afternoon. White Plains, New York. A shopping center or a card shop or a sporting goods store. Mattingly sits behind a table. There's a line. You wait. You bring a baseball. You bring a card. You bring a program. He signs it. He looks up. He says "thanks." You say "thanks." The moment lasts three seconds. The signature lasts forever.
+  THE AUTOGRAPH
+  Saturday afternoon. White Plains, New York. A shopping center or a card shop or a sporting goods store. Mattingly sits behind a table. There's a line. You wait. You bring a baseball. You bring a card. You bring a program. He signs it. He looks up. He says "thanks." You say "thanks." The moment lasts three seconds. The signature lasts forever.
 
-THE EXPERIENCE
-Meeting a ballplayer in person is different from watching on television. They're taller. Or shorter. They're human. They sign your item and hand it back, and for a moment, you and Don Mattingly have a connection — however brief — that nobody else in the world has.
+  THE EXPERIENCE
+  Meeting a ballplayer in person is different from watching on television. They're taller. Or shorter. They're human. They sign your item and hand it back, and for a moment, you and Don Mattingly have a connection — however brief — that nobody else in the world has.
 
-THE ADVICE
-Get there early. The line will be long. Bring a Sharpie. Don't ask him to sign your forehead. Do say thank you. He's giving up his Saturday afternoon to sit at a table in White Plains.
+  THE ADVICE
+  Get there early. The line will be long. Bring a Sharpie. Don't ask him to sign your forehead. Do say thank you. He's giving up his Saturday afternoon to sit at a table in White Plains.
 
-DON MATTINGLY.
-Saturday afternoon.
-White Plains.
-Bring a baseball.`,
+  DON MATTINGLY.
+  Saturday afternoon.
+  White Plains.
+  Bring a baseball.`,
   }},
-];
+  // DISNEYLAND — unique dedicated entry
+  { keywords: ['disneyland', 'thousands of visitors are enjoying'], data: {
+    icon: '🏰', color: '#8B0000',
+    title: '🏰 Disneyland — The Happiest Place on Earth',
+    body: `DISNEYLAND — THOUSANDS OF VISITORS ENJOYING THIS SUMMER
+
+  The magic of Disneyland continues to welcome visitors from around the world.
+
+  THE PARK
+  Disneyland. Anaheim, California. Walt Disney's dream. Opened in 1955. By 1984, it stands as the ultimate American theme park — a place where imagination and engineering merge to create something truly magical.
+
+  THE SUMMER EXPERIENCE
+  Summer at Disneyland means extended hours. The park glows as the California sun sets. The night brings relief from the heat. Fantasyland becomes enchanted. Tomorrowland gleams with possibility. Frontierland feels like another century. The night crowds thin. The magic deepens.
+
+  THE ATTRACTIONS
+  Jungle Cruise: Skippers guide boats through exotic landscapes, their commentary dry and hilarious.
+  Haunted Mansion: 999 happy haunts in a Gothic estate that feels more wonderful than scary.
+  Space Mountain: A rocket ship through the cosmos, inside Tomorrowland's iconic dome.
+  Pirates of the Caribbean: A dark ride through pirate lore, a technical marvel from 1967 that still captivates.
+  Matterhorn Bobsleds: A wooden mountain housing a roller coaster, the first tubular steel coaster in the world.
+
+  THE MAIN STREET U.S.A.
+  Nostalgia by design. A recreation of early-20th-century small-town America. Horse-drawn trolleys. Gas lamps. Victorian storefronts. Disneyland Castle rising at the end. You step onto Main Street and surrender to the illusion. It works.
+
+  THE TECHNOLOGY
+  Disneyland pioneered new entertainment technology. Animatronics. Immersive environments. Storytelling through landscape design. Walt didn't just build a park. He invented a new form of entertainment.
+
+  THE COMMITMENT
+  A day at Disneyland is a full commitment. You must arrive early. You must stay late. Your feet will hurt. Your wallet will be lighter. Your wonder will be restored. This is the trade, and it's a fair one.
+
+  THE THOUSANDS
+  Thousands arrive every day. From Japan. From Europe. From across America. They wait in lines. They spend their money. They take their photos. They leave different than they arrived. They carry the magic home.
+
+  DISNEYLAND.
+  The Happiest Place on Earth.
+  Summer is the perfect time.`,
+  }},
+  // SAN DIEGO SURF/SUNSHINE — unique dedicated entry
+  { keywords: ['enjoy a day of surfing, swimming, and sunshine'], data: {
+    icon: '🌊', color: '#00b4d8',
+    title: '🌊 San Diego — Sun, Surf & Pacific Waves',
+    body: `ENJOY A DAY OF SURFING, SWIMMING, AND SUNSHINE IN SAN DIEGO
+
+  The Pacific coast welcomes you to a day of ocean and sun.
+
+  THE LOCATION
+  San Diego, California. The southern edge of Southern California. Where the Pacific Ocean meets the continent. The waves roll in from distant storms. The sun shows up 260+ days a year. This is America's surfing capital and one of its finest beach destinations.
+
+  SURF CULTURE
+  San Diego IS surf culture. The legendary beaches—Mission Beach, Pacific Beach, Coronado, La Jolla—produce swells that draw surfers worldwide. The local scene is real, passionate, and authentic. Surfers paddle out at dawn. They wait for the set. They ride. They return to shore grinning, salt-soaked, already thinking about the next swell.
+
+  THE OCEAN EXPERIENCE
+  The Pacific in summer is approachable—70°F water, manageable waves, warm sunshine. You wade in without a wetsuit. The water is clear. The sandy bottom drops gradually. You float. You swim. The ocean surrounds you completely. This is the ocean experience most Americans dream of but rarely experience.
+
+  THE WAVES
+  The swells that reach San Diego are born in distant storms—tropical systems, North Pacific lows—hundreds of miles away. By the time they arrive at Southern California, they've mellowed into perfect teaching waves. Not too big. Not too small. Just right.
+
+  THE BEACH CULTURE
+  San Diego beach life is casual. No pretension. No velvet rope. People of every age and background. Families with kids. Lifeguards in wooden towers. Street vendors selling fresh ceviche and grilled corn. Musicians playing guitars as the sun sets.
+
+  THE LIFESTYLE
+  An afternoon at a San Diego beach: arrive mid-morning, swim before lunch, grab a fish taco from a vendor, read or nap in the afternoon, catch the sunset, maybe grab dinner at a beachside restaurant. The Pacific is the backdrop to everything. The sun is reliable. The mood is peaceful.
+
+  LOCALS KNOW
+  If you ask a San Diegan the best way to spend a summer day, they'll tell you: get to the ocean before 10 AM, stay until the sun is low, leave the day better than you found it. This is San Diego.
+
+  SURFS, SWIMS, SUNSHINE.
+  San Diego.
+  This is California at its best.`,
+  }},
+  ];
 
 /**
  * Given ad text, try to find a matching keyword pattern and return a rich popup entry.
