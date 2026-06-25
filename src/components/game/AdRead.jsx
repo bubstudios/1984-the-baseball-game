@@ -348,7 +348,8 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
         : isMetsBanner ? 'metsBanner' : isYankeesBanner ? 'yankeesBanner' : isOriolesBanner ? 'oriolesBanner'
         : isDodgersBanner ? 'dodgersBanner' : isPadresBanner ? 'padresBanner' : isRedsBanner ? 'redsBanner'
         : isRoyalsBanner ? 'royalsBanner' : isDetroitTigers ? 'detroitTigers' : isRedSoxBanner ? 'redSoxBanner'
-        : isTigersStadium ? 'tigersStadium' : isGenericAd ? 'generic' : null;
+        : isTigersStadium ? 'tigersStadium' : isNewspapersClassifieds ? 'newspapersClassifieds' : isLongDistancePhoneWars ? 'longDistancePhoneWars'
+        : isFilmDevelopmentCameras ? 'filmDevelopmentCameras' : isGenericAd ? 'generic' : null;
       if (adTypeKey && !alreadyTracked) {
         setAlreadyTracked(true);
         const qResults = recordAdView(adTypeKey, ad?.text);

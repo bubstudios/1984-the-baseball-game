@@ -4,7 +4,8 @@ import { X } from 'lucide-react';
 export default function AttractiveAdBanner({ entry, onDismiss, onClick }) {
   const [visible, setVisible] = useState(true);
 
-  const handleDismiss = () => {
+  const handleDismiss = (e) => {
+    e?.stopPropagation();
     setVisible(false);
     setTimeout(onDismiss, 200);
   };
@@ -26,14 +27,15 @@ export default function AttractiveAdBanner({ entry, onDismiss, onClick }) {
   const accentColor = accentColors[entry.type] || 'border-amber-600/40';
 
   return (
-    <div className="animate-in slide-in-from-bottom-4 fade-in duration-300" onClick={handleClick}>
+    <div className="animate-in slide-in-from-bottom-4 fade-in duration-300">
       <div
-        className={`w-full bg-background/80 backdrop-blur border-2 ${accentColor} rounded-2xl px-6 py-5 text-center transition-all hover:bg-background/95 hover:border-amber-600/60 active:scale-95 group cursor-pointer`}
+        onClick={handleClick}
+        className={`w-full bg-background/80 backdrop-blur border-2 ${accentColor} rounded-2xl px-6 py-5 text-center transition-all hover:bg-background/95 hover:border-amber-600/60 active:scale-95 group cursor-pointer relative`}
       >
         {/* Label/Category */}
         {entry.label && (
           <div className="flex items-center justify-center gap-2 mb-2">
-            {entry.icon && <span className="text-lg">{entry.icon}</span>}
+            {entry.icon && <span className="text-lg animate-bounce">{entry.icon}</span>}
             <span className="font-heading text-xs uppercase tracking-widest text-amber-600/70 group-hover:text-amber-500 transition-colors">
               {entry.label}
             </span>
@@ -58,9 +60,9 @@ export default function AttractiveAdBanner({ entry, onDismiss, onClick }) {
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            handleDismiss();
+            handleDismiss(e);
           }}
-          className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
+          className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors z-10"
           title="Dismiss"
         >
           <X className="w-4 h-4" />
