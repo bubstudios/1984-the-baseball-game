@@ -37,7 +37,7 @@ import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
 import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
-import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement, trackHomeRunDistance, trackGameRecords } from '@/lib/achievements';
+import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement, trackHomeRunDistance, trackGameRecords, trackPlayersUsed, trackTimePlayed } from '@/lib/achievements';
 import AchievementPopup from '@/components/game/AchievementPopup';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 import { pickAd } from '@/lib/broadcastAds';
@@ -80,6 +80,7 @@ export default function Home() {
   const [ejectionResult, setEjectionResult] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
+  const gameStartTimeRef = useRef(null);
   const prevLogLength = useRef(0);
   const prevHalfInning = useRef(null);
   const [showAd, setShowAd] = useState(null);
@@ -143,6 +144,7 @@ export default function Home() {
     state.log.push({ type: 'info', text: `Top of inning 1 — ${awayName} batting` });
     setGameState(state);
     setLineupPhase(null);
+    gameStartTimeRef.current = Date.now();
   }, []);
 
   const handleTeamSelect = useCallback((home, away) => {
@@ -519,11 +521,34 @@ export default function Home() {
     const oppHits = [...opponentLineup, ...(userSide === 'home' ? (state.awayPlayerHistory || []) : (state.homePlayerHistory || []))]
       .reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
 
+    const opponentTeam = userSide === 'home' ? state.awayTeam : state.homeTeam;
+    const isHomeGame = userSide === 'home';
+    const stadium = gameStadium || TEAMS[state.homeTeam]?.stadium || null;
+
     // Run stats tracking and achievements independently — one failure shouldn't block the other
-    try { trackGameCompleted(userWon, userTeam, null, gameStadium, userHits, oppHits); } catch (e) { console.error('trackGameCompleted failed:', e); }
+    try { trackGameCompleted(userWon, userTeam, opponentTeam, stadium, userHits, oppHits, isHomeGame); } catch (e) { console.error('trackGameCompleted failed:', e); }
     try { trackGameEndTime(); } catch (e) { console.error('trackGameEndTime failed:', e); }
     try { checkTeamAchievements(); } catch (e) { console.error('checkTeamAchievements failed:', e); }
-    try { trackGameRecords(state.score[userSide], state.score[opponentSide], userWon, userTeam, userSide === 'home' ? state.awayTeam : state.homeTeam); } catch (e) { console.error('trackGameRecords failed:', e); }
+    try { trackGameRecords(state.score[userSide], state.score[opponentSide], userWon, userTeam, opponentTeam); } catch (e) { console.error('trackGameRecords failed:', e); }
+
+    // Track unique players and pitchers used across all games
+    try {
+      const allUserPlayers = [...userLineup, ...(userSide === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []))];
+      const userPitchers = [userSide === 'home' ? state.homePitcher : state.awayPitcher, ...allUserPlayers.filter(p => ['SP', 'RP', 'CL'].includes(p.assignedPos || p.pos))];
+      trackPlayersUsed(
+        allUserPlayers.map(p => p.name).filter(Boolean),
+        userPitchers.map(p => p.name).filter(Boolean)
+      );
+    } catch (e) { console.error('trackPlayersUsed failed:', e); }
+
+    // Track time played (elapsed minutes from game start to game end)
+    try {
+      if (gameStartTimeRef.current) {
+        const elapsedMin = Math.max(1, Math.round((Date.now() - gameStartTimeRef.current) / 60000));
+        trackTimePlayed(elapsedMin);
+        gameStartTimeRef.current = null;
+      }
+    } catch (e) { console.error('trackTimePlayed failed:', e); }
 
     if (state._managerEjected && userWon) {
       try { unlockAchievement('earl_weaver'); } catch (e) { console.error('earl_weaver failed:', e); }
