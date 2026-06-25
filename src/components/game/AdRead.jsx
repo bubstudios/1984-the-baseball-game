@@ -71,6 +71,26 @@ import { findDodgersBannerEntry, trackDodgersBannerView } from '@/lib/dodgersBan
 import { findPadresBannerEntry, trackPadresBannerView } from '@/lib/padresBannerPopups';
 import { findRedsBannerEntry, trackRedsBannerView } from '@/lib/redsBannerPopups';
 import { findRoyalsBannerEntry, trackRoyalsBannerView } from '@/lib/royalsBannerPopups';
+import { findInTheAirEntry, trackInTheAirView } from '@/lib/inTheAirPopups';
+import { findJCPenneyEntry, trackJCPenneyView } from '@/lib/jcpenneyPopups';
+import { findPepsiEntry, trackPepsiView } from '@/lib/pepsiPopups';
+import { findChryslerMinivanEntry, trackChryslerMinivanView } from '@/lib/chryslerMinivanPopups';
+import { findFireworksNightEntry, trackFireworksNightView } from '@/lib/fireworksNightPopups';
+import { findBowlingLeaguesEntry, trackBowlingLeaguesView } from '@/lib/bowlingLeaguesPopups';
+import { findHomestandPromoEntry, trackHomestandPromoView } from '@/lib/homestandPromoPopups';
+import { findChurchBakeSaleEntry, trackChurchBakeSaleView } from '@/lib/churchBakeSalePopups';
+import { findOutdoorTimeEntry, trackOutdoorTimeView } from '@/lib/outdoorTimePopups';
+import { findPortableCassetteEntry, trackPortableCassetteView } from '@/lib/portableCassettePopups';
+import InTheAirPopup from './InTheAirPopup';
+import JCPenneyPopup from './JCPenneyPopup';
+import PepsiPopup from './PepsiPopup';
+import ChryslerMinivanPopup from './ChryslerMinivanPopup';
+import FireworksNightPopup from './FireworksNightPopup';
+import BowlingLeaguesPopup from './BowlingLeaguesPopup';
+import HomestandPromoPopup from './HomestandPromoPopup';
+import ChurchBakeSalePopup from './ChurchBakeSalePopup';
+import OutdoorTimePopup from './OutdoorTimePopup';
+import PortableCassettePopup from './PortableCassettePopup';
 
 export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchievement }) {
   const [visible, setVisible] = useState(false);
@@ -149,6 +169,26 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   const [tigersStadiumEntry, setTigersStadiumEntry] = useState(null);
   const [isPhilliesBanner, setIsPhilliesBanner] = useState(false);
   const [philliesBannerEntry, setPhilliesBannerEntry] = useState(null);
+  const [isInTheAir, setIsInTheAir] = useState(false);
+  const [inTheAirEntry, setInTheAirEntry] = useState(null);
+  const [isJCPenney, setIsJCPenney] = useState(false);
+  const [jcpenneyEntry, setJCPenneyEntry] = useState(null);
+  const [isPepsi, setIsPepsi] = useState(false);
+  const [pepsiEntry, setPepsiEntry] = useState(null);
+  const [isChryslerMinivan, setIsChryslerMinivan] = useState(false);
+  const [chryslerMinivanEntry, setChryslerMinivanEntry] = useState(null);
+  const [isFireworksNight, setIsFireworksNight] = useState(false);
+  const [fireworksNightEntry, setFireworksNightEntry] = useState(null);
+  const [isBowlingLeagues, setIsBowlingLeagues] = useState(false);
+  const [bowlingLeaguesEntry, setBowlingLeaguesEntry] = useState(null);
+  const [isHomestandPromo, setIsHomestandPromo] = useState(false);
+  const [homestandPromoEntry, setHomestandPromoEntry] = useState(null);
+  const [isChurchBakeSale, setIsChurchBakeSale] = useState(false);
+  const [churchBakeSaleEntry, setChurchBakeSaleEntry] = useState(null);
+  const [isOutdoorTime, setIsOutdoorTime] = useState(false);
+  const [outdoorTimeEntry, setOutdoorTimeEntry] = useState(null);
+  const [isPortableCassette, setIsPortableCassette] = useState(false);
+  const [portableCassetteEntry, setPortableCassetteEntry] = useState(null);
   const [isGenericAd, setIsGenericAd] = useState(false);
   const [genericAdEntry, setGenericAdEntry] = useState(null);
   const [questResult, setQuestResult] = useState(null);
@@ -257,6 +297,36 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
     } else if (findPhilliesBannerEntry(ad.text)) {
       setIsPhilliesBanner(true);
       setPhilliesBannerEntry(findPhilliesBannerEntry(ad.text));
+    } else if (findInTheAirEntry(ad.text)) {
+      setIsInTheAir(true);
+      setInTheAirEntry(findInTheAirEntry(ad.text));
+    } else if (findJCPenneyEntry(ad.text)) {
+      setIsJCPenney(true);
+      setJCPenneyEntry(findJCPenneyEntry(ad.text));
+    } else if (findPepsiEntry(ad.text)) {
+      setIsPepsi(true);
+      setPepsiEntry(findPepsiEntry(ad.text));
+    } else if (findChryslerMinivanEntry(ad.text)) {
+      setIsChryslerMinivan(true);
+      setChryslerMinivanEntry(findChryslerMinivanEntry(ad.text));
+    } else if (findFireworksNightEntry(ad.text)) {
+      setIsFireworksNight(true);
+      setFireworksNightEntry(findFireworksNightEntry(ad.text));
+    } else if (findBowlingLeaguesEntry(ad.text)) {
+      setIsBowlingLeagues(true);
+      setBowlingLeaguesEntry(findBowlingLeaguesEntry(ad.text));
+    } else if (findHomestandPromoEntry(ad.text)) {
+      setIsHomestandPromo(true);
+      setHomestandPromoEntry(findHomestandPromoEntry(ad.text));
+    } else if (findChurchBakeSaleEntry(ad.text)) {
+      setIsChurchBakeSale(true);
+      setChurchBakeSaleEntry(findChurchBakeSaleEntry(ad.text));
+    } else if (findOutdoorTimeEntry(ad.text)) {
+      setIsOutdoorTime(true);
+      setOutdoorTimeEntry(findOutdoorTimeEntry(ad.text));
+    } else if (findPortableCassetteEntry(ad.text)) {
+      setIsPortableCassette(true);
+      setPortableCassetteEntry(findPortableCassetteEntry(ad.text));
     } else if (findGenericAdEntry(ad.text)) {
       setIsGenericAd(true);
       setGenericAdEntry(findGenericAdEntry(ad.text));
@@ -305,7 +375,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   // Auto-dismiss only when not expanded AND not a movie (handles its own timing)
   // Also don't auto-dismiss if ANY rich popup type is active
   // AND don't auto-dismiss if user hasn't tapped yet (expanded tracks first tap)
-  const hasRichPopup = isElectronics || isGeneralProducts || isMoreObscureTv || isMoreObscureTv3 || isArcade || isArcadeVidGame || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds || isLongDistancePhoneWars || isFilmDevelopmentCameras || isThingsThatScream1984 || isMallCulture || isRedSoxBanner || isNationalCharity || isNationalPromos || isNationalWrestling || isVhsBetamax || isDetroitTigers || isCubsBanner || isTigersBanner2 || isMetsBanner || isYankeesBanner || isOriolesBanner || isDodgersBanner || isPadresBanner || isRedsBanner || isRoyalsBanner || isTigersStadium || isPhilliesBanner || isGenericAd;
+  const hasRichPopup = isElectronics || isGeneralProducts || isMoreObscureTv || isMoreObscureTv3 || isArcade || isArcadeVidGame || isWrestling || isVanishedStores || isPeak1984 || isOlympics || isOlympicsAthletes || isNasaSpace || isNewspapersClassifieds || isLongDistancePhoneWars || isFilmDevelopmentCameras || isThingsThatScream1984 || isMallCulture || isRedSoxBanner || isNationalCharity || isNationalPromos || isNationalWrestling || isVhsBetamax || isDetroitTigers || isCubsBanner || isTigersBanner2 || isMetsBanner || isYankeesBanner || isOriolesBanner || isDodgersBanner || isPadresBanner || isRedsBanner || isRoyalsBanner || isTigersStadium || isPhilliesBanner || isInTheAir || isJCPenney || isPepsi || isChryslerMinivan || isFireworksNight || isBowlingLeagues || isHomestandPromo || isChurchBakeSale || isOutdoorTime || isPortableCassette || isGenericAd;
   useEffect(() => {
     // Only auto-dismiss if autoDismissMs > 0 AND user has tapped (expanded=true)
     if (!visible || !expanded || hasRichPopup || autoDismissMs <= 0 || isMovie) return;
@@ -318,6 +388,38 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
   // ── Movie Popup ──
   if (isMovie) {
     return <MoviePopup ad={ad} onDismiss={() => { setVisible(false); onDismiss(); }} onAchievement={onAchievement} />;
+  }
+
+  // ── New Custom Popups (all stay open) ──
+  if (isInTheAir && inTheAirEntry) {
+    return <InTheAirPopup onDismiss={() => { setVisible(false); onDismiss(); }} />;
+  }
+  if (isJCPenney && jcpenneyEntry) {
+    return <JCPenneyPopup onDismiss={() => { setVisible(false); onDismiss(); }} />;
+  }
+  if (isPepsi && pepsiEntry) {
+    return <PepsiPopup onDismiss={() => { setVisible(false); onDismiss(); }} />;
+  }
+  if (isChryslerMinivan && chryslerMinivanEntry) {
+    return <ChryslerMinivanPopup onDismiss={() => { setVisible(false); onDismiss(); }} />;
+  }
+  if (isFireworksNight && fireworksNightEntry) {
+    return <FireworksNightPopup onDismiss={() => { setVisible(false); onDismiss(); }} />;
+  }
+  if (isBowlingLeagues && bowlingLeaguesEntry) {
+    return <BowlingLeaguesPopup onDismiss={() => { setVisible(false); onDismiss(); }} />;
+  }
+  if (isHomestandPromo && homestandPromoEntry) {
+    return <HomestandPromoPopup onDismiss={() => { setVisible(false); onDismiss(); }} />;
+  }
+  if (isChurchBakeSale && churchBakeSaleEntry) {
+    return <ChurchBakeSalePopup onDismiss={() => { setVisible(false); onDismiss(); }} />;
+  }
+  if (isOutdoorTime && outdoorTimeEntry) {
+    return <OutdoorTimePopup onDismiss={() => { setVisible(false); onDismiss(); }} />;
+  }
+  if (isPortableCassette && portableCassetteEntry) {
+    return <PortableCassettePopup onDismiss={() => { setVisible(false); onDismiss(); }} />;
   }
 
   const handleTap = () => {
@@ -333,7 +435,7 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
       setExpanded(true);
       return;
     }
-    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalPromos, isNationalWrestling, isVhsBetamax, isDetroitTigers, isCubsBanner, isTigersBanner2, isMetsBanner, isYankeesBanner, isOriolesBanner, isDodgersBanner, isPadresBanner, isRedsBanner, isRoyalsBanner, isTigersStadium, isPhilliesBanner, isGenericAd];
+    const specialTypes = [isObscureTv, isMoreObscureTv, isMoreObscureTv3, isTvMovie, isArcade, isArcadeVidGame, isWrestling, isVanishedStores, isPeak1984, isOlympics, isOlympicsAthletes, isNasaSpace, isNewspapersClassifieds, isLongDistancePhoneWars, isFilmDevelopmentCameras, isThingsThatScream1984, isMallCulture, isRedSoxBanner, isNationalCharity, isNationalPromos, isNationalWrestling, isVhsBetamax, isDetroitTigers, isCubsBanner, isTigersBanner2, isMetsBanner, isYankeesBanner, isOriolesBanner, isDodgersBanner, isPadresBanner, isRedsBanner, isRoyalsBanner, isTigersStadium, isPhilliesBanner, isInTheAir, isJCPenney, isPepsi, isChryslerMinivan, isFireworksNight, isBowlingLeagues, isHomestandPromo, isChurchBakeSale, isOutdoorTime, isPortableCassette, isGenericAd];
     if (specialTypes.some(t => t)) {
       setExpanded(true);
       // ── Quest tracking ──
@@ -349,7 +451,10 @@ export default function AdRead({ ad, onDismiss, autoDismissMs = 12000, onAchieve
         : isDodgersBanner ? 'dodgersBanner' : isPadresBanner ? 'padresBanner' : isRedsBanner ? 'redsBanner'
         : isRoyalsBanner ? 'royalsBanner' : isDetroitTigers ? 'detroitTigers' : isRedSoxBanner ? 'redSoxBanner'
         : isTigersStadium ? 'tigersStadium' : isNewspapersClassifieds ? 'newspapersClassifieds' : isLongDistancePhoneWars ? 'longDistancePhoneWars'
-        : isFilmDevelopmentCameras ? 'filmDevelopmentCameras' : isGenericAd ? 'generic' : null;
+        : isFilmDevelopmentCameras ? 'filmDevelopmentCameras' : isInTheAir ? 'inTheAir' : isJCPenney ? 'jcpenney'
+        : isPepsi ? 'pepsi' : isChryslerMinivan ? 'chryslerMinivan' : isFireworksNight ? 'fireworksNight'
+        : isBowlingLeagues ? 'bowlingLeagues' : isHomestandPromo ? 'homestandPromo' : isChurchBakeSale ? 'churchBakeSale'
+        : isOutdoorTime ? 'outdoorTime' : isPortableCassette ? 'portableCassette' : isGenericAd ? 'generic' : null;
       if (adTypeKey && !alreadyTracked) {
         setAlreadyTracked(true);
         const qResults = recordAdView(adTypeKey, ad?.text);
