@@ -1936,6 +1936,33 @@ The future is on sale.`,
 
   The Pacific coast welcomes you to a day of ocean and sun.
 
+  BALBOA PARK — SAN DIEGO'S CULTURAL OASIS
+  Home to museums, gardens, and cultural institutions that define San Diego.
+
+  THE LOCATION
+  Balboa Park. 1,200 acres in the heart of San Diego. Built for the Panama-California Exposition of 1915. By 1984, it is one of the finest cultural parks in America—15 museums, Spanish-Colonial architecture, gardens containing every plant species California can grow.
+
+  THE MUSEUMS
+  The San Diego Museum of Art. The Fleet Science Center. The Natural History Museum. The Automotive Museum. The Aerospace Museum. World-class exhibits. Free admission on rotating Tuesdays.
+
+  THE GARDENS
+  Japanese Friendship Garden. Botanical Building. Desert Garden. Rose Garden. Palm Canyon. Each has character and season. Summer colors are intense. The smell is intoxicating.
+
+  SAN DIEGO ZOO — THE WORLD'S GREATEST ZOO
+  Home to 3,000 animals representing 650+ species—giant pandas, African lions, Bengal tigers, polar bears, gorillas, primates from every continent.
+
+  THE ANIMALS
+  The Gorilla Forest is the most famous exhibit. A silverback gorilla—powerful, intelligent, human-like—changes how you think about the natural world.
+
+  THE TECHNIQUE
+  Cageless exhibits. Naturalistic habitats separated by moats you can't see. Animals have space. They behave naturally. A completely different zoo experience.
+
+  THE MISSION
+  Education. Conservation. The San Diego Zoo breeds endangered species. It funds conservation worldwide. Every ticket supports these efforts.
+
+  BALBOA PARK AND THE SAN DIEGO ZOO.
+  Culture, nature, and wonder. A day in either changes your perspective. A day in both is San Diego at its finest.
+
   THE LOCATION
   San Diego, California. The southern edge of Southern California. Where the Pacific Ocean meets the continent. The waves roll in from distant storms. The sun shows up 260+ days a year. This is America's surfing capital and one of its finest beach destinations.
 
