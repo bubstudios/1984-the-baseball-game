@@ -15,7 +15,7 @@ export const CARD_IMAGES = {
   'Chet Lemon':       BASE + '741c6bad9_images1.jpeg',
   'Larry Herndon':    BASE + '0df9b1cfe_s-l1200.jpg',
   'Howard Johnson':   BASE + '6130771ea_images2.jpeg',
-  'Dan Petry':        BASE + 'a7f54a8b2_generated_image.png',
+  'Dan Petry':        BASE + 'f4daf114f_images2.jpeg',
   'Aurelio Lopez':    BASE + 'cf65394cd_images13.jpeg',
   'Barbaro Garbey':   BASE + 'e23303856_images3.jpeg',
   'Milt Wilcox':      BASE + 'e469ef6ca_images10.jpeg',
@@ -28,7 +28,7 @@ export const CARD_IMAGES = {
   'Dave Bergman':     BASE + '472b009ee_images4.jpeg',
   'Rusty Kuntz':      BASE + '8b34102be_images5.jpeg',
   'Ruppert Jones':    BASE + '5bcd9102e_images8.jpeg',
-  'Johnny Grubb':     BASE + '7847028b2_generated_image.png',
+  'Johnny Grubb':     BASE + '50c8ce5a3_images.jpeg',
 
   // ── CHICAGO CUBS ──
   'Ryne Sandberg':    BASE + '8df93010b_generated_image.png',
