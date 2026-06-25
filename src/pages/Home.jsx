@@ -94,7 +94,6 @@ export default function Home() {
   const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
   const [celebrationPopupBubble, setCelebrationPopupBubble] = useState(null);
-   const [homeRunPopup, setHomeRunPopup] = useState(null);
    const prevCelebrationBubble = useRef(null);
 
   // Auto-show tutorial on first visit & init stats
@@ -299,15 +298,19 @@ export default function Home() {
             } catch (e) { console.error('trackHomeRunDistance failed:', e); }
           }
         }
-        // Show HR distance popup on home runs
-         if (entry.type === 'homerun' && entry.hrDistance && entry.batterName) {
-           setHomeRunPopup({ distance: entry.hrDistance, batterName: entry.batterName });
-         }
-         // Surface celebration lines as popups on the game tab
-         if (entry.type === 'homerun' || (entry.type === 'info' && entry.text && (entry.text.startsWith('🌟') || entry.text.startsWith('🔥') || entry.text.startsWith('🎉') || entry.text.startsWith('✨')))) {
-           const displayText = entry.type === 'homerun' ? entry.text : entry.text;
-           setCelebrationPopup(displayText);
-           setTimeout(() => setCelebrationPopup(null), 7500);
+        // Surface hitting celebrations as the celebration bubble (bat flips, admires, staredowns, etc.)
+         if ((entry.type === 'info' || entry.type === 'homerun') && entry.text) {
+           // Detect hitting celebrations: bat flips, home run admiration, hitting celebrations, triple hustle, staredowns
+           const isBatFlip = entry.text.includes('flips the bat') || entry.text.includes('flips his bat') || entry.text.includes('tosses the bat');
+           const isHRAdmire = entry.text.includes('watches it go') || entry.text.includes('flips the bat and takes');
+           const isHitCeleb = entry.text.includes('slaps hands') || entry.text.includes('standing ovation') || entry.text.includes('dugout erupts') || entry.text.includes('points back to the dugout');
+           const isTripleHustle = entry.text.includes('slides into third') || entry.text.includes('pulls into third') || entry.text.includes('stands on third clapping');
+           const isStaredown = entry.text.includes('watched the batter') || entry.text.includes('lingers on the mound') || entry.text.includes('stares in');
+           
+           if (isBatFlip || isHRAdmire || isHitCeleb || isTripleHustle || isStaredown) {
+             setCelebrationPopup(entry.text);
+             setTimeout(() => setCelebrationPopup(null), 7500);
+           }
          }
         // Trigger catcher popup on caught stealing
         if (entry.type === 'caughtstealing' && entry.text) {
@@ -1186,14 +1189,7 @@ export default function Home() {
       <Fireworks trigger={hrTrigger} type="hr" />
       <Fireworks trigger={winTrigger} type="win" />
 
-      {/* Home Run Distance Popup */}
-      {homeRunPopup && (
-        <HomeRunDistancePopup
-          distance={homeRunPopup.distance}
-          batterName={homeRunPopup.batterName}
-          onClose={() => setHomeRunPopup(null)}
-        />
-      )}
+
 
       {/* Beanball Banner — HBP, warnings, bat flips, collisions, brawls */}
       {beanballEvent && (
