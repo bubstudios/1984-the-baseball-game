@@ -93,6 +93,7 @@ export default function Home() {
   const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
   const [celebrationPopupBubble, setCelebrationPopupBubble] = useState(null);
+  const prevCelebrationBubble = useRef(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -355,11 +356,11 @@ export default function Home() {
 
   // Celebration bubble from game engine
   useEffect(() => {
-    if (gameState?._celebrationBubble) {
+    if (gameState?._celebrationBubble && gameState._celebrationBubble !== prevCelebrationBubble.current) {
+      prevCelebrationBubble.current = gameState._celebrationBubble;
       setCelebrationPopupBubble(gameState._celebrationBubble);
-      gameState._celebrationBubble = null;
     }
-  }, [gameState?.log?.length]);
+  }, [gameState]);
 
   // Argument check via effect after a play resolves
   useEffect(() => {
