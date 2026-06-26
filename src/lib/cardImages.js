@@ -252,12 +252,12 @@ export const CARD_IMAGES = {
   'Dennis Lamp':      BASE + 'baf810d77_generated_image.png',
   'Jim Acker':        BASE + 'baf810d77_generated_image.png',
   'Bryan Clark':      BASE + 'baf810d77_generated_image.png',
-  'Tony Fernandez':   BASE + '1d012b9f0_generated_image.png',
-  'Dave Collins':     BASE + '2bd6f1443_generated_image.png',
-  'Buck Martinez':    BASE + 'c4c32f3da_generated_image.png',
-  'Garth Iorg':       BASE + '1d012b9f0_generated_image.png',
-  'Willie Aikens':    BASE + '2bd6f1443_generated_image.png',
-  'Rick Leach':       BASE + '2bd6f1443_generated_image.png',
+  'Tony Fernandez':   BASE + '2ee4b561a_images33.jpeg',
+  'Dave Collins':     BASE + 'f430bdd8a_images29.jpeg',
+  'Buck Martinez':    BASE + '3184d68ad_images34.jpeg',
+  'Garth Iorg':       BASE + '7e43912f2_images39.jpeg',
+  'Willie Aikens':    BASE + 'f3737b453_images43.jpeg',
+  'Rick Leach':       BASE + 'fb9a3b399_images46.jpeg',
   'Jim Gott':         BASE + 'baf810d77_generated_image.png',
 
   // ── CLEVELAND INDIANS ──
