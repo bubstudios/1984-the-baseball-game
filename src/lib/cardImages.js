@@ -125,11 +125,12 @@ export const CARD_IMAGES = {
   'John Henry Johnson':BASE + '7c846af75_generated_image.png',
   'Steve Crawford':   BASE + '7c846af75_generated_image.png',
   'Charlie Mitchell': BASE + '7c846af75_generated_image.png',
-  'Reid Nichols':     BASE + 'c3ea12ae2_generated_image.png',
-  'Ed Jurak':         BASE + 'a615999a5_generated_image.png',
-  'Jeff Newman':      BASE + 'a615999a5_generated_image.png',
-  'Rick Miller':      BASE + 'c3ea12ae2_generated_image.png',
-  'Glenn Hoffman':    BASE + 'a615999a5_generated_image.png',
+  'Reid Nichols':     BASE + '3bd5f6802_images25.jpeg',
+  'Ed Jurak':         BASE + 'e4e77ba73_images31.jpeg',
+  'Jeff Newman':      BASE + '3d628fc30_images34.jpeg',
+  'Rick Miller':      BASE + 'ee6491ba3_images36.jpeg',
+  'Jerry Remy':       BASE + '93f502973_images37.jpeg',
+  'Glenn Hoffman':    BASE + 'b10f476ad_images42.jpeg',
 
   // ── NEW YORK YANKEES ──
   'Don Mattingly':    BASE + '7c846af75_generated_image.png',
