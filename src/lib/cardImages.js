@@ -234,7 +234,7 @@ export const CARD_IMAGES = {
   'R.J. Reynolds':    BASE + '785514ee0_generated_image.png',
 
   // ── TORONTO BLUE JAYS ──
-  'Dave Stieb':       BASE + 'baf810d77_generated_image.png',
+  'Dave Stieb':       BASE + 'a94ddf16c_images50.jpeg',
   'George Bell':      BASE + 'cd6ce9663_images16.jpeg',
   'Jesse Barfield':   BASE + 'e588cd70f_images12.jpeg',
   'Lloyd Moseby':     BASE + '419cda3b4_images6.jpeg',
@@ -244,9 +244,9 @@ export const CARD_IMAGES = {
   'Ernie Whitt':      BASE + '3ec7021a4_images20.jpeg',
   'Alfredo Griffin':  BASE + 'd43d67f4a_images23.jpeg',
   'Cliff Johnson':    BASE + '10f285690_images9.jpeg',
-  'Doyle Alexander':  BASE + 'baf810d77_generated_image.png',
-  'Jim Clancy':       BASE + 'baf810d77_generated_image.png',
-  'Luis Leal':        BASE + 'baf810d77_generated_image.png',
+  'Doyle Alexander':  BASE + '63b36433c_images53.jpeg',
+  'Jim Clancy':       BASE + '1982c1b9d_images56.jpeg',
+  'Luis Leal':        BASE + '8194d1c9a_images59.jpeg',
   'Jimmy Key':        BASE + 'baf810d77_generated_image.png',
   'Roy Lee Jackson':  BASE + 'baf810d77_generated_image.png',
   'Dennis Lamp':      BASE + 'baf810d77_generated_image.png',
