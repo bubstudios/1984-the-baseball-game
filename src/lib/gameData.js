@@ -395,7 +395,6 @@ export const TEAMS = {
       { name: "Tom Underwood", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Bill Swaggerty", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "John Pacella", pos: "RP", throws: "R", bats: "R", stamina: 3, pitchSpeed: 7, offSpeed: 4, control: 4, contact: 2, power: 1, bunting: 3, speed: 2 },
-      { name: "Dennis Martinez", pos: "RP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 5, contact: 3, power: 1, bunting: 4, speed: 2 },
     ],
   },
 
@@ -1301,7 +1300,7 @@ export const PLAYER_ERRORS = {
   // Orioles
   "Al Bumbry": 4, "Cal Ripken Jr.": 26, "Eddie Murray": 18, "Gary Roenicke": 1,
   "Wayne Gross": 17, "Ken Singleton": 0, "Mike Young": 8, "Rich Dauer": 7, "Rick Dempsey": 3,
-  "John Shelby": 5, "Jim Dwyer": 1, "Floyd Rayford": 6, "Lenn Sakata": 5, "Joe Nolan": 3, "John Lowenstein": 1, "Dennis Martinez": 3,
+  "John Shelby": 5, "Jim Dwyer": 1, "Floyd Rayford": 6, "Lenn Sakata": 5, "Joe Nolan": 3, "John Lowenstein": 1,
   // Dodgers
   "Steve Sax": 22, "Ken Landreaux": 5, "Pedro Guerrero": 27, "Mike Marshall": 7,
   "Mike Scioscia": 13, "Greg Brock": 9, "Franklin Stubbs": 4, "Dave Anderson": 14,
