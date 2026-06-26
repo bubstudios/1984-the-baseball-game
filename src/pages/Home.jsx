@@ -69,6 +69,7 @@ import { ATHLETICS_BANNERS } from '@/lib/bannerData/athleticsBanners';
 import { TWINS_BANNERS } from '@/lib/bannerData/twinsBanners';
 import { MARINERS_BANNERS } from '@/lib/bannerData/marinersBanners';
 import { RANGERS_BANNERS } from '@/lib/bannerData/rangersBanners';
+import { MOVIES_1984_BANNERS } from '@/lib/bannerData/movies1984Banners';
 
 const TEAM_BANNERS = {
   padres: PADRES_BANNERS,
@@ -409,16 +410,15 @@ export default function Home() {
     // ── Trigger banner at inning end (innings 1-8 only, never 9+) ──
     const currentHalf = gameState.halfInning;
     if (prevHalfInning.current !== currentHalf && !gameState.gameOver) {
-      // Just transitioned to a new half-inning
-      // Show banner at the END of the just-completed half-inning (not the new one)
-      const completedInning = gameState.inning;
-      const wasTopInning = prevHalfInning.current === 'top';
-      
-      // If we just finished a top inning and moving to bottom, show banner after top
-      // If we just finished a bottom inning and moving to top+1, show banner after bottom
+      // Mix team-specific banners with national movie banners
       const teamBanners = getBannersForTeam(homeTeam);
-      if (teamBanners && completedInning <= 8) {
-        const randomBanner = teamBanners[Math.floor(Math.random() * teamBanners.length)];
+      const allBanners = [
+        ...(teamBanners || []),
+        ...MOVIES_1984_BANNERS,
+      ];
+      const completedInning = gameState.inning;
+      if (allBanners.length > 0 && completedInning <= 8) {
+        const randomBanner = allBanners[Math.floor(Math.random() * allBanners.length)];
         setActiveBanner(randomBanner);
       }
     }
