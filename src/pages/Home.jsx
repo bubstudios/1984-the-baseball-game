@@ -56,6 +56,7 @@ import { PIRATES_BANNERS } from '@/lib/bannerData/piratesBanners';
 import { PHILLIES_BANNERS } from '@/lib/bannerData/philliesBanners';
 import { EXPOS_BANNERS } from '@/lib/bannerData/exposBanners';
 import { REDSOX_BANNERS } from '@/lib/bannerData/redsoxBanners';
+import { YANKEES_BANNERS } from '@/lib/bannerData/yankeesBanners';
 
 const TEAM_BANNERS = {
   padres: PADRES_BANNERS,
@@ -71,6 +72,7 @@ const TEAM_BANNERS = {
   phillies: PHILLIES_BANNERS,
   expos: EXPOS_BANNERS,
   redsox: REDSOX_BANNERS,
+  yankees: YANKEES_BANNERS,
 };
 
 function getBannersForTeam(teamKey) {
