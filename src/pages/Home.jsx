@@ -67,6 +67,7 @@ import { ANGELS_BANNERS } from '@/lib/bannerData/angelsBanners';
 import { WHITESOX_BANNERS } from '@/lib/bannerData/whitesoxBanners';
 import { ATHLETICS_BANNERS } from '@/lib/bannerData/athleticsBanners';
 import { TWINS_BANNERS } from '@/lib/bannerData/twinsBanners';
+import { MARINERS_BANNERS } from '@/lib/bannerData/marinersBanners';
 
 const TEAM_BANNERS = {
   padres: PADRES_BANNERS,
@@ -93,6 +94,7 @@ const TEAM_BANNERS = {
   whitesox: WHITESOX_BANNERS,
   athletics: ATHLETICS_BANNERS,
   twins: TWINS_BANNERS,
+  mariners: MARINERS_BANNERS,
 };
 
 function getBannersForTeam(teamKey) {
