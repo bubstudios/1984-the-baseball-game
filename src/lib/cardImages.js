@@ -151,11 +151,12 @@ export const CARD_IMAGES = {
   'Mike Armstrong':   BASE + 'a83af9ffb_generated_image.png',
   'Bob Shirley':      BASE + 'a83af9ffb_generated_image.png',
   'Clay Christiansen':BASE + 'a83af9ffb_generated_image.png',
-  'Oscar Gamble':     BASE + '193c8150e_generated_image.png',
-  'Roy Smalley':      BASE + '328927698_generated_image.png',
-  'Rick Cerone':      BASE + '328927698_generated_image.png',
-  'Brian Dayett':     BASE + '193c8150e_generated_image.png',
-  'Tim Foli':         BASE + '328927698_generated_image.png',
+  'Oscar Gamble':     BASE + 'c82946486_images34.jpeg',
+  'Roy Smalley':      BASE + '8c393c200_images41.jpeg',
+  'Rick Cerone':      BASE + 'dadca5046_images44.jpeg',
+  'Brian Dayett':     BASE + '4c636d598_images48.jpeg',
+  'Tim Foli':         BASE + '2df2b544e_images49.jpeg',
+  'Omar Moreno':      BASE + '1b736a7cd_images56.jpeg',
 
   // ── BALTIMORE ORIOLES ──
   'Cal Ripken Jr.':   BASE + '79de78912_generated_image.png',
