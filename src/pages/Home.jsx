@@ -71,6 +71,7 @@ import { MARINERS_BANNERS } from '@/lib/bannerData/marinersBanners';
 import { RANGERS_BANNERS } from '@/lib/bannerData/rangersBanners';
 import { MOVIES_1984_BANNERS } from '@/lib/bannerData/movies1984Banners';
 import { ELECTRONICS_COMPUTERS_BANNER } from '@/lib/bannerData/electronicsComputersBanners';
+import { GENERAL_PRODUCTS_BANNER } from '@/lib/bannerData/generalProductsBanners';
 
 const TEAM_BANNERS = {
   padres: PADRES_BANNERS,
@@ -411,12 +412,13 @@ export default function Home() {
     // ── Trigger banner at inning end (innings 1-8 only, never 9+) ──
     const currentHalf = gameState.halfInning;
     if (prevHalfInning.current !== currentHalf && !gameState.gameOver) {
-      // Mix team-specific banners with national banners (movies + electronics)
+      // Mix team-specific banners with national banners (movies + electronics + general products)
       const teamBanners = getBannersForTeam(homeTeam);
       const allBanners = [
         ...(teamBanners || []),
         ...MOVIES_1984_BANNERS,
         ELECTRONICS_COMPUTERS_BANNER,
+        GENERAL_PRODUCTS_BANNER,
       ];
       const completedInning = gameState.inning;
       if (allBanners.length > 0 && completedInning <= 8) {
