@@ -62,6 +62,7 @@ import { TIGERS_BANNERS } from '@/lib/bannerData/tigersBanners';
 import { INDIANS_BANNERS } from '@/lib/bannerData/indiansBanners';
 import { ORIOLES_BANNERS } from '@/lib/bannerData/oriolesBanners';
 import { BLUEJAYS_BANNERS } from '@/lib/bannerData/bluejaysBanners';
+import { ROYALS_BANNERS } from '@/lib/bannerData/royalsBanners';
 
 const TEAM_BANNERS = {
   padres: PADRES_BANNERS,
@@ -83,6 +84,7 @@ const TEAM_BANNERS = {
   indians: INDIANS_BANNERS,
   orioles: ORIOLES_BANNERS,
   bluejays: BLUEJAYS_BANNERS,
+  royals: ROYALS_BANNERS,
 };
 
 function getBannersForTeam(teamKey) {
