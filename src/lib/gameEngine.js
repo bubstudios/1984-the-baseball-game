@@ -836,7 +836,7 @@ function resolveSwing(state, swingType, pitch) {
   const hitDirection = getHitDirection(adjBatter.bats);
   const powerRating = adjBatter.power / 10;
   const isPitcherBatting2 = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let hitChance = 0.14 + (contactRating + contactWx / 10) * 0.24;
+  let hitChance = 0.165 + (contactRating + contactWx / 10) * 0.24;
   if (isPitcherBatting2) hitChance *= 0.45; // Pitchers rarely get hits
   if (isPower) hitChance -= 0.04; if (isContact) hitChance += 0.06;
   const effP3 = getEffectivePitcher(state) || pitcher;
@@ -1066,7 +1066,7 @@ function resolveSwing(state, swingType, pitch) {
             return;
           }
           if (r1 && r2 && !isMI) { const r3 = state.bases[2]; if (r3 && state.outs < 2) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[2] = null; state.bases[1] = r1 || null; state.bases[0] = null; }
-          else { const r3dp = state.bases[2]; if (r3dp && state.outs < 2) { r3dp.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[2] = null; } if (state.bases[1]) { state.bases[2] = state.bases[2] || state.bases[1]; state.bases[1] = null; } state.bases[0] = null; const dpLine = pickLine(DOUBLE_PLAY_LINES); const dpText = dpLine.includes('grounds into') ? `${batter.name} ${dpLine}` : `${batter.name} grounds to ${['short','second','third','the pitcher'][Math.floor(Math.random() * 4)]} — flip to ${defenders['2B']?.name?.split(' ').pop() || 'second'}, relay to first — ${dpLine}`; state.log.push({ type: 'doubleplay', text: dpText }); state.lastPlay = { type: 'doubleplay', text: dpText }; }
+          else { const r3dp = state.bases[2]; if (r3dp && state.outs < 2) { r3dp.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[2] = null; } if (state.bases[1]) { state.bases[2] = state.bases[2] || state.bases[1]; state.bases[1] = null; } state.bases[0] = null; const dpLine = pickLine(DOUBLE_PLAY_LINES); const dpFielderPos = out.pos; const dpFielderName = defenders[dpFielderPos]?.name?.split(' ').pop() || dpFielderPos; const ssName = defenders['SS']?.name?.split(' ').pop() || 'short'; const b2Name = defenders['2B']?.name?.split(' ').pop() || 'second'; let dpRoute; if (dpFielderPos === '2B') { dpRoute = `${dpFielderName} to ${ssName} covering, relay to first`; } else if (dpFielderPos === 'SS') { dpRoute = `${dpFielderName} to ${b2Name} covering, relay to first`; } else if (dpFielderPos === '3B') { dpRoute = `${dpFielderName} to ${b2Name}, relay to first`; } else if (dpFielderPos === '1B') { dpRoute = `${dpFielderName} to ${ssName} covering second, back to first`; } else if (dpFielderPos === 'SP') { dpRoute = `${dpFielderName} to ${b2Name}, relay to first`; } else { dpRoute = `${b2Name} to first`; } const dpText = dpLine.includes('grounds into') ? `${batter.name} ${dpLine}` : `${batter.name} grounds to ${dpFielderName} — ${dpRoute} — ${dpLine}`; state.log.push({ type: 'doubleplay', text: dpText }); state.lastPlay = { type: 'doubleplay', text: dpText }; }
           state.balls = 0; state.strikes = 0; advanceBatter(state);
           recordOut(state); // first out of the DP
           if (!state.gameOver && state.outs < 3) { // only attempt the second out if the inning is still live
@@ -1534,7 +1534,7 @@ export function processAtBat(state, pitchType, swingType) {
    if (newState.balls === 0 && newState.strikes === 0) {
      const isCpuPitching = getControllingTeam(newState, 'pitching') === 'cpu';
 
-     if (isCpuPitching) {
+     if (isCpuPitching && newState.inning >= 7) {
        const batter = getCurrentBatter(newState);
        const battingTeam = getBattingTeam(newState);
        const battingTeamIndex = battingTeam === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
@@ -1776,8 +1776,9 @@ export function processAtBat(state, pitchType, swingType) {
     }
   }
 
-  // ── PHASE 2.7: PRE-SWING BUNTING DECISION GATE ──
-  const buntDecision = shouldBunt(bjb, {
+  // ── PHASE 2.7: PRE-SWING BUNTING DECISION GATE (CPU-CONTROLLED TEAMS ONLY) ──
+  const isCpuBattingForBunt = getControllingTeam(newState, 'batting') === 'cpu';
+  const buntDecision = isCpuBattingForBunt ? shouldBunt(bjb, {
     runner_on_1st: !!newState.bases[0],
     runner_on_2nd: !!newState.bases[1],
     runner_on_3rd: !!newState.bases[2],
@@ -1786,7 +1787,7 @@ export function processAtBat(state, pitchType, swingType) {
     score_margin: newState.score[getBattingTeam(newState)] - newState.score[getBattingTeam(newState) === 'home' ? 'away' : 'home'],
     bases_empty: !newState.bases.some(b => b !== null),
     third_baseman_playing_back: newState._third_baseman_playing_back || false,
-  });
+  }) : null;
 
   if (buntDecision) {
     const buntResult = resolveBunt(buntDecision, bjb, newState);
@@ -1796,6 +1797,24 @@ export function processAtBat(state, pitchType, swingType) {
 
       if (buntResult.batterOut) {
         bjb.gameStats.ab++;
+        // SACRIFICE: advance all existing runners exactly one base (scoring from 3rd) BEFORE recording the out.
+        const pitcherForSac = getCurrentPitcher(newState);
+        if (buntResult.type === 'sacrifice_success' || buntDecision === 'sacrifice') {
+          for (let b = 2; b >= 0; b--) {
+            if (newState.bases[b]) {
+              if (b + 1 >= 3) {
+                newState.bases[b].gameStats.runs++;
+                scoreRun(newState);
+                bjb.gameStats.rbi++;
+                pitcherForSac.gameStats.r++; pitcherForSac.gameStats.er++;
+                newState.bases[b] = null;
+              } else if (!newState.bases[b + 1]) {
+                newState.bases[b + 1] = newState.bases[b];
+                newState.bases[b] = null;
+              }
+            }
+          }
+        }
         recordOut(newState);
       } else {
         // Bunt single — advance baserunners, batter to first
@@ -2049,14 +2068,15 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     // Bullpen management: closers only in 8th+, mop-up guys in blowouts
     const trailing = cpuScore < userScore;
     const bigDeficit = Math.abs(cpuScore - userScore) >= 4;
+    const isCloser = (p) => p.pos === 'CL' || p.assignedPos === 'CL';
     let candidates;
     if (trailing && bigDeficit && inning <= 7) {
       // Mop-up duty — exclude closers, use worst available
-      candidates = [...cpuBullpen].filter(p => p.pos !== 'CL').sort((a, b) => a.control - b.control);
+      candidates = [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => a.control - b.control);
       if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => a.control - b.control);
     } else if (inning < 8) {
       // Before 8th inning — never use closers, pick best non-closer
-      candidates = [...cpuBullpen].filter(p => p.pos !== 'CL').sort((a, b) => b.control - a.control);
+      candidates = [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => b.control - a.control);
       if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
     } else {
       // 8th inning+ — closers allowed, best pitcher first

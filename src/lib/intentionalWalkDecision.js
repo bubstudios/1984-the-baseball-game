@@ -16,7 +16,10 @@ const IBB_THRESHOLD = 55;  // Score needed to issue IBB (start at 55)
  */
 export function shouldIntentionalWalk(game) {
   if (!game) return false;
-  
+
+  // Hard guard: essentially never issue an IBB before inning 7
+  if (game.inning < 7) return false;
+
   // Hard precondition: first base must be open (or openable)
   if (!ibb_legal(game)) {
     return false;
