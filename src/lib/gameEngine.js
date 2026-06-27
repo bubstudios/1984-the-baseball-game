@@ -120,8 +120,40 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     }
     return lineup;
   };
-  const homeLineup = buildLineup(customHomeLineup, home.lineup, home);
-  let awayLineup = buildLineup(customAwayLineup, away.lineup, away);
+  const enforceNineBatters = (lineup, teamData) => {
+    let result = [...lineup];
+    // Trim to 9 if over
+    if (result.length > 9) result = result.slice(0, 9);
+    // Fill from bench if under 9 (DH only — non-DH should already have pitcher)
+    while (result.length < 9 && teamData?.bench?.length > 0) {
+      const nextBench = teamData.bench.find(b => !result.some(p => p.name === b.name));
+      if (!nextBench) break;
+      result.push({ ...nextBench, assignedPos: nextBench.assignedPos || nextBench.pos || 'DH', order: result.length + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+    }
+    // In non-DH, ensure the starting pitcher appears exactly once
+    if (!useDH && teamData?.rotation?.length > 0) {
+      const spName = teamData.rotation[0].name;
+      const spCount = result.filter(p => p.name === spName).length;
+      if (spCount === 0) {
+        result.push({ ...teamData.rotation[0], assignedPos: 'SP', order: result.length + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+      } else if (spCount > 1) {
+        // Remove duplicates — keep the first occurrence
+        let seen = false;
+        result = result.filter(p => {
+          if (p.name === spName) { if (seen) return false; seen = true; }
+          return true;
+        });
+      }
+    }
+    // Re-number batting order after any trim/fill
+    result.forEach((p, i) => { p.order = i + 1; });
+    if (result.length !== 9) {
+      console.warn(`Lineup built with ${result.length} players — expected 9`);
+    }
+    return result;
+  };
+  const homeLineup = enforceNineBatters(buildLineup(customHomeLineup, home.lineup, home), home);
+  let awayLineup = enforceNineBatters(buildLineup(customAwayLineup, away.lineup, away), away);
   // Override away SP if user selected a specific opponent starter
   const awaySPOverride = opponentStartingPitcher ? away.rotation.find(p => p.name === opponentStartingPitcher.name) : null;
   // Swap opponent SP if user selected a specific starter
@@ -606,8 +638,6 @@ function resolvePitch(state, pitchType) {
                        zone === BEHAVIOR_ZONES.NORMAL ? 1.0 :
                        zone === BEHAVIOR_ZONES.PRESSING ? 0.85 : 0.65;
     controlFactor *= controlMod;
-    // DEBUG: Log effective control and modifier
-    console.log(`[COMPOSURE] ${pitcher.name} | composure=${Math.round(composure.composure)} | zone=${zone.label} | mod=${controlMod} | baseCTL=${Math.round((effectiveP.effectiveControl || effectiveP.control) * 10)}/10 | effective=${controlFactor * 10}/10`);
   }
   
   const effControl = effectiveP.effectiveControl || effectiveP.control;
@@ -1037,9 +1067,11 @@ function resolveSwing(state, swingType, pitch) {
           if (r1 && r2 && !isMI) { const r3 = state.bases[2]; if (r3 && state.outs < 2) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[2] = null; state.bases[1] = r1 || null; state.bases[0] = null; }
           else { const r3dp = state.bases[2]; if (r3dp && state.outs < 2) { r3dp.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; state.bases[2] = null; } if (state.bases[1]) { state.bases[2] = state.bases[2] || state.bases[1]; state.bases[1] = null; } state.bases[0] = null; const dpLine = pickLine(DOUBLE_PLAY_LINES); const dpText = dpLine.includes('grounds into') ? `${batter.name} ${dpLine}` : `${batter.name} grounds to ${['short','second','third','the pitcher'][Math.floor(Math.random() * 4)]} — flip to ${defenders['2B']?.name?.split(' ').pop() || 'second'}, relay to first — ${dpLine}`; state.log.push({ type: 'doubleplay', text: dpText }); state.lastPlay = { type: 'doubleplay', text: dpText }; }
           state.balls = 0; state.strikes = 0; advanceBatter(state);
-          state.outs++; getCurrentPitcher(state).gameStats.ip += 1/3;
-          if (!state.gameOver && state.outs < 3) { state.outs++; getCurrentPitcher(state).gameStats.ip += 1/3; if (state.outs >= 3) endHalfInning(state); }
-          if (state.outs >= 3) endHalfInning(state); return;
+          recordOut(state); // first out of the DP
+          if (!state.gameOver && state.outs < 3) { // only attempt the second out if the inning is still live
+              recordOut(state); // second out (recordOut handles endHalfInning if this is the 3rd)
+          }
+          return;
         } else if (roll < dpc + 0.30) {
           let fcText;
           const fielderPos = out.pos;
