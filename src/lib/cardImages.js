@@ -312,7 +312,7 @@ export const CARD_IMAGES = {
   'Mark Brouhard':    BASE + '8d038602e_images1.jpeg',
   'Roy Howell':       BASE + '4764d9fab_images37.jpeg',
   'Bill Schroeder':   BASE + 'ad5e9c7e0_images41.jpeg',
-  'Bob McClure':      BASE + '5af7e12c2_generated_image.png',
+
 
   // ── MINNESOTA TWINS ──
   'Kent Hrbek':       BASE + 'e07e5dc6e_generated_image.png',

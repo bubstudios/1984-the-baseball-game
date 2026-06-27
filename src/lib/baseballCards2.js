@@ -83,7 +83,6 @@ export const EXTRA_ROSTERS = {
     { id: 22, name: 'Mark Brouhard',    position: 'OF',  number: 35, ba: '.249', hr: 9,  rbi: 34,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 23, name: 'Roy Howell',       position: '3B',  number: 7,  ba: '.235', hr: 4,  rbi: 22,  era: '-',    role: 'Bench/Power',          rarity: 'common'   },
     { id: 24, name: 'Bill Schroeder',   position: 'C',   number: 10, ba: '.257', hr: 14, rbi: 25,  era: '-',    role: 'Backup Catcher/Power', rarity: 'uncommon' },
-    { id: 25, name: 'Bob McClure',      position: 'RP',  number: 26, ba: '-',    hr: '-', rbi: '-', era: '4.38', role: 'Relief/Swingman',       rarity: 'common'   },
   ],
 
   twins: [

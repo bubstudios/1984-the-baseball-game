@@ -689,7 +689,6 @@ export const TEAMS = {
       { name: "Ray Searage", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Tom Tellmann", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Rick Waits", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
-      { name: "Bob McClure", pos: "RP", throws: "L", bats: "L", stamina: 7, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 3, power: 1, bunting: 4, speed: 3 },
     ],
   },
 
