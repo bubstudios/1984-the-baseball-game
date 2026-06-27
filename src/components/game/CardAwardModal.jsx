@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { X } from 'lucide-react';
 import BaseballCard from './BaseballCard';
 
 export default function CardAwardModal({ card, isNewCard, onClose, onDismiss }) {
   const handleClose = onClose || onDismiss;
-  const [visible, setVisible] = useState(false);
 
-  useEffect(() => {
-    setVisible(true);
-  }, []);
-
-  if (!visible || !card) return null;
+  if (!card) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative max-w-96">
         <button
           onClick={handleClose}
@@ -22,7 +17,7 @@ export default function CardAwardModal({ card, isNewCard, onClose, onDismiss }) 
           <X className="w-8 h-8" />
         </button>
 
-        <div className="bg-slate-900 rounded-xl border-4 border-yellow-400 shadow-2xl p-6 text-center">
+        <div className="bg-slate-900 rounded-xl border-4 border-yellow-400 shadow-2xl p-6 text-center animate-in zoom-in-95 duration-300">
           <h2 className="font-heading text-2xl font-bold text-yellow-300 mb-2 uppercase tracking-wider">
             ⭐ Card Awarded!
           </h2>

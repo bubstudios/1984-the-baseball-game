@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-export default function AttractiveAdBanner({ banner, onTap, autoHideMs = 12000 }) {
+export default function AttractiveAdBanner({ banner, onTap, autoHideMs = 12000, onHide }) {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     if (!autoHideMs) return;
-    const timer = setTimeout(() => setIsVisible(false), autoHideMs);
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+      if (onHide) onHide();
+    }, autoHideMs);
     return () => clearTimeout(timer);
   }, [autoHideMs]);
 
@@ -14,7 +17,7 @@ export default function AttractiveAdBanner({ banner, onTap, autoHideMs = 12000 }
   return (
     <div
       onClick={onTap}
-      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl p-4 shadow-2xl cursor-pointer hover:shadow-3xl hover:scale-105 transition-all duration-200 border-2 border-yellow-400 animate-in slide-in-from-bottom-4 fade-in"
+      className="fixed top-20 right-4 z-40 w-72 bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl p-4 shadow-2xl cursor-pointer hover:shadow-3xl hover:scale-105 transition-all duration-200 border-2 border-yellow-400 animate-in slide-in-from-top-4 fade-in"
     >
       <div className="flex items-start gap-3">
         <div className="text-3xl flex-shrink-0">{banner.icon || '📺'}</div>

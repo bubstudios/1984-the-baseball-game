@@ -150,6 +150,7 @@ export default function Home() {
   const [showStretch, setShowStretch] = useState(null);
   const [bannerQueue, setBannerQueue] = useState([]);
   const [activeBanner, setActiveBanner] = useState(null);
+  const [bannerSeq, setBannerSeq] = useState(0);
   const [bannerPopup, setBannerPopup] = useState(null);
   const [beanballEvent, setBeanballEvent] = useState(null);
   const [cardAward, setCardAward] = useState(null);
@@ -409,9 +410,9 @@ export default function Home() {
 
     prevLogLength.current = gameState.log.length;
 
-    // ── Trigger banner at inning end (innings 1-8 only, never 9+) ──
+    // ── Trigger banner at inning end (innings 1-8 only, never 9+, skip game start) ──
     const currentHalf = gameState.halfInning;
-    if (prevHalfInning.current !== currentHalf && !gameState.gameOver) {
+    if (prevHalfInning.current !== null && prevHalfInning.current !== currentHalf && !gameState.gameOver) {
       // Mix team-specific banners with national banners (movies + electronics + general products)
       const teamBanners = getBannersForTeam(homeTeam);
       const allBanners = [
@@ -423,6 +424,8 @@ export default function Home() {
       const completedInning = gameState.inning;
       if (allBanners.length > 0 && completedInning <= 8) {
         const randomBanner = allBanners[Math.floor(Math.random() * allBanners.length)];
+        setActiveBanner(null);  // Clear first to force remount (resets auto-hide timer)
+        setBannerSeq(s => s + 1);
         setActiveBanner(randomBanner);
       }
     }
@@ -592,9 +595,11 @@ export default function Home() {
   // ── Game-over achievement processing (called from effect AND play handlers) ──
   const processGameOver = useCallback((state) => {
     if (!state || !state.gameOver) return;
-    const userSide = state.homeTeam === userTeam ? 'home' : 'away';
+    // Use state.userTeam (set at game start) instead of React closure — more reliable
+    const effectiveUserTeam = state.userTeam || userTeam;
+    const userSide = state.homeTeam === effectiveUserTeam ? 'home' : 'away';
     const opponentSide = userSide === 'home' ? 'away' : 'home';
-    const userWon = state.score[userSide] > state.score[opponentSide];
+    const userWon = state.gameOver && state.score[userSide] > state.score[opponentSide];
     const userLineup = userSide === 'home' ? state.homeLineup : state.awayLineup;
     const opponentLineup = userSide === 'home' ? state.awayLineup : state.homeLineup;
 
@@ -891,6 +896,7 @@ export default function Home() {
     prevHalfInning.current = null;
     setShowStretch(null);
     setActiveBanner(null);
+    setBannerSeq(0);
     setBannerPopup(null);
     setBeanballEvent(null);
     setEjectionResult(null);
@@ -1234,9 +1240,11 @@ export default function Home() {
       {/* Banner and Popup */}
       {activeBanner && (
         <AttractiveAdBanner
+          key={bannerSeq}
           banner={activeBanner}
           onTap={() => setBannerPopup(activeBanner)}
           autoHideMs={12000}
+          onHide={() => setActiveBanner(null)}
         />
       )}
       {bannerPopup && (
