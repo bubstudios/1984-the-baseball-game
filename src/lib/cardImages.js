@@ -292,7 +292,7 @@ export const CARD_IMAGES = {
   'Cecil Cooper':     BASE + '638616e4b_images7.jpeg',
   'Rollie Fingers':   BASE + '5af7e12c2_generated_image.png',
   'Ben Oglivie':      BASE + '8390c0661_images12.jpeg',
-  'Paul Molitor':     BASE + 'c4c32f3da_generated_image.png',
+  'Paul Molitor':     BASE + '44b82a5ea_images38.jpeg',
   'Ted Simmons':      BASE + 'd71493c66_images18.jpeg',
   'Jim Gantner':      BASE + 'cb93a8f44_images4.jpeg',
   'Jim Sundberg':     BASE + '8dbc2ccec_images24.jpeg',
@@ -307,11 +307,11 @@ export const CARD_IMAGES = {
   'Ray Searage':      BASE + '5af7e12c2_generated_image.png',
   'Tom Tellmann':     BASE + '5af7e12c2_generated_image.png',
   'Rick Waits':       BASE + '5af7e12c2_generated_image.png',
-  'Charlie Moore':    BASE + '1d012b9f0_generated_image.png',
+  'Charlie Moore':    BASE + 'fb2e08473_images.jpeg',
   'Randy Ready':      BASE + 'c4c32f3da_generated_image.png',
   'Mark Brouhard':    BASE + '1d012b9f0_generated_image.png',
-  'Roy Howell':       BASE + 'c4c32f3da_generated_image.png',
-  'Bill Schroeder':   BASE + '1d012b9f0_generated_image.png',
+  'Roy Howell':       BASE + '4764d9fab_images37.jpeg',
+  'Bill Schroeder':   BASE + 'ad5e9c7e0_images41.jpeg',
   'Bob McClure':      BASE + '5af7e12c2_generated_image.png',
 
   // ── MINNESOTA TWINS ──
