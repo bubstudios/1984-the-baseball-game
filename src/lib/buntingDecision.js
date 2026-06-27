@@ -51,7 +51,8 @@ function sac_bunt_score(batter, game) {
    let s = 0;
 
    // THE HEADLINE CASE — pitcher hitting (esp. AL pitcher in NL park, no DH)
-   if (batter.is_pitcher) {
+   const isPitcherBatting = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP', 'RP', 'CL'].includes(batter.assignedPos));
+   if (isPitcherBatting) {
      s += 60;  // AL pitcher bunting = near-automatic in this situation
    }
   
@@ -144,7 +145,7 @@ export function resolveBunt(buntType, batter, game) {
 function resolveSacBunt(batter, game) {
   // Bunting skill scales off CON (or dedicated bunt rating).
   // Pitchers in 1984 were generally decent sac bunters — give them a solid clean-sac rate.
-  const isPitcher = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL';
+  const isPitcher = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP', 'RP', 'CL'].includes(batter.assignedPos));
   const conRating = (batter.contact || 3) / 10;
   const pitcherBonus = isPitcher ? 0.15 : 0;  // Pitchers 1984 were decent bunters
   

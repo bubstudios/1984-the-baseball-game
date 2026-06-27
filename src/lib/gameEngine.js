@@ -426,7 +426,8 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
     }
   }
   const defenders = getDefensivePlayers(state);
-  if (isHit && bases <= 2) {
+  const isOutfieldHit = hitDirection && ['LF', 'CF', 'RF', 'LCF', 'RCF'].some(d => hitDirection.includes(d));
+  if (isHit && bases <= 2 && isOutfieldHit) {
     const ofArm = getOutfieldArm(defenders);
     const armPenalty = (ofArm / 10) * 0.18;
     const batterPower = batter.power / 10;
@@ -499,7 +500,7 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
     }
   }
   if (bases <= 3) state.bases[bases - 1] = batter;
-  if (isHit && bases === 1) {
+  if (isHit && bases === 1 && isOutfieldHit) {
     const r3 = state.bases[2], b1 = state.bases[0];
     // Only allow "takes second on throw to third" when the runner on 3rd actually
     // advanced there during this play (wasn't already on 3rd before the hit).
@@ -772,7 +773,7 @@ function resolveSwing(state, swingType, pitch) {
       batter.gameStats.rbi += rbiB; pitcher.gameStats.r += rbiB; pitcher.gameStats.er += rbiB;
       const buntText = `${batter.name} ${pickLine(BUNT_SINGLE_LINES)}${rbiB ? ` ${rbiB} RBI!` : ''}`;
       state.log.push({ type: 'single', text: buntText });
-      state.lastPlay = { type: 'single', text: buntText };
+      state.lastPlay = { type: 'single', text: buntText, infield: true };
       state.balls = 0; state.strikes = 0; advanceBatter(state); return;
     }
     else { state.strikes++; if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; state.log.push({ type: 'strikeout', text: `${batter.name} bunts foul for strike three!` }); state.lastPlay = { type: 'strikeout', text: `${batter.name} bunts foul for strike three!` }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } state.log.push({ type: 'foul', text: `${batter.name} fouls off the bunt — strike ${state.strikes}` }); state.lastPlay = { type: 'foul', text: `Foul bunt — strike ${state.strikes}` }; return; }
@@ -1002,9 +1003,9 @@ function resolveSwing(state, swingType, pitch) {
             }
           }
           state.bases[0] = batter; 
-          const isText = `${batter.name} beats it out — infield single past ${fielder.name}!`; 
-          state.log.push({ type: 'single', text: isText }); 
-          state.lastPlay = { type: 'single', text: isText }; 
+          const isText = `${batter.name} beats it out — infield single past ${fielder.name}!`;
+          state.log.push({ type: 'single', text: isText });
+          state.lastPlay = { type: 'single', text: isText, infield: true };
           state.balls = 0; 
           state.strikes = 0; 
           advanceBatter(state); 
@@ -2038,6 +2039,8 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   // Don't pull starters with a lead unless severely fatigued
   const hasLead = cpuScore > userScore;
   const notSeverelyFatigued = !severeFatigue && !fatiguePull;
+  // Fresh starter in early innings stays in — 1984 starters routinely went 7-9 innings
+  if (!isReliever && inning < 6 && !severeFatigue && !fatiguePull && runs < 5 && bbi < 5) return newState;
   if (hasLead && notSeverelyFatigued && !walksPull && !blowupPull && !lateClose) return newState;
 
   const shouldChange = (severeFatigue || fatiguePull || walksPull || blowupPull || lateClose) && cpuBullpen.length > 0;
