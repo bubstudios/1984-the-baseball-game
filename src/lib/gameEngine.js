@@ -2031,7 +2031,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const ip = cpuPitcher.gameStats.ip || 0, bbi = cpuPitcher.gameStats.bb || 0, runs = cpuPitcher.gameStats.r || 0;
   const inning = newState.inning, stamina = cpuPitcher.stamina || 5;
   const isReliever = ['RP','CL'].includes(cpuPitcher.pos) || ['RP','CL'].includes(cpuPitcher.assignedPos);
-  const maxInnings = isReliever ? stamina * 0.4 : stamina * 0.7;
+  const maxInnings = isReliever ? stamina * 0.4 : Math.max(4.2, stamina * 0.7);
   const fatiguePull = ip >= maxInnings + 0.5, walksPull = bbi >= 5, blowupPull = inning < 6 && runs >= 5;
   const cpuScore = newState.score[cpuPitchingSide], userScore = newState.score[cpuBattingSide];
   const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2 && ip >= 2;
