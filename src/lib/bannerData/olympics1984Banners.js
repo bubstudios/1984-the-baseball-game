@@ -1,0 +1,218 @@
+// National 1984 LA Summer Olympics Banner (#701-715) — 17 windows, mixed into ALL 26 ballparks
+// Flag-waving Americana + golden-summer nostalgia + retrospective wink
+// All names and facts are real 1984 references; all descriptive copy is original.
+// Hidden achievement: "Spirit of '84" — open all Olympics windows
+
+export const OLYMPICS_1984_BANNER = {
+  id: 'olympicsbanner_701',
+  title: '🥇 "The Games are in L.A. — go for the gold!"',
+  subtitle: '(flag-waving Americana meets golden-summer nostalgia)',
+  icon: '🥇',
+  hiddenAchievement: '🥇 "Spirit of \'84"',
+  popups: [
+    // ── WINDOW 01: MARY LOU RETTON ──
+    {
+      num: 1,
+      emoji: '🤸‍♀️',
+      title: 'MARY LOU RETTON',
+      tagline: 'Stick the Landing',
+      whatItWas: 'A 16-year-old American gymnast from West Virginia — all power and megawatt smile — who became the sweetheart of the \'84 Games and the face of U.S. gymnastics.',
+      howChanged: 'Entering her final vault needing a perfect 10 to win all-around gold, she delivered — becoming the first American woman to win Olympic all-around gold, with five medals total.',
+      craze: 'The perfect-10 vault became an instant iconic moment; she was everywhere — cereal boxes, magazines, TV — the gymnastics boom in human form.',
+      howAged: 'A beloved icon; that vault is still replayed every Olympic cycle. 🤸‍♀️',
+      achievement: '🤸‍♀️ *Stick the Landing*',
+    },
+    // ── WINDOW 02: CARL LEWIS ──
+    {
+      num: 2,
+      emoji: '🏃',
+      title: 'CARL LEWIS',
+      tagline: 'Chasing Jesse Owens',
+      whatItWas: 'A towering, graceful American sprinter and long jumper carrying the weight of enormous expectations into his home Olympics — a once-in-a-generation talent.',
+      howChanged: 'He won four gold medals — 100m, 200m, long jump, and 4x100 relay — matching Jesse Owens\'s legendary 1936 haul and cementing himself as one of the greatest athletes alive.',
+      craze: 'The four-gold performance made him a household name and the breakout star of the Games; the Owens comparison elevated everything.',
+      howAged: 'One of the greatest track-and-field careers in history; the \'84 quadruple is still the benchmark. 🏃',
+      achievement: '🏃 *Chasing Jesse Owens*',
+    },
+    // ── WINDOW 03: EDWIN MOSES ──
+    {
+      num: 3,
+      emoji: '🏃‍♂️',
+      title: 'EDWIN MOSES',
+      tagline: 'Untouchable over the hurdles',
+      whatItWas: 'An American 400m hurdler of terrifying consistency — a scientist-athlete whose technical mastery made him nearly unbeatable for years on end.',
+      howChanged: 'He cruised to gold in the 400m hurdles in L.A., extending his legendary winning streak and dominating the event with effortless authority — delivering exactly as expected.',
+      craze: 'His years-long unbeaten streak is one of the most remarkable runs of sustained dominance sport has ever seen.',
+      howAged: 'A revered, almost mythical figure in track and field. 🏃‍♂️',
+      achievement: '🏃‍♂️ *The Streak*',
+    },
+    // ── WINDOW 04: GREG LOUGANIS ──
+    {
+      num: 4,
+      emoji: '🤸‍♂️',
+      title: 'GREG LOUGANIS',
+      tagline: 'Poetry off the board',
+      whatItWas: 'A diver of such grace and precision that he made the impossibly difficult look effortless — widely considered the greatest diver who ever lived.',
+      howChanged: 'He swept both diving golds (springboard and platform), dominating with scores that left no doubt.',
+      craze: 'The gold standard of diving; his artistry redefined what the sport could look like.',
+      howAged: 'Still regarded as the finest diver in history. 🤸‍♂️',
+      achievement: '🤸‍♂️ *Perfect Form*',
+    },
+    // ── WINDOW 05: JOAN BENOIT ──
+    {
+      num: 5,
+      emoji: '👟',
+      title: 'JOAN BENOIT',
+      tagline: 'First through the tunnel',
+      whatItWas: 'A tough, determined American distance runner stepping onto a brand-new Olympic stage.',
+      howChanged: 'She won the very first women\'s Olympic marathon — a race only just added to the Games — pulling away early and running alone into the Coliseum to a roaring welcome.',
+      craze: 'A milestone for women\'s sports; the moment the women\'s marathon arrived on the world\'s biggest stage.',
+      howAged: 'A landmark victory, celebrated as a barrier-breaking moment. 👟',
+      achievement: '👟 *26.2 to History*',
+    },
+    // ── WINDOW 06: MICHAEL JORDAN & THE '84 BASKETBALL TEAM ──
+    {
+      num: 6,
+      emoji: '🏀',
+      title: 'THE \'84 HOOPS GOLD',
+      tagline: 'Before he was "Air"',
+      whatItWas: 'The U.S. men\'s basketball team — amateurs and college stars, coached by Bob Knight — rolling to the gold medal on home soil. Among the young players: a kid from North Carolina named Michael Jordan, not yet an NBA legend.',
+      howChanged: 'Dominant gold for the home team — and an early national glimpse of Jordan\'s brilliance, months before his NBA career began.',
+      craze: 'A "before they were famous" snapshot; the amateur era of Olympic hoops, years before the Dream Team.',
+      howAged: 'Fascinating in hindsight — the greatest player ever, winning gold as a college amateur. 🏀',
+      achievement: '🏀 *Amateur Hour*',
+    },
+    // ── WINDOW 07: THE OPENING CEREMONY ──
+    {
+      num: 7,
+      emoji: '🎆',
+      title: 'THE OPENING CEREMONY',
+      tagline: 'A rocket man and 84 pianos',
+      whatItWas: 'A jaw-dropping Hollywood spectacle in the Coliseum — card-stunt flags, mass choreography, and famously a man flying into the stadium with a rocket pack, all beamed to a global audience.',
+      howChanged: 'L.A. announced itself with pure showmanship, setting a new bar for Olympic pageantry and American spectacle.',
+      craze: 'The template for the modern blockbuster opening ceremony — entertainment as much as ritual.',
+      howAged: 'Iconic \'80s excess in the best way; the rocket man is unforgettable. 🎆',
+      achievement: '🎆 *Let the Games Begin*',
+    },
+    // ── WINDOW 08: THE TORCH RELAY ──
+    {
+      num: 8,
+      emoji: '🔥',
+      title: 'THE OLYMPIC TORCH',
+      tagline: 'Coast to coast to the Coliseum',
+      whatItWas: 'The flame\'s journey across the United States, passed hand to hand through towns big and small on its way to Los Angeles, drawing crowds all along the route.',
+      howChanged: 'The cross-country relay turned into a genuine national event, building anticipation and a sense of shared ownership of the Games.',
+      craze: 'A unifying, feel-good ritual that made communities across the country part of the Olympics.',
+      howAged: 'A warmly remembered piece of the \'84 summer. 🔥',
+      achievement: '🔥 *Carry the Flame*',
+    },
+    // ── WINDOW 09: SAM THE OLYMPIC EAGLE ──
+    {
+      num: 9,
+      emoji: '🦅',
+      title: 'SAM THE OLYMPIC EAGLE',
+      tagline: 'The star-spangled mascot',
+      whatItWas: 'The official mascot of the L.A. Games — a cartoon bald eagle in a red-white-and-blue Uncle Sam hat, designed in a famous animation house style.',
+      howChanged: 'Sam was plastered across merchandise, posters, and souvenirs — the friendly patriotic face of the whole event.',
+      craze: 'A quintessential \'80s mascot, dripping with the era\'s flag-waving optimism.',
+      howAged: 'Pure nostalgia bait; instantly recognizable to anyone who lived it. 🦅',
+      achievement: '🦅 *Mascot Mania*',
+    },
+    // ── WINDOW 10: THE SOVIET-LED BOYCOTT ──
+    {
+      num: 10,
+      emoji: '🌐',
+      title: 'THE BOYCOTT',
+      tagline: 'Half the rivalry stayed home',
+      whatItWas: 'In response to the U.S.-led boycott of the 1980 Moscow Games, the Soviet Union and most of the Eastern Bloc declined to attend Los Angeles, citing security concerns.',
+      howChanged: 'Several powerhouse sports nations were absent, which shaped the medal table and removed some of the era\'s biggest Cold War athletic rivalries from the field.',
+      craze: 'A defining piece of \'80s Olympic history — the tit-for-tat boycotts that bracketed the decade\'s Games.',
+      howAged: 'Remembered as the geopolitical backdrop that gave the \'84 Games their unusual shape. 🌐',
+      achievement: '🌐 *The Empty Lanes*',
+    },
+    // ── WINDOW 11: THE U.S. MEDAL HAUL ──
+    {
+      num: 11,
+      emoji: '🥇',
+      title: 'GOLD RUSH',
+      tagline: 'The home team cleans up',
+      whatItWas: 'With the home crowd behind them (and several rivals absent), American athletes piled up an enormous haul of medals across the Games.',
+      howChanged: 'Gold after gold for Team USA fed a swelling wave of national pride that ran all summer long.',
+      craze: 'The medal flood supercharged the patriotic mood and made the \'84 Games feel like a triumph from start to finish.',
+      howAged: 'A high-water mark of feel-good American Olympic memory. 🥇',
+      achievement: '🥇 *Top of the Podium*',
+    },
+    // ── WINDOW 12: THE FIRST PROFITABLE GAMES ──
+    {
+      num: 12,
+      emoji: '💰',
+      title: 'THE BUSINESS OF GOLD',
+      tagline: 'The Olympics that made money',
+      whatItWas: 'L.A. ran the Games on private money and existing venues instead of costly new construction — and pulled off something unprecedented: a modern Olympics that turned a substantial profit.',
+      howChanged: 'Corporate sponsorship and shrewd organization transformed the economics of the event, proving the Games could be a financial success rather than a civic money pit.',
+      craze: 'It rewrote the playbook for how cities host the Olympics — and how sponsors fund them.',
+      howAged: 'A genuinely pivotal moment in sports business history. 💰',
+      achievement: '💰 *In the Black*',
+    },
+    // ── WINDOW 13: "WAVE YOUR FLAG" — THE PATRIOTISM CRAZE ──
+    {
+      num: 13,
+      emoji: '🇺🇸',
+      title: 'U-S-A! U-S-A!',
+      tagline: 'The summer everyone waved the flag',
+      whatItWas: 'The chant, the flags, the red-white-and-blue everywhere — the \'84 Games arrived at a moment of surging American optimism and turned into a coast-to-coast patriotic celebration.',
+      howChanged: '"U-S-A! U-S-A!" rang out of stadiums and living rooms alike; the Games became a feel-good national rallying point.',
+      craze: 'One of the defining moods of the mid-\'80s — unabashed, flag-waving feel-good Americana.',
+      howAged: 'Shorthand for a whole cultural moment; the chant outlived the summer. 🇺🇸',
+      achievement: '🇺🇸 *Wave Your Flag*',
+    },
+    // ── WINDOW 14: THE GAMES ON TV ──
+    {
+      num: 14,
+      emoji: '📺',
+      title: 'WATCHING IT ALL UNFOLD',
+      tagline: 'Glued to the set for two weeks',
+      whatItWas: 'For two weeks, the Olympics owned American television — prime-time coverage, up-close-and-personal athlete features, and the whole country watching the same moments at the same time.',
+      howChanged: 'Mary Lou\'s vault, Carl Lewis\'s golds, the marathon finish — shared live in living rooms, the kind of mass-audience event that defined pre-cable TV.',
+      craze: 'A peak example of the communal TV moment, when tens of millions watched together.',
+      howAged: 'Nostalgic for an era when the whole country gathered around the same broadcast. 📺',
+      achievement: '📺 *Prime-Time Gold*',
+    },
+    // ── WINDOW 15: THE U.S. MEN'S GYMNASTICS UPSET ──
+    {
+      num: 15,
+      emoji: '🤸',
+      title: 'THE MEN\'S TEAM GOLD',
+      tagline: 'An upset on the mat',
+      whatItWas: 'The American men\'s gymnastics squad pulled off a stunning team gold, toppling the expected pecking order in front of a delirious home crowd.',
+      howChanged: 'Riding the same gymnastics wave as Mary Lou Retton, the men\'s surprise team victory became one of the signature upsets of the Games.',
+      craze: 'A shock triumph that helped fuel the nationwide gymnastics craze that summer.',
+      howAged: 'A fondly remembered high point for American gymnastics. 🤸',
+      achievement: '🤸 *Stuck It*',
+    },
+    // ── WINDOW 16: THE BOXING TEAM ──
+    {
+      num: 16,
+      emoji: '🥊',
+      title: 'THE BOXING RING',
+      tagline: 'Gloves up, gold down',
+      whatItWas: 'One of the most successful U.S. Olympic boxing teams ever assembled, loaded with future professional stars who dominated their weight classes in L.A.',
+      howChanged: 'American boxers won a remarkable haul of gold, with several fighters launching legendary pro careers off the back of their Olympic fame.',
+      craze: 'A launching pad for some of the biggest names boxing would see over the following decade.',
+      howAged: 'Remembered as a golden generation of American amateur boxing. 🥊',
+      achievement: '🥊 *Golden Gloves*',
+    },
+    // ── WINDOW 17: OLYMPIC PIN TRADING ──
+    {
+      num: 17,
+      emoji: '📌',
+      title: 'THE PIN CRAZE',
+      tagline: 'Trade you two for that one',
+      whatItWas: 'Collectible Olympic pins became a full-blown obsession in L.A. — fans, athletes, sponsors, and reporters swapping thousands of designs in an unofficial sport all its own.',
+      howChanged: 'Pin trading exploded into a genuine phenomenon, collectors swapping enamel treasures alongside the avalanche of official merchandise.',
+      craze: 'Part of the commercial juggernaut of the first profitable modern Games.',
+      howAged: 'Those pins are prized collector\'s items now, dripping with \'84 nostalgia. 📌',
+      achievement: '📌 *Pin Collector*',
+    },
+  ],
+};

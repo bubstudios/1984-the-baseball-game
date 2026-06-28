@@ -73,6 +73,7 @@ import { MOVIES_1984_BANNERS } from '@/lib/bannerData/movies1984Banners';
 import { ELECTRONICS_COMPUTERS_BANNER } from '@/lib/bannerData/electronicsComputersBanners';
 import { GENERAL_PRODUCTS_BANNER } from '@/lib/bannerData/generalProductsBanners';
 import { WRESTLING_BANNER } from '@/lib/bannerData/proWrestlingBanners';
+import { OLYMPICS_1984_BANNER } from '@/lib/bannerData/olympics1984Banners';
 
 const TEAM_BANNERS = {
   padres: PADRES_BANNERS,
@@ -422,6 +423,7 @@ export default function Home() {
         ELECTRONICS_COMPUTERS_BANNER,
         GENERAL_PRODUCTS_BANNER,
         WRESTLING_BANNER,
+        OLYMPICS_1984_BANNER,
       ];
       const completedInning = gameState.inning;
       if (allBanners.length > 0 && completedInning <= 8) {
