@@ -83,6 +83,7 @@ import { MALL_CULTURE_BANNER } from '@/lib/bannerData/mallCultureBanners';
 import { FORMAT_WARS_BANNER } from '@/lib/bannerData/formatWarsBanners';
 import { COUNTY_FAIR_BANNER } from '@/lib/bannerData/countyFairBanners';
 import { MUSIC_MTV_BANNER } from '@/lib/bannerData/musicMtvBanners';
+import { CARS_ROAD_BANNER } from '@/lib/bannerData/carsRoadBanners';
 
 const TEAM_BANNERS = {
   padres: PADRES_BANNERS,
@@ -442,6 +443,7 @@ export default function Home() {
         FORMAT_WARS_BANNER,
         COUNTY_FAIR_BANNER,
         MUSIC_MTV_BANNER,
+        CARS_ROAD_BANNER,
       ];
       const completedInning = gameState.inning;
       if (allBanners.length > 0 && completedInning <= 8) {
