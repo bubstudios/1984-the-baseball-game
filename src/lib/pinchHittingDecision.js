@@ -61,9 +61,10 @@ function pinch_hit_score(game) {
   }
   
   // ── THE KEY LINKAGE BONUS ──
-  // If a fresh arm is available next inning, pinch-hitting is nearly free — you gain the bat AND change pitchers anyway
-  if (fresh_arm_available_next_inning(game)) {
-    s += 35;  // Big bonus: pitcher being replaced anyway, PH is free offense
+  // If a fresh arm is available next inning, pinch-hitting is nearly free — you gain the bat AND change pitchers anyway.
+  // BUT only for relievers or starters in inning 7+ — a starter before inning 7 is NOT being replaced.
+  if (fresh_arm_available_next_inning(game) && (!game.is_starter || game.inning >= 7)) {
+    s += 35;
   }
   
   // ── Reliever efficiency ──
@@ -85,12 +86,23 @@ function bench_has_pinch_hitters(game) {
  * Check if it's safe to pinch-hit (don't exhaust bench or lose a pitcher).
  */
 function safe_to_pinch_hit(game) {
-  // Guard 1: Don't burn bench so early you have no one left to pitch later
+  // Starter protection: never pinch-hit for a starting pitcher before inning 6
+  // unless the starter is getting shelled (5+ runs) or has lost command (5+ walks).
+  // 1984 starters routinely went 7–9 innings — lifting one in the 3rd is unthinkable.
+  if (game.is_starter && game.inning < 6) {
+    const runs = game.pitcher_runs_allowed || 0;
+    const walks = game.pitcher_walks_allowed || 0;
+    if (runs < 5 && walks < 5) {
+      return false;
+    }
+  }
+
+  // Don't burn bench so early you have no one left to pitch later
   if (game.inning <= 4 && game.available_bench.length <= 2) {
     return false;
   }
   
-  // Guard 2: Don't pinch-hit if you'd have no pitcher left to PITCH next inning
+  // Don't pinch-hit if you'd have no pitcher left to PITCH next inning
   if (!fresh_arm_available_next_inning(game)) {
     return false;
   }

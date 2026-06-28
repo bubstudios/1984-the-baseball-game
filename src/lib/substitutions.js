@@ -10,10 +10,12 @@ export function pinchHit(state, newPlayer) {
   const idx = batterIdx % lineup.length;
   const oldBatter = lineup[idx];
 
+  const isPitcherSlot = ['SP', 'RP', 'CL'].includes(oldBatter.assignedPos) || ['SP', 'RP', 'CL'].includes(oldBatter.pos);
   const benchPlayer = {
     ...newPlayer,
     order: oldBatter.order,
     assignedPos: newPlayer.pos,
+    _replacedPitcher: isPitcherSlot,  // Flag: this slot held the pitcher — used for slot lookup when replacing
     gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
   };
   lineup[idx] = benchPlayer;

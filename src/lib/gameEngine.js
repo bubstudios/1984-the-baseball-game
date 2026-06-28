@@ -1712,6 +1712,7 @@ export function processAtBat(state, pitchType, swingType) {
     const benchTeam = battingTeamSide === 'home' ? newState.homeTeam : newState.awayTeam;
     const benchList = TEAMS[benchTeam]?.bench || [];
     const bullpen = battingTeamSide === 'home' ? newState.homeBullpen : newState.awayBullpen;
+    const cpuPitcherObj = battingTeamSide === 'home' ? newState.homePitcher : newState.awayPitcher;
 
     const phGate = shouldPinchHit({
       runners_in_scoring_position: !!newState.bases[2] && (!!newState.bases[0] || !!newState.bases[1]),
@@ -1720,9 +1721,12 @@ export function processAtBat(state, pitchType, swingType) {
       inning: newState.inning,
       score_margin: newState.score[getBattingTeam(newState)] === newState.score[getBattingTeam(newState) === 'home' ? 'away' : 'home'] ? 0 : newState.score[getBattingTeam(newState)] - newState.score[getBattingTeam(newState) === 'home' ? 'away' : 'home'],
       available_bench: benchList,
-      current_pitcher_ip: bjb.gameStats.ip || 0,
+      current_pitcher_ip: cpuPitcherObj.gameStats.ip || 0,
       bullpen: bullpen,
-      used_this_inning: [],  // Placeholder — track which relievers pitched this inning
+      used_this_inning: [],
+      is_starter: cpuPitcherObj.pos === 'SP',
+      pitcher_runs_allowed: cpuPitcherObj.gameStats.r || 0,
+      pitcher_walks_allowed: cpuPitcherObj.gameStats.bb || 0,
     });
 
     if (phGate) {
@@ -2024,10 +2028,15 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     if (!isInHistory) {
       // Pitcher is still in the game, just missing from lineup — re-add him
       let si2 = cpuLineupField.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
+      if (si2 < 0) si2 = cpuLineupField.findIndex(p => p._replacedPitcher);
       if (si2 >= 0) {
         cpuLineupField[si2] = { ...oldP, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
-      } else if (cpuLineupField.length < 10) {
-        cpuLineupField.push({ ...oldP, order: cpuLineupField.length + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+      } else {
+        // Fallback: replace the last slot — NEVER create a 10th entry
+        const lastIdx = cpuLineupField.length - 1;
+        if (lastIdx >= 0) {
+          cpuLineupField[lastIdx] = { ...oldP, order: cpuLineupField[lastIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+        }
       }
       return newState;
     }
@@ -2041,11 +2050,16 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       let si2 = cpuLineupField.findIndex(p => p.order === oldP.order);
       if (si2 < 0) si2 = cpuLineupField.findIndex(p => p.name === oldP.name);
       if (si2 < 0) si2 = cpuLineupField.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
+      if (si2 < 0) si2 = cpuLineupField.findIndex(p => p._replacedPitcher);
       if (si2 >= 0) {
         const le2 = { ...newPitcher, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
         cpuLineupField[si2] = le2;
-      } else if (cpuLineupField.length < 10) {
-        cpuLineupField.push({ ...newPitcher, order: cpuLineupField.length + 1, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+      } else {
+        // Fallback: replace the last slot — NEVER create a 10th entry
+        const lastIdx = cpuLineupField.length - 1;
+        if (lastIdx >= 0) {
+          cpuLineupField[lastIdx] = { ...newPitcher, order: cpuLineupField[lastIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+        }
       }
       newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
     }
@@ -2101,6 +2115,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       let si = fl.findIndex(p => p.name === oldPitcher.name);
       if (si < 0 && oldPitcher.order) si = fl.findIndex(p => p.order === oldPitcher.order);
       if (si < 0) si = fl.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
+      if (si < 0) si = fl.findIndex(p => p._replacedPitcher);
       if (si >= 0) {
         const en = { ...newPitcher, order: fl[si].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
         fl[si] = en;
