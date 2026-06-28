@@ -1,0 +1,182 @@
+// National County Fairs & Americana Banner (#951-975) — 14 windows, mixed into ALL 26 ballparks
+// Warm, small-town summer nostalgia
+// All descriptive copy is original; no copyrighted slogans or ad copy.
+// Hidden achievement: "See You Next Summer" — open all 14 county-fair windows
+
+export const COUNTY_FAIR_BANNER = {
+  id: 'countyfairbanner_951',
+  title: '🎡 "The fair\'s in town — come on out!"',
+  subtitle: '(warm small-town summer nostalgia)',
+  icon: '🎡',
+  hiddenAchievement: '🎡 "See You Next Summer"',
+  popups: [
+    // ── WINDOW 01: THE FERRIS WHEEL ──
+    {
+      num: 1,
+      emoji: '🎡',
+      title: 'THE FERRIS WHEEL',
+      tagline: 'Top of the world at sunset',
+      whatItWas: 'The towering centerpiece of the midway — a slow-spinning wheel of open gondolas that lifted you above the fairground, the whole spread of lights and chaos laid out below.',
+      howChanged: 'The Ferris wheel ride at sunset was the fair\'s signature moment in \'84 — the world falling away below you, the evening lights just starting to flicker on across the midway.',
+      craze: 'The iconic image of the American fair; the wheel against a summer sky is pure Americana.',
+      howAged: 'Unchanged and eternal — the Ferris wheel is still the fair\'s crown jewel. 🎡',
+      achievement: '🎡 *Top of the World*',
+    },
+    // ── WINDOW 02: THE MIDWAY & CARNIVAL GAMES ──
+    {
+      num: 2,
+      emoji: '🎯',
+      title: 'THE MIDWAY & CARNIVAL GAMES',
+      tagline: 'Step right up, everybody wins!',
+      whatItWas: 'The row of barkers and booths — ring toss, balloon darts, the basketball hoop that looked regulation but wasn\'t — all promising a giant stuffed animal for a dollar and a lucky throw.',
+      howChanged: 'Walking the midway in \'84 meant running the gauntlet of carnival games, each barker promising easy prizes and delivering just enough wins to keep you feeding quarters.',
+      craze: 'The carnival-game hustle is a beloved fair staple; everybody walked away with at least a small prize.',
+      howAged: 'Still stepping right up — the midway barker is eternal. 🎯',
+      achievement: '🎯 *Everybody Wins*',
+    },
+    // ── WINDOW 03: FUNNEL CAKE & FAIR FOOD ──
+    {
+      num: 3,
+      emoji: '🍩',
+      title: 'FUNNEL CAKE',
+      tagline: 'Fried, sugared, and glorious',
+      whatItWas: 'The deep-fried fairground feast — funnel cakes dusted in powdered sugar, corn dogs, cotton candy, candy apples, and whatever else they could batter and fry that year.',
+      howChanged: 'A paper plate of powdered-sugar funnel cake (or a foot-long corn dog) was the taste of the fair in \'84.',
+      craze: 'Fair food is a beloved once-a-year indulgence; the fry-everything tradition is part of the magic.',
+      howAged: 'Going stronger than ever — the "fry everything" tradition only grew. 🍩',
+      achievement: '🍩 *Powdered Sugar*',
+    },
+    // ── WINDOW 04: COTTON CANDY ──
+    {
+      num: 4,
+      emoji: '🍭',
+      title: 'COTTON CANDY',
+      tagline: 'Spun-sugar clouds',
+      whatItWas: 'The pink-and-blue spun-sugar cloud on a paper cone — wound straight off the spinning machine, impossibly fluffy, and dissolving sweet on your tongue.',
+      howChanged: 'A fresh cone of cotton candy was a fair must in \'84, the vendor twirling it up right in front of you.',
+      craze: 'Cotton candy is a timeless symbol of carnival sweetness.',
+      howAged: 'Unchanged and beloved — still spun the same way. 🍭',
+      achievement: '🍭 *Spun Sugar*',
+    },
+    // ── WINDOW 05: THE LIVESTOCK SHOW ──
+    {
+      num: 5,
+      emoji: '🐄',
+      title: 'THE LIVESTOCK SHOW',
+      tagline: 'Blue ribbon for the prize hog',
+      whatItWas: 'The animal barns — rows of cattle, hogs, sheep, goats, and chickens groomed to perfection, with 4-H and FFA kids showing their animals in the ring and proud blue ribbons pinned to the winners.',
+      howChanged: 'The livestock competition was the heart of the agricultural fair in \'84 — months of a farm kid\'s hard work judged in the show ring.',
+      craze: 'A genuine tradition of rural life and youth pride.',
+      howAged: 'Alive and well — the show ring remains a fair cornerstone. 🐄',
+      achievement: '🐄 *Blue Ribbon*',
+    },
+    // ── WINDOW 06: THE BAKING CONTEST ──
+    {
+      num: 6,
+      emoji: '🥧',
+      title: 'THE BAKING CONTEST',
+      tagline: 'Grandma\'s blue-ribbon recipe',
+      whatItWas: 'The home-arts hall — tables of pies, jams, breads, and cakes entered for judging, with proud bakers and coveted ribbons for the best apple pie, the finest preserves, the lightest biscuit.',
+      howChanged: 'Entering Grandma\'s secret-recipe pie and waiting for the judges\' ribbon was a cherished fair tradition in \'84.',
+      craze: 'The blue-ribbon pie is a perfect emblem of homespun pride.',
+      howAged: 'Still going — the baking contest endures at fairs everywhere. 🥧',
+      achievement: '🥧 *Best in Show*',
+    },
+    // ── WINDOW 07: THE GIANT PRODUCE ──
+    {
+      num: 7,
+      emoji: '🎃',
+      title: 'THE GIANT PRODUCE',
+      tagline: 'That pumpkin weighs HOW much?',
+      whatItWas: 'The agricultural hall\'s crowd-stopper — colossal prize pumpkins, mammoth squash, towering corn, and oddly-shaped vegetables, all entered by green-thumbed growers chasing a record.',
+      howChanged: 'Gawking at a pumpkin the size of a tractor tire was a fair highlight in \'84 for kids and grownups alike.',
+      craze: 'The giant-pumpkin contest is a beloved, slightly absurd fair staple.',
+      howAged: 'Bigger than ever — growers keep smashing the records. 🎃',
+      achievement: '🎃 *Prize Pumpkin*',
+    },
+    // ── WINDOW 08: THE DEMOLITION DERBY ──
+    {
+      num: 8,
+      emoji: '💥',
+      title: 'THE DEMOLITION DERBY',
+      tagline: 'Last car running wins',
+      whatItWas: 'The grandstand spectacle — beat-up cars smashing into each other in a muddy arena until only one still ran, engines roaring, fenders flying, and the crowd on its feet.',
+      howChanged: 'The derby was a grandstand favorite in \'84, loud and gloriously destructive, the whole town cheering for the last car moving.',
+      craze: 'A rowdy, beloved tradition of the fair grandstand.',
+      howAged: 'Still smashing — the derby remains a fair-night draw. 💥',
+      achievement: '💥 *Last Car Running*',
+    },
+    // ── WINDOW 09: THE TRACTOR PULL ──
+    {
+      num: 9,
+      emoji: '🚜',
+      title: 'THE TRACTOR PULL',
+      tagline: 'Full throttle, full sled',
+      whatItWas: 'The grandstand contest of raw power — souped-up tractors dragging a weighted sled down the dirt track, engines screaming and smoke billowing, to see who could pull the farthest.',
+      howChanged: 'The tractor pull (and its truck-pull cousin) packed the grandstand in \'84 with the roar of engines and the smell of diesel.',
+      craze: 'A heartland tradition celebrating horsepower and grit.',
+      howAged: 'Going strong — the pull is still a grandstand headliner. 🚜',
+      achievement: '🚜 *Full Pull*',
+    },
+    // ── WINDOW 10: THE PETTING ZOO ──
+    {
+      num: 10,
+      emoji: '🐐',
+      title: 'THE PETTING ZOO',
+      tagline: 'Feed the goats a quarter\'s worth',
+      whatItWas: 'The gentle corner for little kids — a pen of friendly goats, sheep, bunnies, and baby animals to pet and feed, plus the slow circle of pony rides nearby.',
+      howChanged: 'A quarter\'s worth of feed pellets and a wobbly pony ride were the highlight of the fair in \'84 for the youngest visitors.',
+      craze: 'A sweet, timeless fair tradition for families.',
+      howAged: 'Unchanged — still delighting the littlest fairgoers. 🐐',
+      achievement: '🐐 *Feed the Goats*',
+    },
+    // ── WINDOW !1: THE FAIR PARADE ──
+    {
+      num: 11,
+      emoji: '🎺',
+      title: 'THE FAIR PARADE',
+      tagline: 'Here comes the marching band',
+      whatItWas: 'The opening-day parade down Main Street — the high-school marching band, fire trucks, decorated floats, the fair queen waving from a convertible, and tractors and horses bringing up the rear.',
+      howChanged: 'The parade kicked off fair week in \'84, the whole town lining the sidewalks to wave and cheer.',
+      craze: 'The small-town parade is the heartbeat of community Americana.',
+      howAged: 'A cherished tradition that still rolls every summer. 🎺',
+      achievement: '🎺 *Here Comes the Band*',
+    },
+    // ── WINDOW 12: THE FAIR QUEEN & 4-H ──
+    {
+      num: 12,
+      emoji: '👑',
+      title: 'THE FAIR QUEEN & 4-H',
+      tagline: 'Ribbons, sashes, and hard work',
+      whatItWas: 'The crowning of the fair queen and the celebration of the 4-H and FFA kids — the young people who raised the animals, grew the produce, and sewed the projects that filled the fair\'s exhibit halls.',
+      howChanged: 'The fair honored its youth in \'84 — the sash-and-crown ceremony and the proud display of months of 4-H project work.',
+      craze: 'A tradition celebrating rural youth, pride, and community.',
+      howAged: 'Still central to the fair\'s spirit. 👑',
+      achievement: '👑 *Crowned*',
+    },
+    // ── WINDOW 13: THE MIDWAY AT NIGHT ──
+    {
+      num: 13,
+      emoji: '🎆',
+      title: 'THE MIDWAY AT NIGHT',
+      tagline: 'All lit up and humming',
+      whatItWas: 'The fairground after dark — every ride blazing with chasing lights, the Ferris wheel glowing, the music and screams of the rides, and the warm chaos of the whole midway humming under the stars.',
+      howChanged: 'The fair came truly alive at night in \'84 — the lights, the noise, the smell of fried dough, and the magic of a summer evening on the midway.',
+      craze: 'The night-lit midway is the fair\'s most magical image.',
+      howAged: 'Timeless — the lit midway after dark is eternal summer. 🎆',
+      achievement: '🎆 *Midway Lights*',
+    },
+    // ── WINDOW 14: HEADING HOME ──
+    {
+      num: 14,
+      emoji: '🚗',
+      title: 'HEADING HOME',
+      tagline: 'Sticky, sleepy, and happy',
+      whatItWas: 'The end of fair night — the long, quiet drive home with a sunburn, sticky cotton-candy fingers, a stuffed-animal prize in the back seat, and a tired kid asleep against the window.',
+      howChanged: 'The drowsy ride home in \'84, full of fried food and tired feet, was the perfect bittersweet end to a fair day.',
+      craze: 'That sleepy, contented drive home is the warm coda to every fair.',
+      howAged: 'Universal and timeless — the best part of the day, somehow. 🚗',
+      achievement: '🚗 *Sleepy Drive Home*',
+    },
+  ],
+};
