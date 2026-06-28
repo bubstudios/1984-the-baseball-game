@@ -2,7 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { X, AlertTriangle, Users } from 'lucide-react';
 
-const ALL_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
+const ALL_POSITIONS = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
+
+// Normalize 'SP'/'RP'/'CL' to 'P' for display in the defensive alignment dropdown
+function normalizePos(pos) {
+  if (['SP', 'RP', 'CL', 'P'].includes(pos)) return 'P';
+  return pos;
+}
 
 export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher, initialTab = 'pinchhit' }) {
   const [tab, setTab] = useState(initialTab);
@@ -210,22 +216,25 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                 Defensive Alignment — {myTeam?.name}
               </div>
 
-              {myFieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH' && p.pos !== 'SP').map((player, idx) => {
+              {myFieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH').map((player, idx) => {
                 const actualIdx = myFieldingLineup.indexOf(player);
-                const currentPos = player.assignedPos || player.pos;
+                const rawPos = player.assignedPos || player.pos;
+                const currentPos = normalizePos(rawPos);
+                const isPitcher = ['SP', 'RP', 'CL', 'P'].includes(rawPos);
                 return (
                   <div key={idx} className="flex items-center gap-2 bg-muted/30 rounded-lg p-2">
                     <span className="font-heading font-bold text-xs text-foreground flex-1 truncate">{player.name}</span>
                     <select
                       value={currentPos}
                       onChange={(e) => onDefensiveSwitch(actualIdx, e.target.value, null)}
-                      className="w-14 bg-input border border-border rounded-md px-1.5 py-1 text-[10px] text-foreground text-center focus:outline-none focus:ring-1 focus:ring-primary"
+                      disabled={isPitcher}
+                      className="w-14 bg-input border border-border rounded-md px-1.5 py-1 text-[10px] text-foreground text-center focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60"
                     >
                       {ALL_POSITIONS.map(pos => (
                         <option key={pos} value={pos}>{pos}</option>
                       ))}
                     </select>
-                    {currentPos !== player.pos && (
+                    {currentPos !== normalizePos(player.pos) && !isPitcher && (
                       <AlertTriangle className="w-3 h-3 text-amber-400 flex-shrink-0" />
                     )}
                   </div>
@@ -238,13 +247,14 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                   <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-2">
                     Replace Fielder with Bench Player — {myTeam?.name}
                   </div>
-                  {myFieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH' && p.pos !== 'SP').map((player, fieldIdx) => {
+                  {myFieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH').map((player, fieldIdx) => {
                     const actualIdx = myFieldingLineup.indexOf(player);
-                    const currentPos = player.assignedPos || player.pos;
+                    const currentPos = normalizePos(player.assignedPos || player.pos);
+                    const isPitcher = ['SP', 'RP', 'CL', 'P'].includes(player.assignedPos || player.pos);
                     return (
                       <div key={fieldIdx} className="mb-2">
                         <div className="text-[10px] text-muted-foreground mb-1">
-                          Replace {player.name} ({currentPos}) with:
+                          Replace {player.name} ({currentPos}) with:{isPitcher && <span className="text-amber-400 ml-1">(P — use Pitching tab)</span>}
                         </div>
                         <select
                           value=""
