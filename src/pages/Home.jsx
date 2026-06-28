@@ -34,7 +34,7 @@ import { getArgumentSeverity, resolveArgument, getEjectionCommentary, maybeDugou
 import { pickUmpire, getManagerUmpireRelation } from '@/lib/umpires';
 import { rollBallparkEvent, resetBallparkEvents } from '@/lib/ballparkEvents';
 import { trackGrooverSighting } from '@/lib/achievements';
-import useRobotAnnouncer from '@/hooks/useRobotAnnouncer';
+import useRobotAnnouncer, { unlockRobotAnnouncer } from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
 import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
@@ -982,6 +982,15 @@ export default function Home() {
   const isStarter = pitcher?.pos === 'SP' || pitcher?.assignedPos === 'SP';
   const reachBackMax = isStarter ? 3 : 1;
 
+  // Dedupe: suppress celebration bubble when same text is already in CommentaryBanner's stats flash
+  const _hitTypes = ['single', 'double', 'triple', 'homerun', 'peskyPole', 'basketHR', 'shortPorch', 'offMonster', 'ivyStuck', 'triangle'];
+  const _norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const _celebText = celebrationPopupBubble || celebrationPopup;
+  const _lastPlayText = gameState?.lastPlay?.text || '';
+  const _isDupeBubble = _celebText && _hitTypes.includes(gameState?.lastPlay?.type) &&
+    _norm(_celebText).length > 8 &&
+    (_norm(_lastPlayText).includes(_norm(_celebText)) || _norm(_celebText).includes(_norm(_lastPlayText)));
+
   const situationalBatter = getSituationalBatter(gameState);
   const battingTeamKey = getBattingTeam(gameState) === 'home' ? homeTeam : awayTeam;
   const battingTeamName = TEAMS[battingTeamKey]?.name || '';
@@ -1014,7 +1023,7 @@ export default function Home() {
             <Radio className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setRobotVoice(!robotVoice)}
+            onClick={() => { if (!robotVoice) unlockRobotAnnouncer(); setRobotVoice(!robotVoice); }}
             className={`w-9 h-9 flex items-center justify-center rounded-full transition-colors ${robotVoice ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
             aria-label={robotVoice ? 'Mute announcer' : 'Robot announcer'}
           >
@@ -1260,7 +1269,7 @@ export default function Home() {
       )}
 
       {/* Celebration Bubble — fire-themed popup for pitcher pumped moments */}
-      <CelebrationBubble celebration={celebrationPopupBubble || celebrationPopup} />
+      <CelebrationBubble celebration={_isDupeBubble ? null : (celebrationPopupBubble || celebrationPopup)} />
 
       {/* Fireworks */}
       <Fireworks trigger={hrTrigger} type="hr" />

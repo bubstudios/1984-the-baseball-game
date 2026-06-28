@@ -1,6 +1,27 @@
 import { useEffect, useRef } from 'react';
 import { TEAMS } from '@/lib/gameData';
 
+// Shared AudioContext — created/resumed within a user gesture via unlockRobotAnnouncer()
+let _sharedAudioCtx = null;
+
+// Call this from a click handler (user gesture) to unlock audio for the announcer
+export function unlockRobotAnnouncer() {
+  try {
+    if (!_sharedAudioCtx) {
+      _sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (_sharedAudioCtx.state === 'suspended') _sharedAudioCtx.resume();
+  } catch (e) { /* ignore */ }
+  // Prime speechSynthesis within the user gesture so it works in later effects
+  try {
+    if ('speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance('');
+      u.volume = 0;
+      window.speechSynthesis.speak(u);
+    }
+  } catch (e) { /* ignore */ }
+}
+
 // Blowout promos disabled — user feedback
 
 // Build player name set from all rosters
@@ -158,16 +179,15 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
 }
 
 export default function useRobotAnnouncer(gameState, enabled, announcerName) {
-  const audioCtxRef = useRef(null);
   const lastLogIdx = useRef(0);
   const ensureCtx = () => {
-    if (!audioCtxRef.current) {
-      audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    if (!_sharedAudioCtx) {
+      _sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
-    if (audioCtxRef.current.state === 'suspended') {
-      audioCtxRef.current.resume();
+    if (_sharedAudioCtx.state === 'suspended') {
+      _sharedAudioCtx.resume();
     }
-    return audioCtxRef.current;
+    return _sharedAudioCtx;
   };
 
   useEffect(() => {
@@ -209,7 +229,6 @@ export default function useRobotAnnouncer(gameState, enabled, announcerName) {
   useEffect(() => {
     return () => {
       window.speechSynthesis?.cancel();
-      audioCtxRef.current?.close();
     };
   }, []);
 }
