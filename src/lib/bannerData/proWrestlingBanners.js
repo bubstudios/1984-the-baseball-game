@@ -8,7 +8,7 @@ export const WRESTLING_BANNER = {
   title: '🤼 "Step right up — it\'s wrestling night! Gold belts and grudge matches at the squared circle!"',
   subtitle: '(territory-era hype meets golden-age reverence)',
   icon: '🤼',
-  hiddenAchievement: '🎊 "And That\'s the Bottom Line in \'84"',
+  hiddenAchievement: '📢 "And That\'s the Bottom Line in \'84"',
   popups: [
     // ── WINDOW 01: RIC FLAIR ──
     {
@@ -49,14 +49,14 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 04: ARN ANDERSON ──
     {
       num: 4,
-      emoji: '🦿',
+      emoji: '🪚',
       title: 'ARN ANDERSON',
       tagline: 'The Enforcer',
       whatItWas: 'A rugged, brilliant in-ring craftsman and one of the best pure tag-team and tactical wrestlers alive — the guy who made everything look snug, mean, and real.',
       howChanged: 'Building his name on the territory circuit, already showing the savvy and toughness that would make him the cornerstone enforcer of the most famous faction in wrestling.',
       craze: 'The ultimate "wrestler\'s wrestler" — respected by every peer for ring IQ and credibility.',
-      howAged: 'A future Horseman and one of the most respected minds in the sport. 🦿',
-      achievement: '🦿 The Enforcer',
+      howAged: 'A future Horseman and one of the most respected minds in the sport. 🪚',
+      achievement: '🪚 The Enforcer',
     },
     // ── WINDOW 05: TULLY BLANCHARD ──
     {
@@ -92,7 +92,7 @@ export const WRESTLING_BANNER = {
       howChanged: '...but within a couple of years, four men and a manager will lock arms, throw up four fingers, and form the most copied, most feared faction in the history of the business. You\'re watching the raw materials.',
       craze: 'The greatest faction in wrestling history, assembled from parts already on the board in \'84.',
       howAged: 'Imitated forever — every four-man heel group since owes them everything. 🐎',
-      achievement: '🐎 Four Horsemen',
+      achievement: '🐎 Four Fingers in the Air',
     },
     // ── WINDOW 08: THE VON ERICHS ──
     {
@@ -116,7 +116,7 @@ export const WRESTLING_BANNER = {
       howChanged: 'Locked in their legendary, blood-soaked, money-drawing war with the Von Erichs in World Class — one of the hottest feuds in all of wrestling.',
       craze: 'Pioneers of the music-and-attitude entrance and the "cool heel" trio; a massive influence on everything that followed.',
       howAged: 'A legendary act, remembered as one of the great heel teams and innovators of presentation. 🎸',
-      achievement: '🎸 Bad Brawlers',
+      achievement: '🎸 Bad Street Brawlers',
     },
     // ── WINDOW 10: THE ROAD WARRIORS ──
     {
@@ -133,14 +133,14 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 11: MAGNUM T.A. ──
     {
       num: 11,
-      emoji: '👈',
+      emoji: '🫵',
       title: 'MAGNUM T.A.',
       tagline: 'The next big thing',
       whatItWas: 'A charismatic, mustachioed young star with matinee-idol looks and a rocketing trajectory — the NWA\'s bet on the future, often compared to a certain Hollywood action star.',
       howChanged: 'Rising fast as one of the most popular up-and-coming babyfaces in the NCA, on a clear path toward the top of the card.',
       craze: 'A star whose ceiling looked limitless before a car accident ended his career — one of wrestling\'s great "what ifs."',
-      howAged: 'Remembered with deep affection and a tinge of sadness for the legend he was becoming. 👈',
-      achievement: '👈 The Natural',
+      howAged: 'Remembered with deep affection and a tinge of sadness for the legend he was becoming. 🫵',
+      achievement: '🫵 The Natural',
     },
     // ── WINDOW 12: HULK HOGAN ──
     {
