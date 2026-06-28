@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 // Displays pitcher/batter/fielder celebration moments in a fire-themed bubble
-// Bottom-left corner, 6 seconds duration
+// Bottom-left corner, 10 seconds duration
 export default function CelebrationBubble({ celebration }) {
   const [visible, setVisible] = useState(false);
   const timerRef = useRef(null);
@@ -28,7 +28,7 @@ export default function CelebrationBubble({ celebration }) {
 
   return (
     <div
-      className={`fixed bottom-24 left-3 z-20 pointer-events-none transition-all duration-400 max-w-[240px] ${
+      className={`fixed bottom-24 left-3 z-20 pointer-events-none transition-all duration-500 max-w-[240px] ${
         visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
       }`}
     >
