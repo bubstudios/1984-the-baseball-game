@@ -15,8 +15,8 @@ export const ACHIEVEMENTS = [
 
   // ── HITTING ──
   { id: 'infield_hit', name: 'Seeing Eye Single', desc: 'Get an infield hit', icon: '👀', category: 'hitting' },
-  { id: 'gap_power', name: 'Gap Power', desc: 'Hit a double', icon: '⚡', category: 'hitting' },
-  { id: 'legs_for_days', name: 'Legs for Days', desc: 'Hit a triple', icon: '💨', category: 'hitting' },
+  { id: 'gap_power', name: 'Gap Power', desc: 'Hit 3 doubles in a single game', icon: '⚡', category: 'hitting' },
+  { id: 'legs_for_days', name: 'Legs for Days', desc: 'Hit 2 triples in a single game', icon: '💨', category: 'hitting' },
   { id: 'touch_em_all', name: "Touch 'Em All", desc: 'Hit a home run', icon: '🚀', category: 'hitting' },
   { id: 'rally_starter', name: 'Rally Starter', desc: 'Get 3 hits with one player', icon: '🎯', category: 'hitting' },
   { id: 'perfect_day', name: 'Perfect Day', desc: 'Go 4-for-4 with one player', icon: '💎', category: 'hitting' },
@@ -32,14 +32,11 @@ export const ACHIEVEMENTS = [
   { id: 'lights_out', name: 'Lights Out', desc: 'Throw a shutout', icon: '🔒', category: 'pitching' },
   { id: 'untouchable', name: 'Untouchable', desc: 'Throw a no-hitter', icon: '👻', category: 'pitching' },
   { id: 'perfect_afternoon', name: 'Perfect Afternoon', desc: 'Throw a perfect game', icon: '✨', category: 'pitching' },
-  { id: 'frozen_rope', name: 'Frozen Rope', desc: 'Strike out the side', icon: '🥶', category: 'pitching' },
 
   // ── DEFENSE ──
   { id: 'leather_glove', name: 'Leather Glove', desc: 'Make a diving catch (web gem)', icon: '🧤', category: 'defense' },
-  { id: 'cannon_arm', name: 'Cannon Arm', desc: 'Throw out a runner at home', icon: '💪', category: 'defense' },
   { id: 'caught_stealing', name: 'Caught Stealing', desc: 'Nab a base thief', icon: '🚫', category: 'defense' },
   { id: 'twin_killing', name: 'Twin Killing', desc: 'Turn a double play', icon: '✂️', category: 'defense' },
-  { id: 'around_horn_dp', name: 'Around the Horn', desc: 'Turn a 5-4-3 or 6-4-3 double play', icon: '🔃', category: 'defense' },
   { id: 'web_gem', name: 'Web Gem', desc: 'Rob a home run', icon: '🕸️', category: 'defense' },
   { id: 'fence_patrol', name: 'Fence Patrol', desc: 'Rob 5 home runs', icon: '🚧', category: 'defense', threshold: 5 },
   { id: 'grand_theft_homer', name: 'Grand Theft Homer', desc: 'Rob a home run with runners aboard', icon: '🚨', category: 'defense' },
@@ -73,16 +70,14 @@ export const ACHIEVEMENTS = [
   { id: 'oops', name: 'Oops', desc: 'Commit 3 errors in a game', icon: '😬', category: 'funny' },
   { id: 'little_league', name: 'Little League Baseball', desc: 'Score on an error', icon: '🦋', category: 'funny' },
   { id: 'free_baseball', name: 'Free Baseball', desc: 'Reach the 15th inning', icon: '🆓', category: 'funny' },
-  { id: 'rain_delay_ach', name: 'Rain Delay', desc: 'Pause the game for 10 minutes', icon: '🌧️', category: 'funny' },
+
   { id: 'beanball', name: 'Beanball', desc: 'Hit 3 batters in one game', icon: '🎯', category: 'funny' },
   { id: 'mendoza_line', name: 'The Mendoza Line', desc: 'Win despite getting only 3 hits', icon: '📉', category: 'funny' },
   { id: 'how_ach', name: 'How?!', desc: 'Lose despite out-hitting your opponent by 10', icon: '🤷', category: 'funny' },
 
   // ── 1984-THEMED ──
-  { id: 'like_its_1984', name: "Like It's 1984", desc: 'Complete a game using 1984 teams', icon: '📼', category: '1984' },
   { id: 'small_ball', name: 'Small Ball', desc: 'Score a run without a hit', icon: '🏓', category: '1984' },
   { id: 'whitey_ball', name: 'Whitey Ball', desc: 'Steal 5 bases in a game', icon: '🏃', category: '1984' },
-  { id: 'the_wizard', name: 'The Wizard', desc: 'Make 10 assists with your shortstop', icon: '🧙', category: '1984' },
   { id: 'power_surge', name: 'Power Surge', desc: 'Hit 4 team home runs', icon: '💥', category: '1984' },
   { id: 'ace_of_staff', name: 'Ace of the Staff', desc: 'Complete a game with your starting pitcher', icon: '🃏', category: '1984' },
   { id: 'workhorse', name: 'Workhorse', desc: 'Throw 140+ pitches with one pitcher', icon: '🐴', category: '1984' },
@@ -92,7 +87,6 @@ export const ACHIEVEMENTS = [
   // ── VERY RARE ──
   { id: 'twenty_one_guns', name: '21 Guns', desc: 'Score 21 runs in a game', icon: '🔫', category: 'rare' },
   { id: 'mercy', name: 'Mercy?', desc: 'Win by 15 runs', icon: '🩸', category: 'rare' },
-  { id: 'immaculate', name: 'Immaculate Inning', desc: '3 strikeouts on 9 pitches', icon: '😇', category: 'rare' },
   { id: 'four_bagger_frenzy', name: 'Four-Bagger Frenzy', desc: 'Hit 5 home runs in a game', icon: '💣', category: 'rare' },
   { id: 'no_doubter', name: 'No Doubter', desc: 'Hit a 500-foot home run', icon: '📏', category: 'rare' },
   { id: 'hr_400ft', name: 'Tape Measure Shot', desc: 'Hit a home run 400+ feet', icon: '🎯', category: 'hitting' },
@@ -109,9 +103,7 @@ export const ACHIEVEMENTS = [
   { id: 'ten_spot', name: 'Ten-Spot', desc: 'Score 10+ runs in a game', icon: '🔟', category: 'funny' },
   { id: 'pitching_duel', name: "Pitcher's Duel", desc: 'Win a 1-0 game', icon: '🤺', category: 'funny' },
   { id: 'double_digits_drubbing', name: 'Double Digit Drubbing', desc: 'Allow 10+ runs in a game', icon: '🫣', category: 'funny' },
-  { id: 'heart_of_the_order', name: 'Heart of the Order', desc: 'Have your 3-4-5 hitters each drive in a run', icon: '❤️', category: 'funny' },
-  { id: 'oppo_taco', name: 'Oppo Taco', desc: 'Hit an opposite field home run', icon: '🌮', category: 'funny' },
-  { id: 'seven_innings_plus', name: 'Seven Innings Plus', desc: 'Reach the 7th inning stretch (have a lead after 7)', icon: '🎤', category: 'funny' },
+
 
   // ── GAMES COMPLETED ──
   { id: 'games_1', name: 'First Pitch', desc: 'Complete 1 game', icon: '1️⃣', category: 'milestone', threshold: 1 },
@@ -318,7 +310,7 @@ export const ACHIEVEMENTS = [
   // ── HIDDEN / TIME-BASED ──
   { id: 'night_game', name: 'Night Game', desc: 'Play after 10 PM local time', icon: '🦉', category: 'hidden' },
   { id: 'early_bird', name: 'Early Bird', desc: 'Play before 6 AM', icon: '🐦', category: 'hidden' },
-  { id: 'rain_delay_pause', name: 'Rain Delay', desc: 'Stay paused for 15 minutes', icon: '🌧️', category: 'hidden' },
+
   { id: 'couldnt_put_down', name: "Couldn't Put It Down", desc: 'Play 5 hours without closing', icon: '📖', category: 'hidden' },
 
   // ── HIDDEN / EASTER EGG (team broadcast events) ──
@@ -337,9 +329,7 @@ export const ACHIEVEMENTS = [
   { id: 'frequent_flyer', name: 'Frequent Flyer', desc: '10 manager ejections', icon: '✈️', category: 'ejection', threshold: 10 },
   { id: 'billy_martin', name: 'Billy Martin Award', desc: '25 manager ejections', icon: '😤', category: 'ejection', threshold: 25 },
   { id: 'earl_weaver', name: 'Earl Weaver Special', desc: 'Get ejected and win anyway', icon: '😈', category: 'ejection' },
-  { id: 'dirt_kicker', name: 'Dirt Kicker', desc: 'Kick dirt on home plate', icon: '🦶', category: 'ejection' },
-  { id: 'base_thief', name: 'Base Thief', desc: 'Manager removes first base in protest', icon: '🏟️', category: 'ejection' },
-  { id: 'bench_tossed', name: 'Didn\'t Even Leave the Dugout', desc: 'Manager ejected from the bench', icon: '🪑', category: 'ejection' },
+
 
   // ── HIDDEN / EASTER EGGS ──
   { id: 'reds_streaker', name: 'Riverfront Visitor', desc: 'A most unusual guest interrupts a Reds game', icon: '🏃', category: 'hidden' },
@@ -934,8 +924,6 @@ export function trackPauseEnd() {
   if (stats.pauseStartTime) {
     const pausedMs = Date.now() - stats.pauseStartTime;
     stats.totalPauseTime += pausedMs;
-    if (pausedMs > 10 * 60 * 1000) unlockAchievement('rain_delay_ach');
-    if (pausedMs > 15 * 60 * 1000) unlockAchievement('rain_delay_pause');
     stats.pauseStartTime = null;
   }
   saveStats(stats);
@@ -1035,8 +1023,10 @@ export function checkGameAchievements(gameState, userTeam) {
   // ── HITTING (user team only) ──
   // userNames already defined above
   if (log.some(l => l.type === 'single' && l.text && (l.text.includes('infield single') || l.text.includes('beats it out')) && userNames.some(n => l.text.includes(n)))) u('infield_hit');
-  if (log.some(l => l.type === 'double' && l.text && userNames.some(n => l.text.includes(n)))) u('gap_power');
-  if (log.some(l => l.type === 'triple' && l.text && userNames.some(n => l.text.includes(n)))) u('legs_for_days');
+  const userDoubles = log.filter(l => l.type === 'double' && l.text && userNames.some(n => l.text.includes(n))).length;
+  if (userDoubles >= 3) u('gap_power');
+  const userTriples = log.filter(l => l.type === 'triple' && l.text && userNames.some(n => l.text.includes(n))).length;
+  if (userTriples >= 2) u('legs_for_days');
   if (allUserPlayers.some(p => p.gameStats?.hr > 0)) u('touch_em_all');
   if (allUserPlayers.some(p => p.gameStats?.hits >= 3)) u('rally_starter');
   if (allUserPlayers.some(p => p.gameStats?.hits >= 4)) u('perfect_day');
@@ -1085,12 +1075,10 @@ export function checkGameAchievements(gameState, userTeam) {
   }
   // ── DEFENSE (user team fielding) ──
   const userIsFielder = userIsFielding(gameState, userSide, log);
-  // Frozen Rope: user's pitchers struck out the side (user is PITCHING, not fielding)
-  if (logText.includes('strike out the side') || logText.includes('struck out the side')) u('frozen_rope');
-  if (userIsFielder && (logText.includes('thrown out at home') || logText.includes('nailed at the plate'))) u('cannon_arm');
+
   if (userIsFielder && log.some(l => l.type === 'caughtstealing')) u('caught_stealing');
   if (userIsFielder && logText.includes('double play')) u('twin_killing');
-  if (userIsFielder && (logText.includes('5-4-3') || logText.includes('6-4-3') || logText.includes('Six-four-three') || logText.includes('Around the horn for two') || logText.includes('around the horn for two'))) u('around_horn_dp');
+
 
   // ── DIVING CATCHES ──
   const divingCatchCount = log.filter(l => l.type === 'flyout' && l.text && l.text.includes('🧤')).length;
@@ -1175,14 +1163,11 @@ export function checkGameAchievements(gameState, userTeam) {
   if (userIsFielder && hbpCount >= 3) u('beanball');
 
   // ── 1984-THEMED ──
-  u('like_its_1984');
 
   // Small ball: scored a run without a hit (user team only)
   if (userScore > 0 && logText.includes('scores') && (logText.includes('bunt') || logText.includes('sacrifice fly') || logText.includes('steals home'))) u('small_ball');
   const allSB = allUserPlayers.reduce((sum, p) => sum + (p.gameStats?.sb || 0), 0);
   if (allSB >= 5) u('whitey_ball');
-  // The Wizard: 10+ assists by user SS
-  if (userIsFielder && (logText.match(/to short/gi) || []).length >= 10) u('the_wizard');
   if (totalHR >= 4) u('power_surge');
   // Ace of the Staff: complete game (pitcher with 9+ IP)
   if (userPitchers.some(p => (p.gameStats?.ip || 0) >= 9)) u('ace_of_staff');
@@ -1367,8 +1352,6 @@ export function checkGameAchievements(gameState, userTeam) {
   // ── VERY RARE ──
   if (userScore >= 21) u('twenty_one_guns');
   if (userWon && (userScore - opponentScore) >= 15) u('mercy');
-  // Immaculate inning: 9 pitches, 3 Ks in one inning — check log
-  if (logText.includes('immaculate') || logText.includes('9 pitches')) u('immaculate');
   if (totalHR >= 5) u('four_bagger_frenzy');
   if (log.filter(l => l.type === 'homerun' && l.text && l.text.includes('500') && userNames.some(n => l.text.includes(n))).length > 0) u('no_doubter');
 
@@ -1387,13 +1370,7 @@ export function checkGameAchievements(gameState, userTeam) {
   if (userWon && userScore === 1 && opponentScore === 0) u('pitching_duel');
   // Double Digit Drubbing: allow 10+ runs
   if (opponentScore >= 10) u('double_digits_drubbing');
-  // Heart of the Order: 3-4-5 hitters each with RBI
-  const order345 = userLineup.filter(p => p.order === 3 || p.order === 4 || p.order === 5);
-  if (order345.length >= 3 && order345.every(p => (p.gameStats?.rbi || 0) > 0)) u('heart_of_the_order');
-  // Oppo Taco: opposite field HR mentioned in log
-  if (logText.includes('opposite field') && logText.includes('home run') && userNames.some(n => logText.includes(n))) u('oppo_taco');
-  // Seven Innings Plus: had a lead after 7 innings
-  if (!didTrailAfterInning(gameState, userSide, 7) && computeMaxDeficit(gameState, userSide) <= 0) u('seven_innings_plus');
+
 
   // ── 1984 LEADER CHALLENGES (cumulative per-player tracking) ──
   trackLeaderAchievements(allUserPlayers, userPitchers, log, userWon, userScore, opponentScore, u);
