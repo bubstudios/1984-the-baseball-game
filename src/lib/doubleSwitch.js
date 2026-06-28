@@ -49,7 +49,7 @@ export function should_double_switch(game) {
  * Returns { fielder, bench_replacement } or null.
  */
 export function find_double_switch_partner(game) {
-  const position_players_on_field = game.position_players_on_field; // fielders (not pitcher)
+  const position_players_on_field = game.position_players_on_field || [];
   
   let best = null;
   let best_value = 0;

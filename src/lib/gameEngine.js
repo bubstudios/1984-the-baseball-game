@@ -2125,17 +2125,23 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
     
     // ── PHASE 3.1: Double switch evaluation (NL parks only) ──
-    if (!has_dh && should_double_switch({
-      park_has_dh: has_dh,
+    const dsLineup = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
+    const dsBench = TEAMS[cpuPitchingSide === 'home' ? newState.homeTeam : newState.awayTeam]?.bench || [];
+    if (!hasDH && should_double_switch({
+      park_has_dh: hasDH,
       making_pitcher_change: true,
       pitcher_lineup_slot: oldPitcher.order || 0,
       current_batter_lineup_slot: cpuPitchingSide === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex,
-      lineup: cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup,
+      lineup: dsLineup,
+      position_players_on_field: dsLineup.filter(p => !['SP', 'RP', 'CL'].includes(p.assignedPos)),
+      available_bench: dsBench,
     })) {
       const partner = find_double_switch_partner({
-        position_players_on_field: (cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup).filter(p => !['SP', 'RP', 'CL'].includes(p.assignedPos)),
+        position_players_on_field: dsLineup.filter(p => !['SP', 'RP', 'CL'].includes(p.assignedPos)),
         pitcher_lineup_slot: oldPitcher.order || 0,
-        available_bench: TEAMS[cpuPitchingSide === 'home' ? newState.homeTeam : newState.awayTeam]?.bench || [],
+        available_bench: dsBench,
+        current_batter_lineup_slot: cpuPitchingSide === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex,
+        lineup: dsLineup,
       });
       
       if (partner) {
