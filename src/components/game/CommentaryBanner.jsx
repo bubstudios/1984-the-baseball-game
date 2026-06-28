@@ -1375,9 +1375,11 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const reachBackPitcher = wasReachBack && pitcher?.specialty ? pitcher : null;
 
   let text;
+  let headlineIsPlayText = false;
   // ── Game over: show the final play text as the headline, not random color commentary ──
   if (gameState?.gameOver && hasPlayResult) {
     text = lastPlay.text;
+    headlineIsPlayText = true;
   } else if (wasReachBack && reachBackPitcher) {
     // Super pitch announcer call — mention the signature weapon
     const spName = reachBackPitcher.specialty?.name || reachBackPitcher.specialty;
@@ -1393,10 +1395,13 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   } else if (hasPlayResult && !['single','double','triple','homerun','groundout','flyout','lineout','popout','strikeout','walk','error','fc','doubleplay','sacfly'].includes(lastPlay?.type)) {
     // Only non-hit play results get top billing (strikeouts, walks, errors)
     text = lastPlay.text;
+    headlineIsPlayText = true;
   } else if (isSteal && lastPlay?.text) {
     text = `He's going! ${lastPlay.text}`;
+    headlineIsPlayText = true;
   } else if (isCaughtStealing && lastPlay?.text) {
     text = lastPlay.text;
+    headlineIsPlayText = true;
   } else {
     // ── Blowout Mode: announcers get bored and talk about random stuff ──
     // 8th inning+, 8+ run margin — broadcasters stop calling the game
@@ -1498,8 +1503,8 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
         </div>
       )}
 
-      {/* Stats flash — show hit text in orange; also show other non-standard play results */}
-      {lastPlay && lastPlay.text && !['groundout','flyout','lineout','popout','strikeout','walk','error','fc','doubleplay','sacfly','caughtstealing','steal','strike','ball','foul'].includes(lastPlay?.type) && (
+      {/* Stats flash — show hit text in orange; suppress if headline is already showing the same text */}
+      {lastPlay && lastPlay.text && !headlineIsPlayText && !['groundout','flyout','lineout','popout','strikeout','walk','error','fc','doubleplay','sacfly','caughtstealing','steal','strike','ball','foul'].includes(lastPlay?.type) && (
         <div className="mt-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-1.5 inline-block">
           <span className="text-sm font-heading font-bold text-primary">{lastPlay.text}</span>
         </div>
