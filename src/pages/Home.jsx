@@ -76,6 +76,7 @@ import { WRESTLING_BANNER } from '@/lib/bannerData/proWrestlingBanners';
 import { OLYMPICS_1984_BANNER } from '@/lib/bannerData/olympics1984Banners';
 import { SPACE_AVIATION_BANNER } from '@/lib/bannerData/spaceAviationBanners';
 import { NEWSPAPERS_BANNER } from '@/lib/bannerData/newspapersClassifiedsBanners';
+import { PHONE_WARS_BANNER } from '@/lib/bannerData/longDistancePhoneWarsBanners';
 
 const TEAM_BANNERS = {
   padres: PADRES_BANNERS,
@@ -428,6 +429,7 @@ export default function Home() {
         OLYMPICS_1984_BANNER,
         SPACE_AVIATION_BANNER,
         NEWSPAPERS_BANNER,
+        PHONE_WARS_BANNER,
       ];
       const completedInning = gameState.inning;
       if (allBanners.length > 0 && completedInning <= 8) {
