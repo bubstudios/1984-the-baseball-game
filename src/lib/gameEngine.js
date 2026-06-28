@@ -917,7 +917,7 @@ function resolveSwing(state, swingType, pitch) {
     }
     state.balls = 0; state.strikes = 0; advanceBatter(state);
     // Only process aggressive base advancement on OUTFIELD hits (single to OF or beyond), not infield plays
-    const isOutfieldHit = state.lastPlay && ['single', 'double', 'triple'].includes(state.lastPlay.type) && hitDirection && (hitDirection.includes('LF') || hitDirection.includes('CF') || hitDirection.includes('RF') || hitDirection.includes('LCF') || hitDirection.includes('RCF'));
+    const isOutfieldHit = state.lastPlay && ['single', 'double', 'triple'].includes(state.lastPlay.type) && !state.lastPlay.infield && hitDirection && (hitDirection.includes('LF') || hitDirection.includes('CF') || hitDirection.includes('RF') || hitDirection.includes('LCF') || hitDirection.includes('RCF'));
     if (isOutfieldHit && !state.gameOver) {
       processPostHitBaserunning(state, state.lastPlay.type, batter, defenders);
     }
@@ -1155,7 +1155,7 @@ function resolveSwing(state, swingType, pitch) {
           if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
           state.bases[0] = batter;
           state.log.push({ type: 'single', text: dsResult.text, divingStopPos: dsResult.pos });
-          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos };
+          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, infield: true };
           state.balls = 0; state.strikes = 0; advanceBatter(state);
           return;
         } else {
@@ -1166,7 +1166,7 @@ function resolveSwing(state, swingType, pitch) {
           if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
           state.bases[0] = batter;
           state.log.push({ type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true });
-          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true };
+          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true, infield: true };
           state.balls = 0; state.strikes = 0; advanceBatter(state);
           return;
         }
