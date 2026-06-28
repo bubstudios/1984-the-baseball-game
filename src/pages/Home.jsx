@@ -41,7 +41,7 @@ import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
 import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement, trackHomeRunDistance, trackGameRecords, trackPlayersUsed, trackTimePlayed } from '@/lib/achievements';
 import AchievementPopup from '@/components/game/AchievementPopup';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
-import AttractiveAdBanner from '@/components/game/AttractiveAdBanner';
+import InlineSponsorBanner from '@/components/game/InlineSponsorBanner';
 import BannerPopup from '@/components/game/BannerPopup';
 import { PADRES_BANNERS } from '@/lib/bannerData/padresBanners';
 import { DODGERS_BANNERS } from '@/lib/bannerData/dodgersBanners';
@@ -1111,6 +1111,13 @@ export default function Home() {
                   </div>
                 )}
 
+                {/* Inline Sponsor Banner */}
+                <InlineSponsorBanner
+                  banner={activeBanner}
+                  onTap={() => setBannerPopup(activeBanner)}
+                  onHide={() => setActiveBanner(null)}
+                />
+
                 {/* Commentary */}
                 <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} stadium={gameStadium} homeTeamKey={homeTeam} />
 
@@ -1249,16 +1256,6 @@ export default function Home() {
 
 
 
-      {/* Banner and Popup */}
-      {activeBanner && (
-        <AttractiveAdBanner
-          key={bannerSeq}
-          banner={activeBanner}
-          onTap={() => setBannerPopup(activeBanner)}
-          autoHideMs={12000}
-          onHide={() => setActiveBanner(null)}
-        />
-      )}
       {bannerPopup && (
         <BannerPopup
           banner={bannerPopup}
