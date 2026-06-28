@@ -1,0 +1,182 @@
+// National Newspapers & Classified Ads Banner (#801-825) — 14 windows, mixed into ALL 26 ballparks
+// Ink-stained nostalgia, pre-internet daily-life charm, retrospective wink
+// All names and facts are real 1984-era touchstones; all descriptive copy is original.
+// Hidden achievement: "Read All About It" — open all 14 newspaper windows
+
+export const NEWSPAPERS_BANNER = {
+  id: 'newspapersbanner_801',
+  title: '📰 "Extra, extra — read all about it!"',
+  subtitle: '(ink-stained nostalgia meets pre-internet daily life)',
+  icon: '📰',
+  hiddenAchievement: '📰 "Read All About It"',
+  popups: [
+    // ── WINDOW 01: THE CLASSIFIED ADS ──
+    {
+      num: 1,
+      emoji: '📋',
+      title: 'THE CLASSIFIED ADS',
+      tagline: 'A few cents a word',
+      whatItWas: 'The tiny print in the back — buy, sell, trade, hire, and announce — where a few lines and a phone number could move a couch, fill a job, or find a roommate.',
+      howChanged: 'The classifieds were the internet before the internet: a dense, thriving marketplace of everyday life, running day after day in every local paper in the country.',
+      craze: 'A genuine institution — the place a whole town went to transact and connect, measured out in pennies per line.',
+      howAged: 'Mostly swallowed by online marketplaces, but the format — short, direct, cash-only — is burned into the culture. 📋',
+      achievement: '📋 *OBO*',
+    },
+    // ── WINDOW 02: THE HELP WANTED SECTION ──
+    {
+      num: 2,
+      emoji: '💼',
+      title: 'THE HELP WANTED SECTION',
+      tagline: 'Circle it in red pen',
+      whatItWas: 'The job listings — short descriptions, an address, and a phone number — where a career could start with a single circled ad and a walk-in interview.',
+      howChanged: 'In 1984, the classifieds were how you found work: scan the listings, circle the promising ones in red pen, and call or show up in person.',
+      craze: 'A daily ritual for job-seekers; the Sunday Help Wanted section was a genuine event, thick with opportunity.',
+      howAged: 'Replaced by online job boards, but the red-pen-circle-in-the-paper is a perfect period image. 💼',
+      achievement: '💼 *Now Hiring*',
+    },
+    // ── WINDOW 03: THE PERSONAL ADS ──
+    {
+      num: 3,
+      emoji: '💌',
+      title: 'THE PERSONAL ADS',
+      tagline: 'SWM seeks...',
+      whatItWas: 'The lonely-hearts column — short, coded messages where people looked for love, friendship, or a missed connection, all in clipped abbreviations ("SWM, 30s, enjoys long walks, seeks...").',
+      howChanged: 'Long before dating apps, the personals were how strangers found each other — a leap of faith conducted in a few lines of newsprint.',
+      craze: 'A genuinely romantic (and sometimes mysterious) corner of the paper; the original swipe-right.',
+      howAged: 'Quaint and charming in hindsight — the analog ancestor of online dating. 💌',
+      achievement: '💌 *Missed Connection*',
+    },
+    // ── WINDOW 04: THE SPORTS SECTION ──
+    {
+      num: 4,
+      emoji: '⚾',
+      title: 'THE SPORTS SECTION',
+      tagline: 'Check the box scores',
+      whatItWas: 'The morning ritual for every fan — game stories, standings, and especially the box scores: dense little grids of numbers that told you exactly what happened in last night\'s game.',
+      howChanged: 'Before highlights on demand, the box score was how you found out who went 3-for-4 and who got the win. Fans pored over them daily.',
+      craze: 'The box score is one of journalism\'s great inventions — a whole game in a tiny grid. (Right at home in this game.)',
+      howAged: 'The numbers moved online, but the box score itself is immortal. ⚾',
+      achievement: '⚾ *Read the Box Score*',
+    },
+    // ── WINDOW 05: THE COMICS PAGE ──
+    {
+      num: 5,
+      emoji: '😆',
+      title: 'THE COMICS PAGE',
+      tagline: 'Saving the funnies for last',
+      whatItWas: 'The comics section — a full page (and a fat color spread on Sundays) of strips that millions read every single day, from gag-a-day jokes to long-running soap-opera serials.',
+      howChanged: 'The funny pages were a beloved daily habit, the comics page often the first thing kids grabbed and the last thing adults read with their coffee.',
+      craze: 'A shared cultural touchstone — everybody had a favorite strip.',
+      howAged: 'Still around, but the daily-newsprint ritual is a fond memory. 😆',
+      achievement: '😆 *Read the Funnies*',
+    },
+    // ── WINDOW 06: THE PAPER ROUTE ──
+    {
+      num: 6,
+      emoji: '🚲',
+      title: 'THE PAPER ROUTE',
+      tagline: 'Thump on the porch at dawn',
+      whatItWas: 'The kid on the bike at the crack of dawn, canvas bag stuffed with rolled papers, firing them onto porches one driveway at a time — and collecting a few bucks door-to-door every week.',
+      howChanged: 'The paper route was a rite of passage and many a kid\'s first job — alarm clocks before sunrise, rubber bands, and the satisfying thump of a good throw.',
+      craze: 'A classic slice of Americana and countless people\'s introduction to earning a paycheck.',
+      howAged: 'Mostly gone — a nostalgic symbol of a slower, porch-delivery era. 🚲',
+      achievement: '🚲 *Paper Route*',
+    },
+    // ── WINDOW 07: THE FRONT PAGE ──
+    {
+      num: 7,
+      emoji: '📰',
+      title: 'THE FRONT PAGE',
+      tagline: 'Extra, extra',
+      whatItWas: 'The headline that set the day — bold type across the top, the story everyone would be talking about, hawked from newsstands and stacked on doorsteps.',
+      howChanged: 'The front page was the country\'s shared starting point each morning, before 24-hour cable and the internet fractured the news.',
+      craze: '"Read all about it" — the front page as the daily town square.',
+      howAged: 'The headlines moved to screens, but the bold-type front page remains iconic. 📰',
+      achievement: '📰 *Stop the Presses*',
+    },
+    // ── WINDOW 08: THE COUPON SECTION ──
+    {
+      num: 8,
+      emoji: '✂️',
+      title: 'THE COUPON SECTION',
+      tagline: 'Clip and save',
+      whatItWas: 'The pages (and the fat Sunday insert) full of cents-off coupons — scissors out, careful clipping, and a shoebox or envelope full of savings ready for the grocery run.',
+      howChanged: 'Coupon-clipping was a genuine household skill and a point of pride; the Sunday paper paid for itself in savings for a careful shopper.',
+      craze: 'The original deal-hunting — a whole culture of clip-and-save thrift.',
+      howAged: 'Digital coupons took over, but Sunday clipping is a warm memory. ✂️',
+      achievement: '✂️ *Clip & Save*',
+    },
+    // ── WINDOW 09: THE ANNOUNCEMENTS ──
+    {
+      num: 9,
+      emoji: '📜',
+      title: 'THE ANNOUNCEMENTS',
+      tagline: 'Births, weddings, and farewells',
+      whatItWas: 'The pages that marked life\'s milestones for a community — engagement and wedding announcements, new babies, and the obituaries where families honored those they\'d lost.',
+      howChanged: 'This was how a town kept track of itself — who married, who arrived, who passed — printed for everyone to read and remember.',
+      craze: 'A communal record of a community\'s life, woven into the local paper.',
+      howAged: 'Still present, but the role has spread across the internet. 📜',
+      achievement: '📜 *Hatch, Match & Dispatch*',
+    },
+    // ── WINDOW 10: THE AUTO CLASSIFIEDS ──
+    {
+      num: 10,
+      emoji: '🚗',
+      title: 'THE AUTO CLASSIFIEDS',
+      tagline: 'Runs great, must sell',
+      whatItWas: 'The pages where you bought and sold cars — private sellers and dealers alike, every listing a tiny pitch: year, make, mileage, "runs great," and a phone number to call after 6.',
+      howChanged: 'Buying a used car meant circling ads, making calls from the kitchen phone, and driving across town to kick the tires in someone\'s driveway.',
+      craze: 'The car lot of the newspaper — where a huge share of vehicles changed hands.',
+      howAged: 'Replaced by online listings, but "runs great, must sell" is eternal. 🚗',
+      achievement: '🚗 *Runs Great, Must Sell*',
+    },
+    // ── WINDOW 11: THE HOUSING ADS ──
+    {
+      num: 11,
+      emoji: '🏠',
+      title: 'THE HOUSING ADS',
+      tagline: 'Apt for rent, $400/mo',
+      whatItWas: 'Apartment hunting and house shopping lived here — rentals and homes for sale in dense little listings, abbreviations everywhere ("2BR, 1BA, near downtown, no pets").',
+      howChanged: 'Finding a place to live meant the classifieds, a roll of quarters for the payphone, and a lot of legwork.',
+      craze: 'The original housing search — every apartment and starter home, printed in agate type.',
+      howAged: 'Absorbed by online listing sites, but the cryptic abbreviations are pure period charm. 🏠',
+      achievement: '🏠 *2BR, 1BA*',
+    },
+    // ── WINDOW 12: THE NEWSSTAND ──
+    {
+      num: 12,
+      emoji: '🏪',
+      title: 'THE NEWSSTAND',
+      tagline: 'A quarter for the daily',
+      whatItWas: 'The corner newsstand and the coin-operated sidewalk box — drop in your change, pull the door, grab a paper on your way to work. Magazines, dailies, and the racing form all in one spot.',
+      howChanged: 'The newsstand was a fixture of every downtown and street corner — the paper bought on the go, change jingling in your pocket.',
+      craze: 'A vanished piece of street life; the honor-system coin box especially.',
+      howAged: 'Nearly extinct — a nostalgic emblem of the print era. 🏪',
+      achievement: '🏪 *Got Change?*',
+    },
+    // ── WINDOW 13: THE PRESSROOM ──
+    {
+      num: 13,
+      emoji: '⚙️',
+      title: 'THE PRESSROOM',
+      tagline: 'Hot off the presses',
+      whatItWas: 'The thundering, ink-soaked heart of the operation — giant rolls of newsprint screaming through massive presses overnight, churning out the morning edition by the hundreds of thousands.',
+      howChanged: 'Every paper on every porch started here — a roaring, around-the-clock industrial marvel running while the city slept.',
+      craze: 'The romance of the press — deadlines, ink, and the literal phrase "stop the presses."',
+      howAged: 'Many presses fell silent as print declined, lending the pressroom a mythic, bygone glow. ⚙️',
+      achievement: '⚙️ *Hot Off the Presses*',
+    },
+    // ── WINDOW 14: THE MORNING PAPER ──
+    {
+      num: 14,
+      emoji: '☕',
+      title: 'THE MORNING PAPER',
+      tagline: 'Coffee, and the day\'s first read',
+      whatItWas: 'The whole beloved ritual — the paper off the porch, unfolded over coffee at the kitchen table, sections handed around, fingers smudged gray with ink by the time you finished.',
+      howChanged: 'For millions, the day didn\'t really start until the paper was read — a quiet, shared, unhurried habit.',
+      craze: 'The newspaper morning is one of the warmest rituals of pre-internet life.',
+      howAged: 'Faded as screens took over — but the memory of ink-stained fingers and folded sections endures. ☕',
+      achievement: '☕ *Ink-Stained Fingers*',
+    },
+  ],
+};
