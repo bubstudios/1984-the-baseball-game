@@ -1,6 +1,7 @@
 import React from 'react';
 import { TEAMS } from '@/lib/gameData';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { determinePitcherDecisions } from '@/lib/pitcherDecisions';
 
 function BatterRow({ p }) {
   return (
@@ -110,12 +111,32 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
 export default function BoxScore({ state }) {
   const away = TEAMS[state.awayTeam];
   const home = TEAMS[state.homeTeam];
+  const decisions = state.gameOver ? determinePitcherDecisions(state) : null;
 
   return (
     <ScrollArea className="h-[400px]">
       <div className="space-y-6 p-1">
         <TeamBox team={away} lineup={state.awayLineup} pitcher={state.awayPitcher} playerHistory={state.awayPlayerHistory} label="Away" />
         <TeamBox team={home} lineup={state.homeLineup} pitcher={state.homePitcher} playerHistory={state.homePlayerHistory} label="Home" />
+        {decisions && (
+          <div className="border-t border-border pt-3 space-y-1">
+            <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-1">Decisions</div>
+            <div className="flex items-center gap-2 text-[11px] font-body">
+              <span className="text-emerald-400 font-bold w-6">W</span>
+              <span className="text-foreground font-medium">{decisions.win.name}</span>
+            </div>
+            <div className="flex items-center gap-2 text-[11px] font-body">
+              <span className="text-red-400 font-bold w-6">L</span>
+              <span className="text-foreground font-medium">{decisions.loss.name}</span>
+            </div>
+            {decisions.save && (
+              <div className="flex items-center gap-2 text-[11px] font-body">
+                <span className="text-primary font-bold w-6">SV</span>
+                <span className="text-foreground font-medium">{decisions.save.name}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </ScrollArea>
   );

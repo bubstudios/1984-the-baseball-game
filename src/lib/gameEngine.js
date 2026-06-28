@@ -50,6 +50,7 @@ import { shouldPinchHit, choose_pinch_hitter, resolvePinchHit } from './pinchHit
 import { shouldIntentionalWalk, issue_ibb } from './intentionalWalkDecision';
 import { choose_alignment, apply_alignment_modifiers, expect_bunt } from './defensivePositioning';
 import { should_double_switch, find_double_switch_partner, execute_double_switch } from './doubleSwitch';
+import { logRun } from './pitcherDecisions';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -180,6 +181,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     weather: weather || null, umpire: umpire || null,
     useDH: !!useDH,
     homePlayerHistory: [], awayPlayerHistory: [],
+    runLog: [],
     injuries_enabled: true, // §6 toggle — set false to fully disable injury checks
   };
 }
@@ -383,6 +385,7 @@ function advanceBatter(state) {
 function scoreRun(state) {
   const team = getBattingTeam(state);
   state.score[team]++;
+  logRun(state);
   if (state.innings[state.inning - 1]) {
     const half = state.halfInning === 'top' ? 'away' : 'home';
     if (state.innings[state.inning - 1][half] === null) state.innings[state.inning - 1][half] = 0;
