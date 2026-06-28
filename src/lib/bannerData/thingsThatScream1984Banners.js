@@ -1,0 +1,231 @@
+// National Things That Scream 1984 Banner (#876-900) — 18 windows, mixed into ALL 26 ballparks
+// "Oh man, remember that?" nostalgia + retrospective wink
+// All references are real 1984 touchstones; all descriptive copy is original.
+// NO-OVERLAP: avoids items already in General Products, Electronics, Arcade, Cameras, Space sets.
+// Hidden achievement: "Totally Eighties" — open all 18 scream-1984 windows
+
+export const SCREAM_1984_BANNER = {
+  id: 'scream1984banner_876',
+  title: '📟 "It\'s a totally 1984 kind of day!"',
+  subtitle: '(oh-man-remember-that nostalgia meets retrospective wink)',
+  icon: '📟',
+  hiddenAchievement: '🌈 "Totally Eighties"',
+  popups: [
+    // ── WINDOW 01: CB RADIOS ──
+    {
+      num: 1,
+      emoji: '📻',
+      title: 'CB RADIOS',
+      tagline: 'Breaker breaker, what\'s your twenty?',
+      whatItWas: 'The citizens-band radio craze — truckers and drivers chatting over the air with handles, ten-codes, and a coiled microphone mounted under the dash.',
+      howChanged: 'Still in its boom years in \'84; the CB was the social network of the open road — traffic tips, camaraderie, and smokey-watch warnings shared handle-to-handle.',
+      craze: 'Put a whole vocabulary into the language; "breaker breaker" and "what\'s your twenty?" were everywhere.',
+      howAged: 'Superseded by cell phones; "breaker breaker" is pure nostalgia now. 📻',
+      achievement: '📻 *What\'s Your Twenty?*',
+    },
+    // ── WINDOW 02: THE ATM ──
+    {
+      num: 2,
+      emoji: '🏧',
+      title: 'THE ATM',
+      tagline: 'Cash from a machine?!',
+      whatItWas: 'The automated teller machine — the futuristic novelty of getting cash from a hole in the wall with a plastic card and a secret code.',
+      howChanged: 'Spreading fast in \'84 and feeling genuinely space-age; 24-hour money was a convenience revolution that changed how people thought about banking.',
+      craze: 'Changed banking forever; made round-the-clock cash normal and the bank teller optional.',
+      howAged: 'Utterly mundane now, which is exactly why its \'80s novelty is so charming in hindsight. 🏧',
+      achievement: '🏧 *Cash on Demand*',
+    },
+    // ── WINDOW 03: THE FAX MACHINE ──
+    {
+      num: 3,
+      emoji: '📠',
+      title: 'THE FAX MACHINE',
+      tagline: 'It\'s coming through now...',
+      whatItWas: 'The office marvel that sent a document over the phone line and printed it out on the other end — slowly, on curling thermal paper, with a chorus of beeps and screeches as it "handshook" with the receiving machine.',
+      howChanged: 'The fax was becoming an office essential — the fastest way to get a signed page across the country, screeching modem song and all.',
+      craze: 'Defined business communication for years; "I\'ll fax it over" was the height of efficiency.',
+      howAged: 'Email made it obsolete, leaving the screech and curling paper as retro-office nostalgia. 📠',
+      achievement: '📠 *Coming Through*',
+    },
+    // ── WINDOW 04: THE WATERBED ──
+    {
+      num: 4,
+      emoji: '🛌',
+      title: 'THE WATERBED',
+      tagline: 'Sleeping on a wave',
+      whatItWas: 'The vinyl mattress full of water — sloshy, warm (with its built-in heater), and the height of groovy bedroom cool, often framed in a big wooden pedestal.',
+      howChanged: 'The waterbed was a genuine lifestyle statement in \'84, advertised hard and sloshing in bedrooms across the country.',
+      craze: 'A quintessential \'70s-into-\'80s fad; a punchline-and-pride object rolled into one wobbly package.',
+      howAged: 'Mostly drained away — peak retro bedroom kitsch now. 🛌',
+      achievement: '🛌 *Catch a Wave*',
+    },
+    // ── WINDOW 05: THE MOOD RING & MOOD GADGETS ──
+    {
+      num: 5,
+      emoji: '💍',
+      title: 'THE MOOD RING',
+      tagline: 'What color are you feeling?',
+      whatItWas: 'The ring (and necklace, and more) with a liquid-crystal stone that changed color with your skin temperature — supposedly revealing your mood, from cool blue calm to passionate red.',
+      howChanged: 'A cheap, irresistible novelty in \'84 — everyone checked their color and pretended it meant something.',
+      craze: 'A perfect lightweight fad, equal parts science-y and silly.',
+      howAged: 'A beloved, faintly embarrassing nostalgia trinket. 💍',
+      achievement: '💍 *Read My Mood*',
+    },
+    // ── WINDOW 06: TRUCKER HATS & IRON-ON TEES ──
+    {
+      num: 6,
+      emoji: '👕',
+      title: 'IRON-ON T-SHIRTS',
+      tagline: 'Pick a decal, press it on',
+      whatItWas: 'The mall shop where you picked a glittery or velvet iron-on transfer — a slogan, a rainbow, a band name — and watched them heat-press it onto a fresh tee while you waited.',
+      howChanged: 'Custom iron-on shirts (and foam-front trucker/mesh caps) were the personalized fashion of the moment, straight off the mall kiosk.',
+      craze: 'DIY-feeling wearable expression, peak mall culture.',
+      howAged: 'Cracked-and-peeling iron-ons are pure thrift-store nostalgia. 👕',
+      achievement: '👕 *Press It On*',
+    },
+    // ── WINDOW 07: THE TANNING & AEROBICS CRAZE ──
+    {
+      num: 7,
+      emoji: '💃',
+      title: 'AEROBICS & LEG WARMERS',
+      tagline: 'Feel the burn',
+      whatItWas: 'The fitness explosion — neon leotards, leg warmers, headbands, and living-room workout tapes, with everyone "going for the burn" to an upbeat beat.',
+      howChanged: 'Aerobics was a full-blown movement in \'84 — class at the gym, a tape in the VCR, and spandex in every color of the rainbow.',
+      craze: 'Defined \'80s fitness fashion and put working out into the mainstream.',
+      howAged: 'The neon-spandex aerobics look is one of the most instantly "80s" images there is. 💃',
+      achievement: '💃 *Feel the Burn*',
+    },
+    // ── WINDOW 08: THE PHONE BOOTH ──
+    {
+      num: 8,
+      emoji: '☎️',
+      title: 'THE PHONE BOOTH',
+      tagline: 'Got a dime for a call?',
+      whatItWas: 'The glass-and-metal booth on the corner with a folding door, a phone book on a chain, and a coin slot — where you ducked in to make a call, escape the rain, or (in the movies) change into a superhero.',
+      howChanged: 'The phone booth was everywhere in \'84, a fixture of street corners and gas stations, the only way to call when you were out and about.',
+      craze: 'An icon of public life that\'s all but vanished.',
+      howAged: 'Nearly extinct — a magical relic to anyone born after cell phones. ☎️',
+      achievement: '☎️ *Step Inside*',
+    },
+    // ── WINDOW 09: THE STATION WAGON ──
+    {
+      num: 9,
+      emoji: '🚙',
+      title: 'THE STATION WAGON',
+      tagline: 'Pile in the way-back',
+      whatItWas: 'The long family hauler — fake wood paneling on the sides, a rear-facing "way-back" seat the kids fought over, and no seatbelts to speak of back there. The original family road-trip machine.',
+      howChanged: 'The wood-paneled wagon was the quintessential family car in \'84, packed for vacation with kids rolling around in the cargo area.',
+      craze: 'A nostalgic symbol of \'80s family life, soon to be elbowed aside by the minivan.',
+      howAged: 'Faux-wood wagons are pure retro Americana. 🚙',
+      achievement: '🚙 *Pile In the Way-Back*',
+    },
+    // ── WINDOW 10: SCRATCH-AND-SNIFF & STICKER CULTURE ──
+    {
+      num: 10,
+      emoji: '🌸',
+      title: 'STICKERS & SCRATCH-AND-SNIFF',
+      tagline: 'Trade you the strawberry one',
+      whatItWas: 'The sticker-book craze — puffy stickers, googly-eyed stickers, shiny prismatic ones, and scratch-and-sniff that smelled like strawberry or pizza, all traded and treasured by kids.',
+      howChanged: 'Sticker albums and trading were a genuine schoolyard economy in \'84; the smelly stickers were prized possessions.',
+      craze: 'A defining piece of \'80s childhood, especially for kids of the era.',
+      howAged: 'Pure, wholesome nostalgia. 🌸',
+      achievement: '🌸 *Scratch & Sniff*',
+    },
+    // ── WINDOW 11: THE TV ANTENNA & RABBIT EARS ──
+    {
+      num: 11,
+      emoji: '📺',
+      title: 'RABBIT EARS',
+      tagline: 'Hold it right there — don\'t move!',
+      whatItWas: 'The "rabbit ears" antenna on top of the TV — telescoping rods you bent, twisted, and wrapped in foil to coax a clear picture out of the handful of channels, often while someone held a precarious pose.',
+      howChanged: 'Before cable was everywhere, getting good reception was a household art — and "don\'t move, you\'re the antenna" was a real sentence.',
+      craze: 'The fuzzy-picture, foil-on-the-antenna struggle is a universal pre-cable memory.',
+      howAged: 'Gone with digital and cable — instant nostalgia for anyone who lived it. 📺',
+      achievement: '📺 *Adjust the Antenna*',
+    },
+    // ── WINDOW 12: TV SIGN-OFF & TEST PATTERN ──
+    {
+      num: 12,
+      emoji: '🌙',
+      title: 'THE STATION SIGN-OFF',
+      tagline: 'That\'s all for tonight',
+      whatItWas: 'The end of the broadcast day — late at night, the channel would play the national anthem, show a sign-off message, and then switch to the color-bar test pattern or static until morning. TV literally went to sleep.',
+      howChanged: 'Stay up too late in \'84 and you\'d hit the sign-off — the anthem, the test pattern, and then the hiss of nothing. TV wasn\'t 24 hours yet.',
+      craze: 'A genuinely vanished concept — the idea that television itself had a bedtime.',
+      howAged: 'Mind-bending to younger folks; deeply nostalgic to those who saw it. 🌙',
+      achievement: '🌙 *Don\'t Stay Up Too Late*',
+    },
+    // ── WINDOW 13: THE ROLODEX & DESK CULTURE ──
+    {
+      num: 13,
+      emoji: '📇',
+      title: 'THE ROLODEX',
+      tagline: 'Flip to the right card',
+      whatItWas: 'The spinning wheel of contact cards on every office desk — flip to the letter, find the name, there\'s the phone number. Plus the rest of the analog desk: the desk calendar, the inbox tray, the rubber stamp.',
+      howChanged: 'The Rolodex was your contacts list in \'84, and the whole paper-and-rubber-stamp desk was the engine of office life before computers took over.',
+      craze: 'A perfect emblem of the pre-digital office.',
+      howAged: 'Replaced by the smartphone contacts list — a charming desk relic. 📇',
+      achievement: '📇 *Spin the Wheel*',
+    },
+    // ── WINDOW 14: THE WORD PROCESSOR & TYPEWRITER ──
+    {
+      num: 14,
+      emoji: '⌨️',
+      title: 'THE TYPEWRITER',
+      tagline: 'Ding! ...carriage return',
+      whatItWas: 'The electric typewriter (and the new electronic "word processors" just arriving) — clacking keys, the end-of-line ding, correction tape for mistakes, and a fresh sheet rolled in for every page.',
+      howChanged: 'The typewriter still ruled most desks in \'84; the word processor was the exciting upgrade, and the home computer was just starting to muscle in.',
+      craze: 'The clack-and-ding of the typewriter is one of the most evocative sounds of the era.',
+      howAged: 'Romanticized and collected — a satisfying analog throwback. ⌨️',
+      achievement: '⌨️ *Carriage Return*',
+    },
+    // ── WINDOW 15: TV REMOTES & CHANGING THE CHANNEL ──
+    {
+      num: 15,
+      emoji: '🔘',
+      title: 'THE CLICKER',
+      tagline: 'You\'re closer — change it',
+      whatItWas: 'The TV remote — some clunky and wired, many homes still without one at all, meaning the youngest kid was the "remote," sent to turn the big dial-knob through the channels by hand.',
+      howChanged: 'Whether it was an early clicker or a kid walking to the set in \'84, changing the channel was a small household negotiation.',
+      craze: '"Get up and change the channel" is a universal memory of the era.',
+      howAged: 'Endless remotes and streaming make the manual-dial days quaint. 🔘',
+      achievement: '🔘 *Change the Channel*',
+    },
+    // ── WINDOW 16: THE GAS STATION (FULL SERVICE) ──
+    {
+      num: 16,
+      emoji: '⛽',
+      title: 'FULL-SERVICE GAS',
+      tagline: 'Fill \'er up — check the oil?',
+      whatItWas: 'The service station where an attendant pumped your gas, washed your windshield, and checked your oil while you sat in the car — and gas cost about a dollar a gallon.',
+      howChanged: 'Full service was still common in \'84, the friendly attendant in coveralls a normal part of the drive.',
+      craze: 'A vanished courtesy that defines how different driving used to feel.',
+      howAged: 'Self-serve took over almost everywhere — full service is a rare nostalgic treat. ⛽',
+      achievement: '⛽ *Fill \'Er Up*',
+    },
+    // ── WINDOW 17: THE TV GUIDE & THREE NETWORKS ──
+    {
+      num: 17,
+      emoji: '📖',
+      title: 'TV GUIDE',
+      tagline: 'Circle what you want to watch',
+      whatItWas: 'The little digest-sized magazine that told you what was on, channel by channel, hour by hour — dog-eared, sitting by the couch, with the night\'s shows circled in pen.',
+      howChanged: 'With a handful of channels and no on-screen guide in \'84, TV Guide was essential — you planned your evening around it.',
+      craze: 'One of the best-selling magazines in the country; the bible of the living room.',
+      howAged: 'On-screen guides and streaming menus replaced it — a beloved coffee-table relic. 📖',
+      achievement: '📖 *Must-See Listings*',
+    },
+    // ── WINDOW 18: THE NEON-AND-GEOMETRIC LOOK ──
+    {
+      num: 18,
+      emoji: '🔺',
+      title: 'THE \'84 AESTHETIC',
+      tagline: 'Neon, grids, and zigzags',
+      whatItWas: 'The unmistakable visual style of the moment — hot neon colors, geometric shapes, zigzags and squiggles, grids, chrome, and sunset gradients on everything from notebooks to restaurant decor to TV graphics.',
+      howChanged: 'This look was everywhere in \'84 — the design language of the whole era, splashed across products, posters, and bedroom walls.',
+      craze: 'Now instantly shorthand for "the \'80s," endlessly revived in retro design.',
+      howAged: 'So defining it became a permanent visual genre of its own. 🔺',
+      achievement: '🔺 *Totally Rad*',
+    },
+  ],
+};
