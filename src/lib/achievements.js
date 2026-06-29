@@ -3,6 +3,7 @@
 
 import { TEAMS } from './gameData';
 import { LEADER_LISTS } from './leaders1984';
+import { EXTENDED_TEAM_ACHIEVEMENTS, checkExtendedTeamAchievements, checkExtendedShutout } from './teamAchievementsExtended';
 
 export const ACHIEVEMENTS = [
   // ── FIRST-TIME ──
@@ -278,8 +279,8 @@ export const ACHIEVEMENTS = [
   { id: 'royals_zero_errors', name: 'Royals Way', desc: 'Win while committing zero errors as the Royals', icon: '🧹', category: 'teamSpecific', team: 'royals' },
 
   // ── MULTI-TEAM ──
-  { id: 'nl_tour', name: 'National League Tour', desc: 'Win with the Cubs, Mets, Dodgers, Padres, and Reds', icon: '🏟️', category: 'multiTeam' },
-  { id: 'al_tour', name: 'American League Tour', desc: 'Win with the Yankees, Red Sox, Tigers, and Orioles', icon: '🏟️', category: 'multiTeam' },
+  { id: 'nl_tour', name: 'National League Tour', desc: 'Win with all 12 National League teams', icon: '🏟️', category: 'multiTeam' },
+  { id: 'al_tour', name: 'American League Tour', desc: 'Win with all 14 American League teams', icon: '🏟️', category: 'multiTeam' },
   { id: 'coast_to_coast', name: 'Coast to Coast', desc: 'Win with every team', icon: '🗺️', category: 'multiTeam' },
   { id: 'all_stadiums', name: 'Frequent Flyer', desc: 'Play a game in every stadium', icon: '✈️', category: 'multiTeam' },
   { id: 'games_250_total', name: 'Baseball Traveler', desc: 'Play 250 total games', icon: '🧭', category: 'multiTeam', threshold: 250 },
@@ -409,6 +410,9 @@ export const ACHIEVEMENTS = [
   //   5. Clark & Behb Detective Agency TV popup
   //   6. Carmie TV popup
   { id: 'the_groovers', name: 'The Groovers', desc: 'Witness all 6 rare Easter eggs: the rainbow horse, the Riverfront streaker, the .220 guy, the fries guy, Clark & Behb, and Carmie', icon: '🌈', category: 'hidden' },
+
+  // ── EXTENDED TEAM-SPECIFIC (final 15 teams) ──
+  ...EXTENDED_TEAM_ACHIEVEMENTS,
 ];
 
 // ── Stats storage ──
@@ -1323,6 +1327,10 @@ export function checkGameAchievements(gameState, userTeam) {
     if (balboni && (balboni.gameStats?.hr || 0) > 0) u('royals_balboni_hr');
   }
 
+  // ── EXTENDED TEAMS (final 15 teams) ──
+  checkExtendedTeamAchievements(teamKey, userWon, userScore, stadium, totalHR, allSB, userHitsAll, maxDeficit, u);
+  checkExtendedShutout(teamKey, opponentScore, u);
+
   // ────────────────────────────────────────────
   // ── HIDDEN / EASTER EGG CHECKS ──
   // ────────────────────────────────────────────
@@ -1534,13 +1542,11 @@ export function checkTeamAchievements() {
   if (stats.teamsUsed.length >= 26) unlockAchievement('teams_all');
   if (stats.ballparksVisited.length >= 26) unlockAchievement('parks_all');
 
-  // Multi-team: NL Tour (win with Cubs, Mets, Dodgers, Padres, Reds)
-  const nlTourTeams = ['cubs', 'mets', 'dodgers', 'padres', 'reds'];
-  if (nlTourTeams.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('nl_tour');
+  // Multi-team: NL Tour (win with all 12 NL teams)
+  if (NL_TEAMS.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('nl_tour');
 
-  // Multi-team: AL Tour (win with Yankees, Red Sox, Tigers, Orioles)
-  const alTourTeams = ['yankees', 'redsox', 'tigers', 'orioles'];
-  if (alTourTeams.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('al_tour');
+  // Multi-team: AL Tour (win with all 14 AL teams)
+  if (AL_TEAMS.every(t => (stats.teamWins[t] || 0) > 0)) unlockAchievement('al_tour');
 
   // Multi-team: Coast to Coast (win with every team)
   const allTeams = [...AL_TEAMS, ...NL_TEAMS];
@@ -1569,41 +1575,46 @@ function checkFranchiseHopper(stats) {
   if (allTeams.every(t => (stats.teamWins[t] || 0) >= 10)) unlockAchievement('franchise_hopper');
 }
 
+// All 26 teams' achievement ID lists — used by checkHistorian and checkLocalHero
+const ALL_TEAM_ACH_IDS = {
+  cubs: ['cubs_wrigley_win', 'cubs_3_hr', 'cubs_comeback', 'cubs_10_runs', 'cubs_25_home', 'cubs_100_wins', 'cubs_15_hits', 'cubs_walkoff'],
+  mets: ['mets_extras', 'mets_comeback_5', 'mets_50_wins', 'mets_20_hits', 'mets_100_games', 'mets_3_errors_win', 'mets_wall_scraper', 'mets_late_comeback'],
+  dodgers: ['dodgers_ds_win', 'dodgers_cg', 'dodgers_50_wins', 'dodgers_walkoff', 'dodgers_1_hit', 'dodgers_100_home', 'dodgers_10_road', 'dodgers_12_so'],
+  padres: ['padres_murph_win', 'padres_100_games', 'padres_day_win', 'padres_3_doubles', 'padres_5_sb', 'padres_50_wins', 'padres_15_hits', 'padres_comeback_4'],
+  reds: ['reds_first_game', 'reds_riverfront_win', 'reds_100_games', 'reds_50_wins', 'reds_4_sb', 'reds_10_runs', 'reds_5run_inning', 'reds_100_home'],
+  yankees: ['yanks_4_hr', 'yanks_shutout', 'yanks_12_runs', 'yanks_all_hit', 'yanks_100_wins', 'yanks_10_streak', 'yanks_2000_hits', 'yanks_15_so'],
+  redsox: ['sox_10_doubles', 'sox_fenway_win', 'sox_pole_hr', 'sox_100_games', 'sox_100_wins', 'sox_15_runs', 'sox_shutout', 'sox_25_home'],
+  tigers: ['tigers_win', 'tigers_100_games', 'tigers_50_wins', 'tigers_10_runs', 'tigers_cg', 'tigers_25_home', 'tigers_4_hr', 'tigers_18_hits'],
+  orioles: ['orioles_mem_win', 'orioles_extras', 'orioles_100_games', 'orioles_50_wins', 'orioles_3_hr', 'orioles_4_sb', 'orioles_12_runs', 'orioles_comeback_6'],
+  royals: ['royals_first_win', 'royals_50_wins', 'royals_100_wins', 'royals_25_home', 'royals_george_3', 'royals_balboni_hr', 'royals_4_sb', 'royals_15_hits', 'royals_3_hr_at_home', 'royals_zero_errors'],
+  phillies: ['phillies_first_win', 'phillies_vet_win', 'phillies_comeback', 'phillies_15_hits', 'phillies_samuel_sb', 'phillies_schmidt_hr', 'phillies_carlton_k', 'phillies_50_wins'],
+  // Extended teams (final 15)
+  bluejays: ['bluejays_first_win', 'bluejays_home_win', 'bluejays_3_hr', 'bluejays_10_runs', 'bluejays_comeback', 'bluejays_15_hits', 'bluejays_shutout', 'bluejays_4_sb'],
+  indians: ['indians_first_win', 'indians_home_win', 'indians_3_hr', 'indians_10_runs', 'indians_comeback', 'indians_15_hits', 'indians_shutout', 'indians_3_sb'],
+  brewers: ['brewers_first_win', 'brewers_home_win', 'brewers_4_hr', 'brewers_12_runs', 'brewers_comeback', 'brewers_15_hits', 'brewers_shutout', 'brewers_3_sb'],
+  twins: ['twins_first_win', 'twins_home_win', 'twins_3_hr', 'twins_10_runs', 'twins_comeback', 'twins_15_hits', 'twins_shutout', 'twins_3_sb'],
+  athletics: ['athletics_first_win', 'athletics_home_win', 'athletics_3_hr', 'athletics_10_runs', 'athletics_comeback', 'athletics_15_hits', 'athletics_shutout', 'athletics_4_sb'],
+  angels: ['angels_first_win', 'angels_home_win', 'angels_3_hr', 'angels_10_runs', 'angels_comeback', 'angels_15_hits', 'angels_shutout', 'angels_3_sb'],
+  whitesox: ['whitesox_first_win', 'whitesox_home_win', 'whitesox_4_hr', 'whitesox_10_runs', 'whitesox_comeback', 'whitesox_15_hits', 'whitesox_shutout', 'whitesox_3_sb'],
+  mariners: ['mariners_first_win', 'mariners_home_win', 'mariners_3_hr', 'mariners_10_runs', 'mariners_comeback', 'mariners_15_hits', 'mariners_shutout', 'mariners_3_sb'],
+  rangers: ['rangers_first_win', 'rangers_home_win', 'rangers_4_hr', 'rangers_12_runs', 'rangers_comeback', 'rangers_15_hits', 'rangers_shutout', 'rangers_3_sb'],
+  expos: ['expos_first_win', 'expos_home_win', 'expos_3_hr', 'expos_10_runs', 'expos_comeback', 'expos_15_hits', 'expos_shutout', 'expos_4_sb'],
+  cardinals: ['cardinals_first_win', 'cardinals_home_win', 'cardinals_3_hr', 'cardinals_10_runs', 'cardinals_comeback', 'cardinals_15_hits', 'cardinals_shutout', 'cardinals_3_sb'],
+  pirates: ['pirates_first_win', 'pirates_home_win', 'pirates_3_hr', 'pirates_10_runs', 'pirates_comeback', 'pirates_15_hits', 'pirates_shutout', 'pirates_4_sb'],
+  braves: ['braves_first_win', 'braves_home_win', 'braves_4_hr', 'braves_10_runs', 'braves_comeback', 'braves_15_hits', 'braves_shutout', 'braves_3_sb'],
+  astros: ['astros_first_win', 'astros_home_win', 'astros_3_hr', 'astros_10_runs', 'astros_comeback', 'astros_15_hits', 'astros_shutout', 'astros_3_sb'],
+  giants: ['giants_first_win', 'giants_home_win', 'giants_3_hr', 'giants_10_runs', 'giants_comeback', 'giants_15_hits', 'giants_shutout', 'giants_3_sb'],
+};
+
 function checkHistorian() {
   const achs = loadAchievements();
-  const teamAchIds = {
-    cubs: ['cubs_wrigley_win', 'cubs_3_hr', 'cubs_comeback', 'cubs_10_runs', 'cubs_25_home', 'cubs_100_wins', 'cubs_15_hits', 'cubs_walkoff'],
-    mets: ['mets_extras', 'mets_comeback_5', 'mets_50_wins', 'mets_20_hits', 'mets_100_games', 'mets_3_errors_win', 'mets_wall_scraper', 'mets_late_comeback'],
-    dodgers: ['dodgers_ds_win', 'dodgers_cg', 'dodgers_50_wins', 'dodgers_walkoff', 'dodgers_1_hit', 'dodgers_100_home', 'dodgers_10_road', 'dodgers_12_so'],
-    padres: ['padres_murph_win', 'padres_100_games', 'padres_day_win', 'padres_3_doubles', 'padres_5_sb', 'padres_50_wins', 'padres_15_hits', 'padres_comeback_4'],
-    reds: ['reds_first_game', 'reds_riverfront_win', 'reds_100_games', 'reds_50_wins', 'reds_4_sb', 'reds_10_runs', 'reds_5run_inning', 'reds_100_home'],
-    yankees: ['yanks_4_hr', 'yanks_shutout', 'yanks_12_runs', 'yanks_all_hit', 'yanks_100_wins', 'yanks_10_streak', 'yanks_2000_hits', 'yanks_15_so'],
-    redsox: ['sox_10_doubles', 'sox_fenway_win', 'sox_pole_hr', 'sox_100_games', 'sox_100_wins', 'sox_15_runs', 'sox_shutout', 'sox_25_home'],
-    tigers: ['tigers_win', 'tigers_100_games', 'tigers_50_wins', 'tigers_10_runs', 'tigers_cg', 'tigers_25_home', 'tigers_4_hr', 'tigers_18_hits'],
-    orioles: ['orioles_mem_win', 'orioles_extras', 'orioles_100_games', 'orioles_50_wins', 'orioles_3_hr', 'orioles_4_sb', 'orioles_12_runs', 'orioles_comeback_6'],
-    royals: ['royals_first_win', 'royals_50_wins', 'royals_100_wins', 'royals_25_home', 'royals_george_3', 'royals_balboni_hr', 'royals_4_sb', 'royals_15_hits', 'royals_3_hr_at_home', 'royals_zero_errors'],
-  };
-
-  const teamsWithAch = Object.entries(teamAchIds).filter(([_, ids]) => ids.some(id => achs[id]));
-  if (teamsWithAch.length >= Object.keys(teamAchIds).length) unlockAchievement('historian');
+  const teamsWithAch = Object.entries(ALL_TEAM_ACH_IDS).filter(([_, ids]) => ids.some(id => achs[id]));
+  if (teamsWithAch.length >= Object.keys(ALL_TEAM_ACH_IDS).length) unlockAchievement('historian');
 }
 
 function checkLocalHero() {
   const achs = loadAchievements();
-  const teamAchIds = {
-    cubs: ['cubs_wrigley_win', 'cubs_3_hr', 'cubs_comeback', 'cubs_10_runs', 'cubs_25_home', 'cubs_100_wins', 'cubs_15_hits', 'cubs_walkoff'],
-    mets: ['mets_extras', 'mets_comeback_5', 'mets_50_wins', 'mets_20_hits', 'mets_100_games', 'mets_3_errors_win', 'mets_wall_scraper', 'mets_late_comeback'],
-    dodgers: ['dodgers_ds_win', 'dodgers_cg', 'dodgers_50_wins', 'dodgers_walkoff', 'dodgers_1_hit', 'dodgers_100_home', 'dodgers_10_road', 'dodgers_12_so'],
-    padres: ['padres_murph_win', 'padres_100_games', 'padres_day_win', 'padres_3_doubles', 'padres_5_sb', 'padres_50_wins', 'padres_15_hits', 'padres_comeback_4'],
-    reds: ['reds_first_game', 'reds_riverfront_win', 'reds_100_games', 'reds_50_wins', 'reds_4_sb', 'reds_10_runs', 'reds_5run_inning', 'reds_100_home'],
-    yankees: ['yanks_4_hr', 'yanks_shutout', 'yanks_12_runs', 'yanks_all_hit', 'yanks_100_wins', 'yanks_10_streak', 'yanks_2000_hits', 'yanks_15_so'],
-    redsox: ['sox_10_doubles', 'sox_fenway_win', 'sox_pole_hr', 'sox_100_games', 'sox_100_wins', 'sox_15_runs', 'sox_shutout', 'sox_25_home'],
-    tigers: ['tigers_win', 'tigers_100_games', 'tigers_50_wins', 'tigers_10_runs', 'tigers_cg', 'tigers_25_home', 'tigers_4_hr', 'tigers_18_hits'],
-    orioles: ['orioles_mem_win', 'orioles_extras', 'orioles_100_games', 'orioles_50_wins', 'orioles_3_hr', 'orioles_4_sb', 'orioles_12_runs', 'orioles_comeback_6'],
-    royals: ['royals_first_win', 'royals_50_wins', 'royals_100_wins', 'royals_25_home', 'royals_george_3', 'royals_balboni_hr', 'royals_4_sb', 'royals_15_hits', 'royals_3_hr_at_home', 'royals_zero_errors'],
-  };
-
-  if (Object.values(teamAchIds).some(ids => ids.every(id => achs[id]))) unlockAchievement('local_hero');
+  if (Object.values(ALL_TEAM_ACH_IDS).some(ids => ids.every(id => achs[id]))) unlockAchievement('local_hero');
 }
 
 // Check if user's team was trailing after a specific inning

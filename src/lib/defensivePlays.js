@@ -20,7 +20,7 @@ export function isWallRobable(ballparkName, hitDirection) {
 // ── HR ROBBERY CHANCE ──
 // Very rare: ~3% per home run (about 1 per 12-15 games)
 export function rollHRRobbery() {
-  return Math.random() < 0.03;
+  return Math.random() < 0.08;
 }
 
 // ── GENERIC HR ROBBERY CALLS ──
