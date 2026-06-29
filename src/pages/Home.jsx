@@ -24,6 +24,7 @@ import BeanballBanner from '@/components/game/BeanballBanner';
 import GameSummary from '@/components/game/GameSummary';
 import HomeRunDistancePopup from '@/components/game/HomeRunDistancePopup';
 import GameEventBanner from '@/components/game/GameEventBanner';
+import PitcherInjuryModal from '@/components/game/PitcherInjuryModal';
 
 import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
@@ -126,6 +127,7 @@ import CardAwardModal from '@/components/game/CardAwardModal';
 import { getRandomCardForTeam, addCard, loadFromStorage, saveToStorage, migrateLegacyStorage, getCollectedIds } from '@/lib/baseballCards';
 import FanChirpToast from '@/components/game/FanChirpToast';
 import { checkAndResolveIncident } from '@/lib/incidentIntegration';
+import { checkPitcherInjury } from '@/lib/pitcherInjuries';
 
 
 export default function Home() {
@@ -155,6 +157,7 @@ export default function Home() {
   const [ejectionCount, setEjectionCount] = useState(0);
   const [ballparkEvent, setBallparkEvent] = useState(null);
   const [ejectionResult, setEjectionResult] = useState(null);
+  const [pitcherInjury, setPitcherInjury] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
@@ -203,6 +206,7 @@ export default function Home() {
     setArgumentResult(null);
     setBallparkEvent(null);
     setBeanballEvent(null);
+    setPitcherInjury(null);
     resetBallparkEvents();
     const stadium = TEAMS[home]?.stadium || null;
     setGameStadium(stadium);
@@ -327,6 +331,27 @@ export default function Home() {
     }
 
 
+
+    // Pitcher injury — show modal for user's team, auto-replace for CPU
+    if (gameState._pendingPitcherInjury && !pitcherInjury) {
+      const injury = gameState._pendingPitcherInjury;
+      const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
+                         (injury.side === 'away' && userTeam === gameState.awayTeam);
+      if (isUserTeam) {
+        const bullpen = injury.side === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
+        setPitcherInjury({ ...injury, bullpen });
+      } else {
+        const bullpen = injury.side === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
+        if (bullpen && bullpen.length > 0) {
+          const sorted = [...bullpen].sort((a, b) => b.control - a.control);
+          const newReliever = sorted[0];
+          const newState = changePitcher(gameState, newReliever, injury.side);
+          delete newState._pendingPitcherInjury;
+          setGameState(prev => newState);
+        }
+      }
+      return;
+    }
 
     // Ballpark Event Handler — Award card if bobblehead
     if (ballparkEvent && ballparkEvent.id === 'homestand_bobblehead' && !cardAward) {
@@ -727,6 +752,7 @@ export default function Home() {
 
        // CPU may make substitutions after the at-bat
        const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
+       checkPitcherInjury(updatedState, afterSubs);
        if (afterSubs.gameOver) endingState = afterSubs;
        setGameState(afterSubs);
 
@@ -771,6 +797,7 @@ export default function Home() {
 
       // CPU may make substitutions after the at-bat
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
+      checkPitcherInjury(gameState, afterSubs);
       if (afterSubs.gameOver) endingState = afterSubs;
       setGameState(afterSubs);
 
@@ -816,6 +843,7 @@ export default function Home() {
       const cpuPitch = cpuSelectPitch(stealPending);
       const resultState = processAtBat(stealPending, PITCH_TYPES[cpuPitch], SWING_TYPES[3]);
       const afterSubs = cpuDecideSubstitutions(resultState, userTeam);
+      checkPitcherInjury(stealPending, afterSubs);
       if (afterSubs.gameOver) endingState = afterSubs;
       setGameState(afterSubs);
     } catch (e) {
@@ -840,6 +868,7 @@ export default function Home() {
     let endingState = null;
     try {
       const newState = intentionalWalk(gameState);
+      checkPitcherInjury(gameState, newState);
       if (newState.gameOver) endingState = newState;
       setGameState(newState);
     } catch (e) {
@@ -897,6 +926,14 @@ export default function Home() {
     setEjectionResult(null);
   };
 
+  const handlePitcherInjuryReplacement = (chosenPitcher) => {
+    if (!gameState || !pitcherInjury) return;
+    const newState = changePitcher(gameState, chosenPitcher, pitcherInjury.side);
+    delete newState._pendingPitcherInjury;
+    setGameState(newState);
+    setPitcherInjury(null);
+  };
+
   const handleNewGame = () => {
     setGameState(null);
     setBallparkPhase(null);
@@ -924,6 +961,7 @@ export default function Home() {
     setEjectionResult(null);
     setCardAward(null);
     setShowSummary(false);
+    setPitcherInjury(null);
   };
 
   if (ballparkPhase) {
@@ -1324,6 +1362,15 @@ export default function Home() {
       )}
 
 
+
+      {/* Pitcher Injury Modal — user picks replacement from bullpen */}
+      {pitcherInjury && (
+        <PitcherInjuryModal
+          injury={pitcherInjury}
+          bullpen={pitcherInjury.bullpen}
+          onSelect={handlePitcherInjuryReplacement}
+        />
+      )}
 
       {/* Ejection Replacement Modal — user picks replacement pitcher */}
       {ejectionResult && (

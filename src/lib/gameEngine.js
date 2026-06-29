@@ -2121,4 +2121,4 @@ export function cpuCheckPinchHit(state) {
   return newState;
 }
 
-export { getCurrentBatter, getCurrentPitcher, getBattingTeam };
+export { getCurrentBatter, getCurrentPitcher, getBattingTeam, getPitcherFatigue };
