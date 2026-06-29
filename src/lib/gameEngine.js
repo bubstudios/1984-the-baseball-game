@@ -1516,7 +1516,13 @@ export function processAtBat(state, pitchType, swingType) {
    const oppScore = newState.score[userSide === 'home' ? 'away' : 'home'];
    const preLead = userScore > oppScore ? 'ahead' : userScore === oppScore ? 'tied' : 'behind';
    newState._pitcherLeadState = preLead;
-   
+
+   // Track PITCHING TEAM's lead for symmetric lead-change penalty
+   const _prePitchSide = newState.halfInning === 'top' ? 'home' : 'away';
+   const _prePitchScore = newState.score[_prePitchSide];
+   const _preBatScore = newState.score[_prePitchSide === 'home' ? 'away' : 'home'];
+   newState._prePitchingLead = _prePitchScore > _preBatScore ? 'ahead' : _prePitchScore === _preBatScore ? 'tied' : 'behind';
+
    // ── PHASE 3.0: DEFENSIVE POSITIONING (per plate appearance) ──
    const defensiveAlignment = choose_alignment({
      runner_on_3rd: !!newState.bases[2],
@@ -1671,19 +1677,16 @@ export function processAtBat(state, pitchType, swingType) {
     if (!newState.gameOver && !newState.lastInjury) { const pi = checkPitcherInjury(newState); if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); } }
     applyComposureFromLastPlay(newState, pitcher);
 
-    // ── Check for lead change and apply penalty if pitcher surrendered lead ──
-    const postUserScore = newState.score[userSide];
-    const postOppScore = newState.score[userSide === 'home' ? 'away' : 'home'];
-    const postLead = postUserScore > postOppScore ? 'ahead' : postUserScore === postOppScore ? 'tied' : 'behind';
-    const wasPitchingTeamAhead = preLead === 'ahead';
-    const nowPitchingTeamBehind = postLead === 'behind';
+    // ── Symmetric lead-change penalty: whichever pitcher blew the lead gets penalized ──
+    const _rbPitchSide = state.halfInning === 'top' ? 'home' : 'away';
+    const _rbPostPitch = newState.score[_rbPitchSide];
+    const _rbPostBat = newState.score[_rbPitchSide === 'home' ? 'away' : 'home'];
+    const _rbPostLead = _rbPostPitch > _rbPostBat ? 'ahead' : _rbPostPitch === _rbPostBat ? 'tied' : 'behind';
 
-    if (wasPitchingTeamAhead && nowPitchingTeamBehind) {
+    if (newState._prePitchingLead === 'ahead' && _rbPostLead === 'behind') {
       newState._just_lost_lead = true;
-      const pitchingSide = state.halfInning === 'top' ? 'home' : 'away';
-      const pitcherObj = pitchingSide === 'home' ? state.homePitcher : state.awayPitcher;
-      if (pitcherObj && pitcherObj._composure) {
-        applyLeadChangePenalty(pitcherObj._composure);
+      if (pitcher && pitcher._composure) {
+        applyLeadChangePenalty(pitcher._composure);
       }
     } else {
       newState._just_lost_lead = false;
@@ -1892,6 +1895,20 @@ export function processAtBat(state, pitchType, swingType) {
       }
     }
   }
+  // ── Symmetric lead-change penalty: whichever pitcher blew the lead gets penalized ──
+  const _mainPitchSide = state.halfInning === 'top' ? 'home' : 'away';
+  const _mainPostPitch = newState.score[_mainPitchSide];
+  const _mainPostBat = newState.score[_mainPitchSide === 'home' ? 'away' : 'home'];
+  const _mainPostLead = _mainPostPitch > _mainPostBat ? 'ahead' : _mainPostPitch === _mainPostBat ? 'tied' : 'behind';
+  if (newState._prePitchingLead === 'ahead' && _mainPostLead === 'behind') {
+    newState._just_lost_lead = true;
+    if (pitcher && pitcher._composure) {
+      applyLeadChangePenalty(pitcher._composure);
+    }
+  } else {
+    newState._just_lost_lead = false;
+  }
+
   applyComposureFromLastPlay(newState, pitcher);
   processComposureEvents(newState, pitcher);
   return newState;
