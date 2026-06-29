@@ -17,7 +17,7 @@ const ENTRIES = [
     description: "Fashion photographer Dani Reynolds thought she had it all. Then her secret-agent husband disappears under mysterious circumstances. Recruited by U.S. intelligence, Dani is paired with undercover operative Mac Harper and thrust into a world of espionage, danger, and international intrigue.",
     cast: ['Jennifer O\'Neill', 'Jon-Erik Hexum'],
     funFact: "Star Jon-Erik Hexum became one of television's fastest-rising stars before a tragic on-set accident in 1984 shocked Hollywood and ended the series prematurely.",
-    quote: "One of television's most ambitious new action dramas. — TV Guide",
+    quote: "One of television's most ambitious new action dramas. - TV Guide",
   },
   {
     id: 'riptide_602',
@@ -302,7 +302,7 @@ const ENTRIES = [
     time: 'Primetime',
     matchText: 'Don\'t miss "Hunter" this weekend.',
     tagline: "Crime fears him. Criminals hate him.",
-    description: "Detective Rick Hunter doesn't always play by the rules—but he gets results. Together with partner Dee Dee McCall, Hunter takes on Los Angeles' toughest criminals.",
+    description: "Detective Rick Hunter doesn't always play by the rules-but he gets results. Together with partner Dee Dee McCall, Hunter takes on Los Angeles' toughest criminals.",
     cast: ['Fred Dryer'],
     funFact: "The show combined gritty police drama with explosive action, earning a loyal following among fans of the genre.",
     quote: "Crime fears him. Criminals hate him.",

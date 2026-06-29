@@ -33,7 +33,7 @@ export const BLUEJAYS_BANNERS = [
     exhibit: 'Barfield\'s Cannon',
     icon: '🎯',
     animation: 'power_nod',
-    description: 'Jesse Barfield patrols right field with one of the best arms in baseball. At just 25, he\'s a future star who combines power, speed, and elite defense—exactly what the Jays are building around.'
+    description: 'Jesse Barfield patrols right field with one of the best arms in baseball. At just 25, he\'s a future star who combines power, speed, and elite defense-exactly what the Jays are building around.'
   },
   {
     id: 'bj_upshaw_power',
@@ -51,7 +51,7 @@ export const BLUEJAYS_BANNERS = [
     exhibit: 'Maple Leaf City',
     icon: '🍁',
     animation: 'heritage_shine',
-    description: 'Toronto is a vibrant, multicultural city on Lake Ontario—Canada\'s largest and a gateway to the Great Lakes. The Blue Jays are bringing baseball pride to a nation that\'s embracing the sport.'
+    description: 'Toronto is a vibrant, multicultural city on Lake Ontario-Canada\'s largest and a gateway to the Great Lakes. The Blue Jays are bringing baseball pride to a nation that\'s embracing the sport.'
   },
   {
     id: 'bj_niagara_falls',
@@ -93,7 +93,7 @@ export const BLUEJAYS_BANNERS = [
     exhibit: 'Metric vs. Miles',
     icon: '📏',
     animation: 'sizzle_pop',
-    description: 'The Blue Jays play in Canada where the metric system reigns—distances are in kilometers, temperatures in Celsius. Home run distances on the scoreboard confuse American visitors!'
+    description: 'The Blue Jays play in Canada where the metric system reigns-distances are in kilometers, temperatures in Celsius. Home run distances on the scoreboard confuse American visitors!'
   },
 
   // ── HOMESTAND EXHIBITS ──
@@ -165,7 +165,7 @@ export const BLUEJAYS_BANNERS = [
     exhibit: 'Hockey City Goes Baseball',
     icon: '🏒',
     animation: 'enthusiasm_nod',
-    description: 'Toronto is a hockey-mad city—the Maple Leafs are an institution. But the Blue Jays are winning over the city one game at a time, bringing baseball to Maple Leaf territory.'
+    description: 'Toronto is a hockey-mad city-the Maple Leafs are an institution. But the Blue Jays are winning over the city one game at a time, bringing baseball to Maple Leaf territory.'
   },
 ];
 

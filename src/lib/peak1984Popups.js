@@ -146,7 +146,7 @@ const ENTRIES = [
     icon: '🏃',
     matchText: 'Take your music wherever you go.',
     tagline: 'Freedom Sounds Like This',
-    description: 'Joggers, students, travelers—everyone seems to be wearing headphones. Some adults remain confused by the trend.',
+    description: 'Joggers, students, travelers-everyone seems to be wearing headphones. Some adults remain confused by the trend.',
     adoption: 'Widespread and growing',
     category: 'music',
     humor: true,
@@ -219,7 +219,7 @@ const ENTRIES = [
     debate: 'Ongoing',
     category: 'music',
     humor: true,
-    funFact: 'This prediction proved partially wrong—vinyl experienced a resurgence decades later.',
+    funFact: 'This prediction proved partially wrong-vinyl experienced a resurgence decades later.',
   },
   {
     id: 'future_arriving',

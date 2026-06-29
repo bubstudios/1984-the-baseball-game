@@ -29,7 +29,7 @@ const BLOWOUT_LINES = {
     "Now they're all waving. I've started a trend.",
     "Chicago has the best hot dogs in America. That's not opinion, that's science.",
     "You know what's underrated? A good pretzel. With mustard.",
-    "Not the yellow kind — the spicy brown mustard. That's the real stuff.",
+    "Not the yellow kind - the spicy brown mustard. That's the real stuff.",
     "I bet I could still hit a baseball. Not well, but I could hit it.",
     "Actually, looking at these pitchers, maybe not.",
     "The organist is playing 'Take Me Out to the Ballgame.'",
@@ -293,7 +293,7 @@ const UNIVERSAL_RARE = [
   "And honestly, we understand.",
 ];
 
-// ── Blowout trigger line — said once when blowout mode activates ──
+// ── Blowout trigger line - said once when blowout mode activates ──
 const ACTIVATION_LINES = [
   "Well, we've got a little time here.",
   "You know, we've got some time to fill.",

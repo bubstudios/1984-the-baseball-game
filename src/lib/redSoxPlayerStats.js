@@ -1,4 +1,4 @@
-// Red Sox Player Stats & Tidbits — 1984 season
+// Red Sox Player Stats & Tidbits - 1984 season
 // Used contextually when a specific player is at-bat or on the mound.
 
 const PLAYERS = {
@@ -13,7 +13,7 @@ const PLAYERS = {
       "Boggs led the International League in hits before getting the call to Boston.",
       "Wade Boggs made his major league debut in 1982.",
       "Boggs led the American League in hitting in 1983.",
-      "Wade hit .361 last season — a remarkable rookie campaign.",
+      "Wade hit .361 last season - a remarkable rookie campaign.",
       "Boggs collected 203 hits in 1983.",
       "Wade Boggs is already becoming one of the toughest hitters in baseball to strike out.",
       "Boggs rarely gives away an at-bat.",
@@ -55,7 +55,7 @@ const PLAYERS = {
       "Dwight Evans draws more walks than most power hitters.",
       "Evans is among the smartest outfielders in the game.",
       "Dwight Evans was drafted by Boston in 1969.",
-      "Teammates call him Dewey — always have.",
+      "Teammates call him Dewey - always have.",
       "Dwight played every game in both 1982 and is on pace to do it again.",
       "Evans is respected throughout baseball for his work ethic.",
     ],
@@ -168,7 +168,7 @@ const PLAYERS = {
       "Rich Gedman is a Massachusetts native.",
       "Gedman grew up rooting for the Red Sox.",
       "Rich Gedman came through Boston's farm system.",
-      "Gedman hit 24 home runs last season — remarkable for a catcher.",
+      "Gedman hit 24 home runs last season - remarkable for a catcher.",
       "Rich had a breakout year in 1983.",
       "Gedman is emerging as one of the league's better offensive catchers.",
       "Rich Gedman provides surprising power from behind the plate.",
@@ -236,26 +236,26 @@ const PLAYERS = {
   "Oil Can Boyd": {
     names: ["Oil Can Boyd", "Boyd", "Oil Can", "Dennis Boyd"],
     lines: [
-      "Dennis Boyd — better known as Oil Can — earned one of baseball's greatest nicknames in Mississippi.",
+      "Dennis Boyd - better known as Oil Can - earned one of baseball's greatest nicknames in Mississippi.",
       "Oil Can Boyd made his major league debut last season.",
       "Boyd won 12 games in 1983.",
-      "Oil Can completed 10 games last season — an impressive total.",
+      "Oil Can completed 10 games last season - an impressive total.",
       "Oil Can Boyd is known for pitching with tremendous confidence.",
       "Boyd has become a fan favorite almost overnight at Fenway.",
       "The nickname Oil Can came from a Mississippi expression for beer.",
       "Boyd was drafted by Boston in 1980.",
       "Oil Can quickly became one of Fenway's most popular players.",
-      "Boyd isn't shy about talking to hitters — or anyone else.",
+      "Boyd isn't shy about talking to hitters - or anyone else.",
       "Oil Can Boyd throws harder than most starters in the league.",
       "Boyd's strikeout totals continue to rise.",
     ],
     combo: [
       "Oil Can Boyd and Bob Stanley couldn't have more different personalities.",
-      "Bob Stanley is cool as ice, and Oil Can Boyd — well, Oil Can never met a pulse he didn't raise.",
+      "Bob Stanley is cool as ice, and Oil Can Boyd - well, Oil Can never met a pulse he didn't raise.",
     ],
     rare: [
       "Nobody in baseball has more personality than Oil Can Boyd.",
-      "Oil Can doesn't just pitch the game — he performs it.",
+      "Oil Can doesn't just pitch the game - he performs it.",
       "If confidence were a pitch, Oil Can would throw it 98 miles an hour.",
       "Oil Can Boyd has never met a spotlight he didn't like.",
       "If Oil Can Boyd is pitching tonight, there's a decent chance the umpires hear about every call.",
@@ -275,7 +275,7 @@ const PLAYERS = {
     rare: [
       "Bob Stanley seems to pitch every other day.",
       "The Red Sox have leaned heavily on Steamer over the years.",
-      "Stanley can give you one inning or four — whatever the situation demands.",
+      "Stanley can give you one inning or four - whatever the situation demands.",
       "If Boston has a pitching emergency, Bob Stanley is usually the answer.",
       "When Bob Stanley gets up in the bullpen, Boston fans know help is on the way.",
     ],
@@ -290,8 +290,8 @@ const PLAYERS = {
       "Clear's fastball can overpower hitters.",
     ],
     rare: [
-      "Mark Clear comes right after hitters — no mystery, just heat.",
-      "Mark Clear's pitching philosophy is refreshingly simple — throw it past him.",
+      "Mark Clear comes right after hitters - no mystery, just heat.",
+      "Mark Clear's pitching philosophy is refreshingly simple - throw it past him.",
     ],
   },
 
@@ -403,11 +403,11 @@ const PLAYERS = {
       "Ed Jurak was born in California.",
       "Jurak played college baseball at Cal State Fullerton.",
       "Ed spent years working through the minor leagues.",
-      "Jurak was valued for his versatility — can fill in all over.",
+      "Jurak was valued for his versatility - can fill in all over.",
     ],
     rare: [
       "Ed Jurak can fill in all over the diamond.",
-      "The easiest way to describe Ed Jurak — if somebody needs a day off, he'll be there.",
+      "The easiest way to describe Ed Jurak - if somebody needs a day off, he'll be there.",
     ],
   },
 
@@ -442,7 +442,7 @@ const PLAYERS = {
 
 // ── Combo lines for pairs/trios that fire when any of the duo are involved ──
 const COMBO_LINES = [
-  "Boggs, Barrett, Rice, Armas, Evans — there aren't many easy outs in this lineup.",
+  "Boggs, Barrett, Rice, Armas, Evans - there aren't many easy outs in this lineup.",
   "The Red Sox led the league in conversation starters and offensive production.",
   "Boggs gets on, Rice drives him in. It's a pretty simple formula.",
   "Dewey, Rice, and Armas might be the most dangerous outfield in baseball.",
@@ -476,7 +476,7 @@ export function pickRedSoxPlayerTidbit(playerName) {
 }
 
 /**
- * Pick a random combo line — fires occasionally when any Red Sox player is at bat.
+ * Pick a random combo line - fires occasionally when any Red Sox player is at bat.
  */
 export function pickRedSoxComboLine() {
   return COMBO_LINES[Math.floor(Math.random() * COMBO_LINES.length)];

@@ -93,7 +93,7 @@ export default function DiamondView({ bases, lastPlay, isDay = false }) {
         {bases[2] && <circle cx="40" cy="100" r="5" fill="hsl(38, 85%, 55%)" stroke="white" strokeWidth="1.5" className="animate-pulse" />}
       </svg>
 
-      {/* Runner names with speed — positioned inside diamond edges to avoid clipping */}
+      {/* Runner names with speed - positioned inside diamond edges to avoid clipping */}
       {bases[0] && (
         <div className="absolute right-1 bottom-[35%] text-xs text-primary font-heading font-semibold bg-card/90 px-1.5 py-0.5 rounded whitespace-nowrap z-20">
           {bases[0].name.split(' ').pop()}

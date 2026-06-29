@@ -1,5 +1,5 @@
 // Jerry Coleman & Dave Campbell commentary for Padres home games
-// Generic pool — no player-specific lines
+// Generic pool - no player-specific lines
 // Use pickPadresPlayerLine() for contextual player flavor
 
 export function pickPadresLine() {
@@ -12,11 +12,11 @@ export function pickPadresLine() {
   return POOLS.baseball.lines[0];
 }
 
-// Player-specific flavor — only used when that player is at bat
+// Player-specific flavor - only used when that player is at bat
 export function pickPadresPlayerLine(playerName) {
   const map = {
-    "Tony Gwynn": ["Nobody works harder on their craft than Tony Gwynn.", "Tony studies pitchers more than anyone in the league.", "Pick a spot — any spot — and Tony can hit it there."],
-    "Steve Garvey": ["Steve Garvey — the definition of consistency.", "Garvey knows the strike zone better than the umpires."],
+    "Tony Gwynn": ["Nobody works harder on their craft than Tony Gwynn.", "Tony studies pitchers more than anyone in the league.", "Pick a spot - any spot - and Tony can hit it there."],
+    "Steve Garvey": ["Steve Garvey - the definition of consistency.", "Garvey knows the strike zone better than the umpires."],
   };
   const lines = map[playerName];
   if (!lines) return null;
@@ -52,7 +52,7 @@ const POOLS = {
       "Dave: \"That's what the count allows you to do.\"",
       "Dave: \"The hitter was guessing.\"",
       "Dave: \"You don't want to fall behind this guy.\"",
-      "Dave: \"Smart hitter — he waited for his pitch.\"",
+      "Dave: \"Smart hitter - he waited for his pitch.\"",
       "Dave: \"He'll take that all day.\"",
       "Dave: \"Fundamentally sound baseball.\"",
       "Dave: \"That's exactly what the pitcher needed.\"",
@@ -70,7 +70,7 @@ const POOLS = {
       "Jerry: \"A tremendous effort out there.\"",
       "Jerry: \"The fans appreciate that one.\"",
       "Dave: \"That play doesn't show up in the box score, but it should.\"",
-      "Dave: \"Range, instincts, arm — he's got all three.\"",
+      "Dave: \"Range, instincts, arm - he's got all three.\"",
       "Dave: \"That's why you play defense.\"",
       "Dave: \"The defense has been outstanding tonight.\"",
       "Dave: \"Positioned perfectly.\"",
@@ -88,13 +88,13 @@ const POOLS = {
       "Jerry: \"Just gorgeous out here.\"",
       "Dave: \"That marine layer is starting to roll in.\"",
       "Dave: \"The ball won't carry as well once the sun goes down.\"",
-      "Dave: \"Classic San Diego evening — you couldn't ask for better conditions.\"",
+      "Dave: \"Classic San Diego evening - you couldn't ask for better conditions.\"",
       "Jerry: \"The breeze off the Pacific keeping things cool.\"",
       "Jerry: \"Look at that sky behind the Western Metal building. Just beautiful.\"",
-      "Dave: \"Great night for baseball — the weather here is always a factor in the hitter's favor early.\"",
+      "Dave: \"Great night for baseball - the weather here is always a factor in the hitter's favor early.\"",
       "Jerry: \"We want to thank all our servicemen and women here tonight.\"",
       "Jerry: \"A big salute to the sailors from the naval base.\"",
-      "Dave: \"Great crowd tonight — lots of military families in the stands.\"",
+      "Dave: \"Great crowd tonight - lots of military families in the stands.\"",
       "Jerry: \"The beach towels are out in the bleachers.\"",
       "Jerry: \"Looks like everyone brought their sunscreen today.\"",
     ],
@@ -118,7 +118,7 @@ const POOLS = {
       "Dave: \"Yes it does, Jerry.\"",
       "Jerry: \"The pitcher is ahead unless he isn't.\"",
       "Jerry: \"The natives are getting restless.\"",
-      "Dave: \"It's a close ballgame — I think that's expected.\"",
+      "Dave: \"It's a close ballgame - I think that's expected.\"",
     ],
   },
 };

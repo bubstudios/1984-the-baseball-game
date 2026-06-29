@@ -84,7 +84,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "angels_scorecard",
     "name": "Angels: Scorecard",
-    "desc": "Some fan has framed the scorecard from September 25th, 1979 — the night \"Yes ...",
+    "desc": "Some fan has framed the scorecard from September 25th, 1979 - the night \"Yes ...",
     "team": "angels"
   },
   {
@@ -96,7 +96,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "angels_bobblehead",
     "name": "Angels: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your California Angels!",
+    "desc": "The homestand continues tomorrow night - come see your California Angels!",
     "team": "angels"
   },
   {
@@ -192,7 +192,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "astros_bobblehead",
     "name": "Astros: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Houston Astros!",
+    "desc": "The homestand continues tomorrow night - come see your Houston Astros!",
     "team": "astros"
   },
   {
@@ -276,7 +276,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "athletics_scorecard",
     "name": "Athletics: Scorecard",
-    "desc": "Some fan has framed the scorecard from May 8th, 1968 — the night Oakland's ne...",
+    "desc": "Some fan has framed the scorecard from May 8th, 1968 - the night Oakland's ne...",
     "team": "athletics"
   },
   {
@@ -288,7 +288,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "athletics_bobblehead",
     "name": "Athletics: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Oakland Athletics!",
+    "desc": "The homestand continues tomorrow night - come see your Oakland Athletics!",
     "team": "athletics"
   },
   {
@@ -372,7 +372,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "bluejays_scorecard",
     "name": "Bluejays: Scorecard",
-    "desc": "Some fan has framed the scorecard from April 7th, 1977 — the snowy afternoon ...",
+    "desc": "Some fan has framed the scorecard from April 7th, 1977 - the snowy afternoon ...",
     "team": "bluejays"
   },
   {
@@ -384,7 +384,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "bluejays_bobblehead",
     "name": "Bluejays: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Toronto Blue Jays!",
+    "desc": "The homestand continues tomorrow night - come see your Toronto Blue Jays!",
     "team": "bluejays"
   },
   {
@@ -480,7 +480,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "braves_bobblehead",
     "name": "Braves: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Atlanta Braves!",
+    "desc": "The homestand continues tomorrow night - come see your Atlanta Braves!",
     "team": "braves"
   },
   {
@@ -564,7 +564,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "brewers_scorecard",
     "name": "Brewers: Scorecard",
-    "desc": "Some fan has saved the scorecard from October 3, 1982 — the winner-take-all d...",
+    "desc": "Some fan has saved the scorecard from October 3, 1982 - the winner-take-all d...",
     "team": "brewers"
   },
   {
@@ -576,7 +576,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "brewers_bobblehead",
     "name": "Brewers: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Milwaukee Brewers!",
+    "desc": "The homestand continues tomorrow night - come see your Milwaukee Brewers!",
     "team": "brewers"
   },
   {
@@ -660,7 +660,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "cardinals_gocrazy",
     "name": "Cardinals: Gocrazy",
-    "desc": "There's a fan who's never washed the scorecard from October 14, 1985 — the da...",
+    "desc": "There's a fan who's never washed the scorecard from October 14, 1985 - the da...",
     "team": "cardinals"
   },
   {
@@ -672,7 +672,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "cardinals_bobblehead",
     "name": "Cardinals: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your St. Louis Cardinals!",
+    "desc": "The homestand continues tomorrow night - come see your St. Louis Cardinals!",
     "team": "cardinals"
   },
   {
@@ -768,7 +768,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "cubs_bobblehead",
     "name": "Cubs: Bobblehead",
-    "desc": "The homestand continues tomorrow afternoon — come see your Chicago Cubs!",
+    "desc": "The homestand continues tomorrow afternoon - come see your Chicago Cubs!",
     "team": "cubs"
   },
   {
@@ -780,7 +780,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "dodgers_la",
     "name": "Dodgers: La",
-    "desc": "Welcome to Los Angeles — the city of angels",
+    "desc": "Welcome to Los Angeles - the city of angels",
     "team": "dodgers"
   },
   {
@@ -840,7 +840,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "dodgers_traffic",
     "name": "Dodgers: Traffic",
-    "desc": "Half the stadium has already left — it's only the 6th inning",
+    "desc": "Half the stadium has already left - it's only the 6th inning",
     "team": "dodgers"
   },
   {
@@ -864,7 +864,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "dodgers_bobblehead",
     "name": "Dodgers: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Los Angeles Dodgers!",
+    "desc": "The homestand continues tomorrow night - come see your Los Angeles Dodgers!",
     "team": "dodgers"
   },
   {
@@ -954,7 +954,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "expos_kidsshowcase",
     "name": "Expos: Kidsshowcase",
-    "desc": "Some fan has saved the scorecard from August 9, 1981 — the day the Kid put on...",
+    "desc": "Some fan has saved the scorecard from August 9, 1981 - the day the Kid put on...",
     "team": "expos"
   },
   {
@@ -966,7 +966,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "expos_bobblehead",
     "name": "Expos: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Montreal Expos!",
+    "desc": "The homestand continues tomorrow night - come see your Montreal Expos!",
     "team": "expos"
   },
   {
@@ -1068,7 +1068,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "giants_bobblehead",
     "name": "Giants: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your San Francisco Giants!",
+    "desc": "The homestand continues tomorrow night - come see your San Francisco Giants!",
     "team": "giants"
   },
   {
@@ -1152,7 +1152,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "indians_scorecard",
     "name": "Indians: Scorecard",
-    "desc": "Some fan has kept the scorecard from October 11th, 1948, his whole life — sti...",
+    "desc": "Some fan has kept the scorecard from October 11th, 1948, his whole life - sti...",
     "team": "indians"
   },
   {
@@ -1164,7 +1164,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "indians_bobblehead",
     "name": "Indians: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Cleveland Indians!",
+    "desc": "The homestand continues tomorrow night - come see your Cleveland Indians!",
     "team": "indians"
   },
   {
@@ -1248,7 +1248,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "mariners_scorecard",
     "name": "Mariners: Scorecard",
-    "desc": "Some fan has framed the scorecard from May 6th, 1982 — the night the Ancient ...",
+    "desc": "Some fan has framed the scorecard from May 6th, 1982 - the night the Ancient ...",
     "team": "mariners"
   },
   {
@@ -1260,7 +1260,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "mariners_bobblehead",
     "name": "Mariners: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Seattle Mariners!",
+    "desc": "The homestand continues tomorrow night - come see your Seattle Mariners!",
     "team": "mariners"
   },
   {
@@ -1356,7 +1356,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "mets_bobblehead",
     "name": "Mets: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your New York Mets!",
+    "desc": "The homestand continues tomorrow night - come see your New York Mets!",
     "team": "mets"
   },
   {
@@ -1422,19 +1422,19 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "moviebanner_hardtohold",
     "name": "Moviebanner: Hardtohold",
-    "desc": "📺 \"Hard to Hold\" — Rick Springfield hits the big screen!', subtitle: '(a mic...",
+    "desc": "📺 \"Hard to Hold\" - Rick Springfield hits the big screen!', subtitle: '(a mic...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_upthecreek",
     "name": "Moviebanner: Upthecreek",
-    "desc": "📺 \"Up the Creek\" — paddle for your dignity!', subtitle: '(a rubber raft; a b...",
+    "desc": "📺 \"Up the Creek\" - paddle for your dignity!', subtitle: '(a rubber raft; a b...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_breakin",
     "name": "Moviebanner: Breakin",
-    "desc": "📺 \"Breakin'\" — the streets have a new beat!', subtitle: '(a cardboard dance ...",
+    "desc": "📺 \"Breakin'\" - the streets have a new beat!', subtitle: '(a cardboard dance ...",
     "team": "moviebanner"
   },
   {
@@ -1452,61 +1452,61 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "moviebanner_revengeofthenerds",
     "name": "Moviebanner: Revengeofthenerds",
-    "desc": "📺 \"Revenge of the Nerds\" — the geeks shall inherit the campus!', subtitle: '...",
+    "desc": "📺 \"Revenge of the Nerds\" - the geeks shall inherit the campus!', subtitle: '...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_cloakdagger",
     "name": "Moviebanner: Cloakdagger",
-    "desc": "📺 \"Cloak & Dagger\" — the game just got real!', subtitle: '(a video-game cart...",
+    "desc": "📺 \"Cloak & Dagger\" - the game just got real!', subtitle: '(a video-game cart...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_teachers",
     "name": "Moviebanner: Teachers",
-    "desc": "📺 \"Teachers\" — class is in session!', subtitle: '(a chalkboard; an apple; a ...",
+    "desc": "📺 \"Teachers\" - class is in session!', subtitle: '(a chalkboard; an apple; a ...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_bodydouble",
     "name": "Moviebanner: Bodydouble",
-    "desc": "📺 \"Body Double\" — what did he really see?', subtitle: '(a telescope; a Holly...",
+    "desc": "📺 \"Body Double\" - what did he really see?', subtitle: '(a telescope; a Holly...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_terminator",
     "name": "Moviebanner: Terminator",
-    "desc": "📺 \"The Terminator\" — it will not stop. Ever.', subtitle: '(a red robotic eye...",
+    "desc": "📺 \"The Terminator\" - it will not stop. Ever.', subtitle: '(a red robotic eye...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_nightmare",
     "name": "Moviebanner: Nightmare",
-    "desc": "📺 \"A Nightmare on Elm Street\" — whatever you do, don't fall asleep!', subtit...",
+    "desc": "📺 \"A Nightmare on Elm Street\" - whatever you do, don't fall asleep!', subtit...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_spinaltap",
     "name": "Moviebanner: Spinaltap",
-    "desc": "📺 \"This Is Spinal Tap\" — these go to eleven!', subtitle: '(an amplifier dial...",
+    "desc": "📺 \"This Is Spinal Tap\" - these go to eleven!', subtitle: '(an amplifier dial...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_dune",
     "name": "Moviebanner: Dune",
-    "desc": "📺 \"Dune\" — the spice must flow!', subtitle: '(a desert dune; a giant sandwor...",
+    "desc": "📺 \"Dune\" - the spice must flow!', subtitle: '(a desert dune; a giant sandwor...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_neverendingstory",
     "name": "Moviebanner: Neverendingstory",
-    "desc": "📺 \"The NeverEnding Story\" — believe, and dream forever!', subtitle: '(a luck...",
+    "desc": "📺 \"The NeverEnding Story\" - believe, and dream forever!', subtitle: '(a luck...",
     "team": "moviebanner"
   },
   {
     "id": "moviebanner_natural",
     "name": "Moviebanner: Natural",
-    "desc": "📺 \"The Natural\" — knock the cover off the ball!', subtitle: '(a lightning-bo...",
+    "desc": "📺 \"The Natural\" - knock the cover off the ball!', subtitle: '(a lightning-bo...",
     "team": "moviebanner"
   },
   {
@@ -1728,7 +1728,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "orioles_scorecard",
     "name": "Orioles: Scorecard",
-    "desc": "Some fan has framed the scorecard from October 16th, 1983 — the night Steady ...",
+    "desc": "Some fan has framed the scorecard from October 16th, 1983 - the night Steady ...",
     "team": "orioles"
   },
   {
@@ -1740,7 +1740,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "orioles_bobblehead",
     "name": "Orioles: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Baltimore Orioles!",
+    "desc": "The homestand continues tomorrow night - come see your Baltimore Orioles!",
     "team": "orioles"
   },
   {
@@ -1800,19 +1800,19 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "padres_lajolla",
     "name": "Padres: Lajolla",
-    "desc": "La Jolla — the jewel by the sea",
+    "desc": "La Jolla - the jewel by the sea",
     "team": "padres"
   },
   {
     "id": "padres_harbor",
     "name": "Padres: Harbor",
-    "desc": "San Diego Bay — a sailor's paradise",
+    "desc": "San Diego Bay - a sailor's paradise",
     "team": "padres"
   },
   {
     "id": "padres_section17",
     "name": "Padres: Section17",
-    "desc": "Vendor on the loose — someone ordered nine hot dogs!",
+    "desc": "Vendor on the loose - someone ordered nine hot dogs!",
     "team": "padres"
   },
   {
@@ -1836,7 +1836,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "padres_bobblehead",
     "name": "Padres: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your San Diego Padres! (Rot...",
+    "desc": "The homestand continues tomorrow night - come see your San Diego Padres! (Rot...",
     "team": "padres"
   },
   {
@@ -1920,7 +1920,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "phillies_98years",
     "name": "Phillies: 98years",
-    "desc": "Some fan has framed the scorecard from October 21, 1980 — the night ninety-ei...",
+    "desc": "Some fan has framed the scorecard from October 21, 1980 - the night ninety-ei...",
     "team": "phillies"
   },
   {
@@ -1932,7 +1932,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "phillies_bobblehead",
     "name": "Phillies: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Philadelphia Phillies!",
+    "desc": "The homestand continues tomorrow night - come see your Philadelphia Phillies!",
     "team": "phillies"
   },
   {
@@ -2016,7 +2016,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "pirates_maz",
     "name": "Pirates: Maz",
-    "desc": "There's a fan who still has the scorecard from October 13, 1960 — the day Maz...",
+    "desc": "There's a fan who still has the scorecard from October 13, 1960 - the day Maz...",
     "team": "pirates"
   },
   {
@@ -2028,7 +2028,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "pirates_bobblehead",
     "name": "Pirates: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Pittsburgh Pirates!",
+    "desc": "The homestand continues tomorrow night - come see your Pittsburgh Pirates!",
     "team": "pirates"
   },
   {
@@ -2112,7 +2112,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "rangers_scorecard",
     "name": "Rangers: Scorecard",
-    "desc": "Some fan has framed the scorecard from August 27th, 1977 — the day two Ranger...",
+    "desc": "Some fan has framed the scorecard from August 27th, 1977 - the day two Ranger...",
     "team": "rangers"
   },
   {
@@ -2124,7 +2124,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "rangers_bobblehead",
     "name": "Rangers: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Texas Rangers!",
+    "desc": "The homestand continues tomorrow night - come see your Texas Rangers!",
     "team": "rangers"
   },
   {
@@ -2220,7 +2220,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "reds_bobblehead",
     "name": "Reds: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Cincinnati Reds!",
+    "desc": "The homestand continues tomorrow night - come see your Cincinnati Reds!",
     "team": "reds"
   },
   {
@@ -2304,7 +2304,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "redsox_waveitfair",
     "name": "Redsox: Waveitfair",
-    "desc": "Some fan has framed the scorecard from October 21, 1975 — the night Fisk wave...",
+    "desc": "Some fan has framed the scorecard from October 21, 1975 - the night Fisk wave...",
     "team": "redsox"
   },
   {
@@ -2316,7 +2316,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "redsox_bobblehead",
     "name": "Redsox: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Boston Red Sox!",
+    "desc": "The homestand continues tomorrow night - come see your Boston Red Sox!",
     "team": "redsox"
   },
   {
@@ -2400,7 +2400,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "royals_scorecard",
     "name": "Royals: Scorecard",
-    "desc": "Some fan has framed the scorecard from October 10th, 1980 — the night the Roy...",
+    "desc": "Some fan has framed the scorecard from October 10th, 1980 - the night the Roy...",
     "team": "royals"
   },
   {
@@ -2412,7 +2412,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "royals_bobblehead",
     "name": "Royals: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Kansas City Royals!",
+    "desc": "The homestand continues tomorrow night - come see your Kansas City Royals!",
     "team": "royals"
   },
   {
@@ -2496,7 +2496,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "tigers_scorecard",
     "name": "Tigers: Scorecard",
-    "desc": "Some fan has framed the scorecard from October 10, 1968 — the day the fat man...",
+    "desc": "Some fan has framed the scorecard from October 10, 1968 - the day the fat man...",
     "team": "tigers"
   },
   {
@@ -2508,7 +2508,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "tigers_bobblehead",
     "name": "Tigers: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Detroit Tigers!",
+    "desc": "The homestand continues tomorrow night - come see your Detroit Tigers!",
     "team": "tigers"
   },
   {
@@ -2592,7 +2592,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "twins_scorecard",
     "name": "Twins: Scorecard",
-    "desc": "Some fan has framed the scorecard from August 10th, 1971 — the night the gent...",
+    "desc": "Some fan has framed the scorecard from August 10th, 1971 - the night the gent...",
     "team": "twins"
   },
   {
@@ -2604,7 +2604,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "twins_bobblehead",
     "name": "Twins: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Minnesota Twins!",
+    "desc": "The homestand continues tomorrow night - come see your Minnesota Twins!",
     "team": "twins"
   },
   {
@@ -2688,7 +2688,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "whitesox_scorecard",
     "name": "Whitesox: Scorecard",
-    "desc": "Some fan has framed the scorecard from September 17th, 1983 — the night the S...",
+    "desc": "Some fan has framed the scorecard from September 17th, 1983 - the night the S...",
     "team": "whitesox"
   },
   {
@@ -2700,7 +2700,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "whitesox_bobblehead",
     "name": "Whitesox: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your Chicago White Sox!",
+    "desc": "The homestand continues tomorrow night - come see your Chicago White Sox!",
     "team": "whitesox"
   },
   {
@@ -2784,7 +2784,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "yankees_mroctober",
     "name": "Yankees: Mroctober",
-    "desc": "Some fan has framed the scorecard from October 18, 1977 — the night a man hit...",
+    "desc": "Some fan has framed the scorecard from October 18, 1977 - the night a man hit...",
     "team": "yankees"
   },
   {
@@ -2796,7 +2796,7 @@ const BANNER_ACHIEVEMENT_DATA = [
   {
     "id": "yankees_bobblehead",
     "name": "Yankees: Bobblehead",
-    "desc": "The homestand continues tomorrow night — come see your New York Yankees!",
+    "desc": "The homestand continues tomorrow night - come see your New York Yankees!",
     "team": "yankees"
   }
 ];

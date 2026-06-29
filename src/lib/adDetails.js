@@ -1,4 +1,4 @@
-// Expanded details for broadcast ads — shown when user taps an ad banner.
+// Expanded details for broadcast ads - shown when user taps an ad banner.
 // Maps ad text (or partial match) to historical context.
 
 export const AD_DETAILS = {
@@ -24,7 +24,7 @@ export const AD_DETAILS = {
   "Cheers": {
     title: "Cheers",
     subtitle: "NBC · Thursdays at 9 PM",
-    body: "Making your way in the world today takes everything you've got. Take a break from all your worries at Cheers — a Boston bar where everybody knows your name.",
+    body: "Making your way in the world today takes everything you've got. Take a break from all your worries at Cheers - a Boston bar where everybody knows your name.",
     extra: "Starring Ted Danson, Shelley Long, Rhea Perlman, and George Wendt. Set in Boston, the show ran for 11 seasons.",
   },
   "Dynasty": {
@@ -96,7 +96,7 @@ export const AD_DETAILS = {
   "Cellular": {
     title: "Cellular Telephones",
     subtitle: "The Car Phone Era Begins",
-    body: "In 1984, cellular phones were luxury items — brick-sized, $3,000+, and permanently installed in cars. But the idea of a phone without wires was revolutionary.",
+    body: "In 1984, cellular phones were luxury items - brick-sized, $3,000+, and permanently installed in cars. But the idea of a phone without wires was revolutionary.",
     extra: "The first commercial cellular network launched in Chicago in October 1983. Motorola's DynaTAC was the first truly portable cell phone.",
   },
 
@@ -105,7 +105,7 @@ export const AD_DETAILS = {
     title: "McDonald's",
     subtitle: "You Deserve a Break Today",
     body: "The golden arches were everywhere in 1984. The Olympics promotion ('When the U.S. Wins, You Win') gave away free food based on American medal counts.",
-    extra: "The Chicken McNugget launched nationally in 1983. The McDLT — with the 'hot side hot, cool side cool' styrofoam container — debuted in 1984.",
+    extra: "The Chicken McNugget launched nationally in 1983. The McDLT - with the 'hot side hot, cool side cool' styrofoam container - debuted in 1984.",
   },
   "Burger King": {
     title: "Burger King",
@@ -122,14 +122,14 @@ export const AD_DETAILS = {
   "Coca-Cola": {
     title: "Coca-Cola",
     subtitle: "Coke Is It",
-    body: "In 1984, Coca-Cola was still the world's #1 soft drink. The famous 'Coke Is It' campaign was everywhere — TV, radio, billboards, and ballpark signage.",
+    body: "In 1984, Coca-Cola was still the world's #1 soft drink. The famous 'Coke Is It' campaign was everywhere - TV, radio, billboards, and ballpark signage.",
     extra: "Unknown to most in 1984: Coca-Cola was secretly developing 'New Coke,' which would launch with massive controversy in April 1985.",
   },
   "Pepsi": {
     title: "Pepsi",
     subtitle: "The Choice of a New Generation",
     body: "Pepsi's 'Choice of a New Generation' campaign featured Michael Jackson, Lionel Richie, and other pop stars to position Pepsi as young, hip, and modern.",
-    extra: "Michael Jackson's hair famously caught fire during a Pepsi commercial shoot in January 1984. He signed a $5 million deal with Pepsi — the largest celebrity endorsement ever at the time.",
+    extra: "Michael Jackson's hair famously caught fire during a Pepsi commercial shoot in January 1984. He signed a $5 million deal with Pepsi - the largest celebrity endorsement ever at the time.",
   },
 
   // Cars
@@ -152,7 +152,7 @@ export const AD_DETAILS = {
     extra: "Lee Iacocca championed the minivan. It became Chrysler's most profitable vehicle and transformed the American family road trip.",
   },
 
-  // "Imagine that" — Mattel / Intellivision / Electronics
+  // "Imagine that" - Mattel / Intellivision / Electronics
   "Imagine that": {
     title: "Mattel Electronics Presents: Intellivision",
     subtitle: "The Closest Thing to the Real Thing",
@@ -197,7 +197,7 @@ export const AD_DETAILS = {
     title: "NASA's Space Shuttle Program",
     subtitle: "Discovery Awaits",
     body: "The Space Shuttle Discovery made its maiden flight in August 1984 (STS-41-D). The shuttle era represented America's vision of routine space access.",
-    extra: "The shuttle fleet — Columbia, Challenger, Discovery, and later Atlantis and Endeavour — flew 135 missions from 1981 to 2011.",
+    extra: "The shuttle fleet - Columbia, Challenger, Discovery, and later Atlantis and Endeavour - flew 135 missions from 1981 to 2011.",
   },
 
   // Big Brands
@@ -210,7 +210,7 @@ export const AD_DETAILS = {
   "Kmart": {
     title: "Kmart",
     subtitle: "Blue Light Specials and Everyday Value",
-    body: "The Blue Light Special — a flashing blue police light on a cart — signaled surprise department-wide discounts. Kmart was the #2 retailer behind Sears.",
+    body: "The Blue Light Special - a flashing blue police light on a cart - signaled surprise department-wide discounts. Kmart was the #2 retailer behind Sears.",
     extra: "Kmart stores often had an in-store cafeteria with the famous 'Kmart Submarine' sandwich.",
   },
 
@@ -218,7 +218,7 @@ export const AD_DETAILS = {
   "shopping mall": {
     title: "The American Shopping Mall",
     subtitle: "More Than Just Shopping",
-    body: "The indoor shopping mall was the social center of 1980s suburban America. Food courts, arcades, record stores, and Spencer Gifts — you could spend an entire Saturday there.",
+    body: "The indoor shopping mall was the social center of 1980s suburban America. Food courts, arcades, record stores, and Spencer Gifts - you could spend an entire Saturday there.",
     extra: "The Mall of America wouldn't open until 1992. In 1984, the largest mall was the Del Amo Fashion Center in Torrance, California.",
   },
 };

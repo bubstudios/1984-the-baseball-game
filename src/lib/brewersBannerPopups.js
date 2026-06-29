@@ -51,7 +51,7 @@ export const BREWERS_BANNERS = [
     exhibit: 'America\'s Beer City',
     icon: '🍺',
     animation: 'enthusiasm_nod',
-    description: 'Milwaukee is synonymous with beer. Breweries line the streets, and beer culture is woven into the fabric of the city. The Brewers name is perfect—this team belongs here.'
+    description: 'Milwaukee is synonymous with beer. Breweries line the streets, and beer culture is woven into the fabric of the city. The Brewers name is perfect-this team belongs here.'
   },
   {
     id: 'brew_wisconsin_pride',

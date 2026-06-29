@@ -47,11 +47,11 @@ export default function ActionPanel({
   };
 
   if (isPitching) {
-    // Pitcher was pinch-hit for — must bring in a reliever first
+    // Pitcher was pinch-hit for - must bring in a reliever first
     if (pitcherNeedsReplacement) {
       return (
         <div className="space-y-3 text-center">
-          <div className="text-xs text-amber-400 font-heading">Pitcher was pinch-hit for — bring in a reliever</div>
+          <div className="text-xs text-amber-400 font-heading">Pitcher was pinch-hit for - bring in a reliever</div>
           <Button
             variant="default"
             size="lg"
@@ -181,7 +181,7 @@ export default function ActionPanel({
           .duration-300 { animation-duration: 0.3s; }
         `}</style>
 
-        {/* Reach Back — specialty pitch for iconic pitchers */}
+        {/* Reach Back - specialty pitch for iconic pitchers */}
         {pitcherSpecialty && (
           <div className="flex justify-center pt-1">
             <button
@@ -231,7 +231,7 @@ export default function ActionPanel({
 
   return (
     <div className="space-y-2">
-      {/* Steal + Hit & Run — compact row above swing buttons */}
+      {/* Steal + Hit & Run - compact row above swing buttons */}
       {runnersOn && (
         <div className="space-y-1">
           <div className="text-[9px] font-heading uppercase tracking-widest text-amber-400/60 text-center">Runner Action</div>
@@ -264,7 +264,7 @@ export default function ActionPanel({
         </div>
       )}
 
-      {/* Swing buttons — bats */}
+      {/* Swing buttons - bats */}
       <BatButtons onSwing={onSwing} disabled={disabled} situationalBatter={situationalBatter} lastPlay={lastPlay} />
     </div>
   );

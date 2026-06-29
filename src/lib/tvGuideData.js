@@ -329,7 +329,7 @@ export const TV_SYNOPSES = {
   },
 };
 
-// Network logos — simple text-based since we're going for a retro TV Guide feel
+// Network logos - simple text-based since we're going for a retro TV Guide feel
 export const NETWORK_LOGOS = {
   NBC: { color: '#FF6B35', label: 'NBC', tagline: 'Be There' },
   CBS: { color: '#1E90FF', label: 'CBS', tagline: 'We\'ve Got the Touch' },

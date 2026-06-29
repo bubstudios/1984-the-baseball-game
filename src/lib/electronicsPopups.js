@@ -21,9 +21,9 @@ Suggested retail price starts around $1,199.`,
     color: '#4ade80',
     matchText: 'The Tandy 1000 is available now at your neighborhood Radio Shack.',
     title: 'What The Experts Are Saying',
-    body: `"A strong contender in the growing home computer market." — PC Magazine
+    body: `"A strong contender in the growing home computer market." - PC Magazine
 
-"Excellent graphics and sound capabilities for a home-oriented PC." — Popular Computing
+"Excellent graphics and sound capabilities for a home-oriented PC." - Popular Computing
 
 The Tandy 1000 combines affordability with compatibility and has quickly become one of Radio Shack's most successful computer launches.`,
   },

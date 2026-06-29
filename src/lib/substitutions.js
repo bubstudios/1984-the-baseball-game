@@ -15,7 +15,7 @@ export function pinchHit(state, newPlayer) {
     ...newPlayer,
     order: oldBatter.order,
     assignedPos: newPlayer.pos,
-    _replacedPitcher: isPitcherSlot,  // Flag: this slot held the pitcher — used for slot lookup when replacing
+    _replacedPitcher: isPitcherSlot,  // Flag: this slot held the pitcher - used for slot lookup when replacing
     gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
   };
   lineup[idx] = benchPlayer;
@@ -146,7 +146,7 @@ export function changePitcher(state, newPitcher, side) {
       newP.order = lineupEntry.order;
       newP.assignedPos = 'SP';
     }
-    // Never push a new entry — avoids creating a phantom batting slot
+    // Never push a new entry - avoids creating a phantom batting slot
   }
 
   // Save old pitcher to player history so box score retains their stats

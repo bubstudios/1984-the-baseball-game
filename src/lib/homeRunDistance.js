@@ -35,7 +35,7 @@ export function calculateHomeRunDistance(batter, pitcher, state, isGrandSlam = f
   
   // Round to realistic number (avoid .0, .5 endings)
   distance = Math.round(distance);
-  // Avoid round numbers—add 1-3 feet randomly if it ends in 0 or 5
+  // Avoid round numbers-add 1-3 feet randomly if it ends in 0 or 5
   if (distance % 10 === 0 || distance % 10 === 5) {
     distance += Math.floor(Math.random() * 3) + 1;
   }

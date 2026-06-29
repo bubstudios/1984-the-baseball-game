@@ -54,7 +54,7 @@ export default function CardCollection({ onClose }) {
             <h2 className="font-heading text-2xl font-bold uppercase tracking-wider" style={{ color: teamColor }}>
               Card Collection
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">1984 Season — Win games & explore ads to earn cards</p>
+            <p className="text-xs text-slate-400 mt-0.5">1984 Season - Win games & explore ads to earn cards</p>
           </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 transition-colors">
             <X className="w-6 h-6" style={{ color: teamColor }} />
@@ -270,7 +270,7 @@ export default function CardCollection({ onClose }) {
                         <span className="text-[10px] font-heading text-slate-400 shrink-0">{q.progress}/{q.goal}</span>
                       </div>
                       <p className="text-[10px] text-slate-500 mt-1">
-                        Reward: bonus card — {rewardMeta?.label || q.reward.team}
+                        Reward: bonus card - {rewardMeta?.label || q.reward.team}
                       </p>
                     </div>
                   </div>

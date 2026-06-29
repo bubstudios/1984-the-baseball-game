@@ -1,4 +1,4 @@
-// 6 sliding injury types — equal weight
+// 6 sliding injury types - equal weight
 export const SLIDING_INJURY_TYPES = [
   { id: 'jammed_finger', name: 'Jammed Finger', emoji: '🤕' },
   { id: 'sprained_thumb', name: 'Sprained Thumb', emoji: '🤕' },

@@ -426,7 +426,7 @@ THE PHYSIQUE
 His muscular build and athletic ability make him one of wrestling's most physically impressive performers.
 
 THE LEGACY
-Paul Orndorff proved that complete packages—looks, skill, and charisma—could become top stars.
+Paul Orndorff proved that complete packages-looks, skill, and charisma-could become top stars.
 
 "Isn't that wonderful?"`,
   },
@@ -721,7 +721,7 @@ THE STARS
 Hulk Hogan, Roddy Piper, and Andre the Giant have become mainstream celebrities, not just wrestling stars.
 
 THE MERCHANDISE
-Wrestling merchandise—from action figures to t-shirts to posters—generates millions in revenue.
+Wrestling merchandise-from action figures to t-shirts to posters-generates millions in revenue.
 
 THE MAINSTREAM
 Wrestling stars appear on talk shows, in movies, and in mainstream media.
@@ -738,7 +738,7 @@ The wrestling boom shows no signs of slowing, with bigger events and more mainst
     color: '#dc2626',
     anim: 'pulse',
     matchText: 'Bring the family out for an unforgettable evening.',
-    body: `PROFESSIONAL WRESTLING LIVE — COMING TO YOUR AREA
+    body: `PROFESSIONAL WRESTLING LIVE - COMING TO YOUR AREA
 
 Professional wrestling in 1984 is experiencing an unprecedented boom. Arenas that once hosted 3,000 fans are now selling out 15,000-seat buildings.
 
@@ -750,10 +750,10 @@ A typical 1984 card features:
 • Opening matches with rising stars building their characters
 • Mid-card title bouts for regional championships
 • Grudge matches between long-running rivals
-• The main event — often a championship match or blow-off to a major feud
+• The main event - often a championship match or blow-off to a major feud
 
 THE ATMOSPHERE
-Pyrotechnics, spotlight entrances, and elaborate ring gear make every appearance an event. The crowd noise at a peak moment — a hero making a comeback, a villain getting comeuppance — is electrifying.
+Pyrotechnics, spotlight entrances, and elaborate ring gear make every appearance an event. The crowd noise at a peak moment - a hero making a comeback, a villain getting comeuppance - is electrifying.
 
 THE STARS
 In 1984, Hulk Hogan, Roddy Piper, Andre the Giant, Randy Savage, and Junkyard Dog are the biggest names. Seeing them live, larger than life, is a memory fans carry for decades.

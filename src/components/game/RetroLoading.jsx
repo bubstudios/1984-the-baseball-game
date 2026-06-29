@@ -59,7 +59,7 @@ export default function RetroLoading({ onComplete }) {
             <span className={`inline-block w-2 h-4 bg-[#44dd44] ${loaded ? 'animate-none opacity-0' : 'animate-pulse'}`} />
           </div>
 
-          {/* Status bar — fills up */}
+          {/* Status bar - fills up */}
           <div className="w-64 h-2 bg-[#0a150a] border border-[#1a3a1a] rounded-sm overflow-hidden mt-3">
             <div
               className="h-full bg-[#33cc33] transition-all ease-linear rounded-sm"

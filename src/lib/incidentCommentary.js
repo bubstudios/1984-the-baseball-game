@@ -56,7 +56,7 @@ export const PLAYER_REACTION_COMMENTARY = {
 export const TEAMMATE_INTERVENTION_COMMENTARY = [
   "Teammates quickly step between the two players.",
   "Players from both teams are moving toward the action.",
-  "The benches are aware—everyone is watching closely.",
+  "The benches are aware-everyone is watching closely.",
   "A teammate puts a hand on the {player} and leads him away.",
 ];
 
@@ -68,7 +68,7 @@ export const INJURY_CHECK_COMMENTARY = {
   ],
   temporarily_hurt: [
     "The trainer is examining the {player} carefully.",
-    "He's hurt—they're checking his shoulder.",
+    "He's hurt-they're checking his shoulder.",
     "The {player} may need a moment before continuing.",
   ],
   must_leave: [
@@ -97,12 +97,12 @@ export const UMPIRE_ACTION_COMMENTARY = {
     "The umpire makes it clear: one more incident and someone's gone.",
   ],
   eject_player: [
-    "The umpire points—that player has been ejected!",
+    "The umpire points-that player has been ejected!",
     "He has been thrown out of the ballgame!",
   ],
   call_managers: [
     "The umpire is calling the managers together.",
-    "This is serious—the managers are coming to home plate.",
+    "This is serious-the managers are coming to home plate.",
   ],
 };
 
@@ -115,13 +115,13 @@ export const MANAGER_RESPONSE_COMMENTARY = {
   ejected: [
     "And now the manager is being ejected!",
     "The umpire has heard enough from the bench!",
-    "The manager is gone—he's been tossed from the game!",
+    "The manager is gone-he's been tossed from the game!",
   ],
 };
 
 export const BENCH_RESPONSE_COMMENTARY = [
   "Players are standing up in both dugouts.",
-  "The benches are emptying—everyone is focused on home plate.",
+  "The benches are emptying-everyone is focused on home plate.",
   "Coaches are trying to keep the clubs separated.",
   "Tempers are flaring after that play.",
   "This game has reached a heated emotional level.",

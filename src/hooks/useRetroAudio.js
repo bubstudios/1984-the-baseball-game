@@ -127,7 +127,7 @@ function crowdReact(intensity = 'mild') {
     crowdFilter.frequency.linearRampToValueAtTime(1500, now + 4.0);
     crowdFilter.frequency.linearRampToValueAtTime(1200, now + 8.0);
   } else {
-    // Mild reaction — slight bump
+    // Mild reaction - slight bump
     crowdGain.gain.cancelScheduledValues(now);
     crowdGain.gain.setValueAtTime(crowdGain.gain.value, now);
     crowdGain.gain.linearRampToValueAtTime(0.12, now + 0.15);
@@ -136,7 +136,7 @@ function crowdReact(intensity = 'mild') {
 }
 
 // ─── Crack of the Bat ───────────────────────────────────────────────
-// Brief square-wave burst + noise spike — bat hits ball
+// Brief square-wave burst + noise spike - bat hits ball
 
 export function playBatCrack() {
   ensureResumed();
@@ -199,7 +199,7 @@ export function playOutTone() {
 }
 
 // ─── Steal Tone ──────────────────────────────────────────────────────
-// Two quick ascending chirps — "boop-beep"
+// Two quick ascending chirps - "boop-beep"
 
 export function playStealTone() {
   ensureResumed();
@@ -270,7 +270,7 @@ export function playRunScore() {
 }
 
 // ─── Half-Inning Break Jingle ────────────────────────────────────────
-// 3-second descending arpeggio (C → G → C low) — signals side change
+// 3-second descending arpeggio (C → G → C low) - signals side change
 
 export function playHalfInningBreak() {
   ensureResumed();
@@ -295,7 +295,7 @@ export function playHalfInningBreak() {
   });
 }
 
-// ─── Star Spangled Banner — ~15 seconds, game opening ──────────────
+// ─── Star Spangled Banner - ~15 seconds, game opening ──────────────
 
 export function playAnthem() {
   ensureResumed();
@@ -347,7 +347,7 @@ export function playAnthem() {
   });
 }
 
-// ─── 7th Inning Stretch — "Take Me Out to the Ballgame" ──────────────
+// ─── 7th Inning Stretch - "Take Me Out to the Ballgame" ──────────────
 // ~13 seconds of the classic tune using square-wave melody
 
 export function playStretchMusic() {
@@ -542,14 +542,14 @@ export default function useRetroAudio(gameState, enabled) {
         // ── Half-inning transitions & 7th inning stretch ──
         if (t === 'info') {
           if (entry.text && entry.text.includes('🎶')) {
-            // 7th inning stretch — play after a short delay for the text announcement
+            // 7th inning stretch - play after a short delay for the text announcement
             setTimeout(playStretchMusic, 1500);
-          } else if (entry.text && entry.text.includes('Top of inning 1 —') && !hasPlayedAnthem.current) {
-            // Star Spangled Banner at game start — once per game only
+          } else if (entry.text && entry.text.includes('Top of inning 1 -') && !hasPlayedAnthem.current) {
+            // Star Spangled Banner at game start - once per game only
             hasPlayedAnthem.current = true;
             setTimeout(playAnthem, 600);
           } else if (entry.text && /(Top|Bottom) of inning \d/.test(entry.text)) {
-            // Half-inning change jingle — match text anywhere, not just start
+            // Half-inning change jingle - match text anywhere, not just start
             setTimeout(playHalfInningBreak, 600);
           }
         }
@@ -582,7 +582,7 @@ export default function useRetroAudio(gameState, enabled) {
 }
 
 // ─── Super Pitch (Reach Back) ─────────────────────────────────────────
-// Dramatic rising whoosh — the pitcher digs deep and unleashes their signature weapon
+// Dramatic rising whoosh - the pitcher digs deep and unleashes their signature weapon
 export function playSuperPitch() {
   ensureResumed();
   const ctx = getAudioCtx();

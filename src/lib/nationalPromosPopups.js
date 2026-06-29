@@ -19,7 +19,7 @@ CAST & CREW
 Starring Ben Murphy as Detective Jim Wyatt, leading a specialized law enforcement task force dedicated to pursuing the nation's most dangerous criminals.
 
 PLOT SUMMARY
-Each episode features a different case—from stolen government secrets to organized crime operations—as the team pursues suspects across state lines in a desperate race against time.
+Each episode features a different case-from stolen government secrets to organized crime operations-as the team pursues suspects across state lines in a desperate race against time.
 
 WHY IT FAILED
 Despite strong action sequences and competent writing, "Hot Pursuit" couldn't compete with established crime dramas like "Miami Vice" and "Hill Street Blues." The concept felt derivative and audiences preferred the style of newer shows.
@@ -66,7 +66,7 @@ CAST
 Featuring a rotating ensemble of doctors dealing with everything from medical mysteries to romantic entanglements, all while maintaining comedic timing.
 
 THE EXPERIMENT
-"E/R" was an early attempt to mix the seriousness of medical situations with sitcom humor—a formula that wouldn't truly succeed until shows like "M.A.S.H." and later "Scrubs."
+"E/R" was an early attempt to mix the seriousness of medical situations with sitcom humor-a formula that wouldn't truly succeed until shows like "M.A.S.H." and later "Scrubs."
 
 LEGACY NOTE
 While short-lived, "E/R" paved the way for medical comedies that would eventually find success on television.`,
@@ -105,7 +105,7 @@ Ghost comedies were trendy in the early 1980s, but audiences quickly tired of th
     body: `A nighttime soap opera following the lives of high-fashion models in New York City.
 
 THE DRAMA
-"Paper Dolls" centered on six women navigating the cutthroat modeling world—dealing with unrealistic beauty standards, romantic entanglements, and dangerous industry secrets.
+"Paper Dolls" centered on six women navigating the cutthroat modeling world-dealing with unrealistic beauty standards, romantic entanglements, and dangerous industry secrets.
 
 SETTING
 The show was filmed in glamorous New York locations, featuring the exclusive clubs, high-end restaurants, and modeling agencies of Manhattan's elite.
@@ -136,7 +136,7 @@ SOAP OPERA ELEMENTS
 "The Yellow Rose" attempted to cash in on the success of "Dallas" and "Dynasty" by offering Texas-sized drama with Western flavor.
 
 WHAT FAILED
-The show couldn't find its identity—it was too Western for soap opera fans and too soapy for Western fans. The writing was inconsistent, and the cast changes hurt continuity.`,
+The show couldn't find its identity-it was too Western for soap opera fans and too soapy for Western fans. The writing was inconsistent, and the cast changes hurt continuity.`,
   },
   {
     id: 'tv_507',
@@ -171,7 +171,7 @@ Despite the star power and fun chemistry, the show struggled to find a consisten
     body: `A romantic drama where a mysterious woman reunites lost loves, helping separated couples reconnect.
 
 THE CONCEPT
-Each episode features a different couple—high school sweethearts, wartime romances, or chance meetings—as the titular "Finder" tracks them down and orchestrates their reunion.
+Each episode features a different couple-high school sweethearts, wartime romances, or chance meetings-as the titular "Finder" tracks them down and orchestrates their reunion.
 
 THE HOST
 The central character, a woman with uncanny ability to locate lost loves, becomes involved in each couple's story, often discovering that time has changed them.
@@ -193,7 +193,7 @@ While the concept was charming, the execution became repetitive. Once audiences 
     body: `An action series set in Hawaii following a team of private investigators operating from a beach resort.
 
 THE SETTING
-Riptide Harbor is home to three detectives who solve mysteries while enjoying—and constantly interrupted by—the laid-back Hawaiian lifestyle.
+Riptide Harbor is home to three detectives who solve mysteries while enjoying-and constantly interrupted by-the laid-back Hawaiian lifestyle.
 
 THE TEAM
 The crew includes Nick Ryder, a Vietnam veteran running the operation; Cody Allen, the tech expert; and Bozworth, the comic relief.
@@ -219,7 +219,7 @@ THE PREMISE
 Judge Hardcastle hires Mark McCormick, a street-smart ex-convict, to investigate cases where justice failed through proper legal channels. Together they bend rules to catch criminals the system released.
 
 THE VEHICLE
-The iconic Coyote X—a high-tech car designed by McCormick—becomes central to their investigations, featuring gadgets and modifications perfect for high-speed pursuits.
+The iconic Coyote X-a high-tech car designed by McCormick-becomes central to their investigations, featuring gadgets and modifications perfect for high-speed pursuits.
 
 TONE
 The show balances action, humor, and justice, with McCormick's one-liners and Hardcastle's gruff authority creating compelling chemistry.
@@ -233,17 +233,17 @@ Unlike most on this list, "Hardcastle & McCormick" actually became successful, l
     icon: '🕵️',
     color: '#22c55e',
     anim: 'pulse',
-    matchText: 'Tune in for the premiere of "Clark & Behb Detective Agency" — the quirkiest investigators on television.',
+    matchText: 'Tune in for the premiere of "Clark & Behb Detective Agency" - the quirkiest investigators on television.',
     type: 'failed_tv',
     body: `CLARK & BEHB DETECTIVE AGENCY - The Odd Couple of Sleuthing
 
 "Clark & Behb Detective Agency" premiered in the fall of 1984, following the misadventures of two wildly mismatched private detectives sharing a rundown office above a laundromat in a nameless coastal city.
 
 THE PREMISE
-Clark is a meticulous, by-the-book investigator who files everything in color-coded folders and insists on proper chain of evidence. Behb is his polar opposite — a chaotic, improvisational wild card who solves crimes on instinct, hunches, and the occasional tarot card reading. Together they form the most unlikely detective agency in television history.
+Clark is a meticulous, by-the-book investigator who files everything in color-coded folders and insists on proper chain of evidence. Behb is his polar opposite - a chaotic, improvisational wild card who solves crimes on instinct, hunches, and the occasional tarot card reading. Together they form the most unlikely detective agency in television history.
 
 THE DYNAMIC
-Each episode typically begins with a routine case — a missing parrot, a stolen ceramic cat — that spirals into something far larger and more absurd. Clark's methodical approach clashes hilariously with Behb's gonzo tactics, yet their contrasting styles somehow complement each other when the stakes get high.
+Each episode typically begins with a routine case - a missing parrot, a stolen ceramic cat - that spirals into something far larger and more absurd. Clark's methodical approach clashes hilariously with Behb's gonzo tactics, yet their contrasting styles somehow complement each other when the stakes get high.
 
 WHY IT FAILED
 Critics were divided. Some praised the chemistry between the leads, but network executives couldn't decide whether the show was a comedy, a drama, or something entirely new. Frequent time-slot changes confused viewers, and the show's offbeat tone never found its audience.
@@ -257,23 +257,23 @@ CULT LEGACY
     icon: '🎭',
     color: '#f59e0b',
     anim: 'pulse',
-    matchText: 'Don\'t miss "Carmie" — the heartwarming new series everyone\'s talking about.',
+    matchText: 'Don\'t miss "Carmie" - the heartwarming new series everyone\'s talking about.',
     type: 'failed_tv',
     body: `CARMIE - The Spirit of the Neighborhood
 
 "Carmie" premiered in mid-season 1984 as a half-hour comedy-drama about a larger-than-life character who becomes the unlikely heart and soul of a struggling urban neighborhood.
 
 THE CHARACTER
-Carmie is a lovable, gregarious fixture of the community — part philosopher, part gossip, part unofficial mayor of the block. Carmie knows everyone's secrets, everyone's dreams, and everyone's favorite recipes. With a warm smile and an endless supply of unsolicited advice, Carmie navigates the daily dramas of the neighborhood with charm and good humor.
+Carmie is a lovable, gregarious fixture of the community - part philosopher, part gossip, part unofficial mayor of the block. Carmie knows everyone's secrets, everyone's dreams, and everyone's favorite recipes. With a warm smile and an endless supply of unsolicited advice, Carmie navigates the daily dramas of the neighborhood with charm and good humor.
 
 THE PREMISE
-Each episode centers around Carmie's attempts to solve a neighbor's problem — sometimes practical, sometimes deeply personal — through a combination of street smarts, heart-to-heart conversations, and the occasional well-intentioned scheme that inevitably goes sideways before somehow working out.
+Each episode centers around Carmie's attempts to solve a neighbor's problem - sometimes practical, sometimes deeply personal - through a combination of street smarts, heart-to-heart conversations, and the occasional well-intentioned scheme that inevitably goes sideways before somehow working out.
 
 WHY IT FAILED
 The show was initially well-received by critics who praised its warmth and the lead performance, but ratings declined steadily. The feel-good tone struggled to compete with flashier, action-oriented programming in the same time slot. Despite a loyal following, the network pulled the plug after one season.
 
 TRIVIA
-Fans of the show still reference Carmie's catchphrase, delivered with a knowing wink: "Honey, I've seen worse — and it turned out fine." The line became a minor cultural touchstone among devotees of short-lived 1980s television.`,
+Fans of the show still reference Carmie's catchphrase, delivered with a knowing wink: "Honey, I've seen worse - and it turned out fine." The line became a minor cultural touchstone among devotees of short-lived 1980s television.`,
   },
 ];
 
@@ -357,7 +357,7 @@ In the pre-cable era, these specials represented major entertainment options, of
     anim: 'pulse',
     matchText: 'Enjoy an evening movie from the comfort of home.',
     type: 'tv_movie',
-    body: `The staple of primetime television—a feature-length film broadcast in the evening hours, designed for families to watch together.
+    body: `The staple of primetime television-a feature-length film broadcast in the evening hours, designed for families to watch together.
 
 THE TREND
 By 1984, networks had invested heavily in acquiring movie rights and producing original content to air in evening slots, making theatrical releases available to viewers at home.
@@ -369,7 +369,7 @@ QUALITY RANGE
 While some were recent theatrical releases, others were original productions made specifically for television, often featuring A-list talent seeking television exposure.
 
 CONVENIENCE FACTOR
-Home viewing of movies was revolutionary—no need to drive to a theater, pay for tickets, or worry about babysitters. Entertainment came directly to the living room.`,
+Home viewing of movies was revolutionary-no need to drive to a theater, pay for tickets, or worry about babysitters. Entertainment came directly to the living room.`,
   },
   {
     id: 'tvmov_515',
@@ -405,7 +405,7 @@ const CARTOONS = [
     anim: 'bounce',
     matchText: 'Saturday morning means cartoons for the whole family.',
     type: 'cartoon',
-    body: `Saturday morning television represents an American institution—the weekly tradition of children waking early to watch animated adventures on network television.
+    body: `Saturday morning television represents an American institution-the weekly tradition of children waking early to watch animated adventures on network television.
 
 THE TRADITION
 For generations, Saturday mornings belonged to cartoons. Networks scheduled 2-3 hours of children's programming, attracting millions of young viewers to their stations.
@@ -420,7 +420,7 @@ ADVERTISING & TOYS
 Cartoons were vehicles for toy companies to market directly to children. A successful cartoon could launch action figures, lunch boxes, and games that became cultural phenomena.
 
 THE EXPERIENCE
-Waking up early on Saturday became an American childhood ritual—the reward for enduring school all week. Cereal, cartoons, and fun became inseparable in young minds.`,
+Waking up early on Saturday became an American childhood ritual-the reward for enduring school all week. Cereal, cartoons, and fun became inseparable in young minds.`,
   },
   {
     id: 'cartoon_517',
@@ -436,7 +436,7 @@ THE STAR
 Mr. T, the real person, contributed to the show's development, lending his name, persona, and catchphrases to the animated series.
 
 THE TEAM
-A diverse group of teenage athletes with real skills—gymnasts, wrestlers, martial artists—use their abilities to help people in danger and stop criminals.
+A diverse group of teenage athletes with real skills-gymnasts, wrestlers, martial artists-use their abilities to help people in danger and stop criminals.
 
 THE FORMAT
 Each episode combined action, humor, and positive messaging, with Mr. T often dropping wisdom about friendship, courage, and standing up for what's right.
@@ -452,7 +452,7 @@ The show capitalized on Mr. T's mainstream popularity in 1984, allowing him to e
     anim: 'bounce',
     matchText: 'The adventures continue on "Alvin and the Chipmunks."',
     type: 'cartoon',
-    body: `The beloved chipmunk trio—Alvin, Simon, and Theodore—return in animated adventures, bringing their music and mischief to Saturday mornings.
+    body: `The beloved chipmunk trio-Alvin, Simon, and Theodore-return in animated adventures, bringing their music and mischief to Saturday mornings.
 
 THE CHARACTERS
 Alvin is the troublemaking leader, Simon is the brainy one, and Theodore is the sweet, innocent member of the trio. Their contrasting personalities drive the comedy.
@@ -474,13 +474,13 @@ The Chipmunks franchise proved enduring, repeatedly revived and reimagined becau
     anim: 'bounce',
     matchText: 'See "The Littles" this Saturday.',
     type: 'cartoon',
-    body: `A charming animated series about a family of tiny people—The Littles—who live secretly within the walls and furniture of a human family's home.
+    body: `A charming animated series about a family of tiny people-The Littles-who live secretly within the walls and furniture of a human family's home.
 
 THE PREMISE
 The Littles, each only six inches tall, navigate the giant world of human homes, forming friendships with the human Bigg family while keeping their existence secret.
 
 THE ADVENTURE
-Adventures come from the Littles' daily life—evading discovery, dealing with household hazards that pose real danger at their size, and helping their human friends.
+Adventures come from the Littles' daily life-evading discovery, dealing with household hazards that pose real danger at their size, and helping their human friends.
 
 THE HEART
 The show balanced comedy with genuine sweetness, exploring themes of friendship, kindness, and acceptance between the two families despite their size differences.
@@ -502,7 +502,7 @@ THE STAR
 Heathcliff is an independent, clever cat with more personality than any house pet should have, always scheming and rarely learning his lessons.
 
 THE CAST
-Heathcliff interacts with various characters—his owner Mort, the dog-catcher, neighboring cats, and various townspeople—all of whom become victims of his pranks.
+Heathcliff interacts with various characters-his owner Mort, the dog-catcher, neighboring cats, and various townspeople-all of whom become victims of his pranks.
 
 THE HUMOR
 The comedy comes from Heathcliff's elaborate schemes and the ironic consequences he faces, usually resulting in slapstick situations and wordplay.

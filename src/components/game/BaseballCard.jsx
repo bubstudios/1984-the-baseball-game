@@ -49,7 +49,7 @@ export default function BaseballCard({ card, isNew = false }) {
           NEW!
         </div>
       )}
-      {/* Card frame — white border like real Topps cards */}
+      {/* Card frame - white border like real Topps cards */}
       <div className="w-full h-full bg-white rounded-sm shadow-2xl overflow-hidden flex flex-col border border-gray-300">
         {/* Top color band with team name */}
         <div className="px-2 py-1.5 flex items-center justify-center" style={{ backgroundColor: teamColor }}>
@@ -58,7 +58,7 @@ export default function BaseballCard({ card, isNew = false }) {
           </span>
         </div>
 
-        {/* Photo area — simulated with gradient + silhouette */}
+        {/* Photo area - simulated with gradient + silhouette */}
         <div className="flex-1 relative overflow-hidden" style={{ background: `linear-gradient(160deg, ${teamColor}33, ${teamColor}88, ${teamColor}aa)` }}>
           {/* Field pattern */}
           <div className="absolute inset-0 opacity-20" style={{

@@ -1,4 +1,4 @@
-// Generic Ad Popups — fun, silly, 1984-flavored content for every "plain" broadcast ad
+// Generic Ad Popups - fun, silly, 1984-flavored content for every "plain" broadcast ad
 // These fire when a user taps a community/charity/sponsor banner that has no other popup type.
 import { CUBS_COMMUNITY_POPUP_ENTRIES } from './cubsCommunityPopups';
 
@@ -7,10 +7,10 @@ const GENERIC_AD_ENTRIES = [
   // ── COMMUNITY / LOCAL ──
   {
     matchText: "The local blood drive continues tomorrow at the community center from 9 AM to 3 PM. All donors receive a free t-shirt and a coupon for a half-gallon of ice cream.",
-    title: "🩸 Blood Drive — Community Center",
+    title: "🩸 Blood Drive - Community Center",
     icon: "🩸",
     color: "#c0392b",
-    body: `COMMUNITY BLOOD DRIVE — TOMORROW, 9 AM TO 3 PM
+    body: `COMMUNITY BLOOD DRIVE - TOMORROW, 9 AM TO 3 PM
 
 A pint of blood. A free t-shirt. A coupon for a half-gallon of ice cream.
 
@@ -37,7 +37,7 @@ You're a good person. This will confirm it.`,
     title: "⚾ Youth Baseball Registration",
     icon: "⚾",
     color: "#27ae60",
-    body: `SUMMER YOUTH BASEBALL — REGISTRATION NOW OPEN
+    body: `SUMMER YOUTH BASEBALL - REGISTRATION NOW OPEN
 Ages 5 through 15. All skill levels welcome.
 
 THE TRUTH ABOUT "ALL SKILL LEVELS WELCOME"
@@ -62,12 +62,12 @@ Tell them you heard about it at the ballgame.
 They'll appreciate that.`,
   },
   {
-    matchText: "The annual downtown street fair is this Saturday from 10 to 6. Live music, food vendors, and a classic car show — free admission for the whole family.",
-    title: "🎪 Downtown Street Fair — This Saturday",
+    matchText: "The annual downtown street fair is this Saturday from 10 to 6. Live music, food vendors, and a classic car show - free admission for the whole family.",
+    title: "🎪 Downtown Street Fair - This Saturday",
     icon: "🎪",
     color: "#e67e22",
     body: `ANNUAL DOWNTOWN STREET FAIR
-This Saturday, 10 AM to 6 PM — Free Admission
+This Saturday, 10 AM to 6 PM - Free Admission
 
 THE MUSIC
 Three local bands. One of them is very good. One of them is someone's nephew. One of them has been playing together since 1971 and peaked in 1973. You will enjoy all three.
@@ -93,7 +93,7 @@ Bring sunscreen. Wear comfortable shoes. Budget for at least two funnel cakes. Y
 Read 10 Books. Win a Free Water Park Pass.
 
 THE BOOKS
-Any books count. Picture books, chapter books, comic books (yes, comic books — the library confirmed this). A book about dinosaurs. A book about trucks. A book your older sister says is boring. You don't have to agree with her.
+Any books count. Picture books, chapter books, comic books (yes, comic books - the library confirmed this). A book about dinosaurs. A book about trucks. A book your older sister says is boring. You don't have to agree with her.
 
 THE TRACKING SHEET
 It has pictures of a thermometer. Each book you finish fills the thermometer up a little more. When it reaches the top, you win. The thermometer is very satisfying to fill in. Adults who pick up one of these sheets are not supposed to enter, but nobody is watching.
@@ -111,11 +111,11 @@ Do it.`,
   },
   {
     matchText: "The high school band boosters are holding a pancake breakfast this Saturday morning at the school cafeteria. Five dollars gets you all-you-can-eat pancakes and sausage.",
-    title: "🥞 Pancake Breakfast — Band Boosters",
+    title: "🥞 Pancake Breakfast - Band Boosters",
     icon: "🥞",
     color: "#f39c12",
     body: `BAND BOOSTERS PANCAKE BREAKFAST
-This Saturday Morning — $5.00 — All You Can Eat
+This Saturday Morning - $5.00 - All You Can Eat
 
 THE PANCAKES
 Buttermilk. Cooked on an industrial griddle by Mr. Kowalski, the shop teacher, who has been doing this for eleven consecutive years and is extremely good at it. Each pancake is about the size of a dinner plate. They arrive hot. There is real butter. There is an alarming amount of syrup.
@@ -141,7 +141,7 @@ Be there.`,
     icon: "⛳",
     color: "#27ae60",
     body: `KIWANIS CLUB ANNUAL CHARITY GOLF TOURNAMENT
-The 15th — All Proceeds to the Children's Hospital
+The 15th - All Proceeds to the Children's Hospital
 
 THE PARTICIPANTS
 Local businessmen, three doctors, a retired postal worker who is inexplicably excellent at golf, two judges who are not very good at golf but are very good at arguing about golf, and Dave from the hardware store, who has been playing since 1968 and breaks 90 on a good day.
@@ -156,7 +156,7 @@ Closest to the pin on hole 7: a gift certificate.
 Last place: a gift certificate and the quiet respect of everyone who watched you try.
 
 THE ACTUAL POINT
-The children's hospital. Which is staffed by people who chose to work with sick children because they are better than most of us. Your entry fee, your mulligans, your raffle tickets — all of it goes there.
+The children's hospital. Which is staffed by people who chose to work with sick children because they are better than most of us. Your entry fee, your mulligans, your raffle tickets - all of it goes there.
 
 SIGN UP AT THE KIWANIS CLUB OR CALL THE MAIN OFFICE.
 Play bad golf for a good reason.`,
@@ -166,7 +166,7 @@ Play bad golf for a good reason.`,
     title: "🚒 Fire Department Open House",
     icon: "🚒",
     color: "#e74c3c",
-    body: `FIRE DEPARTMENT OPEN HOUSE — THIS SUNDAY
+    body: `FIRE DEPARTMENT OPEN HOUSE - THIS SUNDAY
 
 THE TRUCKS
 Two pumper trucks. One ladder truck. The ladder truck is very long and parking it in the station is a skill that takes years to master. The firefighters will let your kids climb into the cab. This is the greatest moment of most children's lives.
@@ -190,11 +190,11 @@ Bring the kids. Let them touch a fire truck.
 Some things are just good.`,
   },
   {
-    matchText: "The city parks department needs volunteers for the spring cleanup day next Saturday. Gloves and trash bags provided — just show up at the main pavilion at 8 AM.",
+    matchText: "The city parks department needs volunteers for the spring cleanup day next Saturday. Gloves and trash bags provided - just show up at the main pavilion at 8 AM.",
     title: "🌳 Parks Cleanup Day",
     icon: "🌳",
     color: "#27ae60",
-    body: `CITY PARKS CLEANUP DAY — NEXT SATURDAY, 8 AM
+    body: `CITY PARKS CLEANUP DAY - NEXT SATURDAY, 8 AM
 Main Pavilion. Gloves and trash bags provided.
 
 WHAT YOU WILL DO
@@ -204,7 +204,7 @@ THE FREE HOT DOG
 There is always a free hot dog. This is not an official policy but it has been true for eleven consecutive cleanup days. The parks department staff brings a grill. It simply happens. Plan around it.
 
 WHAT YOU WILL FIND
-The usual: candy wrappers, a lost frisbee, a single shoe (always just one), something that was once a newspaper, bottle caps, and — every year without fail — something absolutely inexplicable that nobody can explain. Last year it was a bowling ball. Nobody knows. Nobody is asking.
+The usual: candy wrappers, a lost frisbee, a single shoe (always just one), something that was once a newspaper, bottle caps, and - every year without fail - something absolutely inexplicable that nobody can explain. Last year it was a bowling ball. Nobody knows. Nobody is asking.
 
 WHAT YOU WILL LEAVE BEHIND
 A cleaner park. The specific satisfaction of having physically improved something. A sense that you are, in fact, a good neighbor. And probably some sore muscles, depending on how committed you got with the weed situation.
@@ -219,11 +219,11 @@ Leave the park better than you found it.`,
   },
   {
     matchText: "The women's auxiliary is hosting a bake sale at the church hall this weekend. All proceeds go to the local food bank.",
-    title: "🍰 Bake Sale — Church Hall",
+    title: "🍰 Bake Sale - Church Hall",
     icon: "🍰",
     color: "#9b59b6",
     body: `WOMEN'S AUXILIARY BAKE SALE
-This Weekend — Church Hall — All Proceeds to the Food Bank
+This Weekend - Church Hall - All Proceeds to the Food Bank
 
 THE BAKED GOODS
 Mrs. Patterson's lemon bars. She has been making these since 1967 and if you do not buy at least one, you will think about it later. Snickerdoodles from the Kowalski sisters. Carrot cake from someone who will not share the recipe and everyone has stopped asking. Fudge. Brownies. Chocolate chip cookies that are aggressively good. A seven-layer bar that defies explanation.
@@ -248,12 +248,12 @@ Do it now.`,
     title: "🏆 Central High Regional Champions!",
     icon: "🏆",
     color: "#f1c40f",
-    body: `CENTRAL HIGH SCHOOL BASEBALL — REGIONAL CHAMPIONS
+    body: `CENTRAL HIGH SCHOOL BASEBALL - REGIONAL CHAMPIONS
 
 They did it.
 
 THE FINAL SCORE
-A nail-biter. Tied in the sixth. A two-run double in the bottom of the seventh by the cleanup hitter — a junior who spent most of the season batting seventh and was moved up when Rodriguez came down with a knee thing. He hit it on a 2-2 count. The opposing pitcher had not given up an extra-base hit in four games. He did on that pitch.
+A nail-biter. Tied in the sixth. A two-run double in the bottom of the seventh by the cleanup hitter - a junior who spent most of the season batting seventh and was moved up when Rodriguez came down with a knee thing. He hit it on a 2-2 count. The opposing pitcher had not given up an extra-base hit in four games. He did on that pitch.
 
 THE CELEBRATION
 Immediate and considerable. The third-base coach, Coach DiMaggio, who is 54 years old and not related to Joe DiMaggio despite what he implies, ran onto the field and lifted the cleanup hitter off the ground. Coach DiMaggio weighs 215 pounds. The cleanup hitter weighs 155. This required significant effort and has been recounted approximately 200 times since.
@@ -272,15 +272,15 @@ Every single one of you.`,
   // ── CHARITY ──
   {
     matchText: "United Way reminds you that your contributions make a difference in our community. If you haven't given yet, there's still time.",
-    title: "🤝 United Way — There's Still Time",
+    title: "🤝 United Way - There's Still Time",
     icon: "🤝",
     color: "#2980b9",
-    body: `UNITED WAY — MAKING A DIFFERENCE
+    body: `UNITED WAY - MAKING A DIFFERENCE
 
 The United Way has a request: give what you can.
 
 WHAT THEY DO WITH IT
-They identify needs in the community — specific, local, real needs — and fund programs that address them. Food pantries. After-school programs. Emergency assistance. Job training. Services for the elderly. Things that work.
+They identify needs in the community - specific, local, real needs - and fund programs that address them. Food pantries. After-school programs. Emergency assistance. Job training. Services for the elderly. Things that work.
 
 THE AMOUNT
 There is no minimum. They will tell you any amount helps, and they mean it. The cumulative effect of small donations from many people is the entire point. $5 from a lot of people is better than $0 from almost everyone. This math is very straightforward.
@@ -289,18 +289,18 @@ WHAT "THERE'S STILL TIME" MEANS
 The campaign is ongoing. If you meant to give and forgot, now is when you remember. If you gave last year and aren't sure whether to give again, the needs from last year still exist this year. If you've never given, this is the year to start.
 
 THE UNCOMFORTABLE TRUTH
-Most of us spend money on things we don't think about — a coffee here, a magazine there, a snack at the ballgame today. The United Way is asking for consideration of whether some of that money might go somewhere that matters more.
+Most of us spend money on things we don't think about - a coffee here, a magazine there, a snack at the ballgame today. The United Way is asking for consideration of whether some of that money might go somewhere that matters more.
 
 YOU KNOW WHERE TO FIND THEM.
 There's still time.`,
   },
   {
     matchText: "The American Heart Association encourages you to get your blood pressure checked. Free screenings are available at the health department.",
-    title: "❤️ Heart Association — Check Your Blood Pressure",
+    title: "❤️ Heart Association - Check Your Blood Pressure",
     icon: "❤️",
     color: "#e74c3c",
     body: `AMERICAN HEART ASSOCIATION
-Free Blood Pressure Screenings — Health Department
+Free Blood Pressure Screenings - Health Department
 
 YOUR BLOOD PRESSURE
 You don't know what it is right now. Most people don't. The problem with high blood pressure is that you feel completely fine while it quietly does its thing. It's been called the "silent killer," which is a dramatic name for something that can be addressed with a 90-second test at the health department.
@@ -326,7 +326,7 @@ Let's keep it that way.`,
     title: "🚶 March of Dimes Walkathon",
     icon: "🚶",
     color: "#e91e63",
-    body: `MARCH OF DIMES WALKATHON — THIS SUNDAY, THE PARK
+    body: `MARCH OF DIMES WALKATHON - THIS SUNDAY, THE PARK
 
 A walk. A cause. Thousands of your neighbors.
 
@@ -334,7 +334,7 @@ THE WALK
 Three miles through the park. Flat. Well-marked. There are water stations every half-mile. There are volunteers at every turn making sure you don't get lost, which would otherwise be a real risk for some of us.
 
 THE CAUSE
-Birth defects. Premature birth. The March of Dimes funds research and programs that have saved — and continue to save — babies who would not otherwise have survived. They have been doing this since 1938. The polio vaccine was funded in part by this organization. They know what they're doing.
+Birth defects. Premature birth. The March of Dimes funds research and programs that have saved - and continue to save - babies who would not otherwise have survived. They have been doing this since 1938. The polio vaccine was funded in part by this organization. They know what they're doing.
 
 THE PLEDGES
 If you've been collecting pledge forms, this is the Sunday you walk for all those people who said they'd give a dollar per mile. That's $3. Worth it for the look on your face when you collect.
@@ -351,16 +351,16 @@ Feel good about it for the rest of the week.`,
   },
   {
     matchText: "The Salvation Army thanks you for your continued support. Your donations help families in need right here in our community.",
-    title: "🔔 Salvation Army — Thank You",
+    title: "🔔 Salvation Army - Thank You",
     icon: "🔔",
     color: "#c0392b",
-    body: `THE SALVATION ARMY — YOUR COMMUNITY, RIGHT HERE
+    body: `THE SALVATION ARMY - YOUR COMMUNITY, RIGHT HERE
 
 Thank you.
 
 That's the message. Two words. The Salvation Army means them.
 
-WHAT YOUR DONATIONS DO — SPECIFICALLY
+WHAT YOUR DONATIONS DO - SPECIFICALLY
 Feed families who are between paychecks and pantries. Provide emergency housing when someone has nowhere else to go. Supply Christmas gifts for children whose parents cannot manage it this year. Give coats to people who need coats when it gets cold.
 
 THE BELL RINGERS
@@ -382,7 +382,7 @@ The thanks are genuine.`,
     title: "🏥 Red Cross CPR Training",
     icon: "🏥",
     color: "#e74c3c",
-    body: `RED CROSS CPR TRAINING — NEXT TUESDAY, THE FIRE STATION
+    body: `RED CROSS CPR TRAINING - NEXT TUESDAY, THE FIRE STATION
 
 The life you save could be someone you love.
 
@@ -416,11 +416,11 @@ But someday, possibly, very much.`,
     title: "⚾ Support Youth Baseball",
     icon: "⚾",
     color: "#27ae60",
-    body: `YOUTH BASEBALL — IT STILL MATTERS
+    body: `YOUTH BASEBALL - IT STILL MATTERS
 
 Here is what happens when a kid plays youth baseball:
 
-They learn to lose. Not to enjoy it — to survive it. To shake hands, get back in the car, process the feeling, and show up for practice on Tuesday.
+They learn to lose. Not to enjoy it - to survive it. To shake hands, get back in the car, process the feeling, and show up for practice on Tuesday.
 
 They learn to win correctly. The handshake line after a win. Say "good game" and mean it. Not too loud about it.
 
@@ -452,12 +452,12 @@ You are at a ballgame right now.
 
 This fact has not escaped us.
 
-But we're talking about a different kid — the one in your life who hasn't been yet. Or hasn't been recently. Or went once as an infant and doesn't count it.
+But we're talking about a different kid - the one in your life who hasn't been yet. Or hasn't been recently. Or went once as an infant and doesn't count it.
 
 THE FIRST TIME
 The first time a child sees a professional baseball game in person, something happens. The scale of it. The green of the grass, which is a green that cannot be reproduced on television. The sound when the ball hits the bat from far away. The smell of concessions. The scoreboard. The players, who are real and not pixels.
 
-Something clicks. Or it doesn't — some kids don't love baseball. That's fine too. But you won't know until you take them.
+Something clicks. Or it doesn't - some kids don't love baseball. That's fine too. But you won't know until you take them.
 
 WHAT TO BUY THEM
 A hot dog. A soda. If they ask for a pennant, get the pennant. The pennant will be on their wall in September. In 30 years they'll remember which game it came from.
@@ -471,10 +471,10 @@ Now. While it's warm and the nights are long and there's no better place to be.`
   },
   {
     matchText: "Drive safely and always wear your seatbelt.",
-    title: "🚗 Buckle Up — Drive Safe",
+    title: "🚗 Buckle Up - Drive Safe",
     icon: "🚗",
     color: "#7f8c8d",
-    body: `BUCKLE UP — DRIVE SAFELY TONIGHT
+    body: `BUCKLE UP - DRIVE SAFELY TONIGHT
 
 You came to a baseball game. You watched nine innings. (Or you're in the middle of one.) You had a hot dog. You argued with the umpire a little in your head. This has been a good day.
 
@@ -500,16 +500,16 @@ Good game today.`,
   },
   {
     matchText: "Please remember to drink responsibly.",
-    title: "🍺 Drink Responsibly — A Reminder",
+    title: "🍺 Drink Responsibly - A Reminder",
     icon: "🍺",
     color: "#2c3e50",
-    body: `DRINK RESPONSIBLY — A FRIENDLY REMINDER FROM BASEBALL
+    body: `DRINK RESPONSIBLY - A FRIENDLY REMINDER FROM BASEBALL
 
 You are at a baseball game. Cold beverages are part of the experience. Nobody is judging anyone for having a beer at the ballpark. This message is not about that.
 
 THIS MESSAGE IS ABOUT:
 
-The drive home. If you've had more than two, and you're not sure — you've probably had more than two. The uncertainty is the answer.
+The drive home. If you've had more than two, and you're not sure - you've probably had more than two. The uncertainty is the answer.
 
 Your friends. The best thing about going to a game with someone is that one of you can drive. Nobody thinks less of you for being the one who drives. Several people think more of you.
 
@@ -529,7 +529,7 @@ That's the important part.`,
     title: "📖 Visit Your Library",
     icon: "📖",
     color: "#8e44ad",
-    body: `YOUR LOCAL LIBRARY — GO THIS WEEK
+    body: `YOUR LOCAL LIBRARY - GO THIS WEEK
 
 It is free.
 
@@ -559,7 +559,7 @@ You might find something you needed.`,
     title: "🔔 Greetings from Veterans Stadium",
     icon: "🔔",
     color: "#c0392b",
-    body: `GREETINGS TO PHILLIES FANS — PENNSYLVANIA, NEW JERSEY, AND DELAWARE
+    body: `GREETINGS TO PHILLIES FANS - PENNSYLVANIA, NEW JERSEY, AND DELAWARE
 
 Harry Kalas and Richie Ashburn are thinking of you specifically.
 
@@ -576,7 +576,7 @@ THE BROADCAST SIGNAL
 WCAU 1210 AM covers the entire Delaware Valley on a clear night. Harry has received letters from listeners as far away as western Maryland. He finds this genuinely moving.
 
 THE POINT
-This team is yours. Wherever you're listening from — in your car on the Schuylkill, at your kitchen table in Camden, in a living room in Wilmington — this game is being played for you.
+This team is yours. Wherever you're listening from - in your car on the Schuylkill, at your kitchen table in Camden, in a living room in Wilmington - this game is being played for you.
 
 Harry says hello.
 Richie says hello.
@@ -586,25 +586,25 @@ Enjoy the game.`,
   },
   {
     matchText: "The Liberty Bell and Independence Hall welcome visitors daily.",
-    title: "🔔 The Liberty Bell — Philadelphia, PA",
+    title: "🔔 The Liberty Bell - Philadelphia, PA",
     icon: "🔔",
     color: "#b8860b",
     body: `THE LIBERTY BELL & INDEPENDENCE HALL
-Philadelphia, Pennsylvania — Open to Visitors Daily
+Philadelphia, Pennsylvania - Open to Visitors Daily
 
 THE LIBERTY BELL
-It weighs 2,080 pounds. It was cast in London in 1752, cracked almost immediately upon arrival, and was recast by local Philadelphia craftsmen John Pass and John Stow. Their names are still on it. It cracked again — its famous crack — sometime in the early 19th century.
+It weighs 2,080 pounds. It was cast in London in 1752, cracked almost immediately upon arrival, and was recast by local Philadelphia craftsmen John Pass and John Stow. Their names are still on it. It cracked again - its famous crack - sometime in the early 19th century.
 
 Nobody is entirely sure when it cracked. Nobody knows why. The bell just decided.
 
 THE INSCRIPTION
-"Proclaim LIBERTY throughout all the land unto all the inhabitants thereof." — Leviticus 25:10. This is where the name comes from. It was not called the Liberty Bell until abolitionists adopted it as a symbol in the 1830s.
+"Proclaim LIBERTY throughout all the land unto all the inhabitants thereof." - Leviticus 25:10. This is where the name comes from. It was not called the Liberty Bell until abolitionists adopted it as a symbol in the 1830s.
 
 THE CRACK
 You will want to see the crack. Everyone does. It is on the lower left side of the bell. It goes from the rim to about halfway up. It is longer than you expect. The bell has not been rung since 1846, when they tried to ring it for George Washington's birthday and made the crack significantly worse. They decided that was enough ringing.
 
 INDEPENDENCE HALL
-The building where the Declaration of Independence was debated and signed in 1776. Also where the Constitution was drafted in 1787. This room — specifically that room, those chairs, that table — is where the country happened.
+The building where the Declaration of Independence was debated and signed in 1776. Also where the Constitution was drafted in 1787. This room - specifically that room, those chairs, that table - is where the country happened.
 
 It is smaller than you expect.
 That's the part that gets people.
@@ -619,7 +619,7 @@ Go see them. They're yours.`,
     title: "🥩 South Philly Cheesesteak",
     icon: "🥩",
     color: "#e67e22",
-    body: `SOUTH PHILADELPHIA — HOME OF THE ORIGINAL CHEESESTEAK
+    body: `SOUTH PHILADELPHIA - HOME OF THE ORIGINAL CHEESESTEAK
 
 Pat Olivieri didn't know what he was starting.
 
@@ -646,11 +646,11 @@ THE LOCATION
 2.7 miles from Veterans Stadium. There is no traffic reason not to stop after the game.`,
   },
   {
-    matchText: "Veterans Stadium — South Philadelphia's home since 1971.",
-    title: "🏟️ Veterans Stadium — The Vet",
+    matchText: "Veterans Stadium - South Philadelphia's home since 1971.",
+    title: "🏟️ Veterans Stadium - The Vet",
     icon: "🏟️",
     color: "#c0392b",
-    body: `VETERANS STADIUM — SOUTH PHILADELPHIA, PA
+    body: `VETERANS STADIUM - SOUTH PHILADELPHIA, PA
 Opened April 10, 1971
 
 THE BUILDING
@@ -688,7 +688,7 @@ Michael. Tonight you are ten years old. And you are at a baseball game.
 This is exactly the correct way to be ten years old.
 
 THE SPECIFICS
-You are here with someone who loves you — a parent, a grandparent, an uncle, someone who looked at you and thought: this kid should be at a baseball game on his birthday. That person made a good decision. Remember who brought you.
+You are here with someone who loves you - a parent, a grandparent, an uncle, someone who looked at you and thought: this kid should be at a baseball game on his birthday. That person made a good decision. Remember who brought you.
 
 WHAT'S HAPPENING AROUND YOU
 Mike Schmidt is at third base. The same Mike Schmidt who has won three MVP awards and whose home run swing is one of the most powerful in baseball. He is right there. You can see him from where you're sitting. This is real life and it is happening.
@@ -699,7 +699,7 @@ WHAT YOU SHOULD DO
 Eat a hot dog if you haven't. Get a program and keep it. Watch every pitch. Try to keep score. If you can't keep score yet, just watch. Ask questions. The answers are the beginning of a very long education in something worth knowing.
 
 THE FUTURE
-Someday you will be older. Veterans Stadium may not be here anymore. This exact game, this exact night, this exact crowd — it will be gone. But you will remember it. Or you'll remember something about it. The smell of the place. A play you saw. The feeling of being small in a big stadium on your birthday.
+Someday you will be older. Veterans Stadium may not be here anymore. This exact game, this exact night, this exact crowd - it will be gone. But you will remember it. Or you'll remember something about it. The smell of the place. A play you saw. The feeling of being small in a big stadium on your birthday.
 
 That's yours, Michael. Nobody can take it.
 
@@ -710,10 +710,10 @@ From Harry, Richie, and everyone here tonight.`,
   // ── HOT DOG / EASTER EGG ──
   {
     matchText: "The hot dog vendor appears to be winning his section by a wide margin.",
-    title: "🌭 Hot Dog Vendor — Section Report",
+    title: "🌭 Hot Dog Vendor - Section Report",
     icon: "🌭",
     color: "#e67e22",
-    body: `HOT DOG VENDOR — FIELD REPORT
+    body: `HOT DOG VENDOR - FIELD REPORT
 
 The hot dog vendor is, by any objective measure, having the best game in the stadium today.
 
@@ -724,7 +724,7 @@ THE MERCHANDISE
 Standard ballpark franks. Steamed in a heated metal carrier strapped across his chest. The carrier has been with him since 1977. It is seasoned. It has absorbed the ambient heat of approximately 400 games. This is believed to contribute to the flavor.
 
 THE CALL
-"HOT DOGS! GET YOUR HOT DOGS HERE!" — delivered at approximately 80% volume, modified for close proximity to actual people, and with a rhythm that suggests he has thought about this. The cadence is practiced. It works.
+"HOT DOGS! GET YOUR HOT DOGS HERE!" - delivered at approximately 80% volume, modified for close proximity to actual people, and with a rhythm that suggests he has thought about this. The cadence is practiced. It works.
 
 THE ECONOMICS
 Each hot dog: $1.50, which represents approximately three at-bats of value at today's exchange rate.
@@ -752,7 +752,7 @@ A kid is watching their first baseball game.
 WHAT THEY ARE NOTICING
 The size of the field. From a television, you don't understand the scale. The outfield goes on for what seems like an impossible distance. The players are far away and fast and enormous and they make things look easy that are extremely hard.
 
-The sound. The bat crack reaches the upper deck about a quarter second after the swing. This delay — sound traveling through space — is one of those things you stop noticing eventually but never quite forget the first time.
+The sound. The bat crack reaches the upper deck about a quarter second after the swing. This delay - sound traveling through space - is one of those things you stop noticing eventually but never quite forget the first time.
 
 The smell. Popcorn, hot dogs, grass (if there is grass), something metallic from the seats, and the specific smell of a crowd that has been sitting in the sun for two hours and is having a good time.
 
@@ -760,7 +760,7 @@ WHAT THEY ARE THINKING
 "I want to come back."
 
 WHAT WILL HAPPEN
-They will come back. They will come back for years. They will bring their own kids someday. They will remember, imprecisely, this exact afternoon — a team, a score, a play — and feel something that doesn't have a good name.
+They will come back. They will come back for years. They will bring their own kids someday. They will remember, imprecisely, this exact afternoon - a team, a score, a play - and feel something that doesn't have a good name.
 
 THE THING ABOUT BASEBALL
 It is not a particularly fast game. It requires patience, which children technically don't have yet and yet often find at a ballpark. There is something about the pace that allows for looking around, noticing things, asking questions, eating slowly, existing in a moment without rushing through it.
@@ -781,13 +781,13 @@ That's a fine thing.`,
 
 Thank you for listening.
 
-We know you have choices. You could be mowing the lawn. You could be doing whatever it is people do when they're not listening to baseball — some kind of activity we've never fully understood. Instead, you're here. We appreciate that.
+We know you have choices. You could be mowing the lawn. You could be doing whatever it is people do when they're not listening to baseball - some kind of activity we've never fully understood. Instead, you're here. We appreciate that.
 
 WHAT'S COMING UP
 More baseball. The specific kind with pitching, batting, fielding, arguing, and the occasional spectacular play that you'll describe to someone tomorrow and have to repeat twice because they don't quite believe it.
 
 A THOUGHT
-Baseball is 162 games. That's a lot of baseball. And yet there are people who listen to every single one — not because they're required to, not because it's convenient, but because the season is a companion. The radio in the kitchen. The game in the background while dinner happens. The late innings when the neighborhood gets quiet.
+Baseball is 162 games. That's a lot of baseball. And yet there are people who listen to every single one - not because they're required to, not because it's convenient, but because the season is a companion. The radio in the kitchen. The game in the background while dinner happens. The late innings when the neighborhood gets quiet.
 
 If you're that person, we see you. And we think you're onto something.
 
@@ -841,28 +841,28 @@ THE MATH
 Turnaround time: at minimum, 25 minutes. The show you want to record starts in 40 minutes. You could make it. You would be late. Is it worth it?
 
 WHAT'S ON TONIGHT
-Something you've been wanting to watch. A show you follow. Or possibly a movie — maybe something good, maybe something you'd watch halfway and fall asleep to anyway. You were going to record it and decide later.
+Something you've been wanting to watch. A show you follow. Or possibly a movie - maybe something good, maybe something you'd watch halfway and fall asleep to anyway. You were going to record it and decide later.
 
 THE VCR AT HOME
 It is sitting on top of your television, which is a 19-inch Zenith with a wooden panel finish. The VCR is connected via a coaxial cable. There is a small red light on the front that blinks when it's in standby. It is currently in standby. It is waiting for instructions.
 
 THE TAPE SITUATION
-Hopefully there's a blank tape in there. You labeled the tapes at one point. One says "MISC" in marker. One says "MOVIES" in marker. One says nothing — just a piece of tape with the marker smeared off. That one might be fine. Might be the kids' Christmas 1982. Unknown.
+Hopefully there's a blank tape in there. You labeled the tapes at one point. One says "MISC" in marker. One says "MOVIES" in marker. One says nothing - just a piece of tape with the marker smeared off. That one might be fine. Might be the kids' Christmas 1982. Unknown.
 
 THE HONEST TRUTH
 You will probably miss this program. You will hear about it from someone at work on Monday. They will tell you what happened. You will nod and feel fine about it.
 
-OR — and this is the optimistic path — you remember when you get home, the show hasn't started yet, and you press record with three minutes to spare.
+OR - and this is the optimistic path - you remember when you get home, the show hasn't started yet, and you press record with three minutes to spare.
 
 That happens too.
 More often than you'd think.`,
   },
   {
     matchText: "The Natural starring Robert Redford is now playing.",
-    title: "🎬 The Natural — Now Playing",
+    title: "🎬 The Natural - Now Playing",
     icon: "🎬",
     color: "#8b4513",
-    body: `THE NATURAL — NOW PLAYING IN THEATERS
+    body: `THE NATURAL - NOW PLAYING IN THEATERS
 
 Starring Robert Redford. Directed by Barry Levinson. Based on the novel by Bernard Malamud.
 
@@ -872,7 +872,7 @@ Roy Hobbs. A ballplayer with a bat he carved himself from a tree split by lightn
 It is a baseball movie. It is also a movie about time, and failure, and what it means to try again after something has been taken from you.
 
 THE BAT
-Wonderboy. Carved from the heart of a lightning-struck oak tree. Roy burns "Wonderboy" into the barrel. When it finally breaks — and you already know it will break, every important thing in this kind of story eventually breaks — something happens in the crowd.
+Wonderboy. Carved from the heart of a lightning-struck oak tree. Roy burns "Wonderboy" into the barrel. When it finally breaks - and you already know it will break, every important thing in this kind of story eventually breaks - something happens in the crowd.
 
 THE LIGHTS
 There is a scene near the end. The stadium lights. Sparks falling like rain. Robert Redford running the bases while everything explodes above him. It is the most beautiful baseball scene ever put on film. This is not opinion. It is the consensus of everyone who has seen it.
@@ -886,14 +886,14 @@ No. Baseball doesn't work the way it works in this movie. That's not what this m
 GO SEE IT.
 It is playing now.
 Take someone who loves baseball.
-Or take someone who doesn't — yet.`,
+Or take someone who doesn't - yet.`,
   },
   {
     matchText: "The Natural tells the story of a mysterious baseball hero.",
-    title: "🎬 The Natural — Roy Hobbs",
+    title: "🎬 The Natural - Roy Hobbs",
     icon: "🎬",
     color: "#8b4513",
-    body: `THE NATURAL — THE STORY OF ROY HOBBS
+    body: `THE NATURAL - THE STORY OF ROY HOBBS
 
 Robert Redford. Glenn Close. Kim Basinger. Robert Duvall. Wilford Brimley. Directed by Barry Levinson.
 
@@ -903,7 +903,7 @@ He shows up at the age of 35. No one knows where he's been. He carries a bag wit
 This is what the movie is about: what happens when someone who should have been great finally gets the chance.
 
 WHAT YOU NEED TO KNOW BEFORE YOU GO
-The movie is about baseball but it isn't really about baseball. It's about something older — a man who was on his way to something extraordinary, had it taken from him, and survived long enough to try again.
+The movie is about baseball but it isn't really about baseball. It's about something older - a man who was on his way to something extraordinary, had it taken from him, and survived long enough to try again.
 
 There's a woman in white in the stands. There is always a woman in white. Remember that.
 
@@ -920,12 +920,12 @@ Go before it leaves.`,
   },
   {
     matchText: "See The Natural this week at your local theater.",
-    title: "🎬 The Natural — See It This Week",
+    title: "🎬 The Natural - See It This Week",
     icon: "🎬",
     color: "#8b4513",
-    body: `THE NATURAL — SEE IT THIS WEEK
+    body: `THE NATURAL - SEE IT THIS WEEK
 
-"Some mistakes you never stop paying for." — Roy Hobbs
+"Some mistakes you never stop paying for." - Roy Hobbs
 
 Robert Redford is Roy Hobbs, a ballplayer who should have been the best who ever lived. Instead, something happened. The movie begins when he arrives, at 35, to try again.
 
@@ -933,11 +933,11 @@ WHY THIS WEEK
 The Natural opened in May 1984. If you haven't seen it yet, summer is still happening. The air conditioning in the theater is working. There is nothing else to do on a Tuesday night that will feel this complete.
 
 THE SCORE
-Randy Newman. Not the funny songs — the orchestral Randy Newman, the one that sounds like corn fields and summer evenings and second chances. You will walk out of the theater hearing it. You will hear it for a week. This is not a complaint.
+Randy Newman. Not the funny songs - the orchestral Randy Newman, the one that sounds like corn fields and summer evenings and second chances. You will walk out of the theater hearing it. You will hear it for a week. This is not a complaint.
 
 THE CAST
 Robert Redford as Roy Hobbs.
-Glenn Close as Iris — the woman in the white dress, in the stands, in the sunlight.
+Glenn Close as Iris - the woman in the white dress, in the stands, in the sunlight.
 Robert Duvall as the sports writer who knows too much.
 Wilford Brimley as the manager, Pop Fisher, who has been waiting for this his whole career.
 Kim Basinger as a woman who understands something about Roy that Roy doesn't understand about himself.
@@ -954,10 +954,10 @@ SEE IT THIS WEEK.`,
   },
   {
     matchText: "Back-to-school savings are now underway.",
-    title: "🎒 Back to School — 1984",
+    title: "🎒 Back to School - 1984",
     icon: "🎒",
     color: "#2980b9",
-    body: `BACK-TO-SCHOOL SAVINGS — NOW UNDERWAY
+    body: `BACK-TO-SCHOOL SAVINGS - NOW UNDERWAY
 
 Summer is ending. Somewhere, in the back of your mind, you knew this was coming.
 
@@ -1024,15 +1024,15 @@ Tonight, Michael, you are ten years old.
 
 And you are at a baseball game.
 
-Not just any baseball game — a Phillies game. At Veterans Stadium. In 1984. Which, if you think about it, is exactly the kind of birthday a person should have.
+Not just any baseball game - a Phillies game. At Veterans Stadium. In 1984. Which, if you think about it, is exactly the kind of birthday a person should have.
 
 WHAT WE KNOW ABOUT MICHAEL
 He is ten years old. He is at a baseball game on his birthday. This means he has a family that made good choices. He is either a Phillies fan or is about to become one. These are not the same thing, but tonight, they are.
 
 WHAT WE HOPE FOR MICHAEL
-That someone bought him a hot dog. That he has a program with today's date on it that he keeps somewhere for a long time. That the Phillies do something memorable tonight — a home run, a great catch, something worth remembering.
+That someone bought him a hot dog. That he has a program with today's date on it that he keeps somewhere for a long time. That the Phillies do something memorable tonight - a home run, a great catch, something worth remembering.
 
-That someday, when he is much older, he drives past Veterans Stadium — or where it used to be — and remembers that he was ten years old here and it was his birthday and the crowd was alive and Mike Schmidt was at third base.
+That someday, when he is much older, he drives past Veterans Stadium - or where it used to be - and remembers that he was ten years old here and it was his birthday and the crowd was alive and Mike Schmidt was at third base.
 
 That'll be worth something.
 
@@ -1047,22 +1047,22 @@ Hope it's a good one.`,
 const MISSING_BANNER_ENTRIES = [
   {
     matchText: "Breaker one-nine, anybody got their ears on?",
-    title: "📻 Breaker 1-9 — CB Radio Culture",
+    title: "📻 Breaker 1-9 - CB Radio Culture",
     icon: "📻",
     color: "#1a237e",
     body: `BREAKER ONE-NINE, ANYBODY GOT THEIR EARS ON?
 
-CB radio — Citizens Band radio — became one of the defining cultural phenomena of the 1970s and early 1980s. What started as a communication tool for truck drivers became a craze that swept across America.
+CB radio - Citizens Band radio - became one of the defining cultural phenomena of the 1970s and early 1980s. What started as a communication tool for truck drivers became a craze that swept across America.
 
 THE HANDLES
 Nobody used their real name on CB. You had a "handle." Truckers had handles like "Rubber Duck," "Snowman," and "Bandit." Families had handles. Your dad had a handle. He used it seriously. You were not allowed to make fun of it.
 
 THE LANGUAGE
-"Breaker one-nine" — a request to speak on channel 19, the unofficial truckers' channel.
-"10-4" — understood, message received. You know this one.
-"What's your twenty?" — where are you?
-"Smokey" or "bear" — police officer.
-"Keep the shiny side up and the rubber side down" — drive safe.
+"Breaker one-nine" - a request to speak on channel 19, the unofficial truckers' channel.
+"10-4" - understood, message received. You know this one.
+"What's your twenty?" - where are you?
+"Smokey" or "bear" - police officer.
+"Keep the shiny side up and the rubber side down" - drive safe.
 
 THE SMOKEY AND THE BANDIT CONNECTION
 Burt Reynolds. The Trans Am. The CB radio on the dash. The 1977 film turned CB into a full cultural explosion. By 1978, 12 million CB radios had been sold in America. Hardware stores sold out. Radio Shack ran out of stock.
@@ -1071,16 +1071,16 @@ THE TRUCKERS
 Channel 19 was their domain. Real information about road conditions, speed traps, construction, and accidents traveled faster on CB than on any other medium available. In many ways, truckers invented real-time traffic reporting.
 
 THE DECLINE
-By 1984, the CB craze had cooled — but it never fully disappeared. The truckers kept their radios. Some families kept theirs. And somewhere on the highway tonight, somebody is still calling breaker one-nine.
+By 1984, the CB craze had cooled - but it never fully disappeared. The truckers kept their radios. Some families kept theirs. And somewhere on the highway tonight, somebody is still calling breaker one-nine.
 
 Copy that.`,
   },
   {
     matchText: "A young fan has been trying to start the wave for three innings with limited success.",
-    title: "🌊 The Wave — A Sociological Study",
+    title: "🌊 The Wave - A Sociological Study",
     icon: "🌊",
     color: "#2980b9",
-    body: `THE WAVE — A STADIUM PHENOMENON
+    body: `THE WAVE - A STADIUM PHENOMENON
 
 Somewhere in the upper deck, a young fan has been trying to start the wave for three innings.
 
@@ -1096,7 +1096,7 @@ THE HISTORY OF THE WAVE
 The wave as a crowd phenomenon is believed to have emerged at Oakland A's and University of Washington games in the early 1980s. Cheerleader "Krazy George" Henderson claims credit. The wave spread to stadiums across the country with remarkable speed.
 
 THE PHYSICS
-The wave requires a critical mass of participants to propagate. Experts estimate approximately 25-35 consecutive fans must participate for the wave to sustain itself around a stadium. Below that threshold, it dies out — usually right at the section where the young fan is standing with his arms up.
+The wave requires a critical mass of participants to propagate. Experts estimate approximately 25-35 consecutive fans must participate for the wave to sustain itself around a stadium. Below that threshold, it dies out - usually right at the section where the young fan is standing with his arms up.
 
 THE OUTCOME
 Unknown. He is still trying.
@@ -1108,7 +1108,7 @@ His dedication is admirable.`,
     title: "📚 Libraries Across America",
     icon: "📚",
     color: "#8e44ad",
-    body: `LIBRARIES ACROSS AMERICA — SUMMER READING PROGRAMS
+    body: `LIBRARIES ACROSS AMERICA - SUMMER READING PROGRAMS
 
 Every summer, public libraries across the United States run reading programs for children. The goal is simple: keep kids reading during the months when school is out and television beckons.
 
@@ -1119,7 +1119,7 @@ THE PRIZES
 Varies by library. Common options: a free book, a certificate, a coupon for a local ice cream shop, a small toy from a bin, the satisfaction of the librarian saying "Well done" with genuine warmth. This last one is underrated.
 
 THE BOOKS
-Any book counts. The library is not judging. Encyclopedia Brown counts. Choose Your Own Adventure counts. A book about dinosaurs counts. A very large book about trucks counts. Comic books — this varies by library. Ask. Some say yes.
+Any book counts. The library is not judging. Encyclopedia Brown counts. Choose Your Own Adventure counts. A book about dinosaurs counts. A very large book about trucks counts. Comic books - this varies by library. Ask. Some say yes.
 
 THE LIBRARIES THEMSELVES
 The air conditioning. The chairs. The quiet hum of a building full of books. The periodicals section where your grandfather has been reading magazines since 1958 and will continue to do so until further notice.
@@ -1135,7 +1135,7 @@ Do it.`,
   },
   {
     matchText: "New releases arrive every Tuesday.",
-    title: "📼 New Releases — Every Tuesday",
+    title: "📼 New Releases - Every Tuesday",
     icon: "📼",
     color: "#1a237e",
     body: `NEW RELEASES ARRIVE EVERY TUESDAY
@@ -1162,10 +1162,10 @@ Be there early for the good ones.`,
   },
   {
     matchText: "A fan in the upper deck has dropped his program three times and recovered it every time.",
-    title: "📋 The Program — Upper Deck Hero",
+    title: "📋 The Program - Upper Deck Hero",
     icon: "📋",
     color: "#e67e22",
-    body: `THE PROGRAM — AN UPPER DECK STORY
+    body: `THE PROGRAM - AN UPPER DECK STORY
 
 In Section 412, a fan has dropped his program three times.
 
@@ -1191,15 +1191,15 @@ He has learned.`,
     title: "⚾ Phillies Little League Field Day",
     icon: "⚾",
     color: "#c0392b",
-    body: `PHILLIES LITTLE LEAGUE FIELD DAY — VETERANS STADIUM
+    body: `PHILLIES LITTLE LEAGUE FIELD DAY - VETERANS STADIUM
 
 The Philadelphia Phillies are pleased to invite Little League teams throughout the Delaware Valley to a special field day at Veterans Stadium.
 
 THE INVITATION
-Youth baseball teams — ages 7 through 14 — are invited to attend a pre-game field day at The Vet. Registered teams receive reserved seating in the lower boxes, a Phillies pennant for each player, and access to the field before first pitch.
+Youth baseball teams - ages 7 through 14 - are invited to attend a pre-game field day at The Vet. Registered teams receive reserved seating in the lower boxes, a Phillies pennant for each player, and access to the field before first pitch.
 
 ON THE FIELD
-Teams gather on the Veterans Stadium artificial turf — the same surface that Juan Samuel runs on, that Mike Schmidt fields ground balls on, that Steve Carlton has walked across for fourteen seasons in a Phillies uniform.
+Teams gather on the Veterans Stadium artificial turf - the same surface that Juan Samuel runs on, that Mike Schmidt fields ground balls on, that Steve Carlton has walked across for fourteen seasons in a Phillies uniform.
 
 Players warm up in the outfield. Coaches run brief fielding and baserunning drills. Several Phillies players may be available for informal interaction during batting practice.
 
@@ -1223,18 +1223,18 @@ That's enough.`,
     title: "🔴 Baseball and Philadelphia",
     icon: "🔴",
     color: "#c0392b",
-    body: `BASEBALL AND PHILADELPHIA — A HISTORY
+    body: `BASEBALL AND PHILADELPHIA - A HISTORY
 
 They have always belonged together. It is not an exaggeration.
 
 THE BEGINNING
-The Philadelphia Athletics were a founding member of the American League in 1901. The Phillies were founded in 1883 — one of the oldest franchises in professional baseball. For over 100 years, Philadelphia has had professional baseball.
+The Philadelphia Athletics were a founding member of the American League in 1901. The Phillies were founded in 1883 - one of the oldest franchises in professional baseball. For over 100 years, Philadelphia has had professional baseball.
 
 CONNIE MACK
-Cornelius McGillicuddy — "Connie Mack" — managed the Athletics for 50 years. Fifty. He managed his final game in 1950 at the age of 87, wearing a suit and tie in the dugout, as he always had. He won nine American League pennants and five World Series. There will never be another like him.
+Cornelius McGillicuddy - "Connie Mack" - managed the Athletics for 50 years. Fifty. He managed his final game in 1950 at the age of 87, wearing a suit and tie in the dugout, as he always had. He won nine American League pennants and five World Series. There will never be another like him.
 
 THE WHIZ KIDS
-1950. The Phillies — nicknamed the "Whiz Kids" for their youth — won the National League pennant for the first time since 1915. Dick Sisler's three-run homer on the final day of the season. Robin Roberts pitching on two days' rest. The city went wild.
+1950. The Phillies - nicknamed the "Whiz Kids" for their youth - won the National League pennant for the first time since 1915. Dick Sisler's three-run homer on the final day of the season. Robin Roberts pitching on two days' rest. The city went wild.
 
 THE DROUGHT
 Then: 1964. The famous collapse. Nine games up with twelve to play. The city has never quite recovered from this. They discuss it at dinner tables. It is passed down through generations.
@@ -1251,18 +1251,18 @@ They still do.`,
   },
   {
     matchText: "Video rental stores are adding new titles every week.",
-    title: "📼 Video Rental Stores — 1984",
+    title: "📼 Video Rental Stores - 1984",
     icon: "📼",
     color: "#1a237e",
-    body: `VIDEO RENTAL STORES — AN AMERICAN INSTITUTION
+    body: `VIDEO RENTAL STORES - AN AMERICAN INSTITUTION
 
 In 1977, there were approximately 700 video rental stores in America. By 1984, there are over 19,000.
 
 THE STORE
-Usually a converted retail space — a former dry cleaner, a former record store, a former something-else. Fluorescent lighting. Industrial carpet. A counter where someone slightly older than you is watching a portable television.
+Usually a converted retail space - a former dry cleaner, a former record store, a former something-else. Fluorescent lighting. Industrial carpet. A counter where someone slightly older than you is watching a portable television.
 
 THE LAYOUT
-New Releases along the front wall — the prime real estate. Action. Comedy. Horror. Drama. Each section has its own shelf. The tape boxes are hollow; the actual cassette is kept behind the counter or in a special sleeve. You bring the empty box to the counter. They hand you the tape.
+New Releases along the front wall - the prime real estate. Action. Comedy. Horror. Drama. Each section has its own shelf. The tape boxes are hollow; the actual cassette is kept behind the counter or in a special sleeve. You bring the empty box to the counter. They hand you the tape.
 
 THE MEMBERSHIP CARD
 Required. Cost varies. Some stores charge a deposit. The card goes in your wallet. You lose it and have to explain this. They give you a new one.
@@ -1288,7 +1288,7 @@ Most of them returned on time.`,
 The year is 1984. The arcade is at the mall, or at the roller rink, or in a corner of the pizza place where the pinball machine used to be. A roll of quarters lasts 45 minutes if you're careful. Longer if you're good.
 
 THE HOME VERSIONS
-Atari 2600. ColecoVision. Intellivision. These machines have been promising to bring the arcade home since 1977. They have been partially successful. The home version of Pac-Man on the Atari 2600 is — well. It exists. It has Pac-Man in it. In the same way that a photograph of a sunset is technically a sunset.
+Atari 2600. ColecoVision. Intellivision. These machines have been promising to bring the arcade home since 1977. They have been partially successful. The home version of Pac-Man on the Atari 2600 is - well. It exists. It has Pac-Man in it. In the same way that a photograph of a sunset is technically a sunset.
 
 THE COMMODORE 64
 Getting closer. The C64 version of certain arcade titles is genuinely impressive. The graphics are better. The sound is better. You can see what game you're playing without squinting.
@@ -1297,7 +1297,7 @@ COLECOVISION
 Probably the best home versions in 1984. The Donkey Kong port is legitimately close to the arcade. This matters enormously to the people for whom this matters.
 
 THE PROMISE
-Every year, the home versions get better. The processing power increases. The graphics improve. The sound chips get more sophisticated. There will come a day — it's hard to imagine but the trajectory is clear — when the home version will be indistinguishable from the arcade.
+Every year, the home versions get better. The processing power increases. The graphics improve. The sound chips get more sophisticated. There will come a day - it's hard to imagine but the trajectory is clear - when the home version will be indistinguishable from the arcade.
 
 UNTIL THEN
 Save your quarters.
@@ -1306,11 +1306,11 @@ Challenge the local champion.
 Some things are still best experienced in person.`,
   },
   {
-    matchText: "Pat's versus Geno's — Philadelphia's longest-running debate.",
-    title: "🥩 Pat's vs. Geno's — The Eternal Debate",
+    matchText: "Pat's versus Geno's - Philadelphia's longest-running debate.",
+    title: "🥩 Pat's vs. Geno's - The Eternal Debate",
     icon: "🥩",
     color: "#e67e22",
-    body: `PAT'S VS. GENO'S — PHILADELPHIA'S LONGEST-RUNNING DEBATE
+    body: `PAT'S VS. GENO'S - PHILADELPHIA'S LONGEST-RUNNING DEBATE
 
 They sit directly across the street from each other at the corner of 9th and Passyunk Avenue in South Philadelphia. Open 24 hours a day, 365 days a year. They have been rivals since 1966. There is no neutral position.
 
@@ -1318,13 +1318,13 @@ PAT'S KING OF STEAKS
 The original. Pat Olivieri started selling chopped beef sandwiches from a cart near his hot dog stand in 1930. A cab driver smelled it and wanted some. It went from there. The current location opened in 1940. The ordering window faces the street. You order, you pay, you step aside. This is the system.
 
 GENO'S STEAKS
-Joey Vento opened Geno's in 1966, directly across the intersection from Pat's. Bright neon lights. An aggressive personality. Geno's quickly became a challenger — some say the superior product, some say a pretender.
+Joey Vento opened Geno's in 1966, directly across the intersection from Pat's. Bright neon lights. An aggressive personality. Geno's quickly became a challenger - some say the superior product, some say a pretender.
 
 THE QUESTION
 Which one is better? This question has been debated by Philadelphia residents for 18 years. It has caused arguments at dinner tables, in bars, and at baseball games. There are people who have eaten at both many times and have a definitive answer, and people who have eaten at both many times and refuse to commit.
 
 THE HONEST ANSWER
-Both are excellent. They are different. Pat's uses a choppier meat preparation. Geno's meat is sliced thinner. The bread at both locations is Amoroso's. The atmosphere is different — Pat's is older, more worn-in; Geno's is brighter, more theatrical.
+Both are excellent. They are different. Pat's uses a choppier meat preparation. Geno's meat is sliced thinner. The bread at both locations is Amoroso's. The atmosphere is different - Pat's is older, more worn-in; Geno's is brighter, more theatrical.
 
 YOUR JOB
 Go to both on the same night.
@@ -1341,31 +1341,31 @@ const ADDITIONAL_MISSING = [
   // Phillies team promos
   {
     matchText: "Stop by the Phillies team store for official 1984 merchandise.",
-    title: "🔴 Phillies Team Store — Veterans Stadium",
+    title: "🔴 Phillies Team Store - Veterans Stadium",
     icon: "🔴",
     color: "#c0392b",
-    body: `PHILLIES TEAM STORE — VETERANS STADIUM 1984\n\nOfficial licensed merchandise from the Philadelphia Phillies.\n\nTHE MERCHANDISE\nPhillies caps in home red and road gray. T-shirts with the classic script "Phillies" across the chest — the same lettering that's been on this uniform since 1971. Pennants. Bumper stickers. Programs.\n\nTHE YEARBOOK\nThe 1984 Phillies Official Yearbook. $3.00. Contains player profiles, season preview, historical notes, and photographs taken during spring training in Clearwater. Mike Schmidt's profile alone is worth the price of admission.\n\nTHE BOBBLEHEADS\nCollectible player bobbleheads are available while supplies last. Each game has a different giveaway.\n\nTHE AUTOGRAPH CARDS\nSmall player cards are available at the team store for 50 cents each. Not authenticated. Not valuable in any monetary sense. Valuable in every other sense.\n\nWHERE TO FIND IT\nMain level, behind Section 108. Open two hours before first pitch and through the seventh inning.\n\nCARRY THE PHILLIES HOME WITH YOU TONIGHT.\nYou're at the right game. You're at the right store.`,
+    body: `PHILLIES TEAM STORE - VETERANS STADIUM 1984\n\nOfficial licensed merchandise from the Philadelphia Phillies.\n\nTHE MERCHANDISE\nPhillies caps in home red and road gray. T-shirts with the classic script "Phillies" across the chest - the same lettering that's been on this uniform since 1971. Pennants. Bumper stickers. Programs.\n\nTHE YEARBOOK\nThe 1984 Phillies Official Yearbook. $3.00. Contains player profiles, season preview, historical notes, and photographs taken during spring training in Clearwater. Mike Schmidt's profile alone is worth the price of admission.\n\nTHE BOBBLEHEADS\nCollectible player bobbleheads are available while supplies last. Each game has a different giveaway.\n\nTHE AUTOGRAPH CARDS\nSmall player cards are available at the team store for 50 cents each. Not authenticated. Not valuable in any monetary sense. Valuable in every other sense.\n\nWHERE TO FIND IT\nMain level, behind Section 108. Open two hours before first pitch and through the seventh inning.\n\nCARRY THE PHILLIES HOME WITH YOU TONIGHT.\nYou're at the right game. You're at the right store.`,
   },
   {
     matchText: "Juan Samuel and Glenn Wilson will meet fans at a youth baseball clinic Saturday morning.",
-    title: "⚾ Juan Samuel & Glenn Wilson — Fan Meet",
+    title: "⚾ Juan Samuel & Glenn Wilson - Fan Meet",
     icon: "⚾",
     color: "#c0392b",
-    body: `JUAN SAMUEL AND GLENN WILSON\nYouth Baseball Clinic & Fan Meet — This Saturday Morning\n\nJUAN SAMUEL\nThe electric 23-year-old second baseman. 33 stolen bases in his rookie year. A bat speed that opposing pitchers discuss with something approaching concern. He arrived from San Pedro de Macoris, Dominican Republic — the same town that has produced more major league shortstops per capita than anywhere on Earth.\n\nThis Saturday, Juan Samuel will be on a baseball diamond with your kid. Showing them how to read a pitcher's move. How to get a jump. How to hit the bag and keep going.\n\nGLENN WILSON\nThe right fielder with the arm that has caused baserunners to rethink life decisions. Glenn Wilson's arm is not theoretical — it has thrown out people who had no business being thrown out.\n\nWilson will work with outfielders on positioning, routes to the ball, and throwing mechanics.\n\nTHE CLINIC\nAll ages 8-14. Free admission with registration. Limited spots available.\n\nContact your local parks and recreation department.\nThis Saturday morning.\nBring your glove and your best questions.`,
+    body: `JUAN SAMUEL AND GLENN WILSON\nYouth Baseball Clinic & Fan Meet - This Saturday Morning\n\nJUAN SAMUEL\nThe electric 23-year-old second baseman. 33 stolen bases in his rookie year. A bat speed that opposing pitchers discuss with something approaching concern. He arrived from San Pedro de Macoris, Dominican Republic - the same town that has produced more major league shortstops per capita than anywhere on Earth.\n\nThis Saturday, Juan Samuel will be on a baseball diamond with your kid. Showing them how to read a pitcher's move. How to get a jump. How to hit the bag and keep going.\n\nGLENN WILSON\nThe right fielder with the arm that has caused baserunners to rethink life decisions. Glenn Wilson's arm is not theoretical - it has thrown out people who had no business being thrown out.\n\nWilson will work with outfielders on positioning, routes to the ball, and throwing mechanics.\n\nTHE CLINIC\nAll ages 8-14. Free admission with registration. Limited spots available.\n\nContact your local parks and recreation department.\nThis Saturday morning.\nBring your glove and your best questions.`,
   },
   {
     matchText: "Don't miss Bat Day this Sunday! The first five thousand kids through the gates receive a free Louisville Slugger.",
-    title: "🏏 Bat Day — Veterans Stadium",
+    title: "🏏 Bat Day - Veterans Stadium",
     icon: "🏏",
     color: "#c0392b",
-    body: `BAT DAY — VETERANS STADIUM\nThis Sunday — Free Louisville Slugger for the First 5,000 Kids\n\nTHE BAT\nAn 18-inch hardwood Louisville Slugger mini-bat. Genuine ash. Phillies logo branded on the barrel. Real wood, real weight — not plastic, not a toy.\n\nLouisville Slugger has been making bats for major league players since 1884. The same company, the same factory in Louisville, Kentucky, the same process. Mike Schmidt uses a custom 35-inch, 32-ounce model. Your kid gets a version made with the same craft.\n\nTHE HISTORY OF BAT DAY\nBat Day began as a promotional idea in the 1950s and became one of baseball's most beloved giveaway traditions. A stadium full of children holding wooden bats, tapping them on the concrete in excitement — there is no better sound in baseball.\n\nARRIVE EARLY\nFirst 5,000 kids through the gates. No exceptions after supplies run out. The gates open 90 minutes before first pitch.\n\nTHIS SUNDAY. VETERANS STADIUM.\nBring a young fan.\nLeave with a Louisville Slugger.\nThat's a good Sunday.`,
+    body: `BAT DAY - VETERANS STADIUM\nThis Sunday - Free Louisville Slugger for the First 5,000 Kids\n\nTHE BAT\nAn 18-inch hardwood Louisville Slugger mini-bat. Genuine ash. Phillies logo branded on the barrel. Real wood, real weight - not plastic, not a toy.\n\nLouisville Slugger has been making bats for major league players since 1884. The same company, the same factory in Louisville, Kentucky, the same process. Mike Schmidt uses a custom 35-inch, 32-ounce model. Your kid gets a version made with the same craft.\n\nTHE HISTORY OF BAT DAY\nBat Day began as a promotional idea in the 1950s and became one of baseball's most beloved giveaway traditions. A stadium full of children holding wooden bats, tapping them on the concrete in excitement - there is no better sound in baseball.\n\nARRIVE EARLY\nFirst 5,000 kids through the gates. No exceptions after supplies run out. The gates open 90 minutes before first pitch.\n\nTHIS SUNDAY. VETERANS STADIUM.\nBring a young fan.\nLeave with a Louisville Slugger.\nThat's a good Sunday.`,
   },
   {
     matchText: "Group ticket packages are available for remaining Phillies homestand games.",
-    title: "🎟️ Phillies Group Tickets — Remaining Homestand",
+    title: "🎟️ Phillies Group Tickets - Remaining Homestand",
     icon: "🎟️",
     color: "#c0392b",
-    body: `PHILLIES GROUP TICKET PACKAGES\nRemaining 1984 Homestand — Veterans Stadium\n\nTHE PACKAGE\nGroups of 20 or more receive discounted tickets, reserved together in the same seating section, and access to the group sales concession stand with pre-arranged food orders.\n\nWHO THIS IS FOR\nChurches. Schools. Little League teams. Corporate outings. Neighborhood groups. Anyone who has ever tried to coordinate 25 people to do anything and knows how complicated it is — the Phillies have made this part easy.\n\nTHE SECTIONS\nLower boxes are available for larger groups when reserved in advance. Club level seating available for premium packages. The 700 Level is available but the Phillies cannot be held responsible for what happens in the 700 Level.\n\nTHE EXPERIENCE\nThere is something different about watching baseball with 30 of your colleagues or congregation members versus watching it alone. The same pitch lands differently when 25 people groan together.\n\nWHAT REMAINS\nSeveral home games remain this season. Some will matter enormously in the standings. Others will be close. All of them will have hot dogs.\n\nCALL THE PHILLIES GROUP SALES OFFICE.\nThey are waiting.\nGroups of 20 or more.\nLet's fill these seats.`,
+    body: `PHILLIES GROUP TICKET PACKAGES\nRemaining 1984 Homestand - Veterans Stadium\n\nTHE PACKAGE\nGroups of 20 or more receive discounted tickets, reserved together in the same seating section, and access to the group sales concession stand with pre-arranged food orders.\n\nWHO THIS IS FOR\nChurches. Schools. Little League teams. Corporate outings. Neighborhood groups. Anyone who has ever tried to coordinate 25 people to do anything and knows how complicated it is - the Phillies have made this part easy.\n\nTHE SECTIONS\nLower boxes are available for larger groups when reserved in advance. Club level seating available for premium packages. The 700 Level is available but the Phillies cannot be held responsible for what happens in the 700 Level.\n\nTHE EXPERIENCE\nThere is something different about watching baseball with 30 of your colleagues or congregation members versus watching it alone. The same pitch lands differently when 25 people groan together.\n\nWHAT REMAINS\nSeveral home games remain this season. Some will matter enormously in the standings. Others will be close. All of them will have hot dogs.\n\nCALL THE PHILLIES GROUP SALES OFFICE.\nThey are waiting.\nGroups of 20 or more.\nLet's fill these seats.`,
   },
   // Phillies charity
   {
@@ -1373,52 +1373,52 @@ const ADDITIONAL_MISSING = [
     title: "🏥 Children's Hospital of Philadelphia",
     icon: "🏥",
     color: "#2980b9",
-    body: `THE CHILDREN'S HOSPITAL OF PHILADELPHIA\nFounded 1855 — The Nation's First Children's Hospital\n\nCHOP opened in 1855. The Children's Hospital of Philadelphia was the first hospital in the United States dedicated exclusively to the care of children. One hundred and twenty-nine years later, it remains one of the finest pediatric medical centers in the world.\n\nWHAT THEY DO\nEvery day, CHOP treats children with conditions ranging from routine to extraordinarily complex. Cancer. Heart disease. Rare genetic conditions. Trauma. The staff includes some of the most accomplished pediatric specialists in medicine — people who chose to spend their careers treating sick children.\n\nWHY DONATIONS MATTER\nFederal and insurance reimbursements do not cover the full cost of pediatric care. Research programs, family support services, and specialized equipment are funded in significant part by community donations.\n\nA FACT\nIn the last year, CHOP treated children from all 50 states and 40 countries. Many of those families could not have afforded care elsewhere.\n\nHOW TO GIVE\nThe CHOP Foundation accepts donations by mail, at participating Philadelphia businesses, and through payroll deduction programs.\n\nThe children there cannot come to this game tonight.\nBut they would if they could.\nHelp them get better.`,
+    body: `THE CHILDREN'S HOSPITAL OF PHILADELPHIA\nFounded 1855 - The Nation's First Children's Hospital\n\nCHOP opened in 1855. The Children's Hospital of Philadelphia was the first hospital in the United States dedicated exclusively to the care of children. One hundred and twenty-nine years later, it remains one of the finest pediatric medical centers in the world.\n\nWHAT THEY DO\nEvery day, CHOP treats children with conditions ranging from routine to extraordinarily complex. Cancer. Heart disease. Rare genetic conditions. Trauma. The staff includes some of the most accomplished pediatric specialists in medicine - people who chose to spend their careers treating sick children.\n\nWHY DONATIONS MATTER\nFederal and insurance reimbursements do not cover the full cost of pediatric care. Research programs, family support services, and specialized equipment are funded in significant part by community donations.\n\nA FACT\nIn the last year, CHOP treated children from all 50 states and 40 countries. Many of those families could not have afforded care elsewhere.\n\nHOW TO GIVE\nThe CHOP Foundation accepts donations by mail, at participating Philadelphia businesses, and through payroll deduction programs.\n\nThe children there cannot come to this game tonight.\nBut they would if they could.\nHelp them get better.`,
   },
   {
-    matchText: "CHOP — the Children's Hospital of Philadelphia — counts on community support.",
-    title: "🏥 CHOP — Community Support",
+    matchText: "CHOP - the Children's Hospital of Philadelphia - counts on community support.",
+    title: "🏥 CHOP - Community Support",
     icon: "🏥",
     color: "#2980b9",
-    body: `CHOP — CHILDREN'S HOSPITAL OF PHILADELPHIA\n\nThe Children's Hospital of Philadelphia has been treating sick children since 1855. It was the first children's hospital in America. It remains among the very best in the world.\n\nCOMMUNITY SUPPORT\nPhiladelphia has always taken care of its own. The hospital exists in part because the people of this city and region believe that children deserve specialized care and that the community has a responsibility to help provide it.\n\nThe Phillies are proud to support CHOP and encourage Phillies fans throughout the Delaware Valley to consider making a contribution.\n\nEvery dollar goes to a place where the patients are children.\nEvery dollar matters.\nPhiladelphia takes care of Philadelphia.`,
+    body: `CHOP - CHILDREN'S HOSPITAL OF PHILADELPHIA\n\nThe Children's Hospital of Philadelphia has been treating sick children since 1855. It was the first children's hospital in America. It remains among the very best in the world.\n\nCOMMUNITY SUPPORT\nPhiladelphia has always taken care of its own. The hospital exists in part because the people of this city and region believe that children deserve specialized care and that the community has a responsibility to help provide it.\n\nThe Phillies are proud to support CHOP and encourage Phillies fans throughout the Delaware Valley to consider making a contribution.\n\nEvery dollar goes to a place where the patients are children.\nEvery dollar matters.\nPhiladelphia takes care of Philadelphia.`,
   },
   // Phillies sponsor
   {
-    matchText: "Horn & Hardart — the original automat — serving Philadelphia since 1902.",
-    title: "🏪 Horn & Hardart — The Original Automat",
+    matchText: "Horn & Hardart - the original automat - serving Philadelphia since 1902.",
+    title: "🏪 Horn & Hardart - The Original Automat",
     icon: "🏪",
     color: "#8b4513",
-    body: `HORN & HARDART — THE ORIGINAL AUTOMAT\nServing Philadelphia Since 1902\n\nTHE AUTOMAT\nIn 1902, Joseph Horn and Frank Hardart opened the first automat in America on Chestnut Street in Philadelphia. The concept was revolutionary: a cafeteria where food was dispensed from glass-fronted compartments for a nickel. Drop your coin, open the door, take your food.\n\nFor decades, Horn & Hardart was where Philadelphia ate. Macaroni and cheese. Baked beans. Coffee from the famous dolphin-head spigots. Apple pie with a flaky crust that became part of the city's institutional memory.\n\nTHE COFFEE\nHorn & Hardart's coffee was made from a blend that Frank Hardart developed from New Orleans coffee culture — strong, dark, made with chicory. People came specifically for the coffee. They got the baked beans as well.\n\nTHE LEGACY\nAt its peak, Horn & Hardart operated dozens of automats in Philadelphia and New York. The automat format eventually gave way to fast food. But the name remains — a landmark of American urban dining history that belongs specifically to Philadelphia.\n\nIF YOU HAVEN'T BEEN\nThere are still Horn & Hardart locations in Philadelphia.\nThe macaroni and cheese is still excellent.\nThe coffee is still the coffee.`,
+    body: `HORN & HARDART - THE ORIGINAL AUTOMAT\nServing Philadelphia Since 1902\n\nTHE AUTOMAT\nIn 1902, Joseph Horn and Frank Hardart opened the first automat in America on Chestnut Street in Philadelphia. The concept was revolutionary: a cafeteria where food was dispensed from glass-fronted compartments for a nickel. Drop your coin, open the door, take your food.\n\nFor decades, Horn & Hardart was where Philadelphia ate. Macaroni and cheese. Baked beans. Coffee from the famous dolphin-head spigots. Apple pie with a flaky crust that became part of the city's institutional memory.\n\nTHE COFFEE\nHorn & Hardart's coffee was made from a blend that Frank Hardart developed from New Orleans coffee culture - strong, dark, made with chicory. People came specifically for the coffee. They got the baked beans as well.\n\nTHE LEGACY\nAt its peak, Horn & Hardart operated dozens of automats in Philadelphia and New York. The automat format eventually gave way to fast food. But the name remains - a landmark of American urban dining history that belongs specifically to Philadelphia.\n\nIF YOU HAVEN'T BEEN\nThere are still Horn & Hardart locations in Philadelphia.\nThe macaroni and cheese is still excellent.\nThe coffee is still the coffee.`,
   },
   // National sponsor
   {
     matchText: "America's phone system is changing.",
-    title: "📞 America's Phone System — 1984",
+    title: "📞 America's Phone System - 1984",
     icon: "📞",
     color: "#1a237e",
-    body: `AMERICA'S PHONE SYSTEM IS CHANGING\n\nOn January 1, 1984, AT&T — the Bell System — was broken up by court order into seven regional "Baby Bell" companies. After nearly a century as a regulated monopoly, the telecommunications system that connected America is being restructured.\n\nTHE OLD SYSTEM\nFor most of the 20th century, if you had a telephone in America, it came from AT&T. The wires, the switching equipment, the handset on your wall — AT&T's. Long-distance calls went through AT&T. The rates were set by regulators. Competition was not part of the equation.\n\nTHE NEW LANDSCAPE\nMCI. Sprint. A dozen smaller long-distance carriers are now competing for your business. Rates are falling. For the first time in history, Americans can choose their long-distance provider.\n\nYOUR TELEPHONE\nSome things haven't changed: local service still comes from the regional Bell company in your area. The phone on your wall still works. Your number is still your number.\n\nWHAT'S COMING\nSome experts predict that competition will drive prices even lower. Others worry about the complexity of a broken-up system. Everyone agrees the telephone industry of 1990 will look very different from the telephone industry of 1983.\n\nREACH OUT AND TOUCH SOMEONE.\nWhoever you call it through.`,
+    body: `AMERICA'S PHONE SYSTEM IS CHANGING\n\nOn January 1, 1984, AT&T - the Bell System - was broken up by court order into seven regional "Baby Bell" companies. After nearly a century as a regulated monopoly, the telecommunications system that connected America is being restructured.\n\nTHE OLD SYSTEM\nFor most of the 20th century, if you had a telephone in America, it came from AT&T. The wires, the switching equipment, the handset on your wall - AT&T's. Long-distance calls went through AT&T. The rates were set by regulators. Competition was not part of the equation.\n\nTHE NEW LANDSCAPE\nMCI. Sprint. A dozen smaller long-distance carriers are now competing for your business. Rates are falling. For the first time in history, Americans can choose their long-distance provider.\n\nYOUR TELEPHONE\nSome things haven't changed: local service still comes from the regional Bell company in your area. The phone on your wall still works. Your number is still your number.\n\nWHAT'S COMING\nSome experts predict that competition will drive prices even lower. Others worry about the complexity of a broken-up system. Everyone agrees the telephone industry of 1990 will look very different from the telephone industry of 1983.\n\nREACH OUT AND TOUCH SOMEONE.\nWhoever you call it through.`,
   },
   {
     matchText: "The Cars continue to produce hit records.",
-    title: "🎵 The Cars — 1984",
+    title: "🎵 The Cars - 1984",
     icon: "🎵",
     color: "#1a237e",
-    body: `THE CARS — CONTINUING TO PRODUCE HIT RECORDS\n\nBoston, Massachusetts. Formed 1976. Ric Ocasek on vocals and rhythm guitar. Elliot Easton on lead guitar. Greg Hawkes on keyboards. Ben Orr on bass and vocals. David Robinson on drums.\n\nTHE SOUND\nNew wave pop with rock teeth. Synthesizers that don't apologize for being synthesizers. Guitar that bites. Vocals delivered with a studied detachment that somehow works perfectly. Songs that are simultaneously weird and unavoidable.\n\nTHE HITS\n"Just What I Needed." "My Best Friend's Girl." "Shake It Up." "You Might Think" — currently climbing the charts in 1984. "Drive" — one of the most beautiful things they have recorded. Ben Orr singing as though the stakes are real because they are.\n\nTHE ALBUM\nHeartbeat City was released in March 1984. It contains "You Might Think," "Magic," "Hello Again," and "Drive." It is, by any measure, an excellent album.\n\nWHY THIS MATTERS AT A BASEBALL GAME\nBecause somewhere in this stadium, someone is thinking about a Cars song. Because the summer of 1984 has a specific sound and The Cars are part of it. Because "Drive" is a genuinely good song and you know it.\n\nThe Cars continue to produce hit records.\nThat's the announcement.\nThat's all that needed to be said.`,
+    body: `THE CARS - CONTINUING TO PRODUCE HIT RECORDS\n\nBoston, Massachusetts. Formed 1976. Ric Ocasek on vocals and rhythm guitar. Elliot Easton on lead guitar. Greg Hawkes on keyboards. Ben Orr on bass and vocals. David Robinson on drums.\n\nTHE SOUND\nNew wave pop with rock teeth. Synthesizers that don't apologize for being synthesizers. Guitar that bites. Vocals delivered with a studied detachment that somehow works perfectly. Songs that are simultaneously weird and unavoidable.\n\nTHE HITS\n"Just What I Needed." "My Best Friend's Girl." "Shake It Up." "You Might Think" - currently climbing the charts in 1984. "Drive" - one of the most beautiful things they have recorded. Ben Orr singing as though the stakes are real because they are.\n\nTHE ALBUM\nHeartbeat City was released in March 1984. It contains "You Might Think," "Magic," "Hello Again," and "Drive." It is, by any measure, an excellent album.\n\nWHY THIS MATTERS AT A BASEBALL GAME\nBecause somewhere in this stadium, someone is thinking about a Cars song. Because the summer of 1984 has a specific sound and The Cars are part of it. Because "Drive" is a genuinely good song and you know it.\n\nThe Cars continue to produce hit records.\nThat's the announcement.\nThat's all that needed to be said.`,
   },
   {
     matchText: "Video rental memberships are available now.",
-    title: "📼 Video Rental Memberships — 1984",
+    title: "📼 Video Rental Memberships - 1984",
     icon: "📼",
     color: "#1a237e",
-    body: `VIDEO RENTAL MEMBERSHIPS — AVAILABLE NOW\n\nYour local video rental store has memberships available.\n\nTHE MEMBERSHIP\nA one-time fee — typically between $10 and $25 depending on the store. In exchange: a laminated card with your name on it, the ability to rent any title in the store, and access to new releases on Tuesdays.\n\nWHAT THE CARD GETS YOU\nThe right to take a VHS tape home, watch it, and return it within 24 or 48 hours. The tape goes back in the same white sleeve. The sleeve goes back in the box. The box goes back to the shelf.\n\nTHE SELECTION\nThousands of titles. Every major theatrical release eventually arrives on VHS — usually six months to a year after it played in theaters. The library keeps growing every Tuesday.\n\nTHE LATE FEE\nThis is important: return the tape on time. The late fee is typically $1.00 to $2.00 per day. Some people believe the store relies on this revenue to stay in business. Some people are right.\n\nBE KIND, REWIND.\nThe sticker on every rental tape.\nThe standard that separates neighbors from people who are just renting VHS tapes.\n\nMEMBERSHIPS AVAILABLE NOW.\nAsk at the counter.`,
+    body: `VIDEO RENTAL MEMBERSHIPS - AVAILABLE NOW\n\nYour local video rental store has memberships available.\n\nTHE MEMBERSHIP\nA one-time fee - typically between $10 and $25 depending on the store. In exchange: a laminated card with your name on it, the ability to rent any title in the store, and access to new releases on Tuesdays.\n\nWHAT THE CARD GETS YOU\nThe right to take a VHS tape home, watch it, and return it within 24 or 48 hours. The tape goes back in the same white sleeve. The sleeve goes back in the box. The box goes back to the shelf.\n\nTHE SELECTION\nThousands of titles. Every major theatrical release eventually arrives on VHS - usually six months to a year after it played in theaters. The library keeps growing every Tuesday.\n\nTHE LATE FEE\nThis is important: return the tape on time. The late fee is typically $1.00 to $2.00 per day. Some people believe the store relies on this revenue to stay in business. Some people are right.\n\nBE KIND, REWIND.\nThe sticker on every rental tape.\nThe standard that separates neighbors from people who are just renting VHS tapes.\n\nMEMBERSHIPS AVAILABLE NOW.\nAsk at the counter.`,
   },
   // County fair / Americana  
   {
     matchText: "See prize-winning livestock from across the county.",
-    title: "🐄 County Fair — Prize Livestock",
+    title: "🐄 County Fair - Prize Livestock",
     icon: "🐄",
     color: "#795548",
-    body: `PRIZE-WINNING LIVESTOCK — COUNTY FAIR\n\nThis is not a figure of speech. These are real animals that have been raised, trained, groomed, and submitted for judged competition by farmers who take this seriously.\n\nTHE BLUE RIBBONS\nBest dairy cow. Best beef steer. Best hog. Best goat. Best sheep. Each category judged by an accredited agricultural judge who has spent decades developing opinions about livestock quality. These opinions are not casual. A blue ribbon at the county fair means something.\n\nTHE ANIMALS\nA 1,200-pound Holstein named Bessie who has won the dairy division three years running. A Berkshire hog whose owner will tell you, at length, about the feed regimen. A Suffolk sheep with wool that has been prepared for this moment for weeks.\n\nTHE FARMERS\nFamilies who got up before dawn this morning to prepare their animals. Who have been doing this their whole lives. Who take more pride in this blue ribbon than in almost anything else. This is their craft and their community.\n\nTHE FAIR\nLivestock barns, 4-H exhibits, the midway, the food stands, the tractor pull, the demolition derby.\n\nVisit your county fair this summer.\nSee the livestock.\nRespect the blue ribbon.`,
+    body: `PRIZE-WINNING LIVESTOCK - COUNTY FAIR\n\nThis is not a figure of speech. These are real animals that have been raised, trained, groomed, and submitted for judged competition by farmers who take this seriously.\n\nTHE BLUE RIBBONS\nBest dairy cow. Best beef steer. Best hog. Best goat. Best sheep. Each category judged by an accredited agricultural judge who has spent decades developing opinions about livestock quality. These opinions are not casual. A blue ribbon at the county fair means something.\n\nTHE ANIMALS\nA 1,200-pound Holstein named Bessie who has won the dairy division three years running. A Berkshire hog whose owner will tell you, at length, about the feed regimen. A Suffolk sheep with wool that has been prepared for this moment for weeks.\n\nTHE FARMERS\nFamilies who got up before dawn this morning to prepare their animals. Who have been doing this their whole lives. Who take more pride in this blue ribbon than in almost anything else. This is their craft and their community.\n\nTHE FAIR\nLivestock barns, 4-H exhibits, the midway, the food stands, the tractor pull, the demolition derby.\n\nVisit your county fair this summer.\nSee the livestock.\nRespect the blue ribbon.`,
   },
   // Phillies Friday tickets
   {
@@ -1426,14 +1426,14 @@ const ADDITIONAL_MISSING = [
     title: "🏟️ Phillies Homestand Continues",
     icon: "🏟️",
     color: "#c0392b",
-    body: `PHILLIES HOMESTAND CONTINUES\nTomorrow Night — Veterans Stadium\n\nThe homestand isn't over yet.\n\nTOMORROW'S GAME\nAnother chance to watch Mike Schmidt work third base like he's done it in his sleep, because he has. Another night for Steve Carlton or the rotation to go to work. Another evening in South Philadelphia with the Phanatic running loose somewhere in the stands.\n\nTICKETS\nAvailable at the Veterans Stadium box office. Regular hours tomorrow morning. Group packages can still be arranged with 24 hours notice.\n\nGETTING THERE\nThe SEPTA Broad Street Line to Pattison Avenue. The direct route. 75 cents. Faster than driving after the game. The Phillies strongly encourage it.\n\nIf you drove tonight and found a good parking spot: congratulations. You've earned the right to try again tomorrow.\n\nTHE ATMOSPHERE\nA Phillies crowd during a homestand in summer is a specific thing. Veterans Stadium gets loud when things are happening. The 700 Level is always prepared to offer its opinion. Harry Kalas's voice fills the park.\n\nCOME BACK TOMORROW.\nThe homestand continues.\nBring someone who hasn't been yet this season.`,
+    body: `PHILLIES HOMESTAND CONTINUES\nTomorrow Night - Veterans Stadium\n\nThe homestand isn't over yet.\n\nTOMORROW'S GAME\nAnother chance to watch Mike Schmidt work third base like he's done it in his sleep, because he has. Another night for Steve Carlton or the rotation to go to work. Another evening in South Philadelphia with the Phanatic running loose somewhere in the stands.\n\nTICKETS\nAvailable at the Veterans Stadium box office. Regular hours tomorrow morning. Group packages can still be arranged with 24 hours notice.\n\nGETTING THERE\nThe SEPTA Broad Street Line to Pattison Avenue. The direct route. 75 cents. Faster than driving after the game. The Phillies strongly encourage it.\n\nIf you drove tonight and found a good parking spot: congratulations. You've earned the right to try again tomorrow.\n\nTHE ATMOSPHERE\nA Phillies crowd during a homestand in summer is a specific thing. Veterans Stadium gets loud when things are happening. The 700 Level is always prepared to offer its opinion. Harry Kalas's voice fills the park.\n\nCOME BACK TOMORROW.\nThe homestand continues.\nBring someone who hasn't been yet this season.`,
   },
   {
-    matchText: "Eagles season tickets are now on sale — call Veterans Stadium for information.",
-    title: "🦅 Eagles Season Tickets — On Sale",
+    matchText: "Eagles season tickets are now on sale - call Veterans Stadium for information.",
+    title: "🦅 Eagles Season Tickets - On Sale",
     icon: "🦅",
     color: "#004C54",
-    body: `PHILADELPHIA EAGLES — 1984 SEASON TICKETS ON SALE\n\nThe Eagles play their home games at Veterans Stadium — the same venue you are currently sitting in. The same artificial turf, the same sight lines, the same 700 Level with different jerseys and a slightly different kind of cold.\n\nTHE 1984 EAGLES\nMarch 1984: the Eagles completed a significant trade. Ron Jaworski remains at quarterback. The offensive line is improved. There is optimism in the NFC East, which is either warranted or the usual preseason Eagles fan optimism — history will determine which.\n\nSEASON TICKETS\nSame seat. Every home game. Eight games plus preseason. You know your section, you know your neighbors in the adjacent seats, you know the specific post where your view of the right corner of the end zone is slightly obstructed.\n\nThere is something to be said for that continuity.\n\nCALL VETERANS STADIUM.\nAsk for the Eagles ticket office.\nTell them you heard about it at the Phillies game.\nThey will find this perfectly normal.`,
+    body: `PHILADELPHIA EAGLES - 1984 SEASON TICKETS ON SALE\n\nThe Eagles play their home games at Veterans Stadium - the same venue you are currently sitting in. The same artificial turf, the same sight lines, the same 700 Level with different jerseys and a slightly different kind of cold.\n\nTHE 1984 EAGLES\nMarch 1984: the Eagles completed a significant trade. Ron Jaworski remains at quarterback. The offensive line is improved. There is optimism in the NFC East, which is either warranted or the usual preseason Eagles fan optimism - history will determine which.\n\nSEASON TICKETS\nSame seat. Every home game. Eight games plus preseason. You know your section, you know your neighbors in the adjacent seats, you know the specific post where your view of the right corner of the end zone is slightly obstructed.\n\nThere is something to be said for that continuity.\n\nCALL VETERANS STADIUM.\nAsk for the Eagles ticket office.\nTell them you heard about it at the Phillies game.\nThey will find this perfectly normal.`,
   },
 ];
 
@@ -1467,7 +1467,7 @@ Right after this, we're back to the ballgame.`,
   },
   {
     matchText: "Recording your favorite television programs has never been easier.",
-    title: "📼 Recording TV — Never Easier",
+    title: "📼 Recording TV - Never Easier",
     icon: "📼",
     color: "#1a237e",
     body: `RECORDING YOUR FAVORITE TELEVISION PROGRAMS
@@ -1494,19 +1494,19 @@ The patience required is its own reward.`,
   },
   {
     matchText: "The Philadelphia Zoo in Fairmount Park is one of America's oldest.",
-    title: "🦁 Philadelphia Zoo — America's Oldest",
+    title: "🦁 Philadelphia Zoo - America's Oldest",
     icon: "🦁",
     color: "#27ae60",
-    body: `THE PHILADELPHIA ZOO — AMERICA'S FIRST
+    body: `THE PHILADELPHIA ZOO - AMERICA'S FIRST
 Fairmount Park, Philadelphia, Pennsylvania
 
 The Philadelphia Zoo opened on July 1, 1874. It was the first zoo in the United States. One hundred and ten years later, it remains one of the finest.
 
 THE LOCATION
-Fairmount Park on the east bank of the Schuylkill River, just northwest of downtown Philadelphia. The park itself contains more than 9,000 acres of green space — the largest urban park system in the country. The zoo occupies about 42 of those acres.
+Fairmount Park on the east bank of the Schuylkill River, just northwest of downtown Philadelphia. The park itself contains more than 9,000 acres of green space - the largest urban park system in the country. The zoo occupies about 42 of those acres.
 
 THE ANIMALS
-Over 1,600 animals representing more than 200 species. The big cats. The great apes — Philadelphia has one of the finest primate collections in North America. The African elephant exhibit. The reptile house, which has been causing children to simultaneously fascinate and disturb themselves since 1874.
+Over 1,600 animals representing more than 200 species. The big cats. The great apes - Philadelphia has one of the finest primate collections in North America. The African elephant exhibit. The reptile house, which has been causing children to simultaneously fascinate and disturb themselves since 1874.
 
 THE VICTORIAN ARCHITECTURE
 The original zoo buildings were designed in a Victorian-era style. Some of the original structures still stand. The gatehouse at the entrance was built in 1876 and was recently listed on the National Register of Historic Places.
@@ -1523,10 +1523,10 @@ It has been waiting 110 years for your visit.`,
   },
   {
     matchText: "The Phillies encourage fans to donate to Philabundance, the regional food bank.",
-    title: "🍎 Philabundance — Regional Food Bank",
+    title: "🍎 Philabundance - Regional Food Bank",
     icon: "🍎",
     color: "#e74c3c",
-    body: `PHILABUNDANCE — THE DELAWARE VALLEY'S HUNGER RELIEF ORGANIZATION
+    body: `PHILABUNDANCE - THE DELAWARE VALLEY'S HUNGER RELIEF ORGANIZATION
 
 Philabundance was founded in 1984 to address hunger in the Philadelphia region. Its mission is simple: reduce hunger and food insecurity in the Delaware Valley.
 
@@ -1534,10 +1534,10 @@ THE NEED
 In the Philadelphia metropolitan area, roughly one in eight residents faces food insecurity at some point during the year. This includes working families, elderly residents on fixed incomes, children, and individuals experiencing temporary economic hardship.
 
 HOW IT WORKS
-Philabundance operates as a food bank — collecting food donations from supermarkets, manufacturers, farms, and individual donors, then distributing that food through a network of more than 600 charitable agencies throughout the region.
+Philabundance operates as a food bank - collecting food donations from supermarkets, manufacturers, farms, and individual donors, then distributing that food through a network of more than 600 charitable agencies throughout the region.
 
 THE SCALE
-Last year, Philabundance distributed more than 20 million pounds of food. The majority of that food — about 80 percent — was donated fresh produce, proteins, and other perishables that would otherwise have been discarded.
+Last year, Philabundance distributed more than 20 million pounds of food. The majority of that food - about 80 percent - was donated fresh produce, proteins, and other perishables that would otherwise have been discarded.
 
 THE FOOD
 Canned goods. Fresh produce from area farms. Surplus from supermarkets. Holiday meals. Summer food programs for children when school lunch programs are unavailable.
@@ -1588,22 +1588,22 @@ That's fine.`,
   },
   {
     matchText: "Please Drive Safely on I-95 and the Schuylkill Expressway after the game.",
-    title: "🚗 Drive Safely — I-95 & Schuylkill",
+    title: "🚗 Drive Safely - I-95 & Schuylkill",
     icon: "🚗",
     color: "#7f8c8d",
     body: `PLEASE DRIVE SAFELY
-After the Game — I-95 and the Schuylkill Expressway
+After the Game - I-95 and the Schuylkill Expressway
 
 A message from the Philadelphia Phillies and Veterans Stadium.
 
 THE ROADS
-I-95 runs along the Delaware River waterfront and connects Veterans Stadium to points north and south. The Schuylkill Expressway — I-76, locally known simply as "the Schuylkill" — runs northwest through the city to the western suburbs and beyond.
+I-95 runs along the Delaware River waterfront and connects Veterans Stadium to points north and south. The Schuylkill Expressway - I-76, locally known simply as "the Schuylkill" - runs northwest through the city to the western suburbs and beyond.
 
 After a Phillies home game, both corridors will be carrying significant traffic. Thousands of fans who came by car will be leaving at approximately the same time.
 
 THE REQUEST
 Drive the speed limit. Particularly in the stadium exit areas where pedestrians are still crossing.
-If you had beer at the game — and the Phillies appreciate that you support their concession operations — please be honest with yourself about whether you are in a condition to drive.
+If you had beer at the game - and the Phillies appreciate that you support their concession operations - please be honest with yourself about whether you are in a condition to drive.
 
 THE HONEST TRUTH ABOUT THE SCHUYLKILL
 The Schuylkill Expressway was built in the 1950s and features ramps, curves, and merge points that require full attention at any time. After a late game, when drivers are tired and the highway is busy, full attention is especially important.
@@ -1617,10 +1617,10 @@ You can't come back if you don't get home.`,
   },
   {
     matchText: "Registration is open for youth baseball leagues throughout Philadelphia.",
-    title: "⚾ Youth Baseball Registration — Philadelphia",
+    title: "⚾ Youth Baseball Registration - Philadelphia",
     icon: "⚾",
     color: "#c0392b",
-    body: `YOUTH BASEBALL REGISTRATION — PHILADELPHIA
+    body: `YOUTH BASEBALL REGISTRATION - PHILADELPHIA
 Summer Leagues Now Forming
 
 The Philadelphia Recreation Department and the Phillies Youth Foundation are pleased to announce that registration is now open for summer youth baseball leagues throughout the city.
@@ -1657,10 +1657,10 @@ GENERIC_AD_ENTRIES.push(...PHILLIES_MISSING);
 const PREVIOUSLY_MISSING = [
   {
     matchText: "Help feed families in need throughout Philadelphia through Philabundance.",
-    title: "🍎 Philabundance — Fighting Hunger in Philadelphia",
+    title: "🍎 Philabundance - Fighting Hunger in Philadelphia",
     icon: "🍎",
     color: "#e74c3c",
-    body: `PHILABUNDANCE — FIGHTING HUNGER IN THE DELAWARE VALLEY
+    body: `PHILABUNDANCE - FIGHTING HUNGER IN THE DELAWARE VALLEY
 Founded in Philadelphia, 1984
 
 The Delaware Valley has more restaurants than most American cities. It also has more people who aren't sure where their next meal is coming from.
@@ -1671,7 +1671,7 @@ THE MISSION
 Collect surplus food from supermarkets, food manufacturers, restaurants, and farms. Distribute it through a network of soup kitchens, food pantries, and shelters throughout Philadelphia and the surrounding counties. No food wasted. No family turned away.
 
 THE SCALE
-Roughly one in eight residents of the greater Philadelphia area faces food insecurity at some point during the year. Many of them are working families — not people who gave up. People who ran into one bad month and couldn't absorb it.
+Roughly one in eight residents of the greater Philadelphia area faces food insecurity at some point during the year. Many of them are working families - not people who gave up. People who ran into one bad month and couldn't absorb it.
 
 HOW IT WORKS
 A supermarket has bread that expires tomorrow. Instead of discarding it, Philabundance picks it up. A church pantry in Kensington distributes it that afternoon. The bread didn't go to waste. A family had dinner.
@@ -1682,7 +1682,7 @@ THE PHILLIES' INVOLVEMENT
 The Phillies organization supports Philabundance and encourages fans throughout the five-county region to do the same.
 
 HOW YOU CAN HELP
-Cash donations allow Philabundance to purchase specific items in bulk — protein especially.
+Cash donations allow Philabundance to purchase specific items in bulk - protein especially.
 Non-perishable food donations are accepted at drop sites throughout the region.
 Volunteer hours at the distribution center are always needed.
 
@@ -1704,7 +1704,7 @@ THE MACHINE
 A cabinet approximately five feet tall, two feet wide. A screen, a joystick, one or two buttons. The artwork on the sides promises excitement in a way that is always slightly more dramatic than what actually happens. You put the quarter in. The screen lights up. The game begins.
 
 THE SOUND
-Every arcade cabinet produces sound. Not background music — sound effects designed to be heard across a loud room. The triple-beep of Pac-Man. The explosion of Space Invaders. The warp whistle of Donkey Kong. These sounds will be recognizable thirty years from now to everyone who heard them.
+Every arcade cabinet produces sound. Not background music - sound effects designed to be heard across a loud room. The triple-beep of Pac-Man. The explosion of Space Invaders. The warp whistle of Donkey Kong. These sounds will be recognizable thirty years from now to everyone who heard them.
 
 THE CROWD
 Arcades in 1984 are a social space in a way that hasn't been fully understood yet. You watch other people play. You give advice nobody asked for. You wait your turn. You memorize the patterns. You challenge the current high score holder, a seventeen-year-old who has been here since 3 PM on a Saturday and will still be here at closing.
@@ -1721,10 +1721,10 @@ The machine is waiting.`,
   },
   {
     matchText: "Richie Ashburn would like to wish happy birthday to Mrs. Colangelo of Cheltenham.",
-    title: "🎙️ Richie Ashburn — Voice of the Phillies",
+    title: "🎙️ Richie Ashburn - Voice of the Phillies",
     icon: "🎙️",
     color: "#c0392b",
-    body: `RICHIE ASHBURN — VOICE OF THE PHILADELPHIA PHILLIES
+    body: `RICHIE ASHBURN - VOICE OF THE PHILADELPHIA PHILLIES
 The Man Who Knows This Town
 
 Don Richie Ashburn grew up in Tilden, Nebraska, played center field for the Phillies from 1948 through 1959, won two batting titles, and retired with a lifetime average of .308. He has been in the broadcast booth since 1963.
@@ -1737,7 +1737,7 @@ Richie reads birthday and anniversary greetings on the air. This is not embarras
 Harry Kalas has been known to gently mock the birthday announcements. Richie doesn't mind. The birthday announcements continue.
 
 THE PARTNERSHIP
-Harry Kalas arrived in Philadelphia in 1971. Richie was already there. Their chemistry is not manufactured. They genuinely like each other. Harry is elegant, the poet with the golden voice. Richie is funny — the kind of funny that comes from having watched baseball every day for thirty years and knowing exactly where the absurdity lives.
+Harry Kalas arrived in Philadelphia in 1971. Richie was already there. Their chemistry is not manufactured. They genuinely like each other. Harry is elegant, the poet with the golden voice. Richie is funny - the kind of funny that comes from having watched baseball every day for thirty years and knowing exactly where the absurdity lives.
 
 THE CATCHPHRASE
 "Hard to believe, Harry." Richie says this when something remarkable happens. Sometimes it's sincere. Sometimes it's ironic. Always it's right.
@@ -1753,17 +1753,17 @@ Richie means it.`,
   },
   {
     matchText: "Stop by the Phillies team store for official 1984 merchandise.",
-    title: "🔴 Phillies Team Store — 1984 Official Merchandise",
+    title: "🔴 Phillies Team Store - 1984 Official Merchandise",
     icon: "🔴",
     color: "#c0392b",
-    body: `PHILLIES TEAM STORE — VETERANS STADIUM
-1984 Official Merchandise — Main Level, Section 108
+    body: `PHILLIES TEAM STORE - VETERANS STADIUM
+1984 Official Merchandise - Main Level, Section 108
 
 HATS
 Home red: $8.00. Road gray: $8.00. The one with the "P" exactly as it looks on the field, not a different "P" they made for the tourist market.
 
 T-SHIRTS
-Classic Phillies script across the chest: $7.00. Player name and number on the back: $9.00. (Available in Schmidt, Carlton, Samuel, and — for some reason — always running low on Hayes.)
+Classic Phillies script across the chest: $7.00. Player name and number on the back: $9.00. (Available in Schmidt, Carlton, Samuel, and - for some reason - always running low on Hayes.)
 
 THE YEARBOOK
 1984 Philadelphia Phillies Official Yearbook: $3.50. Contains season preview, player profiles, spring training photography, and a letter from Paul Owens that carefully avoids predicting anything specific. Considered the honest approach.
@@ -1772,10 +1772,10 @@ PENNANTS
 Standard: $3.00. Mini pennant for children: $1.50. The mini pennant is exactly the right size for a child's bedroom. Nobody argues this.
 
 BUMPER STICKERS
-"WE BELIEVE — PHILLIES 1984": $0.75. For vehicles that do, in fact, believe.
+"WE BELIEVE - PHILLIES 1984": $0.75. For vehicles that do, in fact, believe.
 
 THE ODDBALL SECTION (LIMITED QUANTITIES)
-Phillies key chain shaped like The Vet's aerial view: $2.00. Phillies pencil with an eraser that appears to be the Phanatic's head: $0.50. A Phillies calendar that was supposed to arrive in January and is now 40% off: $2.00. One (1) foam finger — green, for reasons nobody at the store has been able to explain — marked down from $4.00 to $1.25. Still available.
+Phillies key chain shaped like The Vet's aerial view: $2.00. Phillies pencil with an eraser that appears to be the Phanatic's head: $0.50. A Phillies calendar that was supposed to arrive in January and is now 40% off: $2.00. One (1) foam finger - green, for reasons nobody at the store has been able to explain - marked down from $4.00 to $1.25. Still available.
 
 NOT AVAILABLE
 Mike Schmidt's actual bat. We've been asked.
@@ -1792,7 +1792,7 @@ GENERIC_AD_ENTRIES.push(...PREVIOUSLY_MISSING);
 // ── CUBS COMMUNITY BANNER ENTRIES ──
 GENERIC_AD_ENTRIES.push(...CUBS_COMMUNITY_POPUP_ENTRIES);
 
-// Build lookup map for fast matching — built lazily after module finishes loading
+// Build lookup map for fast matching - built lazily after module finishes loading
 let _cachedMap = null;
 
 export function findGenericAdEntry(adText) {

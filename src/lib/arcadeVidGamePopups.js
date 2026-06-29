@@ -395,10 +395,10 @@ THE GAMEPLAY
 Defend the planet from alien invaders while protecting astronauts on the surface. Multiple threats attack simultaneously.
 
 THE CHALLENGE
-Defender throws everything at players. Control complexity is legendary—considered hardest arcade game to master.
+Defender throws everything at players. Control complexity is legendary-considered hardest arcade game to master.
 
 THE MECHANICS
-Hyperspace escape, smart bombs, reverse direction—multiple tools create strategic options.
+Hyperspace escape, smart bombs, reverse direction-multiple tools create strategic options.
 
 THE APPEAL
 For serious players seeking ultimate challenge. Casual players find it nearly impossible.
@@ -637,7 +637,7 @@ BATTERY POWERED
 Play for hours on replaceable batteries.
 
 PORTABLE GAMING
-Fits in your pocket—take video games with you anywhere.
+Fits in your pocket-take video games with you anywhere.
 
 THE APPEAL
 Nintendo perfected portable gaming with simple, addictive LCD games.
@@ -671,7 +671,7 @@ THE REVOLUTION
 Games now feature deeper stories, better graphics, and endless possibilities compared to arcade limitations.
 
 THE POTENTIAL
-Computer gaming offers unlimited potential—no cartridge or arcade hardware limitations.
+Computer gaming offers unlimited potential-no cartridge or arcade hardware limitations.
 
 THE LIBRARY
 Growing library of games designed for home computers expands options daily.
@@ -801,7 +801,7 @@ THE GAMEPLAY
 Navigate fortress structures while destroying enemies and avoiding obstacles.
 
 THE CHALLENGE
-Judging altitude became crucial—a revolutionary concept for arcade gaming at the time.
+Judging altitude became crucial-a revolutionary concept for arcade gaming at the time.
 
 THE APPEAL
 Unique visual perspective and novel gameplay mechanics attracted players seeking fresh experiences.

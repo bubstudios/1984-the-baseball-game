@@ -6,78 +6,78 @@ import { pickLine } from './commentaryLines';
 // ── Pitcher Celebrations (after big Ks, retiring the side, etc.) ──
 const PITCHER_FIST_PUMP = [
   "{pitcher} pumps his fist after the strikeout!",
-  "{pitcher} lets out a yell — that was a big one!",
-  "{pitcher} points to the sky — fired up after that strikeout!",
-  "{pitcher} slaps his glove — he's locked in right now.",
+  "{pitcher} lets out a yell - that was a big one!",
+  "{pitcher} points to the sky - fired up after that strikeout!",
+  "{pitcher} slaps his glove - he's locked in right now.",
   "{pitcher} comes off the mound pumping his fist!",
-  "{pitcher} roars — the dugout is alive!",
-  "{pitcher} spins on the mound — he knows that was filthy.",
+  "{pitcher} roars - the dugout is alive!",
+  "{pitcher} spins on the mound - he knows that was filthy.",
 ];
 
 const PITCHER_RETIRE_SIDE = [
-  "{pitcher} walks off the mound with a swagger — big inning for the defense.",
-  "{pitcher} claps his hands twice — that's how you do it.",
-  "{pitcher} points to the catcher — great game-calling back there.",
-  "{pitcher} tips his cap to the dugout — quality work.",
-  "{pitcher} exits with a quiet confidence — three up, three down.",
+  "{pitcher} walks off the mound with a swagger - big inning for the defense.",
+  "{pitcher} claps his hands twice - that's how you do it.",
+  "{pitcher} points to the catcher - great game-calling back there.",
+  "{pitcher} tips his cap to the dugout - quality work.",
+  "{pitcher} exits with a quiet confidence - three up, three down.",
 ];
 
 // ── Batter Celebrations ──
 const BATTER_ADMIRE = [
-  "{batter} watches it go — he knew it off the bat.",
+  "{batter} watches it go - he knew it off the bat.",
   "{batter} flips the bat and takes a slow walk to first.",
-  "{batter} stands in the box a beat too long — and the dugout goes crazy.",
-  "{batter} punches the air as he rounds first — big moment!",
-  "{batter} points to the dugout — that one was for the boys.",
+  "{batter} stands in the box a beat too long - and the dugout goes crazy.",
+  "{batter} punches the air as he rounds first - big moment!",
+  "{batter} points to the dugout - that one was for the boys.",
 ];
 
 const BATTER_TRIPLE_HUSTLE = [
   "{batter} slides into third and hops up, pumping his fist!",
   "{batter} pulls into third and points to the sky!",
-  "{batter} stands on third clapping — that's a hustle triple!",
+  "{batter} stands on third clapping - that's a hustle triple!",
 ];
 
 const BATTER_HIT_CELEBRATION = [
   "{batter} slaps hands all the way down the dugout.",
   "{batter} gets a standing ovation from the bench.",
-  "The dugout erupts — big hit by {batter}!",
-  "{batter} points back to the dugout — they're all on their feet.",
+  "The dugout erupts - big hit by {batter}!",
+  "{batter} points back to the dugout - they're all on their feet.",
 ];
 
 // ── Bat Flips ──
 const BAT_FLIP_LINES = [
-  "{batter} flips the bat high in the air — no doubt about it!",
-  "{batter} gives the bat a toss — he knew that one was gone the moment it left his hands.",
+  "{batter} flips the bat high in the air - no doubt about it!",
+  "{batter} gives the bat a toss - he knew that one was gone the moment it left his hands.",
   "{batter} flings the bat aside and watches the ball disappear.",
-  "{batter} flips the bat with authority — the crowd loves it!",
-  "{batter} tosses the bat — a beautiful arc, just like the ball.",
+  "{batter} flips the bat with authority - the crowd loves it!",
+  "{batter} tosses the bat - a beautiful arc, just like the ball.",
 ];
 
 // ── Fielder / Team Celebrations on Big Plays ──
 const FIELDER_WEB_GEM_REACTION = [
-  "The infield converges — everyone going nuts over that play!",
-  "Teammates come running — that's the play of the day.",
-  "The whole dugout is off the bench — that was something special.",
+  "The infield converges - everyone going nuts over that play!",
+  "Teammates come running - that's the play of the day.",
+  "The whole dugout is off the bench - that was something special.",
   "The crowd at {stadium} gives him a standing ovation.",
 ];
 
 const INNING_ENDING_CELEBRATION = [
-  "The pitcher pumps both fists — big inning for the defense.",
-  "High fives all around — they needed that one.",
+  "The pitcher pumps both fists - big inning for the defense.",
+  "High fives all around - they needed that one.",
   "The dugout erupts as the third out is recorded.",
-  "The team jogs off the field with energy — big momentum shift.",
+  "The team jogs off the field with energy - big momentum shift.",
 ];
 
 // ── Smack Talk / Trash Talk Flavor (subtle) ──
 const PITCHER_STAREDOWN = [
   "{pitcher} watches the batter all the way back to the dugout.",
-  "{pitcher} lingers on the mound — making the batter feel it.",
-  "{pitcher} stares in — and says something under his breath.",
+  "{pitcher} lingers on the mound - making the batter feel it.",
+  "{pitcher} stares in - and says something under his breath.",
 ];
 
 const BATTER_STAREDOWN = [
-  "{batter} took one step out of the box — just watching that one go.",
-  "{batter} says something as he rounds the bases — the catcher doesn't appreciate it.",
+  "{batter} took one step out of the box - just watching that one go.",
+  "{batter} says something as he rounds the bases - the catcher doesn't appreciate it.",
 ];
 
 // ── Roll functions ──

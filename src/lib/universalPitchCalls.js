@@ -1,4 +1,4 @@
-// Universal pitch-to-the-plate calls — varied, non-repetitive announcer language
+// Universal pitch-to-the-plate calls - varied, non-repetitive announcer language
 // Mixed by pitch type, result, and location
 
 export const PITCH_DELIVERY = [

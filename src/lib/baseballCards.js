@@ -1,4 +1,4 @@
-// Unified 1984 Baseball Card Collection System — All 26 Teams + Manager Cards
+// Unified 1984 Baseball Card Collection System - All 26 Teams + Manager Cards
 // Each team's roster mirrors gameData.js exactly
 import { EXTRA_ROSTERS, MANAGER_CARDS } from './baseballCards2';
 
@@ -421,7 +421,7 @@ export function saveToStorage(teamKey) {
 }
 
 // Migrate legacy Tigers/Phillies storage keys
-// NOTE: Old IDs don't match new roster ordering — clear ALL old card data to avoid mismatches
+// NOTE: Old IDs don't match new roster ordering - clear ALL old card data to avoid mismatches
 export function migrateLegacyStorage() {
   const MIGRATION_KEY = 'cards_migration_v2';
   if (localStorage.getItem(MIGRATION_KEY)) return; // already ran

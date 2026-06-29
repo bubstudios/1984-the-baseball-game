@@ -330,7 +330,7 @@ const ENTRIES = [
     icon: '🌠',
     matchText: 'Just 66 years separated the Wright Brothers\' first flight from the Apollo 11 Moon landing.',
     tagline: 'Progress Unlimited',
-    description: 'Just 66 years separated the Wright Brothers\' first flight from the Apollo 11 Moon landing. If progress continues at that pace, today\'s students may someday witness permanent bases on the Moon—or even journeys to Mars.',
+    description: 'Just 66 years separated the Wright Brothers\' first flight from the Apollo 11 Moon landing. If progress continues at that pace, today\'s students may someday witness permanent bases on the Moon-or even journeys to Mars.',
     timespan: '66 years',
     context: 'Wright Brothers to Moon',
     future: 'Lunar bases, Mars missions',

@@ -23,7 +23,7 @@ function BigAHalo() {
         {/* The Big A structure */}
         <path d="M60 130 L80 40 L90 40 L110 130 L95 130 L90 110 L80 110 L75 130 Z" fill="#FFD700" stroke="#B8860B" strokeWidth="2" />
         <path d="M82 95 L88 95 L85 70 Z" fill="#B8860B" />
-        {/* Halo ring — animated glow */}
+        {/* Halo ring - animated glow */}
         <ellipse cx="85" cy="30" rx="35" ry="8" fill="none" stroke="#FFD700" strokeWidth="3" opacity="0.9">
           <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite" />
           <animate attributeName="rx" values="32;38;32" dur="2s" repeatCount="indefinite" />

@@ -11,7 +11,7 @@ const CALLBACK_LINES = {
   collision_repeat: [
     'That is the catcher involved in the hard play earlier.',
     'There is clearly still some unfinished business.',
-    'The runner who collided with him earlier—this could get tense.',
+    'The runner who collided with him earlier-this could get tense.',
   ],
 
   after_ejection: [
@@ -22,7 +22,7 @@ const CALLBACK_LINES = {
 
   after_warning: [
     'After the earlier warning, both sides need to be careful.',
-    'The umpire has already issued warnings—no more chances.',
+    'The umpire has already issued warnings-no more chances.',
     'One more incident and we could see another ejection.',
   ],
 

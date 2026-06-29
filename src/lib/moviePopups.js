@@ -1,4 +1,4 @@
-// Movie Popups — interactive detail cards for movie broadcast ads
+// Movie Popups - interactive detail cards for movie broadcast ads
 // 25 movies × 3 entries (Synopsis, Review, Trivia) = 75 core entries
 // Plus bonus content: Box Office, Coming Soon, Concessions, Drive-Ins,
 // Letters, Incidents, Surveys, Trivia Challenges, Gossip, Quotes
@@ -206,7 +206,7 @@ const MOVIE_ENTRIES = {
     trivia: 'Daryl Hannah spent hours underwater training to perform many swimming scenes herself.',
   },
 
-  // #43-44: Romancing the Stone (user used #44 twice — adjusting)
+  // #43-44: Romancing the Stone (user used #44 twice - adjusting)
   43: {
     id: 'movie_43', movie: 'Romancing the Stone', bannerIndex: 43,
     synopsis: {
@@ -372,70 +372,70 @@ const MOVIE_ENTRIES = {
 // ── Bonus Content ──
 
 const BONUS_ENTRIES = {
-  // Box Office Reports — #56-60 in user's numbering, but our system continues from movie pool
+  // Box Office Reports - #56-60 in user's numbering, but our system continues from movie pool
   'box_office_1': { id: 'bonus_bo1', type: 'box_office', source: 'Summer Movie News', text: 'Ghostbusters remains one of the hottest tickets in America. Long lines continue to be reported in New York, Chicago, Los Angeles, and St. Louis.' },
   'box_office_2': { id: 'bonus_bo2', type: 'box_office', source: 'Entertainment Weekly', text: 'Beverly Hills Cop continues climbing the box office charts. Many theaters report sold-out evening showings.' },
   'box_office_3': { id: 'bonus_bo3', type: 'box_office', source: 'Hollywood Update', text: 'The Karate Kid has become one of the surprise success stories of 1984. Families and teenagers continue flocking to theaters.' },
   'box_office_4': { id: 'bonus_bo4', type: 'box_office', source: 'Cinema Report', text: 'Gremlins continues drawing large crowds despite causing several audience members to swear they\'ll never own unusual pets.' },
   'box_office_5': { id: 'bonus_bo5', type: 'box_office', source: 'Industry News', text: 'Indiana Jones and the Temple of Doom remains one of the year\'s most successful adventure films. Popcorn sales reportedly increase whenever snakes appear on-screen.' },
 
-  // Coming Soon — #61-65
+  // Coming Soon - #61-65
   'coming_1': { id: 'bonus_cs1', type: 'coming_soon', title: 'Dune', meta: 'Coming this holiday season.', text: 'The legendary science-fiction novel arrives on the big screen. Starring Kyle MacLachlan, Sting, and Max von Sydow.' },
   'coming_2': { id: 'bonus_cs2', type: 'coming_soon', title: '2010', meta: 'Opening this December.', text: 'The long-awaited sequel to 2001: A Space Odyssey.' },
   'coming_3': { id: 'bonus_cs3', type: 'coming_soon', title: 'The Terminator', meta: 'Opening soon. Rated R.', text: 'A mysterious stranger arrives from the future.' },
   'coming_4': { id: 'bonus_cs4', type: 'coming_soon', title: 'Johnny Dangerously', meta: 'Coming soon.', text: 'Michael Keaton stars in a comedy about crime, family, and bad decisions.' },
   'coming_5': { id: 'bonus_cs5', type: 'coming_soon', title: 'Starman', meta: 'Opening nationwide soon.', text: 'Jeff Bridges stars in a science-fiction romance unlike any other.' },
 
-  // Concession Stand — #66-70
+  // Concession Stand - #66-70
   'concession_1': { id: 'bonus_co1', type: 'concession', title: 'Concession Stand Promotion', text: 'Large Popcorn .......... $2.00\nLarge Soda ............. $1.25\nMilk Duds .............. 75¢\nJunior Mints ........... 75¢\n\nEnjoy the show.' },
   'concession_2': { id: 'bonus_co2', type: 'concession', title: 'Family Night', text: 'Children under 12 receive a free small popcorn with the purchase of an adult ticket. Participating locations only.' },
   'concession_3': { id: 'bonus_co3', type: 'concession', title: 'New Arrival', text: 'Try our fresh nachos. Cheese available upon request. Management not responsible for cheese-related accidents.' },
   'concession_4': { id: 'bonus_co4', type: 'concession', title: 'Moviegoer Tip', text: 'Please remove excess butter before entering your vehicle. Thank you.' },
   'concession_5': { id: 'bonus_co5', type: 'concession', title: 'Customer Notice', text: 'The concession stand is currently out of Milk Duds. Several customers appear disappointed.' },
 
-  // Drive-In Double Features — #71-75
+  // Drive-In Double Features - #71-75
   'drivein_1': { id: 'bonus_di1', type: 'drive_in', title: 'Sunset Drive-In', meta: 'Friday Night', text: 'Ghostbusters PLUS Gremlins. One admission price.' },
   'drivein_2': { id: 'bonus_di2', type: 'drive_in', title: 'Star-Lite Drive-In', meta: 'Saturday Night', text: 'Indiana Jones and the Temple of Doom PLUS Romancing the Stone. Gates open at 7 PM.' },
   'drivein_3': { id: 'bonus_di3', type: 'drive_in', title: 'Family Movie Night', meta: '', text: 'The Karate Kid PLUS Footloose. Bring lawn chairs.' },
   'drivein_4': { id: 'bonus_di4', type: 'drive_in', title: 'Science Fiction Weekend', meta: '', text: 'Star Trek III PLUS 2010. No Vulcans admitted without proper identification.' },
   'drivein_5': { id: 'bonus_di5', type: 'drive_in', title: 'Date Night Special', meta: '', text: 'Splash PLUS Romancing the Stone. Couples receive discounted admission.' },
 
-  // Letters to the Editor — #76-80
+  // Letters to the Editor - #76-80
   'letter_1': { id: 'bonus_le1', type: 'letter', source: 'Doris, Peoria', text: 'Dear Movie Times, My husband has now seen Ghostbusters four times. I believe he is attempting to become one.' },
   'letter_2': { id: 'bonus_le2', type: 'letter', source: 'Concerned Parent', text: 'Dear Movie Times, My son insists on practicing karate after seeing The Karate Kid. We have lost three lamps.' },
   'letter_3': { id: 'bonus_le3', type: 'letter', source: 'Mrs. Jenkins', text: 'Dear Movie Times, Please stop showing Gremlins. My children now distrust all household pets.' },
   'letter_4': { id: 'bonus_le4', type: 'letter', source: 'Anonymous', text: 'Dear Movie Times, After watching Beverly Hills Cop, my husband now believes every problem can be solved with wisecracks.' },
   'letter_5': { id: 'bonus_le5', type: 'letter', source: 'Residents of Springfield', text: 'Dear Movie Times, We attended Footloose. The dancing has not stopped.' },
 
-  // Theater Incident Reports — #81-85
+  // Theater Incident Reports - #81-85
   'incident_1': { id: 'bonus_in1', type: 'incident', title: 'Management Notice', text: 'Tonight\'s showing of Ghostbusters was briefly interrupted when the film reel jumped. Audience applauded when projection resumed.' },
   'incident_2': { id: 'bonus_in2', type: 'incident', title: 'Management Notice', text: 'A patron attempted to bring an entire pizza into the theater. The situation has been resolved.' },
   'incident_3': { id: 'bonus_in3', type: 'incident', title: 'Management Notice', text: 'A child wearing a Ghostbusters costume attempted to inspect the projection booth.' },
   'incident_4': { id: 'bonus_in4', type: 'incident', title: 'Management Notice', text: 'Several audience members cheered when Indiana Jones appeared on screen. No complaints were received.' },
   'incident_5': { id: 'bonus_in5', type: 'incident', title: 'Management Notice', text: 'The projector overheated during the late showing. Refund vouchers are available.' },
 
-  // Audience Surveys — #86-90
+  // Audience Surveys - #86-90
   'survey_1': { id: 'bonus_su1', type: 'survey', title: 'Ghostbusters', text: 'Would you recommend this movie?\nYES: 94%\nNO: 6%\n\nMost common response:\n"Who Ya Gonna Call?"' },
   'survey_2': { id: 'bonus_su2', type: 'survey', title: 'The Karate Kid', text: 'Favorite Character:\nMr. Miyagi ........ 72%\nDaniel ............ 23%\nJohnny ............ 5%' },
   'survey_3': { id: 'bonus_su3', type: 'survey', title: 'Footloose', text: 'Most Common Audience Response:\n"Dancing on the way to the parking lot."' },
   'survey_4': { id: 'bonus_su4', type: 'survey', title: 'Gremlins', text: 'Most Common Audience Response:\n"Those things should not be sold as pets."' },
   'survey_5': { id: 'bonus_su5', type: 'survey', title: 'Beverly Hills Cop', text: 'Most Common Audience Response:\n"Eddie Murphy is hilarious."' },
 
-  // Movie Trivia Challenge — #91-95
+  // Movie Trivia Challenge - #91-95
   'trivia_ch_1': { id: 'bonus_tc1', type: 'trivia_challenge', question: 'What city does Axel Foley call home?', answer: 'Detroit.' },
   'trivia_ch_2': { id: 'bonus_tc2', type: 'trivia_challenge', question: 'What are the three rules for caring for a Mogwai?', answer: 'Don\'t get it wet. Keep it away from bright light. Never feed it after midnight.' },
   'trivia_ch_3': { id: 'bonus_tc3', type: 'trivia_challenge', question: 'What is the name of Roy Hobbs\' bat?', answer: 'Wonderboy.' },
   'trivia_ch_4': { id: 'bonus_tc4', type: 'trivia_challenge', question: 'What phrase does Mr. Miyagi repeatedly teach Daniel?', answer: 'Wax on. Wax off.' },
   'trivia_ch_5': { id: 'bonus_tc5', type: 'trivia_challenge', question: 'Who ya gonna call?', answer: 'You know the answer.' },
 
-  // Hollywood Gossip — #96-100
+  // Hollywood Gossip - #96-100
   'gossip_1': { id: 'bonus_go1', type: 'gossip', text: 'Rumor has it several studios are already trying to create "the next Ghostbusters."' },
   'gossip_2': { id: 'bonus_go2', type: 'gossip', text: 'Industry insiders believe Eddie Murphy may become one of Hollywood\'s biggest stars.' },
   'gossip_3': { id: 'bonus_go3', type: 'gossip', text: 'Several major actors reportedly wanted the role of Indiana Jones before Harrison Ford.' },
   'gossip_4': { id: 'bonus_go4', type: 'gossip', text: 'Movie executives remain surprised by the success of The Karate Kid.' },
   'gossip_5': { id: 'bonus_go5', type: 'gossip', text: 'Kevin Bacon\'s popularity reportedly continues to rise among teenage audiences.' },
 
-  // Movie Quotes — #101-105
+  // Movie Quotes - #101-105
   'quote_1': { id: 'bonus_mq1', type: 'quote', movie: 'Ghostbusters', text: '"We came. We saw. We kicked its ass."' },
   'quote_2': { id: 'bonus_mq2', type: 'quote', movie: 'The Karate Kid', text: '"Wax on. Wax off."' },
   'quote_3': { id: 'bonus_mq3', type: 'quote', movie: 'Beverly Hills Cop', text: '"Trust me."' },

@@ -1,5 +1,5 @@
 /**
- * Phase 3.0 — Defensive Positioning
+ * Phase 3.0 - Defensive Positioning
  * 
  * Defense chooses one alignment per plate appearance before the pitch.
  * Five alignments: Normal, Infield In, Double-Play Depth, Corners In, No-Doubles.
@@ -53,24 +53,24 @@ export const ALIGNMENTS = {
  * Priority order: Infield In > Corners In > DP Depth > No-Doubles > Normal
  */
 export function choose_alignment(game) {
-  // Priority 1: Infield In — runner on 3rd, <2 outs, late/close
+  // Priority 1: Infield In - runner on 3rd, <2 outs, late/close
   if (game.runner_on_3rd && game.outs < 2) {
     if (game.inning >= 7 && Math.abs(game.score_margin) <= 2) {
       return ALIGNMENTS.INFIELD_IN;
     }
   }
   
-  // Priority 2: Corners In — expect bunt
+  // Priority 2: Corners In - expect bunt
   if (game.expect_bunt) {
     return ALIGNMENTS.CORNERS_IN;
   }
   
-  // Priority 3: Double-Play Depth — runner on 1st, <2 outs
+  // Priority 3: Double-Play Depth - runner on 1st, <2 outs
   if (game.runner_on_1st && game.outs < 2) {
     return ALIGNMENTS.DP_DEPTH;
   }
   
-  // Priority 4: No-Doubles — protect late lead vs. slugger
+  // Priority 4: No-Doubles - protect late lead vs. slugger
   if (game.inning >= 8 && game.current_pitcher_leads_by(1, 2) && game.current_batter_pwr >= 7) {
     return ALIGNMENTS.NO_DOUBLES;
   }

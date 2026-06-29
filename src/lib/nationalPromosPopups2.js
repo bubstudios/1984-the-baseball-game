@@ -18,7 +18,7 @@ THE BREAKTHROUGH
 Using LaserDisc technology, Dragon's Lair displayed beautiful, fluid animations that made it look like a playable cartoon. Players controlled a knight named Dirk the Daring as he navigated a wizard's castle to rescue Princess Daphne.
 
 THE GAMEPLAY
-Rather than traditional joystick-based action, Dragon's Lair required quick reactions to on-screen prompts—dodge left when Dirk needed to avoid a boulder, thrust your sword when an enemy appeared.
+Rather than traditional joystick-based action, Dragon's Lair required quick reactions to on-screen prompts-dodge left when Dirk needed to avoid a boulder, thrust your sword when an enemy appeared.
 
 THE PHENOMENON
 Arcades nationwide reported lines of players waiting to spend quarters trying to survive the wizard's challenges. The game became the highest-grossing arcade game ever at its time.
@@ -45,7 +45,7 @@ THE TRACKS
 Players raced through digitized versions of famous racing circuits, with Fuji International Speedway as the featured track. Completing laps unlocked new courses.
 
 THE CHALLENGE
-The game demanded precision—hitting cones slowed you down, running off the track was instant failure. Victory required memorizing the track layout and racing line.
+The game demanded precision-hitting cones slowed you down, running off the track was instant failure. Victory required memorizing the track layout and racing line.
 
 THE ARCADE LEGACY
 Pole Position was so popular that it inspired an entire subgenre of arcade racing games and proved that simulation-style gameplay could compete with action games for quarters.`,
@@ -69,7 +69,7 @@ THE PUZZLE
 Players must change the color of every cube on a pyramid by bouncing on it, while avoiding enemies and bouncing balls that patrol the structure.
 
 THE MECHANICS
-Q*bert can't move freely—only diagonal bounces are possible. Players must strategize movements to color all cubes while evading enemies and finding escape routes.
+Q*bert can't move freely-only diagonal bounces are possible. Players must strategize movements to color all cubes while evading enemies and finding escape routes.
 
 THE ACHIEVEMENT
 Q*bert proved that arcade games didn't need complex narratives or intense action. A simple, clever mechanic executed brilliantly could create lasting appeal and cultural impact.`,
@@ -183,7 +183,7 @@ Centipede appealed to a broader audience than typical arcade games, attracting p
 Defender, released in 1980, challenged players to protect a planet from descending alien invaders in one of the most complex arcade control schemes of its era.
 
 THE CONTROLS
-Defender's control panel was overwhelming—five buttons controlling movement, fire, smart bomb, and screen views. Mastering it took dedication and practice.
+Defender's control panel was overwhelming-five buttons controlling movement, fire, smart bomb, and screen views. Mastering it took dedication and practice.
 
 THE CHALLENGE
 Aliens descend to kidnap humans, which must be rescued. Defending the planet required constant movement, strategic bomb placement, and resource management.
@@ -213,7 +213,7 @@ THE INNOVATION
 One joystick controlled movement, the other controlled firing direction independently. This allowed strafing, a technique revolutionary for 1982 arcade gaming.
 
 THE INTENSITY
-Robotron is relentless—hundreds of enemies appear simultaneously, demanding constant movement, rapid aiming, and split-second decision-making.
+Robotron is relentless-hundreds of enemies appear simultaneously, demanding constant movement, rapid aiming, and split-second decision-making.
 
 THE SKILL CEILING
 While accessible to casual players, Robotron rewarded experienced players with techniques and positioning strategies that separated champions from novices.`,
@@ -255,7 +255,7 @@ Ms. Pac-Man rivaled the original's popularity, proving that sequels could be bet
 Joust, released in 1982, featured a knight riding an ostrich, jousting against enemy knights in an action-puzzle game of timing and positioning.
 
 THE PREMISE
-Players control a knight on an ostrich, flying upward to joust enemies. The twist—height advantage determines victory, making positioning crucial.
+Players control a knight on an ostrich, flying upward to joust enemies. The twist-height advantage determines victory, making positioning crucial.
 
 THE MECHANIC
 Attacking an enemy requires being above them. Complex flight physics meant high-scoring players developed intricate maneuvering techniques.
@@ -345,10 +345,10 @@ GAMING FOCUS
 Where the Apple II focuses on education, Atari dominates gaming. Arcade-quality games like Pac-Man, Defender, and original titles draw gamers nationwide.
 
 AFFORDABILITY
-At $399, the 800XL undercuts Apple II pricing while offering better graphics and sound—perfect for families prioritizing entertainment.
+At $399, the 800XL undercuts Apple II pricing while offering better graphics and sound-perfect for families prioritizing entertainment.
 
 THE CHOICE
-Consumers choosing computers must decide: education (Apple), gaming (Atari), or business (IBM)—each serving different needs.`,
+Consumers choosing computers must decide: education (Apple), gaming (Atari), or business (IBM)-each serving different needs.`,
   },
   {
     id: 'computer_544',
@@ -363,7 +363,7 @@ Consumers choosing computers must decide: education (Apple), gaming (Atari), or 
 Radio Shack's TRS-80 line, starting at $799, brought computing to neighborhoods through convenient Radio Shack retail locations nationwide.
 
 AVAILABILITY
-Radio Shack's ubiquity gave customers local support, financing options, and immediate assistance—advantages competitors couldn't match.
+Radio Shack's ubiquity gave customers local support, financing options, and immediate assistance-advantages competitors couldn't match.
 
 SOFTWARE ECOSYSTEM
 Radio Shack actively supported software development, resulting in a strong library of business, educational, and entertainment titles.
@@ -382,7 +382,7 @@ While not the most advanced computer, TRS-80 succeeded by prioritizing customer 
     anim: 'pulse',
     matchText: 'Ask about computer software at your local electronics dealer.',
     type: 'computer',
-    body: `HOME COMPUTER SOFTWARE — THE WILD WEST OF 1984
+    body: `HOME COMPUTER SOFTWARE - THE WILD WEST OF 1984
 
 If the hardware is the body of a home computer, software is the soul. In 1984, the software market is exploding with games, educational programs, productivity tools, and utilities of wildly varying quality.
 
@@ -395,10 +395,10 @@ EDUCATIONAL SOFTWARE
 Oregon Trail (school standard), Reader Rabbit, and Math Blaster are showing parents that computers can genuinely teach their children.
 
 PRODUCTIVITY
-VisiCalc — the first spreadsheet — launched the concept of the "killer app," software so useful it justifies the hardware purchase alone. WordStar and dBASE III are business essentials.
+VisiCalc - the first spreadsheet - launched the concept of the "killer app," software so useful it justifies the hardware purchase alone. WordStar and dBASE III are business essentials.
 
 WHAT FORMATS EXIST
-Software ships on 5.25-inch floppy disks ($20–$50 per program) or cassette tapes ($10–$30 for simpler programs). Compatibility between systems is a nightmare — Commodore 64 software won't run on Apple II.
+Software ships on 5.25-inch floppy disks ($20–$50 per program) or cassette tapes ($10–$30 for simpler programs). Compatibility between systems is a nightmare - Commodore 64 software won't run on Apple II.
 
 WHERE TO BUY
 • Radio Shack (Tandy/TRS-80 software and some multi-platform titles)
@@ -445,7 +445,7 @@ export const WEIRD_TECHNOLOGY = [
     anim: 'pulse',
     matchText: 'You know, I still don\'t understand microwave ovens.',
     type: 'technology',
-    body: `MICROWAVE OVENS — COOKING FROM THE FUTURE
+    body: `MICROWAVE OVENS - COOKING FROM THE FUTURE
 
 The microwave oven has gone from a $3,000 laboratory curiosity in the 1950s to a $200 kitchen appliance that baffles and delights Americans in equal measure.
 
@@ -453,7 +453,7 @@ HOW IT WORKS (sort of)
 Microwave ovens use electromagnetic radiation at 2.45 gigahertz to excite water molecules inside food, generating heat from the inside out rather than from an external flame. This has confused nearly every adult in America.
 
 THE QUESTION
-"But how does it know?" is the question most often asked about microwave ovens. The answer involves magnetrons, standing waves, and rotating turntables — none of which most people want to understand when they're reheating Tuesday's leftover meatloaf.
+"But how does it know?" is the question most often asked about microwave ovens. The answer involves magnetrons, standing waves, and rotating turntables - none of which most people want to understand when they're reheating Tuesday's leftover meatloaf.
 
 THE RESULTS
 • Reheating coffee: Revolutionary
@@ -477,7 +477,7 @@ In 1984, 25% of American homes have a microwave oven. By 1990, that number will 
     anim: 'pulse',
     matchText: 'My nephew says computers are the future. We\'ll see.',
     type: 'technology',
-    body: `THE NEPHEW THESIS — "COMPUTERS ARE THE FUTURE"
+    body: `THE NEPHEW THESIS - "COMPUTERS ARE THE FUTURE"
 
 Somewhere in America right now, a nephew is explaining computers to his uncle over pot roast, and the uncle is nodding in the way people nod when they're not listening.
 
@@ -488,7 +488,7 @@ THE UNCLE'S RESPONSE
 "The refrigerator tells me when I'm out of groceries. I don't need a computer."
 
 THE NEPHEW'S COUNTER
-"It's not like that. It's — look, just trust me."
+"It's not like that. It's - look, just trust me."
 
 WHAT THE NEPHEW IS RIGHT ABOUT
 Everything, it turns out. Though in 1984, even the nephew has no idea how right.
@@ -513,7 +513,7 @@ The nephew's vision will exceed even his own predictions. The uncle will eventua
     anim: 'pulse',
     matchText: 'The information age is only beginning.',
     type: 'technology',
-    body: `THE INFORMATION AGE — ALWAYS MOVING FORWARD
+    body: `THE INFORMATION AGE - ALWAYS MOVING FORWARD
 
 "Innovation continues." Four words that capture 1984's relentless technological march.
 
@@ -530,7 +530,7 @@ THE ENTERTAINMENT
 Cable television, VCRs, and video games have fundamentally changed how Americans spend leisure time in just five years.
 
 THE FEELING
-Americans in 1984 sense they're living through something historic. The computerization of work, the miniaturization of electronics, the digitization of music — each development hints at a world just around the corner.
+Americans in 1984 sense they're living through something historic. The computerization of work, the miniaturization of electronics, the digitization of music - each development hints at a world just around the corner.
 
 THE UNCERTAINTY
 Nobody knows exactly what's coming, but the direction seems clear: smaller, faster, cheaper, more connected.
@@ -550,7 +550,7 @@ The future has always been arriving. In 1984, it seems to be running.`,
 Philips and Sony have developed Compact Disc (CD) technology that stores music digitally on 4.7-inch discs, offering perfect sound quality and durability.
 
 THE TECHNOLOGY
-CDs use laser technology to read tiny pits on a reflective disc surface. No physical contact means no wear—CDs theoretically play perfectly thousands of times.
+CDs use laser technology to read tiny pits on a reflective disc surface. No physical contact means no wear-CDs theoretically play perfectly thousands of times.
 
 THE SOUND QUALITY
 CD sound is digitally encoded at 44.1 kHz sampling rate, 16-bit depth, producing audio that exceeds vinyl records in clarity and consistency.
@@ -563,7 +563,7 @@ THE ADVANTAGES
 - Better fidelity than vinyl
 
 THE ADOPTION CHALLENGE
-CD players cost $800-$1,000, and CDs retail for $12-$16—expensive compared to cassettes at $6-$8. Widespread adoption depends on prices falling significantly.
+CD players cost $800-$1,000, and CDs retail for $12-$16-expensive compared to cassettes at $6-$8. Widespread adoption depends on prices falling significantly.
 
 THE PREDICTION
 Industry observers believe CDs will eventually replace vinyl and cassettes, but the transition will take years as prices gradually decrease.`,
@@ -587,7 +587,7 @@ CURRENT REALITY
 Motorola and other manufacturers have developed portable cellular phones weighing 2-3 pounds, small enough for car mounting or briefcase carrying.
 
 THE SERVICE
-AT&T and other carriers are building networks in major cities. Service costs are substantial—$4,000-$5,000 for equipment, plus $50+ monthly for limited minutes.
+AT&T and other carriers are building networks in major cities. Service costs are substantial-$4,000-$5,000 for equipment, plus $50+ monthly for limited minutes.
 
 THE FUTURE
 Cellular phones will likely become more common and affordable, eventually replacing car phones and pay phones. The technology is still experimental but promising.
@@ -669,10 +669,10 @@ THE CONCEPT
 A smooth stone selected from a beach, packaged in a box with straw bedding and accompanied by a humorous training guide featuring tips like "Housebreaking" and "Tricks."
 
 THE HUMOR
-The entire product is a joke—rocks require no care, no feeding, no attention. The training manual is filled with absurdist humor that appeals to adults and children alike.
+The entire product is a joke-rocks require no care, no feeding, no attention. The training manual is filled with absurdist humor that appeals to adults and children alike.
 
 THE PHENOMENON
-Pet Rocks represent marketing genius—turning a worthless product into a cultural sensation through novelty and clever packaging.
+Pet Rocks represent marketing genius-turning a worthless product into a cultural sensation through novelty and clever packaging.
 
 THE REALITY
 1984 buyers are mostly people reliving the fad or discovering it for the first time. The peak has passed, but the concept endures as a novelty gift.`,
@@ -780,7 +780,7 @@ TRACK LISTING
 12. God Is Watching Us (2:19)
 
 THE PHENOMENON
-Purple Rain is the biggest album release of 1984. Prince's virtuosity—playing all instruments, writing all songs, producing everything—creates sonic depth unmatched by contemporary releases.
+Purple Rain is the biggest album release of 1984. Prince's virtuosity-playing all instruments, writing all songs, producing everything-creates sonic depth unmatched by contemporary releases.
 
 THE SINGLES
 "When Doves Cry" became a #1 hit, featuring Prince's signature falsetto and minimalist production (drums and voice only on the hook).
@@ -976,7 +976,7 @@ As more families acquire VCRs, video rental stores will likely expand rapidly. A
     type: 'culture',
     body: `BOOM BOXES - PORTABLE AUDIO DOMINATES
 
-The Sony Walkman revolutionized personal audio in 1979, but 1984 belongs to the boom box—a large, portable stereo system with dual cassette decks and AM/FM radio.
+The Sony Walkman revolutionized personal audio in 1979, but 1984 belongs to the boom box-a large, portable stereo system with dual cassette decks and AM/FM radio.
 
 THE DEVICE
 Boom boxes are shoulder-mounted or carried in both hands, weighing 10-15 pounds. They play cassettes, FM radio, and some feature record players.

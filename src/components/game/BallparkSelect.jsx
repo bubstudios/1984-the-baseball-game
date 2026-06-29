@@ -55,7 +55,7 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
   const ParkCard = ({ teamKey, isUser }) => {
     const team = TEAMS[teamKey];
     const isSelected = selectedPark === team.stadium;
-    const leagueRule = team.league === 'AL' ? 'DH RULES' : 'NO DH — PITCHER HITS';
+    const leagueRule = team.league === 'AL' ? 'DH RULES' : 'NO DH - PITCHER HITS';
 
     return (
       <button
@@ -134,7 +134,7 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
           </div>
           <h2 className="font-heading text-xl font-bold text-foreground">Choose Ballpark</h2>
           <p className="font-body text-sm text-muted-foreground">
-            {userTeamData.abbr} vs {cpuTeamData.abbr} — where should they play? The home team&apos;s league determines the DH rule.
+            {userTeamData.abbr} vs {cpuTeamData.abbr} - where should they play? The home team&apos;s league determines the DH rule.
           </p>
         </div>
 
@@ -142,13 +142,13 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-[10px] font-heading uppercase tracking-wider text-emerald-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            Your Team — {userTeamData.name}
+            Your Team - {userTeamData.name}
           </div>
           <ParkCard teamKey={userTeam} isUser={true} />
 
           <div className="flex items-center gap-2 text-[10px] font-heading uppercase tracking-wider text-amber-400 mt-4">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            Opponent — {cpuTeamData.name}
+            Opponent - {cpuTeamData.name}
           </div>
           <ParkCard teamKey={cpuTeam} isUser={false} />
         </div>

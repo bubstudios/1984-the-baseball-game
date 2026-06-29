@@ -94,7 +94,7 @@ export default function BatButtons({ onSwing, disabled, situationalBatter, lastP
                   : 'bg-amber-950/30 hover:bg-amber-900/40 border-amber-800/20'
               }`}
             >
-              {/* Bat — horizontal, arcs upward on swing */}
+              {/* Bat - horizontal, arcs upward on swing */}
               <div
                 className={`
                   relative w-24 h-8
@@ -121,7 +121,7 @@ export default function BatButtons({ onSwing, disabled, situationalBatter, lastP
                     </linearGradient>
                   </defs>
 
-                  {/* Barrel — smooth gradual taper from thick barrel end to thin handle */}
+                  {/* Barrel - smooth gradual taper from thick barrel end to thin handle */}
                   <path d="M6,13
                     C6,10 10,8 14,8
                     L68,17.5
@@ -132,7 +132,7 @@ export default function BatButtons({ onSwing, disabled, situationalBatter, lastP
                     fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.5"
                   />
 
-                  {/* Barrel end grain — rounded cap */}
+                  {/* Barrel end grain - rounded cap */}
                   <ellipse cx="10" cy="25" rx="5" ry="16" fill="url(#barrelGrad)" stroke="#3B1E08" strokeWidth="1.2" />
 
                   {/* Barrel top highlight */}
@@ -140,7 +140,7 @@ export default function BatButtons({ onSwing, disabled, situationalBatter, lastP
                   {/* Barrel bottom shadow */}
                   <path d="M14,39 Q40,34 64,31" fill="none" stroke="#8B6040" strokeWidth="1.8" opacity="0.35" strokeLinecap="round" />
 
-                  {/* Handle — thin uniform wood */}
+                  {/* Handle - thin uniform wood */}
                   <rect x="68" y="21" width="72" height="8" rx="1" fill="url(#handleGrad)" stroke="#3B1E08" strokeWidth="1" />
 
                   {/* Grip tape */}
@@ -158,7 +158,7 @@ export default function BatButtons({ onSwing, disabled, situationalBatter, lastP
                     <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#333" strokeWidth="0.9" opacity="0.6" />
                   ))}
 
-                  {/* Knob — rounded pill-shaped button */}
+                  {/* Knob - rounded pill-shaped button */}
                   <rect x="140" y="17" width="16" height="16" rx="8" fill="url(#knobGrad)" stroke="#3B1E08" strokeWidth="1.3" />
                   <ellipse cx="148" cy="21" rx="5" ry="2.5" fill="#8B6040" opacity="0.4" />
 

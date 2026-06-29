@@ -11,7 +11,7 @@ const ENTRIES = [
     matchText: 'Cover Up premieres Friday on NBC.',
     network: 'NBC',
     time: 'Friday 8 PM',
-    body: `COVER UP — NBC FRIDAYS AT 8 PM
+    body: `COVER UP - NBC FRIDAYS AT 8 PM
 
 Fashion photographer Dani Reynolds thought she had it all. Then her secret-agent husband disappears under mysterious circumstances.
 
@@ -28,7 +28,7 @@ Star Jon-Erik Hexum became one of television's fastest-rising stars before a tra
 THE LEGACY
 Despite its brief run, Cover Up remains memorable for its unique blend of fashion and espionage.
 
-"One of television's most ambitious new action dramas." — TV Guide`,
+"One of television's most ambitious new action dramas." - TV Guide`,
     achievement: 'cover_up_fan',
   },
   {
@@ -40,7 +40,7 @@ Despite its brief run, Cover Up remains memorable for its unique blend of fashio
     matchText: 'Riptide returns Tuesday on NBC.',
     network: 'NBC',
     time: 'Tuesday 8 PM',
-    body: `RIPTIDE — NBC TUESDAYS AT 8 PM
+    body: `RIPTIDE - NBC TUESDAYS AT 8 PM
 
 Private investigators Cody Allen, Nick Ryder, and computer genius Murray "Boz" Bozinsky solve crimes up and down the California coast using speedboats, helicopters, and some very unusual detective work.
 
@@ -56,7 +56,7 @@ SIGNATURE ELEMENTS
 • Clever wordplay and humor
 
 THE PHENOMENON
-Many fans remember the helicopter and robot more than the actual mysteries—and that's exactly the point.
+Many fans remember the helicopter and robot more than the actual mysteries-and that's exactly the point.
 
 "Adventure has never looked this sunny."`,
   },
@@ -84,7 +84,7 @@ THE REVIVAL
 Spillane himself is involved in the production, ensuring authenticity to the source material.
 
 THE CHARACTER
-Mike Hammer is tough, cynical, and willing to bend rules to get justice. He represents 1980s attitudes about law and order—taking matters into his own hands when the system fails.
+Mike Hammer is tough, cynical, and willing to bend rules to get justice. He represents 1980s attitudes about law and order-taking matters into his own hands when the system fails.
 
 THE NOVELS
 Spillane's books sold over 225 million copies worldwide, making Mike Hammer one of fiction's most popular characters.
@@ -100,7 +100,7 @@ Spillane's books sold over 225 million copies worldwide, making Mike Hammer one 
     matchText: 'Hotel returns Wednesday on ABC.',
     network: 'ABC',
     time: 'Wednesday 9 PM',
-    body: `HOTEL — ABC WEDNESDAYS AT 9 PM
+    body: `HOTEL - ABC WEDNESDAYS AT 9 PM
 
 Welcome to the elegant St. Gregory Hotel in San Francisco, where every guest brings a new mystery, romance, scandal, or adventure.
 
@@ -113,7 +113,7 @@ GUEST STARS
 Hollywood's biggest names appear weekly as guests, ensuring fresh storylines and star power.
 
 THE GLAMOUR
-The show emphasizes luxury, style, and sophistication—appealing to viewers who enjoy elegant settings and sophisticated drama.
+The show emphasizes luxury, style, and sophistication-appealing to viewers who enjoy elegant settings and sophisticated drama.
 
 THE FORMULA
 Hotel featured more guest stars than almost any other television drama of its era, making it a who's-who of 1980s Hollywood.
@@ -129,7 +129,7 @@ Hotel featured more guest stars than almost any other television drama of its er
     matchText: 'Falcon Crest continues Friday on CBS.',
     network: 'CBS',
     time: 'Friday 9 PM',
-    body: `FALCON CREST — CBS FRIDAYS AT 9 PM
+    body: `FALCON CREST - CBS FRIDAYS AT 9 PM
 
 Power. Wealth. Betrayal.
 
@@ -160,7 +160,7 @@ The show became one of television's most successful dramas of the 1980s, spawnin
     matchText: 'Knots Landing airs Thursday on CBS.',
     network: 'CBS',
     time: 'Thursday 10 PM',
-    body: `KNOTS LANDING — CBS THURSDAYS AT 10 PM
+    body: `KNOTS LANDING - CBS THURSDAYS AT 10 PM
 
 The cul-de-sac may look peaceful, but behind closed doors lies a world of secrets, affairs, rivalries, and heartbreak.
 
@@ -188,7 +188,7 @@ Each episode explores multiple storylines across the four houses, creating compl
     matchText: 'Lottery! continues Thursday on ABC.',
     network: 'ABC',
     time: 'Thursday 8 PM',
-    body: `LOTTERY! — ABC THURSDAYS AT 8 PM
+    body: `LOTTERY! - ABC THURSDAYS AT 8 PM
 
 What would YOU do with a million dollars?
 
@@ -200,7 +200,7 @@ THE PREMISE
 Unlike typical dramas with recurring characters, Lottery! features completely different winners and stories each episode.
 
 THE VARIETY
-Each episode explores how sudden wealth affects ordinary people—some for better, some for worse.
+Each episode explores how sudden wealth affects ordinary people-some for better, some for worse.
 
 THE APPEAL
 Audiences enjoy the fantasy of winning the lottery while watching the consequences play out for the show's weekly winners.
@@ -219,7 +219,7 @@ Every episode featured a completely different winner and story, requiring viewer
     matchText: 'Airwolf flies Saturday on CBS.',
     network: 'CBS',
     time: 'Saturday 8 PM',
-    body: `AIRWOLF — CBS SATURDAYS AT 8 PM
+    body: `AIRWOLF - CBS SATURDAYS AT 8 PM
 
 The world's most advanced combat helicopter takes flight.
 
@@ -228,7 +228,7 @@ Pilot Stringfellow Hawke and Dominic Santini tackle impossible missions using Ai
 STARRING: Jan-Michael Vincent, Ernest Borgnine
 
 THE HELICOPTER
-Airwolf itself is almost a character—featuring vertical takeoff capabilities, advanced weaponry, and speeds that defy belief.
+Airwolf itself is almost a character-featuring vertical takeoff capabilities, advanced weaponry, and speeds that defy belief.
 
 THE ACTION
 The helicopter sequences remain some of the most impressive action footage ever filmed for television.
@@ -266,7 +266,7 @@ THE PREMISE
 Officer Frank Chaney pilots Blue Thunder to fight crime in Los Angeles, combining police procedural elements with action-adventure.
 
 THE APPEAL
-While Airwolf was a spy thriller, Blue Thunder was a police action show—different premises, similar thrills.
+While Airwolf was a spy thriller, Blue Thunder was a police action show-different premises, similar thrills.
 
 "Crime doesn't stand a chance."`,
   },
@@ -310,7 +310,7 @@ The series ran for five seasons, proving that the formula of spy work meets subu
     matchText: 'T.J. Hooker patrols Saturday on ABC.',
     network: 'ABC',
     time: 'Saturday 9 PM',
-    body: `T.J. HOOKER — SATURDAYS AT 9 PM
+    body: `T.J. HOOKER - SATURDAYS AT 9 PM
 
 Veteran police sergeant T.J. Hooker patrols the streets, training rookie officers while fighting crime the old-fashioned way.
 
@@ -341,7 +341,7 @@ Heather Locklear, appearing in her television debut, became a star through the s
     time: 'Fridays',
     body: `HUNTER
 
-Detective Rick Hunter doesn't always play by the rules—but he gets results.
+Detective Rick Hunter doesn't always play by the rules-but he gets results.
 
 Together with partner Dee Dee McCall, Hunter takes on Los Angeles' toughest criminals.
 
@@ -379,7 +379,7 @@ Texas oil heir Matt Houston uses his wealth, private jet, and investigative inst
 STARRING: Lee Horsley
 
 THE PREMISE
-Matt Houston represents 1980s excess—wealth, luxury travel, beautiful locations, and impossible cases solved by a charismatic millionaire.
+Matt Houston represents 1980s excess-wealth, luxury travel, beautiful locations, and impossible cases solved by a charismatic millionaire.
 
 THE SETTING
 Unlike other cop shows, Matt Houston travels the world solving cases, giving the series a luxurious, globe-trotting feel.
@@ -527,7 +527,7 @@ Night Court became one of the most beloved comedies of the 1980s.
 
 Tonight's featured event special programming.
 
-Networks regularly present special television presentations—original movies, miniseries, and events created for broadcast television.
+Networks regularly present special television presentations-original movies, miniseries, and events created for broadcast television.
 
 THE FORMAT
 Special presentations typically air commercial-free or with limited commercials, emphasizing the prestige of the programming.
@@ -611,7 +611,7 @@ Hollywood's greatest films premiere on television.
 Major studios sell broadcast rights to television networks, allowing millions to experience classic cinema.
 
 THE PREMIERES
-Networks premiere iconic films—Gone with the Wind, The Wizard of Oz, Casablanca—making them available to new generations.
+Networks premiere iconic films-Gone with the Wind, The Wizard of Oz, Casablanca-making them available to new generations.
 
 THE IMPACT
 Television premieres of classic films create cultural moments and introduce masterpieces to audiences who might never see them in theaters.
@@ -660,7 +660,7 @@ Late-night hosts have become cultural tastemakers, shaping what America finds fu
 
 Cable television is changing how Americans watch television.
 
-While networks broadcast to everyone, cable delivers specialized programming to subscribers—news, sports, music, movies, and niche content.
+While networks broadcast to everyone, cable delivers specialized programming to subscribers-news, sports, music, movies, and niche content.
 
 THE EXPLOSION
 Cable systems are expanding rapidly, offering more channels and specialized programming than ever before.
@@ -699,10 +699,10 @@ Local stations choose which syndicated programs to air, giving communities progr
 THE APPEAL
 Syndication allows stations to compete with networks through specialized programming.`,
   },
-  // ── ST. ELSEWHERE — 5-Part Rotation ──
+  // ── ST. ELSEWHERE - 5-Part Rotation ──
   {
     id: 'st_elsewhere_rotation',
-    title: 'St. Elsewhere — MTH',
+    title: 'St. Elsewhere - MTH',
     icon: '🏥',
     color: '#2c3e50',
     anim: 'pulse',
@@ -717,7 +717,7 @@ Syndication allows stations to compete with networks through specialized program
         id: 'st_else_1',
         label: 'Second Opinion',
         icon: '🏥',
-        body: `SECOND OPINION — NBC WEDNESDAY 10:00 PM
+        body: `SECOND OPINION - NBC WEDNESDAY 10:00 PM
 
 Westphall questions Craig's plan to perform dangerous experimental surgery on a celebrated Boston architect. Morrison struggles to tell a young patient that his condition has returned. Ehrlich accidentally invites two women to the same hospital benefit.
 
@@ -734,7 +734,7 @@ Craig's confidence in experimental procedures threatens to override Westphall's 
         id: 'st_else_2',
         label: 'Cold Front',
         icon: '❄️',
-        body: `COLD FRONT — NBC WEDNESDAY 10:00 PM
+        body: `COLD FRONT - NBC WEDNESDAY 10:00 PM
 
 A severe cold snap fills St. Eligius with homeless patients suffering from exposure. Chandler searches for the family of a confused elderly woman. Fiscus becomes convinced that a quiet new orderly is stealing food from the cafeteria.
 
@@ -751,7 +751,7 @@ The hospital's mission and its limits collide when winter brings the city's most
         id: 'st_else_3',
         label: 'The Donor',
         icon: '🫀',
-        body: `THE DONOR — NBC WEDNESDAY 10:00 PM
+        body: `THE DONOR - NBC WEDNESDAY 10:00 PM
 
 A family feud threatens to prevent a lifesaving kidney transplant. Craig clashes with a determined attorney over consent. Morrison becomes emotionally involved with the frightened teenage donor. Ehrlich loses the paperwork moments before surgery.
 
@@ -768,7 +768,7 @@ Family conflict, legal uncertainty, and human frailty intersect in a race agains
         id: 'st_else_4',
         label: 'Night Shift',
         icon: '🌙',
-        body: `NIGHT SHIFT — NBC WEDNESDAY 10:00 PM
+        body: `NIGHT SHIFT - NBC WEDNESDAY 10:00 PM
 
 A neighborhood blackout leaves St. Eligius operating on emergency power during an unusually crowded night. Chandler takes command of the emergency room. Auschlander calms a trapped elevator full of patients. Fiscus attempts surgery by flashlight.
 
@@ -785,7 +785,7 @@ When infrastructure fails, the hospital's competence is tested in darkness. Chan
         id: 'st_else_5',
         label: 'Quack Practice',
         icon: '🦆',
-        body: `QUACK PRACTICE — NBC WEDNESDAY 10:00 PM
+        body: `QUACK PRACTICE - NBC WEDNESDAY 10:00 PM
 
 A children's entertainer arrives for routine treatment with his trained duck concealed beneath his coat. The duck escapes into the hospital. Craig blames Ehrlich. Fiscus organizes a search party. Auschlander quietly begins feeding it crackers.
 
@@ -796,7 +796,7 @@ GUEST STARS
 Dom DeLuise · Carol Kane
 
 THE ABSURD
-St. Elsewhere balances comedy with consequence. A duck loose in a hospital is chaos, yes — but it also binds the staff together. Auschlander's crackers are a moment of grace amid institutional pressure.`,
+St. Elsewhere balances comedy with consequence. A duck loose in a hospital is chaos, yes - but it also binds the staff together. Auschlander's crackers are a moment of grace amid institutional pressure.`,
       },
     ],
   },

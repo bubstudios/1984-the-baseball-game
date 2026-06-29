@@ -168,7 +168,7 @@ const ENTRIES = [
     tagline: 'Most players never survive long enough to understand everything.',
     description: 'Defender remains one of the most difficult arcade games ever created. Protect astronauts. Destroy alien invaders. Master one of gaming\'s steepest learning curves.',
     features: ['Rapid Action', 'Astronaut Protection', 'Alien Waves', 'Complex Controls'],
-    funFact: 'Defender is famously difficult—most players never master its complex control scheme.',
+    funFact: 'Defender is famously difficult-most players never master its complex control scheme.',
     quote: 'Not for beginners.',
   },
   {

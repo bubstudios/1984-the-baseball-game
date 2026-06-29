@@ -1,4 +1,4 @@
-// National Banner Achievements — 370 total (354 window + 16 hidden category)
+// National Banner Achievements - 370 total (354 window + 16 hidden category)
 // Generated from the Master Achievement List spec
 // Each hidden achievement auto-unlocks when all window achievements in its category are collected
 
@@ -26,7 +26,7 @@ export const NATIONAL_CATEGORIES = {
   promoNights: { name: 'Ballpark Promo Nights & Giveaways', hiddenName: 'Promo Night Regular' },
 };
 
-// Window achievements (one per popup) — 354 total
+// Window achievements (one per popup) - 354 total
 // Format: { id, name, emoji, cat }
 export const NATIONAL_WINDOW_ACHIEVEMENTS = [
   // ── TV Shows (25) ──
@@ -424,7 +424,7 @@ export const NATIONAL_WINDOW_ACHIEVEMENTS = [
   { id: 'nat_promoNights_25', name: 'Mascot Mayhem', emoji: '🎭', cat: 'promoNights' },
 ];
 
-// Build hidden category achievements (16 total — categories that have a "collect whole category" hidden achievement)
+// Build hidden category achievements (16 total - categories that have a "collect whole category" hidden achievement)
 export const NATIONAL_HIDDEN_ACHIEVEMENTS = Object.entries(NATIONAL_CATEGORIES)
   .filter(([, info]) => info.hiddenName)
   .map(([slug, info]) => ({

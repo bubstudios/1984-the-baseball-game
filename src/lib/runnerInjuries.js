@@ -1,4 +1,4 @@
-// 6 runner injury types — equal weight
+// 6 runner injury types - equal weight
 export const RUNNER_INJURY_TYPES = [
   { id: 'hamstring_strain', name: 'Hamstring Strain', emoji: '🦵' },
   { id: 'groin_strain', name: 'Groin Strain', emoji: '🦵' },

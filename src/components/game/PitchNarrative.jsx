@@ -53,7 +53,7 @@ export default function PitchNarrative({ narrative, autoDismissMs = 4000, onDism
           )}
         </div>
 
-        {/* Progress bar — visual indicator of auto-dismiss */}
+        {/* Progress bar - visual indicator of auto-dismiss */}
         <div className="mt-3 h-0.5 bg-muted/50 rounded-full overflow-hidden">
           <div
             className="h-full bg-primary/60 rounded-full animate-out fade-out duration-500"

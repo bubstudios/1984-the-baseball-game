@@ -1,4 +1,4 @@
-// 1984 Ballpark Dimensions & Quirks — all 26 MLB stadiums
+// 1984 Ballpark Dimensions & Quirks - all 26 MLB stadiums
 // Dimensions verified against 1984 MLB records
 // Wall heights in feet, distances in feet
 // HR factors: multiplier on home run probability per batter handedness
@@ -20,11 +20,11 @@ export const BALLPARKS = {
     quirks: ["overhangRF", "deepCF"],
     hrFactors: { LH: 1.05, RH: 1.10 },
     avgDistance: 368,
-    description: "Deep center (440'), short corners. The famous second-deck RF overhang — 10 feet over fair territory — turns routine fly balls into home runs.",
+    description: "Deep center (440'), short corners. The famous second-deck RF overhang - 10 feet over fair territory - turns routine fly balls into home runs.",
     wallDesc: {
       LF:  "the left field fence at 340 feet",
       LCF: "the left-center gap at 365 feet",
-      CF:  "deepest center field in baseball — a monstrous 440 feet",
+      CF:  "deepest center field in baseball - a monstrous 440 feet",
       RCF: "the right-center alley at 370 feet",
       RF:  "the right field overhang, jutting 10 feet over fair territory at 325",
     },
@@ -68,14 +68,14 @@ export const BALLPARKS = {
     avgDistance: 362,
     description: "The Green Monster (37' left field wall, 315') suppresses LHH HRs but turns everything into doubles. Pesky's Pole at 302' right field is the shortest fair pole in baseball.",
     wallDesc: {
-      LF:  "the Green Monster — 37 feet of green steel looming at 315 feet",
+      LF:  "the Green Monster - 37 feet of green steel looming at 315 feet",
       LCF: "the Monster in left-center at 379 feet",
       CF:  "the center field wall, 390 feet out",
-      RCF: "the deepest corner of Fenway at 420 feet — the bullpen triangle",
-      RF:  "Pesky's Pole, just 302 feet — shortest foul pole in baseball",
+      RCF: "the deepest corner of Fenway at 420 feet - the bullpen triangle",
+      RF:  "Pesky's Pole, just 302 feet - shortest foul pole in baseball",
     },
     specialRules: [
-      "Green Monster: ladder attached — in-play if ball hits ladder (ground rule double if lodged)",
+      "Green Monster: ladder attached - in-play if ball hits ladder (ground rule double if lodged)",
       "Pesky's Pole: ball that hits the pole is a HR regardless of where it lands",
       "The Triangle: deepest point in the park; balls in the triangle corner are in play",
     ],
@@ -96,13 +96,13 @@ export const BALLPARKS = {
     description: "The short right-field porch (310') is a left-handed pull hitter's paradise. Death Valley in left-center (387') eats right-handed power. Monument Park sits in deep center.",
     wallDesc: {
       LF:  "the left field corner at 312 feet",
-      LCF: "Death Valley — the deep left-center gap at 387 feet",
+      LCF: "Death Valley - the deep left-center gap at 387 feet",
       CF:  "the center field wall beyond Monument Park at 417 feet",
       RCF: "the right-center alley at 385 feet",
-      RF:  "the short right-field porch — a lefty's dream at just 310 feet",
+      RF:  "the short right-field porch - a lefty's dream at just 310 feet",
     },
     specialRules: [
-      "Monument Park: balls rolling under the fence or into monuments — ground rule double",
+      "Monument Park: balls rolling under the fence or into monuments - ground rule double",
     ],
   },
 
@@ -141,7 +141,7 @@ export const BALLPARKS = {
     quirks: ["massiveStadium", "lakeWinds"],
     hrFactors: { LH: 0.96, RH: 0.96 },
     avgDistance: 360,
-    description: "The cavernous Municipal Stadium seats 74,000 but usually draws 2,000 fans in 1984. Cold winds off Lake Erie are a constant factor — and the outfield is huge.",
+    description: "The cavernous Municipal Stadium seats 74,000 but usually draws 2,000 fans in 1984. Cold winds off Lake Erie are a constant factor - and the outfield is huge.",
     wallDesc: {
       LF:  "the left field fence at 320 feet",
       LCF: "the left-center gap at 377 feet",
@@ -258,7 +258,7 @@ export const BALLPARKS = {
     quirks: ["explodingScoreboard", "windyCity"],
     hrFactors: { LH: 0.97, RH: 0.97 },
     avgDistance: 372,
-    description: "The original Comiskey Park. The famous exploding scoreboard in center is a Chicago landmark. South Side winds can really blow — in or out depending on the day.",
+    description: "The original Comiskey Park. The famous exploding scoreboard in center is a Chicago landmark. South Side winds can really blow - in or out depending on the day.",
     wallDesc: {
       LF:  "the left field fence at 347 feet",
       LCF: "the left-center alley at 382 feet",
@@ -281,7 +281,7 @@ export const BALLPARKS = {
     quirks: ["domed", "artificialTurf", "lowCeiling"],
     hrFactors: { LH: 1.06, RH: 1.06 },
     avgDistance: 350,
-    description: "The domed Kingdome — no weather factor, but the low ceiling and artificial turf create their own madness. Short corners (316') and a tight feel. Balls carry in the climate-controlled air.",
+    description: "The domed Kingdome - no weather factor, but the low ceiling and artificial turf create their own madness. Short corners (316') and a tight feel. Balls carry in the climate-controlled air.",
     wallDesc: {
       LF:  "the left field fence at 316 feet",
       LCF: "the left-center gap at 357 feet",
@@ -290,7 +290,7 @@ export const BALLPARKS = {
       RF:  "the right field fence at 316 feet",
     },
     specialRules: [
-      "Domed stadium: no weather effects — temperature always ~68°F, no wind",
+      "Domed stadium: no weather effects - temperature always ~68°F, no wind",
       "Ball hitting roof speaker in fair territory: ground rule double",
       "Artificial turf: ground balls shoot fast",
     ],
@@ -331,13 +331,13 @@ export const BALLPARKS = {
     quirks: ["domed", "artificialTurf", "baggyRFWall", "loudCrowd"],
     hrFactors: { LH: 1.08, RH: 0.92 },
     avgDistance: 366,
-    description: "The Hubert H. Humphrey Metrodome opened in 1982. The 23-foot padded right field 'Baggie' is unique — balls hit it and drop straight down, creating ground-rule confusion. Incredibly loud indoors.",
+    description: "The Hubert H. Humphrey Metrodome opened in 1982. The 23-foot padded right field 'Baggie' is unique - balls hit it and drop straight down, creating ground-rule confusion. Incredibly loud indoors.",
     wallDesc: {
       LF:  "the left field fence at 343 feet",
       LCF: "the left-center gap at 385 feet",
       CF:  "the center field wall at 408 feet, under the dome",
       RCF: "the right-center area in front of the 23-foot Baggie",
-      RF:  "the padded Baggie — 23 feet of billowing fabric at 327 feet",
+      RF:  "the padded Baggie - 23 feet of billowing fabric at 327 feet",
     },
     specialRules: [
       "Domed stadium: no weather effects",
@@ -360,7 +360,7 @@ export const BALLPARKS = {
     quirks: ["ivy", "basket", "windTunnel", "noLights"],
     hrFactors: { LH: 1.00, RH: 1.00 },
     avgDistance: 369,
-    description: "Ivy-covered brick walls and the famous home run basket. No lights — all day games in 1984. Wind is everything: blowing out it's a launching pad, blowing in it's a pitcher's heaven.",
+    description: "Ivy-covered brick walls and the famous home run basket. No lights - all day games in 1984. Wind is everything: blowing out it's a launching pad, blowing in it's a pitcher's heaven.",
     wallDesc: {
       LF:  "the ivy-covered brick wall at 355 feet in left",
       LCF: "the ivy in left-center at 368 feet",
@@ -410,7 +410,7 @@ export const BALLPARKS = {
     quirks: ["artificialTurf", "bouncyTurf"],
     hrFactors: { LH: 1.01, RH: 1.01 },
     avgDistance: 362,
-    description: "Philadelphia's cookie-cutter stadium with notoriously unpredictable artificial turf. Bad bounces are a Philadelphia tradition. The Philly faithful are among the most passionate — and ruthless — in baseball.",
+    description: "Philadelphia's cookie-cutter stadium with notoriously unpredictable artificial turf. Bad bounces are a Philadelphia tradition. The Philly faithful are among the most passionate - and ruthless - in baseball.",
     wallDesc: {
       LF:  "the left field fence at 330 feet",
       LCF: "the left-center gap at 371 feet",
@@ -456,7 +456,7 @@ export const BALLPARKS = {
     quirks: ["artificialTurf", "stLouisHeat", "deepCF"],
     hrFactors: { LH: 0.96, RH: 0.96 },
     avgDistance: 368,
-    description: "Busch Stadium II — a symmetrical cookie-cutter with deep alleys (383') and a 414-foot center field. Artificial turf and brutal St. Louis summer heat drain pitchers fast.",
+    description: "Busch Stadium II - a symmetrical cookie-cutter with deep alleys (383') and a 414-foot center field. Artificial turf and brutal St. Louis summer heat drain pitchers fast.",
     wallDesc: {
       LF:  "the left field line at 330 feet",
       LCF: "the deep left-center gap at 383 feet",
@@ -504,7 +504,7 @@ export const BALLPARKS = {
     quirks: ["marineLay", "pitchersFriend"],
     hrFactors: { LH: 0.93, RH: 0.93 },
     avgDistance: 365,
-    description: "Pitcher-friendly with symmetrical deep alleys (385'). The marine layer at night drops balls out of the air. One of the most beautiful parks in the game — and one of the toughest on hitters.",
+    description: "Pitcher-friendly with symmetrical deep alleys (385'). The marine layer at night drops balls out of the air. One of the most beautiful parks in the game - and one of the toughest on hitters.",
     wallDesc: {
       LF:  "the left field pavilion at 330 feet",
       LCF: "the deep left-center gap at 385 feet",
@@ -527,7 +527,7 @@ export const BALLPARKS = {
     quirks: ["marineLay"],
     hrFactors: { LH: 0.97, RH: 0.97 },
     avgDistance: 360,
-    description: "Symmetrical and fair. The ocean marine layer rolls in late — evening games can turn into fly-ball cemeteries. One of the more neutral parks in the NL.",
+    description: "Symmetrical and fair. The ocean marine layer rolls in late - evening games can turn into fly-ball cemeteries. One of the more neutral parks in the NL.",
     wallDesc: {
       LF:  "the left field fence at 327 feet",
       LCF: "the left-center gap at 370 feet",
@@ -573,7 +573,7 @@ export const BALLPARKS = {
     quirks: ["altitude", "atlantaHeat"],
     hrFactors: { LH: 1.08, RH: 1.08 },
     avgDistance: 366,
-    description: "The launching pad. At 1,050 feet above sea level, Atlanta's thin air carries fly balls further than anywhere in the NL. A hitter's paradise — especially in summer heat.",
+    description: "The launching pad. At 1,050 feet above sea level, Atlanta's thin air carries fly balls further than anywhere in the NL. A hitter's paradise - especially in summer heat.",
     wallDesc: {
       LF:  "the left field fence at 330 feet, the thin Atlanta air beyond",
       LCF: "the left-center gap at 385 feet",
@@ -596,7 +596,7 @@ export const BALLPARKS = {
     quirks: ["domed", "artificialTurf", "astroturf"],
     hrFactors: { LH: 0.93, RH: 0.93 },
     avgDistance: 368,
-    description: "The Eighth Wonder of the World — the world's first domed stadium. The dead air inside kills fly balls. Astroturf (the original) makes ground balls lightning fast. Comfortable 72°F no matter what.",
+    description: "The Eighth Wonder of the World - the world's first domed stadium. The dead air inside kills fly balls. Astroturf (the original) makes ground balls lightning fast. Comfortable 72°F no matter what.",
     wallDesc: {
       LF:  "the left field fence at 340 feet, inside the Astrodome",
       LCF: "the left-center gap at 375 feet",
@@ -605,9 +605,9 @@ export const BALLPARKS = {
       RF:  "the right field fence at 340 feet",
     },
     specialRules: [
-      "Domed stadium: no weather effects — always 72°F with no wind",
+      "Domed stadium: no weather effects - always 72°F with no wind",
       "Artificial turf: ground balls shoot extremely fast",
-      "Dead air: HR probability reduced — fly balls die at the warning track",
+      "Dead air: HR probability reduced - fly balls die at the warning track",
     ],
   },
 
@@ -623,13 +623,13 @@ export const BALLPARKS = {
     quirks: ["candlestickWind", "coldFog"],
     hrFactors: { LH: 0.88, RH: 0.88 },
     avgDistance: 360,
-    description: "The most wind-affected park in baseball. Afternoon winds swirl off San Francisco Bay — balls change direction mid-flight. Bring a jacket. Even in July, night games are brutal.",
+    description: "The most wind-affected park in baseball. Afternoon winds swirl off San Francisco Bay - balls change direction mid-flight. Bring a jacket. Even in July, night games are brutal.",
     wallDesc: {
-      LF:  "the left field fence at 335 feet — wind permitting",
+      LF:  "the left field fence at 335 feet - wind permitting",
       LCF: "the left-center gap at 365 feet",
       CF:  "the center field wall at 400 feet",
       RCF: "the right-center alley at 365 feet",
-      RF:  "the right field fence at 335 feet — the wind owns this ballpark",
+      RF:  "the right field fence at 335 feet - the wind owns this ballpark",
     },
     specialRules: [
       "Candlestick wind: swirling conditions increase HR suppression and error rates",
@@ -693,7 +693,7 @@ export function getHitDirection(batterBats) {
     if (roll < 0.96) return 'RCF';
     return 'RF';
   } else {
-    // Switch hitter — more balanced
+    // Switch hitter - more balanced
     if (roll < 0.50) return Math.random() < 0.5 ? 'LF' : 'RF';
     if (roll < 0.80) return Math.random() < 0.5 ? 'LCF' : 'RCF';
     return 'CF';
@@ -732,10 +732,10 @@ export function getBallparkEffect(stadiumName, batterBats, weather) {
       windMod += windStrength * 0.40;
       if (ballpark.quirks.includes('windTunnel')) windMod += windStrength * 0.15;
       if (batterBats === 'L' && ballpark.quirks.includes('shortRF') && windStrength > 0.5) {
-        quirks.push('Wind blowing out toward the short porch — lefties are licking their chops');
+        quirks.push('Wind blowing out toward the short porch - lefties are licking their chops');
       }
       if (ballpark.quirks.includes('candlestickWind')) {
-        quirks.push('Candlestick wind blowing out — but could swirl at any time');
+        quirks.push('Candlestick wind blowing out - but could swirl at any time');
       }
     } else if (windDir === 'in') {
       windMod -= windStrength * 0.35;
@@ -745,11 +745,11 @@ export function getBallparkEffect(stadiumName, batterBats, weather) {
       }
       if (ballpark.quirks.includes('candlestickWind')) {
         windMod -= windStrength * 0.15;
-        quirks.push('Bay wind howling in off the water — nothing is leaving the yard tonight');
+        quirks.push('Bay wind howling in off the water - nothing is leaving the yard tonight');
       }
     } else if (windDir === 'left') {
       if (batterBats === 'R' && windStrength > 0.5 && ballpark.quirks.includes('peskyPole')) {
-        quirks.push("Cross-wind pushing toward Pesky's Pole — could help a right-handed pull");
+        quirks.push("Cross-wind pushing toward Pesky's Pole - could help a right-handed pull");
       }
       if (batterBats === 'L' && windStrength > 0.5 && ballpark.quirks.includes('shortRF')) {
         quirks.push('Cross-wind drifting toward the short porch');
@@ -762,7 +762,7 @@ export function getBallparkEffect(stadiumName, batterBats, weather) {
       windMod += (Math.random() - 0.5) * windStrength * 0.30;
       if (ballpark.quirks.includes('candlestickWind')) {
         windMod += (Math.random() - 0.5) * 0.20;
-        quirks.push('Candlestick swirling wind — even the outfielders have no idea where it\'s going');
+        quirks.push('Candlestick swirling wind - even the outfielders have no idea where it\'s going');
       }
     }
   }
@@ -797,8 +797,8 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
       return {
         type: 'offMonster',
         text: isDouble
-          ? `Smashed high off the Green Monster! The ball caroms back into the field — the runner's in with a double!`
-          : `Lined off the Green Monster! The carom comes right back to the left fielder — hold at first!`,
+          ? `Smashed high off the Green Monster! The ball caroms back into the field - the runner's in with a double!`
+          : `Lined off the Green Monster! The carom comes right back to the left fielder - hold at first!`,
         bases: isDouble ? 2 : 1,
         isHit: true,
       };
@@ -810,7 +810,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.07) {
       return {
         type: 'peskyPole',
-        text: `Hooked around Pesky's Pole! Just 302 feet but it wraps around the right field foul pole — that's a Fenway home run!`,
+        text: `Hooked around Pesky's Pole! Just 302 feet but it wraps around the right field foul pole - that's a Fenway home run!`,
         bases: 4,
         isHit: true,
         isHR: true,
@@ -823,7 +823,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.28) {
       return {
         type: 'deepRCF',
-        text: `Crushed to right-center — but this is the Triangle, deepest corner of Fenway at 420 feet! The outfielder tracks it down on the warning track!`,
+        text: `Crushed to right-center - but this is the Triangle, deepest corner of Fenway at 420 feet! The outfielder tracks it down on the warning track!`,
         bases: 0,
         isHit: false,
       };
@@ -837,8 +837,8 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
       return {
         type: 'triangle',
         text: isTriple
-          ? `Into the Triangle corner! The ball caroms off the angled wall — the batter races for THIRD!`
-          : `Into the Triangle! Weird angles send the ball sideways — the batter pulls into second.`,
+          ? `Into the Triangle corner! The ball caroms off the angled wall - the batter races for THIRD!`
+          : `Into the Triangle! Weird angles send the ball sideways - the batter pulls into second.`,
         bases: isTriple ? 3 : 2,
         isHit: true,
       };
@@ -850,7 +850,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.06) {
       return {
         type: 'ivyStuck',
-        text: `Into the ivy at Wrigley! The outfielder throws his hands up — the ball vanished into the ivy! Ground rule double!`,
+        text: `Into the ivy at Wrigley! The outfielder throws his hands up - the ball vanished into the ivy! Ground rule double!`,
         bases: 2,
         isHit: true,
       };
@@ -862,7 +862,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.04) {
       return {
         type: 'basketHR',
-        text: `Into the basket! The ball drops into the Wrigley Field home run basket hanging over the wall — that counts!`,
+        text: `Into the basket! The ball drops into the Wrigley Field home run basket hanging over the wall - that counts!`,
         bases: 4,
         isHit: true,
         isHR: true,
@@ -877,7 +877,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < porchChance) {
       return {
         type: 'shortPorch',
-        text: `Down the right field line — and it's gone into the short porch! ${batterBats === 'L' ? 'Classic lefty pull' : 'Opposite field shot'} — Yankee Stadium gives again!`,
+        text: `Down the right field line - and it's gone into the short porch! ${batterBats === 'L' ? 'Classic lefty pull' : 'Opposite field shot'} - Yankee Stadium gives again!`,
         bases: 4,
         isHit: true,
         isHR: true,
@@ -890,7 +890,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.18) {
       return {
         type: 'deathValley',
-        text: `Crushed to deep left-center — Death Valley! Four hundred and seventeen feet to the wall. The outfielder runs it down at the warning track.`,
+        text: `Crushed to deep left-center - Death Valley! Four hundred and seventeen feet to the wall. The outfielder runs it down at the warning track.`,
         bases: 0,
         isHit: false,
       };
@@ -902,7 +902,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.10) {
       return {
         type: 'royalsTriple',
-        text: `Into the gap at Royals Stadium! The huge outfield gives him time — he's streaking for THIRD! The throw won't get there!`,
+        text: `Into the gap at Royals Stadium! The huge outfield gives him time - he's streaking for THIRD! The throw won't get there!`,
         bases: 3,
         isHit: true,
       };
@@ -914,7 +914,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.08) {
       return {
         type: 'baggie',
-        text: `Off the Baggie in right! The ball hits the padded fabric wall and drops straight down — the right fielder has to play it on the short hop! That's a double!`,
+        text: `Off the Baggie in right! The ball hits the padded fabric wall and drops straight down - the right fielder has to play it on the short hop! That's a double!`,
         bases: 2,
         isHit: true,
       };
@@ -926,7 +926,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.06) {
       return {
         type: 'overhang',
-        text: `Caught the overhang in right field at Tiger Stadium! The second deck juts out over fair territory — that ball never had a chance to be caught!`,
+        text: `Caught the overhang in right field at Tiger Stadium! The second deck juts out over fair territory - that ball never had a chance to be caught!`,
         bases: 4,
         isHit: true,
         isHR: true,
@@ -939,7 +939,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.12) {
       return {
         type: 'candlestickSwirl',
-        text: `The Candlestick wind gets it! The outfielder had it, then he didn't — the swirling wind off the Bay takes the ball right out of his path! Error!`,
+        text: `The Candlestick wind gets it! The outfielder had it, then he didn't - the swirling wind off the Bay takes the ball right out of his path! Error!`,
         bases: 1,
         isHit: false,
         isError: true,
@@ -952,7 +952,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.10) {
       return {
         type: 'domeDeadAir',
-        text: `Crushed deep but the Astrodome's dead air kills it at the warning track! The outfielder barely has to move — that dome eats home runs.`,
+        text: `Crushed deep but the Astrodome's dead air kills it at the warning track! The outfielder barely has to move - that dome eats home runs.`,
         bases: 0,
         isHit: false,
       };
@@ -964,7 +964,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.07) {
       return {
         type: 'altitudeCarry',
-        text: `The thin Atlanta air carries that ball! It looked like a routine fly, but it just kept going — off the warning track and over the wall! The altitude giveth!`,
+        text: `The thin Atlanta air carries that ball! It looked like a routine fly, but it just kept going - off the warning track and over the wall! The altitude giveth!`,
         bases: 4,
         isHit: true,
         isHR: true,

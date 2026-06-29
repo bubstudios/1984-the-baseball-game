@@ -31,7 +31,7 @@ import { isBlowoutMode, getBlowoutActivationLine, pickBlowoutLine } from '@/lib/
 let _blowoutGameSeed = null;
 let _blowoutAnnounced = false;
 
-// Player nicknames — researched from 1984 MLB lore
+// Player nicknames - researched from 1984 MLB lore
 const NICKNAMES = {
   "Ryne Sandberg": ["Ryno"],
   "Kirk Gibson": ["Gibby"],
@@ -130,7 +130,7 @@ const NICKNAMES = {
   "Greg Minton": ["Moon Man"],
 };
 
-// 1984 Announcers & Stadium Flavor — expanded with real stadium atmosphere
+// 1984 Announcers & Stadium Flavor - expanded with real stadium atmosphere
 export const STADIUM_FLAVOR = {
   chicagoCubs: {
     announcers: ["Harry Caray", "Steve Stone"],
@@ -140,30 +140,30 @@ export const STADIUM_FLAVOR = {
       "the ivy-covered brick walls here at Wrigley",
       "the Bleacher Bums are on their feet out in left",
       "a classic afternoon at the Friendly Confines",
-      "that brick wall — it'll eat up a line drive in a hurry",
-      "the old manual scoreboard in center field — nothing like the classic charm of this ballpark",
-      "the fans are packed onto the rooftops across Waveland and Sheffield avenues — spectacular view from up there",
-      "the flagpoles out there — these fans are watching for the 'W' flag",
+      "that brick wall - it'll eat up a line drive in a hurry",
+      "the old manual scoreboard in center field - nothing like the classic charm of this ballpark",
+      "the fans are packed onto the rooftops across Waveland and Sheffield avenues - spectacular view from up there",
+      "the flagpoles out there - these fans are watching for the 'W' flag",
       "natural grass and sunshine on the North Side",
       "you can feel the history in this old ballpark",
     ],
     weatherFlavor: [
-      "the wind is blowing straight out toward Waveland Avenue today — pitchers better keep it down or it'll be a long afternoon",
-      "the wind is blowing straight in from center field today — gopher balls are turning into routine pop flies",
-      "the mist is rolling in off Lake Michigan right now — temperature just plummeted about fifteen degrees in the last three innings",
+      "the wind is blowing straight out toward Waveland Avenue today - pitchers better keep it down or it'll be a long afternoon",
+      "the wind is blowing straight in from center field today - gopher balls are turning into routine pop flies",
+      "the mist is rolling in off Lake Michigan right now - temperature just plummeted about fifteen degrees in the last three innings",
     ],
     cityFlavor: [
       "if you're taking the Red Line home tonight, folks, the platform at Addison is going to be an absolute sea of blue",
-      "I smell the charcoal and Italian beef wafting into the booth from the neighborhood — this ballpark sits right in the middle of a backyard party",
-      "a beautiful summer afternoon on the North Side — Ernie Banks used to say 'let's play two'",
+      "I smell the charcoal and Italian beef wafting into the booth from the neighborhood - this ballpark sits right in the middle of a backyard party",
+      "a beautiful summer afternoon on the North Side - Ernie Banks used to say 'let's play two'",
       "the Second City loves its Cubbies",
     ],
     loreFlavor: [
-      "day baseball at Wrigley — it's a way of life for generations of Chicagoans",
-      "the Bleacher Bums are in peak form today — if an opposing player catches a home run ball out there, you know it's coming right back onto the field",
+      "day baseball at Wrigley - it's a way of life for generations of Chicagoans",
+      "the Bleacher Bums are in peak form today - if an opposing player catches a home run ball out there, you know it's coming right back onto the field",
       "this crowd stays loud whether it's April or September",
     ],
-    stretchFlavor: "Harry Caray grabs the mic — \"Take me out to the ballgame… Let's get some runs!\"",
+    stretchFlavor: "Harry Caray grabs the mic - \"Take me out to the ballgame… Let's get some runs!\"",
   },
   bostonRedSox: {
     announcers: ["Ned Martin", "Bob Montgomery", "Joe Castiglione"],
@@ -173,30 +173,30 @@ export const STADIUM_FLAVOR = {
       "the Green Monster looming out in left field",
       "Pesky's Pole just 302 feet down the right field line",
       "the manual scoreboard on the Monster",
-      "so much history in this old yard — Ted Williams, Carl Yastrzemski",
-      "the Triangle out in deep center field — a center fielder's absolute nightmare",
+      "so much history in this old yard - Ted Williams, Carl Yastrzemski",
+      "the Triangle out in deep center field - a center fielder's absolute nightmare",
       "Fenway's been here since 1912",
       "those tight dimensions always keep things interesting",
       "the crowd is packed in tight along the baselines",
-      "that short porch in right — Pesky's Pole is just waiting",
-      "the legendary Red Seat out in right field — that one marks where Ted Williams' longest blast landed",
+      "that short porch in right - Pesky's Pole is just waiting",
+      "the legendary Red Seat out in right field - that one marks where Ted Williams' longest blast landed",
     ],
     weatherFlavor: [
-      "that thick, damp April air is blowing right in off the Charles River tonight — hitters will really have to cut through a wall to get anything out",
+      "that thick, damp April air is blowing right in off the Charles River tonight - hitters will really have to cut through a wall to get anything out",
       "the sun is setting over the third-base grandstands, creating some really tough shadows for the hitters right now",
     ],
     cityFlavor: [
-      "the crowds are packing into Lansdowne Street outside the park tonight — you can feel the energy radiating right through the brick",
-      "I grabbed a bowl of New England clam chowder behind home plate before the first pitch — thick as wet cement, just the way it should be",
-      "if you're jumping on the T or navigating Storrow Drive after the game, good luck — pack your patience, folks",
+      "the crowds are packing into Lansdowne Street outside the park tonight - you can feel the energy radiating right through the brick",
+      "I grabbed a bowl of New England clam chowder behind home plate before the first pitch - thick as wet cement, just the way it should be",
+      "if you're jumping on the T or navigating Storrow Drive after the game, good luck - pack your patience, folks",
       "Boston's been a baseball town since the beginning",
     ],
     loreFlavor: [
-      "you look down at the grass and think of the absolute giants who played here: Teddy Ballgame, Yaz, the Splendid Splinter — history baked into the dirt",
-      "this crowd is notoriously demanding — they know the game inside and out and will let you hear it if you miss a cutoff man",
-      "in New England, baseball isn't a pastime — it's a full-blown religion",
+      "you look down at the grass and think of the absolute giants who played here: Teddy Ballgame, Yaz, the Splendid Splinter - history baked into the dirt",
+      "this crowd is notoriously demanding - they know the game inside and out and will let you hear it if you miss a cutoff man",
+      "in New England, baseball isn't a pastime - it's a full-blown religion",
     ],
-    stretchFlavor: "in the seventh, the crowd rises and sings along with the organ — a Fenway tradition",
+    stretchFlavor: "in the seventh, the crowd rises and sings along with the organ - a Fenway tradition",
   },
   detroitTigers: {
     announcers: ["Ernie Harwell", "Paul Carey"],
@@ -205,29 +205,29 @@ export const STADIUM_FLAVOR = {
     nicknames: ["The Corner", "Tiger Stadium"],
     flavor: [
       "the right field overhang here at The Corner",
-      "Tiger Stadium — baseball at Michigan and Trumbull",
+      "Tiger Stadium - baseball at Michigan and Trumbull",
       "the upper deck hangs right over the field",
       "Ty Cobb and Hank Greenberg called this place home",
       "the echoes of '68 still ring through these rafters",
-      "look at the skyline lighting up over the left-field brick — best backdrop in baseball on a summer night",
+      "look at the skyline lighting up over the left-field brick - best backdrop in baseball on a summer night",
       "the statues of the legends out in right field looking on: Cobb, Kaline, Newhouser",
-      "the carousel and the Ferris wheel are lit up behind the stands — always a great atmosphere for families here",
+      "the carousel and the Ferris wheel are lit up behind the stands - always a great atmosphere for families here",
     ],
     weatherFlavor: [
-      "that heavy air rolling in over the outfield walls from the Detroit River tonight — hitting it out to dead center is going to be a monumental task",
-      "it's early April in Michigan, folks — we've got fans in the front row wearing full winter parkas and drinking hot cocoa — that is real dedication",
-      "a bit of a lake-effect breeze cutting across the diamond right now — pitchers are definitely going to need the rosin bag to keep the fingers warm",
+      "that heavy air rolling in over the outfield walls from the Detroit River tonight - hitting it out to dead center is going to be a monumental task",
+      "it's early April in Michigan, folks - we've got fans in the front row wearing full winter parkas and drinking hot cocoa - that is real dedication",
+      "a bit of a lake-effect breeze cutting across the diamond right now - pitchers are definitely going to need the rosin bag to keep the fingers warm",
     ],
     cityFlavor: [
-      "you can tell the shift just let out over at the auto plants — the concourse is starting to pack in with that classic, hard-working Detroit crowd",
-      "I grabbed a couple of Coney dogs before the game — heavy on the chili, heavy on the onions — breakfast of champions in this city",
-      "if you're taking the Lodge or I-75 home after the final out, bless your heart — give yourself a little extra time",
-      "the crowd is bringing the noise tonight — when the Tigers are rolling, the whole city vibrates",
+      "you can tell the shift just let out over at the auto plants - the concourse is starting to pack in with that classic, hard-working Detroit crowd",
+      "I grabbed a couple of Coney dogs before the game - heavy on the chili, heavy on the onions - breakfast of champions in this city",
+      "if you're taking the Lodge or I-75 home after the final out, bless your heart - give yourself a little extra time",
+      "the crowd is bringing the noise tonight - when the Tigers are rolling, the whole city vibrates",
     ],
     loreFlavor: [
       "as the legendary Ernie Harwell used to say on foul balls: 'A fan from Dearborn caught that one!'",
       "the flags are snapping in the breeze atop the left-field roof",
-      "a classic summer evening at Michigan and Trumbull — baseball the way it was meant to be",
+      "a classic summer evening at Michigan and Trumbull - baseball the way it was meant to be",
     ],
     stretchFlavor: null,
   },
@@ -236,27 +236,27 @@ export const STADIUM_FLAVOR = {
     stadium: "Jack Murphy Stadium",
     nicknames: ["The Murph", "Jack Murphy"],
     flavor: [
-      "the sun is setting over the Pacific — the sky over the Western Metal Supply Co. building is just a gorgeous shade of amber",
+      "the sun is setting over the Pacific - the sky over the Western Metal Supply Co. building is just a gorgeous shade of amber",
       "perfect San Diego weather at The Murph",
       "the palm trees swaying beyond the outfield",
       "Tony Gwynn territory out in right field",
       "the breeze off the Pacific keeping things cool",
-      "you can see the beach area out in center field — a lucky fan might catch a home run while sitting in the sand",
-      "the shadows are starting to stretch across the infield — always a tricky few frames for the hitters until the sun goes down completely",
+      "you can see the beach area out in center field - a lucky fan might catch a home run while sitting in the sand",
+      "the shadows are starting to stretch across the infield - always a tricky few frames for the hitters until the sun goes down completely",
     ],
     weatherFlavor: [
-      "the classic San Diego marine layer is starting to creep over the stadium — the air is getting heavy and it's going to turn those deep drives into routine flyouts",
-      "just a flawless, 75-degree day without a cloud in the sky — perfect weather for a ballgame, every single day of the week",
+      "the classic San Diego marine layer is starting to creep over the stadium - the air is getting heavy and it's going to turn those deep drives into routine flyouts",
+      "just a flawless, 75-degree day without a cloud in the sky - perfect weather for a ballgame, every single day of the week",
     ],
     cityFlavor: [
-      "I grabbed a couple of fish tacos on the concourse before the first pitch — lots of lime, lots of cilantro — absolute perfection",
+      "I grabbed a couple of fish tacos on the concourse before the first pitch - lots of lime, lots of cilantro - absolute perfection",
       "if you're taking the San Diego Trolley home tonight, the platforms are going to be a sea of brown and gold",
-      "we've got a massive contingent from the local naval base out in the right-field grandstands today — always great to have our military families in the yard",
-      "this city loves its baseball — when the Padres are hot, the energy downtown is unmatched",
+      "we've got a massive contingent from the local naval base out in the right-field grandstands today - always great to have our military families in the yard",
+      "this city loves its baseball - when the Padres are hot, the energy downtown is unmatched",
     ],
     loreFlavor: [
-      "you look down at the right-field line and you can't help but think of that giant number 19 — Tony Gwynn cast a massive, beautiful shadow over this franchise",
-      "a spectacular play out there — somewhere, the old 'Goose' is smiling down on this defense",
+      "you look down at the right-field line and you can't help but think of that giant number 19 - Tony Gwynn cast a massive, beautiful shadow over this franchise",
+      "a spectacular play out there - somewhere, the old 'Goose' is smiling down on this defense",
       "the Friar is out on the dugout roof getting the crowd fired up",
     ],
     stretchFlavor: null,
@@ -268,31 +268,31 @@ export const STADIUM_FLAVOR = {
     flavor: [
       "Monument Park out beyond the center field fence",
       "the ghosts of Ruth, Gehrig, and Mantle",
-      "the short porch in right — 314 feet to the pole — you don't have to get all of it to get it out over there",
+      "the short porch in right - 314 feet to the pole - you don't have to get all of it to get it out over there",
       "27 World Championships hanging in the rafters",
       "the Bronx is buzzing this afternoon",
-      "you can hear the Bleacher Creatures starting up their Roll Call in right — they won't stop until every fielder waves back",
-      "look at the field: no names on the back of the home jerseys — just classic pinstripes — tradition is everything in the Bronx",
-      "a clean-shaven clubhouse, pants pulled up right — George Steinbrenner's grooming policy is alive and well",
+      "you can hear the Bleacher Creatures starting up their Roll Call in right - they won't stop until every fielder waves back",
+      "look at the field: no names on the back of the home jerseys - just classic pinstripes - tradition is everything in the Bronx",
+      "a clean-shaven clubhouse, pants pulled up right - George Steinbrenner's grooming policy is alive and well",
     ],
     weatherFlavor: [
       "the wind is really pushing out toward that short porch in right field today",
-      "a bit of a humid breeze coming off the Harlem River tonight — might give the breaking balls a tiny bit of extra bite",
+      "a bit of a humid breeze coming off the Harlem River tonight - might give the breaking balls a tiny bit of extra bite",
     ],
     cityFlavor: [
-      "if you're taking the D-train or the 4-line home tonight, good luck — it'll be bumper-to-bumper on the platform after this one",
-      "I checked the traffic on the Major Deegan on the way in — standard Bronx parking lot — if you're driving, hope you brought patience",
-      "I had a slice from a little spot on 161st before the game — burnt the roof of my mouth, but completely worth it — real New York pizza",
-      "nothing like the sound of 'New York, New York' blasting over the PA after a big win — best closing song in sports",
+      "if you're taking the D-train or the 4-line home tonight, good luck - it'll be bumper-to-bumper on the platform after this one",
+      "I checked the traffic on the Major Deegan on the way in - standard Bronx parking lot - if you're driving, hope you brought patience",
+      "I had a slice from a little spot on 161st before the game - burnt the roof of my mouth, but completely worth it - real New York pizza",
+      "nothing like the sound of 'New York, New York' blasting over the PA after a big win - best closing song in sports",
     ],
     loreFlavor: [
-      "I was looking at old clips of the 1927 Murderers' Row team — Babe Ruth and Lou Gehrig stood right where these guys are standing",
+      "I was looking at old clips of the 1927 Murderers' Row team - Babe Ruth and Lou Gehrig stood right where these guys are standing",
       "the ghosts of the old Stadium might be across the street, but you can still feel that classic October aura when the lights get bright",
     ],
     neurosisFlavor: [
-      "this crowd is getting a little restless — in New York, a two-game losing streak feels like a full-blown crisis",
-      "it's World Series or bust here — a 95-win season means absolutely nothing to these fans if you don't get the ring",
-      "the talk on the local sports radio columns this morning was brutal — this town has zero patience for a prolonged slump",
+      "this crowd is getting a little restless - in New York, a two-game losing streak feels like a full-blown crisis",
+      "it's World Series or bust here - a 95-win season means absolutely nothing to these fans if you don't get the ring",
+      "the talk on the local sports radio columns this morning was brutal - this town has zero patience for a prolonged slump",
     ],
     stretchFlavor: null,
   },
@@ -301,29 +301,29 @@ export const STADIUM_FLAVOR = {
     stadium: "Memorial Stadium",
     nicknames: ["Memorial Stadium", "The Old Gray Lady"],
     flavor: [
-      "Memorial Stadium — home of the Birds since '54",
+      "Memorial Stadium - home of the Birds since '54",
       "Brooks Robinson made magic at the hot corner here",
       "Cal Ripken's home field",
-      "the Oriole Way — pitching and defense",
-      "the warehouse looks absolutely spectacular against the twilight sky — best view in the Major Leagues",
-      "you can smell the pit beef and crab cakes wafting down from Boog's BBQ behind the right-field flag court — making me hungry over here",
-      "if you're looking for a ball down on the flag court, keep your eyes peeled — home run balls bounce hard off that concrete",
-      "that deep left-field wall — the 'Lord Baltimore' wall — is where fly balls go to die",
+      "the Oriole Way - pitching and defense",
+      "the warehouse looks absolutely spectacular against the twilight sky - best view in the Major Leagues",
+      "you can smell the pit beef and crab cakes wafting down from Boog's BBQ behind the right-field flag court - making me hungry over here",
+      "if you're looking for a ball down on the flag court, keep your eyes peeled - home run balls bounce hard off that concrete",
+      "that deep left-field wall - the 'Lord Baltimore' wall - is where fly balls go to die",
     ],
     weatherFlavor: [
-      "the humidity is rising off the Chesapeake tonight — the ball is going to carry a little better if you can get it up into the jet stream",
+      "the humidity is rising off the Chesapeake tonight - the ball is going to carry a little better if you can get it up into the jet stream",
     ],
     cityFlavor: [
-      "the crowd is fired up tonight, hon — this city absolutely bleeds orange when the weather gets warm",
+      "the crowd is fired up tonight, hon - this city absolutely bleeds orange when the weather gets warm",
       "if you're hitting the roads after the final out, watch out for the traffic piling up around the Inner Harbor",
       "the national anthem just finished, and as always, the Baltimore faithful let out a massive 'O!' that shook the upper deck",
-      "I saw a few fans out in left field wearing full crab costumes — you gotta love the local flavor in this town",
+      "I saw a few fans out in left field wearing full crab costumes - you gotta love the local flavor in this town",
     ],
     loreFlavor: [
-      "you look down at the shortstop position and you can't help but think of the Iron Man — Number 8 cast a very long shadow in this stadium",
-      "this organization prides itself on fundamental baseball — hit the cutoff man, protect the plate — that's classic 'Oriole Way' philosophy",
-      "the ghosts of Earl Weaver are definitely hovering around the dugout tonight — you can almost hear him barking at the umpires",
-      "a smooth, steady play — somewhere, Brooks and Eddie are smiling down on this infield defense",
+      "you look down at the shortstop position and you can't help but think of the Iron Man - Number 8 cast a very long shadow in this stadium",
+      "this organization prides itself on fundamental baseball - hit the cutoff man, protect the plate - that's classic 'Oriole Way' philosophy",
+      "the ghosts of Earl Weaver are definitely hovering around the dugout tonight - you can almost hear him barking at the umpires",
+      "a smooth, steady play - somewhere, Brooks and Eddie are smiling down on this infield defense",
     ],
     stretchFlavor: null,
   },
@@ -332,25 +332,25 @@ export const STADIUM_FLAVOR = {
     stadium: "Dodger Stadium",
     nicknames: ["Chavez Ravine", "Blue Heaven on Earth"],
     flavor: [
-      "the San Gabriel Mountains beyond the outfield pavilions — absolutely painting the sky in purple and gold",
-      "look at that beautiful pavilion out in left and right field — clean, classic, packed to the brim with Dodger blue",
+      "the San Gabriel Mountains beyond the outfield pavilions - absolutely painting the sky in purple and gold",
+      "look at that beautiful pavilion out in left and right field - clean, classic, packed to the brim with Dodger blue",
       "Fernandomania was born right here",
-      "the left field pavilion and those Dodger Dogs — still the gold standard for ballpark food",
-      "the shadows are creeping across the infield from the grandstand — notoriously difficult time for hitters to pick up the spin",
-      "you can spot a few Hollywood A-listers sitting behind home plate tonight — always a star-studded affair when the Dodgers are in town",
+      "the left field pavilion and those Dodger Dogs - still the gold standard for ballpark food",
+      "the shadows are creeping across the infield from the grandstand - notoriously difficult time for hitters to pick up the spin",
+      "you can spot a few Hollywood A-listers sitting behind home plate tonight - always a star-studded affair when the Dodgers are in town",
     ],
     weatherFlavor: [
-      "a gorgeous, pristine 72-degree night in Southern California — not a cloud in the sky — it's tough to beat a night at the Ravine",
-      "the marine layer is starting to roll in, making the air a little heavy — the ball might not carry quite as well into the deep gaps later",
+      "a gorgeous, pristine 72-degree night in Southern California - not a cloud in the sky - it's tough to beat a night at the Ravine",
+      "the marine layer is starting to roll in, making the air a little heavy - the ball might not carry quite as well into the deep gaps later",
     ],
     cityFlavor: [
-      "it's the top of the third and the late-arriving LA crowd is finally settled into their seats — standard Friday night traffic on the 101",
-      "if you're heading down Vin Scully Avenue after the final out, give yourself plenty of time — the parking lot at Chavez Ravine is a beast",
+      "it's the top of the third and the late-arriving LA crowd is finally settled into their seats - standard Friday night traffic on the 101",
+      "if you're heading down Vin Scully Avenue after the final out, give yourself plenty of time - the parking lot at Chavez Ravine is a beast",
     ],
     loreFlavor: [
-      "you look up at the press box and can't help but think of the master himself — 'It's time for Dodger baseball!' — those words still echo",
-      "the spirit of Fernandomania is still alive in these stands — this fanbase has a deep, generational love for this team",
-      "a beautifully executed curveball — somewhere, Sandy Koufax is looking down approvingly on that sequence",
+      "you look up at the press box and can't help but think of the master himself - 'It's time for Dodger baseball!' - those words still echo",
+      "the spirit of Fernandomania is still alive in these stands - this fanbase has a deep, generational love for this team",
+      "a beautifully executed curveball - somewhere, Sandy Koufax is looking down approvingly on that sequence",
     ],
     stretchFlavor: null,
   },
@@ -362,27 +362,27 @@ export const STADIUM_FLAVOR = {
       "the jets taking off from LaGuardia beyond the outfield",
       "Shea Stadium in Flushing Meadows",
       "Doc Gooden's home turf",
-      "he drives one deep to center — look at the giant apple rising up beyond the wall! That is a home run for the Mets!",
-      "you can hear the rumble of the 7-train rolling past the outfield stands — that is the soundtrack of baseball in Queens",
-      "the planes are roaring overhead out of LaGuardia — a little extra noise for the pitchers to work through on the mound",
-      // "7 Line Army" restricted to HR-only — see HR commentary in getCommentary below
+      "he drives one deep to center - look at the giant apple rising up beyond the wall! That is a home run for the Mets!",
+      "you can hear the rumble of the 7-train rolling past the outfield stands - that is the soundtrack of baseball in Queens",
+      "the planes are roaring overhead out of LaGuardia - a little extra noise for the pitchers to work through on the mound",
+      // "7 Line Army" restricted to HR-only - see HR commentary in getCommentary below
     ],
     weatherFlavor: [
-      "a brisk, chilly night in Flushing — the wind is whipping in hard off Flushing Bay and it's going to knock down anything hit high into the air",
-      "the summer humidity is thick out here tonight — the ball should jump off the bat if you can get it up over the infield line",
+      "a brisk, chilly night in Flushing - the wind is whipping in hard off Flushing Bay and it's going to knock down anything hit high into the air",
+      "the summer humidity is thick out here tonight - the ball should jump off the bat if you can get it up over the infield line",
     ],
     cityFlavor: [
-      "I grabbed a pastrami sandwich on rye before the first pitch — extra mustard, just the way they do it behind home plate here — unbelievable",
-      "if you're jumping on the Grand Central Parkway or the Van Wyck after the game, bless your heart — good luck out there",
-      "the crowd is starting to get that classic, high-octane Queens energy going — when this place gets loud, the whole structure vibrates",
-      "the fans are up and on their feet as Mr. Met makes his rounds — there really isn't a more recognizable head in baseball",
+      "I grabbed a pastrami sandwich on rye before the first pitch - extra mustard, just the way they do it behind home plate here - unbelievable",
+      "if you're jumping on the Grand Central Parkway or the Van Wyck after the game, bless your heart - good luck out there",
+      "the crowd is starting to get that classic, high-octane Queens energy going - when this place gets loud, the whole structure vibrates",
+      "the fans are up and on their feet as Mr. Met makes his rounds - there really isn't a more recognizable head in baseball",
     ],
     loreFlavor: [
-      "you look down at the dugout and think about the magic of '69 — this franchise has a history of making the impossible happen",
-      "a dazzling defensive play at first base — shades of Keith Hernandez saving a run with that spectacular glovework",
+      "you look down at the dugout and think about the magic of '69 - this franchise has a history of making the impossible happen",
+      "a dazzling defensive play at first base - shades of Keith Hernandez saving a run with that spectacular glovework",
     ],
     neurosisFlavor: [
-      "Mets fans are checking their pulses right now — in Queens, a three-run lead in the ninth inning still feels like a tightrope walk",
+      "Mets fans are checking their pulses right now - in Queens, a three-run lead in the ninth inning still feels like a tightrope walk",
       "the sports talk radio phones are going to be absolutely melting tomorrow morning if they don't lock down this victory",
     ],
     stretchFlavor: null,
@@ -392,33 +392,33 @@ export const STADIUM_FLAVOR = {
     stadium: "Royals Stadium",
     nicknames: ["Royals Stadium", "The K"],
     flavor: [
-      "the fountains are flowing beyond the outfield — just a gorgeous sight on a Kansas City evening",
+      "the fountains are flowing beyond the outfield - just a gorgeous sight on a Kansas City evening",
       "one of baseball's most beautiful ballparks here at Royals Stadium",
       "a perfect summer night in the Heartland",
       "the water dancing in the fountains beyond the right-center field fence",
-      "baseball and barbecue — not a bad combination in Kansas City",
-      "Royals Stadium was built for baseball and nothing else — outstanding sightlines everywhere",
+      "baseball and barbecue - not a bad combination in Kansas City",
+      "Royals Stadium was built for baseball and nothing else - outstanding sightlines everywhere",
       "you can see the fountains sparkling from any seat in the ballpark",
       "this ballpark remains one of baseball's showcase facilities",
-      "a gorgeous night in Kansas City — the fountains are flowing",
+      "a gorgeous night in Kansas City - the fountains are flowing",
     ],
     weatherFlavor: [
-      "a little hazy and humid tonight — typical Missouri summer — but the ball should carry",
-      "a gorgeous, crisp Midwestern evening — perfect baseball weather at Royals Stadium",
+      "a little hazy and humid tonight - typical Missouri summer - but the ball should carry",
+      "a gorgeous, crisp Midwestern evening - perfect baseball weather at Royals Stadium",
     ],
     cityFlavor: [
       "if you're heading out after the game, the barbecue joints on the Missouri side will still be smoking",
-      "I grabbed some burnt ends before the first pitch — that is pure Kansas City right there",
-      "Kansas City has supported this club since day one — great baseball town",
-      "the crowd is filing in from all across the metro — Johnson County, Wyandotte, even folks driving in from Lawrence and Topeka",
-      "a great baseball crowd tonight — Kansas City always shows up for its Royals",
-      "Baseball and barbecue — a pretty good combination, and Kansas City does both better than just about anyone",
+      "I grabbed some burnt ends before the first pitch - that is pure Kansas City right there",
+      "Kansas City has supported this club since day one - great baseball town",
+      "the crowd is filing in from all across the metro - Johnson County, Wyandotte, even folks driving in from Lawrence and Topeka",
+      "a great baseball crowd tonight - Kansas City always shows up for its Royals",
+      "Baseball and barbecue - a pretty good combination, and Kansas City does both better than just about anyone",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of George Brett's .390 chase — that was must-see baseball every single night in 1980",
+      "you look around this ballpark and think of George Brett's .390 chase - that was must-see baseball every single night in 1980",
       "the Royals have built their reputation on pitching, speed, and defense, and you can feel that tradition in the stadium",
-      "this franchise has been playing winning baseball since the late '70s — the crowd here expects excellence",
-      "the Royals continue to draw some of baseball's best fans — Kansas City has always been a great baseball town",
+      "this franchise has been playing winning baseball since the late '70s - the crowd here expects excellence",
+      "the Royals continue to draw some of baseball's best fans - Kansas City has always been a great baseball town",
     ],
     stretchFlavor: null,
   },
@@ -427,35 +427,35 @@ export const STADIUM_FLAVOR = {
     stadium: "Veterans Stadium",
     nicknames: ["The Vet"],
     flavor: [
-      "the artificial turf here at Veterans Stadium — a ball can really get through the infield on this surface",
-      "Veterans Stadium in South Philadelphia — Phillies baseball since 1971",
+      "the artificial turf here at Veterans Stadium - a ball can really get through the infield on this surface",
+      "Veterans Stadium in South Philadelphia - Phillies baseball since 1971",
       "the Phanatic is on the dugout roof, whipping the crowd into a frenzy",
-      "the upper deck is rocking — South Philly fans are among the most passionate in baseball",
+      "the upper deck is rocking - South Philly fans are among the most passionate in baseball",
       "a beautiful night under the lights here at The Vet",
-      "the symmetrical dimensions at Veterans Stadium — straightaway power all around",
-      "Philadelphia fans know their baseball — they'll let you know if something doesn't meet their standards",
-      "Hard to believe, Harry — what a crowd here in South Philly tonight",
+      "the symmetrical dimensions at Veterans Stadium - straightaway power all around",
+      "Philadelphia fans know their baseball - they'll let you know if something doesn't meet their standards",
+      "Hard to believe, Harry - what a crowd here in South Philly tonight",
     ],
     weatherFlavor: [
-      "a brisk Philadelphia evening — you can see your breath in the early innings here at The Vet",
-      "the heat radiating off the artificial turf this afternoon — it's warm in South Philly",
-      "a muggy summer night in Philadelphia — the ball should carry well in this air",
+      "a brisk Philadelphia evening - you can see your breath in the early innings here at The Vet",
+      "the heat radiating off the artificial turf this afternoon - it's warm in South Philly",
+      "a muggy summer night in Philadelphia - the ball should carry well in this air",
     ],
     cityFlavor: [
-      "if you're heading home down Broad Street after the game, give yourself some extra time — South Philly is busy tonight",
-      "a cheesesteak from Pat's or Geno's before the game — that's the Philadelphia way",
-      "Philadelphia has always been a tough sports town — the fans demand everything from their athletes",
-      "the passion of this city — hard to believe, Harry, how much this crowd wants it",
+      "if you're heading home down Broad Street after the game, give yourself some extra time - South Philly is busy tonight",
+      "a cheesesteak from Pat's or Geno's before the game - that's the Philadelphia way",
+      "Philadelphia has always been a tough sports town - the fans demand everything from their athletes",
+      "the passion of this city - hard to believe, Harry, how much this crowd wants it",
     ],
     loreFlavor: [
-      "you look around this stadium and think of the 1980 World Series — Mike Schmidt and the Phillies bringing a championship to Philadelphia",
-      "Steve Carlton won four Cy Young Awards as a Philadelphia Phillie — one of the greatest left-handers in the history of the game",
+      "you look around this stadium and think of the 1980 World Series - Mike Schmidt and the Phillies bringing a championship to Philadelphia",
+      "Steve Carlton won four Cy Young Awards as a Philadelphia Phillie - one of the greatest left-handers in the history of the game",
       "Two-thirds of the world is covered by water, Harry. The other third is covered by Garry Maddox.",
       "Watch that baby... the Phillies have a chance to do something here",
     ],
     neurosisFlavor: [
-      "Philly fans are getting restless — this crowd does not suffer in silence",
-      "the boos are starting to rain down from the upper deck — Philadelphia holds its teams to a very high standard",
+      "Philly fans are getting restless - this crowd does not suffer in silence",
+      "the boos are starting to rain down from the upper deck - Philadelphia holds its teams to a very high standard",
     ],
     stretchFlavor: null,
   },
@@ -467,30 +467,30 @@ export const STADIUM_FLAVOR = {
       "the artificial turf playing quick tonight at Riverfront",
       "ground balls can really scoot through on this turf",
       "Riverfront Stadium on the banks of the Ohio River",
-      "the symmetrical bowl here at Riverfront — baseball under the lights in Cincinnati",
-      "you can see the downtown skyline just beyond the outfield — Carew Tower standing tall",
-      "a few barges moving slowly down the Ohio beyond the outfield — classic Cincinnati scene",
+      "the symmetrical bowl here at Riverfront - baseball under the lights in Cincinnati",
+      "you can see the downtown skyline just beyond the outfield - Carew Tower standing tall",
+      "a few barges moving slowly down the Ohio beyond the outfield - classic Cincinnati scene",
       "the Queen City enjoying a beautiful evening at the old concrete doughnut",
-      "this crowd knows its baseball — they've been watching it here since 1869",
+      "this crowd knows its baseball - they've been watching it here since 1869",
       "Riverfront's been good to the Reds since it opened in 1970",
     ],
     weatherFlavor: [
-      "the heat is radiating off the artificial turf — the ground temperature has to be pushing 120 degrees out there",
-      "a little river fog drifting in from the Ohio tonight — might make it tough to track the ball in the outfield",
-      "a humid summer evening along the river — the ball should carry better as the night warms up",
+      "the heat is radiating off the artificial turf - the ground temperature has to be pushing 120 degrees out there",
+      "a little river fog drifting in from the Ohio tonight - might make it tough to track the ball in the outfield",
+      "a humid summer evening along the river - the ball should carry better as the night warms up",
     ],
     cityFlavor: [
-      "nothing wrong with a bowl of Cincinnati chili at Skyline before the game — three-way, extra cheese",
+      "nothing wrong with a bowl of Cincinnati chili at Skyline before the game - three-way, extra cheese",
       "if you're taking I-75 or the Brent Spence Bridge after the final out, give yourself a few extra minutes",
-      "the chili parlors downtown should be busy tonight — Skyline, Gold Star, Camp Washington — take your pick",
-      "greetings from Cincinnati, the Queen City — baseball's first professional team, and this town's never forgotten it",
+      "the chili parlors downtown should be busy tonight - Skyline, Gold Star, Camp Washington - take your pick",
+      "greetings from Cincinnati, the Queen City - baseball's first professional team, and this town's never forgotten it",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of the Big Red Machine — Bench, Morgan, Perez, Rose — my goodness, what a team that was",
+      "you look around this ballpark and think of the Big Red Machine - Bench, Morgan, Perez, Rose - my goodness, what a team that was",
       "this place was absolutely rocking during the World Series years of '75 and '76",
-      "a lot of baseball history in this town — the Reds have been playing professional ball longer than most cities have even existed",
-      "Pete Rose is out at first base tonight, still managing from the field at age 43 — nobody out-hustles Charlie Hustle",
-      "that smooth play at short — Concepcion makes it look so easy, doesn't he?",
+      "a lot of baseball history in this town - the Reds have been playing professional ball longer than most cities have even existed",
+      "Pete Rose is out at first base tonight, still managing from the field at age 43 - nobody out-hustles Charlie Hustle",
+      "that smooth play at short - Concepcion makes it look so easy, doesn't he?",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -501,33 +501,33 @@ export const STADIUM_FLAVOR = {
     nicknames: ["The Ex", "Exhibition Stadium"],
     flavor: [
       "a cool breeze rolling in off Lake Ontario here at Exhibition Stadium",
-      "the seagulls are circling the outfield — they know it's game time at the Ex",
-      "the artificial turf playing fast tonight — ground balls will scoot through the infield",
-      "Exhibition Stadium on the CNE grounds — home of Blue Jays baseball since 1977",
-      "the football configuration gives this ballpark a unique feel — those seats in left are a long way from home plate",
+      "the seagulls are circling the outfield - they know it's game time at the Ex",
+      "the artificial turf playing fast tonight - ground balls will scoot through the infield",
+      "Exhibition Stadium on the CNE grounds - home of Blue Jays baseball since 1977",
+      "the football configuration gives this ballpark a unique feel - those seats in left are a long way from home plate",
       "it may not be the prettiest ballpark in the league, but the fans here make it feel like home",
-      "you can see the Toronto skyline beyond the outfield — a beautiful backdrop on a summer night",
-      "the breeze off the lake can really knock a fly ball down — outfielders have to be alert",
-      "the lights are on at the Ex — the CNE grounds are lit up tonight",
-      "baseball by the lake — there's nothing quite like it",
+      "you can see the Toronto skyline beyond the outfield - a beautiful backdrop on a summer night",
+      "the breeze off the lake can really knock a fly ball down - outfielders have to be alert",
+      "the lights are on at the Ex - the CNE grounds are lit up tonight",
+      "baseball by the lake - there's nothing quite like it",
     ],
     weatherFlavor: [
-      "that wind coming straight in off Lake Ontario is going to hold up every ball hit to the outfield — a lot of long outs tonight",
-      "a chilly Canadian evening — the fans in the first few rows are bundled up in jackets and blankets — that's dedication",
-      "the air is damp and heavy off the lake tonight — pitchers better keep the ball down or the dampness will make it tough to get a grip",
+      "that wind coming straight in off Lake Ontario is going to hold up every ball hit to the outfield - a lot of long outs tonight",
+      "a chilly Canadian evening - the fans in the first few rows are bundled up in jackets and blankets - that's dedication",
+      "the air is damp and heavy off the lake tonight - pitchers better keep the ball down or the dampness will make it tough to get a grip",
     ],
     cityFlavor: [
-      "if you're taking the Gardiner Expressway or the QEW home after the game, give yourself some extra time — Toronto traffic doesn't sleep",
-      "I grabbed a peameal bacon sandwich before the first pitch — that is pure Toronto right there, folks",
-      "the fans are streaming in from all over — Mississauga, Scarborough, North York — the whole GTA comes out for Blue Jays baseball",
-      "baseball in Canada — it's been growing on folks, and you can see why tonight with this crowd",
-      "the Canadian fans here are knowledgeable and passionate — they've taken to this team in a big way",
+      "if you're taking the Gardiner Expressway or the QEW home after the game, give yourself some extra time - Toronto traffic doesn't sleep",
+      "I grabbed a peameal bacon sandwich before the first pitch - that is pure Toronto right there, folks",
+      "the fans are streaming in from all over - Mississauga, Scarborough, North York - the whole GTA comes out for Blue Jays baseball",
+      "baseball in Canada - it's been growing on folks, and you can see why tonight with this crowd",
+      "the Canadian fans here are knowledgeable and passionate - they've taken to this team in a big way",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of opening day in 1977 — it was snowing, the fans were freezing, and the Blue Jays won anyway — that's how this franchise was born",
-      "this team had its first winning season just last year — the fans up here have waited a long time for this",
-      "from expansion afterthought to a club on the rise — the Blue Jays are building something special in Toronto",
-      "Bobby Cox has this young team believing — and when a ballclub believes in itself, anything is possible",
+      "you look around this ballpark and think of opening day in 1977 - it was snowing, the fans were freezing, and the Blue Jays won anyway - that's how this franchise was born",
+      "this team had its first winning season just last year - the fans up here have waited a long time for this",
+      "from expansion afterthought to a club on the rise - the Blue Jays are building something special in Toronto",
+      "Bobby Cox has this young team believing - and when a ballclub believes in itself, anything is possible",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -538,35 +538,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["The Stadium", "Municipal Stadium", "The Mistake on the Lake"],
     flavor: [
       "a beautiful evening here at Cleveland Municipal Stadium",
-      "the lights are on at the old ballpark by the lake — Indians baseball tonight",
-      "Cleveland Municipal Stadium — one of the largest and most historic venues in baseball",
-      "the breeze off Lake Erie is blowing in tonight — that could knock down a few fly balls",
+      "the lights are on at the old ballpark by the lake - Indians baseball tonight",
+      "Cleveland Municipal Stadium - one of the largest and most historic venues in baseball",
+      "the breeze off Lake Erie is blowing in tonight - that could knock down a few fly balls",
       "the cavernous dimensions here make it tough on home-run hitters",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "there's plenty of room out there in the outfield — this is one big ballpark",
-      "the seats stretch far back at Cleveland Municipal Stadium — there's not a bad seat in the house",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "there's plenty of room out there in the outfield - this is one big ballpark",
+      "the seats stretch far back at Cleveland Municipal Stadium - there's not a bad seat in the house",
       "the Cleveland skyline is visible beyond the outfield walls on a clear night",
-      "the wind off the lake can be a factor all game long — outfielders have to be alert",
+      "the wind off the lake can be a factor all game long - outfielders have to be alert",
       "this stadium was built for football, but it's been home to Indians baseball for decades",
       "it may be a big ballpark, but the fans who show up love their Indians",
     ],
     weatherFlavor: [
-      "that wind coming straight in off Lake Erie is going to hold up every ball hit to the outfield — a lot of long outs tonight",
-      "a chilly evening on the lakefront — the fans in the first few rows are bundled up in jackets — that's dedication",
-      "the air is damp and heavy off the lake tonight — pitchers better keep the ball down or the dampness will make it tough to get a grip",
+      "that wind coming straight in off Lake Erie is going to hold up every ball hit to the outfield - a lot of long outs tonight",
+      "a chilly evening on the lakefront - the fans in the first few rows are bundled up in jackets - that's dedication",
+      "the air is damp and heavy off the lake tonight - pitchers better keep the ball down or the dampness will make it tough to get a grip",
     ],
     cityFlavor: [
-      "if you're taking the Shoreway or I-90 home after the game, give yourself some extra time — Cleveland traffic doesn't sleep",
-      "I grabbed a Polish boy and a Stadium mustard before the first pitch — that is pure Cleveland right there, folks",
-      "the fans are streaming in from all over — Lakewood, Parma, Euclid — the whole area comes out for Indians baseball",
-      "Cleveland fans are among the most loyal in baseball — they've been through a lot and they keep coming back",
-      "there's a pride in this city that you can feel at the ballpark — Cleveland loves its Indians",
+      "if you're taking the Shoreway or I-90 home after the game, give yourself some extra time - Cleveland traffic doesn't sleep",
+      "I grabbed a Polish boy and a Stadium mustard before the first pitch - that is pure Cleveland right there, folks",
+      "the fans are streaming in from all over - Lakewood, Parma, Euclid - the whole area comes out for Indians baseball",
+      "Cleveland fans are among the most loyal in baseball - they've been through a lot and they keep coming back",
+      "there's a pride in this city that you can feel at the ballpark - Cleveland loves its Indians",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of Bob Feller and the great Cleveland teams of the past — there's a lot of history here",
-      "this franchise has been playing baseball since 1901 — the fans in Cleveland have seen it all",
-      "from the glory days of the 1940s and '50s to the young club on the field today — Indians baseball runs deep in this city",
-      "the Indians are building something with these young players — the fans up here have been waiting a long time for this",
+      "you look around this ballpark and think of Bob Feller and the great Cleveland teams of the past - there's a lot of history here",
+      "this franchise has been playing baseball since 1901 - the fans in Cleveland have seen it all",
+      "from the glory days of the 1940s and '50s to the young club on the field today - Indians baseball runs deep in this city",
+      "the Indians are building something with these young players - the fans up here have been waiting a long time for this",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -577,35 +577,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["Arlington Stadium", "The Turnpike Stadium"],
     flavor: [
       "a beautiful evening here at Arlington Stadium",
-      "the lights are on at the old ballpark — Rangers baseball tonight",
-      "Arlington Stadium — home of the Rangers since 1972",
+      "the lights are on at the old ballpark - Rangers baseball tonight",
+      "Arlington Stadium - home of the Rangers since 1972",
       "the warm Texas air is perfect for baseball tonight",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "the stands are filling up nicely — the fans in Arlington are excited about this club",
-      "you can feel the Texas heat radiating off the turf — it's a warm one tonight",
-      "the old ballpark has character — you can feel it the moment you walk through the gates",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "the stands are filling up nicely - the fans in Arlington are excited about this club",
+      "you can feel the Texas heat radiating off the turf - it's a warm one tonight",
+      "the old ballpark has character - you can feel it the moment you walk through the gates",
       "the faithful at Arlington Stadium are some of the most passionate fans in baseball",
-      "a crisp evening in Texas — there's nothing better than baseball at Arlington Stadium",
-      "the Dallas-Fort Worth metroplex is buzzing tonight — the fans here love their Rangers",
-      "the Texas flag is flying high above the outfield wall — God bless Texas",
+      "a crisp evening in Texas - there's nothing better than baseball at Arlington Stadium",
+      "the Dallas-Fort Worth metroplex is buzzing tonight - the fans here love their Rangers",
+      "the Texas flag is flying high above the outfield wall - God bless Texas",
     ],
     weatherFlavor: [
-      "the warm Texas air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
-      "a gorgeous Texas evening — not a cloud in the sky",
-      "the breeze across the metroplex is keeping things comfortable — perfect baseball weather",
+      "the warm Texas air is carrying the ball well tonight - hitters will get rewarded if they elevate it",
+      "a gorgeous Texas evening - not a cloud in the sky",
+      "the breeze across the metroplex is keeping things comfortable - perfect baseball weather",
     ],
     cityFlavor: [
-      "if you're taking I-30 or Highway 360 home after the game, give yourself some extra time — DFW traffic doesn't sleep",
-      "I grabbed a brisket sandwich before the first pitch — that is pure Texas right there, folks",
-      "the fans are streaming in from all over — Dallas, Fort Worth, Arlington, Irving — the whole metroplex comes out for Rangers baseball",
-      "Texas is one of the great baseball markets in America — everything's bigger, including the love for the game",
-      "there's a pride in the Lone Star State that you can feel at the ballpark — Texas loves its Rangers",
+      "if you're taking I-30 or Highway 360 home after the game, give yourself some extra time - DFW traffic doesn't sleep",
+      "I grabbed a brisket sandwich before the first pitch - that is pure Texas right there, folks",
+      "the fans are streaming in from all over - Dallas, Fort Worth, Arlington, Irving - the whole metroplex comes out for Rangers baseball",
+      "Texas is one of the great baseball markets in America - everything's bigger, including the love for the game",
+      "there's a pride in the Lone Star State that you can feel at the ballpark - Texas loves its Rangers",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of the great Rangers teams of the past — Toby Harrah, Jim Sundberg, Ferguson Jenkins — there's history here",
-      "this franchise has been playing in Texas since 1972 — the fans in Arlington have seen some great players come through here",
-      "from the Washington Senators to the Texas Rangers — this franchise has grown right along with the metroplex",
-      "the Rangers are building something with this roster — the fans in Texas believe this team can contend",
+      "you look around this ballpark and think of the great Rangers teams of the past - Toby Harrah, Jim Sundberg, Ferguson Jenkins - there's history here",
+      "this franchise has been playing in Texas since 1972 - the fans in Arlington have seen some great players come through here",
+      "from the Washington Senators to the Texas Rangers - this franchise has grown right along with the metroplex",
+      "the Rangers are building something with this roster - the fans in Texas believe this team can contend",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -616,35 +616,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["The Kingdome", "The Dome"],
     flavor: [
       "a beautiful evening indoors at the Kingdome",
-      "the lights are on at the Dome — Mariners baseball tonight",
-      "the Kingdome — home of the Mariners since 1977 — baseball under the concrete roof",
-      "the air conditioning is humming tonight — always 72 degrees inside the Dome",
-      "the white concrete roof stretched above the field — there's nothing else like it in baseball",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "the seats are filling up nicely — Seattle fans are excited about this young team",
-      "you can hear the ballgame echoing off the roof tonight — the Dome has its own sound",
-      "a comfortable evening inside the Kingdome — no rain delays here, ever",
-      "this is still a young ballpark — the fans are still growing with this franchise",
-      "the Kingdome is hopping tonight — the crowd is into this one",
-      "baseball indoors in the Pacific Northwest — the Kingdome is home",
+      "the lights are on at the Dome - Mariners baseball tonight",
+      "the Kingdome - home of the Mariners since 1977 - baseball under the concrete roof",
+      "the air conditioning is humming tonight - always 72 degrees inside the Dome",
+      "the white concrete roof stretched above the field - there's nothing else like it in baseball",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "the seats are filling up nicely - Seattle fans are excited about this young team",
+      "you can hear the ballgame echoing off the roof tonight - the Dome has its own sound",
+      "a comfortable evening inside the Kingdome - no rain delays here, ever",
+      "this is still a young ballpark - the fans are still growing with this franchise",
+      "the Kingdome is hopping tonight - the crowd is into this one",
+      "baseball indoors in the Pacific Northwest - the Kingdome is home",
     ],
     weatherFlavor: [
-      "it's always 72 degrees inside the Dome — the weather outside doesn't matter one bit",
-      "a perfect evening indoors — the air conditioning is keeping things comfortable",
+      "it's always 72 degrees inside the Dome - the weather outside doesn't matter one bit",
+      "a perfect evening indoors - the air conditioning is keeping things comfortable",
       "the controlled climate of the Dome means the ball carries true tonight",
     ],
     cityFlavor: [
-      "if you're taking I-5 or the Alaskan Way Viaduct home after the game, give yourself some extra time — Seattle traffic can back up",
-      "I grabbed a cup of coffee before the first pitch — this is Seattle, after all, the coffee capital of America",
-      "the fans are streaming in from all over — Bellevue, Tacoma, Everett — the whole Puget Sound comes out for Mariners baseball",
-      "Seattle is one of the great baseball cities in the making — the fans here have taken to this team in a big way",
-      "there's a pride in the Pacific Northwest that you can feel at the ballpark — Seattle loves its Mariners",
+      "if you're taking I-5 or the Alaskan Way Viaduct home after the game, give yourself some extra time - Seattle traffic can back up",
+      "I grabbed a cup of coffee before the first pitch - this is Seattle, after all, the coffee capital of America",
+      "the fans are streaming in from all over - Bellevue, Tacoma, Everett - the whole Puget Sound comes out for Mariners baseball",
+      "Seattle is one of the great baseball cities in the making - the fans here have taken to this team in a big way",
+      "there's a pride in the Pacific Northwest that you can feel at the ballpark - Seattle loves its Mariners",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of opening day in 1977 — the Mariners played their first game right here at the Kingdome",
-      "this franchise is still young — the fans in Seattle have been waiting for a winner since day one",
-      "from the expansion days to the young club on the field today — Mariners baseball is growing in this city",
-      "Dave Niehaus has been the voice of the Mariners since the very first pitch in 1977 — \"My oh my!\"",
+      "you look around this ballpark and think of opening day in 1977 - the Mariners played their first game right here at the Kingdome",
+      "this franchise is still young - the fans in Seattle have been waiting for a winner since day one",
+      "from the expansion days to the young club on the field today - Mariners baseball is growing in this city",
+      "Dave Niehaus has been the voice of the Mariners since the very first pitch in 1977 - \"My oh my!\"",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -655,35 +655,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["Comiskey Park", "The Old Ballpark"],
     flavor: [
       "a beautiful evening here at Comiskey Park",
-      "the lights are on at the old ballpark — White Sox baseball tonight",
-      "Comiskey Park — home of the White Sox since 1910",
+      "the lights are on at the old ballpark - White Sox baseball tonight",
+      "Comiskey Park - home of the White Sox since 1910",
       "the warm Midwestern air is perfect for baseball tonight",
-      "the stands are filling up nicely — the fans on the South Side are excited about this club",
-      "you can see the Chicago skyline beyond the outfield — a beautiful backdrop on a clear night",
-      "Comiskey Park has been home to some of baseball's greatest moments — the Black Sox, the Go-Go Sox — history lives here",
-      "the old ballpark has character — you can feel it the moment you walk through the gates",
-      "the upper deck at Comiskey is one of the steepest in baseball — great view from up there",
+      "the stands are filling up nicely - the fans on the South Side are excited about this club",
+      "you can see the Chicago skyline beyond the outfield - a beautiful backdrop on a clear night",
+      "Comiskey Park has been home to some of baseball's greatest moments - the Black Sox, the Go-Go Sox - history lives here",
+      "the old ballpark has character - you can feel it the moment you walk through the gates",
+      "the upper deck at Comiskey is one of the steepest in baseball - great view from up there",
       "the faithful at Comiskey are some of the most passionate fans in baseball",
-      "a crisp evening in Chicago — there's nothing better than baseball at Comiskey Park",
-      "the South Side is buzzing tonight — the fans here love their White Sox",
+      "a crisp evening in Chicago - there's nothing better than baseball at Comiskey Park",
+      "the South Side is buzzing tonight - the fans here love their White Sox",
     ],
     weatherFlavor: [
-      "the warm air off Lake Michigan is carrying the ball well tonight — hitters will get rewarded if they elevate it",
-      "a gorgeous Chicago evening — not a cloud in the sky over the skyline",
-      "the breeze off the lake is keeping things comfortable — perfect baseball weather at Comiskey",
+      "the warm air off Lake Michigan is carrying the ball well tonight - hitters will get rewarded if they elevate it",
+      "a gorgeous Chicago evening - not a cloud in the sky over the skyline",
+      "the breeze off the lake is keeping things comfortable - perfect baseball weather at Comiskey",
     ],
     cityFlavor: [
-      "if you're taking the Dan Ryan or the Stevenson home after the game, give yourself some extra time — Chicago traffic doesn't sleep",
-      "I grabbed a Chicago dog before the first pitch — mustard, onions, relish, sport peppers, tomato, pickle — no ketchup — that's the rule",
-      "the fans are streaming in from all over — Bridgeport, Beverly, Pilsen — the whole South Side comes out for White Sox baseball",
-      "Chicago is one of the great baseball towns in America — two teams, one city, and the South Side bleeds black and white",
-      "there's a pride on the South Side that you can feel at the ballpark — the fans here love their White Sox",
+      "if you're taking the Dan Ryan or the Stevenson home after the game, give yourself some extra time - Chicago traffic doesn't sleep",
+      "I grabbed a Chicago dog before the first pitch - mustard, onions, relish, sport peppers, tomato, pickle - no ketchup - that's the rule",
+      "the fans are streaming in from all over - Bridgeport, Beverly, Pilsen - the whole South Side comes out for White Sox baseball",
+      "Chicago is one of the great baseball towns in America - two teams, one city, and the South Side bleeds black and white",
+      "there's a pride on the South Side that you can feel at the ballpark - the fans here love their White Sox",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of the 1959 Go-Go Sox — Luis Aparicio, Nellie Fox, Early Wynn — the last White Sox team to win the pennant",
-      "this franchise has been playing baseball since 1901 — the fans on the South Side have seen it all",
-      "from Shoeless Joe to Carlton Fisk — the White Sox have always been a team of characters",
-      "the White Sox won the American League West last year — the fans in Chicago believe this team can win it all",
+      "you look around this ballpark and think of the 1959 Go-Go Sox - Luis Aparicio, Nellie Fox, Early Wynn - the last White Sox team to win the pennant",
+      "this franchise has been playing baseball since 1901 - the fans on the South Side have seen it all",
+      "from Shoeless Joe to Carlton Fisk - the White Sox have always been a team of characters",
+      "the White Sox won the American League West last year - the fans in Chicago believe this team can win it all",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -694,35 +694,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["The Big A", "Anaheim Stadium"],
     flavor: [
       "a beautiful evening here at Anaheim Stadium",
-      "the lights are on at the Big A — Angels baseball tonight",
-      "Anaheim Stadium — home of the Angels since 1966",
+      "the lights are on at the Big A - Angels baseball tonight",
+      "Anaheim Stadium - home of the Angels since 1966",
       "the warm Southern California air is perfect for baseball tonight",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "the stands are filling up nicely — the fans in Anaheim are excited about this club",
-      "you can see the Santa Ana Mountains beyond the outfield — a beautiful backdrop on a clear night",
-      "the Big A has been home to some great moments — the Angels won the West right here in '79 and '82",
-      "there's a festive atmosphere at the ballpark tonight — Southern California loves its baseball",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "the stands are filling up nicely - the fans in Anaheim are excited about this club",
+      "you can see the Santa Ana Mountains beyond the outfield - a beautiful backdrop on a clear night",
+      "the Big A has been home to some great moments - the Angels won the West right here in '79 and '82",
+      "there's a festive atmosphere at the ballpark tonight - Southern California loves its baseball",
       "the breeze off the Pacific keeps things comfortable on a warm evening",
       "the faithful at the Big A are some of the most passionate fans in baseball",
-      "a crisp evening in Orange County — there's nothing better than baseball at Anaheim Stadium",
+      "a crisp evening in Orange County - there's nothing better than baseball at Anaheim Stadium",
     ],
     weatherFlavor: [
-      "the warm Southern California air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
-      "a gorgeous California evening — not a cloud in the sky over the Santa Ana Mountains",
-      "the breeze off the Pacific is keeping things comfortable — perfect baseball weather at the Big A",
+      "the warm Southern California air is carrying the ball well tonight - hitters will get rewarded if they elevate it",
+      "a gorgeous California evening - not a cloud in the sky over the Santa Ana Mountains",
+      "the breeze off the Pacific is keeping things comfortable - perfect baseball weather at the Big A",
     ],
     cityFlavor: [
-      "if you're taking I-5 or the Orange Freeway home after the game, give yourself some extra time — Orange County traffic doesn't sleep",
-      "I grabbed a fish taco from a stand on Katella Avenue before the first pitch — that is pure Southern California right there, folks",
-      "the fans are streaming in from all over — Anaheim, Fullerton, Irvine, Huntington Beach — the whole county comes out for Angels baseball",
-      "California is one of the great baseball markets in America — the fans here have seen the Angels win two division titles in the last four years",
-      "there's a pride in Orange County that you can feel at the ballpark — the fans here love their Angels",
+      "if you're taking I-5 or the Orange Freeway home after the game, give yourself some extra time - Orange County traffic doesn't sleep",
+      "I grabbed a fish taco from a stand on Katella Avenue before the first pitch - that is pure Southern California right there, folks",
+      "the fans are streaming in from all over - Anaheim, Fullerton, Irvine, Huntington Beach - the whole county comes out for Angels baseball",
+      "California is one of the great baseball markets in America - the fans here have seen the Angels win two division titles in the last four years",
+      "there's a pride in Orange County that you can feel at the ballpark - the fans here love their Angels",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of Nolan Ryan's no-hitters — Ryan threw four of his career no-hitters right here in an Angels uniform",
-      "this franchise has been playing baseball since 1961 — the fans in Anaheim have seen some great players come through here",
-      "from the original Los Angeles Angels to the California Angels — this franchise has grown right along with Southern California",
-      "the Angels are building something with this roster — the fans in Anaheim believe this team can contend again",
+      "you look around this ballpark and think of Nolan Ryan's no-hitters - Ryan threw four of his career no-hitters right here in an Angels uniform",
+      "this franchise has been playing baseball since 1961 - the fans in Anaheim have seen some great players come through here",
+      "from the original Los Angeles Angels to the California Angels - this franchise has grown right along with Southern California",
+      "the Angels are building something with this roster - the fans in Anaheim believe this team can contend again",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -733,35 +733,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["The Coliseum", "Oakland Coliseum"],
     flavor: [
       "a beautiful evening here at the Oakland-Alameda County Coliseum",
-      "the lights are on at the Coliseum — Athletics baseball tonight",
-      "the Oakland Coliseum — home of the Athletics since 1968",
+      "the lights are on at the Coliseum - Athletics baseball tonight",
+      "the Oakland Coliseum - home of the Athletics since 1968",
       "the warm East Bay air is perfect for baseball tonight",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "the stands are filling up nicely — Oakland fans are excited about this club",
-      "you can see the Oakland hills beyond the outfield — a beautiful backdrop on a clear night",
-      "the Coliseum has been home to some of baseball's greatest moments — three straight World Series in the '70s",
-      "there's plenty of room out there in the outfield — this is one big ballpark",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "the stands are filling up nicely - Oakland fans are excited about this club",
+      "you can see the Oakland hills beyond the outfield - a beautiful backdrop on a clear night",
+      "the Coliseum has been home to some of baseball's greatest moments - three straight World Series in the '70s",
+      "there's plenty of room out there in the outfield - this is one big ballpark",
       "the breeze off the bay keeps things comfortable on a warm evening",
       "the faithful at the Coliseum are some of the most passionate fans in baseball",
-      "a crisp evening in the East Bay — there's nothing better than baseball at the Coliseum",
+      "a crisp evening in the East Bay - there's nothing better than baseball at the Coliseum",
     ],
     weatherFlavor: [
-      "the warm East Bay air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
-      "a gorgeous California evening — not a cloud in the sky over the Oakland hills",
-      "the breeze off the bay is keeping things comfortable — perfect baseball weather at the Coliseum",
+      "the warm East Bay air is carrying the ball well tonight - hitters will get rewarded if they elevate it",
+      "a gorgeous California evening - not a cloud in the sky over the Oakland hills",
+      "the breeze off the bay is keeping things comfortable - perfect baseball weather at the Coliseum",
     ],
     cityFlavor: [
-      "if you're taking I-880 or the Nimitz Freeway home after the game, give yourself some extra time — East Bay traffic doesn't sleep",
-      "I grabbed a burrito from a truck on Coliseum Way before the first pitch — that is pure Oakland right there, folks",
-      "the fans are streaming in from all over — Berkeley, Hayward, Fremont — the whole East Bay comes out for A's baseball",
-      "Oakland is one of the great baseball towns in America — the fans here have seen three straight World Series champions and they want another",
-      "there's a pride in this city that you can feel at the ballpark — Oakland loves its Athletics",
+      "if you're taking I-880 or the Nimitz Freeway home after the game, give yourself some extra time - East Bay traffic doesn't sleep",
+      "I grabbed a burrito from a truck on Coliseum Way before the first pitch - that is pure Oakland right there, folks",
+      "the fans are streaming in from all over - Berkeley, Hayward, Fremont - the whole East Bay comes out for A's baseball",
+      "Oakland is one of the great baseball towns in America - the fans here have seen three straight World Series champions and they want another",
+      "there's a pride in this city that you can feel at the ballpark - Oakland loves its Athletics",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of Catfish Hunter, Rollie Fingers and Reggie Jackson — the A's won three straight World Series right here",
-      "this franchise has a championship pedigree — five World Series titles between Philadelphia and Oakland",
-      "from Connie Mack to Charlie Finley to the current regime — the Athletics have always been a franchise of bold moves",
-      "the A's are building something with these young players — the fans in Oakland believe this team can contend again",
+      "you look around this ballpark and think of Catfish Hunter, Rollie Fingers and Reggie Jackson - the A's won three straight World Series right here",
+      "this franchise has a championship pedigree - five World Series titles between Philadelphia and Oakland",
+      "from Connie Mack to Charlie Finley to the current regime - the Athletics have always been a franchise of bold moves",
+      "the A's are building something with these young players - the fans in Oakland believe this team can contend again",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -772,35 +772,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["The Metrodome", "The Dome", "The HHH Metrodome"],
     flavor: [
       "a beautiful evening indoors at the Hubert H. Humphrey Metrodome",
-      "the lights are on at the Dome — Twins baseball tonight",
-      "the Metrodome — home of the Twins since 1982 — baseball under the Teflon roof",
-      "the air conditioning is humming tonight — always 72 degrees inside the Dome",
-      "the white Teflon roof stretched above the field — there's nothing else like it in baseball",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "the seats are filling up nicely — Minnesota fans are excited about this young team",
-      "you can hear the ballgame echoing off the roof tonight — the Dome has its own sound",
-      "the baggy in right field — that's the Hank Aaron Lou Gehrig wall — it's a unique target",
-      "a comfortable evening inside the Metrodome — no rain delays here, ever",
-      "this is still a new ballpark — the fans are still getting used to baseball indoors",
-      "the Dome is hopping tonight — the crowd is into this one",
+      "the lights are on at the Dome - Twins baseball tonight",
+      "the Metrodome - home of the Twins since 1982 - baseball under the Teflon roof",
+      "the air conditioning is humming tonight - always 72 degrees inside the Dome",
+      "the white Teflon roof stretched above the field - there's nothing else like it in baseball",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "the seats are filling up nicely - Minnesota fans are excited about this young team",
+      "you can hear the ballgame echoing off the roof tonight - the Dome has its own sound",
+      "the baggy in right field - that's the Hank Aaron Lou Gehrig wall - it's a unique target",
+      "a comfortable evening inside the Metrodome - no rain delays here, ever",
+      "this is still a new ballpark - the fans are still getting used to baseball indoors",
+      "the Dome is hopping tonight - the crowd is into this one",
     ],
     weatherFlavor: [
-      "it's always 72 degrees inside the Dome — the weather outside doesn't matter one bit",
-      "a perfect evening indoors — the air conditioning is keeping things comfortable",
+      "it's always 72 degrees inside the Dome - the weather outside doesn't matter one bit",
+      "a perfect evening indoors - the air conditioning is keeping things comfortable",
       "the controlled climate of the Dome means the ball carries true tonight",
     ],
     cityFlavor: [
-      "if you're taking I-35W or I-94 home after the game, give yourself some extra time — Twin Cities traffic can back up",
-      "I grabbed a Juicy Lucy before the first pitch — that is pure Minnesota right there, folks",
-      "the fans are streaming in from all over — St. Paul, Bloomington, Brooklyn Center — the whole metro comes out for Twins baseball",
-      "Minnesota is one of the great baseball states in America — the fans here know their stuff",
-      "there's a pride in this state that you can feel at the ballpark — Minnesota loves its Twins",
+      "if you're taking I-35W or I-94 home after the game, give yourself some extra time - Twin Cities traffic can back up",
+      "I grabbed a Juicy Lucy before the first pitch - that is pure Minnesota right there, folks",
+      "the fans are streaming in from all over - St. Paul, Bloomington, Brooklyn Center - the whole metro comes out for Twins baseball",
+      "Minnesota is one of the great baseball states in America - the fans here know their stuff",
+      "there's a pride in this state that you can feel at the ballpark - Minnesota loves its Twins",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of the great Twins teams of the past — Killebrew, Oliva, Carew — there's a lot of history here",
-      "this franchise won the World Series in 1965 — the fans in Minnesota have tasted winning baseball",
-      "from Metropolitan Stadium to the Dome — the Twins have a new home and a new era",
-      "the Twins are building something with these young players — the fans up here believe this team can contend again",
+      "you look around this ballpark and think of the great Twins teams of the past - Killebrew, Oliva, Carew - there's a lot of history here",
+      "this franchise won the World Series in 1965 - the fans in Minnesota have tasted winning baseball",
+      "from Metropolitan Stadium to the Dome - the Twins have a new home and a new era",
+      "the Twins are building something with these young players - the fans up here believe this team can contend again",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -811,35 +811,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["County Stadium", "The ballpark on the fairgrounds"],
     flavor: [
       "a beautiful evening here at County Stadium, right on the Wisconsin state fairgrounds",
-      "the lights are on at County Stadium — Milwaukee baseball tonight",
-      "County Stadium — home of the Brewers since 1970, and the fans here love their baseball",
-      "the bratwursts are sizzling on the grill behind the bleachers — that's the smell of Brewers baseball",
-      "a cool Wisconsin evening — perfect baseball weather at County Stadium",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "the bleachers are packed tonight — Milwaukee fans know how to enjoy a ballgame",
+      "the lights are on at County Stadium - Milwaukee baseball tonight",
+      "County Stadium - home of the Brewers since 1970, and the fans here love their baseball",
+      "the bratwursts are sizzling on the grill behind the bleachers - that's the smell of Brewers baseball",
+      "a cool Wisconsin evening - perfect baseball weather at County Stadium",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "the bleachers are packed tonight - Milwaukee fans know how to enjoy a ballgame",
       "you can see the Milwaukee skyline beyond the outfield walls on a clear night",
       "the faithful at County Stadium are some of the most knowledgeable fans in baseball",
-      "a crisp summer night in Wisconsin — there's nothing better than baseball at County Stadium",
-      "this ballpark has seen some great moments — the 1982 pennant clincher right here on this field",
-      "the stands are filling up nicely — Wisconsin loves its Brewers",
+      "a crisp summer night in Wisconsin - there's nothing better than baseball at County Stadium",
+      "this ballpark has seen some great moments - the 1982 pennant clincher right here on this field",
+      "the stands are filling up nicely - Wisconsin loves its Brewers",
     ],
     weatherFlavor: [
-      "a cool breeze coming in off Lake Michigan tonight — the ball might not carry as well in this air",
-      "a gorgeous Wisconsin summer evening — not too hot, not too cold — perfect baseball weather",
-      "the air is damp and heavy tonight — the ball is not going to carry far in these conditions",
+      "a cool breeze coming in off Lake Michigan tonight - the ball might not carry as well in this air",
+      "a gorgeous Wisconsin summer evening - not too hot, not too cold - perfect baseball weather",
+      "the air is damp and heavy tonight - the ball is not going to carry far in these conditions",
     ],
     cityFlavor: [
-      "if you're taking I-94 or the freeway home after the game, give yourself some extra time — Milwaukee traffic can back up",
-      "I grabbed a bratwurst and a beer before the first pitch — that is pure Milwaukee right there, folks",
-      "the fans are streaming in from all over — Waukesha, West Allis, Wauwatosa — the whole area comes out for Brewers baseball",
-      "Milwaukee is one of the great baseball towns in America — the fans here know their stuff",
-      "there's a pride in this city that you can feel at the ballpark — Milwaukee loves its Brewers",
+      "if you're taking I-94 or the freeway home after the game, give yourself some extra time - Milwaukee traffic can back up",
+      "I grabbed a bratwurst and a beer before the first pitch - that is pure Milwaukee right there, folks",
+      "the fans are streaming in from all over - Waukesha, West Allis, Wauwatosa - the whole area comes out for Brewers baseball",
+      "Milwaukee is one of the great baseball towns in America - the fans here know their stuff",
+      "there's a pride in this city that you can feel at the ballpark - Milwaukee loves its Brewers",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of the 1982 pennant — Harvey's Wallbangers — what a team that was",
-      "this franchise went to the World Series just two years ago — the fans in Milwaukee have tasted winning baseball",
-      "from the early days of the Seattle Pilots to the Brewers of today — this franchise has come a long way",
-      "the Brewers are building toward another run — the fans up here believe this team can contend again",
+      "you look around this ballpark and think of the 1982 pennant - Harvey's Wallbangers - what a team that was",
+      "this franchise went to the World Series just two years ago - the fans in Milwaukee have tasted winning baseball",
+      "from the early days of the Seattle Pilots to the Brewers of today - this franchise has come a long way",
+      "the Brewers are building toward another run - the fans up here believe this team can contend again",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -850,35 +850,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["The Big O", "Olympic Stadium"],
     flavor: [
       "a beautiful evening here at Olympic Stadium",
-      "the lights are on at the Big O — Expos baseball tonight",
-      "Olympic Stadium — home of the Expos since 1977",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "the Montreal Tower looms above the stadium — the tallest inclined tower in the world",
+      "the lights are on at the Big O - Expos baseball tonight",
+      "Olympic Stadium - home of the Expos since 1977",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "the Montreal Tower looms above the stadium - the tallest inclined tower in the world",
       "the cavernous dimensions here make it tough on home-run hitters",
-      "the stands are filling up nicely — the fans in Montreal are excited about this club",
-      "you can hear the bilingual announcements echoing through the stadium — Montreal baseball is unique",
-      "Youppi! is working the crowd into a frenzy — the fans love that orange furball",
-      "the roof situation at the Big O is still unresolved — but the baseball goes on",
-      "a comfortable evening at Olympic Stadium — the fans here are passionate about their Expos",
-      "the Big O is hopping tonight — the crowd is into this one",
+      "the stands are filling up nicely - the fans in Montreal are excited about this club",
+      "you can hear the bilingual announcements echoing through the stadium - Montreal baseball is unique",
+      "Youppi! is working the crowd into a frenzy - the fans love that orange furball",
+      "the roof situation at the Big O is still unresolved - but the baseball goes on",
+      "a comfortable evening at Olympic Stadium - the fans here are passionate about their Expos",
+      "the Big O is hopping tonight - the crowd is into this one",
     ],
     weatherFlavor: [
-      "the air inside the Big O is heavy tonight — the ball might not carry as well in these conditions",
-      "a cool Canadian evening — the fans in the first few rows are bundled up in jackets — that's dedication",
-      "the damp air off the St. Lawrence River is making the ball heavy tonight — pitchers will benefit",
+      "the air inside the Big O is heavy tonight - the ball might not carry as well in these conditions",
+      "a cool Canadian evening - the fans in the first few rows are bundled up in jackets - that's dedication",
+      "the damp air off the St. Lawrence River is making the ball heavy tonight - pitchers will benefit",
     ],
     cityFlavor: [
       "if you're taking the Metro home after the game, the platform at Pie-IX is going to be packed",
-      "I grabbed a smoked meat sandwich from Schwartz's before the game — that is pure Montreal right there",
-      "the fans are streaming in from all over — Westmount, Outremont, Plateau — the whole city comes out for Expos baseball",
-      "Montreal is one of the great baseball cities in North America — the fans here have a European passion for the game",
-      "there's a joie de vivre in this city that you can feel at the ballpark — Montreal loves its Expos",
+      "I grabbed a smoked meat sandwich from Schwartz's before the game - that is pure Montreal right there",
+      "the fans are streaming in from all over - Westmount, Outremont, Plateau - the whole city comes out for Expos baseball",
+      "Montreal is one of the great baseball cities in North America - the fans here have a European passion for the game",
+      "there's a joie de vivre in this city that you can feel at the ballpark - Montreal loves its Expos",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of the 1981 playoff run — the Expos came so close to the World Series",
-      "this franchise has been playing since 1969 — Canada's first major-league team — and the fans here have never stopped believing",
-      "from Rusty Staub to Gary Carter to Andre Dawson — the Expos have always had stars for the fans to love",
-      "the Expos are building something with this roster — the fans in Montreal believe this team can contend in the East",
+      "you look around this ballpark and think of the 1981 playoff run - the Expos came so close to the World Series",
+      "this franchise has been playing since 1969 - Canada's first major-league team - and the fans here have never stopped believing",
+      "from Rusty Staub to Gary Carter to Andre Dawson - the Expos have always had stars for the fans to love",
+      "the Expos are building something with this roster - the fans in Montreal believe this team can contend in the East",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -889,35 +889,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["Busch Stadium", "The Old Busch"],
     flavor: [
       "a beautiful evening here at Busch Memorial Stadium",
-      "the lights are on at Busch Stadium — Cardinals baseball tonight",
-      "Busch Memorial Stadium — home of the Cardinals since 1966",
-      "the Gateway Arch is looming beyond the outfield wall — best backdrop in baseball",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "the stands are filling up nicely — St. Louis loves its Cardinals",
-      "you can see the Mississippi River beyond the stadium — downtown St. Louis at its finest",
-      "Busch Stadium is rocking tonight — the best fans in baseball are here",
-      "the Cardinal Nation is out in force tonight — red as far as the eye can see",
-      "the Anheuser-Busch sign gleams above the stadium — this is St. Louis",
+      "the lights are on at Busch Stadium - Cardinals baseball tonight",
+      "Busch Memorial Stadium - home of the Cardinals since 1966",
+      "the Gateway Arch is looming beyond the outfield wall - best backdrop in baseball",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "the stands are filling up nicely - St. Louis loves its Cardinals",
+      "you can see the Mississippi River beyond the stadium - downtown St. Louis at its finest",
+      "Busch Stadium is rocking tonight - the best fans in baseball are here",
+      "the Cardinal Nation is out in force tonight - red as far as the eye can see",
+      "the Anheuser-Busch sign gleams above the stadium - this is St. Louis",
       "a perfect evening for baseball at the old ballpark on the river",
       "the defending World Series champions take the field at Busch Stadium",
     ],
     weatherFlavor: [
-      "the warm Midwestern air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
-      "a gorgeous St. Louis evening — not a cloud in the sky over the Arch",
-      "the breeze off the Mississippi is keeping things comfortable — perfect baseball weather at Busch",
+      "the warm Midwestern air is carrying the ball well tonight - hitters will get rewarded if they elevate it",
+      "a gorgeous St. Louis evening - not a cloud in the sky over the Arch",
+      "the breeze off the Mississippi is keeping things comfortable - perfect baseball weather at Busch",
     ],
     cityFlavor: [
-      "if you're taking I-64 or I-55 home after the game, give yourself some extra time — St. Louis traffic doesn't sleep",
-      "I grabbed a toasted ravioli before the first pitch — that is pure St. Louis right there, folks",
-      "the fans are streaming in from all over — St. Louis County, the Metro East, Jefferson County — the whole region comes out for Cardinals baseball",
-      "St. Louis is the best baseball city in America — the fans here live and breathe Cardinals baseball",
-      "there's a pride in this city that you can feel at the ballpark — St. Louis loves its Cardinals",
+      "if you're taking I-64 or I-55 home after the game, give yourself some extra time - St. Louis traffic doesn't sleep",
+      "I grabbed a toasted ravioli before the first pitch - that is pure St. Louis right there, folks",
+      "the fans are streaming in from all over - St. Louis County, the Metro East, Jefferson County - the whole region comes out for Cardinals baseball",
+      "St. Louis is the best baseball city in America - the fans here live and breathe Cardinals baseball",
+      "there's a pride in this city that you can feel at the ballpark - St. Louis loves its Cardinals",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of the 1982 World Series — the Cardinals beating Milwaukee right here at Busch",
-      "this franchise has been playing since 1892 — the Cardinals are one of the oldest and most storied franchises in baseball",
-      "from Stan Musial to Bob Gibson to Lou Brock — the Cardinals have a tradition of greatness that runs deep",
-      "the Cardinals won the World Series right here in '82 — Darrell Porter was the MVP — Bruce Sutter struck out Gorman Thomas to end it",
+      "you look around this ballpark and think of the 1982 World Series - the Cardinals beating Milwaukee right here at Busch",
+      "this franchise has been playing since 1892 - the Cardinals are one of the oldest and most storied franchises in baseball",
+      "from Stan Musial to Bob Gibson to Lou Brock - the Cardinals have a tradition of greatness that runs deep",
+      "the Cardinals won the World Series right here in '82 - Darrell Porter was the MVP - Bruce Sutter struck out Gorman Thomas to end it",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -928,34 +928,34 @@ export const STADIUM_FLAVOR = {
     nicknames: ["The Stick", "Candlestick"],
     flavor: [
       "a beautiful evening here at Candlestick Park",
-      "the lights are on at the Stick — Giants baseball tonight",
-      "Candlestick Park — home of the Giants since 1960",
-      "the wind is howling off the bay tonight — this ballpark can be brutal",
-      "the stands are filling up nicely — San Francisco loves its Giants",
-      "you can feel the chill in the air — Candlestick is famous for its cold summer nights",
-      "the fog is rolling in off San Francisco Bay — classic conditions at the Stick",
-      "the wind is playing tricks with every fly ball — outfielders have to be alert",
-      "the crowd is bundled up tonight — it's cold out there by the bay",
-      "the lights are cutting through the fog — a classic San Francisco baseball night",
-      "Candlestick Park has seen some great moments — this is a historic ballpark",
-      "the wind is knocking down every deep drive — nothing leaves here easily",
+      "the lights are on at the Stick - Giants baseball tonight",
+      "Candlestick Park - home of the Giants since 1960",
+      "the wind is howling off the bay tonight - this ballpark can be brutal",
+      "the stands are filling up nicely - San Francisco loves its Giants",
+      "you can feel the chill in the air - Candlestick is famous for its cold summer nights",
+      "the fog is rolling in off San Francisco Bay - classic conditions at the Stick",
+      "the wind is playing tricks with every fly ball - outfielders have to be alert",
+      "the crowd is bundled up tonight - it's cold out there by the bay",
+      "the lights are cutting through the fog - a classic San Francisco baseball night",
+      "Candlestick Park has seen some great moments - this is a historic ballpark",
+      "the wind is knocking down every deep drive - nothing leaves here easily",
     ],
     weatherFlavor: [
-      "the wind is howling straight in from center field — any ball hit high is going to die on the warning track",
-      "the fog is thick and heavy tonight — the air is damp and the ball is not carrying at all",
-      "the wind is actually blowing out toward right field tonight — anything elevated could sail out of here",
+      "the wind is howling straight in from center field - any ball hit high is going to die on the warning track",
+      "the fog is thick and heavy tonight - the air is damp and the ball is not carrying at all",
+      "the wind is actually blowing out toward right field tonight - anything elevated could sail out of here",
     ],
     cityFlavor: [
-      "if you're taking the 101 or the Junipero Serra home after the game, give yourself some extra time — San Francisco traffic is tough",
-      "I grabbed a bowl of clam chowder in a sourdough bread bowl before the first pitch — pure San Francisco right there",
-      "the fans are streaming in from all over — the City, the Peninsula, Marin — the whole Bay Area comes out for Giants baseball",
-      "San Francisco is one of the great baseball cities in America — the fans here have a special love for this team",
-      "there's a magic to this city that you can feel at the ballpark — by the bay, under the fog — there's nothing like it",
+      "if you're taking the 101 or the Junipero Serra home after the game, give yourself some extra time - San Francisco traffic is tough",
+      "I grabbed a bowl of clam chowder in a sourdough bread bowl before the first pitch - pure San Francisco right there",
+      "the fans are streaming in from all over - the City, the Peninsula, Marin - the whole Bay Area comes out for Giants baseball",
+      "San Francisco is one of the great baseball cities in America - the fans here have a special love for this team",
+      "there's a magic to this city that you can feel at the ballpark - by the bay, under the fog - there's nothing like it",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of Willie Mays making that catch in center field — the greatest defensive play in baseball history",
-      "this franchise has been in San Francisco since 1958 — the Giants have a rich history in this city",
-      "from New York to San Francisco — the Giants have a tradition that spans both coasts",
+      "you look around this ballpark and think of Willie Mays making that catch in center field - the greatest defensive play in baseball history",
+      "this franchise has been in San Francisco since 1958 - the Giants have a rich history in this city",
+      "from New York to San Francisco - the Giants have a tradition that spans both coasts",
       "Willie McCovey hit some of the longest home runs ever seen right here at Candlestick",
     ],
     neurosisFlavor: null,
@@ -967,35 +967,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["The Dome", "The Eighth Wonder of the World"],
     flavor: [
       "a beautiful evening here at the Astrodome",
-      "the lights are on at the Dome — Astros baseball tonight",
-      "the Astrodome — the Eighth Wonder of the World — home of the Astros since 1965",
-      "the air conditioning is humming tonight — always 72 degrees inside the Dome",
-      "the white roof stretched above the field — there's nothing else like it in baseball",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "the stands are filling up nicely — Houston fans are excited about this club",
-      "you can hear the ballgame echoing off the roof tonight — the Dome has its own sound",
-      "a comfortable evening inside the Astrodome — no rain delays here, ever",
-      "the Dome is hopping tonight — the crowd is into this one",
-      "baseball indoors in the Gulf Coast — the Astrodome is home",
+      "the lights are on at the Dome - Astros baseball tonight",
+      "the Astrodome - the Eighth Wonder of the World - home of the Astros since 1965",
+      "the air conditioning is humming tonight - always 72 degrees inside the Dome",
+      "the white roof stretched above the field - there's nothing else like it in baseball",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "the stands are filling up nicely - Houston fans are excited about this club",
+      "you can hear the ballgame echoing off the roof tonight - the Dome has its own sound",
+      "a comfortable evening inside the Astrodome - no rain delays here, ever",
+      "the Dome is hopping tonight - the crowd is into this one",
+      "baseball indoors in the Gulf Coast - the Astrodome is home",
       "the spacious dimensions here make it tough on home-run hitters",
     ],
     weatherFlavor: [
-      "it's always 72 degrees inside the Dome — the weather outside doesn't matter one bit",
-      "a perfect evening indoors — the air conditioning is keeping things comfortable",
+      "it's always 72 degrees inside the Dome - the weather outside doesn't matter one bit",
+      "a perfect evening indoors - the air conditioning is keeping things comfortable",
       "the controlled climate of the Dome means the ball carries true tonight",
     ],
     cityFlavor: [
-      "if you're taking I-45 or the Loop home after the game, give yourself some extra time — Houston traffic doesn't sleep",
-      "I grabbed some barbecue brisket before the first pitch — that is pure Texas right there, folks",
-      "the fans are streaming in from all over — the Heights, Bellaire, Pasadena — the whole metro comes out for Astros baseball",
-      "Houston is one of the great baseball markets in the South — the fans here have taken to this team in a big way",
-      "there's a pride in Space City that you can feel at the ballpark — Houston loves its Astros",
+      "if you're taking I-45 or the Loop home after the game, give yourself some extra time - Houston traffic doesn't sleep",
+      "I grabbed some barbecue brisket before the first pitch - that is pure Texas right there, folks",
+      "the fans are streaming in from all over - the Heights, Bellaire, Pasadena - the whole metro comes out for Astros baseball",
+      "Houston is one of the great baseball markets in the South - the fans here have taken to this team in a big way",
+      "there's a pride in Space City that you can feel at the ballpark - Houston loves its Astros",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of the 1980 division title — the Astros' first postseason appearance",
-      "this franchise has been playing indoors since 1965 — the Astrodome changed baseball forever",
-      "from the Colt .45s to the Astros — this franchise has grown right along with the Gulf Coast",
-      "Nolan Ryan threw his fifth no-hitter right here at the Astrodome — September 26, 1981",
+      "you look around this ballpark and think of the 1980 division title - the Astros' first postseason appearance",
+      "this franchise has been playing indoors since 1965 - the Astrodome changed baseball forever",
+      "from the Colt .45s to the Astros - this franchise has grown right along with the Gulf Coast",
+      "Nolan Ryan threw his fifth no-hitter right here at the Astrodome - September 26, 1981",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -1006,35 +1006,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["Fulton County", "The Launching Pad"],
     flavor: [
       "a beautiful evening here at Atlanta-Fulton County Stadium",
-      "the lights are on at Fulton County — Braves baseball tonight",
-      "Atlanta-Fulton County Stadium — home of the Braves since 1966",
+      "the lights are on at Fulton County - Braves baseball tonight",
+      "Atlanta-Fulton County Stadium - home of the Braves since 1966",
       "the warm Southern air is perfect for baseball tonight",
-      "the stands are filling up nicely — Atlanta loves its Braves",
-      "you can feel the energy in this ballpark — the fans are into this one",
-      "Fulton County Stadium is rocking tonight — the crowd is fired up",
-      "the Atlanta skyline is visible beyond the outfield — a beautiful backdrop on a clear night",
+      "the stands are filling up nicely - Atlanta loves its Braves",
+      "you can feel the energy in this ballpark - the fans are into this one",
+      "Fulton County Stadium is rocking tonight - the crowd is fired up",
+      "the Atlanta skyline is visible beyond the outfield - a beautiful backdrop on a clear night",
       "the faithful at Fulton County are some of the most passionate fans in baseball",
       "a perfect evening for baseball in the Deep South",
-      "the humidity is thick tonight — the ball should carry well in this air",
-      "baseball in the South — there's nothing quite like a summer night at Fulton County",
+      "the humidity is thick tonight - the ball should carry well in this air",
+      "baseball in the South - there's nothing quite like a summer night at Fulton County",
     ],
     weatherFlavor: [
-      "the warm Southern air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
-      "a gorgeous Atlanta evening — not a cloud in the sky",
-      "the breeze across the metro area is keeping things comfortable — perfect baseball weather",
+      "the warm Southern air is carrying the ball well tonight - hitters will get rewarded if they elevate it",
+      "a gorgeous Atlanta evening - not a cloud in the sky",
+      "the breeze across the metro area is keeping things comfortable - perfect baseball weather",
     ],
     cityFlavor: [
-      "if you're taking I-85 or I-75 home after the game, give yourself some extra time — Atlanta traffic doesn't sleep",
-      "I grabbed a peach cobbler before the first pitch — that is pure Georgia right there, folks",
-      "the fans are streaming in from all over — Marietta, Decatur, Buckhead — the whole metro comes out for Braves baseball",
-      "Atlanta is one of the great baseball markets in the South — the fans here have taken to this team in a big way",
-      "there's a pride in the Deep South that you can feel at the ballpark — Atlanta loves its Braves",
+      "if you're taking I-85 or I-75 home after the game, give yourself some extra time - Atlanta traffic doesn't sleep",
+      "I grabbed a peach cobbler before the first pitch - that is pure Georgia right there, folks",
+      "the fans are streaming in from all over - Marietta, Decatur, Buckhead - the whole metro comes out for Braves baseball",
+      "Atlanta is one of the great baseball markets in the South - the fans here have taken to this team in a big way",
+      "there's a pride in the Deep South that you can feel at the ballpark - Atlanta loves its Braves",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of the great Braves teams of the past — Hank Aaron hit home run number 715 right here",
-      "this franchise has been in Atlanta since 1966 — the fans here have seen some great players come through",
-      "from Milwaukee to Atlanta — the Braves have been part of this city since the beginning",
-      "the Braves won the National League West right here in 1982 — the fans in Atlanta believe this team can contend again",
+      "you look around this ballpark and think of the great Braves teams of the past - Hank Aaron hit home run number 715 right here",
+      "this franchise has been in Atlanta since 1966 - the fans here have seen some great players come through",
+      "from Milwaukee to Atlanta - the Braves have been part of this city since the beginning",
+      "the Braves won the National League West right here in 1982 - the fans in Atlanta believe this team can contend again",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -1045,35 +1045,35 @@ export const STADIUM_FLAVOR = {
     nicknames: ["Three Rivers", "The Stadium"],
     flavor: [
       "a beautiful evening here at Three Rivers Stadium",
-      "the lights are on at Three Rivers — Pirates baseball tonight",
-      "Three Rivers Stadium — home of the Pirates since 1970",
-      "the artificial turf plays fast tonight — ground balls will scoot through the infield",
-      "you can see the Allegheny River beyond the outfield — Pittsburgh at its finest",
-      "the stands are filling up nicely — Pittsburgh loves its Pirates",
-      "the confluence of the Allegheny and Monongahela rivers — this city was built on baseball",
-      "Three Rivers is rocking tonight — the fans are into this one",
-      "the Steel City is buzzing tonight — Pittsburgh loves its Bucs",
-      "the Roberto Clemente gate — this franchise honors its legends",
+      "the lights are on at Three Rivers - Pirates baseball tonight",
+      "Three Rivers Stadium - home of the Pirates since 1970",
+      "the artificial turf plays fast tonight - ground balls will scoot through the infield",
+      "you can see the Allegheny River beyond the outfield - Pittsburgh at its finest",
+      "the stands are filling up nicely - Pittsburgh loves its Pirates",
+      "the confluence of the Allegheny and Monongahela rivers - this city was built on baseball",
+      "Three Rivers is rocking tonight - the fans are into this one",
+      "the Steel City is buzzing tonight - Pittsburgh loves its Bucs",
+      "the Roberto Clemente gate - this franchise honors its legends",
       "a perfect evening for baseball at Three Rivers",
       "the cavernous dimensions here make it tough on home-run hitters",
     ],
     weatherFlavor: [
-      "the warm summer air is carrying the ball well tonight — hitters will get rewarded if they elevate it",
-      "a gorgeous Pittsburgh evening — not a cloud in the sky over the Point",
-      "the breeze off the Allegheny is keeping things comfortable — perfect baseball weather at Three Rivers",
+      "the warm summer air is carrying the ball well tonight - hitters will get rewarded if they elevate it",
+      "a gorgeous Pittsburgh evening - not a cloud in the sky over the Point",
+      "the breeze off the Allegheny is keeping things comfortable - perfect baseball weather at Three Rivers",
     ],
     cityFlavor: [
-      "if you're taking the Parkway East or I-279 home after the game, give yourself some extra time — Pittsburgh traffic doesn't sleep",
-      "I grabbed a Primanti Brothers sandwich before the first pitch — french fries and coleslaw right on the sandwich — that is pure Pittsburgh right there, folks",
-      "the fans are streaming in from all over — the North Hills, the South Hills, the Strip District — the whole region comes out for Pirates baseball",
-      "Pittsburgh is one of the great baseball towns in America — the fans here bleed black and gold",
-      "there's a pride in this city that you can feel at the ballpark — Pittsburgh loves its Pirates",
+      "if you're taking the Parkway East or I-279 home after the game, give yourself some extra time - Pittsburgh traffic doesn't sleep",
+      "I grabbed a Primanti Brothers sandwich before the first pitch - french fries and coleslaw right on the sandwich - that is pure Pittsburgh right there, folks",
+      "the fans are streaming in from all over - the North Hills, the South Hills, the Strip District - the whole region comes out for Pirates baseball",
+      "Pittsburgh is one of the great baseball towns in America - the fans here bleed black and gold",
+      "there's a pride in this city that you can feel at the ballpark - Pittsburgh loves its Pirates",
     ],
     loreFlavor: [
-      "you look around this ballpark and think of the 1979 World Series — Willie Stargell and the Pirates beating Baltimore right here at Three Rivers",
-      "this franchise has been playing since 1887 — the Pirates are one of the oldest franchises in baseball",
-      "from Honus Wagner to Roberto Clemente to Willie Stargell — the Pirates have a tradition of greatness that runs deep",
-      "the Pirates won the World Series right here in 1979 — Willie Stargell was the MVP — the whole family was part of it",
+      "you look around this ballpark and think of the 1979 World Series - Willie Stargell and the Pirates beating Baltimore right here at Three Rivers",
+      "this franchise has been playing since 1887 - the Pirates are one of the oldest franchises in baseball",
+      "from Honus Wagner to Roberto Clemente to Willie Stargell - the Pirates have a tradition of greatness that runs deep",
+      "the Pirates won the World Series right here in 1979 - Willie Stargell was the MVP - the whole family was part of it",
     ],
     neurosisFlavor: null,
     stretchFlavor: null,
@@ -1143,7 +1143,7 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
   options.push(`The ${count} count, ${outs === 0 ? 'nobody' : outs === 1 ? 'one' : 'two'} ${outs === 1 ? 'away' : 'out'}`);
   options.push(`${count} the count, ${outs} ${outs === 1 ? 'out' : 'outs'}, ${half} ${inning}`);
 
-  // Player intro — fresh at-bat
+  // Player intro - fresh at-bat
   if (ab === 0) {
     options.push(`Now batting, ${posName}, ${batterName}`);
     options.push(`Up now, ${batterName}`);
@@ -1157,8 +1157,8 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
   // With stats
   if (ab > 0) {
     options.push(`${batterName}, ${hits} for ${ab} today`);
-    if (rbi > 0) options.push(`${batterName} — ${hits} for ${ab} with ${rbi} RBI${rbi !== 1 ? 's' : ''}`);
-    if (hr > 0) options.push(`${lastName} has gone deep today — ${hits} for ${ab}`);
+    if (rbi > 0) options.push(`${batterName} - ${hits} for ${ab} with ${rbi} RBI${rbi !== 1 ? 's' : ''}`);
+    if (hr > 0) options.push(`${lastName} has gone deep today - ${hits} for ${ab}`);
     options.push(`${batterName} hitting ${avg} on the afternoon`);
   }
 
@@ -1166,7 +1166,7 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
   const isFatigued = pitcher?.fatigueLevel > 0;
   const isGassed = pitcher?.fatigueLevel >= 3;
 
-  // Pitcher focus — windup with bases empty, stretch with runners on
+  // Pitcher focus - windup with bases empty, stretch with runners on
   const pitcherDelivery = runnersOn > 0
     ? `${pitcher?.name} deals from the stretch`
     : `${pitcher?.name} works from the windup`;
@@ -1174,28 +1174,28 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
   options.push(`${pitcher?.name} looks in for the sign`);
   if (runnersOn === 0) {
     options.push(`${pitcher?.name} winds and fires`);
-    options.push(`${pitcher?.name} comes set — here's the pitch`);
+    options.push(`${pitcher?.name} comes set - here's the pitch`);
   }
   if (runnersOn > 0) {
     options.push(`${pitcher?.name} comes to the stretch, checks the runner`);
-    options.push(`${pitcher?.name} from the stretch — kicks and deals`);
+    options.push(`${pitcher?.name} from the stretch - kicks and deals`);
   }
 
   // Fatigue commentary
   if (isGassed) {
-    options.push(`${pitcher?.name} is running on fumes — the manager might need to think about the bullpen`);
-    options.push(`${pitcher?.name} has lost a few ticks on the fastball — he's laboring out there`);
-    options.push(`The velocity is dropping — ${pitcher?.name} is clearly gassed`);
-    if (announcer) options.push(`${announcer}: "You can see the arm slot dropping — ${pitcher?.name} is running on empty"`);
+    options.push(`${pitcher?.name} is running on fumes - the manager might need to think about the bullpen`);
+    options.push(`${pitcher?.name} has lost a few ticks on the fastball - he's laboring out there`);
+    options.push(`The velocity is dropping - ${pitcher?.name} is clearly gassed`);
+    if (announcer) options.push(`${announcer}: "You can see the arm slot dropping - ${pitcher?.name} is running on empty"`);
   } else if (isFatigued) {
-    options.push(`${pitcher?.name} is starting to show signs of fatigue — the command isn't quite as sharp`);
-    options.push(`A little less zip on the fastball — ${pitcher?.name} is working deep into this one`);
-    if (announcer) options.push(`${announcer}: "${pitcher?.name} is grinding — you can tell the tank is starting to get low"`);
+    options.push(`${pitcher?.name} is starting to show signs of fatigue - the command isn't quite as sharp`);
+    options.push(`A little less zip on the fastball - ${pitcher?.name} is working deep into this one`);
+    if (announcer) options.push(`${announcer}: "${pitcher?.name} is grinding - you can tell the tank is starting to get low"`);
   }
 
   // Runners on
   if (runnersOn === 1) options.push(`Runner aboard for ${lastName}`);
-  if (runnersOn === 2 && outs === 2) options.push(`Two on, two away — ${lastName} at the dish`);
+  if (runnersOn === 2 && outs === 2) options.push(`Two on, two away - ${lastName} at the dish`);
   if (runnersOn === 3) options.push(`Bases loaded, ${outs === 0 ? 'nobody' : outs + ' ' + (outs === 1 ? 'out' : 'outs')}`);
 
   // Situation
@@ -1203,7 +1203,7 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
   if (outs === 2) options.push(`Two away, ${lastName} at the dish`);
 
   // --- Stadium Flavor ---
-  // Determine if home team is trailing late — for neurosis lines
+  // Determine if home team is trailing late - for neurosis lines
   const isBattingTeamHome = gameState.halfInning === 'bottom';
   const homeTrailing = (isBattingTeamHome && gameState.score.home < gameState.score.away) ||
     (!isBattingTeamHome && gameState.score.home < gameState.score.away);
@@ -1239,71 +1239,71 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
 
   // ── Count-specific commentary ──
   if (gameState.balls >= 2 && gameState.strikes === 0) {
-    options.push(`${lastName} is ahead in the count — can afford to be selective here`);
-    options.push(`Hitter's count — ${lastName} looking for his pitch`);
-    if (gameState.balls >= 3) options.push(`Green light for ${lastName} — 3-0 count`);
+    options.push(`${lastName} is ahead in the count - can afford to be selective here`);
+    options.push(`Hitter's count - ${lastName} looking for his pitch`);
+    if (gameState.balls >= 3) options.push(`Green light for ${lastName} - 3-0 count`);
   } else if (gameState.balls === 3 && gameState.strikes === 1) {
-    options.push(`${lastName} ahead 3-1 — he's taking a rip if it's near the zone`);
-    options.push(`In the driver's seat at 3-1 — ${pitcher?.name} has to come in with it`);
+    options.push(`${lastName} ahead 3-1 - he's taking a rip if it's near the zone`);
+    options.push(`In the driver's seat at 3-1 - ${pitcher?.name} has to come in with it`);
   } else if (gameState.strikes >= 2 && gameState.balls === 0) {
-    options.push(`${lastName} is down 0-2 — choking up, just trying to put it in play`);
-    options.push(`Two strikes on ${lastName} — shorter swing, protecting the plate`);
-    if (announcer) options.push(`${announcer}: "He'll shorten up here — just battle and put the ball in play"`);
+    options.push(`${lastName} is down 0-2 - choking up, just trying to put it in play`);
+    options.push(`Two strikes on ${lastName} - shorter swing, protecting the plate`);
+    if (announcer) options.push(`${announcer}: "He'll shorten up here - just battle and put the ball in play"`);
   } else if (gameState.strikes >= 2 && gameState.balls === 1) {
-    options.push(`Behind 1-2 — ${lastName} still on the defensive`);
-    options.push(`${lastName} is at a disadvantage — ${pitcher?.name} can expand the zone`);
+    options.push(`Behind 1-2 - ${lastName} still on the defensive`);
+    options.push(`${lastName} is at a disadvantage - ${pitcher?.name} can expand the zone`);
   }
 
-  // Classic baseball slang & sayings — filter by game context
+  // Classic baseball slang & sayings - filter by game context
   const anyRunners = runnersOn > 0;
   const runnerSlang = anyRunners ? [
     `Ducks on the pond for ${lastName}`,
     `Chance to clear the ducks off the pond here`,
     `Twin killing would be big right here`,
-    `Double play depth — middle infielders creeping in`,
+    `Double play depth - middle infielders creeping in`,
   ] : [];
   const allSlangOptions = [
-    // Hitting — aspirational & flavor only (no result descriptions)
+    // Hitting - aspirational & flavor only (no result descriptions)
     ...runnerSlang,
     `${lastName} digging in at the dish`,
-    `The hot corner is ready — ${lastName} steps in`,
+    `The hot corner is ready - ${lastName} steps in`,
     `${lastName} could use a little seeing-eye single right here`,
-    `Texas Leaguer territory — bloop it in, ${lastName}`,
+    `Texas Leaguer territory - bloop it in, ${lastName}`,
     `Warning track power out there`,
     `He's got warning track power but that's about it`,
     `Looking for a dinger here`,
     `A moonshot would be something, wouldn't it?`,
-    `Give it a ride, ${lastName} — send a tater out of here`,
+    `Give it a ride, ${lastName} - send a tater out of here`,
     `Big fly time, ${lastName}`,
     // Pitching & Stuff
     `${pitcher?.name} bringing the high cheese`,
-    `Here comes Uncle Charlie — buckle up`,
+    `Here comes Uncle Charlie - buckle up`,
     `${pitcher?.name} might give him a little chin music`,
-    `High and tight — ${pitcher?.name} backing ${lastName} off the plate`,
+    `High and tight - ${pitcher?.name} backing ${lastName} off the plate`,
     `Public Enemy No. 1 from ${pitcher?.name}`,
-    `Southpaw slinging from the left side — tough angle`,
-    `No gopher balls here — ${pitcher?.name} keeping it down`,
+    `Southpaw slinging from the left side - tough angle`,
+    `No gopher balls here - ${pitcher?.name} keeping it down`,
     `${lastName} protecting the plate now`,
     `${lastName} crowds the dish`,
     `He'll take one for the team if he has to`,
     `${pitcher?.name} painting the corners`,
     `${pitcher?.name} dotting the black with that heater`,
     `He's got swing-and-miss stuff working today`,
-    `The hook is on — ${pitcher?.name} dealing`,
+    `The hook is on - ${pitcher?.name} dealing`,
     // In the Field
-    `${lastName}'s below the Mendoza Line — needs to get it going`,
+    `${lastName}'s below the Mendoza Line - needs to get it going`,
     `${lastName} looking for his pitch to drive`,
     `Gap-to-gap hitter, this ${posName}`,
     `Small ball might be the play here`,
     `Hit 'em where they ain't`,
-    `He's in a groove — locked in at the plate`,
+    `He's in a groove - locked in at the plate`,
     // General
     `Pitcher's duel unfolding here at ${info.stadium || 'the ballpark'}`,
-    `Hitters' counts and pitchers' counts — that's the chess match`,
-    `Gotta love October-type baseball — every pitch matters`,
-    `Just a cup of coffee in the big leagues — but every at-bat counts`,
-    `A dribbler or a nubber — anything to get on base`,
-    `The tools of ignorance — and ${lastName}'s wearing 'em proudly`,
+    `Hitters' counts and pitchers' counts - that's the chess match`,
+    `Gotta love October-type baseball - every pitch matters`,
+    `Just a cup of coffee in the big leagues - but every at-bat counts`,
+    `A dribbler or a nubber - anything to get on base`,
+    `The tools of ignorance - and ${lastName}'s wearing 'em proudly`,
   ];
 
   // Always mix in 1-2 slang terms for a colorful broadcast feel
@@ -1319,7 +1319,7 @@ function getCommentary(batter, pitcher, gameState, stadiumInfo) {
     if (announcer) options.push(`${announcer}: "Welcome to ${info.stadium || 'the ballpark'}!"`);
   }
   if (inning === 9 && outs === 2 && half === 'bottom') {
-    options.push(`Last call here at ${info.stadium || 'the ballpark'} — one out to go!`);
+    options.push(`Last call here at ${info.stadium || 'the ballpark'} - one out to go!`);
   }
 
   // Stadium-specific scoring context
@@ -1367,7 +1367,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
   const isBravesGame = homeTeamKey === 'braves';
   const isAstrosGame = homeTeamKey === 'astros';
   const isGiantsGame = homeTeamKey === 'giants';
-  // When there's a play result, show it as the main call — don't bury it under random flavor
+  // When there's a play result, show it as the main call - don't bury it under random flavor
   const isSteal = lastPlay?.type === 'steal';
   const isCaughtStealing = lastPlay?.type === 'caughtstealing';
   const hasPlayResult = lastPlay?.text && !['strike','ball','foul'].includes(lastPlay?.type);
@@ -1381,15 +1381,15 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
     text = lastPlay.text;
     headlineIsPlayText = true;
   } else if (wasReachBack && reachBackPitcher) {
-    // Super pitch announcer call — mention the signature weapon
+    // Super pitch announcer call - mention the signature weapon
     const spName = reachBackPitcher.specialty?.name || reachBackPitcher.specialty;
     const calls = [
-      `${reachBackPitcher.name} reaches back for something extra — the ${spName} is coming!`,
-      `${reachBackPitcher.name} goes to the well — here's that vintage ${spName}!`,
-      `${reachBackPitcher.name} summons the ${spName} — the crowd rises!`,
-      `${reachBackPitcher.name} uncorks the ${spName} — he's pulling out all the stops!`,
-      `You can feel the electricity — ${reachBackPitcher.name} is about to unleash the ${spName}!`,
-      `${reachBackPitcher.name} grips it, winds, and here it comes — the legendary ${spName}`,
+      `${reachBackPitcher.name} reaches back for something extra - the ${spName} is coming!`,
+      `${reachBackPitcher.name} goes to the well - here's that vintage ${spName}!`,
+      `${reachBackPitcher.name} summons the ${spName} - the crowd rises!`,
+      `${reachBackPitcher.name} uncorks the ${spName} - he's pulling out all the stops!`,
+      `You can feel the electricity - ${reachBackPitcher.name} is about to unleash the ${spName}!`,
+      `${reachBackPitcher.name} grips it, winds, and here it comes - the legendary ${spName}`,
     ];
     text = calls[Math.floor(Math.random() * calls.length)];
   } else if (hasPlayResult && !['single','double','triple','homerun','groundout','flyout','lineout','popout','strikeout','walk','error','fc','doubleplay','sacfly'].includes(lastPlay?.type)) {
@@ -1404,7 +1404,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
     headlineIsPlayText = true;
   } else {
     // ── Blowout Mode: announcers get bored and talk about random stuff ──
-    // 8th inning+, 8+ run margin — broadcasters stop calling the game
+    // 8th inning+, 8+ run margin - broadcasters stop calling the game
     const inBlowout = isBlowoutMode(gameState);
     if (inBlowout) {
       if (_blowoutGameSeed !== gameState) {
@@ -1420,7 +1420,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
         if (line) text = `"${line}"`;
       }
     }
-    // White color commentary: player facts, tidbits, analysis — NOT play-by-play
+    // White color commentary: player facts, tidbits, analysis - NOT play-by-play
     // (play results show in the orange stats flash below)
     if (!text) {
       // Try team-specific player lines first (actual player facts/tidbits)
@@ -1479,7 +1479,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
         "{text}"
       </p>
 
-      {/* RBI flash — when there's an exciting RBI hit, show a big splash */}
+      {/* RBI flash - when there's an exciting RBI hit, show a big splash */}
       {hasPlayResult && lastPlay && (lastPlay.text?.includes('RBI') || lastPlay.type === 'sacfly') && (
         <div className="mt-2 mb-1 bg-emerald-400/15 border border-emerald-400/40 rounded-xl px-4 py-2 animate-in fade-in zoom-in-95 duration-300">
           {(() => {
@@ -1490,7 +1490,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
             const exclamations = isMulti
               ? ['💥 THAT CLEARS THE BASES!', '🔥 MULTI-RBI HIT!', '💥 RUNS SCORE!', '🚀 THEY\'RE SCORING!']
               : isSacFly
-              ? ['✅ THE RUN SCORES!', '🎯 SAC FLY — RUN IN!', '✅ SCORES ON THE FLY BALL!']
+              ? ['✅ THE RUN SCORES!', '🎯 SAC FLY - RUN IN!', '✅ SCORES ON THE FLY BALL!']
               : ['🎯 RUN BATTED IN!', '⚾ RUN SCORES!', '🙌 RBI!', '🎯 DRIVES IN A RUN!'];
             const msg = exclamations[Math.floor(Math.random() * exclamations.length)];
             return (
@@ -1503,7 +1503,7 @@ export default function CommentaryBanner({ batter, pitcher, gameState, lastPlay,
         </div>
       )}
 
-      {/* Stats flash — show hit text in orange; suppress if headline is already showing the same text */}
+      {/* Stats flash - show hit text in orange; suppress if headline is already showing the same text */}
       {lastPlay && lastPlay.text && !headlineIsPlayText && !['groundout','flyout','lineout','popout','strikeout','walk','error','fc','doubleplay','sacfly','caughtstealing','steal','strike','ball','foul'].includes(lastPlay?.type) && (
         <div className="mt-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-1.5 inline-block">
           <span className="text-sm font-heading font-bold text-primary">{lastPlay.text}</span>

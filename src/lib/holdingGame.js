@@ -1,4 +1,4 @@
-// Holding Game — Balks & Pickoffs (Automatic, Exhibition Mode)
+// Holding Game - Balks & Pickoffs (Automatic, Exhibition Mode)
 // All mechanics are fully automatic (no UI buttons) and reset every game.
 
 export const HOLDING_GAME_RATES = {
@@ -17,24 +17,24 @@ export const HOLDING_GAME_RATES = {
 
 // ── Log message pools ──
 export const THROW_OVER_NOTHING_LINES = [
-  "{pitcher} steps off and throws to first — {runner} dives back. Lead trimmed.",
+  "{pitcher} steps off and throws to first - {runner} dives back. Lead trimmed.",
   "Throw over to first. {runner} gets back easily, but he's holding closer now.",
 ];
 
 export const PICKOFF_OUT_LINES = [
-  "PICKED OFF! {pitcher} catches {runner} leaning — he's out at first! 🔥",
-  "Snap throw to first — {runner} is hung out to dry! Pickoff!",
+  "PICKED OFF! {pitcher} catches {runner} leaning - he's out at first! 🔥",
+  "Snap throw to first - {runner} is hung out to dry! Pickoff!",
 ];
 
 export const WILD_THROW_LINES = [
-  "{pitcher}'s pickoff throw sails past first — {runner} advances!",
+  "{pitcher}'s pickoff throw sails past first - {runner} advances!",
   "Errant throw to first! {runner} hustles to second on the miscue.",
 ];
 
 export const BALK_LINES = [
-  "BALK! {pitcher} is called for a balk — runners move up. 🙄",
-  "The umpire points — balk on {pitcher}. Runners advance.",
-  "{pitcher} flinches on the mound — balk called, everybody up a base.",
+  "BALK! {pitcher} is called for a balk - runners move up. 🙄",
+  "The umpire points - balk on {pitcher}. Runners advance.",
+  "{pitcher} flinches on the mound - balk called, everybody up a base.",
 ];
 
 // ── Helpers ──
@@ -75,7 +75,7 @@ export function decideThrowOver(state) {
   if (!runner) return null;
   if (!isStealRelevant(runner, state.outs)) return null;
 
-  // Only throw over to the lead runner — skip if runners are ahead on 2nd or 3rd
+  // Only throw over to the lead runner - skip if runners are ahead on 2nd or 3rd
   if (state.bases[1] || state.bases[2]) return null;
 
   // Cap throw-overs per plate appearance
@@ -102,7 +102,7 @@ export function decideThrowOver(state) {
   return { shouldThrow: true, hand, runner, pitcherName: pitcher?.name || 'The pitcher' };
 }
 
-// Resolve a throw-over outcome — returns { outcome, text } (no state mutation)
+// Resolve a throw-over outcome - returns { outcome, text } (no state mutation)
 export function resolveThrowOverOutcome(hand, runnerName, pitcherName) {
   // LHP throw-over can be ruled a balk
   if (hand === 'L' && Math.random() < HOLDING_GAME_RATES.lhpThrowOverBalkChance * HOLDING_GAME_RATES.globalMultiplier) {

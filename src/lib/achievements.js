@@ -353,7 +353,7 @@ export const ACHIEVEMENTS = [
   // ── FAN CHATTER ──
   { id: 'fan_chatter_10', name: 'Bleacher Bum', desc: 'Heard 10 fan yells during play', icon: '📣', category: 'fan' },
   { id: 'fan_chatter_50', name: 'Section 36', desc: 'Heard 50 fan yells across games', icon: '🗣️', category: 'fan' },
-  { id: 'fan_chatter_100', name: 'Die-Hard', desc: 'Heard 100 fan yells — you never leave early', icon: '🏟️', category: 'fan' },
+  { id: 'fan_chatter_100', name: 'Die-Hard', desc: 'Heard 100 fan yells - you never leave early', icon: '🏟️', category: 'fan' },
   { id: 'fan_chatter_ump', name: 'Kill the Ump', desc: 'Heard 10 crowd complaints about the umpire', icon: '😤', category: 'fan' },
   { id: 'fan_chatter_rally', name: 'Rally Crowd', desc: "Heard the crowd yell 'Let's start a rally!' five times", icon: '🚀', category: 'fan' },
 
@@ -524,7 +524,7 @@ export function resetAchievements() {
   } catch (e) { /* ignore */ }
 }
 
-// Purge orphaned achievement IDs — unlocked entries that no longer have a definition
+// Purge orphaned achievement IDs - unlocked entries that no longer have a definition
 // (e.g., removed banner/popup achievements from a previous version)
 export function purgeOrphanedAchievements() {
   const achs = loadAchievements();
@@ -951,7 +951,7 @@ export function trackPauseEnd() {
   saveStats(stats);
 }
 
-// "One More Game" — finished after midnight
+// "One More Game" - finished after midnight
 export function trackGameEndTime() {
   const hour = new Date().getHours();
   if (hour >= 0 && hour < 5) {
@@ -1053,7 +1053,7 @@ export function checkGameAchievements(gameState, userTeam) {
   if (allUserPlayers.some(p => p.gameStats?.hits >= 3)) u('rally_starter');
   if (allUserPlayers.some(p => p.gameStats?.hits >= 4)) u('perfect_day');
 
-  // Cycle check: player needs 1B, 2B, 3B, HR — check log for a single player
+  // Cycle check: player needs 1B, 2B, 3B, HR - check log for a single player
   for (const p of allUserPlayers) {
     const pName = p.name;
     const nameRegex = new RegExp(pName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
@@ -1593,7 +1593,7 @@ function checkFranchiseHopper(stats) {
   if (allTeams.every(t => (stats.teamWins[t] || 0) >= 10)) unlockAchievement('franchise_hopper');
 }
 
-// All 26 teams' achievement ID lists — used by checkHistorian and checkLocalHero
+// All 26 teams' achievement ID lists - used by checkHistorian and checkLocalHero
 const ALL_TEAM_ACH_IDS = {
   cubs: ['cubs_wrigley_win', 'cubs_3_hr', 'cubs_comeback', 'cubs_10_runs', 'cubs_25_home', 'cubs_100_wins', 'cubs_15_hits', 'cubs_walkoff'],
   mets: ['mets_extras', 'mets_comeback_5', 'mets_50_wins', 'mets_20_hits', 'mets_100_games', 'mets_3_errors_win', 'mets_wall_scraper', 'mets_late_comeback'],

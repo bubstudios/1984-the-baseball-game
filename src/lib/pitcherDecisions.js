@@ -1,5 +1,5 @@
 /**
- * Pitcher Decision Tracking — Wins, Losses, and Saves
+ * Pitcher Decision Tracking - Wins, Losses, and Saves
  *
  * Tracks a runLog (via logRun, called from scoreRun) to attribute each run
  * to the pitcher who allowed it and the pitcher of record for the scoring team.
@@ -106,7 +106,7 @@ export function determinePitcherDecisions(state) {
   const winPitcherIP = winPitcherStats?.gameStats?.ip || 0;
 
   if (winPitcherIsStarter && winPitcherIP < 5) {
-    // Starter didn't go 5 — award win to the most effective reliever (most IP, not the losing pitcher)
+    // Starter didn't go 5 - award win to the most effective reliever (most IP, not the losing pitcher)
     const relievers = getRelieversFromHistory(state, winningSide)
       .filter(p => p.name !== lossName && p.name !== winName)
       .sort((a, b) => (b.gameStats?.ip || 0) - (a.gameStats?.ip || 0));
@@ -132,7 +132,7 @@ export function determinePitcherDecisions(state) {
   //   - One of:
   //     a. Final lead is 3 or fewer AND pitched at least 1 full inning
   //     c. Pitched 3+ innings regardless of score
-  // (Condition b — entering with tying run on base — approximated by condition a)
+  // (Condition b - entering with tying run on base - approximated by condition a)
   const finishingPitcher = winningSide === 'home' ? state.homePitcher : state.awayPitcher;
   let saveName = null;
 

@@ -1,5 +1,5 @@
 /**
- * Phase 2.7 — Situational Bunting Decision Gate
+ * Phase 2.7 - Situational Bunting Decision Gate
  * 
  * Bunting is a PRE-SWING decision, not a swing option.
  * Evaluated separately before normal hitting logic based on situation + batter traits.
@@ -36,7 +36,7 @@ export function shouldBunt(batter, game) {
 }
 
 /**
- * Sacrifice bunt score — evaluated when runners are on and <2 outs.
+ * Sacrifice bunt score - evaluated when runners are on and <2 outs.
  */
 function sac_bunt_score(batter, game) {
    if (!game.runner_on_1st && !game.runner_on_2nd && !game.runner_on_3rd || game.outs >= 2) {
@@ -50,7 +50,7 @@ function sac_bunt_score(batter, game) {
 
    let s = 0;
 
-   // THE HEADLINE CASE — pitcher hitting (esp. AL pitcher in NL park, no DH)
+   // THE HEADLINE CASE - pitcher hitting (esp. AL pitcher in NL park, no DH)
    const isPitcherBatting = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP', 'RP', 'CL'].includes(batter.assignedPos));
    if (isPitcherBatting) {
      s += 60;  // AL pitcher bunting = near-automatic in this situation
@@ -75,10 +75,10 @@ function sac_bunt_score(batter, game) {
     s += 15;  // Close game
   }
   if (game.score_margin === 0 && game.inning >= 8) {
-    s += 10;  // Tie, very late — manufacture a run
+    s += 10;  // Tie, very late - manufacture a run
   }
   
-  // Weak hitter — bunting costs little
+  // Weak hitter - bunting costs little
   if (batter.power <= 3) {
     s += 10;
   }
@@ -90,7 +90,7 @@ function sac_bunt_score(batter, game) {
 }
 
 /**
- * Bunt-for-hit score — evaluated for fast, low-power guys only.
+ * Bunt-for-hit score - evaluated for fast, low-power guys only.
  */
 function hitBuntScore(batter, game) {
   if (game.outs >= 2) {
@@ -144,7 +144,7 @@ export function resolveBunt(buntType, batter, game) {
 
 function resolveSacBunt(batter, game) {
   // Bunting skill scales off CON (or dedicated bunt rating).
-  // Pitchers in 1984 were generally decent sac bunters — give them a solid clean-sac rate.
+  // Pitchers in 1984 were generally decent sac bunters - give them a solid clean-sac rate.
   const isPitcher = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP', 'RP', 'CL'].includes(batter.assignedPos));
   const conRating = (batter.contact || 3) / 10;
   const pitcherBonus = isPitcher ? 0.15 : 0;  // Pitchers 1984 were decent bunters
@@ -155,30 +155,30 @@ function resolveSacBunt(batter, game) {
   if (roll < cleanSacChance) {
     // ── CLEAN SAC (SUCCESS) ──
     // Pitcher got the out, but conceded a base advancement.
-    // Small penalty — roughly neutral, but not a positive.
+    // Small penalty - roughly neutral, but not a positive.
     return {
       type: 'sacrifice_success',
-      text: `${batter.name} lays down a perfect sacrifice bunt — runner advances, batter out.`,
+      text: `${batter.name} lays down a perfect sacrifice bunt - runner advances, batter out.`,
       batterOut: true,
       success: true,
       composureDelta: -2,  // Small penalty for conceding base, slight morale sting
     };
   } else if (roll < cleanSacChance + 0.15) {
     // ── BUNT SINGLE (rare, good defense slow) ──
-    // A BUNT SINGLE IS A HIT — bunt attempt failed, batter got on = pitcher allowed a hit.
+    // A BUNT SINGLE IS A HIT - bunt attempt failed, batter got on = pitcher allowed a hit.
     // Composure penalty like any other hit.
     return {
       type: 'bunt_single',
       text: `${batter.name} sneaks a bunt single through the infield! Runners advance.`,
       batterOut: false,
       success: true,
-      composureDelta: -8,  // Pitcher allowed a hit — negative
+      composureDelta: -8,  // Pitcher allowed a hit - negative
     };
   } else if (roll < cleanSacChance + 0.30) {
     // ── POP-UP / LINEOUT ──
     return {
       type: 'bunt_pop',
-      text: `${batter.name} pops up the bunt attempt — caught by the catcher!`,
+      text: `${batter.name} pops up the bunt attempt - caught by the catcher!`,
       batterOut: true,
       success: false,
       composureDelta: -5,  // Small penalty (failed execution)
@@ -196,7 +196,7 @@ function resolveSacBunt(batter, game) {
 }
 
 function resolveBuntForHit(batter, game) {
-  // Speed is the key — scales heavily off SPD.
+  // Speed is the key - scales heavily off SPD.
   // Slow guys make outs (which is why they shouldn't attempt).
   const spdRating = (batter.speed || 5) / 10;
   const pwrRating = (batter.power || 5) / 10;
@@ -208,7 +208,7 @@ function resolveBuntForHit(batter, game) {
     // ── MAKE AN OUT (most likely for slow guys) ──
     return {
       type: 'bunt_for_hit_out',
-      text: `${batter.name} swings for the hills but bunts weakly — easy out.`,
+      text: `${batter.name} swings for the hills but bunts weakly - easy out.`,
       batterOut: true,
       success: false,
       composureDelta: -10,  // Moderate penalty
@@ -222,7 +222,7 @@ function resolveBuntForHit(batter, game) {
       text: `${batter.name} beats out a bunt single on the infield!`,
       batterOut: false,
       success: true,
-      composureDelta: -9,  // Pitcher allowed a hit — negative
+      composureDelta: -9,  // Pitcher allowed a hit - negative
     };
   }
 }

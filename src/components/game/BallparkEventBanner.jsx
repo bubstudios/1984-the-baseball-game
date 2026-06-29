@@ -65,7 +65,7 @@ export default function BallparkEventBanner({ event, onDismiss }) {
             <p className="text-sm font-heading text-foreground/90 leading-snug">{event.text}</p>
             {event.delay > 0 && (
               <p className="text-[10px] text-muted-foreground/60 mt-1">
-                Brief delay — ~{event.delay} seconds
+                Brief delay - ~{event.delay} seconds
               </p>
             )}
           </div>

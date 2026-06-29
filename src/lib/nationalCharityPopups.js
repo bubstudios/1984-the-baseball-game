@@ -1,4 +1,4 @@
-// 25 National Charity and Nonprofit Popups — 1984 PSA and Broadcast Sponsors
+// 25 National Charity and Nonprofit Popups - 1984 PSA and Broadcast Sponsors
 // Historical nonprofits featured in baseball broadcasts, with accurate mission/history
 
 const NATIONAL_CHARITY_POPUPS = [
@@ -10,12 +10,12 @@ const NATIONAL_CHARITY_POPUPS = [
     logo: 'UW',
     category: 'Community Services',
     color: '#E81B23',
-    title: 'United Way — Fighting Poverty Together',
+    title: 'United Way - Fighting Poverty Together',
     body: `United Way of America reaches into every corner of our nation, pooling local talent and resources to address the root causes of poverty and hardship.
 
 In 1984, United Way campaigns raised over $2 billion nationwide to support thousands of local agencies providing food, shelter, job training, and youth programs.
 
-"It takes a United Way" — the iconic slogan — reminds Americans that collective action solves community problems.
+"It takes a United Way" - the iconic slogan - reminds Americans that collective action solves community problems.
 
 Baseball broadcasts featured United Way PSAs, connecting sports to lifting vulnerable populations across America.`,
     history: 'Founded in 1886 as response to urban poverty. By 1984, United Way was the largest privately-funded social services organization in North America.',
@@ -32,7 +32,7 @@ Baseball broadcasts featured United Way PSAs, connecting sports to lifting vulne
     title: 'United Way Annual Campaign',
     body: `Every fall, United Way kicks off its annual workplace campaign, asking companies to pledge support for local United Way chapters.
 
-In 1984, the campaign emphasized one gift reaches hundreds of agencies — far more efficient than giving separately.
+In 1984, the campaign emphasized one gift reaches hundreds of agencies - far more efficient than giving separately.
 
 "One gift. One call. One time." emphasized simplicity and power in numbers.
 
@@ -53,7 +53,7 @@ MLB teams partnered with United Way during the regular season and World Series.`
 
 In 1984, the Red Cross recovered from 1983 El Niño storms and prepared for hurricane season, mobilizing thousands nationwide.
 
-Baseball broadcasts featured Red Cross PSAs reminding viewers to give blood — lifesaving resources.
+Baseball broadcasts featured Red Cross PSAs reminding viewers to give blood - lifesaving resources.
 
 "The Power of Red" symbolized America's commitment to helping neighbors in crisis.`,
     history: 'Founded in 1881 by Clara Barton. By 1984, Red Cross operated in all 50 states, world largest humanitarian organization.',
@@ -86,7 +86,7 @@ Baseball games often hosted Red Cross blood drives in parking lots, turning ball
     logo: 'MOD',
     category: 'Child Health',
     color: '#00A3E0',
-    title: 'March of Dimes — Fighting Birth Defects',
+    title: 'March of Dimes - Fighting Birth Defects',
     body: `March of Dimes pivoted after polio eradication to prevent birth defects and infant mortality.
 
 In 1984, March of Dimes funded research into prenatal care, neonatal intensive care, and genetic counseling.
@@ -124,7 +124,7 @@ The "Mothers March" fundraising campaign still engaged millions supporting criti
     logo: 'AHA',
     category: 'Heart Disease Prevention',
     color: '#E71930',
-    title: 'American Heart Association — Prevention',
+    title: 'American Heart Association - Prevention',
     body: `The American Heart Association fought cardiovascular disease through research, education, and community programs.
 
 In 1984, AHA launched campaigns on exercise, diet, and stress management.
@@ -150,7 +150,7 @@ In 1984, AHA instructors taught schools and workplaces chest compression and res
 
 Baseball stadiums hosted CPR training, and PSAs emphasized anyone can save lives.
 
-"Learn CPR — Be a Lifesaver" transformed emergency medicine into achievable skill.`,
+"Learn CPR - Be a Lifesaver" transformed emergency medicine into achievable skill.`,
     history: 'AHA CPR training programs introduced 1970s, trained millions by 1984, became standard emergency response.',
     achievement: 'heart_assoc_viewer',
   },
@@ -162,7 +162,7 @@ Baseball stadiums hosted CPR training, and PSAs emphasized anyone can save lives
     logo: 'ACS',
     category: 'Cancer Prevention',
     color: '#008000',
-    title: 'American Cancer Society — Early Detection',
+    title: 'American Cancer Society - Early Detection',
     body: `American Cancer Society promoted cancer early detection through education and research funding.
 
 In 1984, ACS campaigns emphasized regular screening importance for breast, cervical, and colon cancer.
@@ -200,7 +200,7 @@ Baseball broadcasters highlighted research achievements emphasizing progress sav
     logo: 'ES',
     category: 'Disability Services',
     color: '#C41E3A',
-    title: 'Easter Seals — Services for Disabilities',
+    title: 'Easter Seals - Services for Disabilities',
     body: `Easter Seals provided rehabilitation, job training, and assistive technology for people with disabilities.
 
 In 1984, Easter Seals operated centers nationwide serving cerebral palsy, spinal cord, and autism populations.
@@ -238,7 +238,7 @@ Baseball broadcasters featured success stories: "With training, people with disa
     logo: 'NAACP',
     category: 'Civil Rights',
     color: '#000000',
-    title: 'NAACP — Civil Rights Advancement',
+    title: 'NAACP - Civil Rights Advancement',
     body: `NAACP, America oldest civil rights group, fought discrimination in employment, housing, education, and justice.
 
 In 1984, NAACP challenged racial inequality in school desegregation, voting, and police brutality.
@@ -257,7 +257,7 @@ Baseball broadcasters featured NAACP PSAs celebrating Civil Rights progress and 
     logo: 'NAACP',
     category: 'Civil Rights',
     color: '#000000',
-    title: 'NAACP Legal Defense — Courtroom Justice',
+    title: 'NAACP Legal Defense - Courtroom Justice',
     body: `NAACP Legal Defense Fund argued civil rights cases in federal courts nationwide.
 
 In 1984, NAACP lawyers litigated school desegregation, employment discrimination, and capital punishment cases.
@@ -276,7 +276,7 @@ NAACP legal tradition reached new heights in 1980s with new generations of civil
     logo: 'SA',
     category: 'Emergency Relief',
     color: '#CC0000',
-    title: 'Salvation Army — Emergency Assistance',
+    title: 'Salvation Army - Emergency Assistance',
     body: `Salvation Army, founded in England 1865, provided emergency food, shelter, and disaster relief.
 
 In 1984, Salvation Army shelters served homeless, runaway youth, and displaced families with military discipline.
@@ -314,7 +314,7 @@ Rapid response and on-ground presence made trusted disaster relief partner.`,
     logo: 'BGC',
     category: 'Youth Development',
     color: '#003399',
-    title: 'Boys and Girls Clubs — Youth Programs',
+    title: 'Boys and Girls Clubs - Youth Programs',
     body: `Boys and Girls Clubs provided after-school and summer programs in low-income neighborhoods.
 
 In 1984, clubs operated nationwide serving youth 6-18 with sports, arts, and mentorship.
@@ -352,7 +352,7 @@ MLB teams partnered for baseball clinics, creating pathways for talented youth.`
     logo: 'YWCA',
     category: 'Women Empowerment',
     color: '#FF6600',
-    title: 'YWCA — Women Empowerment',
+    title: 'YWCA - Women Empowerment',
     body: `YWCA, founded 1858, provided women programs for health, wellbeing, career training, and social action.
 
 In 1984, YWCA ran fitness centers, job training, childcare, and domestic violence shelters.
@@ -390,7 +390,7 @@ Baseball broadcasters featured testimonies: "With skills and confidence, women a
     logo: 'WV',
     category: 'International Relief',
     color: '#CC0000',
-    title: 'World Vision — Global Hunger Relief',
+    title: 'World Vision - Global Hunger Relief',
     body: `World Vision, Christian humanitarian organization, fought poverty and famine worldwide.
 
 In 1984, World Vision responded to famines in Ethiopia and Sudan.
@@ -428,7 +428,7 @@ Individual giving multiplied across millions transformed communities worldwide.`
     logo: 'TLS',
     category: 'Cancer Research',
     color: '#FF3333',
-    title: 'Leukemia and Lymphoma Society — Blood Cancer Research',
+    title: 'Leukemia and Lymphoma Society - Blood Cancer Research',
     body: `Society funded research and patient support for blood cancers.
 
 In 1984, blood cancers seemed incurable. Society mission accelerated research for cures.

@@ -81,7 +81,7 @@ export function trackSynopsisView(showName, bannerIndex, easterEgg) {
   if (totalViews >= 100) unlockOrAdd('tv_couch_potato', unlocked);
   if (totalViews >= 125) unlockOrAdd('tv_nielsen_family', unlocked);
 
-  // Show-specific achievements — check if all synopses for this show are viewed
+  // Show-specific achievements - check if all synopses for this show are viewed
   const showKey = SHOW_ACHIEVEMENTS[showName];
   if (showKey) {
     // Count how many banners belong to this show

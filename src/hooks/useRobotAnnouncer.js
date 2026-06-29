@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { TEAMS } from '@/lib/gameData';
 
-// Shared AudioContext — created/resumed within a user gesture via unlockRobotAnnouncer()
+// Shared AudioContext - created/resumed within a user gesture via unlockRobotAnnouncer()
 let _sharedAudioCtx = null;
 
 // Call this from a click handler (user gesture) to unlock audio for the announcer
@@ -22,7 +22,7 @@ export function unlockRobotAnnouncer() {
   } catch (e) { /* ignore */ }
 }
 
-// Blowout promos disabled — user feedback
+// Blowout promos disabled - user feedback
 
 // Build player name set from all rosters
 const PLAYER_NAMES = new Set();
@@ -33,7 +33,7 @@ Object.values(TEAMS).forEach(team => {
   team.bench?.forEach(p => PLAYER_NAMES.add(p.name));
 });
 
-// Voice profiles — each with a sex flag so broadcast pairs sound like two different people
+// Voice profiles - each with a sex flag so broadcast pairs sound like two different people
 // Lead announcers use 'male', color commentators use 'female' (or solo if only one announcer)
 const ANNOUNCER_PROFILES = {
   'Harry Caray':    { pitch: 0.78, rate: 0.85, modFreq: 55,  modGain: 0.22, sex: 'male' },
@@ -64,8 +64,8 @@ const HIT_PLAY_TYPES = ['single', 'double', 'triple', 'homerun', 'groundout', 'f
 function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
   if (!('speechSynthesis' in window)) return;
 
-  // Strip emojis — speech synth reads them literally (e.g. 💥 = "collision")
-  const cleanedText = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B50}\u{2B55}\u{2702}-\u{27B0}\u{1F900}-\u{1F9FF}\u{200D}\u{FE0F}]/gu, '').replace(/\s*—\s*/g, ', ').trim();
+  // Strip emojis - speech synth reads them literally (e.g. 💥 = "collision")
+  const cleanedText = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B50}\u{2B55}\u{2702}-\u{27B0}\u{1F900}-\u{1F9FF}\u{200D}\u{FE0F}]/gu, '').replace(/\s*-\s*/g, ', ').trim();
   if (!cleanedText) return;
 
   const doSpeak = () => {

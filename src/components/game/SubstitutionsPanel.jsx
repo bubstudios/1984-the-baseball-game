@@ -45,7 +45,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
     return names;
   }, [gameState.homeLineup, gameState.awayLineup, benchUsed, gameState.homePlayerHistory, gameState.awayPlayerHistory]);
 
-  // Show ALL bench players — used ones will be grayed out
+  // Show ALL bench players - used ones will be grayed out
   const myBench = useMemo(() => {
     if (!myTeam?.bench) return [];
     return myTeam.bench;
@@ -112,7 +112,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
               </div>
 
               <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground">
-                Bench ({myBench.length}) — {myTeam?.name}
+                Bench ({myBench.length}) - {myTeam?.name}
               </div>
 
               {myBench.length === 0 ? (
@@ -241,7 +241,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
           {tab === 'defense' && (
             <div className="space-y-3">
               <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-2">
-                Defensive Alignment — {myTeam?.name}
+                Defensive Alignment - {myTeam?.name}
               </div>
 
               {myFieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH').map((player, idx) => {
@@ -273,7 +273,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
               {myBench.length > 0 && (
                 <div className="mt-4 pt-3 border-t border-border">
                   <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-2">
-                    Replace Fielder with Bench Player — {myTeam?.name}
+                    Replace Fielder with Bench Player - {myTeam?.name}
                   </div>
                   {myFieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH').map((player, fieldIdx) => {
                     const actualIdx = myFieldingLineup.indexOf(player);
@@ -282,7 +282,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                     return (
                       <div key={fieldIdx} className="mb-2">
                         <div className="text-[10px] text-muted-foreground mb-1">
-                          Replace {player.name} ({currentPos}) with:{isPitcher && <span className="text-amber-400 ml-1">(P — use Pitching tab)</span>}
+                          Replace {player.name} ({currentPos}) with:{isPitcher && <span className="text-amber-400 ml-1">(P - use Pitching tab)</span>}
                         </div>
                         <select
                           value=""
@@ -297,7 +297,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                           <option value="">-- Select bench player --</option>
                           {myBench.map((p, i) => (
                             <option key={i} value={p.name} disabled={isBenchUsed(p)}>
-                              {p.name} ({p.pos}, CON {p.contact}){isBenchUsed(p) ? ' — USED' : ''}
+                              {p.name} ({p.pos}, CON {p.contact}){isBenchUsed(p) ? ' - USED' : ''}
                             </option>
                           ))}
                         </select>

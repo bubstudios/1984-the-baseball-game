@@ -11,23 +11,23 @@ export const STRIKEOUT_CELEBRATIONS = {
   ended_inning_runners: [
     '🔥 He pounds his glove after stranding the runners!',
     '🔥 He strides off the mound, inning over!',
-    '🔥 The strikeout ends the threat — he exits with a nod!',
+    '🔥 The strikeout ends the threat - he exits with a nod!',
     '🔥 He comes off the mound letting out a roar!',
   ],
 
   // ── Bases loaded K ──
   bases_loaded: [
-    '🔥 He fires the final strike with bases loaded — fist pump!',
-    '🔥 The pressure pitch for strike three — he escapes the jam!',
-    '🔥 Strikeout with the bases full — he stares toward the dugout!',
+    '🔥 He fires the final strike with bases loaded - fist pump!',
+    '🔥 The pressure pitch for strike three - he escapes the jam!',
+    '🔥 Strikeout with the bases full - he stares toward the dugout!',
     '🔥 He blows him away with bases loaded!',
   ],
 
   // ── K after falling behind 3–0 ──
   after_3_0: [
-    '🔥 He comes back from 3–0 and strikes him out — fierce shout!',
-    '🔥 The battle back — strikeout after being down three-oh!',
-    '⚡ He strikes out the hitter who got ahead 3–0 — stares him down!',
+    '🔥 He comes back from 3–0 and strikes him out - fierce shout!',
+    '🔥 The battle back - strikeout after being down three-oh!',
+    '⚡ He strikes out the hitter who got ahead 3–0 - stares him down!',
   ],
 
   // ── K of opposing team's best hitter ──
@@ -40,46 +40,46 @@ export const STRIKEOUT_CELEBRATIONS = {
 
   // ── Third consecutive K ──
   third_consecutive_k: [
-    '🔥 Three strikeouts in a row — he raises both arms!',
-    '🔥 The third consecutive strikeout — he grips the ball tight!',
-    '🔥 Three up, three down at the K rate — he pounds his glove!',
+    '🔥 Three strikeouts in a row - he raises both arms!',
+    '🔥 The third consecutive strikeout - he grips the ball tight!',
+    '🔥 Three up, three down at the K rate - he pounds his glove!',
   ],
 
   // ── K after long at-bat (8+ pitches) ──
   long_battle: [
-    '🔥 He wins the long battle — strikeout on pitch eight!',
+    '🔥 He wins the long battle - strikeout on pitch eight!',
     '🔥 The full-count strikeout after a fierce battle!',
-    '🔥 He outlasts the hitter after ten pitches — fist pump!',
-    '⚡ The hitter finally gives in after the long battle — strikeout!',
+    '🔥 He outlasts the hitter after ten pitches - fist pump!',
+    '⚡ The hitter finally gives in after the long battle - strikeout!',
   ],
 
   // ── Called strike three, perfectly located ──
   called_strike_perfect: [
     '🔥 The called strike three on a perfect pitch!',
     '🔥 He paints the corner and the hitter walks away!',
-    '🔥 The pinpoint strike three — he points to the glove!',
+    '🔥 The pinpoint strike three - he points to the glove!',
   ],
 
   // ── K immediately after allowing HR ──
   after_home_run: [
     '🔥 He bounces back from the home run with a strikeout!',
-    '🔥 The answer to the home run — K to settle down!',
+    '🔥 The answer to the home run - K to settle down!',
     '🔥 He retaliates with a strikeout after giving up the round-tripper!',
   ],
 
   // ── K after error extended inning ──
   after_error: [
     '🔥 He escapes the error with a strikeout!',
-    '🔥 The defense gives him a second chance — he strikes him out!',
+    '🔥 The defense gives him a second chance - he strikes him out!',
     '🔥 The strikeout erases the error!',
   ],
 
   // ── K to preserve 1-run lead late ──
   preserve_late_lead: [
-    '🔥 He punches out the tying run with one swing — late in the game!',
+    '🔥 He punches out the tying run with one swing - late in the game!',
     '🔥 The crucial strikeout preserves the one-run lead!',
     '🔥 He strikes out the potential tying run in the ninth!',
-    '⚡ The strikeout in a tight spot — he points to the dugout!',
+    '⚡ The strikeout in a tight spot - he points to the dugout!',
   ],
 
   // ── Generic high-leverage K ──
@@ -123,7 +123,7 @@ export function getStrikeoutSituationType(state, pitcher, batter) {
   // K to preserve 1-run lead late
   if (isLate && closeLead && runnersStranded) return 'preserve_late_lead';
 
-  // K after error (would need state tracking — defer for now)
+  // K after error (would need state tracking - defer for now)
   // if (state._lastPlayWasError) return 'after_error';
 
   // K immediately after HR (would need tracking)

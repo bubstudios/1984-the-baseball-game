@@ -1,4 +1,4 @@
-// Weather generation for exhibition games — April 2 to September 30
+// Weather generation for exhibition games - April 2 to September 30
 // Based on 1984 city climates, month, and day/night
 
 // Climate by city: month -> { avgHigh, avgLow, rainChance, snowChance, windChance }
@@ -199,7 +199,7 @@ function randBetween(min, max) {
 }
 
 export function generateIndoorWeather() {
-  // Domed stadiums — fixed comfortable conditions, random date only
+  // Domed stadiums - fixed comfortable conditions, random date only
   const monthDays = { 4: 29, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30 };
   const months = [4, 5, 6, 7, 8, 9];
   const totalDays = Object.values(monthDays).reduce((a, b) => a + b, 0);
@@ -219,8 +219,8 @@ export function generateIndoorWeather() {
     condition: 'clear',
     windSpeed: 'calm',
     windDirection: null,
-    windLabel: 'Dome — No Wind',
-    summary: '72°F, Dome — Climate Controlled',
+    windLabel: 'Dome - No Wind',
+    summary: '72°F, Dome - Climate Controlled',
     effects: ['Domed stadium: no weather effects'],
     isIndoor: true,
   };
@@ -264,7 +264,7 @@ export function generateWeather(city) {
   const isDay = Math.random() < 0.65; // slightly more day games
 
   const data = climate[month];
-  // Night games are cooler — drop temp by ~8-12 degrees
+  // Night games are cooler - drop temp by ~8-12 degrees
   const nightDrop = isDay ? 0 : randBetween(8, 12);
   const temp = randBetween(data.low, data.high) - nightDrop;
 
@@ -316,7 +316,7 @@ export function generateWeather(city) {
   if (windDirection === 'out' && windSpeed === 'strong') effects.push('Strong wind blowing out carries fly balls');
   if (windDirection === 'out' && windSpeed === 'moderate') effects.push('Wind blowing out helps fly balls');
   if (windDirection === 'swirling' && windSpeed !== 'calm') effects.push('Swirling wind increases errors');
-  if (!isDay) effects.push('Night game — slightly lower batting average');
+  if (!isDay) effects.push('Night game - slightly lower batting average');
 
   const dateStr = `${MONTH_NAMES[month]} ${day}, 1984`;
 

@@ -23,7 +23,7 @@ const ANNOUNCER_CALLS = {
   },
   expos: {
     tracking: ['A high drive!', 'Deep to left field!', 'A high fly ball into deep left!', 'Deep to right field!'],
-    payoff: ['Up, up and away!', 'That ball is gone! Up, up and away!', 'Up, up and away — it is gone!'],
+    payoff: ['Up, up and away!', 'That ball is gone! Up, up and away!', 'Up, up and away - it is gone!'],
   },
   athletics: {
     // Lon Simmons & Bill King shared the booth

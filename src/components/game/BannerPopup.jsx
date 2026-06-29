@@ -45,7 +45,7 @@ function cleanPlaceholders(text) {
   return text.replace(/\[Player\]/gi, 'this player');
 }
 
-// Field renderers for popup entries — handles electronics, movies, TV shows, and general products structures
+// Field renderers for popup entries - handles electronics, movies, TV shows, and general products structures
 const FIELD_RENDERERS = [
   // ── TV Show episode fields ──
   { key: 'day', label: null, render: (v, popup) => (
@@ -61,7 +61,7 @@ const FIELD_RENDERERS = [
   { key: 'location', label: 'Filmed at', render: (v) => <p className="text-sm"><span className="font-bold text-yellow-300">Filmed at:</span> {v}</p> },
   { key: 'slogan', label: null, render: (v) => <p className="text-sm text-muted-foreground italic text-center">{v}</p> },
   // ── General / movie / electronics fields ──
-  { key: 'tagline', label: null, render: (v) => <p className="text-sm text-yellow-200 font-heading italic">— {v}</p> },
+  { key: 'tagline', label: null, render: (v) => <p className="text-sm text-yellow-200 font-heading italic">- {v}</p> },
   { key: 'price', label: 'Price', render: (v) => <p className="text-sm"><span className="font-bold text-yellow-300">Price:</span> {v}</p> },
   { key: 'premiere', label: 'Premiere', render: (v) => <p className="text-sm"><span className="font-bold text-yellow-300">Premiere:</span> {v}</p> },
   { key: 'runtime', label: 'Runtime', render: (v) => <p className="text-sm"><span className="font-bold text-yellow-300">Runtime:</span> {v}</p> },
@@ -161,7 +161,7 @@ export default function BannerPopup({ banner, onClose }) {
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header — shows the banner's headline (not the popup's) */}
+        {/* Header - shows the banner's headline (not the popup's) */}
         <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-700 border-b-2 border-yellow-400 p-4 flex items-start justify-between gap-4">
           <div className="flex items-start gap-3 flex-1">
             <div className="text-4xl flex-shrink-0">{banner.icon || '📺'}</div>
@@ -183,10 +183,10 @@ export default function BannerPopup({ banner, onClose }) {
 
         {/* Content */}
         <div className="p-6 space-y-4 text-foreground">
-          {/* National banners with popups array — show the selected popup's detail content */}
+          {/* National banners with popups array - show the selected popup's detail content */}
           {selectedPopup && <PopupContent popup={selectedPopup} />}
 
-          {/* Bobblehead wobble + friendly intro — shown for bobblehead banners */}
+          {/* Bobblehead wobble + friendly intro - shown for bobblehead banners */}
           {!selectedPopup && banner.id && banner.id.endsWith('_bobblehead') && (
             <>
               <div className="flex justify-center py-2">
@@ -198,7 +198,7 @@ export default function BannerPopup({ banner, onClose }) {
             </>
           )}
 
-          {/* Team banners with paragraphs array — cleaned: strips metadata, renders bold, fixes placeholders */}
+          {/* Team banners with paragraphs array - cleaned: strips metadata, renders bold, fixes placeholders */}
           {!selectedPopup && banner.paragraphs && banner.paragraphs
             .filter((para) => !isMetadataParagraph(para))
             .map((para) => stripMetadataTail(cleanPlaceholders(para)))

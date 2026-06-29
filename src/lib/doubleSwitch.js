@@ -1,5 +1,5 @@
 /**
- * Phase 3.1 — The Double Switch
+ * Phase 3.1 - The Double Switch
  * 
  * NL-park pitcher change + defensive swap to bury the new pitcher's batting slot.
  * The manager simultaneously changes pitchers AND swaps a position player, rearranging
@@ -66,7 +66,7 @@ export function find_double_switch_partner(game) {
     
     // Ideal partner: someone whose slot bats SOON (so pitcher takes that slot)
     if (spots_until > 4) {
-      continue;  // This fielder's spot isn't coming up soon — not useful
+      continue;  // This fielder's spot isn't coming up soon - not useful
     }
     
     // Find a bench replacement who can play this position

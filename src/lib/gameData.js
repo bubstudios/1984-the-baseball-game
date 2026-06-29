@@ -1,4 +1,4 @@
-// 1984 MLB Teams & Players — ratings + real split data
+// 1984 MLB Teams & Players - ratings + real split data
 // Hitters: Contact, Power, Bunting, Speed, Defense, Arm (1-10), splits (BA/HR vs LHP/RHP)
 // Pitchers: Stamina, PitchSpeed, OffSpeed, Control (1-10), throws (L/R)
 
@@ -1270,7 +1270,7 @@ export const TEAMS = {
   },
 };
 
-// 1984 Error counts (estimated from real stats) — used for fielding error probability
+// 1984 Error counts (estimated from real stats) - used for fielding error probability
 export const PLAYER_ERRORS = {
   // Tigers
   "Lou Whitaker": 11, "Alan Trammell": 10, "Kirk Gibson": 8, "Lance Parrish": 5,

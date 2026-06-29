@@ -1,4 +1,4 @@
-// Ad-Based Quest System — 1984 Baseball Simulation
+// Ad-Based Quest System - 1984 Baseball Simulation
 // Watching specific categories of broadcast ads unlocks bonus baseball cards and achievements.
 // Quests are tracked in localStorage and shown as "clue" text inside popups.
 
@@ -86,7 +86,7 @@ export const AD_QUESTS = [
     desc: 'Spot 3 food or restaurant ads during the broadcast.',
     goal: 3,
     category: 'food',
-    reward: { type: 'card', team: 'padres', clue: 'A San Diego closer is sizzling on the mound — just like the grill.' },
+    reward: { type: 'card', team: 'padres', clue: 'A San Diego closer is sizzling on the mound - just like the grill.' },
     completionMsg: '🌭 Extra mustard! Bonus card from the San Diego Padres!',
   },
   {
@@ -114,11 +114,11 @@ export const AD_QUESTS = [
     goal: 8,
     category: 'teamBanner',
     reward: { type: 'card', team: 'tigers', clue: 'A World Series champion is lurking in the sponsor boards.' },
-    completionMsg: '⚾ You read every banner! Bonus card — a surprise from the 1984 Tigers!',
+    completionMsg: '⚾ You read every banner! Bonus card - a surprise from the 1984 Tigers!',
   },
 ];
 
-// ── Category detection — maps ad types to quest categories ──
+// ── Category detection - maps ad types to quest categories ──
 export const AD_CATEGORY_MAP = {
   // arcade / video games
   arcade: 'arcade',

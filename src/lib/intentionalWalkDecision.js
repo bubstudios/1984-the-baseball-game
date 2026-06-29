@@ -1,5 +1,5 @@
 /**
- * Phase 2.9 — Intentional Walk Decision Gate
+ * Phase 2.9 - Intentional Walk Decision Gate
  * 
  * Fires BEFORE the pitcher's first pitch to a new batter (fresh count: 0-0).
  * Hard precondition: first base must be open (never with bases loaded or empty).
@@ -35,7 +35,7 @@ export function shouldIntentionalWalk(game) {
  * Hard rules prevent loading bases, empty bases, or tying/winning run scenarios.
  */
 function ibb_legal(game) {
-  // Never with runner on 1st (forces everyone up — almost never right)
+  // Never with runner on 1st (forces everyone up - almost never right)
   if (game.runner_on_1st) {
     return false;
   }
@@ -95,7 +95,7 @@ function ibb_score(game) {
   
   // The on-deck comparison is the BIGGEST trigger
   if (on_deck && on_deck.power <= 3 && on_deck.contact <= 3) {
-    s += 30;  // Walk to get to the pitcher — huge
+    s += 30;  // Walk to get to the pitcher - huge
   }
   
   // ── BASE/OUT STATE ──
@@ -176,9 +176,9 @@ export function issue_ibb(game) {
   
   return {
     type: 'intentional_walk',
-    text: `${batter.name} is intentionally walked — catcher stands and points.`,
+    text: `${batter.name} is intentionally walked - catcher stands and points.`,
     rbi: rbi,
-    batter_ibb_composure_delta: 0,  // NEUTRAL — sign of respect, not failure
+    batter_ibb_composure_delta: 0,  // NEUTRAL - sign of respect, not failure
     pitcher_composure_delta: 0,      // Pitcher not penalized (manager's call)
     on_deck_composure_delta: 5,      // Pressure-but-opportunity for on-deck hitter
   };

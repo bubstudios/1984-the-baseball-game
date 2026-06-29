@@ -1,5 +1,5 @@
 /**
- * Phase 2.8 — Pinch-Hitting Decision Gate
+ * Phase 2.8 - Pinch-Hitting Decision Gate
  * 
  * Pinch-hitting fires WHEN A PITCHER IS DUE UP TO BAT, not during pitcher changes.
  * It's a pre-swing decision gate (like bunting in Phase 2.7).
@@ -33,7 +33,7 @@ export function shouldPinchHit(game) {
 }
 
 /**
- * Pinch-hit score — evaluates offensive opportunity and bullpen readiness.
+ * Pinch-hit score - evaluates offensive opportunity and bullpen readiness.
  */
 function pinch_hit_score(game) {
   let s = 0;
@@ -61,8 +61,8 @@ function pinch_hit_score(game) {
   }
   
   // ── THE KEY LINKAGE BONUS ──
-  // If a fresh arm is available next inning, pinch-hitting is nearly free — you gain the bat AND change pitchers anyway.
-  // BUT only for relievers or starters in inning 7+ — a starter before inning 7 is NOT being replaced.
+  // If a fresh arm is available next inning, pinch-hitting is nearly free - you gain the bat AND change pitchers anyway.
+  // BUT only for relievers or starters in inning 7+ - a starter before inning 7 is NOT being replaced.
   if (fresh_arm_available_next_inning(game) && (!game.is_starter || game.inning >= 7)) {
     s += 35;
   }
@@ -88,7 +88,7 @@ function bench_has_pinch_hitters(game) {
 function safe_to_pinch_hit(game) {
   // Starter protection: never pinch-hit for a starting pitcher before inning 6
   // unless the starter is getting shelled (5+ runs) or has lost command (5+ walks).
-  // 1984 starters routinely went 7–9 innings — lifting one in the 3rd is unthinkable.
+  // 1984 starters routinely went 7–9 innings - lifting one in the 3rd is unthinkable.
   if (game.is_starter && game.inning < 6) {
     const runs = game.pitcher_runs_allowed || 0;
     const walks = game.pitcher_walks_allowed || 0;
@@ -116,7 +116,7 @@ function safe_to_pinch_hit(game) {
  */
 function fresh_arm_available_next_inning(game) {
   // Is there any reliever in the bullpen who hasn't pitched this inning?
-  // Bullpen players don't carry a 'rested' flag — just check they exist and weren't used this inning.
+  // Bullpen players don't carry a 'rested' flag - just check they exist and weren't used this inning.
   if (!game.bullpen || game.bullpen.length === 0) {
     return false;
   }
@@ -144,7 +144,7 @@ export function choose_pinch_hitter(game) {
   }
   
   if (game.need_baserunner) {
-    // Trailing late, just need to get on — contact + speed
+    // Trailing late, just need to get on - contact + speed
     return bench.reduce((best, h) => 
       (h.contact + h.speed > (best.contact + best.speed)) ? h : best
     );

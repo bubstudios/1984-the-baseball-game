@@ -1,4 +1,4 @@
-// 5 batter swing-injury types — equal weight
+// 5 batter swing-injury types - equal weight
 export const BATTER_INJURY_TYPES = [
   { id: 'oblique_strain', name: 'Oblique Strain', emoji: '🤕' },
   { id: 'back_strain', name: 'Back Strain', emoji: '🤕' },
@@ -7,7 +7,7 @@ export const BATTER_INJURY_TYPES = [
   { id: 'shoulder_strain', name: 'Shoulder Strain', emoji: '💪' },
 ];
 
-// 6 HBP injury types — equal weight
+// 6 HBP injury types - equal weight
 export const HBP_INJURY_TYPES = [
   { id: 'forearm_contusion', name: 'Forearm Contusion', emoji: '🤕' },
   { id: 'thigh_contusion', name: 'Thigh Contusion', emoji: '🤕' },

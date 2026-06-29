@@ -85,7 +85,7 @@ export function generatePitchNarrative(gameState, pitchType, swingType, result) 
   } else if (resultType === 'homerun') {
     playByPlayLines.push(getPitchCall(HOME_RUNS));
   } else {
-    // Batted ball — use universal calls
+    // Batted ball - use universal calls
     const ballCalls = getBattedBallCallByType(resultType);
     playByPlayLines.push(getPitchCall(ballCalls));
   }
@@ -94,34 +94,34 @@ export function generatePitchNarrative(gameState, pitchType, swingType, result) 
   const colorLines = [];
   
   // Count situation
-  if (count === '0-2') colorLines.push(`Two strikes — the hitter is vulnerable.`);
-  else if (count === '2-0') colorLines.push(`Two balls — the pitcher must throw a strike.`);
-  else if (count === '3-0') colorLines.push(`Three and oh — a hitter\'s count.`);
-  else if (count === '3-2') colorLines.push(`Full count — everything is on the line.`);
-  else if (gameState.strikes === 2) colorLines.push(`Two strikes — the hitter is protecting the zone.`);
-  else if (gameState.balls === 3) colorLines.push(`Three balls — the pitcher is struggling with location.`);
+  if (count === '0-2') colorLines.push(`Two strikes - the hitter is vulnerable.`);
+  else if (count === '2-0') colorLines.push(`Two balls - the pitcher must throw a strike.`);
+  else if (count === '3-0') colorLines.push(`Three and oh - a hitter\'s count.`);
+  else if (count === '3-2') colorLines.push(`Full count - everything is on the line.`);
+  else if (gameState.strikes === 2) colorLines.push(`Two strikes - the hitter is protecting the zone.`);
+  else if (gameState.balls === 3) colorLines.push(`Three balls - the pitcher is struggling with location.`);
   
   // Runner context
-  if (runners === 3) colorLines.push(`Bases are loaded — pressure on the pitcher.`);
-  else if (runners === 2) colorLines.push(`Two runners in scoring position — the defense is alert.`);
-  else if (runners === 1) colorLines.push(`Runner on base — the pitcher must be careful.`);
+  if (runners === 3) colorLines.push(`Bases are loaded - pressure on the pitcher.`);
+  else if (runners === 2) colorLines.push(`Two runners in scoring position - the defense is alert.`);
+  else if (runners === 1) colorLines.push(`Runner on base - the pitcher must be careful.`);
   
   // Pitch effectiveness
   if (resultType === 'strike' && swingName.includes('take')) {
     colorLines.push(`A well-placed pitch that catches the zone.`);
   } else if (resultType === 'ball') {
-    colorLines.push(`Off the corner — the pitcher is missing his spots.`);
+    colorLines.push(`Off the corner - the pitcher is missing his spots.`);
   } else if (resultType === 'homerun') {
     const runs = runners + 1;
     colorLines.push(`That\'s a ${runs}-run shot! Game-changer!`);
   } else if (resultType === 'double' || resultType === 'triple') {
-    colorLines.push(`Extra-base hit — runners are advancing.`);
+    colorLines.push(`Extra-base hit - runners are advancing.`);
   } else if (resultType === 'single') {
-    colorLines.push(`Base hit — the runner is on first.`);
+    colorLines.push(`Base hit - the runner is on first.`);
   } else if (resultType === 'strikeout') {
-    colorLines.push(`A strikeout — the pitcher gets the out.`);
+    colorLines.push(`A strikeout - the pitcher gets the out.`);
   } else if (resultType === 'walk') {
-    colorLines.push(`Free pass — the pitcher\'s control is off.`);
+    colorLines.push(`Free pass - the pitcher\'s control is off.`);
   }
   
   // Fallback if no commentary

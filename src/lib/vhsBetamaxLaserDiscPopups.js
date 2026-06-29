@@ -7,7 +7,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "⚔️",
     tagline: "VHS vs. Betamax vs. LaserDisc: The battle for home video supremacy",
     category: "technology",
-    description: "By 1984, buying a home-video machine required choosing sides. Sony's Betamax and JVC's VHS both recorded television onto magnetic tape, but their cassettes were completely incompatible. LaserDisc offered a third option with a sharper picture, but it could only play prerecorded movies. Families had to predict which format stores, movie studios, and neighbors would support. Choosing incorrectly could leave an expensive machine surrounded by blank shelves—and an owner insisting his format was technically superior.",
+    description: "By 1984, buying a home-video machine required choosing sides. Sony's Betamax and JVC's VHS both recorded television onto magnetic tape, but their cassettes were completely incompatible. LaserDisc offered a third option with a sharper picture, but it could only play prerecorded movies. Families had to predict which format stores, movie studios, and neighbors would support. Choosing incorrectly could leave an expensive machine surrounded by blank shelves-and an owner insisting his format was technically superior.",
   },
   {
     id: 927,
@@ -63,7 +63,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "⚖️",
     tagline: "Sony v. Universal: Home recording declared legal",
     category: "legal",
-    description: "Movie studios worried that home recording would allow viewers to copy television programs without permission. The legal fight reached the United States Supreme Court in Sony Corporation of America v. Universal City Studios. In January 1984, the Court ruled 5–4 that manufacturers were not responsible merely because consumers could use VCRs to record copyrighted programs. Recording a broadcast to watch at a more convenient time—known as time-shifting—was recognized as a legitimate home use. The decision helped secure the future of the VCR industry.",
+    description: "Movie studios worried that home recording would allow viewers to copy television programs without permission. The legal fight reached the United States Supreme Court in Sony Corporation of America v. Universal City Studios. In January 1984, the Court ruled 5–4 that manufacturers were not responsible merely because consumers could use VCRs to record copyrighted programs. Recording a broadcast to watch at a more convenient time-known as time-shifting-was recognized as a legitimate home use. The decision helped secure the future of the VCR industry.",
   },
   {
     id: 934,
@@ -71,7 +71,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "⏲️",
     tagline: "Viewers finally control the television schedule",
     category: "culture",
-    description: "Before the VCR, viewers arranged their evenings around network schedules. If a program aired Thursday at 9:00, the audience had to be sitting in front of the television Thursday at 9:00. A VCR allowed families to record Dallas, Cheers, a baseball game, or a late-night movie and watch it later. Commercials could even be fast-forwarded, alarming advertisers everywhere. Television was no longer entirely controlled by the clock—and viewers quickly became accustomed to that freedom.",
+    description: "Before the VCR, viewers arranged their evenings around network schedules. If a program aired Thursday at 9:00, the audience had to be sitting in front of the television Thursday at 9:00. A VCR allowed families to record Dallas, Cheers, a baseball game, or a late-night movie and watch it later. Commercials could even be fast-forwarded, alarming advertisers everywhere. Television was no longer entirely controlled by the clock-and viewers quickly became accustomed to that freedom.",
   },
   {
     id: 935,
@@ -87,7 +87,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "📦",
     tagline: "Betamax compact, VHS larger but more practical",
     category: "technology",
-    description: "Betamax cassettes were noticeably smaller than VHS cassettes, which supporters considered compact and elegant. VHS tapes were larger but could hold more tape, contributing to their longer recording times. Both contained half-inch magnetic videotape wound between two reels inside a protective plastic shell. Unlike an audio cassette, the VCR pulled the tape out of the cassette and wrapped it around a rapidly spinning video-head drum. This complicated process happened every time the viewer pressed Play—and usually worked without anyone thinking about it.",
+    description: "Betamax cassettes were noticeably smaller than VHS cassettes, which supporters considered compact and elegant. VHS tapes were larger but could hold more tape, contributing to their longer recording times. Both contained half-inch magnetic videotape wound between two reels inside a protective plastic shell. Unlike an audio cassette, the VCR pulled the tape out of the cassette and wrapped it around a rapidly spinning video-head drum. This complicated process happened every time the viewer pressed Play-and usually worked without anyone thinking about it.",
   },
   {
     id: 937,
@@ -95,7 +95,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "📚",
     tagline: "Building a mysterious collection of recorded memories",
     category: "culture",
-    description: "Once a household bought a VCR, blank tapes began multiplying. Families labeled them with handwritten titles such as \"OLYMPICS,\" \"CARTOONS,\" \"MOVIES,\" and \"DO NOT ERASE.\" Nobody could remember exactly what was on Tape 7, while Tape 12 contained three sitcoms, half a football game, and twenty minutes of local news. Eventually, every cabinet held at least one mysterious cassette marked simply \"MISC.\" Playing it could reveal a forgotten television special—or two hours of a channel that had been recorded by mistake.",
+    description: "Once a household bought a VCR, blank tapes began multiplying. Families labeled them with handwritten titles such as \"OLYMPICS,\" \"CARTOONS,\" \"MOVIES,\" and \"DO NOT ERASE.\" Nobody could remember exactly what was on Tape 7, while Tape 12 contained three sitcoms, half a football game, and twenty minutes of local news. Eventually, every cabinet held at least one mysterious cassette marked simply \"MISC.\" Playing it could reveal a forgotten television special-or two hours of a channel that had been recorded by mistake.",
   },
   {
     id: 938,
@@ -103,7 +103,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "⚠️",
     tagline: "The power to record brings terrible responsibility",
     category: "culture",
-    description: "The Record button created tremendous power and tremendous danger. One careless family member could erase a wedding, graduation, championship game, or favorite movie by recording a sitcom over it. Some blank cassettes included a removable safety tab; once broken off, the tape could no longer be recorded normally. Resourceful owners discovered that covering the opening with adhesive tape restored the ability to record. Family history was therefore sometimes protected by a tiny piece of plastic—and defeated by a strip of Scotch tape.",
+    description: "The Record button created tremendous power and tremendous danger. One careless family member could erase a wedding, graduation, championship game, or favorite movie by recording a sitcom over it. Some blank cassettes included a removable safety tab; once broken off, the tape could no longer be recorded normally. Resourceful owners discovered that covering the opening with adhesive tape restored the ability to record. Family history was therefore sometimes protected by a tiny piece of plastic-and defeated by a strip of Scotch tape.",
   },
   {
     id: 939,
@@ -119,7 +119,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "🕐",
     tagline: "A symbol of technology that was slightly too complicated",
     category: "culture",
-    description: "Many VCR owners never learned—or never bothered—to set the machine's internal clock. After a power interruption, the display returned to a blinking \"12:00\" that could remain for months or years. The flashing numbers became a symbol of technology becoming slightly more complicated than the average household wanted. The VCR might record movies, freeze pictures, and play tapes in slow motion, but asking it to display the correct time was apparently going too far.",
+    description: "Many VCR owners never learned-or never bothered-to set the machine's internal clock. After a power interruption, the display returned to a blinking \"12:00\" that could remain for months or years. The flashing numbers became a symbol of technology becoming slightly more complicated than the average household wanted. The VCR might record movies, freeze pictures, and play tapes in slow motion, but asking it to display the correct time was apparently going too far.",
   },
   {
     id: 941,
@@ -135,7 +135,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "🎚️",
     tagline: "Adjusting picture quality required skill and patience",
     category: "technology",
-    description: "Videotape did not always pass across the playback heads in exactly the same way it had during recording. The result could be rolling lines, picture noise, or a band of distortion across the screen. Viewers corrected this by adjusting the tracking control until the image stabilized. Rental tapes that had passed through hundreds of machines often required delicate tuning. Finding the best setting felt like tuning a distant radio station—except the reward was finally being able to see the actor's face.",
+    description: "Videotape did not always pass across the playback heads in exactly the same way it had during recording. The result could be rolling lines, picture noise, or a band of distortion across the screen. Viewers corrected this by adjusting the tracking control until the image stabilized. Rental tapes that had passed through hundreds of machines often required delicate tuning. Finding the best setting felt like tuning a distant radio station-except the reward was finally being able to see the actor's face.",
   },
   {
     id: 943,
@@ -143,7 +143,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "⚙️",
     tagline: "Helical scanning: engineering marvel hidden inside",
     category: "technology",
-    description: "A VCR records video using a process called helical scanning. When the cassette is inserted, the machine pulls a loop of tape from the shell and wraps it around a tilted, spinning drum containing the video heads. The rapidly rotating heads record diagonal tracks across the moving tape, allowing far more picture information to be stored than a stationary head could manage. Pressing Eject reverses the process and carefully returns the tape to the cassette—unless the machine decides to keep it.",
+    description: "A VCR records video using a process called helical scanning. When the cassette is inserted, the machine pulls a loop of tape from the shell and wraps it around a tilted, spinning drum containing the video heads. The rapidly rotating heads record diagonal tracks across the moving tape, allowing far more picture information to be stored than a stationary head could manage. Pressing Eject reverses the process and carefully returns the tape to the cassette-unless the machine decides to keep it.",
   },
   {
     id: 944,
@@ -151,7 +151,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "📊",
     tagline: "Recording speed options: quality versus quantity",
     category: "technology",
-    description: "VHS machines offered different recording speeds. Standard Play, or SP, used more tape and usually produced the best picture. Long Play stretched recording time further, while Extended Play—also called SLP on some machines—could place roughly six hours on a standard T-120 cassette. That made EP useful for long sporting events, multiple movies, or an entire evening of television. The tradeoff was reduced picture quality. Every family eventually had to decide whether the program deserved a sharp picture or the cheapest possible use of tape.",
+    description: "VHS machines offered different recording speeds. Standard Play, or SP, used more tape and usually produced the best picture. Long Play stretched recording time further, while Extended Play-also called SLP on some machines-could place roughly six hours on a standard T-120 cassette. That made EP useful for long sporting events, multiple movies, or an entire evening of television. The tradeoff was reduced picture quality. Every family eventually had to decide whether the program deserved a sharp picture or the cheapest possible use of tape.",
   },
   {
     id: 945,
@@ -159,7 +159,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "🔊",
     tagline: "Beta Hi-Fi and VHS Hi-Fi deliver concert-quality sound",
     category: "technology",
-    description: "Picture quality received most of the attention, but sound became another battlefield. Sony introduced Beta Hi-Fi in 1983, offering dramatically improved stereo sound. VHS Hi-Fi machines followed, reaching consumers around the same period and becoming a major attraction by 1984. Hi-Fi VCRs could reproduce music with impressive clarity and were sometimes used as audio recorders. For enthusiasts, a concert recorded on videotape could sound better than an ordinary cassette—even when the picture showed nothing more exciting than a blank television screen.",
+    description: "Picture quality received most of the attention, but sound became another battlefield. Sony introduced Beta Hi-Fi in 1983, offering dramatically improved stereo sound. VHS Hi-Fi machines followed, reaching consumers around the same period and becoming a major attraction by 1984. Hi-Fi VCRs could reproduce music with impressive clarity and were sometimes used as audio recorders. For enthusiasts, a concert recorded on videotape could sound better than an ordinary cassette-even when the picture showed nothing more exciting than a blank television screen.",
   },
   {
     id: 946,
@@ -175,7 +175,7 @@ export const VHS_BETAMAX_LASERDISC_POPUPS = [
     icon: "💿",
     tagline: "Optical technology brings laser-read movies to homes",
     category: "technology",
-    description: "LaserDisc offered home viewers a completely different approach. Instead of magnetic tape, movies were stored on a shiny optical disc approximately the size of a vinyl record. A laser read the surface without physically touching it, providing a sharper and more stable picture than ordinary videotape. The disc did not require rewinding and could offer rapid chapter access. It also looked impressively futuristic when removed from its jacket—although handling a twelve-inch movie disc without dropping it required both hands.",
+    description: "LaserDisc offered home viewers a completely different approach. Instead of magnetic tape, movies were stored on a shiny optical disc approximately the size of a vinyl record. A laser read the surface without physically touching it, providing a sharper and more stable picture than ordinary videotape. The disc did not require rewinding and could offer rapid chapter access. It also looked impressively futuristic when removed from its jacket-although handling a twelve-inch movie disc without dropping it required both hands.",
   },
   {
     id: 948,

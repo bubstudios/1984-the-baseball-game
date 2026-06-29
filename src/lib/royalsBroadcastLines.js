@@ -1,4 +1,4 @@
-// Denny Matthews-style commentary — professional, smooth, understated
+// Denny Matthews-style commentary - professional, smooth, understated
 // Player-specific lines only used when that player is involved (at bat or on mound)
 
 // ── Generic flavor pool (NO player-specific lines) ──
@@ -9,7 +9,7 @@ export function pickRoyalsLine(isNight = true) {
   return all[Math.floor(Math.random() * all.length)];
 }
 
-// ── Contextual player line — used when a specific batter or pitcher is involved ──
+// ── Contextual player line - used when a specific batter or pitcher is involved ──
 export function pickRoyalsPlayerLine(playerName) {
   const map = {
     "George Brett": BRETT_FLAVOR,
@@ -23,7 +23,7 @@ export function pickRoyalsPlayerLine(playerName) {
   return lines[Math.floor(Math.random() * lines.length)];
 }
 
-// ── Routine flavor (between-pitch filler — atmosphere only, never describes outcomes) ──
+// ── Routine flavor (between-pitch filler - atmosphere only, never describes outcomes) ──
 const ROUTINE_FILLER = [
   "No trouble there.",
   "That'll do it.",
@@ -37,7 +37,7 @@ const ROUTINE_FILLER = [
   "A fine crowd on hand here in Kansas City.",
 ];
 
-// Night-only lines — filtered out during day games
+// Night-only lines - filtered out during day games
 const NIGHT_ONLY_FOUNTAIN = [
   "A beautiful evening at Royals Stadium.",
   "The fountains are flowing tonight.",
@@ -51,7 +51,7 @@ const NIGHT_ONLY_KC = [
   "A beautiful baseball night in the Heartland.",
 ];
 
-// ── Pitching misc (between-pitch filler — generic only, no event-specific lines) ──
+// ── Pitching misc (between-pitch filler - generic only, no event-specific lines) ──
 const PITCHING_MISC = [
   "Couldn't catch up to it.",
   "Went fishing.",
@@ -65,44 +65,44 @@ const PITCHING_NOTES = [
   "He drops down low.",
 ];
 
-// ── George Brett flavor — only when Brett is batting ──
+// ── George Brett flavor - only when Brett is batting ──
 const BRETT_FLAVOR = [
-  "George Brett steps in — always an event at Royals Stadium.",
-  "Brett digs in — the fans rise a little in their seats.",
+  "George Brett steps in - always an event at Royals Stadium.",
+  "Brett digs in - the fans rise a little in their seats.",
   "Brett is locked in tonight.",
   "The Royals' captain.",
   "The best hitter in the American League.",
   "Brett is putting on a show tonight.",
   "George Brett has been doing this for a long time.",
   "George Brett is carrying the offense.",
-  "Brett — one of the purest swings in baseball.",
+  "Brett - one of the purest swings in baseball.",
 ];
 
 // ── Willie Wilson flavor ──
 const WILSON_FLAVOR = [
-  "Wilson at the plate — always a stolen base threat.",
+  "Wilson at the plate - always a stolen base threat.",
   "Nobody runs better than Willie Wilson.",
   "You have to keep an eye on him.",
-  "Willie Wilson — the league's most dangerous baserunner.",
+  "Willie Wilson - the league's most dangerous baserunner.",
   "Wilson can change a game with his speed.",
-  "Willie Wilson — speed to burn.",
+  "Willie Wilson - speed to burn.",
   "The Royals love having Wilson on the bases.",
 ];
 
 // ── Frank White flavor ──
 const WHITE_FLAVOR = [
-  "Frank White — Gold Glove second baseman.",
+  "Frank White - Gold Glove second baseman.",
   "You won't find many smoother fielders than Frank White.",
   "White is one of the best defensive second basemen in the game.",
   "Frank White makes it look easy.",
-  "White — steady as they come.",
+  "White - steady as they come.",
 ];
 
 // ── Steve Balboni flavor ──
 const BALBONI_FLAVOR = [
-  "Bye-Bye Balboni — always a threat to leave the yard.",
+  "Bye-Bye Balboni - always a threat to leave the yard.",
   "Balboni steps in with that big swing.",
-  "The big first baseman — power to all fields.",
+  "The big first baseman - power to all fields.",
   "Balboni is a threat every time he steps in.",
   "Balboni has that light-tower power.",
 ];
@@ -112,7 +112,7 @@ const QUISENBERRY_FLAVOR = [
   "Here comes Quisenberry.",
   "The Royals turn it over to Quiz.",
   "One of baseball's best closers.",
-  "Quisenberry — that submarine delivery is so unusual.",
+  "Quisenberry - that submarine delivery is so unusual.",
   "The Royals fans rise for Quiz.",
 ];
 
@@ -139,7 +139,7 @@ const KC_REFERENCES = [
   "The fans are filing in from all across the metro area.",
   "Another strong crowd tonight.",
   "Kansas City has always supported its baseball team.",
-  "Baseball and barbecue—a pretty good combination.",
+  "Baseball and barbecue-a pretty good combination.",
   "A beautiful night in the Heartland.",
   "Kansas City fans know their baseball.",
   "The Royals continue to draw some of baseball's best fans.",

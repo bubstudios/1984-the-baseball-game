@@ -1,4 +1,4 @@
-// 1984 American Baseball League Umpiring Crew — 20 named umpires
+// 1984 American Baseball League Umpiring Crew - 20 named umpires
 // Each with distinct strike zones, accuracy, temperament, and hidden traits
 
 export const UMPIRES = {
@@ -72,7 +72,7 @@ export const UMPIRES = {
     traits: [],
     pitcherFriendly: false,
     hitterFriendly: true,
-    pregameLine: "Pitchers are never happy to see Leonard Grimes back there. Tiny strike zone — he makes you earn it.",
+    pregameLine: "Pitchers are never happy to see Leonard Grimes back there. Tiny strike zone - he makes you earn it.",
   },
   tommy_keeler: {
     id: "tommy_keeler",
@@ -130,7 +130,7 @@ export const UMPIRES = {
     traits: [],
     pitcherFriendly: true,
     hitterFriendly: false,
-    pregameLine: "Sam Bianchi behind the dish. Loves the low strike — sinkerballers, tonight's your night.",
+    pregameLine: "Sam Bianchi behind the dish. Loves the low strike - sinkerballers, tonight's your night.",
   },
   ray_tuttle: {
     id: "ray_tuttle",
@@ -200,7 +200,7 @@ export const UMPIRES = {
     traits: ["veteranRespect"],
     pitcherFriendly: false,
     hitterFriendly: false,
-    pregameLine: "Al Dugan has the plate. Old school. Respects the veterans — you earn your calls with Dugan.",
+    pregameLine: "Al Dugan has the plate. Old school. Respects the veterans - you earn your calls with Dugan.",
   },
   victor_salazar: {
     id: "victor_salazar",
@@ -270,7 +270,7 @@ export const UMPIRES = {
     traits: ["makeupArtist"],
     pitcherFriendly: false,
     hitterFriendly: false,
-    pregameLine: "Artie Malone behind the dish. Known for evening things up — if he misses one, the next close call goes the other way.",
+    pregameLine: "Artie Malone behind the dish. Known for evening things up - if he misses one, the next close call goes the other way.",
   },
   doug_farnsworth: {
     id: "doug_farnsworth",

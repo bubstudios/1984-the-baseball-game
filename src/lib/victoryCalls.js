@@ -107,7 +107,7 @@ const ROAD_WIN_ENDINGS = [
 const GENERIC_ENDINGS = [
   'The final out is recorded, and they win it!',
   'Put this one in the win column!',
-  'That will do it—the ballgame is over!',
+  'That will do it-the ballgame is over!',
   'They shake hands around the mound after a victory!',
   'The final score is in, and they come away winners!',
   'They survive the ninth and win the ballgame!',
@@ -122,7 +122,7 @@ const GENERIC_ENDINGS = [
   'They close out the homestand with a win!',
   'They send the crowd home happy!',
   'They win it before a roaring crowd!',
-  'The players gather around the mound—this one is over!',
+  'The players gather around the mound-this one is over!',
   'They have come from behind to win it!',
   'The lead holds up, and they win!',
 ];
@@ -174,7 +174,7 @@ export const TEAM_CELEBRATIONS = {
     title: 'BLESS YOU, BOYS',
     subtitle: 'Motown sounds fill Tiger Stadium',
     song: 'Dancing in the Street',
-    songNote: 'Martha and the Vandellas — the "Motor City" lyric',
+    songNote: 'Martha and the Vandellas - the "Motor City" lyric',
     emoji: '🐯',
   },
   orioles: {
@@ -182,7 +182,7 @@ export const TEAM_CELEBRATIONS = {
     title: 'ORIOLES MAGIC',
     subtitle: 'Orioles Magic plays at Memorial Stadium',
     song: 'Orioles Magic',
-    songNote: 'Debuted in 1980 — played after dramatic wins',
+    songNote: 'Debuted in 1980 - played after dramatic wins',
     emoji: '🐦',
   },
   mets: {
@@ -206,7 +206,7 @@ export const TEAM_CELEBRATIONS = {
     title: 'CUB-BUSTERS',
     subtitle: 'Ghostbusters parody plays at the Murph',
     song: 'Cub-Busters',
-    songNote: 'Postseason-specific — activate vs. Cubs',
+    songNote: 'Postseason-specific - activate vs. Cubs',
     emoji: '⚾',
   },
 };
@@ -221,7 +221,7 @@ const TEAM_FLAVOR = {
   bluejays:  { emoji: '🐦', line: 'EXHIBITION STADIUM CHEERS' },
   indians:   { emoji: '⚾', line: 'THE TRIBE WINS ON THE LAKE' },
   twins:     { emoji: '⚾', line: 'THE DOME GOES WILD' },
-  whitesox:  { emoji: '💥', line: 'SOUTH SIDE WINS — SCOREBOARD SALUTES!' },
+  whitesox:  { emoji: '💥', line: 'SOUTH SIDE WINS - SCOREBOARD SALUTES!' },
   mariners:  { emoji: '⚾', line: 'THE KINGDOME RUMBLES' },
   rangers:   { emoji: '⭐', line: 'ARLINGTON ARENA RISES' },
   expos:     { emoji: '⚾', line: 'LE BIG O FÊTE LA VICTOIRE' },

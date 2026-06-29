@@ -1,6 +1,6 @@
-// Cleveland Indians Broadcast — 1984
+// Cleveland Indians Broadcast - 1984
 // Radio: Herb Score & Nev Chandler (WWWE) / TV: Bruce Drennen
-// Cleveland Municipal Stadium — home of the Indians
+// Cleveland Municipal Stadium - home of the Indians
 // All stats cutoff: end of 1983 season
 
 export function pickIndiansLine() {
@@ -549,23 +549,23 @@ const PLAYER_TIDBITS = {
 
 const POOLS = {
   gameAction: { weight: 0, lines: [
-    "\"Strike three called.\"", "\"Got him looking.\"", "\"A line drive — base hit.\"",
-    "\"Long drive to right field — way back — gone. Home run!\"",
-    "\"Ground ball to short — over to first — in time.\"",
+    "\"Strike three called.\"", "\"Got him looking.\"", "\"A line drive - base hit.\"",
+    "\"Long drive to right field - way back - gone. Home run!\"",
+    "\"Ground ball to short - over to first - in time.\"",
   ]},
   teamPraise: { weight: 20, lines: [
-    "\"This is a ballclub with young talent all over the diamond — the Indians are building something here.\"",
+    "\"This is a ballclub with young talent all over the diamond - the Indians are building something here.\"",
     "\"Cleveland baseball has a bright future with these young players.\"",
     "\"The Indians have put together an athletic, exciting young club.\"",
     "\"There's a new energy at Cleveland Municipal Stadium this season.\"",
-    "\"Brett Butler, Julio Franco, Brook Jacoby — that's a young core to build around.\"",
+    "\"Brett Butler, Julio Franco, Brook Jacoby - that's a young core to build around.\"",
     "\"The trades have brought in talent and the future looks bright for the Indians.\"",
     "\"This team is younger and faster than Cleveland fans have seen in years.\"",
-    "\"The Indians are turning the corner — you can feel it at the ballpark.\"",
+    "\"The Indians are turning the corner - you can feel it at the ballpark.\"",
     "\"Cleveland has a nucleus here that could compete for years to come.\"",
     "\"There's talent up and down this roster, and it's starting to come together.\"",
-    "\"The fans in Cleveland have been waiting for a winner — this club is working toward it.\"",
-    "\"This team doesn't quit. They play hard all nine innings — that's Indians baseball.\"",
+    "\"The fans in Cleveland have been waiting for a winner - this club is working toward it.\"",
+    "\"This team doesn't quit. They play hard all nine innings - that's Indians baseball.\"",
   ]},
   players: { weight: 15, lines: [
     "\"Brett Butler gives the Indians a true leadoff man with game-changing speed.\"",
@@ -578,27 +578,27 @@ const POOLS = {
   ]},
   atmosphere: { weight: 15, lines: [
     "\"A beautiful evening here at Cleveland Municipal Stadium.\"",
-    "\"The lights are on at the old ballpark by the lake — Indians baseball tonight.\"",
-    "\"Cleveland Municipal Stadium — one of the largest and most historic venues in baseball.\"",
-    "\"The breeze off Lake Erie is blowing in tonight — that could knock down a few fly balls.\"",
+    "\"The lights are on at the old ballpark by the lake - Indians baseball tonight.\"",
+    "\"Cleveland Municipal Stadium - one of the largest and most historic venues in baseball.\"",
+    "\"The breeze off Lake Erie is blowing in tonight - that could knock down a few fly balls.\"",
     "\"The cavernous dimensions here at the stadium make it tough on home-run hitters.\"",
-    "\"The artificial turf plays fast tonight — ground balls will scoot through the infield.\"",
-    "\"There's plenty of room out there in the outfield — this is one big ballpark.\"",
-    "\"The seats stretch far back at Cleveland Municipal Stadium — there's not a bad seat in the house.\"",
+    "\"The artificial turf plays fast tonight - ground balls will scoot through the infield.\"",
+    "\"There's plenty of room out there in the outfield - this is one big ballpark.\"",
+    "\"The seats stretch far back at Cleveland Municipal Stadium - there's not a bad seat in the house.\"",
     "\"The Cleveland skyline is visible beyond the outfield walls on a clear night.\"",
-    "\"The wind off the lake can be a factor all game long — outfielders have to be alert.\"",
+    "\"The wind off the lake can be a factor all game long - outfielders have to be alert.\"",
     "\"This stadium was built for football, but it's been home to Indians baseball for decades.\"",
     "\"It may be a big ballpark, but the fans who show up love their Indians.\"",
   ]},
   crowd: { weight: 10, lines: [
     "\"The crowd here in Cleveland is into this ballgame.\"",
     "\"Indians fans are making some noise tonight.\"",
-    "\"The fans in Cleveland love their baseball — listen to that.\"",
+    "\"The fans in Cleveland love their baseball - listen to that.\"",
     "\"The faithful at the old stadium are on their feet.\"",
-    "\"Cleveland fans have been through a lot — they're loyal to this ballclub.\"",
-    "\"The crowd is energized tonight — they can feel something building here.\"",
+    "\"Cleveland fans have been through a lot - they're loyal to this ballclub.\"",
+    "\"The crowd is energized tonight - they can feel something building here.\"",
     "\"A great turnout at Cleveland Municipal Stadium.\"",
-    "\"These fans have supported this team through some tough years — they deserve a winner.\"",
+    "\"These fans have supported this team through some tough years - they deserve a winner.\"",
   ]},
   folksy: { weight: 6, lines: [
     "\"Welcome to Cleveland Municipal Stadium, everyone. A fine evening for baseball.\"",
@@ -606,14 +606,14 @@ const POOLS = {
     "\"There's nothing quite like baseball by the lake on a summer night.\"",
     "\"From all of us here in Cleveland, thanks for joining us at the ballpark.\"",
     "\"The great thing about baseball is you never know what you might see.\"",
-    "\"Every game tells its own story — that's the beauty of this sport.\"",
-    "\"Baseball in Cleveland — it's a tradition that runs deep in this city.\"",
+    "\"Every game tells its own story - that's the beauty of this sport.\"",
+    "\"Baseball in Cleveland - it's a tradition that runs deep in this city.\"",
   ]},
   signature: { weight: 1, lines: [
-    "\"That ball is gone — into the seats at the old ballpark!\"",
+    "\"That ball is gone - into the seats at the old ballpark!\"",
     "\"A magnificent piece of hitting. Simply magnificent.\"",
     "\"The Indians are making their move here at Cleveland Municipal Stadium.\"",
-    "\"That one is long gone — souvenir for a fan in the bleachers.\"",
+    "\"That one is long gone - souvenir for a fan in the bleachers.\"",
     "\"You won't see many better than that one.\"",
     "\"He stood there like the house by the side of the road.\"",
   ]},

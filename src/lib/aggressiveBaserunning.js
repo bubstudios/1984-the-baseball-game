@@ -1,4 +1,4 @@
-// Aggressive baserunning logic — batter stretching hits into extra bases.
+// Aggressive baserunning logic - batter stretching hits into extra bases.
 // Research-based frequencies (1980s era, more aggressive than modern baseball):
 //
 // BATTER STRETCHING:
@@ -22,11 +22,11 @@ import { pickLine, STRETCH_SUCCESS_LINES,
  * @param {object} batter - batter player object (needs .speed and .name)
  * @param {number} ofArm - best outfield arm rating (1-10)
  * @returns {{type: string, text?: string}} result
- *   - {type: 'none'} — no stretch attempted
- *   - {type: 'caught', text} — thrown out (caller removes from base, records out)
- *   - {type: 'safe_double', text} — safe at 2nd (caller moves batter 1st→2nd)
- *   - {type: 'safe_triple', text} — safe at 3rd (caller moves batter 2nd→3rd)
- *   - {type: 'inside_park_hr', text} — inside-the-park HR (caller scores run, credits HR)
+ *   - {type: 'none'} - no stretch attempted
+ *   - {type: 'caught', text} - thrown out (caller removes from base, records out)
+ *   - {type: 'safe_double', text} - safe at 2nd (caller moves batter 1st→2nd)
+ *   - {type: 'safe_triple', text} - safe at 3rd (caller moves batter 2nd→3rd)
+ *   - {type: 'inside_park_hr', text} - inside-the-park HR (caller scores run, credits HR)
  */
 export function checkBatterStretch(hitType, batter, ofArm) {
   const speed = batter.speed || 5;
@@ -60,7 +60,7 @@ export function checkBatterStretch(hitType, batter, ofArm) {
     const outPool = hitType === 'single' ? STRETCH_SINGLE_DOUBLE_OUT_LINES
       : hitType === 'double' ? STRETCH_DOUBLE_TRIPLE_OUT_LINES
       : STRETCH_TRIPLE_HR_OUT_LINES;
-    return { type: 'caught', text: `❌ ${batter.name} — ${pickLine(outPool)}` };
+    return { type: 'caught', text: `❌ ${batter.name} - ${pickLine(outPool)}` };
   }
 
   if (hitType === 'single') {

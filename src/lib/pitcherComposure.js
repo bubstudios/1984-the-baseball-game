@@ -127,7 +127,7 @@ export function applyEventDelta(composureState, eventType, leverage = 1.0) {
    const sensitivity = volatility / 5.0;  // 0.2–2.0x
    let applied = delta * sensitivity;
 
-   // Apply leverage multiplier (situational scaling) — ALL negative events
+   // Apply leverage multiplier (situational scaling) - ALL negative events
    applied = applied * leverage;
 
    // Debug logging (set pitcher.debug=true to enable)
@@ -193,15 +193,15 @@ export function applyEventDelta(composureState, eventType, leverage = 1.0) {
 
   let scoreSitWeight = 1.0;
   if (diff <= -2) {
-    scoreSitWeight = 0.5;  // Pitching team already well behind — garbage time
+    scoreSitWeight = 0.5;  // Pitching team already well behind - garbage time
   } else if (diff === -1) {
-    scoreSitWeight = 0.9;  // Pitching team down by 1 — muted (already trailing)
+    scoreSitWeight = 0.9;  // Pitching team down by 1 - muted (already trailing)
   } else if (diff === 0) {
-    scoreSitWeight = 1.0;  // Tied game — neutral (blown-lead penalty handled separately by applyLeadChangePenalty)
+    scoreSitWeight = 1.0;  // Tied game - neutral (blown-lead penalty handled separately by applyLeadChangePenalty)
   } else if (diff === 1) {
-    scoreSitWeight = 0.9;  // Pitching team STILL ahead by 1 — sting, but muted
+    scoreSitWeight = 0.9;  // Pitching team STILL ahead by 1 - sting, but muted
   } else if (diff >= 2) {
-    scoreSitWeight = 0.6;  // Pitching team comfortably ahead — low leverage
+    scoreSitWeight = 0.6;  // Pitching team comfortably ahead - low leverage
   }
 
   return inningWeight * scoreSitWeight;
@@ -274,10 +274,10 @@ function getRecoveryMode(composureState, gameState) {
   const leadState = gameState._pitcherLeadState || 'ahead';  // 'ahead', 'tied', 'behind'
   
   if (leadState === 'behind' && gameState._just_lost_lead) {
-    return 'none';  // Just blew it — no recovery
+    return 'none';  // Just blew it - no recovery
   }
   if (leadState === 'behind') {
-    return 'muted';  // Trailing — slow recovery
+    return 'muted';  // Trailing - slow recovery
   }
   return 'normal';  // Ahead or tied
 }

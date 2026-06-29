@@ -1,6 +1,6 @@
 import { getPitcherFatigue } from './gameEngine';
 
-// 6 pitcher injury types — equal weight
+// 6 pitcher injury types - equal weight
 export const PITCHER_INJURY_TYPES = [
   { id: 'shoulder_soreness', name: 'Shoulder Soreness', emoji: '💪' },
   { id: 'elbow_soreness', name: 'Elbow Soreness', emoji: '💪' },
@@ -52,7 +52,7 @@ export function checkPitcherInjury(prevState, newState) {
       pitcherName: pitcherObj.name,
     };
 
-    newState.log.push({ type: 'injury', text: `🚑 ${pitcherObj.name} is done — ${injury.name}!` });
+    newState.log.push({ type: 'injury', text: `🚑 ${pitcherObj.name} is done - ${injury.name}!` });
   }
 
   return newState;

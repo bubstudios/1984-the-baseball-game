@@ -188,7 +188,7 @@ export function checkExtendedTeamAchievements(teamKey, userWon, userScore, stadi
   if (userWon && maxDeficit > 0) unlockFn(`${teamKey}_comeback`);
   if (userHitsAll >= config.hits) unlockFn(`${teamKey}_${config.hits}_hits`);
   if (userScore === 0 && !userWon) { /* opponent scored 0 = user shutout */ }
-  // Shutout: opponent scored 0 (but we need opponentScore — check via the caller)
+  // Shutout: opponent scored 0 (but we need opponentScore - check via the caller)
   // Actually shutout is when the USER's pitcher allows 0 runs, meaning opponentScore === 0
   // We'll handle this in the caller
   if (allSB >= config.sb) unlockFn(`${teamKey}_${config.sb}_sb`);

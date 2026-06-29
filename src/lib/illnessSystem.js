@@ -1,4 +1,4 @@
-// 6 illness types — equal weight, 1% chance per player on roster
+// 6 illness types - equal weight, 1% chance per player on roster
 export const ILLNESS_TYPES = [
   { id: 'flu', name: 'Flu-Like Symptoms', emoji: '🤒' },
   { id: 'stomach', name: 'Stomach Issues', emoji: '🤢' },

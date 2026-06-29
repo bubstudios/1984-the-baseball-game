@@ -42,7 +42,7 @@ function formatTime(minutes) {
 }
 
 function formatDate(dateStr) {
-  if (!dateStr) return '—';
+  if (!dateStr) return '-';
   try {
     const d = new Date(dateStr);
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -129,7 +129,7 @@ export default function Scorecard() {
         </div>
       ) : (
         <>
-          {/* Career Summary — stat grid */}
+          {/* Career Summary - stat grid */}
           <div className="grid grid-cols-3 gap-2">
             <StatCard icon={<Trophy className="w-4 h-4" />} label="Wins" value={wins} color="emerald" />
             <StatCard icon={<TrendingUp className="w-4 h-4" />} label="Losses" value={losses} color="rose" />

@@ -1,4 +1,4 @@
-// Beanball Engine — HBP, retaliation, celebrations, collisions, brawls
+// Beanball Engine - HBP, retaliation, celebrations, collisions, brawls
 // Tracks game-wide tension and fires contextual events
 
 // ── Beanball Context (mutates gameState._beanball) ──
@@ -48,11 +48,11 @@ export function shouldFistPump(pitcher, wasBigK = false) {
 
 // ── HBP Context Reasons ──
 const HBP_REASONS = {
-  revengeHR: { baseChance: 0.15, tensionAdd: 40, label: 'Revenge — homered off him earlier' },
-  revengeHRTeammate: { baseChance: 0.10, tensionAdd: 25, label: 'Frustration — previous batter homered' },
-  frustration: { baseChance: 0.08, tensionAdd: 20, label: 'Frustration — rough inning' },
-  retaliation: { baseChance: 0.25, tensionAdd: 50, label: 'Retaliation — payback for hitting their guy' },
-  celebration: { baseChance: 0.12, tensionAdd: 30, label: 'Revenge — excessive celebration' },
+  revengeHR: { baseChance: 0.15, tensionAdd: 40, label: 'Revenge - homered off him earlier' },
+  revengeHRTeammate: { baseChance: 0.10, tensionAdd: 25, label: 'Frustration - previous batter homered' },
+  frustration: { baseChance: 0.08, tensionAdd: 20, label: 'Frustration - rough inning' },
+  retaliation: { baseChance: 0.25, tensionAdd: 50, label: 'Retaliation - payback for hitting their guy' },
+  celebration: { baseChance: 0.12, tensionAdd: 30, label: 'Revenge - excessive celebration' },
   random: { baseChance: 0.02, tensionAdd: 5, label: 'Got away from him' },
 };
 
@@ -63,7 +63,7 @@ export function shouldThrowAtBatter(state, pitcher, batter) {
   // Don't bean in close games with 2 outs unless tension is sky-high
   if (state.outs >= 2 && ctx.tension < 60) return null;
   
-  // After warnings, any HBP = ejection — much lower chance
+  // After warnings, any HBP = ejection - much lower chance
   const warningMult = ctx.warningIssued ? 0.15 : 1.0;
   
   // Check each reason
@@ -100,7 +100,7 @@ export function shouldThrowAtBatter(state, pitcher, batter) {
   // 6. Random (always possible but very low)
   reasons.push(HBP_REASONS.random);
 
-  // Roll each reason — first one that hits triggers
+  // Roll each reason - first one that hits triggers
   for (const reason of reasons) {
     const adjustedChance = reason.baseChance * warningMult * (1 + ctx.tension / 100);
     if (Math.random() < Math.min(adjustedChance, 0.18)) {
@@ -201,7 +201,7 @@ export function checkHomePlateCollision(state, runner, catcher) {
   
   if (Math.random() < collisionChance) {
     ctx.collisions++;
-    addTension(state, 35, `Collision at home — ${runner.name.split(' ').pop()} and ${catcher.name.split(' ').pop()}`);
+    addTension(state, 35, `Collision at home - ${runner.name.split(' ').pop()} and ${catcher.name.split(' ').pop()}`);
     return {
       type: 'homePlate',
       runner: runner.name,

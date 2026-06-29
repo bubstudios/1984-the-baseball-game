@@ -1,4 +1,4 @@
-// Universal batted-ball announcer calls — mixed by contact type and outcome
+// Universal batted-ball announcer calls - mixed by contact type and outcome
 
 export const WEAK_CONTACT = [
   'A little dribbler toward third.',
@@ -311,7 +311,7 @@ export const SINGLES = [
   'A low, hard liner falls safely.',
   'The defense reacts quickly, but the ball is already down.',
   'He hits it on the nose and settles for one base.',
-  // Balls near the line or between outfielders — held to a single
+  // Balls near the line or between outfielders - held to a single
   'He sends it toward the gap, but the defense cuts it off quickly.',
   'The ball gets between the outfielders, but not far enough for two.',
   'A shot near the line is played quickly, holding him at first.',
@@ -392,7 +392,7 @@ export const DOUBLES = [
   'He turns on the inside pitch and drives it into the corner.',
   'A fair ball just inside the line becomes an extra-base hit.',
   'He sends it down the chalk and pulls into second with a double.',
-  // Hit between outfielders — does not reach the wall
+  // Hit between outfielders - does not reach the wall
   'He drives it between the outfielders for a double.',
   'The ball lands in the gap, and he races into second.',
   'A well-placed shot splits the defense.',
@@ -418,7 +418,7 @@ export const DOUBLES = [
   'A hard shot splits the defense without reaching the fence.',
   'He finds the gap and takes second without a play.',
   'The ball lands between the outfielders, and he settles for two.',
-  // Hit between outfielders — reaches the wall
+  // Hit between outfielders - reaches the wall
   'He drives it between the outfielders and all the way to the wall.',
   'The ball splits the defense and rolls to the fence.',
   'He sends one deep into the gap for a double.',
@@ -444,7 +444,7 @@ export const DOUBLES = [
   'A deep gapper leaves the defense chasing it to the fence.',
   'He drives it where the outfielders cannot reach it, and it rolls to the wall.',
   'The ball splits the defense cleanly and produces a comfortable double.',
-  // Hit over an outfielder\'s head — reaches the wall
+  // Hit over an outfielder\'s head - reaches the wall
   'He drives it over the outfielder\'s head and to the wall.',
   'The ball sails beyond the defender and bounces against the fence.',
   'He gets it over the defense for a double.',
@@ -614,10 +614,10 @@ export const HOME_RUNS = [
   'A home run for the Cubs!',
   // Vin Scully (Dodgers) signature
   'She is gone!',
-  'A high drive into deep left field—she is gone!',
+  'A high drive into deep left field-she is gone!',
   'He hit it a mile.',
-  'Gone—and the Dodgers take the lead.',
-  'That ball is carrying, carrying—and gone.',
+  'Gone-and the Dodgers take the lead.',
+  'That ball is carrying, carrying-and gone.',
   'Forget it. That one is out of here.',
   // Ernie Harwell (Tigers) signature
   'That ball is long gone!',
@@ -628,8 +628,8 @@ export const HOME_RUNS = [
   'He hit that one where nobody could catch it.',
   // Bob Uecker (Brewers) signature
   'Get up! Get up! Get outta here! Gone!',
-  'Get up! Get outta here—and gone!',
-  'That one is back—and it is gone!',
+  'Get up! Get outta here-and gone!',
+  'That one is back-and it is gone!',
   'He got all of that one!',
   'Way back! Goodbye!',
   'That ball will not be coming back.',
@@ -637,19 +637,19 @@ export const HOME_RUNS = [
   'That ball is outta here!',
   'Long drive! That ball is outta here!',
   'It is gone! A home run!',
-  'Deep to left field—outta here!',
+  'Deep to left field-outta here!',
   'He has just tied this ballgame!',
   'That ball is well hit, and it is outta here!',
   // Dave Niehaus (Mariners) signature
   'Fly, fly away!',
   'That ball will fly, fly away!',
-  'A deep drive—and goodbye baseball!',
+  'A deep drive-and goodbye baseball!',
   'That one is gone!',
   'My, oh my! What a shot!',
   'He sends it into the seats!',
   // Ken Harrelson (White Sox) signature
-  'You can put it on the board—yes!',
-  'You can put it on the booooard—yes!',
+  'You can put it on the board-yes!',
+  'You can put it on the booooard-yes!',
   'Stretch! Stretch! Get on back there!',
   'Mercy!',
   'He absolutely crushed it!',

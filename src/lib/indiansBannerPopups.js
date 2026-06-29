@@ -51,7 +51,7 @@ export const INDIANS_BANNERS = [
     exhibit: 'Lake Erie\'s Cold Winds',
     icon: '❄️',
     animation: 'heritage_shine',
-    description: 'Lake Erie\'s icy winds sweep across Municipal Stadium, making April and September games brutally cold. Home runs sail differently here—sometimes aided, sometimes cut short by the lake wind.'
+    description: 'Lake Erie\'s icy winds sweep across Municipal Stadium, making April and September games brutally cold. Home runs sail differently here-sometimes aided, sometimes cut short by the lake wind.'
   },
   {
     id: 'ind_cleveland_grit',
@@ -59,7 +59,7 @@ export const INDIANS_BANNERS = [
     exhibit: 'Steel City Spirit',
     icon: '🏭',
     animation: 'heritage_shine',
-    description: 'Cleveland is a steel and manufacturing town, a blue-collar city with gritty determination. The Indians reflect that spirit—hardworking, tough, and refusing to quit.'
+    description: 'Cleveland is a steel and manufacturing town, a blue-collar city with gritty determination. The Indians reflect that spirit-hardworking, tough, and refusing to quit.'
   },
   {
     id: 'ind_rock_roll',
@@ -85,7 +85,7 @@ export const INDIANS_BANNERS = [
     exhibit: 'Drought Dreams',
     icon: '📉',
     animation: 'enthusiasm_nod',
-    description: 'The Indians haven\'t won a pennant since 1954—30 years of heartbreak. Fans dream of breaking that curse, of seeing October baseball return to Cleveland.'
+    description: 'The Indians haven\'t won a pennant since 1954-30 years of heartbreak. Fans dream of breaking that curse, of seeing October baseball return to Cleveland.'
   },
   {
     id: 'ind_city_pride',

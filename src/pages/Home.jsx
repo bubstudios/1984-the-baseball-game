@@ -202,7 +202,7 @@ export default function Home() {
     migrateLegacyStorage();
   }, []);
 
-  // Robot announcer — use stadium's lead announcer voice
+  // Robot announcer - use stadium's lead announcer voice
   const announcerName = homeTeam && TEAM_TO_FLAVOR[homeTeam]
     ? STADIUM_FLAVOR[TEAM_TO_FLAVOR[homeTeam]]?.announcers?.[0]
     : null;
@@ -235,16 +235,16 @@ export default function Home() {
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
     if (umpire) {
-      state.log.push({ type: 'info', text: `👨‍⚖️ Home plate umpire: ${umpire.name} — "${umpire.nick}"` });
+      state.log.push({ type: 'info', text: `👨‍⚖️ Home plate umpire: ${umpire.name} - "${umpire.nick}"` });
       state.log.push({ type: 'info', text: `   ${umpire.pregameLine}` });
     }
     if (weather) {
-      state.log.push({ type: 'info', text: `🌤 ${weather.summary} — ${weather.date}` });
+      state.log.push({ type: 'info', text: `🌤 ${weather.summary} - ${weather.date}` });
       if (weather.effects.length > 0) {
         weather.effects.forEach(e => state.log.push({ type: 'info', text: `   ${e}` }));
       }
     }
-    state.log.push({ type: 'info', text: `Top of inning 1 — ${awayName} batting` });
+    state.log.push({ type: 'info', text: `Top of inning 1 - ${awayName} batting` });
     setGameState(state);
     setLineupPhase(null);
     gameStartTimeRef.current = Date.now();
@@ -354,11 +354,11 @@ export default function Home() {
     // Umpire warnings
     if (gameState._beanballWarning && !beanballEvent) {
       // Clear the flag and show warning
-      setBeanballEvent({ type: 'warning', text: getWarningCall(homeTeam), subtext: `Tension at ${gameState._beanball?.tension || 0}% — both dugouts warned` });
+      setBeanballEvent({ type: 'warning', text: getWarningCall(homeTeam), subtext: `Tension at ${gameState._beanball?.tension || 0}% - both dugouts warned` });
       setGameState(prev => prev ? { ...prev, _beanballWarning: false } : prev);
     }
 
-    // Check for pitcher ejections — prompt user for replacement
+    // Check for pitcher ejections - prompt user for replacement
     if (gameState._pendingEjectionReplacement && !ejectionResult) {
       const ejectedSide = gameState._beanball?.autoEjectionSide;
       const isUserTeam = ejectedSide === 'home' && userTeam === gameState.homeTeam || ejectedSide === 'away' && userTeam === gameState.awayTeam;
@@ -367,7 +367,7 @@ export default function Home() {
         const bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
         setEjectionResult({ ejectedSide, bullpen });
       } else {
-        // CPU team ejection — auto-select best reliever
+        // CPU team ejection - auto-select best reliever
         const bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
         if (bullpen && bullpen.length > 0) {
           const sorted = [...bullpen].sort((a, b) => b.control - a.control);
@@ -381,7 +381,7 @@ export default function Home() {
 
 
 
-    // Pitcher injury — alert first, then modal/auto-replace on dismiss
+    // Pitcher injury - alert first, then modal/auto-replace on dismiss
     if (gameState._pendingPitcherInjury && !injuryAlert && !pitcherInjury) {
       const injury = gameState._pendingPitcherInjury;
       const teamKey = injury.side === 'home' ? gameState.homeTeam : gameState.awayTeam;
@@ -389,7 +389,7 @@ export default function Home() {
       return;
     }
 
-    // Batter injury — alert first, then modal/auto-replace on dismiss
+    // Batter injury - alert first, then modal/auto-replace on dismiss
     if (gameState._pendingBatterInjury && !injuryAlert && !batterInjury) {
       const injury = gameState._pendingBatterInjury;
       const teamKey = injury.side === 'home' ? gameState.homeTeam : gameState.awayTeam;
@@ -397,7 +397,7 @@ export default function Home() {
       return;
     }
 
-    // Runner injury — alert first, then modal/auto-replace on dismiss
+    // Runner injury - alert first, then modal/auto-replace on dismiss
     if (gameState._pendingRunnerInjury && !injuryAlert && !runnerInjury) {
       const injury = gameState._pendingRunnerInjury;
       const teamKey = injury.side === 'home' ? gameState.homeTeam : gameState.awayTeam;
@@ -405,7 +405,7 @@ export default function Home() {
       return;
     }
 
-    // Sliding injury — alert first, then modal/auto-replace on dismiss
+    // Sliding injury - alert first, then modal/auto-replace on dismiss
     if (gameState._pendingSlidingInjury && !injuryAlert && !slidingInjury) {
       const injury = gameState._pendingSlidingInjury;
       const teamKey = injury.side === 'home' ? gameState.homeTeam : gameState.awayTeam;
@@ -413,7 +413,7 @@ export default function Home() {
       return;
     }
 
-    // Fielder injury — alert first, then modal/auto-replace on dismiss
+    // Fielder injury - alert first, then modal/auto-replace on dismiss
     if (gameState._pendingFielderInjury && !injuryAlert && !fielderInjury) {
       const injury = gameState._pendingFielderInjury;
       const teamKey = injury.side === 'home' ? gameState.homeTeam : gameState.awayTeam;
@@ -421,7 +421,7 @@ export default function Home() {
       return;
     }
 
-    // Ballpark Event Handler — Award card if bobblehead
+    // Ballpark Event Handler - Award card if bobblehead
     if (ballparkEvent && ballparkEvent.id === 'homestand_bobblehead' && !cardAward) {
       try {
         loadFromStorage(homeTeam);
@@ -536,10 +536,10 @@ export default function Home() {
     */
 
     // Game-over: handler path processes achievements via finally block.
-    // No need to double-process here — trackGameCompleted is not idempotent.
+    // No need to double-process here - trackGameCompleted is not idempotent.
   }, [gameState]);
 
-  // Celebration bubble from game engine — route to inline banner
+  // Celebration bubble from game engine - route to inline banner
   useEffect(() => {
     if (gameState?._celebrationBubble && gameState._celebrationBubble !== prevCelebrationBubble.current) {
       prevCelebrationBubble.current = gameState._celebrationBubble;
@@ -548,7 +548,7 @@ export default function Home() {
     }
   }, [gameState]);
 
-  // CPU pinch-hit pre-check — apply the substitution BEFORE the user throws a pitch
+  // CPU pinch-hit pre-check - apply the substitution BEFORE the user throws a pitch
   // so the pinch-hitter is visible on screen and the user can decide on a pitching change.
   // The existing pinch-hit gate inside processAtBat acts as a fallback if this doesn't fire.
   useEffect(() => {
@@ -570,7 +570,7 @@ export default function Home() {
     checkForArgumentLogic(gameState);
   }, [gameState, homeTeam, awayTeam]);
 
-  // Ballpark events — separate effect (not blocked by prevLastPlay consumption in main effect)
+  // Ballpark events - separate effect (not blocked by prevLastPlay consumption in main effect)
   useEffect(() => {
     if (!gameState || gameState.gameOver || !gameState.lastPlay) return;
     if (gameState.lastPlay === prevBallparkPlay.current) return;
@@ -597,7 +597,7 @@ export default function Home() {
     const severity = state.lastPlay ? getArgumentSeverity(state.lastPlay, state, state._argTopicCounts) : null;
 
     if (!severity) {
-      // No play argument — maybe just a random dugout chirp
+      // No play argument - maybe just a random dugout chirp
       const chirp = maybeDugoutChirp(state);
       if (chirp) {
         // Chirps can come from either dugout
@@ -706,19 +706,19 @@ export default function Home() {
         return newCount;
       });
     } else {
-      // Non-ejection argument — log it
+      // Non-ejection argument - log it
       const cmt = getEjectionCommentary(arguingTeamKey, result);
       state = { ...state, log: [...state.log, { type: 'info', text: `🗣️ ${cmt}` }] };
     }
 
-    // Show the animation — use the arguing team's key for correct commentary
+    // Show the animation - use the arguing team's key for correct commentary
     setArgumentResult({ ...result, homeTeamKey: arguingTeamKey });
   }, [homeTeam, awayTeam]);
 
   // ── Game-over achievement processing (called from effect AND play handlers) ──
   const processGameOver = useCallback((state) => {
     if (!state || !state.gameOver) return;
-    // Use state.userTeam (set at game start) instead of React closure — more reliable
+    // Use state.userTeam (set at game start) instead of React closure - more reliable
     const effectiveUserTeam = state.userTeam || userTeam;
     const userSide = state.homeTeam === effectiveUserTeam ? 'home' : 'away';
     const opponentSide = userSide === 'home' ? 'away' : 'home';
@@ -735,7 +735,7 @@ export default function Home() {
     const isHomeGame = userSide === 'home';
     const stadium = gameStadium || TEAMS[state.homeTeam]?.stadium || null;
 
-    // Run stats tracking and achievements independently — one failure shouldn't block the other
+    // Run stats tracking and achievements independently - one failure shouldn't block the other
     try { trackGameCompleted(userWon, userTeam, opponentTeam, stadium, userHits, oppHits, isHomeGame); } catch (e) { console.error('trackGameCompleted failed:', e); }
     try { trackGameEndTime(); } catch (e) { console.error('trackGameEndTime failed:', e); }
     try { checkTeamAchievements(); } catch (e) { console.error('checkTeamAchievements failed:', e); }
@@ -824,7 +824,7 @@ export default function Home() {
        if (afterSubs.gameOver) endingState = afterSubs;
        setGameState(afterSubs);
 
-       // Process ballpark events — check if a giveaway event occurred
+       // Process ballpark events - check if a giveaway event occurred
        if (afterSubs._ballparkEvent && afterSubs._ballparkEvent.awardCard) {
          try {
            loadFromStorage(userTeam);
@@ -842,16 +842,16 @@ export default function Home() {
          } catch (e) { console.error('ballpark card award failed:', e); }
        }
 
-       // Batter injury — 2% chance on every swing
+       // Batter injury - 2% chance on every swing
        checkBatterInjury(updatedState, afterSubs);
 
-       // Runner injury — 2% chance when a runner moves
+       // Runner injury - 2% chance when a runner moves
        checkRunnerInjury(updatedState, afterSubs);
 
-       // Sliding injury — 7%/14% chance on slides
+       // Sliding injury - 7%/14% chance on slides
        checkSlidingInjury(updatedState, afterSubs);
 
-       // Fielder injury — 3%/10%/14% on diving stops/catches/collisions
+       // Fielder injury - 3%/10%/14% on diving stops/catches/collisions
        checkFielderInjury(updatedState, afterSubs);
 
     } catch (e) {
@@ -880,7 +880,7 @@ export default function Home() {
       if (afterSubs.gameOver) endingState = afterSubs;
       setGameState(afterSubs);
 
-      // Process ballpark events — check if a giveaway event occurred
+      // Process ballpark events - check if a giveaway event occurred
       if (afterSubs._ballparkEvent && afterSubs._ballparkEvent.awardCard) {
         try {
           loadFromStorage(userTeam);
@@ -898,16 +898,16 @@ export default function Home() {
         } catch (e) { console.error('ballpark card award failed:', e); }
       }
 
-      // Batter injury — 2% chance on every swing
+      // Batter injury - 2% chance on every swing
       checkBatterInjury(gameState, afterSubs);
 
-      // Runner injury — 2% chance when a runner moves
+      // Runner injury - 2% chance when a runner moves
       checkRunnerInjury(gameState, afterSubs);
 
-      // Sliding injury — 7%/14% chance on slides
+      // Sliding injury - 7%/14% chance on slides
       checkSlidingInjury(gameState, afterSubs);
 
-      // Fielder injury — 3%/10%/14% on diving stops/catches/collisions
+      // Fielder injury - 3%/10%/14% on diving stops/catches/collisions
       checkFielderInjury(gameState, afterSubs);
 
     } catch (e) {
@@ -937,16 +937,16 @@ export default function Home() {
       if (afterSubs.gameOver) endingState = afterSubs;
       setGameState(afterSubs);
 
-      // Batter injury — 2% chance on every swing (steal attempt = swing)
+      // Batter injury - 2% chance on every swing (steal attempt = swing)
       checkBatterInjury(stealPending, afterSubs);
 
-      // Runner injury — 2% chance when a runner moves (steal attempt)
+      // Runner injury - 2% chance when a runner moves (steal attempt)
       checkRunnerInjury(stealPending, afterSubs);
 
-      // Sliding injury — 7%/14% chance on slides (steal attempt)
+      // Sliding injury - 7%/14% chance on slides (steal attempt)
       checkSlidingInjury(stealPending, afterSubs);
 
-      // Fielder injury — 3%/10%/14% on diving stops/catches/collisions
+      // Fielder injury - 3%/10%/14% on diving stops/catches/collisions
       checkFielderInjury(stealPending, afterSubs);
     } catch (e) {
       console.error('handleSteal error:', e);
@@ -1059,7 +1059,7 @@ export default function Home() {
     // Roll the appropriate injury
     let injury;
     if (isHBP) {
-      // Track HBP count for this batter — chance doubles on 2nd+ HBP
+      // Track HBP count for this batter - chance doubles on 2nd+ HBP
       if (!newState._hbpCounts) newState._hbpCounts = {};
       newState._hbpCounts[batter.name] = (newState._hbpCounts[batter.name] || 0) + 1;
       injury = rollHBPIfBatter(newState._hbpCounts[batter.name]);
@@ -1069,7 +1069,7 @@ export default function Home() {
 
     if (!injury) return newState;
 
-    // Check if batter is still at the plate (at-bat not complete — foul/miss)
+    // Check if batter is still at the plate (at-bat not complete - foul/miss)
     const newBatterIdx = battingSide === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
     const stillAtPlate = prevState.halfInning === newState.halfInning && prevBatterIdx === newBatterIdx;
 
@@ -1091,7 +1091,7 @@ export default function Home() {
       stillAtPlate,
     };
 
-    newState.log.push({ type: 'injury', text: `🚑 ${batter.name} is done — ${injury.name}!` });
+    newState.log.push({ type: 'injury', text: `🚑 ${batter.name} is done - ${injury.name}!` });
 
     return newState;
   };
@@ -1100,10 +1100,10 @@ export default function Home() {
     if (!gameState || !batterInjury) return;
     let newState;
     if (batterInjury.stillAtPlate) {
-      // Batter is still at the plate — pinchHit handles the at-bat swap
+      // Batter is still at the plate - pinchHit handles the at-bat swap
       newState = pinchHit(gameState, chosenPlayer);
     } else {
-      // Batter completed their at-bat — replace directly in the lineup
+      // Batter completed their at-bat - replace directly in the lineup
       newState = replaceInjuredBatter(gameState, batterInjury.batterName, batterInjury.side, chosenPlayer, batterInjury.name);
     }
     delete newState._pendingBatterInjury;
@@ -1149,7 +1149,7 @@ export default function Home() {
       }
     }
 
-    // Roll 2% for each moved runner — first injury only
+    // Roll 2% for each moved runner - first injury only
     for (const runner of movedRunners) {
       const injury = rollRunnerInjury();
       if (injury) {
@@ -1171,7 +1171,7 @@ export default function Home() {
           bench: availableBench,
         };
 
-        newState.log.push({ type: 'injury', text: `🚑 ${runner.name} is done — ${injury.name}!` });
+        newState.log.push({ type: 'injury', text: `🚑 ${runner.name} is done - ${injury.name}!` });
         break;
       }
     }
@@ -1183,10 +1183,10 @@ export default function Home() {
     if (!gameState || !runnerInjury) return;
     let newState;
     if (runnerInjury.baseIndex >= 0) {
-      // Runner is on base — use pinchRun
+      // Runner is on base - use pinchRun
       newState = pinchRun(gameState, runnerInjury.baseIndex, chosenPlayer);
     } else {
-      // Runner scored/was out — replace directly in lineup
+      // Runner scored/was out - replace directly in lineup
       newState = replaceInjuredBatter(gameState, runnerInjury.runnerName, runnerInjury.side, chosenPlayer, runnerInjury.name);
     }
     delete newState._pendingRunnerInjury;
@@ -1242,7 +1242,7 @@ export default function Home() {
       const didSlide = Math.random() < slideChance;
       if (!didSlide) continue;
 
-      // Runner slid — roll sliding injury (7% base, 14% with contact)
+      // Runner slid - roll sliding injury (7% base, 14% with contact)
       const injury = rollSlidingInjury(hasContact);
       if (injury) {
         const teamKey = battingSide === 'home' ? newState.homeTeam : newState.awayTeam;
@@ -1264,7 +1264,7 @@ export default function Home() {
           contact: hasContact,
         };
 
-        newState.log.push({ type: 'injury', text: `🚑 ${runner.name} is done — ${injury.name} on the slide!` });
+        newState.log.push({ type: 'injury', text: `🚑 ${runner.name} is done - ${injury.name} on the slide!` });
         break;
       }
     }
@@ -1326,7 +1326,7 @@ export default function Home() {
     }
     if (!fielder) return newState;
 
-    // Skip pitcher — has its own injury system
+    // Skip pitcher - has its own injury system
     const fielderPos = fielder.assignedPos || fielder.pos;
     if (['SP', 'RP', 'CL'].includes(fielderPos)) return newState;
 
@@ -1354,7 +1354,7 @@ export default function Home() {
       bench: availableBench,
     };
 
-    newState.log.push({ type: 'injury', text: `🚑 ${fielderName} is done — ${injury.name}!` });
+    newState.log.push({ type: 'injury', text: `🚑 ${fielderName} is done - ${injury.name}!` });
     return newState;
   };
 
@@ -1571,12 +1571,12 @@ export default function Home() {
     ? (gameState.halfInning === 'top' ? gameState.homeLineup : gameState.awayLineup)
     : null;
   // Only flag pitcher as needing replacement if DH is off (pitcher was in lineup and removed)
-  // With DH on, the pitcher never bats, so they won't be in the lineup — that's expected
+  // With DH on, the pitcher never bats, so they won't be in the lineup - that's expected
   const pitcherNeedsReplacement = isUserPitching && pitcher && userFieldingLineup && !useDH && pitcher.name
     ? !userFieldingLineup.some(p => p.name === pitcher.name)
     : false;
 
-  // Reach Back — specialty pitch for iconic pitchers
+  // Reach Back - specialty pitch for iconic pitchers
   const pitcherSpecialty = pitcher?.specialty || null;
   const reachBackUses = gameState._reachBackUses || 0;
   const isStarter = pitcher?.pos === 'SP' || pitcher?.assignedPos === 'SP';
@@ -1598,7 +1598,7 @@ export default function Home() {
           <span className="text-sm shrink-0">⚾</span>
           <div className="min-w-0">
             <div className="font-heading text-[11px] text-foreground font-bold truncate">
-              {away?.abbr} {gameState.score.away} — {gameState.score.home} {home?.abbr}
+              {away?.abbr} {gameState.score.away} - {gameState.score.home} {home?.abbr}
             </div>
             <div className="font-heading text-[9px] text-muted-foreground truncate">
               {inningLabel} · {gameStadium || battingTeamName}
@@ -1657,14 +1657,14 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Middle content — single centered column on all screens */}
+      {/* Middle content - single centered column on all screens */}
       <div className="flex-1 overflow-y-auto px-3 md:px-6 py-2 w-full max-w-2xl md:max-w-5xl mx-auto">
         <div className="space-y-2">
             {tab === 'game' && (
               <div className="md:grid md:grid-cols-[2fr_3fr] md:gap-4 space-y-2 md:space-y-0">
                 {/* LEFT column: Scoreboard + Diamond */}
                 <div className="space-y-2">
-                {/* Scoreboard — compact */}
+                {/* Scoreboard - compact */}
                 <div className="bg-card border border-border rounded-lg px-2 py-1.5">
                   <Scoreboard
                     innings={gameState.innings}
@@ -1726,7 +1726,7 @@ export default function Home() {
                 {/* Game Over state */}
                 {gameState.gameOver && (
                   <div className="bg-card border border-primary/30 rounded-xl p-4 text-center space-y-3">
-                    {/* Home win celebration — 1984 accurate */}
+                    {/* Home win celebration - 1984 accurate */}
                     {gameState.score.home > gameState.score.away && (
                       <WinCelebration teamKey={homeTeam} gameState={gameState} isHomeWin={true} />
                     )}
@@ -1750,7 +1750,7 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Achievement popup — flashy overlay */}
+                {/* Achievement popup - flashy overlay */}
                 {showAchievementPopup && newAchievements.length > 0 && (
                   <AchievementPopup
                     achievementIds={newAchievements}
@@ -1811,7 +1811,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Action Panel — pinned to bottom on mobile only */}
+      {/* Action Panel - pinned to bottom on mobile only */}
       {!gameState.gameOver && (
         <div className="shrink-0 border-t border-border bg-card/90 backdrop-blur px-3 py-2 w-full max-w-2xl mx-auto md:hidden">
           <div className="flex items-center justify-center gap-2 mb-1">
@@ -1851,7 +1851,7 @@ export default function Home() {
         />
       )}
 
-      {/* Fan Chirp Toast — teal bubble from the stands */}
+      {/* Fan Chirp Toast - teal bubble from the stands */}
       {gameState && !gameState.gameOver && (
         <FanChirpToast trigger={gameState.log.length} homeTeamKey={homeTeam} />
       )}
@@ -1864,7 +1864,7 @@ export default function Home() {
 
 
 
-      {/* Beanball Banner — HBP, warnings, bat flips, collisions, brawls */}
+      {/* Beanball Banner - HBP, warnings, bat flips, collisions, brawls */}
       {beanballEvent && (
         <BeanballBanner
           event={beanballEvent}
@@ -1903,7 +1903,7 @@ export default function Home() {
 
 
 
-      {/* Injury Alert Modal — shows injury details before replacement */}
+      {/* Injury Alert Modal - shows injury details before replacement */}
       {injuryAlert && (
         <InjuryAlertModal
           injury={injuryAlert.injury}
@@ -1913,7 +1913,7 @@ export default function Home() {
         />
       )}
 
-      {/* Pitcher Injury Modal — user picks replacement from bullpen */}
+      {/* Pitcher Injury Modal - user picks replacement from bullpen */}
       {pitcherInjury && (
         <PitcherInjuryModal
           injury={pitcherInjury}
@@ -1922,7 +1922,7 @@ export default function Home() {
         />
       )}
 
-      {/* Batter Injury Modal — user picks pinch hitter from bench */}
+      {/* Batter Injury Modal - user picks pinch hitter from bench */}
       {batterInjury && (
         <BatterInjuryModal
           injury={batterInjury}
@@ -1931,7 +1931,7 @@ export default function Home() {
         />
       )}
 
-      {/* Runner Injury Modal — user picks pinch runner / replacement */}
+      {/* Runner Injury Modal - user picks pinch runner / replacement */}
       {runnerInjury && (
         <BatterInjuryModal
           injury={runnerInjury}
@@ -1940,7 +1940,7 @@ export default function Home() {
         />
       )}
 
-      {/* Sliding Injury Modal — user picks replacement after slide injury */}
+      {/* Sliding Injury Modal - user picks replacement after slide injury */}
       {slidingInjury && (
         <BatterInjuryModal
           injury={slidingInjury}
@@ -1949,7 +1949,7 @@ export default function Home() {
         />
       )}
 
-      {/* Fielder Injury Modal — user picks replacement after fielding injury */}
+      {/* Fielder Injury Modal - user picks replacement after fielding injury */}
       {fielderInjury && (
         <BatterInjuryModal
           injury={fielderInjury}
@@ -1958,7 +1958,7 @@ export default function Home() {
         />
       )}
 
-      {/* Ejection Replacement Modal — user picks replacement pitcher */}
+      {/* Ejection Replacement Modal - user picks replacement pitcher */}
       {ejectionResult && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-card border border-destructive/50 rounded-xl p-6 max-w-md w-full">
@@ -1984,7 +1984,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Home Run Distance Popup — shows distance for user team HRs */}
+      {/* Home Run Distance Popup - shows distance for user team HRs */}
       {hrDistancePopup && (
         <HomeRunDistancePopup
           distance={hrDistancePopup.distance}
@@ -1994,7 +1994,7 @@ export default function Home() {
         />
       )}
 
-      {/* Card Award Modal — Tigers home win */}
+      {/* Card Award Modal - Tigers home win */}
       {cardAward && (
         <CardAwardModal
           card={cardAward}

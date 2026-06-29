@@ -1,4 +1,4 @@
-// 6 fielder injury types — equal weight
+// 6 fielder injury types - equal weight
 export const FIELDER_INJURY_TYPES = [
   { id: 'shoulder_strain', name: 'Shoulder Strain', emoji: '💪' },
   { id: 'wrist_sprain', name: 'Wrist Sprain', emoji: '✋' },

@@ -32,7 +32,7 @@ function useIsMobile() {
 }
 
 /**
- * MobileGate — wraps the app and blocks access on laptop/tablet screens.
+ * MobileGate - wraps the app and blocks access on laptop/tablet screens.
  * Shows a friendly retro-themed message directing visitors to their phone.
  */
 export default function MobileGate({ children }) {
@@ -70,7 +70,7 @@ export default function MobileGate({ children }) {
         </div>
 
         <p className="text-[10px] text-muted-foreground/50 font-heading uppercase tracking-widest">
-          Step up to the plate — on mobile
+          Step up to the plate - on mobile
         </p>
       </div>
     </div>

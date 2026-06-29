@@ -2,10 +2,10 @@
 // Organized by category and team specificity
 //
 // Categories (matching real 1984 broadcast feel):
-//   sponsor:    60% — product ads, TV shows, movies
-//   community:  20% — local events, public service
-//   charity:    10% — blood drives, fundraisers
-//   team_promo: 10% — upcoming games, promotions
+//   sponsor:    60% - product ads, TV shows, movies
+//   community:  20% - local events, public service
+//   charity:    10% - blood drives, fundraisers
+//   team_promo: 10% - upcoming games, promotions
 
 // ── GENERAL (playable in any stadium) ──
 
@@ -669,16 +669,16 @@ GENERAL_SPONSOR.push(
   "And somewhere, somebody just spilled mustard on their scorecard.",
 );
 
-// Community announcements — generic, playable anywhere
+// Community announcements - generic, playable anywhere
 const GENERAL_COMMUNITY = [
   "The local blood drive continues tomorrow at the community center from 9 AM to 3 PM. All donors receive a free t-shirt and a coupon for a half-gallon of ice cream.",
   "Registration is now open for summer youth baseball leagues. Sign up at your local parks and recreation office. All skill levels welcome, ages 5 through 15.",
-  "The annual downtown street fair is this Saturday from 10 to 6. Live music, food vendors, and a classic car show — free admission for the whole family.",
+  "The annual downtown street fair is this Saturday from 10 to 6. Live music, food vendors, and a classic car show - free admission for the whole family.",
   "The public library's summer reading program kicks off next week. Kids who read ten books earn a free pass to the water park. Stop by any branch to sign up.",
   "The high school band boosters are holding a pancake breakfast this Saturday morning at the school cafeteria. Five dollars gets you all-you-can-eat pancakes and sausage.",
   "The Kiwanis Club reminds you that their annual charity golf tournament is coming up on the 15th. All proceeds benefit the children's hospital.",
   "The local fire department is hosting an open house this Sunday. Bring the kids to see the trucks, meet the firefighters, and learn about fire safety.",
-  "The city parks department needs volunteers for the spring cleanup day next Saturday. Gloves and trash bags provided — just show up at the main pavilion at 8 AM.",
+  "The city parks department needs volunteers for the spring cleanup day next Saturday. Gloves and trash bags provided - just show up at the main pavilion at 8 AM.",
   "The women's auxiliary is hosting a bake sale at the church hall this weekend. All proceeds go to the local food bank.",
   "Congratulations to the Central High baseball team on winning the regional championship. The whole town is proud of you, boys.",
 ];
@@ -692,12 +692,12 @@ const GENERAL_CHARITY = [
   "The Red Cross is holding a CPR training session next Tuesday evening at the fire station. The life you save could be someone you love.",
 ];
 
-// Team promotions — generic
+// Team promotions - generic
 const GENERAL_TEAM_PROMO = [
   "Don't miss Bat Day this Sunday! The first five thousand kids through the gates receive a free Louisville Slugger.",
-  "Fireworks Night is this Friday after the game — stick around for a spectacular show set to music. Ask at the box office for details.",
+  "Fireworks Night is this Friday after the game - stick around for a spectacular show set to music. Ask at the box office for details.",
   "Next homestand features Cap Night and a magnetic schedule giveaway. Check the scorecard for details.",
-  "Family Night tickets are available for every Tuesday home game — four tickets, four hot dogs, four sodas for one low price. Ask at the box office.",
+  "Family Night tickets are available for every Tuesday home game - four tickets, four hot dogs, four sodas for one low price. Ask at the box office.",
 ];
 
 // ── EXPORT: ad pools by team ──
@@ -709,7 +709,7 @@ const AD_CATEGORIES = {
   team_promo: { weight: 0.10, general: GENERAL_TEAM_PROMO },
 };
 
-// Team-specific overrides — each team can have its own ads that mix with general ones
+// Team-specific overrides - each team can have its own ads that mix with general ones
 const TEAM_POOLS = {};
 // These will be populated as users send team-specific ads.
 // Structure: TEAM_POOLS["cubs"] = { sponsor: [...], community: [...], ... }
@@ -751,7 +751,7 @@ export function pickAd(homeTeamKey = null) {
   // Build the pool: team-specific ads first (if any), then general
   let pool = [...categoryConfig.general];
   if (teamPool && teamPool[chosenCategory] && teamPool[chosenCategory].length > 0) {
-    // Mix team ads into the pool — they appear frequently when available
+    // Mix team ads into the pool - they appear frequently when available
     pool = [...pool, ...teamPool[chosenCategory], ...teamPool[chosenCategory]];
   }
 
@@ -996,7 +996,7 @@ const NY_SHARED_CHARITY = [
 registerTeamAds('yankees', 'charity', NY_SHARED_CHARITY);
 registerTeamAds('mets', 'charity', NY_SHARED_CHARITY);
 
-// Shared NY community — landmarks, Broadway, family attractions (both teams)
+// Shared NY community - landmarks, Broadway, family attractions (both teams)
 const NY_SHARED_COMMUNITY = [
   // Landmarks
   "Take a ferry ride and visit the Statue of Liberty this weekend.",
@@ -1062,7 +1062,7 @@ const NY_SHARED_COMMUNITY = [
 registerTeamAds('yankees', 'community', NY_SHARED_COMMUNITY);
 registerTeamAds('mets', 'community', NY_SHARED_COMMUNITY);
 
-// Shared NY sponsor — radio & TV (both teams)
+// Shared NY sponsor - radio & TV (both teams)
 const NY_SHARED_SPONSOR = [
   "Stay tuned after the game for local news and weather updates.",
   "Join us later tonight for sports highlights from around the league.",
@@ -1079,7 +1079,7 @@ registerTeamAds('mets', 'sponsor', [
   "More Mets baseball is coming your way tomorrow evening.",
 ]);
 
-// Phil Rizzuto-style reads — Yankees only
+// Phil Rizzuto-style reads - Yankees only
 registerTeamAds('yankees', 'community', [
   "Holy cow, traffic looks heavy on the Major Deegan today.",
   "If you're heading home through the Bronx, give yourself a little extra time.",
@@ -1134,7 +1134,7 @@ registerTeamAds('padres', 'team_promo', [
   "Bring your Little League team out to a Padres game this summer.",
 ]);
 
-// Shared CA community — Disneyland, Universal, beaches, San Diego, aerospace (both teams)
+// Shared CA community - Disneyland, Universal, beaches, San Diego, aerospace (both teams)
 const CA_SHARED_COMMUNITY = [
   // Disneyland
   "Spend a magical day at Disneyland in Anaheim.",
@@ -1197,7 +1197,7 @@ const CA_SHARED_COMMUNITY = [
   "Another beautiful day beneath the California sun.",
   "The game continues to connect generations of fans.",
   "Summer memories often begin at a ballpark.",
-  "A father and son enjoying a game together—that's baseball.",
+  "A father and son enjoying a game together-that's baseball.",
   "Every game tells a story.",
   "Baseball remains one of America's great traditions.",
   "There is something special about a day at the ballpark.",
@@ -1217,7 +1217,7 @@ const CA_SHARED_COMMUNITY = [
 registerTeamAds('dodgers', 'community', CA_SHARED_COMMUNITY);
 registerTeamAds('padres', 'community', CA_SHARED_COMMUNITY);
 
-// Military & naval flavor — shared but especially Padres territory
+// Military & naval flavor - shared but especially Padres territory
 const CA_SHARED_MILITARY = [
   "We salute the men and women serving at Naval Base San Diego.",
   "Our thanks to military personnel listening throughout Southern California.",
@@ -1352,12 +1352,12 @@ const GENERAL_PSA = [
   "Thank you for being a baseball fan.",
 ];
 
-// Merge PSAs into general community pool — they play everywhere
+// Merge PSAs into general community pool - they play everywhere
 GENERAL_COMMUNITY.push(...GENERAL_PSA);
 
 // ── Rare Easter Egg Ads (#491–500) ──
 
-// Announcer-specific rare reads — registered to their teams
+// Announcer-specific rare reads - registered to their teams
 registerTeamAds('cubs', 'community', [
   "Harry says he's pretty sure he left his scorecard in the seventh inning.",
   "Just want to say hello to little Jimmy Cochrane, who skipped school today to watch his favorite team.",
@@ -1375,14 +1375,14 @@ registerTeamAds('tigers', 'community', [
   "Ernie Harwell says this game reminds him of one he saw thirty years ago.",
 ]);
 
-// Generic heartwarming Easter eggs — playable anywhere
+// Generic heartwarming Easter eggs - playable anywhere
 const EASTER_EGG_FINALE = [
   "The organist appears to know more songs than the announcers.",
   "A fan has reportedly caught three foul balls today. That's a good day.",
   "Someone in the upper deck is keeping score the old-fashioned way.",
   "The hot dog vendor appears to be winning his section by a wide margin.",
   "Somewhere, a youngster is falling in love with baseball for the first time today.",
-  // Ultra-Rare "Announcer Lost the Plot" Reads (<0.05%) — fires once every few hundred games
+  // Ultra-Rare "Announcer Lost the Plot" Reads (<0.05%) - fires once every few hundred games
   "You know, I still don't understand microwave ovens.",
   "My nephew says computers are the future. We'll see.",
   "I accidentally recorded over our vacation tape with a bowling tournament.",
@@ -1405,30 +1405,30 @@ registerTeamAds('reds', 'team_promo', [
   "Join the Reds for Youth Baseball Day next Saturday afternoon.",
   "Little League Night returns to Riverfront Stadium next week.",
   "Reds players will sign autographs this Saturday at the Carew Tower concourse.",
-  "Don't miss Bat Day at Riverfront Stadium — the first 5,000 youngsters receive a free Louisville Slugger.",
-  "Team Photo Day is coming up — check the scorecard for details.",
+  "Don't miss Bat Day at Riverfront Stadium - the first 5,000 youngsters receive a free Louisville Slugger.",
+  "Team Photo Day is coming up - check the scorecard for details.",
   "Reds Baseball Camp registration is now open for ages 8 through 14.",
   "Johnny Bench will appear at a special Big Red Machine autograph event next month.",
 ]);
 
 registerTeamAds('reds', 'sponsor', [
   "Visit your local Skyline Chili and enjoy Cincinnati's favorite three-way.",
-  "Skyline Chili — the official chili of Reds baseball.",
+  "Skyline Chili - the official chili of Reds baseball.",
   "Gold Star Chili invites you to stop in after tonight's game.",
-  "Hudepohl Beer — Cincinnati's own since 1885.",
+  "Hudepohl Beer - Cincinnati's own since 1885.",
   "Enjoy a cold Hudepohl at the ballpark tonight.",
   "WKRP in Cincinnati brings you all the hits, all summer long.",
   "Tune in to WLW 700 for complete Reds coverage throughout the season.",
-  "WLW — the 50,000-watt voice of the Cincinnati Reds.",
-  "Kings Island is now open for the summer season — ride The Beast if you dare.",
+  "WLW - the 50,000-watt voice of the Cincinnati Reds.",
+  "Kings Island is now open for the summer season - ride The Beast if you dare.",
   "Kings Island welcomes families from across the region.",
   "Visit your local Kroger for fresh produce and great deals.",
-  "P&G — bringing quality products to Cincinnati families for over a century.",
-  "Cincinnati Bell — connecting the Queen City.",
+  "P&G - bringing quality products to Cincinnati families for over a century.",
+  "Cincinnati Bell - connecting the Queen City.",
 ]);
 
 registerTeamAds('reds', 'community', [
-  "Visit the Cincinnati Zoo this weekend — home of the world-famous white Bengal tigers.",
+  "Visit the Cincinnati Zoo this weekend - home of the world-famous white Bengal tigers.",
   "The Cincinnati Zoo welcomes visitors all summer long.",
   "Take the family to Kings Island this weekend.",
   "The Beast roller coaster is waiting.",
@@ -1467,32 +1467,32 @@ registerTeamAds('royals', 'team_promo', [
   "Join the Royals for Youth Baseball Day next Saturday afternoon.",
   "Little League Night returns to Royals Stadium next week.",
   "Royals players will sign autographs this Saturday at Crown Center.",
-  "Don't miss Bat Day at Royals Stadium — the first 5,000 youngsters receive a free Louisville Slugger.",
-  "Team Photo Day is coming up — check the scorecard for details.",
+  "Don't miss Bat Day at Royals Stadium - the first 5,000 youngsters receive a free Louisville Slugger.",
+  "Team Photo Day is coming up - check the scorecard for details.",
   "Royals Baseball Camp registration is now open for ages 8 through 14.",
   "George Brett will appear at a special autograph event next month.",
 ]);
 
 registerTeamAds('royals', 'sponsor', [
   "Visit Gates Bar-B-Q and taste Kansas City's finest barbecue.",
-  "Arthur Bryant's Barbeque — a Kansas City tradition since the 1920s.",
+  "Arthur Bryant's Barbeque - a Kansas City tradition since the 1920s.",
   "Stop by Jack Stack Barbecue after tonight's game.",
-  "Boulevard Beer — Kansas City's own, brewed right here in the heartland.",
-  "Russell Stover Candies — proudly made in Kansas City since 1923.",
+  "Boulevard Beer - Kansas City's own, brewed right here in the heartland.",
+  "Russell Stover Candies - proudly made in Kansas City since 1923.",
   "Tune in to WIBW 580 for complete Royals coverage throughout the season.",
   "The Royals Radio Network brings you baseball all across the Midwest.",
-  "Visit your local Hallmark store — Kansas City's own — for cards and gifts.",
-  "Hallmark Cards — when you care enough to send the very best.",
-  "Worlds of Fun is now open for the summer season — ride the Orient Express if you dare.",
+  "Visit your local Hallmark store - Kansas City's own - for cards and gifts.",
+  "Hallmark Cards - when you care enough to send the very best.",
+  "Worlds of Fun is now open for the summer season - ride the Orient Express if you dare.",
   "Worlds of Fun welcomes families from across the region.",
   "Visit your local Price Chopper for fresh produce and great deals.",
-  "Kansas City Power & Light — powering the heartland.",
+  "Kansas City Power & Light - powering the heartland.",
 ]);
 
 registerTeamAds('royals', 'community', [
-  "Visit the Country Club Plaza this weekend — Kansas City's original outdoor shopping district.",
+  "Visit the Country Club Plaza this weekend - Kansas City's original outdoor shopping district.",
   "The Plaza fountains are flowing beautifully this summer.",
-  "Kansas City is the City of Fountains — over 200 throughout the metro area.",
+  "Kansas City is the City of Fountains - over 200 throughout the metro area.",
   "Take the family to Worlds of Fun this weekend.",
   "The Timber Wolf and Orient Express are waiting.",
   "Visit the Kansas City Zoo and see animals from around the world.",
@@ -1503,7 +1503,7 @@ registerTeamAds('royals', 'community', [
   "Tour the Arabia Steamboat Museum and see treasures from the Missouri River.",
   "Walk through the City Market on a Saturday morning.",
   "Fresh produce and local goods every weekend at the City Market.",
-  "Take a drive through Swope Park — one of the largest urban parks in America.",
+  "Take a drive through Swope Park - one of the largest urban parks in America.",
   "Spend a summer evening at Starlight Theatre.",
   "Baseball fans throughout the heartland are enjoying this one.",
   "Greetings to listeners in Kansas, Missouri, Nebraska, and across the Midwest.",
@@ -1524,8 +1524,8 @@ registerTeamAds('royals', 'charity', [
 
 registerTeamAds('phillies', 'team_promo', [
   // Non-bobblehead promos (the bulk of the pool, so homestand banner is rare by dilution)
-  "Free 1984 Phillies team poster — pick yours up at the main gate.",
-  "Youth Baseball Day at Veterans Stadium — kids run the bases after the game.",
+  "Free 1984 Phillies team poster - pick yours up at the main gate.",
+  "Youth Baseball Day at Veterans Stadium - kids run the bases after the game.",
   "Don't miss Bat Day this Sunday! The first five thousand kids through the gates receive a free Louisville Slugger.",
   "Phillies Old-Timers Day returns to Veterans Stadium this weekend.",
   "The Phillies continue their homestand tomorrow night at Veterans Stadium.",
@@ -1535,34 +1535,34 @@ registerTeamAds('phillies', 'team_promo', [
   "Juan Samuel and Glenn Wilson will meet fans at a youth baseball clinic Saturday morning.",
   "Group ticket packages are available for remaining Phillies homestand games.",
   "The Phillies invite Little League teams to attend a special field day at The Vet.",
-  "Eagles season tickets are now on sale — call Veterans Stadium for information.",
-  // Homestand bobblehead banner — appears once in pool (rare among 12 other entries)
-  "The homestand continues tomorrow at Veterans Stadium — come out and join us.",
+  "Eagles season tickets are now on sale - call Veterans Stadium for information.",
+  // Homestand bobblehead banner - appears once in pool (rare among 12 other entries)
+  "The homestand continues tomorrow at Veterans Stadium - come out and join us.",
 ]);
 
 registerTeamAds('phillies', 'sponsor', [
-  "Eagles season tickets are now on sale — call Veterans Stadium for information.",
-  "Tastykake — Philadelphia's own — available throughout Veterans Stadium.",
+  "Eagles season tickets are now on sale - call Veterans Stadium for information.",
+  "Tastykake - Philadelphia's own - available throughout Veterans Stadium.",
   "Tastykake reminds you to save room for dessert.",
   "WCAU 1210 AM brings you every Phillies broadcast, home and away.",
   "Harry Kalas and Richie Ashburn thank you for listening on WCAU.",
-  "PHL-17 brings you Phillies baseball every night — check local listings.",
-  "Ballantine Beer — the official beer of Philadelphia baseball.",
-  "Schmidts Beer of Philadelphia — brewed right here in the city.",
-  "Frank's Black Cherry Wishniak — a South Philadelphia tradition since 1925.",
-  "Horn & Hardart — the original automat — serving Philadelphia since 1902.",
+  "PHL-17 brings you Phillies baseball every night - check local listings.",
+  "Ballantine Beer - the official beer of Philadelphia baseball.",
+  "Schmidts Beer of Philadelphia - brewed right here in the city.",
+  "Frank's Black Cherry Wishniak - a South Philadelphia tradition since 1925.",
+  "Horn & Hardart - the original automat - serving Philadelphia since 1902.",
   "Acme Markets welcomes Phillies fans throughout the Delaware Valley.",
-  "Genuardi's Family Markets — family-owned, Philadelphia-proud.",
+  "Genuardi's Family Markets - family-owned, Philadelphia-proud.",
 ]);
 
 registerTeamAds('phillies', 'community', [
   // Veterans Stadium / Philadelphia lore
-  "Veterans Stadium — South Philadelphia's home since 1971.",
-  "Broad Street — the spine of Philadelphia — runs right past The Vet.",
+  "Veterans Stadium - South Philadelphia's home since 1971.",
+  "Broad Street - the spine of Philadelphia - runs right past The Vet.",
   "South Philadelphia is the home of the original cheesesteak.",
-  "Pat's versus Geno's — Philadelphia's longest-running debate.",
+  "Pat's versus Geno's - Philadelphia's longest-running debate.",
   "The Italian Market on 9th Street is open every morning.",
-  "Visit the Philadelphia Museum of Art this weekend — the steps are famous.",
+  "Visit the Philadelphia Museum of Art this weekend - the steps are famous.",
   "The Liberty Bell and Independence Hall welcome visitors daily.",
   "Penn's Landing on the Delaware River offers summer entertainment all season.",
   "The Philadelphia Zoo in Fairmount Park is one of America's oldest.",
@@ -1572,7 +1572,7 @@ registerTeamAds('phillies', 'community', [
   "Richie Ashburn would like to wish happy birthday to Mrs. Colangelo of Cheltenham.",
   "A birthday greeting to young Michael Fratelli, celebrating his 10th at tonight's game.",
   "Greetings to Phillies fans throughout Pennsylvania, New Jersey, and Delaware.",
-  "South Philly, North Philly, the suburbs — welcome, all of you.",
+  "South Philly, North Philly, the suburbs - welcome, all of you.",
   "The Phillies thank the five-county region for their continued support.",
   "Baseball and Philadelphia have always belonged together.",
 ]);
@@ -1581,7 +1581,7 @@ registerTeamAds('phillies', 'charity', [
   "Phillies Charities supports youth baseball throughout the Delaware Valley.",
   "Registration is open for youth baseball leagues throughout Philadelphia.",
   "Support the Children's Hospital of Philadelphia with your donations.",
-  "CHOP — the Children's Hospital of Philadelphia — counts on community support.",
+  "CHOP - the Children's Hospital of Philadelphia - counts on community support.",
   "The Phillies encourage fans to donate to Philabundance, the regional food bank.",
   "Help feed families in need throughout Philadelphia through Philabundance.",
 ]);
@@ -1590,7 +1590,7 @@ registerTeamAds('phillies', 'charity', [
 
 registerTeamAds('royals', 'community', [
   "Denny Matthews recalls a game from '77 when Brett hit three doubles in one afternoon.",
-  "The fountains are putting on a spectacular show tonight — timed perfectly to the music.",
+  "The fountains are putting on a spectacular show tonight - timed perfectly to the music.",
   "A gentleman in Section 220 has been keeping score since the first pitch of the season.",
   "Someone in the upper deck is grilling in the parking lot on a portable hibachi.",
   "The smell of Arthur Bryant's is drifting across the Truman Sports Complex.",
@@ -1603,14 +1603,14 @@ registerTeamAds('royals', 'community', [
 
 registerTeamAds('expos', 'team_promo', [
   "The Expos continue their homestand tomorrow night at Olympic Stadium.",
-  "Les Expos de Montréal vous remercient de votre soutien — thank you, Montreal!",
+  "Les Expos de Montréal vous remercient de votre soutien - thank you, Montreal!",
   "The first 10,000 fans this Sunday receive a commemorative Expos team poster.",
   "Stop by souvenir stands for your official 1984 Expos yearbook.",
   "Join the Expos for Youth Baseball Day next Saturday afternoon.",
   "Little League Night returns to Olympic Stadium next week.",
   "Tim Raines and Gary Carter will appear at a special fan event this weekend.",
-  "Don't miss Bat Day at Olympic Stadium — the first 5,000 youngsters receive a free Louisville Slugger.",
-  "Team Photo Day is coming up — check the scorecard for details.",
+  "Don't miss Bat Day at Olympic Stadium - the first 5,000 youngsters receive a free Louisville Slugger.",
+  "Team Photo Day is coming up - check the scorecard for details.",
   "Expos Baseball Camp registration is now open for ages 8 through 14.",
   "Gary Carter will sign autographs this Saturday at Place Bonaventure.",
   "Group ticket packages are available for remaining Expos homestand games.",
@@ -1618,89 +1618,89 @@ registerTeamAds('expos', 'team_promo', [
 ]);
 
 registerTeamAds('expos', 'sponsor', [
-  "CKAC Radio Montreal — la voix francophone des Expos.",
+  "CKAC Radio Montreal - la voix francophone des Expos.",
   "Dave Van Horne and Duke Snider thank you for listening to Expos baseball.",
   "Stay tuned to CJAD 800 for complete Expos coverage throughout the season.",
   "The Expos Radio Network brings baseball to fans across Quebec and the Maritimes.",
-  "Molson Canadian — fière commanditaire des Expos de Montréal.",
-  "Dow Brewery — brassée ici à Montréal depuis 1790.",
+  "Molson Canadian - fière commanditaire des Expos de Montréal.",
+  "Dow Brewery - brassée ici à Montréal depuis 1790.",
   "La Brasserie Molson vous invite à profiter du match avec un Molson Canadian.",
-  "Les Ailes de la Mode — pour les vrais partisans des Expos.",
-  "Steinberg's Supermarkets — proudly serving Montreal since 1917.",
+  "Les Ailes de la Mode - pour les vrais partisans des Expos.",
+  "Steinberg's Supermarkets - proudly serving Montreal since 1917.",
   "Eaton's of Montreal invites you to browse their summer collections.",
-  "Pascal Hardware — everything you need for your Montreal home.",
-  "La Caisse Desjardins — la banque coopérative du Québec.",
+  "Pascal Hardware - everything you need for your Montreal home.",
+  "La Caisse Desjardins - la banque coopérative du Québec.",
 ]);
 
 registerTeamAds('expos', 'community', [
   // Olympic Stadium and local landmarks
-  "Bienvenue au Stade Olympique — welcome to Olympic Stadium, home of the Montreal Expos.",
+  "Bienvenue au Stade Olympique - welcome to Olympic Stadium, home of the Montreal Expos.",
   "Olympic Stadium stands as a testament to Montreal's 1976 Summer Games.",
   "The tower of Olympic Stadium is the world's largest inclined tower at 175 meters.",
   "Visit the Olympic Park complex and discover world-class facilities for all ages.",
-  "The Biodôme — soon to open inside the velodrome — will showcase four ecosystems.",
+  "The Biodôme - soon to open inside the velodrome - will showcase four ecosystems.",
   // Montreal neighborhoods and culture
-  "Spend a Sunday morning in Le Plateau-Mont-Royal — the heart of Montreal's artistic soul.",
+  "Spend a Sunday morning in Le Plateau-Mont-Royal - the heart of Montreal's artistic soul.",
   "Stroll through Vieux-Montréal this weekend and experience 350 years of history.",
-  "Visit the Basilique Notre-Dame de Montréal — one of North America's finest churches.",
+  "Visit the Basilique Notre-Dame de Montréal - one of North America's finest churches.",
   "Place Jacques-Cartier in Old Montreal is the city's outdoor living room in summer.",
-  "The Jean-Talon Market in Little Italy is open six days a week — best produce in the city.",
+  "The Jean-Talon Market in Little Italy is open six days a week - best produce in the city.",
   "Atwater Market offers fresh Quebec produce, cheeses, and local specialties.",
   "Take a walk along Rue Sherbrooke and admire Montreal's architectural heritage.",
   "Crescent Street is alive with patios, music, and Montreal's famous summer energy.",
-  "Saint-Denis Street in the Quartier Latin — cafés, bookshops, and Quebec culture.",
+  "Saint-Denis Street in the Quartier Latin - cafés, bookshops, and Quebec culture.",
   // Quebec pride
-  "Les Québécois sont fiers de leurs Expos — a bilingual city and a bilingual team.",
-  "Baseball in two languages — only in Montreal.",
+  "Les Québécois sont fiers de leurs Expos - a bilingual city and a bilingual team.",
+  "Baseball in two languages - only in Montreal.",
   "The Expos represent Quebec on the continental stage. Allez les Expos!",
-  "Tim Raines, Gary Carter, Andre Dawson — this team belongs to Montreal.",
+  "Tim Raines, Gary Carter, Andre Dawson - this team belongs to Montreal.",
   // Community events and local flavor
-  "The International Jazz Festival returns to Montreal this July — free outdoor concerts all week.",
-  "Just for Laughs comedy festival is coming — Montreal becomes the comedy capital of the world.",
-  "Montreal's film festival is one of the world's oldest — celebrating the art of cinema.",
+  "The International Jazz Festival returns to Montreal this July - free outdoor concerts all week.",
+  "Just for Laughs comedy festival is coming - Montreal becomes the comedy capital of the world.",
+  "Montreal's film festival is one of the world's oldest - celebrating the art of cinema.",
   "Enjoy free outdoor concerts at Parc Lafontaine this summer.",
   "The Festival des Films du Monde celebrates international cinema right here in Montreal.",
   "Visit the Musée des Beaux-Arts de Montréal and discover Quebec's artistic tradition.",
   "The McCord Museum on Sherbrooke Street tells the story of Montreal through the ages.",
-  "Take the metro to any station — Montreal's underground city keeps you cool all summer.",
+  "Take the metro to any station - Montreal's underground city keeps you cool all summer.",
   "The Montreal Underground City connects 60 blocks of shops, restaurants, and offices.",
-  "La Main — boulevard Saint-Laurent — divides east and west Montreal and unites them.",
+  "La Main - boulevard Saint-Laurent - divides east and west Montreal and unites them.",
   // Broadcasters and fan culture
-  "Dave Van Horne calls the play — un jeu magnifique pour les partisans des Expos!",
+  "Dave Van Horne calls the play - un jeu magnifique pour les partisans des Expos!",
   "Expos fans know their baseball. This city has lived and breathed the team since 1969.",
   "Greetings to Expos fans listening across Quebec, Ontario, and the Maritimes.",
-  "From Laval to Longueuil, from Quebec City to Sherbrooke — merci aux partisans!",
+  "From Laval to Longueuil, from Quebec City to Sherbrooke - merci aux partisans!",
   "Another beautiful Montreal evening for baseball at the Big Owe.",
-  "The Big O — as some call it — is one of baseball's most distinctive stadiums.",
-  "Denny's of Montreal — open late for Expos fans heading home from the game.",
+  "The Big O - as some call it - is one of baseball's most distinctive stadiums.",
+  "Denny's of Montreal - open late for Expos fans heading home from the game.",
   "The traffic on Autoroute 20 is reportedly moving well tonight.",
-  "Take the Pie-IX metro station directly to Olympic Stadium — fast and efficient.",
-  "Bienvenue à tous les partisans — welcome to all fans joining us tonight.",
+  "Take the Pie-IX metro station directly to Olympic Stadium - fast and efficient.",
+  "Bienvenue à tous les partisans - welcome to all fans joining us tonight.",
   // Quebec food culture
   "After the game, try a classic Montreal smoked meat sandwich at Schwartz's on Saint-Laurent.",
-  "Fairmount Bagel — open 24 hours — makes the best wood-fired bagels in the world.",
-  "St-Viateur Bagels — the great Montreal bagel debate continues. Either way, you win.",
-  "Poutine at La Banquise on Rachel — the classic Quebec comfort food done right.",
-  "A Montreal-style hot dog — steamed bun, fried sausage, coleslaw — is a thing of beauty.",
+  "Fairmount Bagel - open 24 hours - makes the best wood-fired bagels in the world.",
+  "St-Viateur Bagels - the great Montreal bagel debate continues. Either way, you win.",
+  "Poutine at La Banquise on Rachel - the classic Quebec comfort food done right.",
+  "A Montreal-style hot dog - steamed bun, fried sausage, coleslaw - is a thing of beauty.",
 ]);
 
 registerTeamAds('expos', 'charity', [
-  "Les Expos de Montréal soutiennent les jeunes de la communauté — supporting youth in Quebec.",
+  "Les Expos de Montréal soutiennent les jeunes de la communauté - supporting youth in Quebec.",
   "Youth baseball registration is open across the island of Montreal this summer.",
   "Support Little League programs across Quebec this summer.",
   "Expos Community Foundation helps youth baseball thrive across the province.",
-  "Volunteer opportunities with Montreal youth sports programs are available this summer — call your local ligue de baseball.",
+  "Volunteer opportunities with Montreal youth sports programs are available this summer - call your local ligue de baseball.",
   "Help keep baseball strong in Quebec. Sign up to coach a local youth team.",
-  "Donate to your local Montreal community center — keeping youth off the streets and on the diamond.",
+  "Donate to your local Montreal community center - keeping youth off the streets and on the diamond.",
   "The Expos encourage fans to support community organizations throughout Quebec.",
   "La Croix-Rouge canadienne remercie les bénévoles de Montréal pour leur soutien.",
-  "Montreal's food banks need your support — contact Moisson Montréal to donate.",
+  "Montreal's food banks need your support - contact Moisson Montréal to donate.",
 ]);
 
 // ── Reds Easter Eggs ──
 
 registerTeamAds('reds', 'community', [
-  "Joe Nuxhall says he still remembers his first big league pitch — he was 15 years old.",
+  "Joe Nuxhall says he still remembers his first big league pitch - he was 15 years old.",
   "Joe says he once pitched both ends of a doubleheader and still had energy for a chili three-way after.",
   "The organist appears to know every song written since 1869.",
   "A gentleman in Section 314 has now kept score for 43 consecutive innings.",

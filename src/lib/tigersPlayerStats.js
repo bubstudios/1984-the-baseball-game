@@ -1,4 +1,4 @@
-// Tigers Player Stats & Tidbits — 1984 season
+// Tigers Player Stats & Tidbits - 1984 season
 // Used contextually when a specific player is at-bat or on the mound.
 
 const PLAYERS = {
@@ -449,7 +449,7 @@ export function pickTigersPlayerTidbit(playerName) {
 }
 
 /**
- * Pick a random combo line — fires occasionally when any Tigers player is at bat.
+ * Pick a random combo line - fires occasionally when any Tigers player is at bat.
  */
 export function pickTigersComboLine() {
   return COMBO_LINES[Math.floor(Math.random() * COMBO_LINES.length)];

@@ -33,7 +33,7 @@ const ENTRIES = [
     description: 'Stop by Woolworth this weekend and browse candy, toys, school supplies, housewares, and sewing goods.',
     items: ['Candy', 'Toys', 'School Supplies', 'Housewares', 'Sewing Goods'],
     lunchCounter: true,
-    special: 'Grilled Cheese & Soup — $1.99',
+    special: 'Grilled Cheese & Soup - $1.99',
     funFact: 'Woolworth five-and-dime stores were a fixture in American Main Streets for over 100 years.',
   },
   {
@@ -264,7 +264,7 @@ const ENTRIES = [
     description: 'Spend the day at your local shopping center. Visit Sears, JCPenney, Kmart, B. Dalton, Musicland, and Orange Julius.',
     anchor: ['Sears', 'JCPenney', 'Kmart'],
     tenants: ['B. Dalton Booksellers', 'Musicland', 'Orange Julius'],
-    cultural: 'For millions of Americans in 1984, the mall isn\'t just a place to shop—it\'s where the weekend begins.',
+    cultural: 'For millions of Americans in 1984, the mall isn\'t just a place to shop-it\'s where the weekend begins.',
     funFact: 'The shopping mall was the center of American leisure and socializing in the 1980s.',
   },
 ];

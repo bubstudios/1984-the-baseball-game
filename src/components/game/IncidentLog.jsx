@@ -35,7 +35,7 @@ export default function IncidentLog({ gameState }) {
               className={`text-xs border-l-2 pl-2 py-1 ${getIncidentStyle(incident.type)}`}
             >
               <div className="font-heading font-bold text-foreground">
-                {incident.inning ? `${incident.inning}` : '?'} — {incident.title}
+                {incident.inning ? `${incident.inning}` : '?'} - {incident.title}
               </div>
               <div className="text-muted-foreground text-[10px] mt-0.5">{incident.description}</div>
               {incident.consequence && (

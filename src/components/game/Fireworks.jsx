@@ -9,7 +9,7 @@ export default function Fireworks({ trigger, type = 'hr' }) {
       prevTrigger.current = trigger;
 
       if (type === 'hr') {
-        // Home run — burst from center
+        // Home run - burst from center
         confetti({
           particleCount: 120,
           spread: 100,
@@ -34,7 +34,7 @@ export default function Fireworks({ trigger, type = 'hr' }) {
           });
         }, 150);
       } else if (type === 'win') {
-        // Win — extended celebration
+        // Win - extended celebration
         const end = Date.now() + 3000;
         const frame = () => {
           confetti({

@@ -1,7 +1,7 @@
-// Joe Nuxhall & Marty Brennaman — Cincinnati Reds 1984 broadcast lines
+// Joe Nuxhall & Marty Brennaman - Cincinnati Reds 1984 broadcast lines
 // Generic pool: atmosphere, flavor, and between-pitch filler ONLY.
 // No result-describing lines (hits, HRs, strikeouts, walks, base running).
-// Player-specific via pickRedsPlayerLine() — atmosphere only, no play calls.
+// Player-specific via pickRedsPlayerLine() - atmosphere only, no play calls.
 
 export function pickRedsLine() {
   return GENERIC[Math.floor(Math.random() * GENERIC.length)];
@@ -12,7 +12,7 @@ export function pickRedsPlayerLine(playerName) {
     "Dave Concepcion": ["Concepcion makes it look easy.", "Davey still has the glove."],
     "Ron Oester": ["Oester with the sure hands.", "Nothing getting through that infield."],
     "Dave Parker": ["Parker has been a great addition to this lineup.", "The Cobra brings a presence to the batter's box."],
-    "Pete Rose": ["Pete grinding out there, as always.", "Charlie Hustle doing what he does.", "Number 14 — still the hardest worker in baseball.", "He's 43 years old and still playing like a kid.", "Nobody out-hustles Pete Rose.", "He may not have the power anymore, but he'll find a way on base.", "That's why he's the all-time hit king right there."],
+    "Pete Rose": ["Pete grinding out there, as always.", "Charlie Hustle doing what he does.", "Number 14 - still the hardest worker in baseball.", "He's 43 years old and still playing like a kid.", "Nobody out-hustles Pete Rose.", "He may not have the power anymore, but he'll find a way on base.", "That's why he's the all-time hit king right there."],
     "Mario Soto": ["Soto's had a strong year on the mound.", "When Soto's on, he's as tough as anyone."],
     "John Franco": ["Young Franco has a bright future.", "El Presidente coming in from the pen."],
     "Dave Concepcion": ["Concepcion makes it look easy.", "Davey still has the glove."],
@@ -37,7 +37,7 @@ const GENERIC = [
   "This young club plays hard every night.",
   "Pete has them ready to play.",
 
-  // ── Pitching — process, not outcome ──
+  // ── Pitching - process, not outcome ──
   "He's getting ahead of hitters.",
   "He's working quickly tonight.",
   "He's keeping the ball down.",
@@ -69,7 +69,7 @@ const GENERIC = [
   "If you were here in '75 and '76, you know what this town can sound like.",
   "Some of the greatest teams ever played right here.",
   "They set a standard that'll be hard to match.",
-  "Bench, Morgan, Perez — my goodness, what a ballclub that was.",
+  "Bench, Morgan, Perez - my goodness, what a ballclub that was.",
   "Nothing wrong with a bowl of Cincinnati chili before the game.",
   "The chili parlors should be busy tonight.",
   "Hope somebody saved me a three-way at Skyline.",
@@ -83,7 +83,7 @@ const GENERIC = [
   "The turf temperature is reported near 120 degrees.",
   "The symmetry of this stadium makes for fair baseball.",
   "Riverfront was built for both sports but baseball always felt right here.",
-  "The downtown skyline is lighting up — Carew Tower looking grand.",
+  "The downtown skyline is lighting up - Carew Tower looking grand.",
   "Marty, I think this is going to be a good one tonight.",
   "The Reds haven't missed a beat with this young infield.",
   "Pete's got 'em playing aggressive baseball.",

@@ -1,12 +1,12 @@
 // National TV Show Banners (25 shows × 5 popup listings each = 125 total popups)
-// Mixed into all 26 ballparks — prime-time 1983–84 television guide
+// Mixed into all 26 ballparks - prime-time 1983–84 television guide
 // Batch 1 of 4: Miami Vice, Dallas, Dynasty, Simon & Simon
 
 export const NATIONAL_TV_BANNERS = [
   // ── #001 MIAMI VICE ──
   {
     id: 'tvbanner_001',
-    title: '📺 Don\'t miss this week\'s all-new episode of *Miami Vice* — Friday on NBC!',
+    title: '📺 Don\'t miss this week\'s all-new episode of *Miami Vice* - Friday on NBC!',
     subtitle: '(neon-pink-and-teal Art Deco glow; pastel suit, no socks)',
     icon: '📺',
     popups: [
@@ -20,7 +20,7 @@ export const NATIONAL_TV_BANNERS = [
         stars: '**Don Johnson** and **Philip Michael Thomas**',
         guests: '**Charo**, **Scott Baio**, and **Lucille Ball**',
         location: 'Coconut Grove art dealer',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -32,7 +32,7 @@ export const NATIONAL_TV_BANNERS = [
         stars: '**Don Johnson** and **Philip Michael Thomas**',
         guests: '**Mr. T**, **Morgan Fairchild**, and **Rip Taylor**',
         location: 'flamboyant club promoter',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -44,7 +44,7 @@ export const NATIONAL_TV_BANNERS = [
         stars: '**Don Johnson** and **Philip Michael Thomas**',
         guests: '**Edward James Olmos** as Lt. Castillo, **Grace Jones**, **Robert Goulet**, and **Gary Coleman**',
         location: 'street kid who saw too much',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -56,7 +56,7 @@ export const NATIONAL_TV_BANNERS = [
         stars: '**Don Johnson** and **Philip Michael Thomas**',
         guests: '**Joan Collins**, **Wayne Newton** as a casino fixer, and **Charo** (she gets around)',
         location: 'nightclub owner',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -68,7 +68,7 @@ export const NATIONAL_TV_BANNERS = [
         stars: '**Don Johnson** and **Philip Michael Thomas**',
         guests: '**Apollonia**, **Jack Klugman**, and **Abe Vigoda**',
         location: 'retired hitman',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
     achievementId: 'nat_tv_1',
@@ -77,7 +77,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #002 DALLAS ──
   {
     id: 'tvbanner_002',
-    title: '📺 Who\'s scheming now? An all-new *Dallas* — Friday on CBS!',
+    title: '📺 Who\'s scheming now? An all-new *Dallas* - Friday on CBS!',
     subtitle: '(oil derrick; ten-gallon hat; Southfork at sunset)',
     icon: '📺',
     popups: [
@@ -90,7 +90,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'J.R. quietly buys up the notes on a rival\'s offshore leases, but Bobby uncovers the paper trail before the ink is dry.',
         stars: '**Larry Hagman**, **Patrick Duffy**, and **Linda Gray**',
         guests: '**Robert Goulet** as a Gulf Coast wildcatter and **Eva Gaborr** as his sharp-tongued wife',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 2,
@@ -101,7 +101,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Sue Ellen checks into a clinic under a false name, and J.R. spends the hour making sure no one at Ewing Oil finds out why.',
         stars: '**Larry Hagman** and **Linda Gray**',
         guests: '**Morgan Fairchild** as a society reporter and **George Kennedy** as a family doctor with loose lips',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 3,
@@ -112,7 +112,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A long-lost Ewing cousin arrives at Southfork claiming a stake in the ranch, and Miss Ellie demands the truth before the will is read.',
         stars: '**Larry Hagman**, **Patrick Duffy**, and **Barbara Bel Geddes**',
         guests: '**Lana Turner** as a glamorous houseguest who knows the family\'s oldest secret',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 4,
@@ -123,7 +123,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'J.R.\'s latest power play collapses when a senator he\'s bankruptrolled gets cold feet on the courthouse steps.',
         stars: '**Larry Hagman** and **Ken Kercheval**',
         guests: '**Robert Stack** as the wavering senator and **Dyan Cannon** as a lobbyist playing both sides',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 5,
@@ -131,10 +131,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Friday',
         time: '10:00/9:00c',
         network: 'CBS',
-        plot: 'A fire at an Ewing refinery may be sabotage, and Bobby races to find the truth before the insurance men — and J.R. — rewrite the story.',
+        plot: 'A fire at an Ewing refinery may be sabotage, and Bobby races to find the truth before the insurance men - and J.R. - rewrite the story.',
         stars: '**Patrick Duffy** and **Victoria Principal**',
         guests: '**Ernest Borgnine** as a fire marshal and **Stella Stevens** as a refinery foreman\'s widow',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
     ],
     achievementId: 'nat_tv_2',
@@ -143,7 +143,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #003 DYNASTY ──
   {
     id: 'tvbanner_003',
-    title: '📺 The Carringtons are back! An all-new *Dynasty* — Wednesday on ABC!',
+    title: '📺 The Carringtons are back! An all-new *Dynasty* - Wednesday on ABC!',
     subtitle: '(shoulder pads; champagne flute; a slammed limousine door)',
     icon: '📺',
     popups: [
@@ -156,7 +156,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Alexis maneuvers to seize a controlling block of Denver-Carrington stock, and Blake fights back with a secret weapon of his own.',
         stars: '**Linda Evans** and **John Forsythe**',
         guests: '**Ricardo Montalbán** as an oil minister and **Zsa Zsa Gaborr** as a rival socialite',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 2,
@@ -166,7 +166,7 @@ export const NATIONAL_TV_BANNERS = [
         network: 'ABC',
         plot: 'Krystle plans a charity gala while Alexis plots to ruin it in front of all Denver. Starring **Linda Evans** and **Joan Collins**.',
         guests: '**Robert Goulet** as the evening\'s entertainment and **Joan Rivers** as a gossip columnist who knows where the bodies are buried',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 3,
@@ -174,10 +174,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Wednesday',
         time: '10:00/9:00c',
         network: 'ABC',
-        plot: 'A mysterious European arrives claiming to be Alexis\'s first husband — and he hasn\'t aged a day. Or has he been dead all along?',
+        plot: 'A mysterious European arrives claiming to be Alexis\'s first husband - and he hasn\'t aged a day. Or has he been dead all along?',
         stars: '**Joan Collins** and **John Forsythe**',
         guests: '**Roger Moore**-styled charmer **George Hamilton** and **Eartha Kitt** as a fortune teller',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 4,
@@ -187,7 +187,7 @@ export const NATIONAL_TV_BANNERS = [
         network: 'ABC',
         plot: 'Blake\'s offshore deal hangs on one signature, and Alexis owns the pen. Starring **John Forsythe** and **Joan Collins**.',
         guests: '**Lloyd Bridges** as a maritime tycoon and **Dyan Evans** as the woman he never forgot',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 5,
@@ -198,7 +198,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A film crew takes over the lobby, and the leading lady refuses to leave her suite until her ex-husband checks out.',
         stars: '**Connie Sellecca** and **James Brolin**',
         guests: '**Joan Collins** as the diva and **George Hamilton** as the ex who booked the room on purpose',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
     ],
     achievementId: 'nat_tv_3',
@@ -207,7 +207,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #006 SIMON & SIMON ──
   {
     id: 'tvbanner_006',
-    title: '📺 Two brothers, one case — an all-new *Simon & Simon* on CBS!',
+    title: '📺 Two brothers, one case - an all-new *Simon & Simon* on CBS!',
     subtitle: '(beat-up pickup and a sports car; San Diego palms)',
     icon: '📺',
     popups: [
@@ -220,7 +220,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A.J. goes undercover at a yacht club while Rick works the docks, both chasing the same insurance fraud from opposite ends of San Diego Bay.',
         stars: '**Gerald McRaney** and **Jameson Parker**',
         guests: '**Robert Loggia** as the marina owner and **Markie Post**-styled underwriter',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 2,
@@ -231,7 +231,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A country singer hires the brothers to find out who\'s been sabotaging her tour bus before opening night at the county fair.',
         stars: '**Gerald McRaney** and **Jameson Parker**',
         guests: '**Tammy Wynette** as the singer and **Slim Pickens** as a rival promoter',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 3,
@@ -242,7 +242,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Rick\'s poker buddy turns up missing along with a briefcase that several very serious men would like back.',
         stars: '**Gerald McRaney** and **Jameson Parker**',
         guests: '**Robert Conrad** as a casino boss and **Stella Stevens** as the buddy\'s worried sister',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 4,
@@ -250,10 +250,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Thursday',
         time: '9:00/8:00c',
         network: 'CBS',
-        plot: 'When a rival firm — the **Clark & Behh Detective Agency** — keeps beating the Simons to every client in town, Rick and A.J. set a trap to find out who\'s tipping them off. Turns out the competition isn\'t playing fair, and the brothers turn the tables in the last act.',
+        plot: 'When a rival firm - the **Clark & Behh Detective Agency** - keeps beating the Simons to every client in town, Rick and A.J. set a trap to find out who\'s tipping them off. Turns out the competition isn\'t playing fair, and the brothers turn the tables in the last act.',
         stars: '**Gerald McRaney** and **Jameson Parker**',
         guests: '**Tom Bosley** as a rumpled rival P.I. and **Audrey Landers** as the double-dealing receptionist',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 5,
@@ -264,17 +264,17 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Mom Simon insists on tagging along to a stakeout, and promptly cracks the case the boys have been blowing for a week.',
         stars: '**Gerald McRaney**, **Jameson Parker**, and **Mary Carver**',
         guests: '**Eve Arden** as Mom\'s bridge partner and **Abe Vigoda** as a suspect who folds under her questioning',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
     ],
-    easterEgg: '🔍 Hidden Easter egg in popup #4 — the **Clark & Behh Detective Agency** appears (a reference)',
+    easterEgg: '🔍 Hidden Easter egg in popup #4 - the **Clark & Behh Detective Agency** appears (a reference)',
     achievementId: 'nat_tv_4',
   },
 
   // ── #007 MAGNUM, P.I. ──
   {
     id: 'tvbanner_007',
-    title: '📺 Aloha trouble — an all-new *Magnum, P.I.* — Thursday on CBS!',
+    title: '📺 Aloha trouble - an all-new *Magnum, P.I.* - Thursday on CBS!',
     subtitle: '(red Ferrari; Hawaiian shirt; a winking mustache)',
     icon: '📺',
     popups: [
@@ -287,7 +287,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Magnum takes a "simple" bodyguard job that lands him crosswise with Higgins, the lads, and a very angry Doberman named Apollo.',
         stars: '**Tom Selleck** and **John Hillerman**',
         guests: '**Erin Gray** as a nervous heiress and **Cesar Romero** as her smooth uncle',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 2,
@@ -298,7 +298,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'An old Navy buddy surfaces asking for help, then disappears with the Robin\'s Nest wine cellar\'s most valuable bottle.',
         stars: '**Tom Selleck**, **Roger E. Mosley**',
         guests: '**Rick Gould**, **Robert Conrad** as the buddy, and **Catherine Bach** as a lounge singer',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 3,
@@ -306,10 +306,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Thursday',
         time: '8:00/7:00c',
         network: 'CBS',
-        plot: 'Higgins insists his prize roses are being stolen; Magnum insists it\'s nothing — until the gardener turns up tangled in international intrigue.',
+        plot: 'Higgins insists his prize roses are being stolen; Magnum insists it\'s nothing - until the gardener turns up tangled in international intrigue.',
         stars: '**Tom Selleck** and **John Hillerman**',
         guests: '**Patrick Macnee** as a retired spy and **Eva Gaborr** as a baroness with a green thumb',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 4,
@@ -320,7 +320,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'T.C.\'s chopper is "borrowed" for a smuggling run, and Magnum has one day to clear his friend before the feds impound everything.',
         stars: '**Tom Selleck** and **Roger E. Mosley**',
         guests: '**Billy Dee Williams** as a charter pilot and **Pam Grier** as a customs agent',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 5,
@@ -331,7 +331,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A murder mystery weekend at a posh resort turns real when one of the "victims" doesn\'t get up. Magnum and Higgins reluctantly team up.',
         stars: '**Tom Selleck** and **John Hillerman**',
         guests: '**Tom Bosley** as a mystery writer and **Angela Lansbury**-styled sleuth **Stefanie Powers**',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
     ],
     achievementId: 'nat_tv_5',
@@ -340,7 +340,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #008 FAMILY TIES ──
   {
     id: 'tvbanner_008',
-    title: '📺 Sit down with the Keatons — an all-new *Family Ties* — Thursday on NBC!',
+    title: '📺 Sit down with the Keatons - an all-new *Family Ties* - Thursday on NBC!',
     subtitle: '(a Reagan poster on a teenager\'s wall; a briefcase; sweater vest)',
     icon: '📺',
     popups: [
@@ -353,7 +353,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Alex P. Keaton schemes to invest the family vacation fund in a "sure thing," and only Mallory can talk sense to him.',
         stars: '**Michael J. Fox**, **Meredith Baxter Birney**, and **Michael Gross**',
         guests: '**Tom Hanks**-styled wild uncle **Judd Hirsch** and **Geena Davis** as a fast-talking broker',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -364,7 +364,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Steven and Elyse\'s wedding-anniversary plans collide with Alex\'s debate tournament and Mallory\'s fashion show.',
         stars: '**Michael Gross** and **Meredith Baxter Birney**',
         guests: '**Eve Arden** as Elyse\'s mother and **Robert Klein** as Steven\'s old college roommate',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -375,7 +375,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Alex lands a part-time job at a bank and tries to give the manager investment advice on day one.',
         stars: '**Michael J. Fox**',
         guests: '**Charles Durning** as the exasperated manager and **Christine Baranski**-styled teller **Swoosie Kurtz**',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -386,7 +386,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A power outage traps the whole family in the house, and they actually have to talk to each other. Heartwarming chaos ensues.',
         stars: 'The full Keaton clan',
         guests: '**Tom Poston** as a neighbor with a generator and **Doris Roberts** as Grandma',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -397,7 +397,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Mallory brings home a "misunderstood" boyfriend, and Alex appoints himself head of security.',
         stars: '**Michael J. Fox** and **Justine Bateman**',
         guests: '**Scott Baio** as a pre-fame mumbling charmer and **Charo** as his very loud aunt',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
     achievementId: 'nat_tv_6',
@@ -406,7 +406,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #009 MURDER, SHE WROTE ──
   {
     id: 'tvbanner_009',
-    title: '📺 There\'s been a murder in Cabot Cove — an all-new *Murder, She Wrote* — Sunday on CBS!',
+    title: '📺 There\'s been a murder in Cabot Cove - an all-new *Murder, She Wrote* - Sunday on CBS!',
     subtitle: '(a typewriter; a bicycle; a Maine lighthouse)',
     icon: '📺',
     popups: [
@@ -419,7 +419,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A famous chef collapses at the Cabot Cove cook-off, and Jessica notices the prize-winning chowder tastes faintly of foul play.',
         stars: '**Angela Lansbury**',
         guests: '**Vincent Price** as a rival restaurateur and **Eve Arden** as the contest judge',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 2,
@@ -430,7 +430,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'On a book tour in San Francisco, Jessica\'s publisher turns up dead, and the hotel holds a motive.',
         stars: '**Angela Lansbury**',
         guests: '**Roddy McDowall** as a jealous biographer and **Stella Stevens** as the publisher\'s widow',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 3,
@@ -438,10 +438,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Sunday',
         time: '8:00/7:00c',
         network: 'CBS',
-        plot: 'A reunion at Jessica\'s old college reunites her with friends — and one very old grudge that proves fatal.',
+        plot: 'A reunion at Jessica\'s old college reunites her with friends - and one very old grudge that proves fatal.',
         stars: '**Angela Lansbury**',
         guests: '**Jean Stapleton** as a classmate and **Ricardo Montalban** as a visiting professor',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 4,
@@ -452,7 +452,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Sheriff Tupper is baffled when the bank manager vanishes the same night as the night-deposit bag. Jessica bicycles toward the truth.',
         stars: '**Angela Lansbury** and **Tom Bosley**',
         guests: '**Pat Hingle** as the bank\'s owner and **Piper Laurie** as a suspicious teller',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 5,
@@ -463,7 +463,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A theater troupe stages a murder mystery in Cabot Cove, and the prop knife turns out to be very real.',
         stars: '**Angela Lansbury**',
         guests: '**Cesar Romero** as the director and **Anne Baxter** as the fading star who refuses to die quietly',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
     ],
     achievementId: 'nat_tv_7',
@@ -472,7 +472,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #010 CHEERS ──
   {
     id: 'tvbanner_010',
-    title: '📺 Where everybody knows your name — an all-new *Cheers* — Thursday on NBC!',
+    title: '📺 Where everybody knows your name - an all-new *Cheers* - Thursday on NBC!',
     subtitle: '(a frothy mug; a dart board; a neon bar sign)',
     icon: '📺',
     popups: [
@@ -485,7 +485,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Sam bets Diane he can go a full week without flirting with a customer. The bar starts a pool. Nobody bets on Sam.',
         stars: '**Ted Danson** and **Shelley Long**',
         guests: '**Harry Anderson** as a con-man regular and **Markie Post**-styled patron **Julia Duffy**',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -496,7 +496,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Cliff is convinced he\'s about to be named Mailman of the Year, and Norm just wants to finish his beer in peace.',
         stars: '**George Wendt** and **John Ratzenberger**',
         guests: '**Dick Cavett** as a banquet host and **Eve Arden** as Cliff\'s mother',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -507,7 +507,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Coach tries to help Diane study for a poetry exam, and somehow everyone in the bar ends up reciting Keats by closing time.',
         stars: '**Nicholas Colasanto** and **Shelley Long**',
         guests: '**Robert Goulet** as a visiting professor and **Rip Taylor** as a very emotional regular',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -518,7 +518,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A rival bar challenges Cheers to a bowling night, and Carla appoints herself team coach and enforcer.',
         stars: '**Rhea Perlman** and **Ted Danson**',
         guests: '**Jay Thomas** as the rival owner and **Charo** as a ringer Carla recruits off the street',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -529,7 +529,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Sam and Diane get locked in the back office overnight, and the gang outside places increasingly elaborate bets on what\'s happening in there.',
         stars: '**Ted Danson** and **Shelley Long**',
         guests: '**Tom Skerritt** as Diane\'s date left waiting at the bar and **Bea Arthur** as a customer who\'s seen it all',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
     achievementId: 'nat_tv_8',
@@ -538,7 +538,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #011 RIPTIDE ──
   {
     id: 'tvbanner_011',
-    title: '📺 Two detectives, one boat, one robot — an all-new *Riptide* — Tuesday on NBC!',
+    title: '📺 Two detectives, one boat, one robot - an all-new *Riptide* - Tuesday on NBC!',
     subtitle: '(a pink helicopter; a marina; a clunky beige robot named Roboz)',
     icon: '📺',
     popups: [
@@ -551,7 +551,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Cody and Nick take a missing-persons case that leads from the King Harbor docks to a smuggler\'s yacht, while Boz reprograms Roboz to "help."',
         stars: '**Perry King**, **Joe Penny**, and **Thom Bray**',
         guests: '**Heather Thomas** as a runaway heiress and **Robert Davis** as a dock boss',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -562,7 +562,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A surfer is framed for a beachfront robbery, and the only alibi is buried in security footage Boz has to hack before sunrise.',
         stars: '**Perry King** and **Thom Bray**',
         guests: '**Catherine Bach** as the surfer\'s sister and **William Katt** as a crooked lifeguard captain',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -573,7 +573,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'The Screaming Mimi (the pink chopper) gets repossessed mid-case, and the boys have to solve a kidnapping on foot for once.',
         stars: '**Perry King** and **Joe Penny**',
         guests: '**Robert Loggia** as a loan shark and **Markie Post**-styled client **Mary Cadorette**',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -584,7 +584,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Roboz "falls in love" with a high-end security computer, and Boz isn\'t sure whether to be proud or terrified. Comic chaos at a tech expo.',
         stars: '**Thom Bray**',
         guests: '**Eddie Deezen** as a rival programmer and **Charo** as the expo\'s flustered host',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -595,7 +595,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'An old Army buddy of Cody\'s washes up needing help, but his story has more holes than the dock.',
         stars: '**Perry King** and **Joe Penny**',
         guests: '**Robert Conrad** as the buddy and **Pam Grier** as the federal agent on his trail',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
     achievementId: 'nat_tv_9',
@@ -604,7 +604,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #012 IT\'S YOUR MOVE ──
   {
     id: 'tvbanner_012',
-    title: '📺 The kid\'s got a scheme — an all-new *It\'s Your Move* — Saturday on NBC!',
+    title: '📺 The kid\'s got a scheme - an all-new *It\'s Your Move* - Saturday on NBC!',
     subtitle: '(a chess piece; a teenager\'s smirk; a cassette tape)',
     icon: '📺',
     popups: [
@@ -614,10 +614,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Saturday',
         time: '8:30/7:30c',
         network: 'NBC',
-        plot: 'Matt cooks up an elaborate scam to get out of a school project, but his mom\'s new boyfriend — a writer — sees right through it.',
+        plot: 'Matt cooks up an elaborate scam to get out of a school project, but his mom\'s new boyfriend - a writer - sees right through it.',
         stars: '**Jason Bateman** and **Caren Kaye**',
         guests: '**David Garrison** as the boyfriend and **Tracey Gold** as Matt\'s exasperated sister',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -628,7 +628,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Matt forms a fake band to win a talent contest, then has to actually learn an instrument by Friday.',
         stars: '**Jason Bateman**',
         guests: '**Corey Feldman** as a bandmate and **Charo** as the contest judge who isn\'t fooled',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -639,7 +639,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A new kid out-schemes Matt at his own game, and Matt has to decide whether to team up or take him down.',
         stars: '**Jason Bateman**',
         guests: '**Ricky Schroder** as the new kid and **Eve Arden** as the principal who\'s seen every trick',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -650,7 +650,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Matt "borrows" the school\'s PA system to run a pirate radio show, and somehow gets the whole town tuning in.',
         stars: '**Jason Bateman**',
         guests: '**Jamie Farr** as himself and **Jennifer Jason Leigh** as the flustered vice-principal',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -661,7 +661,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Matt tries to play matchmaker for his mom and accidentally books three dates on the same night at the same restaurant.',
         stars: '**Jason Bateman** and **Caren Kaye**',
         guests: '**Robert Goulet**, **Gabe Kaplan**, and **Charles Nelson Reilly** as the three unwitting suitors',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
     achievementId: 'nat_tv_10',
@@ -670,7 +670,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #013 CAGNEY & LACEY ──
   {
     id: 'tvbanner_013',
-    title: '📺 Two cops, one city — an all-new *Cagney & Lacey* — Monday on CBS!',
+    title: '📺 Two cops, one city - an all-new *Cagney & Lacey* - Monday on CBS!',
     subtitle: '(a detective\'s badge; a squad-room coffee pot; the New York skyline)',
     icon: '📺',
     popups: [
@@ -680,10 +680,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Monday',
         time: '10:00/9:00c',
         network: 'CBS',
-        plot: 'Cagney and Lacey work a jewelry-district robbery while juggling a captain who wants the case closed by Friday — facts be damned.',
+        plot: 'Cagney and Lacey work a jewelry-district robbery while juggling a captain who wants the case closed by Friday - facts be damned.',
         stars: '**Sharon Gless** and **Tyne Daly**',
         guests: '**Robert Loggia** as a fence and **Swoosie Kurtz** as a nervous witness',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 2,
@@ -694,7 +694,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A string of break-ins in Lacey\'s own neighborhood gets personal when her family becomes a target.',
         stars: '**Tyne Daly** and **John Karlen**',
         guests: '**Danny Aiello** as a building super and **Olympia Dukakis** as a watchful neighbor',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 3,
@@ -705,7 +705,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Cagney goes undercover at a high-end art gallery, and the case turns on a forgery only she can spot.',
         stars: '**Sharon Gless**',
         guests: '**Roddy McDowall** as the gallery owner and **Stella Stevens** as a collector with a secret',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 4,
@@ -716,7 +716,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A retiring detective\'s last case lands on Cagney and Lacey\'s desk, and he\'s not ready to let it go.',
         stars: '**Sharon Gless** and **Tyne Daly**',
         guests: '**Jack Warden** as the retiring cop and **Doris Roberts** as his wife',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 5,
@@ -727,7 +727,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A witness who only trusts Lacey goes into hiding, and the two detectives have to find her before the wrong people do.',
         stars: '**Tyne Daly** and **Sharon Gless**',
         guests: '**Edward James Olmos** as a tight-lipped informant and **Rosanna Arquette** as the missing witness',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
     ],
     achievementId: 'nat_tv_11',
@@ -736,7 +736,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #014 THE FALL GUY ──
   {
     id: 'tvbanner_014',
-    title: '📺 He\'s the unknown stuntman — an all-new *Fall Guy* — Friday on ABC!',
+    title: '📺 He\'s the unknown stuntman - an all-new *Fall Guy* - Friday on ABC!',
     subtitle: '(a GMC truck flying over cars; a Hollywood clapperboard)',
     icon: '📺',
     popups: [
@@ -749,7 +749,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Colt Seavers takes a bounty job that turns out to be a setup, and the only way out is the biggest stunt of his life.',
         stars: '**Lee Majors**, **Heather Thomas**, and **Douglas Barr**',
         guests: '**Robert Goulet** as a ball-turner and **Markie Post**-styled bondswoman **Jo Ann Pflug**',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 2,
@@ -757,10 +757,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Friday',
         time: '8:00/7:00c',
         network: 'ABC',
-        plot: 'A movie star skips out on a contract, and Colt has to drag him back to the set — through a demolition derby.',
+        plot: 'A movie star skips out on a contract, and Colt has to drag him back to the set - through a demolition derby.',
         stars: '**Lee Majors**',
         guests: '**George Hamilton** as the runaway star and **Catherine Bach** as his stunt double',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 3,
@@ -771,7 +771,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Howie books a "simple" skip trace that lands the whole crew in a smuggling ring at the county fairgrounds.',
         stars: '**Douglas Barr** and **Lee Majors**',
         guests: '**Slim Pickens** as a carnival boss and **Loni Anderson** as a fortune-teller in the know',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 4,
@@ -782,7 +782,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Jody is mistaken for an heiress and kidnapped, and Colt jumps a truck off a pier to get her back.',
         stars: '**Lee Majors**, **Heather Thomas**, and **Douglas Barr**',
         guests: '**Morgan Fairchild** as the heiress and **Morey Conrad** as the real heiress\'s bodyguard',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 5,
@@ -793,7 +793,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Colt\'s old stunt mentor comes out of retirement for one last gag, and it goes wrong in all the right TV ways.',
         stars: '**Lee Majors**',
         guests: '**Ernest Borgnine** as the mentor and **Mickey Rooney** as a penny-pinching producer',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
     ],
     achievementId: 'nat_tv_12',
@@ -802,7 +802,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #015 THE FACTS OF LIFE ──
   {
     id: 'tvbanner_015',
-    title: '📺 You take the good, you take the bad — an all-new *Facts of Life* — Wednesday on NBC!',
+    title: '📺 You take the good, you take the bad - an all-new *Facts of Life* - Wednesday on NBC!',
     subtitle: '(a boarding-school gate; a plate of cookies; Mrs. Garrett\'s apron)',
     icon: '📺',
     popups: [
@@ -815,7 +815,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Blair organizes a charity fashion show. Jo fixes the school van, and Mrs. Garrett tries to keep both of them from quitting before showtime.',
         stars: '**Charlotte Rae**, **Lisa Whelchel**, and **Nancy McKeon**',
         guests: '**Eve Arden** as a visiting headmistress and **Geena Davis** as a guest model',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -826,7 +826,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Tootie lands a part in a local TV commercial and lets the fame go straight to her head for exactly one episode.',
         stars: '**Kim Fields** and **Charlotte Rae**',
         guests: '**Robert Guillaume** as the director and **Charo** as the commercial\'s diva spokeswoman',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -837,7 +837,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Natalie enters a writing contest and accidentally enters everyone\'s secrets along with it.',
         stars: '**Mindy Cohn**',
         guests: '**Tom Poston** as the contest judge and **Doris Roberts** as a nosy alumna',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -848,7 +848,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Jo\'s motorcycle breaks down on the way to a job interview, and Blair offers a ride with strings attached.',
         stars: '**Nancy McKeon** and **Lisa Whelchel**',
         guests: '**Scott Baio** as a mechanic and **Cloris Leachman** as the interviewer',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -859,7 +859,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'The girls plan a surprise party for Mrs. Garrett and nearly burn down the kitchen doing it.',
         stars: 'The whole cast',
         guests: '**Gavin MacLeod** as Mrs. Garrett\'s old flame and **Betty White** as her best friend',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
     achievementId: 'nat_tv_13',
@@ -868,7 +868,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #016 HARDCASTLE AND McCORMICK ──
   {
     id: 'tvbanner_016',
-    title: '📺 A judge, an ex-con, and a fast car — an all-new *Hardcastle and McCormick* — Sunday on ABC!',
+    title: '📺 A judge, an ex-con, and a fast car - an all-new *Hardcastle and McCormick* - Sunday on ABC!',
     subtitle: '(a gavel; the Coyote sports car; a courthouse at dusk)',
     icon: '📺',
     popups: [
@@ -878,10 +878,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Sunday',
         time: '8:00/7:00c',
         network: 'ABC',
-        plot: 'Judge Hardcastle reopens a case he could never close, and McCormick does the driving — straight through a crooked contractor\'s roadblock.',
+        plot: 'Judge Hardcastle reopens a case he could never close, and McCormick does the driving - straight through a crooked contractor\'s roadblock.',
         stars: '**Brian Keith** and **Daniel Hugh Kelly**',
         guests: '**Robert Loggia** as the contractor and **Markie Post**-styled clerk **Mary Cadorette**',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 2,
@@ -889,10 +889,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Sunday',
         time: '8:00/7:00c',
         network: 'ABC',
-        plot: 'A con man Hardcastle once sentenced returns claiming he\'s gone straight — and McCormick, of all people, vouches for him.',
+        plot: 'A con man Hardcastle once sentenced returns claiming he\'s gone straight - and McCormick, of all people, vouches for him.',
         stars: '**Daniel Hugh Kelly** and **Brian Keith**',
         guests: '**Jack Klugman** as the con man and **Stella Stevens** as his alleged mark',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 3,
@@ -903,7 +903,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'The Coyote gets stolen the night before a key stakeout, and the duo borrows the worst possible replacement vehicle.',
         stars: '**Brian Keith** and **Daniel Hugh Kelly**',
         guests: '**Slim Pickens** as a junkyard owner and **Charo** as a witness who only talks while dancing',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 4,
@@ -914,7 +914,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A retired cop friend of Hardcastle\'s turns up dead, and the official ruling doesn\'t sit right with the judge.',
         stars: '**Brian Keith**',
         guests: '**Jack Warden** as a fellow retiree and **Pat Hingle** as a night-lipped chief',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 5,
@@ -925,7 +925,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'McCormick\'s old racing rival resurfaces tangled up in a fixed circuit, and the boys go undercover at the track.',
         stars: '**Daniel Hugh Kelly** and **Brian Keith**',
         guests: '**Robert Conrad** as the rival and **Catherine Bach** as a pit-crew chief',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
     ],
     achievementId: 'nat_tv_14',
@@ -934,7 +934,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #017 ALICE ──
   {
     id: 'tvbanner_017',
-    title: '📺 Kiss my grits — an all-new *Alice* — Sunday on CBS!',
+    title: '📺 Kiss my grits - an all-new *Alice* - Sunday on CBS!',
     subtitle: '(a diner counter; a coffee pot; a pink waitress uniform)',
     icon: '📺',
     popups: [
@@ -947,7 +947,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Mel tries to cut costs at the diner, and the waitresses stage a quiet rebellion involving the slowest service ever.',
         stars: '**Linda Lavin**, **Vic Tayback**, and **Beth Howland**',
         guests: '**Charles Durning** as a health inspector and **Eve Arden** as a demanding regular',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 2,
@@ -958,7 +958,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Flo\'s old flame rolls through Phoenix in an eighteen-wheeler, and the whole diner roils for romance.',
         stars: '**Polly Holliday** and **Linda Lavin**',
         guests: '**Slim Pickens** as the trucker and **Stella Stevens** as his jealous dispatcher',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 3,
@@ -969,7 +969,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Vera accidentally wins a radio contest and has to sing on live air, terrifying everyone including herself.',
         stars: '**Beth Howland**',
         guests: '**Wolfman Jack** as the DJ and **Charo** as a fellow contestant who steals the show',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 4,
@@ -977,10 +977,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Sunday',
         time: '9:30/8:30c',
         network: 'CBS',
-        plot: 'Alice gets a shot at a real singing gig, and Mel — for once — actually tries to help. It goes about how you\'d expect.',
+        plot: 'Alice gets a shot at a real singing gig, and Mel - for once - actually tries to help. It goes about how you\'d expect.',
         stars: '**Linda Lavin** and **Vic Tayback**',
         guests: '**Robert Goulet** as a club owner and **Mel Torme** as himself',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 5,
@@ -991,7 +991,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A film crew wants to shoot a commercial at Mel\'s Diner, and Mel becomes an instant, insufferable "star."',
         stars: '**Vic Tayback** and **Linda Lavin**',
         guests: '**Jamie Farr** as the director and **Doris Roberts** as the agency boss',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
     ],
     achievementId: 'nat_tv_15',
@@ -1000,7 +1000,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #018 KNIGHT RIDER ──
   {
     id: 'tvbanner_018',
-    title: '📺 One man can make a difference — an all-new *Knight Rider* — Sunday on NBC!',
+    title: '📺 One man can make a difference - an all-new *Knight Rider* - Sunday on NBC!',
     subtitle: '(a black Trans Am; a red scanner light; a glowing dashboard)',
     icon: '📺',
     popups: [
@@ -1013,7 +1013,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Michael and KITT go undercover at a desert racing circuit to bust a hijacking ring, but KITT\'s been spotted by a rival supercar.',
         stars: '**David Hasselhoff** and the voice of **William Daniels**',
         guests: '**Robert Davis** as a track boss and **Heather Locklear** as an undercover racer',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -1024,7 +1024,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A scientist is kidnapped along with the plans for a device that could shut KITT down for good.',
         stars: '**David Hasselhoff**',
         guests: '**Ricardo Montalbán** as the villain and **Geena Davis** as the scientist\'s assistant',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -1035,7 +1035,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'KITT develops a "personality glitch" and starts giving Michael sarcastic backtalk at the worst possible moments.',
         stars: '**David Hasselhoff** and the voice of **William Daniels**',
         guests: '**Eddie Deezen** as a hacker and **Charo** as a stranded motorist KITT can\'t stop talking to',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -1043,10 +1043,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Sunday',
         time: '8:00/7:00c',
         network: 'NBC',
-        plot: 'Michael\'s lookalike — a wanted criminal — frames him for a heist, and only KITT can tell the two apart.',
+        plot: 'Michael\'s lookalike - a wanted criminal - frames him for a heist, and only KITT can tell the two apart.',
         stars: '**David Hasselhoff** (in a dual role)',
         guests: '**Robert Conrad** as the detective on his trail and **Morgan Fairchild** as the heist\'s mastermind',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -1057,7 +1057,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A small town is being run off its land by a corrupt sheriff, and Michael rolls in to even the odds.',
         stars: '**David Hasselhoff**',
         guests: '**Slim Pickens** as the sheriff and **Pam Grier** as the town\'s last holdout',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
     achievementId: 'nat_tv_16',
@@ -1066,7 +1066,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #019 WEBSTER ──
   {
     id: 'tvbanner_019',
-    title: '📺 A pint-sized force of nature — an all-new *Webster* — Friday on ABC!',
+    title: '📺 A pint-sized force of nature - an all-new *Webster* - Friday on ABC!',
     subtitle: '(a brownstone staircase; tiny sneakers; a heart-shaped balloon)',
     icon: '📺',
     popups: [
@@ -1079,7 +1079,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Webster decides to run for class president on a platform of "more recess," and George becomes an unwitting campaign manager.',
         stars: '**Emmanuel Lewis**, **Alex Karras**, and **Susan Clark**',
         guests: '**Tom Poston** as the principal and **Charo** as a flamboyant campaign consultant',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 2,
@@ -1090,7 +1090,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A misunderstanding convinces Webster the family is moving away, and he packs a suitcase on the sly.',
         stars: '**Emmanuel Lewis** and **Susan Clark**',
         guests: '**Doris Roberts** as a sympathetic neighbor and **Scatman Crothers** as a wise janitor',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 3,
@@ -1101,7 +1101,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'George\'s old football buddies visit, and Webster turns the brownstone into a training camp for the big charity game.',
         stars: '**Alex Karras** and **Emmanuel Lewis**',
         guests: '**Dick Butkus** and **Lyle Alzado** as the buddies',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 4,
@@ -1112,7 +1112,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Webster invents a "perpetual motion machine" for the science fair that, against all odds, sort of works.',
         stars: '**Emmanuel Lewis** and **Alex Karras**',
         guests: '**Eddie Deezen** as a rival kid genius and **Eve Arden** as the science teacher',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
       {
         num: 5,
@@ -1123,7 +1123,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A snow day traps the family indoors, and Webster organizes the most elaborate indoor scavenger hunt the brownstone has ever seen.',
         stars: 'The whole cast',
         guests: '**Tom Bosley** as the building super and **Betty White** as Aunt Marlowe',
-        slogan: '*ABC — "That Special Feeling, on ABC."*',
+        slogan: '*ABC - "That Special Feeling, on ABC."*',
       },
     ],
     achievementId: 'nat_tv_17',
@@ -1132,7 +1132,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #020 REMINGTON STEELE ──
   {
     id: 'tvbanner_020',
-    title: '📺 She\'s the brains. He\'s the name. An all-new *Remington Steele* — Tuesday on NBC!',
+    title: '📺 She\'s the brains. He\'s the name. An all-new *Remington Steele* - Tuesday on NBC!',
     subtitle: '(a tuxedo; a magnifying glass; a glamorous silhouette)',
     icon: '📺',
     popups: [
@@ -1145,7 +1145,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Laura solves a gallery theft while "Mr. Steele" charms the suspects and takes all the credit, as usual.',
         stars: '**Pierce Brosnan** and **Stephanie Zimbalist**',
         guests: '**Roddy McDowall** as a forger and **Stella Stevens** as a collector',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -1156,7 +1156,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A figure from Steele\'s mysterious past walks into the agency, and Laura finally gets a clue to who he really is.',
         stars: '**Pierce Brosnan** and **Stephanie Zimbalist**',
         guests: '**Patrick Macnee** as an old associate and **Joan Collins** as a woman from Steele\'s history',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -1167,7 +1167,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'On a case aboard a luxury train, a jewel vanishes between stations, and everyone in the dining car is a suspect.',
         stars: '**Stephanie Zimbalist** and **Pierce Brosnan**',
         guests: '**Cesar Romero** as a baron and **Eva Gaborr** as a baroness',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -1178,7 +1178,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Mildred goes undercover as a wealthy widow to draw out a con artist preying on lonely hearts.',
         stars: '**Doris Roberts**',
         guests: '**Robert Goulet** as the smooth con artist and **Audrey Landers** as his accomplice',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -1186,10 +1186,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Tuesday',
         time: '9:00/8:00c',
         network: 'NBC',
-        plot: 'A movie studio hires Steele investigations to find a missing film reel worth a fortune — and worth killing for.',
+        plot: 'A movie studio hires Steele investigations to find a missing film reel worth a fortune - and worth killing for.',
         stars: '**Pierce Brosnan** and **Stephanie Zimbalist**',
         guests: '**George Hamilton** as a fading matinee idol and **Anne Baxter** as a studio executive',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
     achievementId: 'nat_tv_18',
@@ -1198,7 +1198,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #021 HIGHWAY TO HEAVEN ──
   {
     id: 'tvbanner_021',
-    title: '📺 An angel walks the earth — an all-new *Highway to Heaven* — Wednesday on NBC!',
+    title: '📺 An angel walks the earth - an all-new *Highway to Heaven* - Wednesday on NBC!',
     subtitle: '(a country road; a warm glow; a hitchhiker\'s duffel bag)',
     icon: '📺',
     popups: [
@@ -1211,7 +1211,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Jonathan and Mark roll into a town where the high-school baseball team has lost its heart, and a little divine encouragement goes a long way.',
         stars: '**Michael Landon** and **Victor French**',
         guests: '**Gary Coleman** as the team\'s batboy and **Ernest Borgnine** as a gruff coach',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -1222,7 +1222,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A widower has given up on everything, and Jonathan takes a job at his struggling hardware store to remind him why he\'s living for.',
         stars: '**Michael Landon**',
         guests: '**Jack Warden** as the widower and **Doris Roberts** as a kindly customer',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -1233,7 +1233,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Mark butts heads with a runaway teen, and Jonathan helps both of them find their way home.',
         stars: '**Victor French** and **Michael Landon**',
         guests: '**Kristy McNichol** as the runaway and **Eve Arden** as her estranged grandmother',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -1244,7 +1244,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A small-town diner is about to close, and the angel cooks up one last reason for the whole community to come together.',
         stars: '**Michael Landon** and **Victor French**',
         guests: '**Linda Lavin** as the diner owner and **Scatman Crothers** as a regular',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -1255,7 +1255,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Jonathan helps a bitter old veteran reconcile with the son he hasn\'t spoken to in twenty years.',
         stars: '**Michael Landon**',
         guests: '**Lloyd Bridges** as the veteran and **Tom Skerritt** as his son',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
     achievementId: 'nat_tv_19',
@@ -1264,7 +1264,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #022 HILL STREET BLUES ──
   {
     id: 'tvbanner_022',
-    title: '📺 Let\'s be careful out there — an all-new *Hill Street Blues* — Thursday on NBC!',
+    title: '📺 Let\'s be careful out there - an all-new *Hill Street Blues* - Thursday on NBC!',
     subtitle: '(a precinct roll-call room; a rain-slicked city street; a coffee-stained clipboard)',
     icon: '📺',
     popups: [
@@ -1274,10 +1274,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Thursday',
         time: '10:00/9:00c',
         network: 'NBC',
-        plot: 'Roll call brings a city-council crackdown, a hostage standoff, and Belker biting another suspect — all before lunch.',
+        plot: 'Roll call brings a city-council crackdown, a hostage standoff, and Belker biting another suspect - all before lunch.',
         stars: '**Daniel J. Travanti**, **Veronica Hamel**, and **Bruce Weitz**',
         guests: '**Dennis Franz** as a precinct rival and **Barbara Babcock** as a councilwoman',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -1288,7 +1288,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Furillo juggles a delicate union negotiation while Howard\'s emergency action team prepares for a raid nobody asked for.',
         stars: '**Daniel J. Travanti** and **James B. Sikking**',
         guests: '**Pat Hingle** as a union boss and **Olympia Dukakis** as a city mediator',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -1299,7 +1299,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Public defender Joyce Davenport squares off against the D.A. over a case that hits too close to home.',
         stars: '**Veronica Hamel** and **Daniel J. Travanti**',
         guests: '**Jack Warden** as a veteran judge and **Swoosie Kurtz** as a key witness',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -1310,7 +1310,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'LaRue and Washington stake out a numbers racket and end up babysitting the world\'s most talkative informant.',
         stars: '**Kiel Martin** and **Taurean Blacque**',
         guests: '**Danny Aiello** as the informant and **Stella Stevens** as the racket\'s bookkeeper',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -1321,7 +1321,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A blackout throws the whole precinct into chaos, and every officer\'s worst night happens at once.',
         stars: 'The full Hill Street ensemble',
         guests: '**Edward James Olmos** as a power-company foreman and **Doris Roberts** as a frantic 911 caller',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
     achievementId: 'nat_tv_20',
@@ -1330,7 +1330,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #023 KATE & ALLIE ──
   {
     id: 'tvbanner_023',
-    title: '📺 Two friends, one household — an all-new *Kate & Allie* — Monday on CBS!',
+    title: '📺 Two friends, one household - an all-new *Kate & Allie* - Monday on CBS!',
     subtitle: '(a Greenwich Village brownstone; two coffee mugs; a shared grocery list)',
     icon: '📺',
     popups: [
@@ -1343,7 +1343,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Kate lands a big catering job and ropes Allie into a kitchen disaster of epic proportions the night before the event.',
         stars: '**Susan Saint James** and **Jane Curtin**',
         guests: '**Robert Klein** as the demanding client and **Charo** as a rival caterer',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 2,
@@ -1354,7 +1354,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Allie goes on her first date since the divorce, and the kids appoint themselves her chaperones.',
         stars: '**Jane Curtin** and **Susan Saint James**',
         guests: '**Tom Poston** as the nervous date and **Eve Arden** as Allie\'s opinionated mother',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 3,
@@ -1365,7 +1365,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A leak in the apartment forces the whole blended household into one bedroom, and tempers fray fast.',
         stars: '**Susan Saint James** and **Jane Curtin**',
         guests: '**Danny Aiello** as a slow-moving plumber and **Doris Roberts** as the landlady',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 4,
@@ -1376,7 +1376,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Kate\'s ex breezes into town with a new girlfriend, and Kate insists she\'s totally fine with it. She is not.',
         stars: '**Susan Saint James**',
         guests: '**George Hamilton** as the ex and **Morgan Fairchild** as the girlfriend',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 5,
@@ -1387,7 +1387,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'The two friends start a neighborhood business together and discover that mixing friendship and a balance sheet is harder than it looks.',
         stars: '**Jane Curtin** and **Susan Saint James**',
         guests: '**Robert Guillaume** as a small-business advisor and **Swoosie Kurtz** as their first customer',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
     ],
     achievementId: 'nat_tv_21',
@@ -1396,7 +1396,7 @@ export const NATIONAL_TV_BANNERS = [
   // ── #024 NIGHT COURT ──
   {
     id: 'tvbanner_024',
-    title: '📺 Court is now in session — an all-new *Night Court* — Wednesday on NBC!',
+    title: '📺 Court is now in session - an all-new *Night Court* - Wednesday on NBC!',
     subtitle: '(a gavel; a paper-clip chain; a magician\'s deck of cards)',
     icon: '📺',
     popups: [
@@ -1409,7 +1409,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Judge Harry Stone presides over the strangest night yet: a sleepwalking burglar, a stolen mascot costume, and Dan Fielding\'s worst date ever.',
         stars: '**Harry Anderson**, **John Larroquette**, and **Markie Post**',
         guests: '**Charo** as a flamenco dancer cited for "excessive joy" and **Jay Leno**-styled stand-up **Richard Lewis**',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 2,
@@ -1420,7 +1420,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Bull accidentally locks himself, the bailiff\'s keys, and the entire night\'s docket in the holding cell.',
         stars: '**Richard Moll** and **Harry Anderson**',
         guests: '**Tom Poston** as a befuddled locksmith and **Eve Arden** as a stern inspector',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 3,
@@ -1428,10 +1428,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Wednesday',
         time: '9:30/8:30c',
         network: 'NBC',
-        plot: 'A meek file clerk named **Carmie** is hauled in after being pushed one inch too far by a sneering landlord — and the whole courtroom watches mild-mannered Carmie transform into the unstoppable, table-flipping force known as **"Carmage."**',
+        plot: 'A meek file clerk named **Carmie** is hauled in after being pushed one inch too far by a sneering landlord - and the whole courtroom watches mild-mannered Carmie transform into the unstoppable, table-flipping force known as **"Carmage."**',
         stars: '**Harry Anderson** and **John Larroquette**',
         guests: '**Brian Dennehy** as the doomed landlord and **Doris Roberts** as the bewildered public defender',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 4,
@@ -1439,10 +1439,10 @@ export const NATIONAL_TV_BANNERS = [
         day: 'Wednesday',
         time: '9:30/8:30c',
         network: 'NBC',
-        plot: 'A magician on trial keeps making the evidence disappear, and Harry — an amateur conjurer himself — resists a courtroom duel of card tricks.',
+        plot: 'A magician on trial keeps making the evidence disappear, and Harry - an amateur conjurer himself - resists a courtroom duel of card tricks.',
         stars: '**Harry Anderson**',
         guests: '**Doug Henning** as the defendant and **Charo** as a very confused witness',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
       {
         num: 5,
@@ -1453,17 +1453,17 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A blizzard strands the whole court overnight, and Dan tries to talk his way into the only warm office in the building.',
         stars: '**John Larroquette** and **Markie Post**',
         guests: '**Jack Gifford** as a stranded janitor and **Selma Diamond**-styled bailiff **Florence Halop**',
-        slogan: '*NBC — "Be There."*',
+        slogan: '*NBC - "Be There."*',
       },
     ],
-    easterEgg: '✨ Hidden Easter egg in popup #3 — Carmie becomes "Carmage" (a reference)',
+    easterEgg: '✨ Hidden Easter egg in popup #3 - Carmie becomes "Carmage" (a reference)',
     achievementId: 'nat_tv_22',
   },
 
   // ── #025 TRAPPER JOHN, M.D. ──
   {
     id: 'tvbanner_025',
-    title: '📺 Heart and humor at San Francisco Memorial — an all-new *Trapper John, M.D.* — Sunday on CBS!',
+    title: '📺 Heart and humor at San Francisco Memorial - an all-new *Trapper John, M.D.* - Sunday on CBS!',
     subtitle: '(a stethoscope; an ambulance; a hospital corridor)',
     icon: '📺',
     popups: [
@@ -1476,7 +1476,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Trapper and Gonzo clash over how to treat a stubborn patient who happens to be a retired ballplayer refusing surgery before the big charity game.',
         stars: '**Pernell Roberts** and **Gregory Harrison**',
         guests: '**Ernest Borgnine** as the ballplayer and **Madlyn Rhue** as Nurse Bascomb',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 2,
@@ -1487,7 +1487,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A bus crash floods the ER, and the whole staff pulls a double while Gonzo faces his toughest call yet.',
         stars: '**Gregory Harrison** and **Pernell Roberts**',
         guests: '**Pat Hingle** as a bus driver and **Piper Laurie** as a frightened passenger',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 3,
@@ -1498,7 +1498,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Trapper\'s old Army surgical buddy visits with a secret diagnosis he\'s been hiding from everyone.',
         stars: '**Pernell Roberts**',
         guests: '**Lloyd Bridges** as the buddy and **Stella Stevens** as the buddy\'s worried wife',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 4,
@@ -1509,7 +1509,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'A VIP donor demands special treatment, and Trapper reminds the whole hospital that every patient gets the same care.',
         stars: '**Pernell Roberts** and **Charles Siebert**',
         guests: '**George Kennedy** as the donor and **Eva Gaborr** as his wife',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
       {
         num: 5,
@@ -1520,7 +1520,7 @@ export const NATIONAL_TV_BANNERS = [
         plot: 'Gonzo\'s free clinic in the hospital parking lot (his beloved trailer) faces the wrecking ball, and the staff rallies to save it.',
         stars: '**Gregory Harrison** and **Pernell Roberts**',
         guests: '**Scatman Crothers** as a longtime patient and **Doris Roberts** as a hospital administrator',
-        slogan: '*CBS — "We\'ve Got the Touch."*',
+        slogan: '*CBS - "We\'ve Got the Touch."*',
       },
     ],
     achievementId: 'nat_tv_23',
@@ -1528,7 +1528,7 @@ export const NATIONAL_TV_BANNERS = [
 ];
 
 // ── CATEGORY ACHIEVEMENTS (TV SHOWS) ──
-// **[Show] Marathon** — see all 5 popup listings for a given show (×25).
-// **Prime Time '84** — collect all 25 national TV-show banners.
-// **Couch Potato** — see all 125 popup listings across every TV show.
-// **Channel Surfer** (hidden) — discover both Easter eggs: the Clark & Behh Detective Agency (#006-⊗) and Carmie's transformation into "Carmage" (#024-⊗).
+// **[Show] Marathon** - see all 5 popup listings for a given show (×25).
+// **Prime Time '84** - collect all 25 national TV-show banners.
+// **Couch Potato** - see all 125 popup listings across every TV show.
+// **Channel Surfer** (hidden) - discover both Easter eggs: the Clark & Behh Detective Agency (#006-⊗) and Carmie's transformation into "Carmage" (#024-⊗).

@@ -118,7 +118,7 @@ export default function ArgumentsBanner({ result, onDismiss }) {
               {showBasePickup && <div className="text-xs text-destructive/80 mt-1">He's taking the base with him!</div>}
               {showDirt && <div className="text-xs text-destructive/80 mt-1">Dirt kicked all over home plate!</div>}
               {showHat && <div className="text-xs text-destructive/80 mt-1">Hat thrown to the ground!</div>}
-              {result.delayedEjection && <div className="text-xs text-destructive/80 mt-1">The delayed ejection — he just couldn't help himself!</div>}
+              {result.delayedEjection && <div className="text-xs text-destructive/80 mt-1">The delayed ejection - he just couldn't help himself!</div>}
             </div>
           )}
 
@@ -129,11 +129,11 @@ export default function ArgumentsBanner({ result, onDismiss }) {
           <div className="text-xs text-foreground/60 font-heading italic">
             {isFinal
               ? (result.basePickup ? "Crowd goes absolutely wild!" :
-                 result.dirtKick ? "Crowd erupts — dirt everywhere!" :
+                 result.dirtKick ? "Crowd erupts - dirt everywhere!" :
                  result.hatThrow ? "Crowd roars as the cap hits the dirt!" :
-                 result.ejected && result.escaLevel >= 3 ? "Huge ovation — the crowd is on its feet!" :
-                 result.ejected ? "Crowd cheers — the manager is gone!" :
-                 result.escaLevel >= 2 ? "Crowd stirs — this is getting interesting." :
+                 result.ejected && result.escaLevel >= 3 ? "Huge ovation - the crowd is on its feet!" :
+                 result.ejected ? "Crowd cheers - the manager is gone!" :
+                 result.escaLevel >= 2 ? "Crowd stirs - this is getting interesting." :
                  "A few murmurs from the stands.")
               : '...'}
           </div>

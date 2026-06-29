@@ -35,7 +35,7 @@ const STRIKEOUT_LINES = [
   c("That's three!"), c("Back to the dugout!"), c("Nothing doing!"),
   // old school (uncommon)
   c("He couldn't catch up to that one.", 'uncommon'),
-  c("Blew it right by him — strike three.", 'uncommon'),
+  c("Blew it right by him - strike three.", 'uncommon'),
   c("Left him guessing.", 'uncommon'),
   c("Frozen at the plate.", 'uncommon'),
   c("Caught looking.", 'uncommon'),
@@ -43,7 +43,7 @@ const STRIKEOUT_LINES = [
   c("He'll take the slow walk back.", 'uncommon'),
   // rare gems
   c("He'll be seeing that one in his sleep tonight.", 'rare'),
-  c("Not even close — that's a punchout.", 'rare'),
+  c("Not even close - that's a punchout.", 'rare'),
 ];
 
 // =========== WALK ===========
@@ -51,8 +51,8 @@ const WALK_LINES = [
   c("Ball four."), c("Batter awarded first base on the walk."), c("He draws the walk."),
   c("Base on balls."),
   c("Free pass."), c("First class ticket to first base."),
-  c("He'll take it — ball four."), c("Four wide ones."),
-  c("Gift-wrapped first base."), c("No purchase necessary — ball four."),
+  c("He'll take it - ball four."), c("Four wide ones."),
+  c("Gift-wrapped first base."), c("No purchase necessary - ball four."),
   c("The pitcher lost him."),
   c("Showing patience at the plate.", 'uncommon'),
   c("Worked the count and earned it.", 'uncommon'),
@@ -65,41 +65,41 @@ const WALK_LINES = [
 // =========== INTENTIONAL WALK ===========
 const INTENTIONAL_WALK_LINES = [
   c("They're putting him on intentionally."),
-  c("Four wide ones — no intention of pitching to him."),
+  c("Four wide ones - no intention of pitching to him."),
   c("They'd rather face the next guy."),
   c("The free pass is issued."),
-  c("No respect — they're walking him to set up the force.", 'uncommon'),
-  c("Smart baseball — take the bat out of his hands.", 'uncommon'),
+  c("No respect - they're walking him to set up the force.", 'uncommon'),
+  c("Smart baseball - take the bat out of his hands.", 'uncommon'),
 ];
 
-// =========== SINGLE =========== (these are templates — batter name prefixed)
+// =========== SINGLE =========== (these are templates - batter name prefixed)
 const SINGLE_LINES = [
   c("lines a single to left."), c("grounds a single through the hole."),
   c("bloops a single into shallow right."), c("singles sharply up the middle."),
   c("Base hit."), c("Single to center."), c("Sharp single."), c("One-base hit."),
   c("Base knock."), c("A little duck snort falls in.", 'uncommon'),
-  c("A little flare drops in front of the outfielder."), c("That's a seeing-eye single."), c("Single — found some grass."),
-  c("Looper into shallow center — base hit."), c("Drops one in front — single."),
-  c("Base knock — just what the doctor ordered."), c("Clean single."),
-  c("Single — solid piece of hitting.", 'uncommon'),
-  c("Single — hit it where they weren't.", 'uncommon'),
-  c("stayed with the pitch — base hit.", 'uncommon'),
-  c("Single — nice stroke.", 'uncommon'),
+  c("A little flare drops in front of the outfielder."), c("That's a seeing-eye single."), c("Single - found some grass."),
+  c("Looper into shallow center - base hit."), c("Drops one in front - single."),
+  c("Base knock - just what the doctor ordered."), c("Clean single."),
+  c("Single - solid piece of hitting.", 'uncommon'),
+  c("Single - hit it where they weren't.", 'uncommon'),
+  c("stayed with the pitch - base hit.", 'uncommon'),
+  c("Single - nice stroke.", 'uncommon'),
   c("Poked it through the infield.", 'uncommon'),
   c("That's a frozen rope through the hole.", 'rare'),
-  // Universal batted-ball calls — varied contact descriptions
+  // Universal batted-ball calls - varied contact descriptions
   c("A clean base hit up the middle.", 'uncommon'),
   c("A hard single through the left side.", 'uncommon'),
-  c("A line drive the other way — base hit.", 'uncommon'),
-  c("He shoots it toward right field — single.", 'uncommon'),
+  c("A line drive the other way - base hit.", 'uncommon'),
+  c("He shoots it toward right field - single.", 'uncommon'),
   c("A ground ball that splits the middle infielders.", 'uncommon'),
-  c("A hard shot between first and second — base hit.", 'uncommon'),
-  c("A ground ball through the opposite side — he's on with a single.", 'uncommon'),
-  c("A dart toward shortstop — finds the hole.", 'rare'),
-  c("A rope into left-center — base hit.", 'rare'),
+  c("A hard shot between first and second - base hit.", 'uncommon'),
+  c("A ground ball through the opposite side - he's on with a single.", 'uncommon'),
+  c("A dart toward shortstop - finds the hole.", 'rare'),
+  c("A rope into left-center - base hit.", 'rare'),
 ];
 
-// =========== SINGLE — INFIELD HITS ===========
+// =========== SINGLE - INFIELD HITS ===========
 const INFIELD_SINGLE_LINES = [
   c("A slow roller, and he beats the throw to first."),
   c("He chops one into the ground and legs it out."),
@@ -128,7 +128,7 @@ const INFIELD_SINGLE_LINES = [
   c("The ball stays on the infield, but the batter does not."),
 ];
 
-// =========== SINGLE — GROUNDERS THROUGH THE INFIELD ===========
+// =========== SINGLE - GROUNDERS THROUGH THE INFIELD ===========
 const GROUNDER_SINGLE_LINES = [
   c("A ground ball finds its way through for a single."),
   c("He shoots a grounder through the infield."),
@@ -157,7 +157,7 @@ const GROUNDER_SINGLE_LINES = [
   c("A sharply hit grounder becomes a clean base hit."),
 ];
 
-// =========== SINGLE — LINERS THROUGH THE INFIELD ===========
+// =========== SINGLE - LINERS THROUGH THE INFIELD ===========
 const LINER_SINGLE_LINES = [
   c("A line drive shoots through the infield for a single."),
   c("He ropes one into the outfield."),
@@ -186,7 +186,7 @@ const LINER_SINGLE_LINES = [
   c("A hard liner carries safely into the outfield."),
 ];
 
-// =========== SINGLE — BLOOPS BETWEEN THE INFIELD AND OUTFIELD ===========
+// =========== SINGLE - BLOOPS BETWEEN THE INFIELD AND OUTFIELD ===========
 const BLOOP_SINGLE_LINES = [
   c("A soft blooper drops in for a single."),
   c("He lifts a little flare into open grass."),
@@ -215,7 +215,7 @@ const BLOOP_SINGLE_LINES = [
   c("He drops one over the infield for a single."),
 ];
 
-// =========== SINGLE — HARDER-HIT BALLS BETWEEN THE INFIELD AND OUTFIELD ===========
+// =========== SINGLE - HARDER-HIT BALLS BETWEEN THE INFIELD AND OUTFIELD ===========
 const HARD_SHALLOW_SINGLE_LINES = [
   c("A firm shot lands in front of the outfield for a single."),
   c("He drives a low ball into shallow outfield territory."),
@@ -244,7 +244,7 @@ const HARD_SHALLOW_SINGLE_LINES = [
   c("He hits it on the nose and settles for one base."),
 ];
 
-// =========== SINGLE — BALLS NEAR THE LINE OR BETWEEN OUTFIELDERS — HELD TO SINGLE ===========
+// =========== SINGLE - BALLS NEAR THE LINE OR BETWEEN OUTFIELDERS - HELD TO SINGLE ===========
 const HELD_AT_FIRST_SINGLE_LINES = [
   c("He sends it toward the gap, but the defense cuts it off quickly."),
   c("The ball gets between the outfielders, but not far enough for two."),
@@ -279,15 +279,15 @@ const DOUBLE_LINES = [
   c("Two-base hit."), c("Stand-up double."),
   c("Splits the outfielders."), c("Into the alley!"),
   c("That's extra bases."), c("Two bags for him."),
-  c("Double — a gapper."), c("Rattles around the wall."),
-  c("Double — drove it with authority.", 'uncommon'),
+  c("Double - a gapper."), c("Rattles around the wall."),
+  c("Double - drove it with authority.", 'uncommon'),
   c("Shot into the gap.", 'uncommon'),
-  c("Double — that's textbook hitting.", 'uncommon'),
+  c("Double - that's textbook hitting.", 'uncommon'),
   c("He was thinking two all the way.", 'uncommon'),
-  c("One-hopped the wall — easy stand-up double.", 'rare'),
+  c("One-hopped the wall - easy stand-up double.", 'rare'),
 ];
 
-// =========== DOUBLE — STRETCHING A SINGLE ===========
+// =========== DOUBLE - STRETCHING A SINGLE ===========
 const STRETCH_SINGLE_DOUBLE_LINES = [
   c("He rounds first aggressively and beats the throw into second."),
   c("He turns the single into a double with an aggressive sprint."),
@@ -316,7 +316,7 @@ const STRETCH_SINGLE_DOUBLE_LINES = [
   c("He takes advantage of the slow recovery and reaches second standing."),
 ];
 
-// =========== DOUBLE — HIT DOWN THE LINE ===========
+// =========== DOUBLE - HIT DOWN THE LINE ===========
 const LINE_DOUBLE_LINES = [
   c("He shoots the ball down the line for a double."),
   c("A sharp drive hugs the line and rolls into the corner."),
@@ -345,7 +345,7 @@ const LINE_DOUBLE_LINES = [
   c("He sends it down the chalk and pulls into second with a double."),
 ];
 
-// =========== DOUBLE — HIT BETWEEN OUTFIELDERS — DOES NOT REACH WALL ===========
+// =========== DOUBLE - HIT BETWEEN OUTFIELDERS - DOES NOT REACH WALL ===========
 const GAP_DOUBLE_SHORT_LINES = [
   c("He drives it between the outfielders for a double."),
   c("The ball lands in the gap, and he races into second."),
@@ -374,7 +374,7 @@ const GAP_DOUBLE_SHORT_LINES = [
   c("The ball lands between the outfielders, and he settles for two."),
 ];
 
-// =========== DOUBLE — HIT BETWEEN OUTFIELDERS — REACHES WALL ===========
+// =========== DOUBLE - HIT BETWEEN OUTFIELDERS - REACHES WALL ===========
 const GAP_DOUBLE_LONG_LINES = [
   c("He drives it between the outfielders and all the way to the wall."),
   c("The ball splits the defense and rolls to the fence."),
@@ -403,7 +403,7 @@ const GAP_DOUBLE_LONG_LINES = [
   c("The ball splits the defense cleanly and produces a comfortable double."),
 ];
 
-// =========== DOUBLE — HIT OVER OUTFIELDER'S HEAD — REACHES WALL ===========
+// =========== DOUBLE - HIT OVER OUTFIELDER'S HEAD - REACHES WALL ===========
 const OVER_HEAD_DOUBLE_LINES = [
   c("He drives it over the outfielder's head and to the wall."),
   c("The ball sails beyond the defender and bounces against the fence."),
@@ -432,7 +432,7 @@ const OVER_HEAD_DOUBLE_LINES = [
   c("The ball sails overhead, reaches the wall and produces a double."),
 ];
 
-// =========== DOUBLE — BALL HITS WALL ON FLY OR LINE DRIVE ===========
+// =========== DOUBLE - BALL HITS WALL ON FLY OR LINE DRIVE ===========
 const WALL_DOUBLE_LINES = [
   c("He drives it off the wall for a double."),
   c("The ball slams against the fence and stays in play."),
@@ -467,15 +467,15 @@ const TRIPLE_LINES = [
   c("Triple! Wheels!"), c("Triple! He's flying around the bases!"),
   c("Triple city!"), c("Standing on third with three bags."),
   c("Triple! Track meet around the bases."),
-  c("Triple — turned on the jets.", 'uncommon'),
-  c("Triple — excellent baserunning.", 'uncommon'),
-  c("Triple — legged it out.", 'uncommon'),
+  c("Triple - turned on the jets.", 'uncommon'),
+  c("Triple - excellent baserunning.", 'uncommon'),
+  c("Triple - legged it out.", 'uncommon'),
   c("Triple! Hustle from the batter.", 'uncommon'),
   c("Slid into third with a cloud of dust.", 'rare'),
-  c("That's the hardest hit in baseball — a stand-up triple.", 'rare'),
+  c("That's the hardest hit in baseball - a stand-up triple.", 'rare'),
 ];
 
-// =========== TRIPLE — STRETCHING A DOUBLE ===========
+// =========== TRIPLE - STRETCHING A DOUBLE ===========
 const STRETCH_DOUBLE_TRIPLE_LINES = [
   c("He rounds second aggressively and races safely into third."),
   c("He turns the double into a triple with pure hustle."),
@@ -504,7 +504,7 @@ const STRETCH_DOUBLE_TRIPLE_LINES = [
   c("He takes advantage of the slow recovery and reaches third standing."),
 ];
 
-// =========== TRIPLE — BALL SPLITS OUTFIELDERS AND REACHES WALL ===========
+// =========== TRIPLE - BALL SPLITS OUTFIELDERS AND REACHES WALL ===========
 const GAP_TRIPLE_WALL_LINES = [
   c("He drives it between the outfielders and all the way to the wall."),
   c("The ball splits the defense and rolls to the fence."),
@@ -533,7 +533,7 @@ const GAP_TRIPLE_WALL_LINES = [
   c("The ball splits the defense cleanly and produces a stand-up triple."),
 ];
 
-// =========== TRIPLE — BALL OVER OUTFIELDER'S HEAD TO WALL ===========
+// =========== TRIPLE - BALL OVER OUTFIELDER'S HEAD TO WALL ===========
 const OVER_HEAD_TRIPLE_LINES = [
   c("He drives it over the outfielder's head and all the way to the wall."),
   c("The ball sails beyond the defender and bounces toward the fence."),
@@ -562,7 +562,7 @@ const OVER_HEAD_TRIPLE_LINES = [
   c("The ball sails overhead, reaches the wall and produces a triple."),
 ];
 
-// =========== TRIPLE — BALL BOUNCES OFF WALL AND BACK PAST OUTFIELDER ===========
+// =========== TRIPLE - BALL BOUNCES OFF WALL AND BACK PAST OUTFIELDER ===========
 const WALL_BOUNCE_TRIPLE_LINES = [
   c("The ball hits the wall and kicks back past the outfielder."),
   c("It caroms off the fence and rolls away from the defense."),
@@ -593,7 +593,7 @@ const WALL_BOUNCE_TRIPLE_LINES = [
 
 // =========== HOME RUN ===========
 const HOME_RUN_LINES = [
-  c("sends it deep —"), c("Home run."), c("Gone."),
+  c("sends it deep -"), c("Home run."), c("Gone."),
   c("Out of here."), c("He got all of that one."),
   c("Touch 'em all!"), c("Way back and gone!"),
   c("See ya later!"), c("Into the seats!"),
@@ -608,7 +608,7 @@ const HOME_RUN_LINES = [
   c("Somewhere a windshield is in danger.", 'rare'),
   c("That one is halfway to St. Louis.", 'rare'),
   c("Light tower power!", 'rare'),
-  c("Call the highway patrol — that ball is leaving town.", 'rare'),
+  c("Call the highway patrol - that ball is leaving town.", 'rare'),
 ];
 
 // =========== WILD PITCH ===========
@@ -631,24 +631,24 @@ const GROUNDOUT_LINES = [
   c("grounds out to first."),
   c("ground ball to short."), c("routine groundout."),
   c("retired on a ground ball."),
-  c("groundout — an easy hopper."), c("two hops and a throw — groundout."), c("routine as can be — groundout."),
-  c("right at 'em — groundout.", 'uncommon'),
-  c("groundout — nothing doing there.", 'uncommon'),
-  c("groundout — good fundamentals.", 'uncommon'),
-  c("ropes a one-hopper — snared on a hop.", 'rare'),
-  c("a tailor-made double play ball — but only one out.", 'rare'),
+  c("groundout - an easy hopper."), c("two hops and a throw - groundout."), c("routine as can be - groundout."),
+  c("right at 'em - groundout.", 'uncommon'),
+  c("groundout - nothing doing there.", 'uncommon'),
+  c("groundout - good fundamentals.", 'uncommon'),
+  c("ropes a one-hopper - snared on a hop.", 'rare'),
+  c("a tailor-made double play ball - but only one out.", 'rare'),
   // Universal batted-ball calls
-  c("A high chopper toward third — got him.", 'uncommon'),
-  c("A hard one-hopper to second — routine out.", 'uncommon'),
-  c("A slow roller up the first-base line — just not fast enough.", 'uncommon'),
-  c("A little squibber toward first — he's out.", 'uncommon'),
-  c("A ground ball back through the box — pitcher makes the play.", 'uncommon'),
-  c("A sharp grounder to the left side — retires him.", 'uncommon'),
-  c("A big Baltimore chop — third baseman waits and guns him down.", 'rare'),
-  c("A wicked one-hop shot — nice play, groundout.", 'rare'),
+  c("A high chopper toward third - got him.", 'uncommon'),
+  c("A hard one-hopper to second - routine out.", 'uncommon'),
+  c("A slow roller up the first-base line - just not fast enough.", 'uncommon'),
+  c("A little squibber toward first - he's out.", 'uncommon'),
+  c("A ground ball back through the box - pitcher makes the play.", 'uncommon'),
+  c("A sharp grounder to the left side - retires him.", 'uncommon'),
+  c("A big Baltimore chop - third baseman waits and guns him down.", 'rare'),
+  c("A wicked one-hop shot - nice play, groundout.", 'rare'),
 ];
 
-// =========== INFIELD GROUNDOUT — SOFTLY HIT ===========
+// =========== INFIELD GROUNDOUT - SOFTLY HIT ===========
 const SOFT_GROUNDOUT_LINES = [
   c("A soft ground ball is handled for the out."),
   c("He taps one weakly on the infield."),
@@ -682,7 +682,7 @@ const SOFT_GROUNDOUT_LINES = [
   c("He makes contact, but the ball dies on the infield."),
 ];
 
-// =========== INFIELD GROUNDOUT — HARD-HIT ===========
+// =========== INFIELD GROUNDOUT - HARD-HIT ===========
 const HARD_GROUNDOUT_LINES = [
   c("A hard ground ball is handled for the out."),
   c("He smashes one on the ground, but right at the defense."),
@@ -718,25 +718,25 @@ const HARD_GROUNDOUT_LINES = [
 
 // =========== FLYOUT ===========
 const FLYOUT_LINES = [
-  c("flies out to"), c("fly ball to left —"), c("routine flyout —"),
-  c("easy play —"),
-  c("can of corn —"), c("camping under it —"),
-  c("routine fly ball —"),
-  c("easy chance for the outfielder —", 'uncommon'),
-  c("fielder barely had to move —", 'uncommon'),
-  c("routine fly ball —", 'uncommon'),
+  c("flies out to"), c("fly ball to left -"), c("routine flyout -"),
+  c("easy play -"),
+  c("can of corn -"), c("camping under it -"),
+  c("routine fly ball -"),
+  c("easy chance for the outfielder -", 'uncommon'),
+  c("fielder barely had to move -", 'uncommon'),
+  c("routine fly ball -", 'uncommon'),
   // Universal batted-ball calls
-  c("A soft fly ball — right at the center fielder.", 'uncommon'),
-  c("A medium fly ball — routine catch.", 'uncommon'),
-  c("A high fly ball — stays in the park, caught.", 'uncommon'),
-  c("A towering pop-up — fielder settles under it.", 'uncommon'),
-  c("A shallow fly — outfielder charges, makes the play.", 'uncommon'),
-  c("A fly ball hit directly at the outfielder — no play needed.", 'uncommon'),
-  c("A dying quail toward right — outfielder comes in and makes the catch.", 'rare'),
-  c("A towering fly to the warning track — caught at the wall.", 'rare'),
+  c("A soft fly ball - right at the center fielder.", 'uncommon'),
+  c("A medium fly ball - routine catch.", 'uncommon'),
+  c("A high fly ball - stays in the park, caught.", 'uncommon'),
+  c("A towering pop-up - fielder settles under it.", 'uncommon'),
+  c("A shallow fly - outfielder charges, makes the play.", 'uncommon'),
+  c("A fly ball hit directly at the outfielder - no play needed.", 'uncommon'),
+  c("A dying quail toward right - outfielder comes in and makes the catch.", 'rare'),
+  c("A towering fly to the warning track - caught at the wall.", 'rare'),
 ];
 
-// =========== OUTFIELD FLY-OUT — SHALLOW ===========
+// =========== OUTFIELD FLY-OUT - SHALLOW ===========
 const SHALLOW_FLYOUT_LINES = [
   c("A shallow fly ball hangs up for the catch."),
   c("He lifts a soft fly into shallow outfield territory."),
@@ -770,7 +770,7 @@ const SHALLOW_FLYOUT_LINES = [
   c("He lifts a weak one into shallow outfield territory."),
 ];
 
-// =========== OUTFIELD FLY-OUT — MEDIUM ===========
+// =========== OUTFIELD FLY-OUT - MEDIUM ===========
 const MEDIUM_FLYOUT_LINES = [
   c("A routine fly ball is hit to medium depth."),
   c("He sends a fly ball well into the outfield, but it is playable."),
@@ -804,7 +804,7 @@ const MEDIUM_FLYOUT_LINES = [
   c("He gets decent contact, but the defense has it measured."),
 ];
 
-// =========== OUTFIELD FLY-OUT — DEEP ===========
+// =========== OUTFIELD FLY-OUT - DEEP ===========
 const DEEP_FLYOUT_LINES = [
   c("A deep fly ball is caught near the warning track."),
   c("He drives it a long way, but not quite far enough."),
@@ -895,36 +895,36 @@ const END_INNING_LINES = [
   c("The side goes down in order.", 'uncommon'),
   c("Clean inning for the defense.", 'uncommon'),
   c("Nothing across that inning.", 'uncommon'),
-  c("That's a quick one — grab a hot dog.", 'rare'),
+  c("That's a quick one - grab a hot dog.", 'rare'),
 ];
 
 // =========== LINE DRIVE / LINEOUT ===========
 const LINEOUT_LINES = [
   c("lines it right at"), c("smokes one toward"),
-  c("rips a liner — snared by"), c("hard liner to"),
+  c("rips a liner - snared by"), c("hard liner to"),
   c("laser shot right at"),
-  c("lines it — leaping grab by"),
-  c("smokes one — stabbed by"), c("ropes a liner — picked clean by"),
-  c("line drive — caught by", 'uncommon'),
-  c("rips one right on the screws — snared by", 'uncommon'),
+  c("lines it - leaping grab by"),
+  c("smokes one - stabbed by"), c("ropes a liner - picked clean by"),
+  c("line drive - caught by", 'uncommon'),
+  c("rips one right on the screws - snared by", 'uncommon'),
   c("robbed! That was smoked by", 'rare'),
   // Universal batted-ball calls
-  c("A frozen rope — right at", 'uncommon'),
-  c("A scorching line drive — snared by", 'uncommon'),
-  c("A bullet off the bat — caught by", 'uncommon'),
-  c("A vicious liner — snagged by", 'uncommon'),
-  c("A sharp one-hopper — stabbed by", 'rare'),
-  c("A screaming drive — grabbed by", 'rare'),
+  c("A frozen rope - right at", 'uncommon'),
+  c("A scorching line drive - snared by", 'uncommon'),
+  c("A bullet off the bat - caught by", 'uncommon'),
+  c("A vicious liner - snagged by", 'uncommon'),
+  c("A sharp one-hopper - stabbed by", 'rare'),
+  c("A screaming drive - grabbed by", 'rare'),
 ];
 
 // =========== POPOUT ===========
 const POPOUT_LINES = [
-  c("pops it up behind the plate —"), c("Infield pop-up —"),
-  c("pops one up in foul territory —"),
+  c("pops it up behind the plate -"), c("Infield pop-up -"),
+  c("pops one up in foul territory -"),
   c("calls for it and makes the catch."), c("makes the grab."),
   c("makes the play."),
-  c("Pop-up on the infield —", 'uncommon'),
-  c("Sky-high pop-up — the infield converges.", 'uncommon'),
+  c("Pop-up on the infield -", 'uncommon'),
+  c("Sky-high pop-up - the infield converges.", 'uncommon'),
 ];
 
 // =========== FOUL BALLS ===========
@@ -983,7 +983,7 @@ const FOUL_BALL_LINES = [
 
 // =========== STRIKEOUT SWINGING (name prefixed) ===========
 const STRIKEOUT_SWINGING_LINES = [
-  c("goes down swinging!"), c("can't catch up — strike three!"),
+  c("goes down swinging!"), c("can't catch up - strike three!"),
   c("whiffs on strike three!"),
   c("fans on a wicked"),
   c("chases a nasty"),
@@ -993,27 +993,27 @@ const STRIKEOUT_SWINGING_LINES = [
   c("waves at a devastating"),
   c("can't catch up to a blazing"),
   c("whiffs on a knee-buckling"),
-  c("swings right through it — out!"),
-  c("chases one out of the zone — struck out!"),
-  c("swings and misses — struck out!"),
-  c("flails and misses — strike three!"),
-  c("flails at one in the dirt — strikeout!"),
-  c("couldn't lay off the high heat — strike three!", 'uncommon'),
-  c("swings right over the top of it — strike three!", 'uncommon'),
-  c("a big cut — and a big miss — strike three!", 'rare'),
+  c("swings right through it - out!"),
+  c("chases one out of the zone - struck out!"),
+  c("swings and misses - struck out!"),
+  c("flails and misses - strike three!"),
+  c("flails at one in the dirt - strikeout!"),
+  c("couldn't lay off the high heat - strike three!", 'uncommon'),
+  c("swings right over the top of it - strike three!", 'uncommon'),
+  c("a big cut - and a big miss - strike three!", 'rare'),
 ];
 
 // =========== CALLED STRIKEOUT (name prefixed) ===========
 const STRIKEOUT_CALLED_LINES = [
-  c("called out on strikes!"), c("frozen — strike three!"),
+  c("called out on strikes!"), c("frozen - strike three!"),
   c("watches strike three go by!"), c("caught looking!"),
-  c("can't believe it — called strike three!"),
-  c("goes down looking — strike three!", 'uncommon'),
-  c("never took the bat off his shoulder — strike three!", 'uncommon'),
-  c("Frozen like a statue at the plate — strike three!", 'rare'),
+  c("can't believe it - called strike three!"),
+  c("goes down looking - strike three!", 'uncommon'),
+  c("never took the bat off his shoulder - strike three!", 'uncommon'),
+  c("Frozen like a statue at the plate - strike three!", 'rare'),
 ];
 
-// =========== CAUGHT STEALING — PLAY-BY-PLAY ===========
+// =========== CAUGHT STEALING - PLAY-BY-PLAY ===========
 const CAUGHT_STEALING_LINES = [
   c("The runner goes, and the throw is there in time."),
   c("He breaks for the next bag and is cut down."),
@@ -1051,20 +1051,20 @@ const CAUGHT_STEALING_LINES = [
 const BUNT_SINGLE_LINES = [
   c("lays down a bunt single!"), c("drops a perfect bunt!"),
   c("bunts his way on!"), c("beats out the bunt!"),
-  c("With the drag bunt — he's safe!", 'uncommon'),
+  c("With the drag bunt - he's safe!", 'uncommon'),
 ];
 
 // =========== SACRIFICE BUNT ===========
 const SACRIFICE_BUNT_LINES = [
-  c("lays down the sacrifice —"), c("drops the sac bunt —"),
-  c("gets the bunt down —"),
-  c("sacrifice bunt is down —", 'uncommon'),
+  c("lays down the sacrifice -"), c("drops the sac bunt -"),
+  c("gets the bunt down -"),
+  c("sacrifice bunt is down -", 'uncommon'),
 ];
 
 // =========== SACRIFICE FLY ===========
 const SAC_FLY_LINES = [
-  c("hits a sacrifice fly —"), c("lifts a sacrifice fly —"),
-  c("sends one deep enough —"),
+  c("hits a sacrifice fly -"), c("lifts a sacrifice fly -"),
+  c("sends one deep enough -"),
   c("sac fly does the job.", 'uncommon'),
 ];
 
@@ -1081,10 +1081,10 @@ const STEAL_LINES = {
     c("caught stealing second!"), c("caught stealing third!"),
     c("caught stealing home!"), c("gunned down at second!"),
     c("gunned down at third!"),
-    c("thrown out — bad read all the way."),
-    c("he's out — that's a rally killer."),
+    c("thrown out - bad read all the way."),
+    c("he's out - that's a rally killer."),
     c("The catcher nails him!", 'uncommon'),
-    c("Not even close — he's out by a mile.", 'uncommon'),
+    c("Not even close - he's out by a mile.", 'uncommon'),
     c("That one's going to sting.", 'uncommon'),
     c("And the crowd lets him hear it.", 'uncommon'),
   ],
@@ -1094,11 +1094,11 @@ const STEAL_LINES = {
 const ERROR_LINES = [
   c("boots it!"), c("can't handle it!"), c("muffs it!"),
   c("lets it go through the wickets!"),
-  c("That's an error — he'll want that one back.", 'uncommon'),
-  c("Routine chance — and he drops it.", 'rare'),
+  c("That's an error - he'll want that one back.", 'uncommon'),
+  c("Routine chance - and he drops it.", 'rare'),
 ];
 
-// =========== CALLED BALL — FASTBALL ===========
+// =========== CALLED BALL - FASTBALL ===========
 const CALLED_BALL_FASTBALL_LINES = [
   c("Fastball misses outside."), c("The heater sails high for a ball."), c("Fastball down and away."),
   c("He lays off the fastball off the plate."), c("The fastball misses just below the knees."), c("High heat, but too high."),
@@ -1112,7 +1112,7 @@ const CALLED_BALL_FASTBALL_LINES = [
   c("He pulls back as the fastball runs in."), c("The pitch catches glove but not plate."), c("Fastball just off the black."),
 ];
 
-// =========== CALLED BALL — BREAKING BALL ===========
+// =========== CALLED BALL - BREAKING BALL ===========
 const CALLED_BALL_BREAKING_LINES = [
   c("Breaking ball misses outside."), c("The curveball drops below the zone."), c("He lays off the slider in the dirt."),
   c("The breaker sweeps too far away."), c("A curveball starts high and never drops enough."), c("The slider misses off the outside corner."),
@@ -1126,7 +1126,7 @@ const CALLED_BALL_BREAKING_LINES = [
   c("He lets the breaking ball pass harmlessly."), c("The breaker nearly clips the outside edge."), c("The umpire refuses to give him the corner."),
 ];
 
-// =========== CALLED BALL — CHANGEUP ===========
+// =========== CALLED BALL - CHANGEUP ===========
 const CALLED_BALL_CHANGEUP_LINES = [
   c("Changeup misses low."), c("The changeup fades outside."), c("He lays off the off-speed pitch in the dirt."),
   c("The pitcher takes something off but misses the zone."), c("A sinking changeup drops beneath the knees."), c("The changeup drifts off the outside corner."),
@@ -1140,7 +1140,7 @@ const CALLED_BALL_CHANGEUP_LINES = [
   c("The pitcher cannot quite locate the softer offering."), c("The changeup runs away from the strike zone."), c("A good take on a deceptive pitch."),
 ];
 
-// =========== CALLED BALL — GENERIC ===========
+// =========== CALLED BALL - GENERIC ===========
 const CALLED_BALL_GENERIC_LINES = [
   c("Ball outside."), c("The pitch misses low."), c("That one is high."), c("Inside for a ball."),
   c("He takes it off the plate."), c("The pitch misses the outside corner."), c("Just below the knees."), c("He lays off that one."),
@@ -1150,11 +1150,11 @@ const CALLED_BALL_GENERIC_LINES = [
   c("The umpire will not give him the corner."), c("He refuses to chase."), c("That one is nowhere near the plate."), c("The pitch bounces in front of the catcher."),
   c("He takes it in the dirt."), c("The offering misses up and away."), c("The pitch runs too far inside."), c("He leans back as it comes close."),
   c("That one nearly brushes him."), c("The batter checks and lets it go."), c("The pitch is low, and the catcher blocks it."), c("He watches it sail outside."),
-  c("The pitcher misses his target."), c("The catcher has to reach across the plate."), c("A close take, and the batter gets the call."), c("The umpire shakes his head—ball."),
+  c("The pitcher misses his target."), c("The catcher has to reach across the plate."), c("A close take, and the batter gets the call."), c("The umpire shakes his head-ball."),
   c("That pitch is off the edge."), c("He shows patience at the plate."), c("The offering never tempts him."), c("The pitcher falls behind with that miss."),
 ];
 
-// =========== SWINGING STRIKE — FASTBALL ===========
+// =========== SWINGING STRIKE - FASTBALL ===========
 const SWINGING_STRIKE_FASTBALL_LINES = [
   c("He swings through the fastball."), c("Fastball by him for a strike."), c("He comes up empty on the heater."),
   c("The fastball blows right past him."), c("He takes a healthy cut and misses."), c("High heat, and he cannot catch up."),
@@ -1168,7 +1168,7 @@ const SWINGING_STRIKE_FASTBALL_LINES = [
   c("He swings over the fastball at the knees."), c("The fastball jumps through the zone before he can react."), c("He knew it was coming and still could not catch up."),
 ];
 
-// =========== SWINGING STRIKE — BREAKING BALL ===========
+// =========== SWINGING STRIKE - BREAKING BALL ===========
 const SWINGING_STRIKE_BREAKING_LINES = [
   c("He swings over the breaking ball."), c("The curveball gets him fishing."), c("He comes up empty on the breaker."),
   c("A sharp slider disappears beneath the bat."), c("He chases the curve into the dirt."), c("The breaking ball bends away from his swing."),
@@ -1182,7 +1182,7 @@ const SWINGING_STRIKE_BREAKING_LINES = [
   c("The hook has him completely out in front."), c("He offers at a pitch that never reaches the plate."), c("The curveball finishes in the dirt, and the bat follows it down."),
 ];
 
-// =========== SWINGING STRIKE — CHANGEUP ===========
+// =========== SWINGING STRIKE - CHANGEUP ===========
 const SWINGING_STRIKE_CHANGEUP_LINES = [
   c("He swings through the changeup."), c("The change of speed has him out in front."), c("He comes up empty on the off-speed pitch."),
   c("The pitcher pulls the string, and the batter misses."), c("He swings before the changeup arrives."), c("That changeup completely fools him."),
@@ -1196,7 +1196,7 @@ const SWINGING_STRIKE_CHANGEUP_LINES = [
   c("He cannot wait long enough to make contact."), c("The batter's timing is completely disrupted."), c("He was sitting fastball, and the changeup made him look foolish."),
 ];
 
-// =========== SWINGING STRIKE — GENERIC ===========
+// =========== SWINGING STRIKE - GENERIC ===========
 const SWINGING_STRIKE_GENERIC_LINES = [
   c("Swing and a miss."), c("He comes up empty."), c("He takes a cut but misses."), c("Nothing but air on that swing."),
   c("He cannot make contact."), c("The batter offers and misses."), c("He waves at that one."), c("A mighty swing, but no contact."),
@@ -1210,7 +1210,7 @@ const SWINGING_STRIKE_GENERIC_LINES = [
   c("He offers at a pitcher's pitch and misses."), c("The ball is safely in the catcher's glove before the swing is finished."), c("He had the right idea but missed the execution."), c("A clean swing, but the ball avoids the barrel."),
 ];
 
-// =========== TAKEN STRIKE — FASTBALL ===========
+// =========== TAKEN STRIKE - FASTBALL ===========
 const TAKEN_STRIKE_FASTBALL_LINES = [
   c("Fastball taken for a strike."),
   c("He watches the heater cross the plate."),
@@ -1220,7 +1220,7 @@ const TAKEN_STRIKE_FASTBALL_LINES = [
   c("He takes a fastball right down Broadway."),
   c("A good hard fastball finds the zone."),
   c("The heater paints the inside corner."),
-  c("Fastball at the knees—called strike."),
+  c("Fastball at the knees-called strike."),
   c("He lets a belt-high fastball go by."),
   c("The fastball clips the black."),
   c("Smoke on the outside edge, and it is a strike."),
@@ -1236,10 +1236,10 @@ const TAKEN_STRIKE_FASTBALL_LINES = [
   c("The pitcher challenges him, and the fastball is called a strike."),
   c("He was looking for something else as the heater went by."),
   c("The fastball explodes into the mitt for a called strike."),
-  c("Nothing fancy there—just a fastball over the plate."),
+  c("Nothing fancy there-just a fastball over the plate."),
 ];
 
-// =========== TAKEN STRIKE — BREAKING BALL ===========
+// =========== TAKEN STRIKE - BREAKING BALL ===========
 const TAKEN_STRIKE_BREAKING_LINES = [
   c("Breaking ball taken for a strike."),
   c("The curve drops over the plate for a called strike."),
@@ -1268,7 +1268,7 @@ const TAKEN_STRIKE_BREAKING_LINES = [
   c("That one turned sharply and caught a piece of the plate."),
 ];
 
-// =========== TAKEN STRIKE — CHANGEUP ===========
+// =========== TAKEN STRIKE - CHANGEUP ===========
 const TAKEN_STRIKE_CHANGEUP_LINES = [
   c("Changeup taken for a strike."),
   c("He watches the changeup float across the plate."),
@@ -1297,7 +1297,7 @@ const TAKEN_STRIKE_CHANGEUP_LINES = [
   c("The change of speed leaves him standing there with the bat on his shoulder."),
 ];
 
-// =========== TAKEN STRIKE — GENERIC ===========
+// =========== TAKEN STRIKE - GENERIC ===========
 const TAKEN_STRIKE_GENERIC_LINES = [
   c("Taken for a strike."),
   c("He watches it cross the plate."),
@@ -1331,7 +1331,7 @@ const TAKEN_STRIKE_GENERIC_LINES = [
   c("A quiet take and a loud strike call."),
 ];
 
-// =========== INFIELD POP-UP — GENERIC PLAY-BY-PLAY ===========
+// =========== INFIELD POP-UP - GENERIC PLAY-BY-PLAY ===========
 const INFIELD_POPUP_LINES = [
   c("Popped straight up."),
   c("A towering pop-up."),
@@ -1365,7 +1365,7 @@ const INFIELD_POPUP_LINES = [
   c("He gets underneath the pitch, and this should be an easy out."),
 ];
 
-// =========== INFIELD LINE-OUT — SOFT ===========
+// =========== INFIELD LINE-OUT - SOFT ===========
 const INFIELD_LINEOUT_SOFT_LINES = [
   c("A soft liner hangs up for the catch."),
   c("He flips a gentle line drive into waiting hands."),
@@ -1399,7 +1399,7 @@ const INFIELD_LINEOUT_SOFT_LINES = [
   c("He makes contact, but the soft liner goes directly to the defense."),
 ];
 
-// =========== INFIELD LINE-OUT — HARD ===========
+// =========== INFIELD LINE-OUT - HARD ===========
 const INFIELD_LINEOUT_HARD_LINES = [
   c("A sharp line drive is caught for the out."),
   c("He smokes a liner, but it goes directly to the defense."),
@@ -1442,87 +1442,87 @@ const FC_LINES = [
 // =========== BATTER THROWN OUT STRETCHING ===========
 const STRETCH_OUT_LINES = [
   c("is thrown out trying to stretch it into a double!"),
-  c("is gunned down at second — too greedy!"),
+  c("is gunned down at second - too greedy!"),
   c("tries to stretch it and gets thrown out at second!"),
   c("is cut down trying for two!"),
-  c("gets thrown out at second — bad decision!"),
-  c("is tagged out sliding into second — tried to stretch!"),
+  c("gets thrown out at second - bad decision!"),
+  c("is tagged out sliding into second - tried to stretch!"),
   c("rounds first too far and gets thrown out at second!"),
   c("is thrown out trying to turn a single into a double!"),
   c("pushes his luck and is thrown out at second!"),
-  c("is gunned down — the throw beats him to second!"),
+  c("is gunned down - the throw beats him to second!"),
   c("tries for the extra base and pays for it!", 'uncommon'),
-  c("is caught stretching — the throw was right on the money!", 'uncommon'),
+  c("is caught stretching - the throw was right on the money!", 'uncommon'),
   c("is thrown out by a step at second!", 'uncommon'),
-  c("rounds the bag and gets tagged out — caught stretching!", 'rare'),
+  c("rounds the bag and gets tagged out - caught stretching!", 'rare'),
   c("is thrown out trying to stretch it into a triple!", 'uncommon'),
-  c("is gunned down at third — going for the triple!", 'uncommon'),
+  c("is gunned down at third - going for the triple!", 'uncommon'),
   c("is cut down at third trying to stretch a double!"),
-  c("is thrown out at third — greed got the better of him!"),
+  c("is thrown out at third - greed got the better of him!"),
   c("is tagged out at third trying to turn two into three!"),
-  c("is gunned down at third — the relay was perfect!"),
+  c("is gunned down at third - the relay was perfect!"),
   c("is thrown out at home trying for the inside-the-parker!", 'rare'),
-  c("is cut down at the plate — just short of glory!", 'rare'),
+  c("is cut down at the plate - just short of glory!", 'rare'),
 ];
 
 // =========== BATTER STRETCH SUCCESS ===========
 const STRETCH_SUCCESS_LINES = [
-  c("stretches it into a double — safe at second!"),
-  c("takes the extra base — safe at second with a double!"),
-  c("makes it to second standing up — he stretched it!"),
-  c("slides in safe at second — turned it into a double!"),
-  c("stretches the single into a double — good hustle!"),
+  c("stretches it into a double - safe at second!"),
+  c("takes the extra base - safe at second with a double!"),
+  c("makes it to second standing up - he stretched it!"),
+  c("slides in safe at second - turned it into a double!"),
+  c("stretches the single into a double - good hustle!"),
   c("turns on the speed and makes it to second!"),
 ];
 
 // ── Stretch double→triple success (distinct pool so single→double never says "triple") ──
 const STRETCH_SUCCESS_DOUBLE_TRIPLE_LINES = [
-  c("stretches it into a triple — safe at third!"),
-  c("makes it to third — he turned it into a triple!"),
-  c("legs out the triple — safe at third standing up!"),
+  c("stretches it into a triple - safe at third!"),
+  c("makes it to third - he turned it into a triple!"),
+  c("legs out the triple - safe at third standing up!"),
   c("turns the double into a triple with his speed!"),
 ];
 
 // ── Stretch triple→HR success (inside-the-park home run) ──
 const STRETCH_SUCCESS_TRIPLE_HR_LINES = [
   c("rounds the bases for an inside-the-park home run!"),
-  c("legs it all the way home — inside-the-park homer!"),
-  c("circles the bases — an inside-the-park home run!"),
+  c("legs it all the way home - inside-the-park homer!"),
+  c("circles the bases - an inside-the-park home run!"),
 ];
 
 // =========== RUNNER THROWN OUT AT THIRD ===========
 const RUNNER_OUT_AT_THIRD_LINES = [
   c("is thrown out at third trying to take the extra base!"),
-  c("is gunned down at third — the throw was perfect!"),
+  c("is gunned down at third - the throw was perfect!"),
   c("is cut down trying for third on the single!"),
-  c("gets thrown out at third — too aggressive!"),
+  c("gets thrown out at third - too aggressive!"),
   c("is tagged out sliding into third!"),
   c("is thrown out trying to go first to third!"),
-  c("is gunned down — the outfielder's throw nails him at third!"),
+  c("is gunned down - the outfielder's throw nails him at third!"),
   c("is thrown out at third by a step!"),
-  c("is cut down at third — should have stayed at second!"),
-  c("is thrown out at third — the relay was on target!"),
+  c("is cut down at third - should have stayed at second!"),
+  c("is thrown out at third - the relay was on target!"),
   c("is tagged out at third trying to be aggressive!", 'uncommon'),
-  c("is thrown out at third — the cutoff man relayed it perfectly!", 'uncommon'),
-  c("gets thrown out at third — he never should have gone!", 'rare'),
+  c("is thrown out at third - the cutoff man relayed it perfectly!", 'uncommon'),
+  c("gets thrown out at third - he never should have gone!", 'rare'),
 ];
 
 // =========== RUNNER THROWN OUT AT HOME ===========
 const RUNNER_OUT_AT_HOME_LINES = [
   c("is thrown out at the plate!"),
-  c("is gunned down at home — the throw was perfect!"),
+  c("is gunned down at home - the throw was perfect!"),
   c("is cut down trying to score!"),
-  c("is thrown out at home — no chance!"),
+  c("is thrown out at home - no chance!"),
   c("is tagged out at the plate!"),
   c("is thrown out trying to score!"),
-  c("is gunned down at home — the relay was on target!"),
+  c("is gunned down at home - the relay was on target!"),
   c("is thrown out at the plate by a mile!"),
-  c("is cut down at home — the catcher blocks the plate!"),
-  c("is thrown out trying to score — the throw beat him!"),
-  c("is tagged out at the plate — he never had a chance!", 'uncommon'),
-  c("is thrown out at home — the cutoff relay was perfect!", 'uncommon'),
-  c("is gunned down at the plate — the throw was a strike!", 'uncommon'),
-  c("is thrown out at home — why did they send him?!", 'rare'),
+  c("is cut down at home - the catcher blocks the plate!"),
+  c("is thrown out trying to score - the throw beat him!"),
+  c("is tagged out at the plate - he never had a chance!", 'uncommon'),
+  c("is thrown out at home - the cutoff relay was perfect!", 'uncommon'),
+  c("is gunned down at the plate - the throw was a strike!", 'uncommon'),
+  c("is thrown out at home - why did they send him?!", 'rare'),
 ];
 
 // =========== TAG UP THROWN OUT ===========
@@ -1537,13 +1537,13 @@ const TAG_UP_OUT_LINES = [
   c("is thrown out trying to tag and take the extra base!"),
   c("tags up and is thrown out at second!"),
   c("is caught trying to advance on the catch!"),
-  c("is thrown out — the throw beat him after the tag!", 'uncommon'),
-  c("tags up and is cut down — the outfielder's arm was too strong!", 'uncommon'),
-  c("is gunned down — the relay was perfect after the catch!", 'uncommon'),
+  c("is thrown out - the throw beat him after the tag!", 'uncommon'),
+  c("tags up and is cut down - the outfielder's arm was too strong!", 'uncommon'),
+  c("is gunned down - the relay was perfect after the catch!", 'uncommon'),
   c("is thrown out tagging up by a mile!", 'rare'),
 ];
 
-// =========== BATTER STRETCHING SINGLE INTO DOUBLE — CAUGHT ===========
+// =========== BATTER STRETCHING SINGLE INTO DOUBLE - CAUGHT ===========
 const STRETCH_SINGLE_DOUBLE_OUT_LINES = [
   c("He rounds first and heads for second, but the throw beats him."),
   c("He tries to turn the single into two bases and is cut down."),
@@ -1562,7 +1562,7 @@ const STRETCH_SINGLE_DOUBLE_OUT_LINES = [
   c("An aggressive single becomes an out on the bases."),
 ];
 
-// =========== BATTER STRETCHING DOUBLE INTO TRIPLE — CAUGHT ===========
+// =========== BATTER STRETCHING DOUBLE INTO TRIPLE - CAUGHT ===========
 const STRETCH_DOUBLE_TRIPLE_OUT_LINES = [
   c("He rounds second and heads for third, but the throw beats him."),
   c("He tries to turn the double into a triple and is cut down."),
@@ -1581,7 +1581,7 @@ const STRETCH_DOUBLE_TRIPLE_OUT_LINES = [
   c("What began as a double ends with the runner tagged out at third."),
 ];
 
-// =========== BATTER STRETCHING TRIPLE INTO INSIDE-THE-PARK HR — CAUGHT ===========
+// =========== BATTER STRETCHING TRIPLE INTO INSIDE-THE-PARK HR - CAUGHT ===========
 const STRETCH_TRIPLE_HR_OUT_LINES = [
   c("He rounds third and heads for home, but the throw beats him to the plate."),
   c("He tries to complete the inside-the-park home run and is cut down."),
@@ -1657,7 +1657,7 @@ const RUNNER_SECOND_TO_HOME_OUT_LINES = [
   c("He rounds third aggressively, but the play ends at the plate."),
 ];
 
-// =========== TAG UP — RUNNER FROM FIRST THROWN OUT AT SECOND ===========
+// =========== TAG UP - RUNNER FROM FIRST THROWN OUT AT SECOND ===========
 const TAG_UP_FIRST_TO_SECOND_OUT_LINES = [
   c("The runner tags at first and heads for second, but the throw beats him."),
   c("He tries to advance after the catch and is cut down at second."),
@@ -1676,7 +1676,7 @@ const TAG_UP_FIRST_TO_SECOND_OUT_LINES = [
   c("He tests the arm from first and is thrown out at second."),
 ];
 
-// =========== TAG UP — RUNNER FROM SECOND THROWN OUT AT THIRD ===========
+// =========== TAG UP - RUNNER FROM SECOND THROWN OUT AT THIRD ===========
 const TAG_UP_SECOND_TO_THIRD_OUT_LINES = [
   c("The runner tags at second and heads for third, but the throw beats him."),
   c("He tries to advance after the catch and is cut down at third."),
@@ -1695,7 +1695,7 @@ const TAG_UP_SECOND_TO_THIRD_OUT_LINES = [
   c("The runner is thrown out trying to tag from second to third."),
 ];
 
-// =========== TAG UP — RUNNER FROM THIRD THROWN OUT AT HOME ===========
+// =========== TAG UP - RUNNER FROM THIRD THROWN OUT AT HOME ===========
 const TAG_UP_THIRD_TO_HOME_OUT_LINES = [
   c("The runner tags at third and heads home, but the throw beats him."),
   c("He tries to score on the flyout and is cut down at the plate."),
