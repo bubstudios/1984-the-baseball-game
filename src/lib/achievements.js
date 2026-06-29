@@ -524,6 +524,21 @@ export function resetAchievements() {
   } catch (e) { /* ignore */ }
 }
 
+// Purge orphaned achievement IDs — unlocked entries that no longer have a definition
+// (e.g., removed banner/popup achievements from a previous version)
+export function purgeOrphanedAchievements() {
+  const achs = loadAchievements();
+  const validIds = new Set(ACHIEVEMENTS.map(a => a.id));
+  let changed = false;
+  for (const id of Object.keys(achs)) {
+    if (!validIds.has(id)) {
+      delete achs[id];
+      changed = true;
+    }
+  }
+  if (changed) saveAchievements(achs);
+}
+
 // ── THE GROOVERS: Track sightings of all 6 rare Easter eggs ──
 const GROOVERS_KEY = 'ach_groover_sightings';
 const GROOVER_ITEMS = [
@@ -645,6 +660,9 @@ export function trackSessionStart() {
   if (hour >= 4 && hour < 6) unlockAchievement('early_bird');
 
   saveStats(stats);
+
+  // Purge orphaned achievement IDs from removed banner/popup achievements
+  purgeOrphanedAchievements();
 }
 
 // Called when a game finishes

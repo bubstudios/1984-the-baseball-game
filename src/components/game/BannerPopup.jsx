@@ -1,8 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { X } from 'lucide-react';
-import { unlockAchievement } from '@/lib/achievements';
-import { unlockBannerAchievement, checkBannerMetaAchievements } from '@/lib/bannerAchievements';
-import { checkNationalCategoryAchievements } from '@/lib/nationalBannerAchievements';
 
 // ── Markdown + metadata helpers for team-banner paragraphs ──
 
@@ -142,24 +139,6 @@ export default function BannerPopup({ banner, onClose }) {
     }
     return null;
   }, [banner]);
-
-  // Unlock the banner's achievement when the popup is opened
-  // Checks both the banner-level achievementId and the selected popup's achievementId
-  useEffect(() => {
-    if (!banner) return;
-    const bannerAchId = banner.achievementId;
-    const popupAchId = selectedPopup?.achievementId;
-    const achId = popupAchId || bannerAchId;
-    if (achId) {
-      try {
-        unlockAchievement(achId);
-        checkBannerMetaAchievements(unlockAchievement);
-        checkNationalCategoryAchievements(unlockAchievement);
-      } catch (e) {
-        console.error('Banner achievement unlock failed:', e);
-      }
-    }
-  }, [banner?.achievementId, selectedPopup?.achievementId]);
 
   // Guard: don't render if no banner
   if (!banner) return null;
