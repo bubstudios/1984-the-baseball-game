@@ -197,7 +197,7 @@ export function applyEventDelta(composureState, eventType, leverage = 1.0) {
   } else if (diff === -1) {
     scoreSitWeight = 0.9;  // Pitching team down by 1 — muted (already trailing)
   } else if (diff === 0) {
-    scoreSitWeight = 2.0;  // Just tied the game (pitching team was ahead) — high leverage
+    scoreSitWeight = 1.0;  // Tied game — neutral (blown-lead penalty handled separately by applyLeadChangePenalty)
   } else if (diff === 1) {
     scoreSitWeight = 0.9;  // Pitching team STILL ahead by 1 — sting, but muted
   } else if (diff >= 2) {

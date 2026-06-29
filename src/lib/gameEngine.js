@@ -891,7 +891,7 @@ function resolveSwing(state, swingType, pitch) {
        if (hrCall) state.log.push({ type: 'homerun', text: `🎙️ ${hrCall}` });
        state.log.push({ type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name };
        const hrAdmire = rollHRAdmire(batter); if (hrAdmire) { state.log.push({ type: 'info', text: `✨ ${hrAdmire}` }); state._celebrationBubble = `✨ ${hrAdmire}`; }
-    } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.10 + sf2 * 0.18) * doubleMod) {
+    } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.085 + sf2 * 0.02) * doubleMod) {
       const rbi = advanceRunners(state, 3, batter, true, hitDirection);
       let tripFlavor = '';
       const bpTrp = BALLPARKS[stadiumName];
