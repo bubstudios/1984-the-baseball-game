@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS, PITCH_TYPES, SWING_TYPES, MANAGERS } from '@/lib/gameData';
-import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk, cpuCheckPinchHit } from '@/lib/gameEngine';
+import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk, cpuCheckPinchHit, pickCpuReliever } from '@/lib/gameEngine';
 import { applyWeatherEffects } from '@/lib/weather';
 import TeamSelect from '@/components/game/TeamSelect';
 import BallparkSelect from '@/components/game/BallparkSelect';
@@ -367,13 +367,12 @@ export default function Home() {
         const bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
         setEjectionResult({ ejectedSide, bullpen });
       } else {
-        // CPU team ejection - auto-select best reliever
+        // CPU team ejection - auto-select best reliever (no closers before 7th)
         const bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
-        if (bullpen && bullpen.length > 0) {
-          const sorted = [...bullpen].sort((a, b) => b.control - a.control);
-          const newReliever = sorted[0];
+        const newReliever = pickCpuReliever(bullpen, gameState.inning);
+        if (newReliever) {
           const newState = changePitcher(gameState, newReliever, ejectedSide);
-          setGameState(prev => newState);
+          setGameState(newState);
         }
       }
       return;
@@ -1380,9 +1379,8 @@ export default function Home() {
         setPitcherInjury({ ...injury, bullpen });
       } else {
         const bullpen = injury.side === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
-        if (bullpen && bullpen.length > 0) {
-          const sorted = [...bullpen].sort((a, b) => b.control - a.control);
-          const newReliever = sorted[0];
+        const newReliever = pickCpuReliever(bullpen, gameState.inning);
+        if (newReliever) {
           const newState = changePitcher(gameState, newReliever, injury.side);
           delete newState._pendingPitcherInjury;
           setGameState(newState);

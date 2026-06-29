@@ -673,6 +673,20 @@ export function attemptDoubleSteal(state) {
   return newState;
 }
 
+// Helper: pick a CPU reliever, excluding closers before the 7th inning
+export function pickCpuReliever(bullpen, inning) {
+  if (!bullpen || bullpen.length === 0) return null;
+  const isCloser = (p) => p.pos === 'CL' || p.assignedPos === 'CL';
+  let candidates;
+  if (inning < 7) {
+    candidates = [...bullpen].filter(p => !isCloser(p)).sort((a, b) => b.control - a.control);
+    if (candidates.length === 0) candidates = [...bullpen].sort((a, b) => b.control - a.control);
+  } else {
+    candidates = [...bullpen].sort((a, b) => b.control - a.control);
+  }
+  return candidates[0] || null;
+}
+
 // --- HIT AND RUN ---
 export function setHitAndRun(state, active) { const ns = JSON.parse(JSON.stringify(state)); ns.hitAndRun = active; return ns; }
 
@@ -2140,10 +2154,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       }
       return newState;
     }
-    // Pitcher was subbed out - replace with bullpen arm
+    // Pitcher was subbed out - replace with bullpen arm (no closers before 7th)
     if (cpuBullpen.length > 0) {
-      const sorted = [...cpuBullpen].sort((a, b) => b.control - a.control);
-      const newPitcher = sorted[0], newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
+      const newPitcher = pickCpuReliever(cpuBullpen, newState.inning);
+      if (!newPitcher) return newState;
+      const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
       if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
       const bpi2 = cpuBullpen.findIndex(p => p.name === newPitcher.name); if (bpi2 >= 0) cpuBullpen.splice(bpi2, 1);
       if (!newState[hk2].find(p => p.name === oldP.name)) newState[hk2].push({ ...oldP });
