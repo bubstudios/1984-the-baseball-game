@@ -1037,7 +1037,7 @@ export default function Home() {
 
   return (
     <ErrorBoundary>
-    <div className="h-[100dvh] md:h-auto md:min-h-screen bg-background text-foreground flex flex-col overflow-hidden md:overflow-visible">
+    <div className="h-[100dvh] bg-background text-foreground flex flex-col overflow-hidden">
       {/* Compact Top Bar */}
       <div className="shrink-0 border-b border-border bg-card/50 px-3 md:px-6 py-1.5 flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0">
@@ -1103,12 +1103,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Middle content — responsive: single column mobile, two-column desktop */}
-      <div className="flex-1 overflow-y-auto px-3 md:px-6 py-2 md:max-w-6xl md:mx-auto md:w-full">
-        {/* Desktop: Game tab gets two-column layout */}
-        <div className="md:flex md:gap-4">
-          {/* Left column: Diamond + Commentary + Matchup */}
-          <div className="md:flex-1 md:min-w-0 space-y-2">
+      {/* Middle content — single centered column on all screens */}
+      <div className="flex-1 overflow-y-auto px-3 md:px-6 py-2 w-full max-w-2xl mx-auto">
+        <div className="space-y-2">
             {tab === 'game' && (
               <>
                 {/* Scoreboard — compact */}
@@ -1220,49 +1217,15 @@ export default function Home() {
                 <BoxScore state={gameState} />
               </div>
             )}
-          </div>
-
-          {/* Right column: Action Panel (desktop) */}
-          <div className="hidden md:block md:w-72 md:shrink-0">
-            {!gameState.gameOver && (
-              <div className="bg-card border border-border rounded-xl p-4 sticky top-4">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <span className="text-xs text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
-                  <span className="text-sm text-primary font-heading font-bold">
-                    {isUserBatting ? 'Batting' : 'Pitching'}
-                  </span>
-                </div>
-                <ActionPanel
-                  isPitching={isUserPitching}
-                  onPitch={handlePitch}
-                  onSwing={handleSwing}
-                  onSteal={handleSteal}
-                  onHitAndRun={handleHitAndRun}
-                  onIntBB={handleIntBB}
-                  disabled={processing}
-                  bases={gameState.bases}
-                  hitAndRun={gameState.hitAndRun}
-                  pitcherPitches={pitcher.pitches}
-                  pitcherNeedsReplacement={pitcherNeedsReplacement}
-                  onNeedReliever={() => { setSubsTab('pitching'); setShowSubs(true); }}
-                  pitcherSpecialty={pitcherSpecialty}
-                  reachBackUses={reachBackUses}
-                  reachBackMax={reachBackMax}
-                  situationalBatter={situationalBatter}
-                  lastPlay={gameState.lastPlay}
-                />
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
-      {/* Action Panel — pinned to bottom on mobile only */}
+      {/* Action Panel — pinned to bottom on all screens */}
       {!gameState.gameOver && (
-        <div className="shrink-0 border-t border-border bg-card/90 backdrop-blur px-3 py-2 md:hidden">
+        <div className="shrink-0 border-t border-border bg-card/90 backdrop-blur px-3 md:px-6 py-2 w-full max-w-2xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-1">
-            <span className="text-[10px] text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
-            <span className="text-[11px] text-primary font-heading font-bold">
+            <span className="text-[10px] md:text-xs text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
+            <span className="text-[11px] md:text-sm text-primary font-heading font-bold">
               {isUserBatting ? 'Batting' : 'Pitching'}
             </span>
           </div>
