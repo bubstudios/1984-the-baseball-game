@@ -28,6 +28,10 @@ const FIELD_RENDERERS = [
       </div>
     )
   },
+  { key: 'whatItIs', label: 'What it is', render: (v) => <p className="text-sm leading-relaxed">{v}</p> },
+  { key: 'theFun', label: 'The fun', render: (v) => <p className="text-sm leading-relaxed">{v}</p> },
+  { key: 'theNote', label: 'The note', render: (v) => <p className="text-sm leading-relaxed italic text-muted-foreground">{v}</p> },
+  { key: 'howItLands', label: 'How it lands', render: (v) => <p className="text-sm leading-relaxed">{v}</p> },
   { key: 'achievement', label: null, render: (v) => (
     <div className="bg-yellow-400/10 border border-yellow-400/30 rounded-lg px-3 py-2 text-center">
       <span className="text-sm font-heading font-bold text-yellow-300">{v}</span>
