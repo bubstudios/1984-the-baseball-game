@@ -27,6 +27,7 @@ import GameEventBanner from '@/components/game/GameEventBanner';
 import PitcherInjuryModal from '@/components/game/PitcherInjuryModal';
 import BatterInjuryModal from '@/components/game/BatterInjuryModal';
 import PregameIllnessModal from '@/components/game/PregameIllnessModal';
+import InjuryAlertModal from '@/components/game/InjuryAlertModal';
 
 import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
@@ -170,6 +171,7 @@ export default function Home() {
   const [slidingInjury, setSlidingInjury] = useState(null);
   const [fielderInjury, setFielderInjury] = useState(null);
   const [pregameIllnesses, setPregameIllnesses] = useState(null);
+  const [injuryAlert, setInjuryAlert] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
@@ -379,120 +381,43 @@ export default function Home() {
 
 
 
-    // Pitcher injury — show modal for user's team, auto-replace for CPU
-    if (gameState._pendingPitcherInjury && !pitcherInjury) {
+    // Pitcher injury — alert first, then modal/auto-replace on dismiss
+    if (gameState._pendingPitcherInjury && !injuryAlert && !pitcherInjury) {
       const injury = gameState._pendingPitcherInjury;
-      const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
-                         (injury.side === 'away' && userTeam === gameState.awayTeam);
-      if (isUserTeam) {
-        const bullpen = injury.side === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
-        setPitcherInjury({ ...injury, bullpen });
-      } else {
-        const bullpen = injury.side === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
-        if (bullpen && bullpen.length > 0) {
-          const sorted = [...bullpen].sort((a, b) => b.control - a.control);
-          const newReliever = sorted[0];
-          const newState = changePitcher(gameState, newReliever, injury.side);
-          delete newState._pendingPitcherInjury;
-          setGameState(prev => newState);
-        }
-      }
+      const teamKey = injury.side === 'home' ? gameState.homeTeam : gameState.awayTeam;
+      setInjuryAlert({ type: 'pitcher', injury, teamKey });
       return;
     }
 
-    // Batter injury — show modal for user's team, auto-replace for CPU
-    if (gameState._pendingBatterInjury && !batterInjury) {
+    // Batter injury — alert first, then modal/auto-replace on dismiss
+    if (gameState._pendingBatterInjury && !injuryAlert && !batterInjury) {
       const injury = gameState._pendingBatterInjury;
-      const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
-                         (injury.side === 'away' && userTeam === gameState.awayTeam);
-      if (isUserTeam) {
-        setBatterInjury(injury);
-      } else {
-        // CPU — auto-select best bench player
-        const bench = injury.bench || [];
-        if (bench.length > 0) {
-          const sorted = [...bench].sort((a, b) => (b.contact + b.power) - (a.contact + a.power));
-          const replacement = sorted[0];
-          let newState;
-          if (injury.stillAtPlate) {
-            newState = pinchHit(gameState, replacement);
-          } else {
-            newState = replaceInjuredBatter(gameState, injury.batterName, injury.side, replacement, injury.name);
-          }
-          delete newState._pendingBatterInjury;
-          setGameState(prev => newState);
-        }
-      }
+      const teamKey = injury.side === 'home' ? gameState.homeTeam : gameState.awayTeam;
+      setInjuryAlert({ type: 'batter', injury, teamKey });
       return;
     }
 
-    // Runner injury — show modal for user's team, auto-replace for CPU
-    if (gameState._pendingRunnerInjury && !runnerInjury) {
+    // Runner injury — alert first, then modal/auto-replace on dismiss
+    if (gameState._pendingRunnerInjury && !injuryAlert && !runnerInjury) {
       const injury = gameState._pendingRunnerInjury;
-      const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
-                         (injury.side === 'away' && userTeam === gameState.awayTeam);
-      if (isUserTeam) {
-        setRunnerInjury(injury);
-      } else {
-        const bench = injury.bench || [];
-        if (bench.length > 0) {
-          const sorted = [...bench].sort((a, b) => b.speed - a.speed);
-          const replacement = sorted[0];
-          let newState;
-          if (injury.baseIndex >= 0) {
-            newState = pinchRun(gameState, injury.baseIndex, replacement);
-          } else {
-            newState = replaceInjuredBatter(gameState, injury.runnerName, injury.side, replacement, injury.name);
-          }
-          delete newState._pendingRunnerInjury;
-          setGameState(prev => newState);
-        }
-      }
+      const teamKey = injury.side === 'home' ? gameState.homeTeam : gameState.awayTeam;
+      setInjuryAlert({ type: 'runner', injury, teamKey });
       return;
     }
 
-    // Sliding injury — show modal for user's team, auto-replace for CPU
-    if (gameState._pendingSlidingInjury && !slidingInjury) {
+    // Sliding injury — alert first, then modal/auto-replace on dismiss
+    if (gameState._pendingSlidingInjury && !injuryAlert && !slidingInjury) {
       const injury = gameState._pendingSlidingInjury;
-      const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
-                         (injury.side === 'away' && userTeam === gameState.awayTeam);
-      if (isUserTeam) {
-        setSlidingInjury(injury);
-      } else {
-        const bench = injury.bench || [];
-        if (bench.length > 0) {
-          const sorted = [...bench].sort((a, b) => b.speed - a.speed);
-          const replacement = sorted[0];
-          let newState;
-          if (injury.baseIndex >= 0) {
-            newState = pinchRun(gameState, injury.baseIndex, replacement);
-          } else {
-            newState = replaceInjuredBatter(gameState, injury.runnerName, injury.side, replacement, injury.name);
-          }
-          delete newState._pendingSlidingInjury;
-          setGameState(prev => newState);
-        }
-      }
+      const teamKey = injury.side === 'home' ? gameState.homeTeam : gameState.awayTeam;
+      setInjuryAlert({ type: 'sliding', injury, teamKey });
       return;
     }
 
-    // Fielder injury — show modal for user's team, auto-replace for CPU
-    if (gameState._pendingFielderInjury && !fielderInjury) {
+    // Fielder injury — alert first, then modal/auto-replace on dismiss
+    if (gameState._pendingFielderInjury && !injuryAlert && !fielderInjury) {
       const injury = gameState._pendingFielderInjury;
-      const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
-                         (injury.side === 'away' && userTeam === gameState.awayTeam);
-      if (isUserTeam) {
-        setFielderInjury(injury);
-      } else {
-        const bench = injury.bench || [];
-        if (bench.length > 0) {
-          const sorted = [...bench].sort((a, b) => (b.contact + b.power) - (a.contact + a.power));
-          const replacement = sorted[0];
-          const newState = replaceInjuredBatter(gameState, injury.fielderName, injury.side, replacement, injury.name);
-          delete newState._pendingFielderInjury;
-          setGameState(prev => newState);
-        }
-      }
+      const teamKey = injury.side === 'home' ? gameState.homeTeam : gameState.awayTeam;
+      setInjuryAlert({ type: 'fielder', injury, teamKey });
       return;
     }
 
@@ -1441,6 +1366,98 @@ export default function Home() {
     setFielderInjury(null);
   };
 
+  const handleInjuryAlertDismiss = useCallback(() => {
+    if (!injuryAlert || !gameState) return;
+    const { type, injury } = injuryAlert;
+    setInjuryAlert(null);
+
+    const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
+                       (injury.side === 'away' && userTeam === gameState.awayTeam);
+
+    if (type === 'pitcher') {
+      if (isUserTeam) {
+        const bullpen = injury.side === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
+        setPitcherInjury({ ...injury, bullpen });
+      } else {
+        const bullpen = injury.side === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
+        if (bullpen && bullpen.length > 0) {
+          const sorted = [...bullpen].sort((a, b) => b.control - a.control);
+          const newReliever = sorted[0];
+          const newState = changePitcher(gameState, newReliever, injury.side);
+          delete newState._pendingPitcherInjury;
+          setGameState(newState);
+        }
+      }
+    } else if (type === 'batter') {
+      if (isUserTeam) {
+        setBatterInjury(injury);
+      } else {
+        const bench = injury.bench || [];
+        if (bench.length > 0) {
+          const sorted = [...bench].sort((a, b) => (b.contact + b.power) - (a.contact + a.power));
+          const replacement = sorted[0];
+          let newState;
+          if (injury.stillAtPlate) {
+            newState = pinchHit(gameState, replacement);
+          } else {
+            newState = replaceInjuredBatter(gameState, injury.batterName, injury.side, replacement, injury.name);
+          }
+          delete newState._pendingBatterInjury;
+          setGameState(newState);
+        }
+      }
+    } else if (type === 'runner') {
+      if (isUserTeam) {
+        setRunnerInjury(injury);
+      } else {
+        const bench = injury.bench || [];
+        if (bench.length > 0) {
+          const sorted = [...bench].sort((a, b) => b.speed - a.speed);
+          const replacement = sorted[0];
+          let newState;
+          if (injury.baseIndex >= 0) {
+            newState = pinchRun(gameState, injury.baseIndex, replacement);
+          } else {
+            newState = replaceInjuredBatter(gameState, injury.runnerName, injury.side, replacement, injury.name);
+          }
+          delete newState._pendingRunnerInjury;
+          setGameState(newState);
+        }
+      }
+    } else if (type === 'sliding') {
+      if (isUserTeam) {
+        setSlidingInjury(injury);
+      } else {
+        const bench = injury.bench || [];
+        if (bench.length > 0) {
+          const sorted = [...bench].sort((a, b) => b.speed - a.speed);
+          const replacement = sorted[0];
+          let newState;
+          if (injury.baseIndex >= 0) {
+            newState = pinchRun(gameState, injury.baseIndex, replacement);
+          } else {
+            newState = replaceInjuredBatter(gameState, injury.runnerName, injury.side, replacement, injury.name);
+          }
+          delete newState._pendingSlidingInjury;
+          setGameState(newState);
+        }
+      }
+    } else if (type === 'fielder') {
+      if (isUserTeam) {
+        setFielderInjury(injury);
+      } else {
+        const bench = injury.bench || [];
+        if (bench.length > 0) {
+          const sorted = [...bench].sort((a, b) => (b.contact + b.power) - (a.contact + a.power));
+          const replacement = sorted[0];
+          const newState = replaceInjuredBatter(gameState, injury.fielderName, injury.side, replacement, injury.name);
+          delete newState._pendingFielderInjury;
+          setGameState(newState);
+        }
+      }
+    }
+  }, [injuryAlert, gameState, userTeam]);
+
   const handleNewGame = () => {
     setGameState(null);
     setBallparkPhase(null);
@@ -1474,6 +1491,7 @@ export default function Home() {
     setSlidingInjury(null);
     setFielderInjury(null);
     setPregameIllnesses(null);
+    setInjuryAlert(null);
   };
 
   if (ballparkPhase) {
@@ -1884,6 +1902,16 @@ export default function Home() {
       )}
 
 
+
+      {/* Injury Alert Modal — shows injury details before replacement */}
+      {injuryAlert && (
+        <InjuryAlertModal
+          injury={injuryAlert.injury}
+          type={injuryAlert.type}
+          teamKey={injuryAlert.teamKey}
+          onClose={handleInjuryAlertDismiss}
+        />
+      )}
 
       {/* Pitcher Injury Modal — user picks replacement from bullpen */}
       {pitcherInjury && (
