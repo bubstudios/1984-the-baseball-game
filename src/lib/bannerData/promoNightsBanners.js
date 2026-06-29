@@ -15,6 +15,7 @@ export const PROMO_NIGHTS_BANNER = {
     // ── REALISTIC PROMO DAYS / NIGHTS (13) ──
     {
       num: 1,
+        achievementId: 'nat_promoNights_1',
       emoji: '🏏',
       title: 'BAT DAY',
       tagline: 'A free bat for every kid!',
@@ -26,6 +27,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 2,
+        achievementId: 'nat_promoNights_2',
       emoji: '🎆',
       title: 'FIREWORKS NIGHT',
       tagline: 'Stick around after the final out!',
@@ -37,6 +39,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 3,
+        achievementId: 'nat_promoNights_3',
       emoji: '🧢',
       title: 'CAP DAY',
       tagline: 'Free team cap at the gate!',
@@ -48,6 +51,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 4,
+        achievementId: 'nat_promoNights_4',
       emoji: '💙',
       title: 'FAN APPRECIATION NIGHT',
       tagline: 'This one\'s for you, fans!',
@@ -59,6 +63,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 5,
+        achievementId: 'nat_promoNights_5',
       emoji: '👴',
       title: 'OLD-TIMERS\' DAY',
       tagline: 'The legends take the field once more',
@@ -70,6 +75,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 6,
+        achievementId: 'nat_promoNights_6',
       emoji: '🌭',
       title: 'DOLLAR DOG NIGHT',
       tagline: 'Hot dogs, just a buck!',
@@ -81,6 +87,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 7,
+        achievementId: 'nat_promoNights_7',
       emoji: '🎍',
       title: 'OPENING DAY',
       tagline: 'Baseball is back!',
@@ -92,6 +99,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 8,
+        achievementId: 'nat_promoNights_8',
       emoji: '📸',
       title: 'PHOTO DAY',
       tagline: 'Get up close with the players!',
@@ -103,6 +111,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 9,
+        achievementId: 'nat_promoNights_9',
       emoji: '⛑️',
       title: 'HELMET DAY',
       tagline: 'Free batting helmet for the kids!',
@@ -114,6 +123,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 10,
+        achievementId: 'nat_promoNights_10',
       emoji: '👕',
       title: 'JERSEY NIGHT',
       tagline: 'Free team jersey at the gate!',
@@ -125,6 +135,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 11,
+        achievementId: 'nat_promoNights_11',
       emoji: '🏁',
       title: 'THE DIZZY BAT RACE',
       tagline: 'Spin, stagger, and stumble to the finish!',
@@ -136,6 +147,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 12,
+        achievementId: 'nat_promoNights_12',
       emoji: '🎶',
       title: 'SEVENTH-INNING STRETCH',
       tagline: 'Everybody up — stretch those legs!',
@@ -147,6 +159,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 13,
+        achievementId: 'nat_promoNights_13',
       emoji: '⚾',
       title: 'BALL DAY',
       tagline: 'A free baseball for every fan!',
@@ -159,6 +172,7 @@ export const PROMO_NIGHTS_BANNER = {
     // ── SILLY / INVENTED THEME NIGHTS (12) ──
     {
       num: 14,
+        achievementId: 'nat_promoNights_14',
       emoji: '🐶',
       title: 'BARK IN THE PARK',
       tagline: 'Bring your best friend to the ballgame!',
@@ -170,6 +184,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 15,
+        achievementId: 'nat_promoNights_15',
       emoji: '🐠',
       title: 'GOLDFISH NIGHT',
       tagline: 'Bring your goldfish to the ballgame!',
@@ -181,6 +196,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 16,
+        achievementId: 'nat_promoNights_16',
       emoji: '🚀',
       title: 'SPACE SAGA NIGHT',
       tagline: 'The force is strong at the ballpark!',
@@ -192,6 +208,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 17,
+        achievementId: 'nat_promoNights_17',
       emoji: '🏖️',
       title: 'BEACH TOWEL NIGHT',
       tagline: 'Free towel — wave for the rally!',
@@ -203,6 +220,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 18,
+        achievementId: 'nat_promoNights_18',
       emoji: '🧶',
       title: 'UGLY SWEATER NIGHT',
       tagline: 'The tackier, the better!',
@@ -214,6 +232,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 19,
+        achievementId: 'nat_promoNights_19',
       emoji: '🎸',
       title: 'POSTGAME CONCERT: DREGS OF HUMANITY',
       tagline: 'Stick around — the show\'s just starting!',
@@ -225,6 +244,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 20,
+        achievementId: 'nat_promoNights_20',
       emoji: '🧦',
       title: 'SOCK NIGHT',
       tagline: 'Free team socks — knock your socks ON!',
@@ -236,6 +256,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 21,
+        achievementId: 'nat_promoNights_21',
       emoji: '🦸',
       title: 'SUPERHERO NIGHT',
       tagline: 'Capes welcome at the ballpark!',
@@ -247,6 +268,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 22,
+        achievementId: 'nat_promoNights_22',
       emoji: '🌙',
       title: 'PAJAMA NIGHT',
       tagline: 'Come to the game in your jammies!',
@@ -258,6 +280,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 23,
+        achievementId: 'nat_promoNights_23',
       emoji: '💇',
       title: 'MULLET NIGHT',
       tagline: 'Business up front, party in the back!',
@@ -269,6 +292,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 24,
+        achievementId: 'nat_promoNights_24',
       emoji: '👆',
       title: 'FOAM FINGER NIGHT',
       tagline: 'We\'re number one!',
@@ -280,6 +304,7 @@ export const PROMO_NIGHTS_BANNER = {
     },
     {
       num: 25,
+        achievementId: 'nat_promoNights_25',
       emoji: '🤹',
       title: 'MASCOT MAYHEM NIGHT',
       tagline: 'Every mascot in one place!',

@@ -13,6 +13,7 @@ export const CAMERAS_FILM_BANNER = {
     // ── WINDOW 01: KODAK & THE ROLL OF FILM ──
     {
       num: 1,
+        achievementId: 'nat_film_1',
       emoji: '🎞️',
       title: 'KODAK & THE ROLL OF FILM',
       tagline: 'You press the button...',
@@ -25,6 +26,7 @@ export const CAMERAS_FILM_BANNER = {
     // ── WINDOW 02: THE ONE-HOUR PHOTO ──
     {
       num: 2,
+        achievementId: 'nat_film_2',
       emoji: '🏪',
       title: 'THE ONE-HOUR PHOTO',
       tagline: 'Pictures back by lunch',
@@ -37,6 +39,7 @@ export const CAMERAS_FILM_BANNER = {
     // ── WINDOW 03: POLAROID: INSTANT FILM MAGIC ──
     {
       num: 3,
+        achievementId: 'nat_film_3',
       emoji: '✨',
       title: 'POLAROID: INSTANT FILM MAGIC',
       tagline: 'Shake it... and watch it appear',
@@ -49,6 +52,7 @@ export const CAMERAS_FILM_BANNER = {
     // ── WINDOW 04: THE DISC CAMERA ──
     {
       num: 4,
+        achievementId: 'nat_film_4',
       emoji: '💿',
       title: 'THE DISC CAMERA',
       tagline: 'The future that wasn\'t',
@@ -61,6 +65,7 @@ export const CAMERAS_FILM_BANNER = {
     // ── WINDOW 05: THE 110 POCKET CAMERA ──
     {
       num: 5,
+        achievementId: 'nat_film_5',
       emoji: '👝',
       title: 'THE 110 POCKET CAMERA',
       tagline: 'Small enough to take anywhere',
@@ -73,6 +78,7 @@ export const CAMERAS_FILM_BANNER = {
     // ── WINDOW 06: THE FLASH CUBE & FLASH ──
     {
       num: 6,
+        achievementId: 'nat_film_6',
       emoji: '⚡',
       title: 'THE FLASH CUBE & FLASH',
       tagline: 'Don\'t look directly at it',
@@ -85,6 +91,7 @@ export const CAMERAS_FILM_BANNER = {
     // ── WINDOW 07: THE PHOTO ALBUM & SHOEBOX ──
     {
       num: 7,
+        achievementId: 'nat_film_7',
       emoji: '📒',
       title: 'THE PHOTO ALBUM & SHOEBOX',
       tagline: 'Stick \'em under the plastic',
@@ -97,6 +104,7 @@ export const CAMERAS_FILM_BANNER = {
     // ── WINDOW 08: THE 35MM ENTHUSIAST CAMERA ──
     {
       num: 8,
+        achievementId: 'nat_film_8',
       emoji: '📷',
       title: 'THE 35MM SLR',
       tagline: 'For the serious shutterbug',
@@ -109,6 +117,7 @@ export const CAMERAS_FILM_BANNER = {
     // ── WINDOW 09: THE SLIDE PROJECTOR ──
     {
       num: 9,
+        achievementId: 'nat_film_9',
       emoji: '🎞️',
       title: 'SLIDES & THE PROJECTOR',
       tagline: 'Gather round for vacation photos',
@@ -121,6 +130,7 @@ export const CAMERAS_FILM_BANNER = {
     // ── WINDOW 10: "DID THEY COME OUT?" ──
     {
       num: 10,
+        achievementId: 'nat_film_10',
       emoji: '🤞',
       title: 'THE BIG REVEAL',
       tagline: 'Flip through and hope',

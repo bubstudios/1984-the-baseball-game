@@ -13,6 +13,7 @@ export const PHONE_WARS_BANNER = {
     // ── WINDOW 01: THE BREAKUP OF MA BELL ──
     {
       num: 1,
+        achievementId: 'nat_phoneWars_1',
       emoji: '🏛️',
       title: 'THE BREAKUP OF MA BELL',
       tagline: 'The end of Ma Bell',
@@ -25,6 +26,7 @@ export const PHONE_WARS_BANNER = {
     // ── WINDOW 02: AT&T ──
     {
       num: 2,
+        achievementId: 'nat_phoneWars_2',
       emoji: '📞',
       title: 'AT&T',
       tagline: 'The long-distance giant',
@@ -37,6 +39,7 @@ export const PHONE_WARS_BANNER = {
     // ── WINDOW 03: MCI ──
     {
       num: 3,
+        achievementId: 'nat_phoneWars_3',
       emoji: '🔵',
       title: 'MCI',
       tagline: 'The scrappy challenger',
@@ -49,6 +52,7 @@ export const PHONE_WARS_BANNER = {
     // ── WINDOW 04: SPRINT ──
     {
       num: 4,
+        achievementId: 'nat_phoneWars_4',
       emoji: '✨',
       title: 'SPRINT',
       tagline: 'So clear you could hear a pin drop',
@@ -61,6 +65,7 @@ export const PHONE_WARS_BANNER = {
     // ── WINDOW 05: THE PHONE BILL ──
     {
       num: 5,
+        achievementId: 'nat_phoneWars_5',
       emoji: '🧾',
       title: 'THE PHONE BILL',
       tagline: 'Who did you call in Ohio?!',
@@ -73,6 +78,7 @@ export const PHONE_WARS_BANNER = {
     // ── WINDOW 06: NIGHTS & WEEKENDS ──
     {
       num: 6,
+        achievementId: 'nat_phoneWars_6',
       emoji: '🌙',
       title: 'NIGHTS & WEEKENDS',
       tagline: 'Wait till the rates drop',
@@ -85,6 +91,7 @@ export const PHONE_WARS_BANNER = {
     // ── WINDOW 07: THE PAYPHONE ──
     {
       num: 7,
+        achievementId: 'nat_phoneWars_7',
       emoji: '🪙',
       title: 'THE PAYPHONE',
       tagline: 'Got a dime? Better make it a quarter',
@@ -97,6 +104,7 @@ export const PHONE_WARS_BANNER = {
     // ── WINDOW 08: CALLING CARDS & TOLL-FREE ──
     {
       num: 8,
+        achievementId: 'nat_phoneWars_8',
       emoji: '🔢',
       title: 'CALLING CARDS & TOLL-FREE',
       tagline: 'Dial 1, then the number',
@@ -109,6 +117,7 @@ export const PHONE_WARS_BANNER = {
     // ── WINDOW 09: THE TELEPHONE ITSELF ──
     {
       num: 9,
+        achievementId: 'nat_phoneWars_9',
       emoji: '☎️',
       title: 'THE TELEPHONE ITSELF',
       tagline: 'From rotary to Touch-Tone',
@@ -121,6 +130,7 @@ export const PHONE_WARS_BANNER = {
     // ── WINDOW 10: THE PHONE AD WARS ──
     {
       num: 10,
+        achievementId: 'nat_phoneWars_10',
       emoji: '💛',
       title: 'THE PHONE AD WARS',
       tagline: 'Connecting people, one call at a time',

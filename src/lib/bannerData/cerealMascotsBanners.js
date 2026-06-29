@@ -12,6 +12,7 @@ export const CEREAL_BANNER = {
   popups: [
     {
       num: 1,
+        achievementId: 'nat_cereal_1',
       emoji: '🥣',
       title: 'THE CEREAL AISLE',
       tagline: 'A wall of cartoon color',
@@ -23,6 +24,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 2,
+        achievementId: 'nat_cereal_2',
       emoji: '🎁',
       title: 'THE PRIZE INSIDE',
       tagline: 'Buried at the bottom of the box',
@@ -34,6 +36,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 3,
+        achievementId: 'nat_cereal_3',
       emoji: '🦁',
       title: 'THE FROSTED-FLAKES TIGER',
       tagline: 'They\'re great',
@@ -45,6 +48,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 4,
+        achievementId: 'nat_cereal_4',
       emoji: '🧛',
       title: 'THE CEREAL MONSTERS',
       tagline: 'Spooky, sweet, and silly',
@@ -56,6 +60,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 5,
+        achievementId: 'nat_cereal_5',
       emoji: '🍀',
       title: 'THE MARSHMALLOW LEPRECHAUN',
       tagline: 'Always after the marshmallows',
@@ -67,6 +72,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 6,
+        achievementId: 'nat_cereal_6',
       emoji: '🐝',
       title: 'THE FRIENDLY MASCOTS',
       tagline: 'Buzzing and chirping for breakfast',
@@ -78,6 +84,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 7,
+        achievementId: 'nat_cereal_7',
       emoji: '🍬',
       title: 'THE SUGAR CEREALS',
       tagline: 'Dessert for breakfast',
@@ -89,6 +96,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 8,
+        achievementId: 'nat_cereal_8',
       emoji: '🥣',
       title: 'THE BALANCED BREAKFAST',
       tagline: '…with toast, juice, and milk',
@@ -100,6 +108,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 9,
+        achievementId: 'nat_cereal_9',
       emoji: '📦',
       title: 'THE BACK OF THE BOX',
       tagline: 'Read it ten times over breakfast',
@@ -111,6 +120,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 10,
+        achievementId: 'nat_cereal_10',
       emoji: '✉️',
       title: 'THE BOX-TOP MAIL-AWAY',
       tagline: 'Send 2 box tops and $1.99',
@@ -122,6 +132,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 11,
+        achievementId: 'nat_cereal_11',
       emoji: '🏅',
       title: 'THE CHAMPIONS\' CEREAL',
       tagline: 'Breakfast of champions',
@@ -133,6 +144,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 12,
+        achievementId: 'nat_cereal_12',
       emoji: '🌾',
       title: 'THE HEALTHY CEREALS',
       tagline: 'For the grown-ups',
@@ -144,6 +156,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 13,
+        achievementId: 'nat_cereal_13',
       emoji: '📺',
       title: 'CEREAL & CARTOONS',
       tagline: 'The perfect pairing',
@@ -155,6 +168,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 14,
+        achievementId: 'nat_cereal_14',
       emoji: '🥛',
       title: 'THE BOTTOM OF THE BOX',
       tagline: 'Sweet milk and crumbs',
@@ -166,6 +180,7 @@ export const CEREAL_BANNER = {
     },
     {
       num: 15,
+        achievementId: 'nat_cereal_15',
       emoji: '🥣',
       title: 'THE CEREAL EXPERIENCE',
       tagline: 'Color, sugar, and a cartoon friend',

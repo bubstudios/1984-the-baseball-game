@@ -12,6 +12,7 @@ export const CARS_ROAD_BANNER = {
   popups: [
     {
       num: 1,
+        achievementId: 'nat_cars_1',
       emoji: '🚐',
       title: 'THE MINIVAN',
       tagline: 'The family car of the future',
@@ -23,6 +24,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 2,
+        achievementId: 'nat_cars_2',
       emoji: '🏎️',
       title: 'THE PONTIAC FIERO',
       tagline: 'A mid-engine sports car for the masses',
@@ -34,6 +36,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 3,
+        achievementId: 'nat_cars_3',
       emoji: '🚙',
       title: 'THE K-CAR',
       tagline: 'Boxy, thrifty, and everywhere',
@@ -45,6 +48,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 4,
+        achievementId: 'nat_cars_4',
       emoji: '🔥',
       title: 'THE PONY & MUSCLE CARS',
       tagline: 'V8 rumble and T-tops',
@@ -56,6 +60,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 5,
+        achievementId: 'nat_cars_5',
       emoji: '📱',
       title: 'THE CAR PHONE',
       tagline: 'Making calls from the road?!',
@@ -67,6 +72,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 6,
+        achievementId: 'nat_cars_6',
       emoji: '🍔',
       title: 'DRIVE-IN CULTURE',
       tagline: 'Eat, watch, and order from your car',
@@ -78,6 +84,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 7,
+        achievementId: 'nat_cars_7',
       emoji: '🗺️',
       title: 'THE FAMILY ROAD TRIP',
       tagline: 'Are we there yet?',
@@ -89,6 +96,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 8,
+        achievementId: 'nat_cars_8',
       emoji: '🎶',
       title: 'THE CAR STEREO',
       tagline: 'Crank the tunes on the highway',
@@ -100,6 +108,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 9,
+        achievementId: 'nat_cars_9',
       emoji: '⛽',
       title: 'DOLLAR-A-GALLON GAS',
       tagline: 'Fill the tank for a few bucks',
@@ -111,6 +120,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 10,
+        achievementId: 'nat_cars_10',
       emoji: '🛻',
       title: 'THE PICKUP TRUCK',
       tagline: 'Work hard, haul anything',
@@ -122,6 +132,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 11,
+        achievementId: 'nat_cars_11',
       emoji: '🌈',
       title: 'THE CUSTOM VAN',
       tagline: 'Shag carpet and a mural on the side',
@@ -133,6 +144,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 12,
+        achievementId: 'nat_cars_12',
       emoji: '🎛️',
       title: 'THE DASHBOARD',
       tagline: 'Bench seat, AM radio, no seatbelt fuss',
@@ -144,6 +156,7 @@ export const CARS_ROAD_BANNER = {
     },
     {
       num: 13,
+        achievementId: 'nat_cars_13',
       emoji: '🛣️',
       title: 'THE OPEN ROAD',
       tagline: 'Just drive',

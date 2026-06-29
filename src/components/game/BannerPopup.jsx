@@ -48,8 +48,22 @@ function cleanPlaceholders(text) {
   return text.replace(/\[Player\]/gi, 'this player');
 }
 
-// Field renderers for popup entries — handles electronics, movies, and general products structures
+// Field renderers for popup entries — handles electronics, movies, TV shows, and general products structures
 const FIELD_RENDERERS = [
+  // ── TV Show episode fields ──
+  { key: 'day', label: null, render: (v, popup) => (
+    <p className="text-sm font-heading text-yellow-200">
+      {v}{popup?.time ? ` at ${popup.time}` : ''}{popup?.network ? ` on ${popup.network}` : ''}
+    </p>
+  ) },
+  { key: 'time', label: null, render: () => null }, // handled by 'day' renderer
+  { key: 'network', label: null, render: () => null }, // handled by 'day' renderer
+  { key: 'plot', label: 'This Week', render: (v) => <p className="text-sm leading-relaxed">{v}</p> },
+  { key: 'stars', label: 'Starring', render: (v) => <p className="text-sm"><span className="font-bold text-yellow-300">Starring:</span> {v}</p> },
+  { key: 'guests', label: 'Guest Stars', render: (v) => <p className="text-sm"><span className="font-bold text-yellow-300">Guest Stars:</span> {v}</p> },
+  { key: 'location', label: 'Filmed at', render: (v) => <p className="text-sm"><span className="font-bold text-yellow-300">Filmed at:</span> {v}</p> },
+  { key: 'slogan', label: null, render: (v) => <p className="text-sm text-muted-foreground italic text-center">{v}</p> },
+  // ── General / movie / electronics fields ──
   { key: 'tagline', label: null, render: (v) => <p className="text-sm text-yellow-200 font-heading italic">— {v}</p> },
   { key: 'price', label: 'Price', render: (v) => <p className="text-sm"><span className="font-bold text-yellow-300">Price:</span> {v}</p> },
   { key: 'premiere', label: 'Premiere', render: (v) => <p className="text-sm"><span className="font-bold text-yellow-300">Premiere:</span> {v}</p> },
@@ -87,12 +101,13 @@ const FIELD_RENDERERS = [
 ];
 
 function PopupContent({ popup }) {
+  const headerTitle = popup.title || (popup.num ? `Episode ${popup.num}` : null);
   return (
     <div className="space-y-3">
       {/* Popup header with emoji + title */}
       <div className="flex items-center gap-3 pb-2 border-b border-yellow-400/20">
         {popup.emoji && <span className="text-4xl">{popup.emoji}</span>}
-        <h3 className="font-heading text-xl font-bold text-yellow-300">{popup.title}</h3>
+        {headerTitle && <h3 className="font-heading text-xl font-bold text-yellow-300">{headerTitle}</h3>}
       </div>
       {/* Render all known fields dynamically */}
       {FIELD_RENDERERS.map(({ key, label, render }) => {
@@ -100,7 +115,7 @@ function PopupContent({ popup }) {
         return (
           <div key={key}>
             {label && <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-0.5">{label}</div>}
-            {render(popup[key])}
+            {render(popup[key], popup)}
           </div>
         );
       })}

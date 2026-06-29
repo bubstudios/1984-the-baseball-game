@@ -12,6 +12,7 @@ export const SATURDAY_CARTOONS_BANNER = {
   popups: [
     {
       num: 1,
+        achievementId: 'nat_cartoons_1',
       emoji: '📺',
       title: 'THE SATURDAY MORNING RITUAL',
       tagline: 'Up at dawn, bowl in hand',
@@ -23,6 +24,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 2,
+        achievementId: 'nat_cartoons_2',
       emoji: '🤖',
       title: 'TRANSFORMING ROBOT HEROES',
       tagline: 'More than meets the eye',
@@ -34,6 +36,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 3,
+        achievementId: 'nat_cartoons_3',
       emoji: '🎖️',
       title: 'THE ELITE MILITARY TEAM',
       tagline: 'A real American hero',
@@ -45,6 +48,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 4,
+        achievementId: 'nat_cartoons_4',
       emoji: '⚔️',
       title: 'THE SWORD-AND-SORCERY HERO',
       tagline: 'By the power of the castle',
@@ -56,6 +60,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 5,
+        achievementId: 'nat_cartoons_5',
       emoji: '🌈',
       title: 'THE RAINBOW CUDDLY BEARS',
       tagline: 'Caring is their superpower',
@@ -67,6 +72,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 6,
+        achievementId: 'nat_cartoons_6',
       emoji: '👶',
       title: 'THE TINY VERSIONS',
       tagline: 'Your favorite characters, as kids',
@@ -78,6 +84,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 7,
+        achievementId: 'nat_cartoons_7',
       emoji: '🐰',
       title: 'THE CLASSIC CARTOON GANG',
       tagline: 'That\'s all, folks',
@@ -89,6 +96,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 8,
+        achievementId: 'nat_cartoons_8',
       emoji: '🐕',
       title: 'THE MYSTERY GANG & THEIR DOG',
       tagline: 'Those meddling kids',
@@ -100,6 +108,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 9,
+        achievementId: 'nat_cartoons_9',
       emoji: '🔵',
       title: 'THE LITTLE BLUE VILLAGE',
       tagline: 'Three apples high',
@@ -111,6 +120,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 10,
+        achievementId: 'nat_cartoons_10',
       emoji: '🕹️',
       title: 'THE ARCADE-HERO CARTOONS',
       tagline: 'From the arcade to the TV',
@@ -122,6 +132,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 11,
+        achievementId: 'nat_cartoons_11',
       emoji: '📚',
       title: 'THE LEARNING SHORTS',
       tagline: 'A little lesson between the toons',
@@ -133,6 +144,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 12,
+        achievementId: 'nat_cartoons_12',
       emoji: '🦹',
       title: 'THE SUPER-FRIENDS',
       tagline: 'Heroes assemble',
@@ -144,6 +156,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 13,
+        achievementId: 'nat_cartoons_13',
       emoji: '🦆',
       title: 'THE FUNNY-ANIMAL TOWN',
       tagline: 'Wacky critters and big laughs',
@@ -155,6 +168,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 14,
+        achievementId: 'nat_cartoons_14',
       emoji: '🧸',
       title: 'CARTOONS AS COMMERCIALS',
       tagline: 'Buy the toy, watch the show',
@@ -166,6 +180,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 15,
+        achievementId: 'nat_cartoons_15',
       emoji: '⛵',
       title: 'THE SATURDAY COMMERCIALS',
       tagline: 'Sugar, toys, and a public-service tip',
@@ -177,6 +192,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 16,
+        achievementId: 'nat_cartoons_16',
       emoji: '🎪',
       title: 'THE LIVE-ACTION KIDS\' SHOWS',
       tagline: 'Puppets, sketches, and zaniness',
@@ -188,6 +204,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 17,
+        achievementId: 'nat_cartoons_17',
       emoji: '🦖',
       title: 'THE PREHISTORIC FAMILIES',
       tagline: 'Modern stone-age fun',
@@ -199,6 +216,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 18,
+        achievementId: 'nat_cartoons_18',
       emoji: '🚀',
       title: 'THE SPACE ADVENTURE TOONS',
       tagline: 'To the stars and beyond',
@@ -210,6 +228,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 19,
+        achievementId: 'nat_cartoons_19',
       emoji: '🏁',
       title: 'THE RACING & SPORTS TOONS',
       tagline: 'Wacky races and big games',
@@ -221,6 +240,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 20,
+        achievementId: 'nat_cartoons_20',
       emoji: '👻',
       title: 'THE FRIENDLY MONSTERS',
       tagline: 'Spooky but silly',
@@ -232,6 +252,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 21,
+        achievementId: 'nat_cartoons_21',
       emoji: '💻',
       title: 'THE NETWORK BUMPERS',
       tagline: 'We\'ll be right back!',
@@ -243,6 +264,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 22,
+        achievementId: 'nat_cartoons_22',
       emoji: '🥣',
       title: 'CARTOON CEREAL TIE-INS',
       tagline: 'Your favorite toon, now a breakfast',
@@ -254,6 +276,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 23,
+        achievementId: 'nat_cartoons_23',
       emoji: '🌟',
       title: 'WHEN IT\'S OVER',
       tagline: 'Now go outside and play',
@@ -265,6 +288,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 24,
+        achievementId: 'nat_cartoons_24',
       emoji: '🎒',
       title: 'CHARACTERS ON EVERYTHING',
       tagline: 'Your toon on your lunchbox',
@@ -276,6 +300,7 @@ export const SATURDAY_CARTOONS_BANNER = {
     },
     {
       num: 25,
+        achievementId: 'nat_cartoons_25',
       emoji: '✨',
       title: 'THE WHOLE MAGICAL MORNING',
       tagline: 'The best few hours of the week',

@@ -11,6 +11,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 01: COMMODORE 64 ──
     {
       num: 1,
+        achievementId: 'nat_electronics_1',
       emoji: '🖥️',
       title: 'COMMODORE 64',
       price: '~$200 (down from $595 at its 1982 launch — the price war is ON)',
@@ -23,6 +24,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 02: APPLE IIe ──
     {
       num: 2,
+        achievementId: 'nat_electronics_2',
       emoji: '🍎',
       title: 'APPLE IIe',
       price: '~$1,400 (a full setup with monitor and drive runs more)',
@@ -35,6 +37,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 03: APPLE MACINTOSH ──
     {
       num: 3,
+        achievementId: 'nat_electronics_3',
       emoji: '🖱️',
       title: 'APPLE MACINTOSH',
       price: '~$2,495',
@@ -47,6 +50,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 04: RADIO SHACK TANDY 1000 ──
     {
       num: 4,
+        achievementId: 'nat_electronics_4',
       emoji: '🖥️',
       title: 'RADIO SHACK TANDY 1000',
       price: '~$1,200',
@@ -59,6 +63,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 05: ATARI 800XL ──
     {
       num: 5,
+        achievementId: 'nat_electronics_5',
       emoji: '🎮',
       title: 'ATARI 800XL',
       price: '~$200–$250',
@@ -71,6 +76,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 06: THE VCR (HOME VIDEO) ──
     {
       num: 6,
+        achievementId: 'nat_electronics_6',
       emoji: '📼',
       title: 'THE VCR (HOME VIDEO)',
       price: '~$400–$800 for a decent deck',
@@ -83,6 +89,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 07: THE SONY WALKMAN ──
     {
       num: 7,
+        achievementId: 'nat_electronics_7',
       emoji: '🎧',
       title: 'THE SONY WALKMAN',
       price: '~$50–$150 depending on model',
@@ -95,6 +102,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 08: THE BOOMBOX ──
     {
       num: 8,
+        achievementId: 'nat_electronics_8',
       emoji: '📻',
       title: 'THE BOOMBOX',
       price: '~$80–$300 (the bigger, the better)',
@@ -107,6 +115,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 09: THE NINTENDO ARCADE & HOME-GAME WORLD ──
     {
       num: 9,
+        achievementId: 'nat_electronics_9',
       emoji: '🕹️',
       title: 'VIDEO GAMES, 1984',
       price: 'Arcade: a quarter a play · home cartridges: ~$20–$40',
@@ -119,6 +128,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 10: THE COMPACT DISC (CD) ──
     {
       num: 10,
+        achievementId: 'nat_electronics_10',
       emoji: '💿',
       title: 'THE COMPACT DISC (CD)',
       price: 'Players ~$700–$1,000 (early-adopter money); discs ~$15–$20',
@@ -131,6 +141,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 11: THE IBM PC & PCJr ──
     {
       num: 11,
+        achievementId: 'nat_electronics_11',
       emoji: '🖥️',
       title: 'THE IBM PC & PCJr',
       price: 'IBM PC: ~$2,000–$4,000+ · PCJr (the home version): ~$1,300',
@@ -143,6 +154,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 12: THE CAMCORDER ──
     {
       num: 12,
+        achievementId: 'nat_electronics_12',
       emoji: '🎥',
       title: 'THE CAMCORDER',
       price: '~$1,000–$1,500 (a big-ticket splurge)',
@@ -155,6 +167,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 13: THE DIGITAL & CALCULATOR WATCH ──
     {
       num: 13,
+        achievementId: 'nat_electronics_13',
       emoji: '⌚',
       title: 'THE DIGITAL & CALCULATOR WATCH',
       price: '~$25–$70 (calculator models a bit more)',
@@ -167,6 +180,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 14: HOME-TECH CULTURE (NON-PRODUCT) ──
     {
       num: 14,
+        achievementId: 'nat_electronics_14',
       emoji: '🏡',
       title: 'THE WIRED-UP HOME, 1984',
       price: 'N/A (but your family electric bill just went up)',
@@ -179,6 +193,7 @@ export const ELECTRONICS_COMPUTERS_BANNER = {
     // ── WINDOW 15: THE BULLETIN BOARD & THE MODEM (NON-PRODUCT) ──
     {
       num: 15,
+        achievementId: 'nat_electronics_15',
       emoji: '📞',
       title: 'THE BULLETIN BOARD & THE MODEM',
       price: 'A 300-baud modem ~$100–$300',

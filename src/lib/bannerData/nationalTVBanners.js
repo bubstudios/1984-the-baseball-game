@@ -71,7 +71,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*NBC — "Be There."*',
       },
     ],
-    achievementId: 'tvbanner_miamiavice',
+    achievementId: 'nat_tv_1',
   },
 
   // ── #002 DALLAS ──
@@ -137,7 +137,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*CBS — "We\'ve Got the Touch."*',
       },
     ],
-    achievementId: 'tvbanner_dallas',
+    achievementId: 'nat_tv_2',
   },
 
   // ── #003 DYNASTY ──
@@ -201,7 +201,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*ABC — "That Special Feeling, on ABC."*',
       },
     ],
-    achievementId: 'tvbanner_dynasty',
+    achievementId: 'nat_tv_3',
   },
 
   // ── #006 SIMON & SIMON ──
@@ -268,7 +268,7 @@ export const NATIONAL_TV_BANNERS = [
       },
     ],
     easterEgg: '🔍 Hidden Easter egg in popup #4 — the **Clark & Behh Detective Agency** appears (a reference)',
-    achievementId: 'tvbanner_simonsimon',
+    achievementId: 'nat_tv_4',
   },
 
   // ── #007 MAGNUM, P.I. ──
@@ -334,7 +334,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*CBS — "We\'ve Got the Touch."*',
       },
     ],
-    achievementId: 'tvbanner_magnum',
+    achievementId: 'nat_tv_5',
   },
 
   // ── #008 FAMILY TIES ──
@@ -400,7 +400,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*NBC — "Be There."*',
       },
     ],
-    achievementId: 'tvbanner_familyties',
+    achievementId: 'nat_tv_6',
   },
 
   // ── #009 MURDER, SHE WROTE ──
@@ -466,7 +466,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*CBS — "We\'ve Got the Touch."*',
       },
     ],
-    achievementId: 'tvbanner_murdershewrote',
+    achievementId: 'nat_tv_7',
   },
 
   // ── #010 CHEERS ──
@@ -532,7 +532,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*NBC — "Be There."*',
       },
     ],
-    achievementId: 'tvbanner_cheers',
+    achievementId: 'nat_tv_8',
   },
 
   // ── #011 RIPTIDE ──
@@ -598,7 +598,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*NBC — "Be There."*',
       },
     ],
-    achievementId: 'tvbanner_riptide',
+    achievementId: 'nat_tv_9',
   },
 
   // ── #012 IT\'S YOUR MOVE ──
@@ -664,7 +664,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*NBC — "Be There."*',
       },
     ],
-    achievementId: 'tvbanner_itsyourmove',
+    achievementId: 'nat_tv_10',
   },
 
   // ── #013 CAGNEY & LACEY ──
@@ -730,7 +730,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*CBS — "We\'ve Got the Touch."*',
       },
     ],
-    achievementId: 'tvbanner_cagneyandlacey',
+    achievementId: 'nat_tv_11',
   },
 
   // ── #014 THE FALL GUY ──
@@ -796,7 +796,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*ABC — "That Special Feeling, on ABC."*',
       },
     ],
-    achievementId: 'tvbanner_fallguy',
+    achievementId: 'nat_tv_12',
   },
 
   // ── #015 THE FACTS OF LIFE ──
@@ -862,7 +862,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*NBC — "Be There."*',
       },
     ],
-    achievementId: 'tvbanner_factsoflife',
+    achievementId: 'nat_tv_13',
   },
 
   // ── #016 HARDCASTLE AND McCORMICK ──
@@ -928,7 +928,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*ABC — "That Special Feeling, on ABC."*',
       },
     ],
-    achievementId: 'tvbanner_hardcastleandmccormick',
+    achievementId: 'nat_tv_14',
   },
 
   // ── #017 ALICE ──
@@ -994,7 +994,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*CBS — "We\'ve Got the Touch."*',
       },
     ],
-    achievementId: 'tvbanner_alice',
+    achievementId: 'nat_tv_15',
   },
 
   // ── #018 KNIGHT RIDER ──
@@ -1060,7 +1060,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*NBC — "Be There."*',
       },
     ],
-    achievementId: 'tvbanner_knightrider',
+    achievementId: 'nat_tv_16',
   },
 
   // ── #019 WEBSTER ──
@@ -1126,7 +1126,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*ABC — "That Special Feeling, on ABC."*',
       },
     ],
-    achievementId: 'tvbanner_webster',
+    achievementId: 'nat_tv_17',
   },
 
   // ── #020 REMINGTON STEELE ──
@@ -1192,7 +1192,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*NBC — "Be There."*',
       },
     ],
-    achievementId: 'tvbanner_remingtonsteele',
+    achievementId: 'nat_tv_18',
   },
 
   // ── #021 HIGHWAY TO HEAVEN ──
@@ -1258,7 +1258,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*NBC — "Be There."*',
       },
     ],
-    achievementId: 'tvbanner_highwaytoheaven',
+    achievementId: 'nat_tv_19',
   },
 
   // ── #022 HILL STREET BLUES ──
@@ -1324,7 +1324,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*NBC — "Be There."*',
       },
     ],
-    achievementId: 'tvbanner_hillstreetblues',
+    achievementId: 'nat_tv_20',
   },
 
   // ── #023 KATE & ALLIE ──
@@ -1390,7 +1390,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*CBS — "We\'ve Got the Touch."*',
       },
     ],
-    achievementId: 'tvbanner_kateandAllie',
+    achievementId: 'nat_tv_21',
   },
 
   // ── #024 NIGHT COURT ──
@@ -1457,7 +1457,7 @@ export const NATIONAL_TV_BANNERS = [
       },
     ],
     easterEgg: '✨ Hidden Easter egg in popup #3 — Carmie becomes "Carmage" (a reference)',
-    achievementId: 'tvbanner_nightcourt',
+    achievementId: 'nat_tv_22',
   },
 
   // ── #025 TRAPPER JOHN, M.D. ──
@@ -1523,7 +1523,7 @@ export const NATIONAL_TV_BANNERS = [
         slogan: '*CBS — "We\'ve Got the Touch."*',
       },
     ],
-    achievementId: 'tvbanner_trapperjomd',
+    achievementId: 'nat_tv_23',
   },
 ];
 

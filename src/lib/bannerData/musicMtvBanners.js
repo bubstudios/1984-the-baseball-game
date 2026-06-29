@@ -13,6 +13,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 01: MTV ──
     {
       num: 1,
+        achievementId: 'nat_music_1',
       emoji: '📺',
       title: 'MTV',
       tagline: 'The channel that played the videos',
@@ -25,6 +26,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 02: MICHAEL JACKSON & THRILLER ──
     {
       num: 2,
+        achievementId: 'nat_music_2',
       emoji: '🧤',
       title: 'MICHAEL JACKSON',
       tagline: 'The King of Pop at his peak',
@@ -37,6 +39,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 03: PRINCE & PURPLE RAIN ──
     {
       num: 3,
+        achievementId: 'nat_music_3',
       emoji: '💜',
       title: 'PRINCE',
       tagline: 'Purple Rain takes over',
@@ -49,6 +52,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 04: MADONNA ──
     {
       num: 4,
+        achievementId: 'nat_music_4',
       emoji: '🎤',
       title: 'MADONNA',
       tagline: 'The new queen of pop',
@@ -61,6 +65,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 05: BRUCE SPRINGSTEEN & BORN IN THE U.S.A. ──
     {
       num: 5,
+        achievementId: 'nat_music_5',
       emoji: '🇺🇸',
       title: 'BRUCE SPRINGSTEEN',
       tagline: 'The Boss and a record-breaking album',
@@ -73,6 +78,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 06: VAN HALEN & 1984 ──
     {
       num: 6,
+        achievementId: 'nat_music_6',
       emoji: '🎹',
       title: 'VAN HALEN',
       tagline: 'The album literally called 1984',
@@ -85,6 +91,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 07: CYNTHIA LAUPER ──
     {
       num: 7,
+        achievementId: 'nat_music_7',
       emoji: '🌈',
       title: 'CYNDI LAUPER',
       tagline: 'Technicolor hair and huge hits',
@@ -97,6 +104,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 08: THE WALKMAN GENERATION ──
     {
       num: 8,
+        achievementId: 'nat_music_8',
       emoji: '🎧',
       title: 'MUSIC ON THE GO',
       tagline: 'Your own private soundtrack',
@@ -109,6 +117,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 09: THE MIXTAPE ──
     {
       num: 9,
+        achievementId: 'nat_music_9',
       emoji: '📼',
       title: 'THE MIXTAPE',
       tagline: 'Recorded straight off the radio',
@@ -121,6 +130,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 10: THE TOP 40 RADIO COUNTDOWN ──
     {
       num: 10,
+        achievementId: 'nat_music_10',
       emoji: '📻',
       title: 'THE WEEKLY COUNTDOWN',
       tagline: 'And the number one song is...',
@@ -133,6 +143,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 11: THE BOOMBOX & STREET MUSIC ──
     {
       num: 11,
+        achievementId: 'nat_music_11',
       emoji: '🔈',
       title: 'THE BOOMBOX CULTURE',
       tagline: 'Carry the party with you',
@@ -145,6 +156,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 12: THE RISE OF HIP-HOP ──
     {
       num: 12,
+        achievementId: 'nat_music_12',
       emoji: '🎤',
       title: 'EARLY HIP-HOP',
       tagline: 'A brand-new sound from the block',
@@ -157,6 +169,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 13: SYNTH-POP & NEW WAVE ──
     {
       num: 13,
+        achievementId: 'nat_music_13',
       emoji: '🎹',
       title: 'SYNTH-POP & NEW WAVE',
       tagline: 'The sound of the future',
@@ -169,6 +182,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 14: TINA TURNER'S COMEBACK ──
     {
       num: 14,
+        achievementId: 'nat_music_14',
       emoji: '🔥',
       title: 'TINA TURNER',
       tagline: 'The comeback of the year',
@@ -181,6 +195,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 15: THE BRITISH INVASION (SECOND WAVE) ──
     {
       num: 15,
+        achievementId: 'nat_music_15',
       emoji: '🇬🇧',
       title: 'THE BRITS ON MTV',
       tagline: 'London takes the video channel',
@@ -193,6 +208,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 16: THE POWER BALLAD ──
     {
       num: 16,
+        achievementId: 'nat_music_16',
       emoji: '🤘',
       title: 'THE POWER BALLAD',
       tagline: 'Lighters up',
@@ -205,6 +221,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 17: THE ALBUM & THE LINER NOTES ──
     {
       num: 17,
+        achievementId: 'nat_music_17',
       emoji: '💿',
       title: 'THE VINYL ALBUM',
       tagline: 'Drop the needle, read the sleeve',
@@ -217,6 +234,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 18: THE CONCERT & THE TOUR TEE ──
     {
       num: 18,
+        achievementId: 'nat_music_18',
       emoji: '🎫',
       title: 'THE LIVE SHOW',
       tagline: 'Stub in your pocket, shirt on your back',
@@ -229,6 +247,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 19: THE MUSIC VIDEO AS EVENT ──
     {
       num: 19,
+        achievementId: 'nat_music_19',
       emoji: '🎬',
       title: 'THE BLOCKBUSTER VIDEO',
       tagline: 'A short film, not just a clip',
@@ -241,6 +260,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 20: THE GRAMMYS & AWARDS SHOWS ──
     {
       num: 20,
+        achievementId: 'nat_music_20',
       emoji: '🏆',
       title: 'THE GRAMMYS & AWARDS SHOWS',
       tagline: 'And the award goes to...',
@@ -253,6 +273,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 21: DANCE & THE CLUB ──
     {
       num: 21,
+        achievementId: 'nat_music_21',
       emoji: '💃',
       title: 'DANCE & THE CLUB',
       tagline: 'Lights, beat, and a packed floor',
@@ -265,6 +286,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 22: THE ONE-HIT WONDERS ──
     {
       num: 22,
+        achievementId: 'nat_music_22',
       emoji: '✨',
       title: 'THE ONE-HIT WONDERS',
       tagline: 'That song you can\'t forget',
@@ -277,6 +299,7 @@ export const MUSIC_MTV_BANNER = {
     // ── WINDOW 23: THE WHOLE GOLDEN YEAR ──
     {
       num: 23,
+        achievementId: 'nat_music_23',
       emoji: '🎶',
       title: 'THE WHOLE GOLDEN YEAR',
       tagline: 'Maybe the best year pop ever had',

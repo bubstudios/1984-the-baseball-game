@@ -13,6 +13,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 01: THE FORMAT WAR ITSELF ──
     {
       num: 1,
+        achievementId: 'nat_formatWars_1',
       emoji: '⚔️',
       title: 'VHS vs. BETAMAX',
       tagline: 'Two tapes enter, one tape wins',
@@ -25,6 +26,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 02: VHS (THE WINNER) ──
     {
       num: 2,
+        achievementId: 'nat_formatWars_2',
       emoji: '📼',
       title: 'VHS',
       tagline: 'The one in every living room',
@@ -37,6 +39,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 03: BETAMAX (THE GALLANT LOSER) ──
     {
       num: 3,
+        achievementId: 'nat_formatWars_3',
       emoji: '🅱️',
       title: 'BETAMAX',
       tagline: 'Better picture, losing the war',
@@ -49,6 +52,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 04: LASERDISC (THE HIGH-END OPTION) ──
     {
       num: 4,
+        achievementId: 'nat_formatWars_4',
       emoji: '💿',
       title: 'LASERDISC',
       tagline: 'Gorgeous picture, big shiny platter',
@@ -61,6 +65,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 05: TIME-SHIFTING ──
     {
       num: 5,
+        achievementId: 'nat_formatWars_5',
       emoji: '⏺',
       title: 'TIME-SHIFTING',
       tagline: 'Tape it and watch it later',
@@ -73,6 +78,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 06: THE BLINKING "12:00" ──
     {
       num: 6,
+        achievementId: 'nat_formatWars_6',
       emoji: '🕓',
       title: 'THE BLINKING "12:00"',
       tagline: 'Nobody could program the thing',
@@ -85,6 +91,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 07: BLANK TAPES & STOCKPILING ──
     {
       num: 7,
+        achievementId: 'nat_formatWars_7',
       emoji: '📼',
       title: 'THE BLANK TAPE STASH',
       tagline: 'How many hours on this one?',
@@ -97,6 +104,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 08: "BE KIND, REWIND" ──
     {
       num: 8,
+        achievementId: 'nat_formatWars_8',
       emoji: '↩️',
       title: 'REWINDING',
       tagline: 'Don\'t return it un-rewound',
@@ -109,6 +117,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 09: TRACKING & THE FUZZY PICTURE ──
     {
       num: 9,
+        achievementId: 'nat_formatWars_9',
       emoji: '📶',
       title: 'THE TRACKING KNOB',
       tagline: 'Adjust until the static goes away',
@@ -121,6 +130,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 10: THE FBI WARNING & PREVIEWS ──
     {
       num: 10,
+        achievementId: 'nat_formatWars_10',
       emoji: '🚨',
       title: 'THE TAPE INTRO',
       tagline: 'You can\'t skip this part',
@@ -133,6 +143,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 11: THE BIG TOP-LOADER & EARLY DECKS ──
     {
       num: 11,
+        achievementId: 'nat_formatWars_11',
       emoji: '🎛️',
       title: 'THE VCR DECK',
       tagline: 'Heavy as a cinder block',
@@ -145,6 +156,7 @@ export const FORMAT_WARS_BANNER = {
     // ── WINDOW 12: MOVIE NIGHT AT HOME ──
     {
       num: 12,
+        achievementId: 'nat_formatWars_12',
       emoji: '🍿',
       title: 'HOME MOVIE NIGHT',
       tagline: 'The whole feature, in your living room',

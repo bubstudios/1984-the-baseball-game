@@ -13,6 +13,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 01: THE UNTETHERED SPACEWALK ──
     {
       num: 1,
+        achievementId: 'nat_space_1',
       emoji: '🧑‍🚀',
       title: 'BRUCE McCANDLESS — THE HUMAN SATELLITE',
       tagline: 'Floating free, no rope at all',
@@ -25,6 +26,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 02: THE MMU JETPACK ──
     {
       num: 2,
+        achievementId: 'nat_space_2',
       emoji: '🎒',
       title: 'THE MMU JETPACK',
       tagline: 'A spaceship you wear',
@@ -37,6 +39,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 03: DISCOVERY'S MAIDEN VOYAGE ──
     {
       num: 3,
+        achievementId: 'nat_space_3',
       emoji: '🛸',
       title: 'SPACE SHUTTLE DISCOVERY',
       tagline: 'A new bird takes flight',
@@ -49,6 +52,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 04: FIRST AMERICAN WOMAN TO SPACEWALK ──
     {
       num: 4,
+        achievementId: 'nat_space_4',
       emoji: '👩‍🚀',
       title: 'KATHRYN SULLIVAN',
       tagline: 'Stepping out into the void',
@@ -61,6 +65,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 05: SATELLITE RESCUE MISSIONS ──
     {
       num: 5,
+        achievementId: 'nat_space_5',
       emoji: '🛰️',
       title: 'CATCHING SATELLITES',
       tagline: 'The orbital tow truck',
@@ -73,6 +78,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 06: THE ORBITER ITSELF ──
     {
       num: 6,
+        achievementId: 'nat_space_6',
       emoji: '🚀',
       title: 'THE SPACE SHUTTLE',
       tagline: 'A spaceship that lands like a plane',
@@ -85,6 +91,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 07: MISSION CONTROL ──
     {
       num: 7,
+        achievementId: 'nat_space_7',
       emoji: '🎧',
       title: 'HOUSTON, MISSION CONTROL',
       tagline: 'Go for launch',
@@ -97,6 +104,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 08: THE ASTRONAUT CORPS ──
     {
       num: 8,
+        achievementId: 'nat_space_8',
       emoji: '⭐',
       title: 'THE ASTRONAUTS',
       tagline: 'America\'s spacefarers',
@@ -109,6 +117,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 09: THE LAUNCH ──
     {
       num: 9,
+        achievementId: 'nat_space_9',
       emoji: '🔥',
       title: 'LIFTOFF!',
       tagline: 'Five, four, three, one...',
@@ -121,6 +130,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 10: SPACELAB & SCIENCE IN ORBIT ──
     {
       num: 10,
+        achievementId: 'nat_space_10',
       emoji: '🔬',
       title: 'SPACELAB',
       tagline: 'A laboratory in the sky',
@@ -133,6 +143,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 11: THE VIEW FROM ORBIT ──
     {
       num: 11,
+        achievementId: 'nat_space_11',
       emoji: '🌍',
       title: 'THE BLUE MARBLE',
       tagline: 'Looking back home',
@@ -145,6 +156,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 12: THE SPACE-AGE CRAZE ──
     {
       num: 12,
+        achievementId: 'nat_space_12',
       emoji: '🪐',
       title: 'SPACE FEVER',
       tagline: 'Every kid wanted to be an astronaut',
@@ -157,6 +169,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 13: VOYAGER & ROBOTIC EXPLORERS ──
     {
       num: 13,
+        achievementId: 'nat_space_13',
       emoji: '📡',
       title: 'THE DEEP-SPACE PROBES',
       tagline: 'Robots at the edge of the solar system',
@@ -169,6 +182,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 14: THE CONCORDE ──
     {
       num: 14,
+        achievementId: 'nat_space_14',
       emoji: '✈️',
       title: 'THE CONCORDE',
       tagline: 'Faster than a speeding bullet',
@@ -181,6 +195,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 15: MILITARY JETS ──
     {
       num: 15,
+        achievementId: 'nat_space_15',
       emoji: '✈️',
       title: 'THE FIGHTER JETS',
       tagline: 'Top of the sky',
@@ -193,6 +208,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 16: COMMERCIAL FLIGHT ──
     {
       num: 16,
+        achievementId: 'nat_space_16',
       emoji: '🛫',
       title: 'THE JET AGE',
       tagline: 'The friendly skies',
@@ -205,6 +221,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 17: THE AVIATION PIONEERS ──
     {
       num: 17,
+        achievementId: 'nat_space_17',
       emoji: '🛩️',
       title: 'THE PIONEERS OF FLIGHT',
       tagline: 'Standing on the shoulders of dreamers',
@@ -217,6 +234,7 @@ export const SPACE_AVIATION_BANNER = {
     // ── WINDOW 18: THE NIGHT SKY & THE DREAM ──
     {
       num: 18,
+        achievementId: 'nat_space_18',
       emoji: '🌌',
       title: 'REACH FOR THE STARS',
       tagline: 'Look up',

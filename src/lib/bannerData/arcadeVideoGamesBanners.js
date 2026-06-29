@@ -14,6 +14,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 01: PAC-MAN ──
     {
       num: 1,
+        achievementId: 'nat_arcade_1',
       emoji: '🟡',
       title: 'PAC-MAN',
       tagline: 'Waka waka waka',
@@ -26,6 +27,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 02: DRAGON'S LAIR ──
     {
       num: 2,
+        achievementId: 'nat_arcade_2',
       emoji: '🐉',
       title: 'DRAGON\'S LAIR',
       tagline: 'The arcade game that looked like a cartoon',
@@ -38,6 +40,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 03: MARBLE MADNESS ──
     {
       num: 3,
+        achievementId: 'nat_arcade_3',
       emoji: '🔵',
       title: 'MARBLE MADNESS',
       tagline: 'Roll with it',
@@ -50,6 +53,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 04: DIG DUG ──
     {
       num: 4,
+        achievementId: 'nat_arcade_4',
       emoji: '⛏️',
       title: 'DIG DUG',
       tagline: 'Dig deep, pump hard',
@@ -62,6 +66,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 05: DONKEY KONG ──
     {
       num: 5,
+        achievementId: 'nat_arcade_5',
       emoji: '🦍',
       title: 'DONKEY KONG (birth of Mario)',
       tagline: 'How high can you get?',
@@ -74,6 +79,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 06: THE GAME MAKERS ──
     {
       num: 6,
+        achievementId: 'nat_arcade_6',
       emoji: '🏢',
       title: 'THE GAME MAKERS',
       tagline: 'Behind every cabinet',
@@ -86,6 +92,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 07: ATARI 2600 ──
     {
       num: 7,
+        achievementId: 'nat_arcade_7',
       emoji: '🎮',
       title: 'ATARI 2600',
       tagline: 'The one that brought the arcade home',
@@ -98,6 +105,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 08: THE GREAT VIDEO GAME CRASH OF 1983 ──
     {
       num: 8,
+        achievementId: 'nat_arcade_8',
       emoji: '📉',
       title: 'THE GREAT VIDEO GAME CRASH OF 1983',
       tagline: 'When the bubble burst',
@@ -110,6 +118,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 09: GALAGA & THE SHOOTERS ──
     {
       num: 9,
+        achievementId: 'nat_arcade_9',
       emoji: '🚀',
       title: 'GALAGA & THE SHOOTERS',
       tagline: 'Defend the galaxy, one wave at a time',
@@ -122,6 +131,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 10: DEFENDER & ROBOTRON ──
     {
       num: 10,
+        achievementId: 'nat_arcade_10',
       emoji: '🕹️',
       title: 'DEFENDER & ROBOTRON',
       tagline: 'For the reflexes of the gods',
@@ -134,6 +144,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 11: THE ARCADE ITSELF ──
     {
       num: 11,
+        achievementId: 'nat_arcade_11',
       emoji: '🏛️',
       title: 'THE ARCADE ITSELF',
       tagline: 'The neon temple of the quarter',
@@ -146,6 +157,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 12: THE HIGH SCORE ──
     {
       num: 12,
+        achievementId: 'nat_arcade_12',
       emoji: '🔤',
       title: 'THE HIGH SCORE',
       tagline: 'Three letters, eternal glory',
@@ -158,6 +170,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 13: TRON & GAMES-MEET-HOLLYWOOD ──
     {
       num: 13,
+        achievementId: 'nat_arcade_13',
       emoji: '💿',
       title: 'TRON & GAMES-MEET-HOLLYWOOD',
       tagline: 'Game becomes movie becomes game',
@@ -170,6 +183,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 14: Q*BERT, FROGGER & FRIENDS ──
     {
       num: 14,
+        achievementId: 'nat_arcade_14',
       emoji: '🐸',
       title: 'Q*BERT, FROGGER & FRIENDS',
       tagline: 'The arcade gets cute',
@@ -182,6 +196,7 @@ export const ARCADE_BANNER = {
     // ── WINDOW 15: HANDHELD & TABLETOP GAMES ──
     {
       num: 15,
+        achievementId: 'nat_arcade_15',
       emoji: '🔦',
       title: 'HANDHELD & TABLETOP GAMES',
       tagline: 'Pocket arcade, parents\' nightmare',

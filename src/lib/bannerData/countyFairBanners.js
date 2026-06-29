@@ -13,6 +13,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 01: THE FERRIS WHEEL ──
     {
       num: 1,
+        achievementId: 'nat_countyFair_1',
       emoji: '🎡',
       title: 'THE FERRIS WHEEL',
       tagline: 'Top of the world at sunset',
@@ -25,6 +26,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 02: THE MIDWAY & CARNIVAL GAMES ──
     {
       num: 2,
+        achievementId: 'nat_countyFair_2',
       emoji: '🎯',
       title: 'THE MIDWAY & CARNIVAL GAMES',
       tagline: 'Step right up, everybody wins!',
@@ -37,6 +39,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 03: FUNNEL CAKE & FAIR FOOD ──
     {
       num: 3,
+        achievementId: 'nat_countyFair_3',
       emoji: '🍩',
       title: 'FUNNEL CAKE',
       tagline: 'Fried, sugared, and glorious',
@@ -49,6 +52,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 04: COTTON CANDY ──
     {
       num: 4,
+        achievementId: 'nat_countyFair_4',
       emoji: '🍭',
       title: 'COTTON CANDY',
       tagline: 'Spun-sugar clouds',
@@ -61,6 +65,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 05: THE LIVESTOCK SHOW ──
     {
       num: 5,
+        achievementId: 'nat_countyFair_5',
       emoji: '🐄',
       title: 'THE LIVESTOCK SHOW',
       tagline: 'Blue ribbon for the prize hog',
@@ -73,6 +78,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 06: THE BAKING CONTEST ──
     {
       num: 6,
+        achievementId: 'nat_countyFair_6',
       emoji: '🥧',
       title: 'THE BAKING CONTEST',
       tagline: 'Grandma\'s blue-ribbon recipe',
@@ -85,6 +91,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 07: THE GIANT PRODUCE ──
     {
       num: 7,
+        achievementId: 'nat_countyFair_7',
       emoji: '🎃',
       title: 'THE GIANT PRODUCE',
       tagline: 'That pumpkin weighs HOW much?',
@@ -97,6 +104,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 08: THE DEMOLITION DERBY ──
     {
       num: 8,
+        achievementId: 'nat_countyFair_8',
       emoji: '💥',
       title: 'THE DEMOLITION DERBY',
       tagline: 'Last car running wins',
@@ -109,6 +117,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 09: THE TRACTOR PULL ──
     {
       num: 9,
+        achievementId: 'nat_countyFair_9',
       emoji: '🚜',
       title: 'THE TRACTOR PULL',
       tagline: 'Full throttle, full sled',
@@ -121,6 +130,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 10: THE PETTING ZOO ──
     {
       num: 10,
+        achievementId: 'nat_countyFair_10',
       emoji: '🐐',
       title: 'THE PETTING ZOO',
       tagline: 'Feed the goats a quarter\'s worth',
@@ -133,6 +143,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW !1: THE FAIR PARADE ──
     {
       num: 11,
+        achievementId: 'nat_countyFair_11',
       emoji: '🎺',
       title: 'THE FAIR PARADE',
       tagline: 'Here comes the marching band',
@@ -145,6 +156,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 12: THE FAIR QUEEN & 4-H ──
     {
       num: 12,
+        achievementId: 'nat_countyFair_12',
       emoji: '👑',
       title: 'THE FAIR QUEEN & 4-H',
       tagline: 'Ribbons, sashes, and hard work',
@@ -157,6 +169,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 13: THE MIDWAY AT NIGHT ──
     {
       num: 13,
+        achievementId: 'nat_countyFair_13',
       emoji: '🎆',
       title: 'THE MIDWAY AT NIGHT',
       tagline: 'All lit up and humming',
@@ -169,6 +182,7 @@ export const COUNTY_FAIR_BANNER = {
     // ── WINDOW 14: HEADING HOME ──
     {
       num: 14,
+        achievementId: 'nat_countyFair_14',
       emoji: '🚗',
       title: 'HEADING HOME',
       tagline: 'Sticky, sleepy, and happy',

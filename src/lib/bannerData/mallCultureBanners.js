@@ -13,6 +13,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 01: THE FOOD COURT ──
     {
       num: 1,
+        achievementId: 'nat_mall_1',
       emoji: '🍕',
       title: 'THE FOOD COURT',
       tagline: 'Grab a tray and find a table',
@@ -25,6 +26,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 02: ORANGE JULIUS ──
     {
       num: 2,
+        achievementId: 'nat_mall_2',
       emoji: '🥤',
       title: 'ORANGE JULIUS',
       tagline: 'That frothy orange drink',
@@ -37,6 +39,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 03: WALDENBOOKS / B. DALTON ──
     {
       num: 3,
+        achievementId: 'nat_mall_3',
       emoji: '📚',
       title: 'THE MALL BOOKSTORE',
       tagline: 'Browse the racks',
@@ -49,6 +52,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 04: SPENCER GIFTS ──
     {
       num: 4,
+        achievementId: 'nat_mall_4',
       emoji: '🔮',
       title: 'SPENCER GIFTS',
       tagline: 'The weird store in the back',
@@ -61,6 +65,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 05: THE RECORD STORE ──
     {
       num: 5,
+        achievementId: 'nat_mall_5',
       emoji: '💿',
       title: 'THE MALL RECORD STORE',
       tagline: 'Flip through the bins',
@@ -73,6 +78,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 06: THE ARCADE ──
     {
       num: 6,
+        achievementId: 'nat_mall_6',
       emoji: '🕹️',
       title: 'THE MALL ARCADE',
       tagline: 'Dark room, glowing screens',
@@ -85,6 +91,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 07: THE COOKIE STAND ──
     {
       num: 7,
+        achievementId: 'nat_mall_7',
       emoji: '🍪',
       title: 'THE COOKIE STAND',
       tagline: 'Follow your nose',
@@ -97,6 +104,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 08: THE ANCHOR DEPARTMENT STORE ──
     {
       num: 8,
+        achievementId: 'nat_mall_8',
       emoji: '🏢',
       title: 'THE ANCHOR STORE',
       tagline: 'Through the perfume counter',
@@ -109,6 +117,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 09: THE CLOTHING CHAINS ──
     {
       num: 9,
+        achievementId: 'nat_mall_9',
       emoji: '👖',
       title: 'THE MALL FASHION SHOPS',
       tagline: 'Stonewashed and ready',
@@ -121,6 +130,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 10: THE SHOE STORES ──
     {
       num: 10,
+        achievementId: 'nat_mall_10',
       emoji: '👟',
       title: 'THE SHOE STORE',
       tagline: 'What\'s your size?',
@@ -133,6 +143,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 11: THE PRETZEL & SNACK STANDS ──
     {
       num: 11,
+        achievementId: 'nat_mall_11',
       emoji: '🥨',
       title: 'THE PRETZEL STAND',
       tagline: 'Soft, warm, and salty',
@@ -145,6 +156,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 12: THE PHOTO BOOTH ──
     {
       num: 12,
+        achievementId: 'nat_mall_12',
       emoji: '📷',
       title: 'THE PHOTO BOOTH',
       tagline: 'Squeeze in — four poses!',
@@ -157,6 +169,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 13: THE FOUNTAIN ──
     {
       num: 13,
+        achievementId: 'nat_mall_13',
       emoji: '⛲',
       title: 'THE MALL FOUNTAIN',
       tagline: 'Make a wish, toss a penny',
@@ -169,6 +182,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 14: THE PET STORE ──
     {
       num: 14,
+        achievementId: 'nat_mall_14',
       emoji: '🐶',
       title: 'THE MALL PET STORE',
       tagline: 'Just looking at the puppies',
@@ -181,6 +195,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 15: THE CANDY & NUT SHOP ──
     {
       num: 15,
+        achievementId: 'nat_mall_15',
       emoji: '🍬',
       title: 'THE CANDY SHOP',
       tagline: 'By the quarter pound',
@@ -193,6 +208,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 16: THE CARD & GIFT SHOP ──
     {
       num: 16,
+        achievementId: 'nat_mall_16',
       emoji: '💌',
       title: 'THE CARD SHOP',
       tagline: 'A card for every occasion',
@@ -205,6 +221,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 17: THE ELECTRONICS / RADIO SHOP ──
     {
       num: 17,
+        achievementId: 'nat_mall_17',
       emoji: '🔊',
       title: 'THE ELECTRONICS STORE',
       tagline: 'Gadgets and gizmos',
@@ -217,6 +234,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 18: THE MALL CINEMA ──
     {
       num: 18,
+        achievementId: 'nat_mall_18',
       emoji: '🎞️',
       title: 'THE MALL CINEMA',
       tagline: 'Catch a flick after shopping',
@@ -229,6 +247,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 19: HOLIDAY AT THE MALL ──
     {
       num: 19,
+        achievementId: 'nat_mall_19',
       emoji: '🎄',
       title: 'HOLIDAY AT THE MALL',
       tagline: 'Santa\'s village and the rush',
@@ -241,6 +260,7 @@ export const MALL_CULTURE_BANNER = {
     // ── WINDOW 20: JUST HANGING OUT ──
     {
       num: 20,
+        achievementId: 'nat_mall_20',
       emoji: '😎',
       title: 'HANGING AT THE MALL',
       tagline: 'No money, all day',

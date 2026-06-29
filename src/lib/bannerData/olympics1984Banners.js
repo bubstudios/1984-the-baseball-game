@@ -13,6 +13,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 01: MARY LOU RETTON ──
     {
       num: 1,
+        achievementId: 'nat_olympics_1',
       emoji: '🤸‍♀️',
       title: 'MARY LOU RETTON',
       tagline: 'The perfect 10',
@@ -25,6 +26,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 02: CARL LEWIS ──
     {
       num: 2,
+        achievementId: 'nat_olympics_2',
       emoji: '🏃',
       title: 'CARL LEWIS',
       tagline: 'Four golds, one summer',
@@ -37,6 +39,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 03: EDWIN MOSES ──
     {
       num: 3,
+        achievementId: 'nat_olympics_3',
       emoji: '🏃🏾‍♂️',
       title: 'EDWIN MOSES',
       tagline: 'Untouchable over the hurdles',
@@ -49,6 +52,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 04: GREG LOUGANIS ──
     {
       num: 4,
+        achievementId: 'nat_olympics_4',
       emoji: '🤿',
       title: 'GREG LOUGANIS',
       tagline: 'Poetry off the board',
@@ -61,6 +65,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 05: JOAN BENOIT ──
     {
       num: 5,
+        achievementId: 'nat_olympics_5',
       emoji: '👟',
       title: 'JOAN BENOIT',
       tagline: 'First through the tunnel',
@@ -73,6 +78,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 06: MICHAEL JORDAN & THE '84 BASKETBALL TEAM ──
     {
       num: 6,
+        achievementId: 'nat_olympics_6',
       emoji: '🏀',
       title: 'THE \'84 HOOPS GOLD',
       tagline: 'Before he was "Air"',
@@ -85,6 +91,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 07: THE OPENING CEREMONY ──
     {
       num: 7,
+        achievementId: 'nat_olympics_7',
       emoji: '🎆',
       title: 'THE OPENING CEREMONY',
       tagline: 'A rocket man and 84 pianos',
@@ -97,6 +104,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 08: THE TORCH RELAY ──
     {
       num: 8,
+        achievementId: 'nat_olympics_8',
       emoji: '🔥',
       title: 'THE OLYMPIC TORCH',
       tagline: 'Coast to coast to the Coliseum',
@@ -109,6 +117,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 09: SAM THE OLYMPIC EAGLE ──
     {
       num: 9,
+        achievementId: 'nat_olympics_9',
       emoji: '🦅',
       title: 'SAM THE OLYMPIC EAGLE',
       tagline: 'The star-spangled mascot',
@@ -121,6 +130,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 10: THE SOVIET-LED BOYCOTT ──
     {
       num: 10,
+        achievementId: 'nat_olympics_10',
       emoji: '🌐',
       title: 'THE BOYCOTT',
       tagline: 'Half the rivalry stayed home',
@@ -133,6 +143,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 11: THE U.S. MEDAL HAUL ──
     {
       num: 11,
+        achievementId: 'nat_olympics_11',
       emoji: '🥇',
       title: 'GOLD RUSH',
       tagline: 'The home team cleans up',
@@ -145,6 +156,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 12: THE FIRST PROFITABLE GAMES ──
     {
       num: 12,
+        achievementId: 'nat_olympics_12',
       emoji: '💰',
       title: 'THE BUSINESS OF GOLD',
       tagline: 'The Olympics that made money',
@@ -157,6 +169,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 13: "WAVE YOUR FLAG" — THE PATRIOTISM CRAZE ──
     {
       num: 13,
+        achievementId: 'nat_olympics_13',
       emoji: '🇺🇸',
       title: 'U-S-A! U-S-A!',
       tagline: 'The summer everyone waved the flag',
@@ -169,6 +182,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 14: THE GAMES ON TV ──
     {
       num: 14,
+        achievementId: 'nat_olympics_14',
       emoji: '📺',
       title: 'WATCHING IT ALL UNFOLD',
       tagline: 'Glued to the set for two weeks',
@@ -181,6 +195,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 15: THE U.S. MEN'S GYMNASTICS UPSET ──
     {
       num: 15,
+        achievementId: 'nat_olympics_15',
       emoji: '🤸',
       title: 'THE MEN\'S TEAM GOLD',
       tagline: 'An upset on the mat',
@@ -193,6 +208,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 16: THE BOXING TEAM ──
     {
       num: 16,
+        achievementId: 'nat_olympics_16',
       emoji: '🥊',
       title: 'THE BOXING RING',
       tagline: 'Gloves up, gold down',
@@ -205,6 +221,7 @@ export const OLYMPICS_1984_BANNER = {
     // ── WINDOW 17: OLYMPIC PIN TRADING ──
     {
       num: 17,
+        achievementId: 'nat_olympics_17',
       emoji: '📌',
       title: 'THE PIN CRAZE',
       tagline: 'Trade you two for that one',

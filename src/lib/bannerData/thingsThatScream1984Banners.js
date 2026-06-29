@@ -14,6 +14,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 01: CB RADIOS ──
     {
       num: 1,
+        achievementId: 'nat_scream1984_1',
       emoji: '📻',
       title: 'CB RADIOS',
       tagline: 'Breaker breaker, what\'s your twenty?',
@@ -26,6 +27,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 02: THE ATM ──
     {
       num: 2,
+        achievementId: 'nat_scream1984_2',
       emoji: '🏧',
       title: 'THE ATM',
       tagline: 'Cash from a machine?!',
@@ -38,6 +40,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 03: THE FAX MACHINE ──
     {
       num: 3,
+        achievementId: 'nat_scream1984_3',
       emoji: '📠',
       title: 'THE FAX MACHINE',
       tagline: 'It\'s coming through now...',
@@ -50,6 +53,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 04: THE WATERBED ──
     {
       num: 4,
+        achievementId: 'nat_scream1984_4',
       emoji: '🛌',
       title: 'THE WATERBED',
       tagline: 'Sleeping on a wave',
@@ -62,6 +66,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 05: THE MOOD RING & MOOD GADGETS ──
     {
       num: 5,
+        achievementId: 'nat_scream1984_5',
       emoji: '💍',
       title: 'THE MOOD RING',
       tagline: 'What color are you feeling?',
@@ -74,6 +79,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 06: TRUCKER HATS & IRON-ON TEES ──
     {
       num: 6,
+        achievementId: 'nat_scream1984_6',
       emoji: '👕',
       title: 'IRON-ON T-SHIRTS',
       tagline: 'Pick a decal, press it on',
@@ -86,6 +92,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 07: THE TANNING & AEROBICS CRAZE ──
     {
       num: 7,
+        achievementId: 'nat_scream1984_7',
       emoji: '💃',
       title: 'AEROBICS & LEG WARMERS',
       tagline: 'Feel the burn',
@@ -98,6 +105,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 08: THE PHONE BOOTH ──
     {
       num: 8,
+        achievementId: 'nat_scream1984_8',
       emoji: '☎️',
       title: 'THE PHONE BOOTH',
       tagline: 'Got a dime for a call?',
@@ -110,6 +118,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 09: THE STATION WAGON ──
     {
       num: 9,
+        achievementId: 'nat_scream1984_9',
       emoji: '🚙',
       title: 'THE STATION WAGON',
       tagline: 'Pile in the way-back',
@@ -122,6 +131,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 10: SCRATCH-AND-SNIFF & STICKER CULTURE ──
     {
       num: 10,
+        achievementId: 'nat_scream1984_10',
       emoji: '🌸',
       title: 'STICKERS & SCRATCH-AND-SNIFF',
       tagline: 'Trade you the strawberry one',
@@ -134,6 +144,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 11: THE TV ANTENNA & RABBIT EARS ──
     {
       num: 11,
+        achievementId: 'nat_scream1984_11',
       emoji: '📺',
       title: 'RABBIT EARS',
       tagline: 'Hold it right there — don\'t move!',
@@ -146,6 +157,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 12: TV SIGN-OFF & TEST PATTERN ──
     {
       num: 12,
+        achievementId: 'nat_scream1984_12',
       emoji: '🌙',
       title: 'THE STATION SIGN-OFF',
       tagline: 'That\'s all for tonight',
@@ -158,6 +170,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 13: THE ROLODEX & DESK CULTURE ──
     {
       num: 13,
+        achievementId: 'nat_scream1984_13',
       emoji: '📇',
       title: 'THE ROLODEX',
       tagline: 'Flip to the right card',
@@ -170,6 +183,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 14: THE WORD PROCESSOR & TYPEWRITER ──
     {
       num: 14,
+        achievementId: 'nat_scream1984_14',
       emoji: '⌨️',
       title: 'THE TYPEWRITER',
       tagline: 'Ding! ...carriage return',
@@ -182,6 +196,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 15: TV REMOTES & CHANGING THE CHANNEL ──
     {
       num: 15,
+        achievementId: 'nat_scream1984_15',
       emoji: '🔘',
       title: 'THE CLICKER',
       tagline: 'You\'re closer — change it',
@@ -194,6 +209,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 16: THE GAS STATION (FULL SERVICE) ──
     {
       num: 16,
+        achievementId: 'nat_scream1984_16',
       emoji: '⛽',
       title: 'FULL-SERVICE GAS',
       tagline: 'Fill \'er up — check the oil?',
@@ -206,6 +222,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 17: THE TV GUIDE & THREE NETWORKS ──
     {
       num: 17,
+        achievementId: 'nat_scream1984_17',
       emoji: '📖',
       title: 'TV GUIDE',
       tagline: 'Circle what you want to watch',
@@ -218,6 +235,7 @@ export const SCREAM_1984_BANNER = {
     // ── WINDOW 18: THE NEON-AND-GEOMETRIC LOOK ──
     {
       num: 18,
+        achievementId: 'nat_scream1984_18',
       emoji: '🔺',
       title: 'THE \'84 AESTHETIC',
       tagline: 'Neon, grids, and zigzags',

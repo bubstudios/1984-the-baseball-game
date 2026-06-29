@@ -13,6 +13,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 01: THE CLASSIFIED ADS ──
     {
       num: 1,
+        achievementId: 'nat_newspapers_1',
       emoji: '📋',
       title: 'THE CLASSIFIED ADS',
       tagline: 'A few cents a word',
@@ -25,6 +26,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 02: THE HELP WANTED SECTION ──
     {
       num: 2,
+        achievementId: 'nat_newspapers_2',
       emoji: '💼',
       title: 'THE HELP WANTED SECTION',
       tagline: 'Circle it in red pen',
@@ -37,6 +39,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 03: THE PERSONAL ADS ──
     {
       num: 3,
+        achievementId: 'nat_newspapers_3',
       emoji: '💌',
       title: 'THE PERSONAL ADS',
       tagline: 'SWM seeks...',
@@ -49,6 +52,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 04: THE SPORTS SECTION ──
     {
       num: 4,
+        achievementId: 'nat_newspapers_4',
       emoji: '⚾',
       title: 'THE SPORTS SECTION',
       tagline: 'Check the box scores',
@@ -61,6 +65,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 05: THE COMICS PAGE ──
     {
       num: 5,
+        achievementId: 'nat_newspapers_5',
       emoji: '😆',
       title: 'THE COMICS PAGE',
       tagline: 'Saving the funnies for last',
@@ -73,6 +78,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 06: THE PAPER ROUTE ──
     {
       num: 6,
+        achievementId: 'nat_newspapers_6',
       emoji: '🚲',
       title: 'THE PAPER ROUTE',
       tagline: 'Thump on the porch at dawn',
@@ -85,6 +91,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 07: THE FRONT PAGE ──
     {
       num: 7,
+        achievementId: 'nat_newspapers_7',
       emoji: '📰',
       title: 'THE FRONT PAGE',
       tagline: 'Extra, extra',
@@ -97,6 +104,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 08: THE COUPON SECTION ──
     {
       num: 8,
+        achievementId: 'nat_newspapers_8',
       emoji: '✂️',
       title: 'THE COUPON SECTION',
       tagline: 'Clip and save',
@@ -109,6 +117,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 09: THE ANNOUNCEMENTS ──
     {
       num: 9,
+        achievementId: 'nat_newspapers_9',
       emoji: '📜',
       title: 'THE ANNOUNCEMENTS',
       tagline: 'Births, weddings, and farewells',
@@ -121,6 +130,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 10: THE AUTO CLASSIFIEDS ──
     {
       num: 10,
+        achievementId: 'nat_newspapers_10',
       emoji: '🚗',
       title: 'THE AUTO CLASSIFIEDS',
       tagline: 'Runs great, must sell',
@@ -133,6 +143,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 11: THE HOUSING ADS ──
     {
       num: 11,
+        achievementId: 'nat_newspapers_11',
       emoji: '🏠',
       title: 'THE HOUSING ADS',
       tagline: 'Apt for rent, $400/mo',
@@ -145,6 +156,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 12: THE NEWSSTAND ──
     {
       num: 12,
+        achievementId: 'nat_newspapers_12',
       emoji: '🏪',
       title: 'THE NEWSSTAND',
       tagline: 'A quarter for the daily',
@@ -157,6 +169,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 13: THE PRESSROOM ──
     {
       num: 13,
+        achievementId: 'nat_newspapers_13',
       emoji: '⚙️',
       title: 'THE PRESSROOM',
       tagline: 'Hot off the presses',
@@ -169,6 +182,7 @@ export const NEWSPAPERS_BANNER = {
     // ── WINDOW 14: THE MORNING PAPER ──
     {
       num: 14,
+        achievementId: 'nat_newspapers_14',
       emoji: '☕',
       title: 'THE MORNING PAPER',
       tagline: 'Coffee, and the day\'s first read',

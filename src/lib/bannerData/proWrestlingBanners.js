@@ -13,6 +13,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 01: RIC FLAIR ──
     {
       num: 1,
+        achievementId: 'nat_wrestling_1',
       emoji: '🌟',
       title: 'RIC FLAIR',
       tagline: 'The measuring stick of the whole business',
@@ -25,6 +26,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 02: HARLEY RACE ──
     {
       num: 2,
+        achievementId: 'nat_wrestling_2',
       emoji: '👑',
       title: 'HARLEY RACE',
       tagline: 'The toughest man in the territory',
@@ -37,6 +39,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 03: DUSTY RHODES ──
     {
       num: 3,
+        achievementId: 'nat_wrestling_3',
       emoji: '💙',
       title: 'DUSTY RHODES',
       tagline: 'The son of a plumber',
@@ -49,6 +52,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 04: ARN ANDERSON ──
     {
       num: 4,
+        achievementId: 'nat_wrestling_4',
       emoji: '🪚',
       title: 'ARN ANDERSON',
       tagline: 'The Enforcer',
@@ -61,6 +65,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 05: TULLY BLANCHARD ──
     {
       num: 5,
+        achievementId: 'nat_wrestling_5',
       emoji: '💼',
       title: 'TULLY BLANCHARD',
       tagline: 'Perfect, in his own mind',
@@ -73,6 +78,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 06: OLE ANDERSON ──
     {
       num: 6,
+        achievementId: 'nat_wrestling_6',
       emoji: '🪨',
       title: 'OLE ANDERSON',
       tagline: 'Old-school and mean about it',
@@ -85,6 +91,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 07: THE HORSEMEN ARE COMING (forward-wink) ──
     {
       num: 7,
+        achievementId: 'nat_wrestling_7',
       emoji: '🐎',
       title: 'FOUR OF A KIND',
       tagline: 'The pieces are starting to assemble...',
@@ -97,6 +104,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 08: THE VON ERICHS ──
     {
       num: 8,
+        achievementId: 'nat_wrestling_8',
       emoji: '⭐',
       title: 'THE VON ERICHS',
       tagline: 'Texas royalty',
@@ -109,6 +117,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 09: THE FABULOUS FREEBIRDS ──
     {
       num: 9,
+        achievementId: 'nat_wrestling_9',
       emoji: '🎸',
       title: 'THE FABULOUS FREEBIRDS',
       tagline: 'Bad Street\'s finest',
@@ -121,6 +130,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 10: THE ROAD WARRIORS ──
     {
       num: 10,
+        achievementId: 'nat_wrestling_10',
       emoji: '💀',
       title: 'THE ROAD WARRIORS',
       tagline: 'Ohhh, what a rush',
@@ -133,6 +143,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 11: MAGNUM T.A. ──
     {
       num: 11,
+        achievementId: 'nat_wrestling_11',
       emoji: '🫵',
       title: 'MAGNUM T.A.',
       tagline: 'The next big thing',
@@ -145,6 +156,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 12: HULK HOGAN ──
     {
       num: 12,
+        achievementId: 'nat_wrestling_12',
       emoji: '💛',
       title: 'HULK HOGAN',
       tagline: 'Hulkamania is running wild',
@@ -157,6 +169,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 13: "ROWDY" RODDY PIPER ──
     {
       num: 13,
+        achievementId: 'nat_wrestling_13',
       emoji: '🎤',
       title: 'RODDY PIPER',
       tagline: 'The man you loved to hate',
@@ -169,6 +182,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 14: ANDRE THE GIANT ──
     {
       num: 14,
+        achievementId: 'nat_wrestling_14',
       emoji: '🏔️',
       title: 'ANDRE THE GIANT',
       tagline: 'The Eighth Wonder of the World',
@@ -181,6 +195,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 15: THE IRON SHEIK ──
     {
       num: 15,
+        achievementId: 'nat_wrestling_15',
       emoji: '🏅',
       title: 'THE IRON SHEIK',
       tagline: 'The man who made Hulkamania possible',
@@ -193,6 +208,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 16: JIMMY "SUPERFLY" SNUKA ──
     {
       num: 16,
+        achievementId: 'nat_wrestling_16',
       emoji: '🦅',
       title: 'JIMMY "SUPERFLY" SNUKA',
       tagline: 'Off the top of the cage',
@@ -205,6 +221,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 17: JUNKYARD DOG ──
     {
       num: 17,
+        achievementId: 'nat_wrestling_17',
       emoji: '🐕',
       title: 'JUNKYARD DOG',
       tagline: 'Thump',
@@ -217,6 +234,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 18: RICKY "THE DRAGON" STEAMBOAT ──
     {
       num: 18,
+        achievementId: 'nat_wrestling_18',
       emoji: '🐉',
       title: 'RICKY STEAMBOAT',
       tagline: 'The perfect babyface',
@@ -229,6 +247,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 19: SGT. SLAUGHTER ──
     {
       num: 19,
+        achievementId: 'nat_wrestling_19',
       emoji: '🎖️',
       title: 'SGT. SLAUGHTER',
       tagline: 'Cobra Clutch and a Cadence',
@@ -241,6 +260,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 20: THE MANAGERS ──
     {
       num: 20,
+        achievementId: 'nat_wrestling_20',
       emoji: '🎩',
       title: 'THE MOUTHPIECES',
       tagline: 'Every monster needs a manager',
@@ -253,6 +273,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 21: THE ROCK 'N' WRESTLING CONNECTION ──
     {
       num: 21,
+        achievementId: 'nat_wrestling_21',
       emoji: '🎸',
       title: 'ROCK \'N\' WRESTLING',
       tagline: 'When wrestling crashed MTV',
@@ -265,6 +286,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 22: THE TERRITORIES vs. THE NATIONAL TAKEOVER ──
     {
       num: 22,
+        achievementId: 'nat_wrestling_22',
       emoji: '🗺️',
       title: 'THE TERRITORY SYSTEM',
       tagline: 'The map is being redrawn',
@@ -277,6 +299,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 23: SATURDAY MORNING WRESTLING ──
     {
       num: 23,
+        achievementId: 'nat_wrestling_23',
       emoji: '📺',
       title: 'WRESTLING ON THE TUBE',
       tagline: 'Channel surfing into a headlock',
@@ -289,6 +312,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 24: THE ACTION FIGURES & THE MERCH CRAZE ──
     {
       num: 24,
+        achievementId: 'nat_wrestling_24',
       emoji: '🧸',
       title: 'WRESTLING MERCH',
       tagline: 'From the ring to the toy aisle',
@@ -301,6 +325,7 @@ export const WRESTLING_BANNER = {
     // ── WINDOW 25: WRESTLEMANIA IS COMING (forward-wink) ──
     {
       num: 25,
+        achievementId: 'nat_wrestling_25',
       emoji: '🎪',
       title: 'THE BIGGEST SHOW OF THEM ALL',
       tagline: 'They\'re betting the whole company on it...',

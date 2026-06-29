@@ -101,7 +101,7 @@ export const MOVIES_1984_BANNERS = [
         achievement: '👻 "Who You Gonna Call?"',
       },
     ],
-    achievementId: 'moviebanner_ghostbusters',
+    achievementId: 'nat_movie_1',
   },
 
   // ── #027 BEVERLY HILLS COP ──
@@ -202,7 +202,7 @@ export const MOVIES_1984_BANNERS = [
         achievement: '🚔 "Axel Foley"',
       },
     ],
-    achievementId: 'moviebanner_beverlyhillscop',
+    achievementId: 'nat_movie_2',
   },
 
   // ── #028 INDIANA JONES AND THE TEMPLE OF DOOM ──
@@ -303,7 +303,7 @@ export const MOVIES_1984_BANNERS = [
         achievement: '🏺 "Fortune and Glory"',
       },
     ],
-    achievementId: 'moviebanner_indianajones',
+    achievementId: 'nat_movie_3',
   },
 
   // ── #029 GREMLINS ──
@@ -404,7 +404,7 @@ export const MOVIES_1984_BANNERS = [
         achievement: '👹 "The Three Rules"',
       },
     ],
-    achievementId: 'moviebanner_gremlins',
+    achievementId: 'nat_movie_4',
   },
 
   // ── #030 THE KARATE KID ──
@@ -505,7 +505,7 @@ export const MOVIES_1984_BANNERS = [
         achievement: '🥋 "Wax On, Wax Off"',
       },
     ],
-    achievementId: 'moviebanner_karatekid',
+    achievementId: 'nat_movie_5',
   },
 
   // ── #031 POLICE ACADEMY ──
@@ -606,7 +606,7 @@ export const MOVIES_1984_BANNERS = [
         achievement: '🚨 "Roll Call"',
       },
     ],
-    achievementId: 'moviebanner_policeacademy',
+    achievementId: 'nat_movie_6',
   },
 
   // ── #032 FOOTLOOSE ──
@@ -707,7 +707,7 @@ export const MOVIES_1984_BANNERS = [
         achievement: '👟 "Cut Loose"',
       },
     ],
-    achievementId: 'moviebanner_footloose',
+    achievementId: 'nat_movie_7',
   },
 
   // ── #033 ROMANCING THE STONE ──
@@ -808,7 +808,7 @@ export const MOVIES_1984_BANNERS = [
         achievement: '💎 "Chase the Stone"',
       },
     ],
-    achievementId: 'moviebanner_romancingthestone',
+    achievementId: 'nat_movie_8',
   },
 
   // ── #034 STAR TREK III: THE SEARCH FOR SPOCK ──
@@ -909,7 +909,7 @@ export const MOVIES_1984_BANNERS = [
         achievement: '🚀 "The Needs of the Many"',
       },
     ],
-    achievementId: 'moviebanner_startrekiii',
+    achievementId: 'nat_movie_9',
   },
 
   // ── #035 SPLASH ──
@@ -1010,7 +1010,7 @@ export const MOVIES_1984_BANNERS = [
         achievement: '🧜 "Catch of the Day"',
       },
     ],
-    achievementId: 'moviebanner_splash',
+    achievementId: 'nat_movie_10',
   },
 
   // Continue with remaining movies (#036-050) — abbreviated for space
@@ -1020,21 +1020,21 @@ export const MOVIES_1984_BANNERS = [
   { id: 'moviebanner_036', title: '📺 "Hard to Hold" — Rick Springfield hits the big screen!', subtitle: '(a microphone; guitar pick; stage lights)', icon: '🎸',
     popups: [
       { num: 1, emoji: '🎸', title: 'HARD TO HOLD', premiere: 'April 6, 1984', runtime: '93 min', genre: 'Romance / Musical Drama', synopsis: 'A chart-topping pop star, bored with fame, falls for a down-to-earth child psychologist who\'s never heard of him — and has to figure out whether the music or the woman matters more. A romance built around its pop-star lead and his hit-laden soundtrack.', starring: '**Rick Springfield, Janet Eilber, Patti Hansen.**', funFacts: 'Springfield\'s charm carries it. High as both a pop star and a soap opera star, is a revelation. The soundtrack does even better business than the movie.', reviews: [{ stars: 4, quote: '"Springfield\'s charm carries it." — **Picture Show Weekly**' }, { stars: 3, quote: '"The songs are the real story." — **Screen Scene**' }, { stars: 2, quote: '"Held it just fine. Not hard at all. Misleading title." — **Earl P., Section 14**' }, { stars: 3, quote: '"More concert than movie, but the fans won\'t mind." — **The Marquee Review**' }], achievement: '🎸 "Stage Lights"' }
-    ], achievementId: 'moviebanner_hardtohold'
+    ], achievementId: 'nat_movie_11'
   },
 
   // ── #037 UP THE CREEK ──
   { id: 'moviebanner_037', title: '📺 "Up the Creek" — paddle for your dignity!', subtitle: '(a rubber raft; a beer can; whitewater rapids)', icon: '⛵',
     popups: [
       { num: 1, emoji: '⛵', title: 'UP THE CREEK', premiere: 'April 6, 1984', runtime: '95 min', genre: 'Comedy', synopsis: 'A pack of academic-probation misfits shipped off to represent their lousy college in a whitewater rafting race against snooty rivals and military-school jerks. A rowdy, raunchy slobs-vs-snobs comedy with a dog along for the ride.', starring: '**Tim Matheson, Stephen Furst, Dan Monahan, Sandy Helberg.**', funFacts: '"Pure early-80s underdog party animals win the day" energy. A theme song by a famous rock band anchors the soundtrack. The dog, "Chug," is a fan favorite.', reviews: [{ stars: 4, quote: '"Exactly the dumb fun it promises." — **Screen Scene**' }, { stars: 3, quote: '"Slobs vs. snobs, on water this time." — **Picture Show Weekly**' }, { stars: 3, quote: '"I was, in fact, up a creek. The theater had no paddles for sale at all." — **Earl P., Section 14**' }, { stars: 3, quote: '"You\'ll laugh and feel slightly guilty about it." — **The Marquee Review**' }], achievement: '⛵ "Paddle Up"' }
-    ], achievementId: 'moviebanner_upthecreek'
+    ], achievementId: 'nat_movie_12'
   },
 
   // ── #038 BREAKIN' ──
   { id: 'moviebanner_038', title: '📺 "Breakin\'" — the streets have a new beat!', subtitle: '(a cardboard dance floor; a boombox; spinning sneakers)', icon: '🎤',
     popups: [
       { num: 1, emoji: '🎤', title: 'BREAKIN\'', premiere: 'May 4, 1984', runtime: '90 min', genre: 'Musical / Dance', synopsis: 'A struggling jazz dancer and discovers a whole new style — and a shot at the big time. A pure, joyful showcase for the breakdancing craze sweeping the country this year.', starring: '**Lucinda Dickey, Adolfo "Shabba-Doo" Quinones, Michael "Boogaloo Shrimp" Chambers.**', funFacts: 'Rode the breakdancing wave to surprise box-office success. A young, pre-fame future superstar appears as an extra (legend has it). A sequel is already on the way for later this year.', reviews: [{ stars: 5, quote: '"The dancing is electric." — **Screen Scene**' }, { stars: 4, quote: '"Thin plot, incredible moves." — **Picture Show Weekly**' }, { stars: 3, quote: '"Nobody broke anything. I checked. The title is a lie and possibly a threat." — **Earl P., Section 14**' }, { stars: 4, quote: '"Pop, lock, and enjoy." — **The Marquee Review**' }], achievement: '🎤 "Pop and Lock"' }
-    ], achievementId: 'moviebanner_breakin'
+    ], achievementId: 'nat_movie_13'
   },
 
   // ── #039 THE LAST STARFIGHTER ──
@@ -1042,7 +1042,7 @@ export const MOVIES_1984_BANNERS = [
     popups: [
       { num: 1, emoji: '🎮', title: 'THE LAST STARFIGHTER', premiere: 'July 13, 1984', runtime: '101 min', genre: 'Science Fiction', synopsis: 'A trailer-park teen who masters a video game discovers it\'s actually a recruitment test for a real intergalactic war — and gets whisked away to fly an alien armada. A wish-fulfillment dream for every kid who ever ruled the arcade.', starring: '**Lance Guest, Robert Preston, Dan O\'Herlihy, Catherine Mary Stewart.**',
         funFacts: 'Among the first films to use extensive computer-generated special effects — a genuine milestone. Robert Preston is a hoot as a fast-talking alien recruiter. Every arcade kid\'s fantasy made real.', reviews: [{ stars: 5, quote: '"A blast for anyone who grew up at the arcade." — **The Marquee Review**' }, { stars: 4, quote: '"The computer effects point to the future." — **Screen Scene**' }, { stars: 2, quote: '"I got the high score at my local arcade and no aliens recruited me. Movie sets false expectations." — **Earl P., Section 14**' }, { stars: 5, quote: '"Robert Preston steals the galaxy." — **Picture Show Weekly**' }], achievement: '🎮 "Greetings, Starfighter"' }
-    ], achievementId: 'moviebanner_laststarfighter'
+    ], achievementId: 'nat_movie_14'
   },
 
   // ── #040 THE MUPPETS TAKE MANHATTAN ──
@@ -1050,77 +1050,77 @@ export const MOVIES_1984_BANNERS = [
     popups: [
       { num: 1, emoji: '🎭', title: 'THE MUPPETS TAKE MANHATTAN', premiere: 'July 13, 1984', runtime: '94 min', genre: 'Family / Musical Comedy', synopsis: 'Kermit and the gang head to New York City to get their college musical onto Broadway, scattering across the city when things get tough before a triumphant (and very Muppety) reunion. Warm, funny, and packed with cameos.',
         starring: '**The Muppets, with Frank Oz directing, plus a parade of human cameos.**', funFacts: 'Introduces the "Muppet Babies" in a now-beloved dream sequence (and an animated spinoff is already in development). The cameos alone are worth the ticket.', reviews: [{ stars: 5, quote: '"Pure joy for all ages." — **The Marquee Review**' }, { stars: 5, quote: '"The cameos alone are a scavenger hunt." — **Picture Show Weekly**' }, { stars: 2, quote: '"A frog cannot legally produce a Broadway show. I checked with my cousin who knows theater." — **Earl P., Section 14**' }, { stars: 5, quote: '"I laughed, I cried; it\'s the Muppets." — **Screen Scene**' }], achievement: '🎭 "Broadway Bound"' }
-    ], achievementId: 'moviebanner_muppetsmanhattan'
+    ], achievementId: 'nat_movie_15'
   },
 
   // ── #041 REVENGE OF THE NERDS ──
   { id: 'moviebanner_041', title: '📺 "Revenge of the Nerds" — the geeks shall inherit the campus!', subtitle: '(thick glasses; a pocket protector; a trophy)', icon: '🤓',
     popups: [
       { num: 1, emoji: '🤓', title: 'REVENGE OF THE NERDS', premiere: 'July 20, 1984', runtime: '90 min', genre: 'Comedy', synopsis: 'Two brainy freshmen, bullied by the campus jocks, band together with a fraternity of fellow outcasts to fight back and win the all-important homecoming competition. A rowdy underdog comedy that turned "nerd" into a badge of honor.', starring: '**Robert Carradine, Anthony Edwards, Curtis Armstrong, Ted McGinley.**', funFacts: 'A sleeper hit that spawns a franchise. The triumphant talent-show finale is the stuff of legend. The film helped redefine underdog comedies.', reviews: [{ stars: 5, quote: '"Crude, funny, and weirdly inspiring." — **Screen Scene**' }, { stars: 4, quote: '"The nerds win, and so do we." — **Picture Show Weekly**' }, { stars: 2, quote: '"I am a nerd and was promised revenge. None was delivered to my home. Waiting." — **Earl P., Section 14**' }, { stars: 4, quote: '"Root for the underdogs." — **The Marquee Review**' }], achievement: '🤓 "Nerd Power"' }
-    ], achievementId: 'moviebanner_revengeofthenerds'
+    ], achievementId: 'nat_movie_16'
   },
 
   // ── #042 CLOAK & DAGGER ──
   { id: 'moviebanner_042', title: '📺 "Cloak & Dagger" — the game just got real!', subtitle: '(a video-game cartridge; a toy spy figure; a magnifying glass)', icon: '🕵️',
     popups: [
       { num: 1, emoji: '🕵️', title: 'CLOAK & DAGGER', premiere: 'Aug 10, 1984', runtime: '101 min', genre: 'Thriller / Family', synopsis: 'A lonely boy obsessed with a spy video game stumbles onto a real-life espionage plot hidden inside a game cartridge — and only his imaginary hero can help him survive when no adult will believe him. A clever kids-in-peril thriller with a video-game heart.', starring: '**Henry Thomas, Dabney Coleman, Michael Murphy.**', funFacts: 'Henry Thomas carries it beautifully. Dabney Coleman plays dual roles — the boy\'s dad and his fantasy spy hero. Taps right into the year\'s video-game mania.', reviews: [{ stars: 5, quote: '"A surprisingly tense ride for the whole family." — **The Marquee Review**' }, { stars: 4, quote: '"Henry Thomas carries it beautifully." — **Picture Show Weekly**' }, { stars: 2, quote: '"There was a dagger but no actual cloak that I could see. Costume department dropped the ball." — **Earl P., Section 14**' }, { stars: 5, quote: '"Coleman\'s a blast in two roles." — **Screen Scene**' }], achievement: '🕵️ "The Real Game"' }
-    ], achievementId: 'moviebanner_cloakdagger'
+    ], achievementId: 'nat_movie_17'
   },
 
   // ── #043 TEACHERS ──
   { id: 'moviebanner_043', title: '📺 "Teachers" — class is in session!', subtitle: '(a chalkboard; an apple; a school bell)', icon: '🏫',
     popups: [
       { num: 1, emoji: '🏫', title: 'TEACHERS', premiere: 'Oct 5, 1984', runtime: '106 min', genre: 'Comedy / Drama', synopsis: 'A burned-out high school teacher rediscovers why he got into the job amid the chaos of a falling inner-city school, a looming lawsuit, and a faculty full of eccentrics. A sharp, sometimes raucous, sometimes biting look at the state of education.', starring: '**Nick Nolte, JoBeth Williams, Judd Hirsch, Ralph Macchio, Richard Mulligan.**', funFacts: 'Ralph Macchio, in a big year for him, appears here too. A pointed message movie wrapped in dark comedy. The soundtrack is stacked with rock acts.', reviews: [{ stars: 4, quote: '"Nolte anchors a messy, ambitious film." — **Picture Show Weekly**' }, { stars: 4, quote: '"Funny and furious about schools." — **Screen Scene**' }, { stars: 2, quote: '"Did not teach me anything. I watched for two hours and learned zero new skills." — **Earl P., Section 14**' }, { stars: 4, quote: '"Uneven but it\'s got something to say." — **The Marquee Review**' }], achievement: '🏫 "Class is Session"' }
-    ], achievementId: 'moviebanner_teachers'
+    ], achievementId: 'nat_movie_18'
   },
 
   // ── #044 BODY DOUBLE ──
   { id: 'moviebanner_044', title: '📺 "Body Double" — what did he really see?', subtitle: '(a telescope; a Hollywood Hills house; a film reel)', icon: '🎬',
     popups: [
       { num: 1, emoji: '🎬', title: 'BODY DOUBLE', premiere: 'Oct 26, 1984', runtime: '114 min', genre: 'Thriller', synopsis: 'An out-of-work actor house-sitting in the Hollywood Hills becomes obsessed with a neighbor he watches through a telescope — and witnesses a crime that pulls him into a twisty, stylish web of deception. A slick, controversial thriller that leans into Hitchcock homage.', starring: '**Craig Wasson, Melanie Griffith, Gregg Henry, Deborah Shelton.**', funFacts: 'A stylish, divisive thriller that leans into Hitchcock homage. Melanie Griffith makes a vivid impression. The soundtrack features a memorable new-wave music cameo.', reviews: [{ stars: 4, quote: '"Stylish, lurid, and impossible to look away from." — **Screen Scene**' }, { stars: 4, quote: '"A glossy nightmare of a thriller." — **The Marquee Review**' }, { stars: 1, quote: '"Bought a ticket for body, the title clearly promises a double. Shortchanged." — **Earl P., Section 14**' }, { stars: 4, quote: '"Not subtle, but it sticks with you." — **Picture Show Weekly**' }], achievement: '🎬 "Through the Lens"' }
-    ], achievementId: 'moviebanner_bodydouble'
+    ], achievementId: 'nat_movie_19'
   },
 
   // ── #045 THE TERMINATOR ──
   { id: 'moviebanner_045', title: '📺 "The Terminator" — it will not stop. Ever.', subtitle: '(a red robotic eye; a leather jacket; a desert highway)', icon: '🤖',
     popups: [
       { num: 1, emoji: '🤖', title: 'THE TERMINATOR', premiere: 'Oct 26, 1984', runtime: '107 min', genre: 'Science Fiction / Action', synopsis: 'A relentless cyborg assassin is sent back from a war-torn future to kill a young woman whose unborn son will one day lead humanity — and a lone soldier follows to protect her. A lean, ferocious, low-budget sci-fi thriller that hits like a freight train.', starring: '**Arnold Schwarzenegger, Linda Hamilton, Michael Biehn, Paul Winfield.**', funFacts: 'Schwarzenegger was originally going to play the *hero* — switching him to the villain was a masterстroke. Made on a shoestring, it\'s the surprise of the fall. "I\'ll be back" is about to become the most-quoted line of the decade.', reviews: [{ stars: 5, quote: '"A relentless, electrifying machine of a movie." — **The Marquee Review**' }, { stars: 5, quote: '"Schwarzenegger is terrifying. Hamilton is the real find." — **Screen Scene**' }, { stars: 2, quote: '"The terminator never terminated my screening early so I could go home. Stayed whole time against will." — **Earl P., Section 14**' }, { stars: 5, quote: '"Believe the hype." — **Picture Show Weekly**' }], achievement: '🤖 "I\'ll Be Back"' }
-    ], achievementId: 'moviebanner_terminator'
+    ], achievementId: 'nat_movie_20'
   },
 
   // ── #046 A NIGHTMARE ON ELM STREET ──
   { id: 'moviebanner_046', title: '📺 "A Nightmare on Elm Street" — whatever you do, don\'t fall asleep!', subtitle: '(a clawed glove; a creaky door; a boiler room)', icon: '🌙',
     popups: [
       { num: 1, emoji: '🌙', title: 'A NIGHTMARE ON ELM STREET', premiere: 'Nov 9, 1984', runtime: '91 min', genre: 'Horror', synopsis: 'A group of teenagers discover that a burned, razor-gloved killer is stalking them in their dreams — and dying in the dream means dying for real. The only defense is to stay awake. A wildly inventive horror nightmare that births a new icon of terror.', starring: '**Heather Langenkamp, Robert Englund, John Saxon, Ronee Blakley, and a young Johnny Depp in his film debut.**', funFacts: 'Johnny Depp\'s very first movie role. Launches one of horror\'s most enduring villains. The dream-logic effects are unlike anything else this year.', reviews: [{ stars: 5, quote: '"Genuinely nightmarish — and that\'s a compliment." — **Screen Scene**' }, { stars: 5, quote: '"A brand-new boogeyman is born." — **The Marquee Review**' }, { stars: 3, quote: '"I fell asleep during it, as one does, and nothing happened to me. Overhyped." — **Earl P., Section 14**' }, { stars: 5, quote: '"Clever, scary, and impossible to shake." — **Picture Show Weekly**' }], achievement: '🌙 "Don\'t Fall Asleep"' }
-    ], achievementId: 'moviebanner_nightmare'
+    ], achievementId: 'nat_movie_21'
   },
 
   // ── #047 THIS IS SPINAL TAP ──
   { id: 'moviebanner_047', title: '📺 "This Is Spinal Tap" — these go to eleven!', subtitle: '(an amplifier dial past 10; a tiny Stonehenge; long rocker hair)', icon: '🎸',
     popups: [
       { num: 1, emoji: '🎸', title: 'THIS IS SPINAL TAP', premiere: 'March 2, 1984', runtime: '82 min', genre: 'Comedy / Mockumentary', synopsis: 'A film crew follows the (fictional) washed-up British heavy-metal band Spinal Tap on a disastrous American tour, capturing every backstage blowup, baffling prop, and exploding drummer along the way. The mockumentary that fooled half its audience into thinking the band was real.', starring: '**Christopher Guest, Michael McKean, Harry Shearer, Rob Reiner (also directing).**', funFacts: 'Largely improvised from an outline. "These go to eleven" instantly enters the language. The tiny-Stonehenge gag is destined for immortality.', reviews: [{ stars: 5, quote: '"The funniest movie about rock and roll ever made." — **The Marquee Review**' }, { stars: 5, quote: '"So real it\'s almost a documentary. Wait — it\'s not?" — **Screen Scene**' }, { stars: 2, quote: '"Tried to buy this band\'s records. They don\'t exist. Two hours of my life chasing a phantom group." — **Earl P., Section 14**' }, { stars: 5, quote: '"It goes to eleven. So does the laughter." — **Picture Show Weekly**' }], achievement: '🎸 "These Go To Eleven"' }
-    ], achievementId: 'moviebanner_spinaltap'
+    ], achievementId: 'nat_movie_22'
   },
 
   // ── #048 DUNE ──
   { id: 'moviebanner_048', title: '📺 "Dune" — the spice must flow!', subtitle: '(a desert dune; a giant sandworm; a blue-eyed stare)', icon: '🌍',
     popups: [
       { num: 1, emoji: '🌍', title: 'DUNE', premiere: 'Dec 14, 1984', runtime: '137 min', genre: 'Science Fiction', synopsis: 'On a desert planet that\'s the only source of the most valuable substance in the universe, a young noble heir becomes the prophesied leader of an oppressed people and rises to reclaim his destiny. A sprawling, strange, visually overwhelming adaptation of the beloved sci-fi epic.', starring: '**Kyle MacLachlan, Francesca Annis, Sting, Max von Sydow, Patrick Stewart, José Ferrer.**', funFacts: 'Directed by David Lynch, which makes it weirder and more striking than any other blockbuster this year. Sting, the rock star, has a memorable villainous turn. The giant sandworms are unforgettable.', reviews: [{ stars: 4, quote: '"Ambitious, baffling, and unforgettable." — **Screen Scene**' }, { stars: 4, quote: '"A gorgeous, confusing dream." — **The Marquee Review**' }, { stars: 2, quote: '"Too much sand. I had sand in my popcorn metaphorically and that\'s one star off right there." — **Earl P., Section 14**' }, { stars: 4, quote: '"Like nothing else at the multiplex. Bring a guidebook." — **Picture Show Weekly**' }], achievement: '🌍 "The Spice Must Flow"' }
-    ], achievementId: 'moviebanner_dune'
+    ], achievementId: 'nat_movie_23'
   },
 
   // ── #049 THE NEVERENDING STORY ──
   { id: 'moviebanner_049', title: '📺 "The NeverEnding Story" — believe, and dream forever!', subtitle: '(a luckdragon; an old book; an attic window)', icon: '🐉',
     popups: [
       { num: 1, emoji: '🐉', title: 'THE NEVERENDING STORY', premiere: 'July 20, 1984', runtime: '102 min', genre: 'Fantasy / Family', synopsis: 'A bullied boy hides in a school attic with a magical book and discovers he\'s being pulled into the story itself — a fantasy world called Fantasia that\'s vanishing into "The Nothing," and that only he can save. A wondrous, heartfelt fantasy with a flying luckdragon and an unforgettable theme song.', starring: '**Barret Oliver, Noah Hathaway, Tami Stronach, with the voice of Falkor the luckdragon.**', funFacts: 'That synth-pop theme song is climbing the charts. Falkor the luckdragon becomes every kid\'s dream pet. The Swamps of Sadness sequence scars a generation in the best way.', reviews: [{ stars: 5, quote: '"A genuinely magical fantasy for kids of all ages." — **The Marquee Review**' }, { stars: 5, quote: '"Falkor is the best movie dragon, period." — **Picture Show Weekly**' }, { stars: 2, quote: '"It ended. After 102 minutes. The title is an outright fabrication." — **Earl P., Section 14**' }, { stars: 5, quote: '"Bring tissues for the horse. You know the scene." — **Screen Scene**' }], achievement: '🐉 "Call My Name"' }
-    ], achievementId: 'moviebanner_neverendingstory'
+    ], achievementId: 'nat_movie_24'
   },
 
   // ── #050 THE NATURAL ──
   { id: 'moviebanner_050', title: '📺 "The Natural" — knock the cover off the ball!', subtitle: '(a lightning-bolt bat; stadium lights bursting; a sunlit outfield)', icon: '⚾',
     popups: [
       { num: 1, emoji: '⚾', title: 'THE NATURAL', premiere: 'May 11, 1984', runtime: '138 min', genre: 'Sports / Drama', synopsis: 'A gifted ballplayer whose career was derailed in his youth resurfaces as a mysterious middle-aged rookie, swinging a homemade bat called "Wonderboy" and carrying the struggling New York Knights toward the pennant — while the ghosts of his past close in. A lush, mythic, golden-hued fable about talent, second chances, and the magic of baseball.', starring: '**Robert Redford, Robert Duvall, Glenn Close, Kim Basinger, Wilford Brimley, Richard Farnsworth.**', funFacts: 'That shower-of-sparks home run into the stadium lights is destined to be the most famous final shot in baseball-movie history. Redford, a genuine ballplayer in his youth, did much of his own hitting. The swelling brass score will play over highlights reels for decades.', reviews: [{ stars: 5, quote: '"A baseball fairy tale told in pure gold light. Goosebumps in the ninth." — **The Marquee Review**' }, { stars: 5, quote: '"Redford is perfect. The ending is legend." — **Picture Show Weekly**' }, { stars: 2, quote: '"Hit the lights out with one swing. Do you know what electricians cost? Irresponsible behavior." — **Earl P., Section 14**' }, { stars: 5, quote: '"The best baseball movie ever made — and you can quote me at the ballpark." — **Screen Scene**' }], achievement: '⚾ "Knock the Cover Off"' }
-    ], achievementId: 'moviebanner_natural'
+    ], achievementId: 'nat_movie_25'
   },
 ];
 

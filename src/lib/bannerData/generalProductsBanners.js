@@ -11,6 +11,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 01: KMART ──
     {
       num: 1,
+        achievementId: 'nat_generalProducts_1',
       emoji: '🛒',
       title: 'KMART',
       tagline: '"Attention, shoppers..."',
@@ -23,6 +24,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 02: SEARS & THE WISH BOOK ──
     {
       num: 2,
+        achievementId: 'nat_generalProducts_2',
       emoji: '📖',
       title: 'SEARS & THE WISH BOOK',
       tagline: '"Where America shops"',
@@ -35,6 +37,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 03: WOOLWORTH'S & THE FIVE-AND-DIME ──
     {
       num: 3,
+        achievementId: 'nat_generalProducts_3',
       emoji: '🏪',
       title: 'WOOLWORTH\'S & THE FIVE-AND-DIME',
       tagline: '"The original five-and-dime"',
@@ -47,6 +50,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 04: McDONALD'S ──
     {
       num: 4,
+        achievementId: 'nat_generalProducts_4',
       emoji: '🍔',
       title: 'McDONALD\'S',
       tagline: '"You deserve a break today"',
@@ -59,6 +63,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 05: COCA-COLA (and the cola wars) ──
     {
       num: 5,
+        achievementId: 'nat_generalProducts_5',
       emoji: '🥤',
       title: 'COCA-COLA (and the Cola Wars)',
       tagline: '"The choice of a new generation vs. the real thing"',
@@ -71,6 +76,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 06: THE SHOPPING MALL ──
     {
       num: 6,
+        achievementId: 'nat_generalProducts_6',
       emoji: '🏬',
       title: 'THE SHOPPING MALL',
       tagline: '"Meet you at the food court"',
@@ -83,6 +89,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 07: CABBAGE PATCH KIDS ──
     {
       num: 7,
+        achievementId: 'nat_generalProducts_7',
       emoji: '🧸',
       title: 'CABBAGE PATCH KIDS',
       tagline: '"Adopt one today (if you can find one)"',
@@ -95,6 +102,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 08: RUBIK'S CUBE & FAD TOYS ──
     {
       num: 8,
+        achievementId: 'nat_generalProducts_8',
       emoji: '🧩',
       title: 'RUBIK\'S CUBE & FAD TOYS',
       tagline: '"Six sides, one solution, endless frustration"',
@@ -107,6 +115,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 09: TRAPPER KEEPER & BACK-TO-SCHOOL ──
     {
       num: 9,
+        achievementId: 'nat_generalProducts_9',
       emoji: '📁',
       title: 'TRAPPER KEEPER & BACK-TO-SCHOOL',
       tagline: '"Get it together"',
@@ -119,6 +128,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 10: JELLY SHOES, PARACHUTE PANTS & '84 FASHION ──
     {
       num: 10,
+        achievementId: 'nat_generalProducts_10',
       emoji: '👟',
       title: 'JELLY SHOES, PARACHUTE PANTS & \'84 FASHION',
       tagline: '"Totally rad, head to toe"',
@@ -131,6 +141,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 11: TUPPERWARE & AVON (the home-party economy) ──
     {
       num: 11,
+        achievementId: 'nat_generalProducts_11',
       emoji: '🍴',
       title: 'TUPPERWARE & AVON (the home-party economy)',
       tagline: '"Ding dong, the party\'s here"',
@@ -143,6 +154,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 12: THE POLAROID INSTANT CAMERA ──
     {
       num: 12,
+        achievementId: 'nat_generalProducts_12',
       emoji: '📷',
       title: 'THE POLAROID INSTANT CAMERA',
       tagline: '"The picture develops before your eyes"',
@@ -155,6 +167,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 13: TV DINNERS & SUPERMARKET AMERICA ──
     {
       num: 13,
+        achievementId: 'nat_generalProducts_13',
       emoji: '📺',
       title: 'TV DINNERS & SUPERMARKET AMERICA',
       tagline: '"Dinner in minutes"',
@@ -167,6 +180,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 14: THE VIDEO RENTAL STORE ──
     {
       num: 14,
+        achievementId: 'nat_generalProducts_14',
       emoji: '📼',
       title: 'THE VIDEO RENTAL STORE',
       tagline: '"Friday night starts here"',
@@ -179,6 +193,7 @@ export const GENERAL_PRODUCTS_BANNER = {
     // ── WINDOW 15: EVERYDAY AMERICANA, 1984 (non-product) ──
     {
       num: 15,
+        achievementId: 'nat_generalProducts_15',
       emoji: '🇺🇸',
       title: 'THE TEXTURE OF 1984',
       tagline: '"The little things you\'ll miss"',
