@@ -50,6 +50,7 @@ import { shouldIntentionalWalk, issue_ibb } from './intentionalWalkDecision';
 import { choose_alignment, apply_alignment_modifiers, expect_bunt } from './defensivePositioning';
 import { should_double_switch, find_double_switch_partner, execute_double_switch } from './doubleSwitch';
 import { logRun } from './pitcherDecisions';
+import { HOLDING_GAME_RATES, decideBalk, decideThrowOver, resolveThrowOverOutcome, fillHoldingTemplate, pickHoldingLine, BALK_LINES } from './holdingGame';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -535,6 +536,7 @@ function endHalfInning(state) {
    if (!state.innings[state.inning - 1]) state.innings[state.inning - 1] = { home: null, away: null };
    if (state.innings[state.inning - 1][half] === null) state.innings[state.inning - 1][half] = 0;
    state.outs = 0; state.balls = 0; state.strikes = 0; state.bases = [null, null, null]; state.hitAndRun = false; state.pendingSteal = null;
+   state._throwOverCount = {};
    state._inningJustEnded = true;  // Flag for pitcher celebration
   
   // ── Pitcher composure recovery at half-inning boundary (gated by lead state) ──
@@ -581,6 +583,11 @@ export function attemptSteal(state, baseIndex) {
   const pSpeed = effP.effectivePitchSpeed || effP.pitchSpeed;
   const pCtrl = effP.effectiveControl || effP.control;
   let sc = 0.20 + speedFactor * 0.55 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - (pSpeed / 10) * 0.13;
+  // ── Steal suppression from throw-over ──
+  if (newState.bases[baseIndex]?._heldClose) {
+    sc -= HOLDING_GAME_RATES.stealSuccessPenalty;
+    delete newState.bases[baseIndex]._heldClose;
+  }
   sc = Math.max(0.08, Math.min(sc, 0.80));
   if (Math.random() < sc) {
     runner.gameStats.sb = (runner.gameStats.sb || 0) + 1;
@@ -615,7 +622,12 @@ export function cpuDecideSteal(state) {
     if (r.speed <= 2) continue;  // Never steal
     if (r.speed <= 3 && Math.random() > 0.03) continue;  // 3% chance
     if (r.speed <= 4 && Math.random() > 0.06) continue;  // 6% chance
-    if (Math.random() < Math.max(0.02, 0.04 + (r.speed / 10) * 0.20 - armF - pitchF)) return i;
+    let attemptChance = Math.max(0.02, 0.04 + (r.speed / 10) * 0.20 - armF - pitchF);
+    // ── Steal attempt penalty from throw-over ──
+    if (r._heldClose) {
+      attemptChance *= (1 - HOLDING_GAME_RATES.stealAttemptPenaltyRel);
+    }
+    if (Math.random() < attemptChance) return i;
   }
   return -1;
 }
@@ -1392,6 +1404,121 @@ function getControllingTeam(state, context) {
   return null;
 }
 
+// ── HOLDING GAME: Throw-overs & Balks ──
+function processHoldingGame(state) {
+  if (state.gameOver || state.outs >= 3) return null;
+
+  const hasRunner = state.bases.some(b => b !== null);
+  if (!hasRunner) return null;
+
+  const pitcher = getCurrentPitcher(state);
+
+  // ── BALK CHECK (per pitch, any runner on base) ──
+  if (decideBalk(state)) {
+    const pitcherName = pitcher?.name || 'The pitcher';
+    // Advance all runners one base
+    for (let i = 2; i >= 0; i--) {
+      if (state.bases[i]) {
+        if (i + 1 >= 3) {
+          state.bases[i].gameStats.runs++;
+          scoreRun(state);
+          state.bases[i] = null;
+        } else if (!state.bases[i + 1]) {
+          state.bases[i + 1] = state.bases[i];
+          state.bases[i] = null;
+        }
+      }
+    }
+    const text = fillHoldingTemplate(pickHoldingLine(BALK_LINES), { pitcher: pitcherName });
+    state.log.push({ type: 'balk', text });
+    state.lastPlay = { type: 'balk', text };
+    state._celebrationBubble = text;
+    return { balk: true };
+  }
+
+  // ── THROW-OVER CHECK (runner on 1st, no steal pending) ──
+  if (state.pendingSteal !== null && state.pendingSteal !== undefined) return null;
+
+  const decision = decideThrowOver(state);
+  if (!decision) return null;
+
+  // Increment throw-over counter for this PA
+  const paKey = `${state.halfInning}_${state.inning}_${state.awayBatterIndex}_${state.homeBatterIndex}`;
+  if (!state._throwOverCount) state._throwOverCount = {};
+  state._throwOverCount[paKey] = (state._throwOverCount[paKey] || 0) + 1;
+
+  const outcome = resolveThrowOverOutcome(decision.hand, decision.runner.name, decision.pitcherName);
+
+  // LHP throw-over ruled a balk
+  if (outcome.outcome === 'balk') {
+    for (let i = 2; i >= 0; i--) {
+      if (state.bases[i]) {
+        if (i + 1 >= 3) {
+          state.bases[i].gameStats.runs++;
+          scoreRun(state);
+          state.bases[i] = null;
+        } else if (!state.bases[i + 1]) {
+          state.bases[i + 1] = state.bases[i];
+          state.bases[i] = null;
+        }
+      }
+    }
+    state.log.push({ type: 'balk', text: outcome.text });
+    state.lastPlay = { type: 'balk', text: outcome.text };
+    state._celebrationBubble = outcome.text;
+    return { balk: true };
+  }
+
+  // Pickoff OUT
+  if (outcome.outcome === 'pickoff_out') {
+    const runner = state.bases[0];
+    if (runner) {
+      runner.gameStats.cs = (runner.gameStats.cs || 0) + 1;
+      state.bases[0] = null;
+    }
+    state.log.push({ type: 'pickoff', text: outcome.text });
+    state.lastPlay = { type: 'pickoff', text: outcome.text };
+    state._celebrationBubble = outcome.text;
+    recordOut(state);
+    return { pickoff: true };
+  }
+
+  // Wild throw — runner advances (pitch still happens after)
+  if (outcome.outcome === 'wild_throw') {
+    const runner = state.bases[0];
+    if (runner) {
+      state.bases[0] = null;
+      if (outcome.doubleAdvance && !state.bases[1] && !state.bases[2]) {
+        state.bases[2] = runner;
+      } else if (!state.bases[1]) {
+        state.bases[1] = runner;
+      } else {
+        // 2nd base occupied — push runner forward
+        if (state.bases[1]) {
+          if (!state.bases[2]) {
+            state.bases[2] = state.bases[1];
+          } else {
+            state.bases[1].gameStats.runs++;
+            scoreRun(state);
+          }
+        }
+        state.bases[1] = runner;
+      }
+    }
+    state.log.push({ type: 'error', text: outcome.text, isWildPickoff: true });
+    state._celebrationBubble = outcome.text;
+    return { wildThrow: true };
+  }
+
+  // Nothing — set _heldClose for steal suppression
+  if (state.bases[0]) {
+    state.bases[0]._heldClose = true;
+  }
+  state.log.push({ type: 'info', text: outcome.text });
+  state._celebrationBubble = outcome.text;
+  return { nothing: true };
+}
+
 export function processAtBat(state, pitchType, swingType) {
    const home = TEAMS[state.homeTeam], away = TEAMS[state.awayTeam];
    const newState = JSON.parse(JSON.stringify(state));
@@ -1586,6 +1713,22 @@ export function processAtBat(state, pitchType, swingType) {
   delete newState._wasReachBack;
   const pitcher = getCurrentPitcher(newState), effP = getEffectivePitcher(newState) || pitcher;
   const batter = getCurrentBatter(newState);
+
+  // Clear steal suppression (fades after 1 pitch if not consumed by attemptSteal)
+  newState.bases.forEach(b => { if (b) delete b._heldClose; });
+
+  // ── HOLDING GAME: Throw-overs & Balks ──
+  const holdingResult = processHoldingGame(newState);
+  if (holdingResult?.balk || holdingResult?.pickoff) {
+    if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) {
+      newState.gameOver = true; newState.waitingForInput = false;
+      newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
+    }
+    applyComposureFromLastPlay(newState, pitcher);
+    processComposureEvents(newState, pitcher);
+    return newState;
+  }
+
   const wc = Math.max(0.01, (10 - (effP.effectiveControl || effP.control)) * 0.005);
   if (Math.random() < wc) { batter.gameStats.bb++; pitcher.gameStats.bb++; pitcher.gameStats.pitches += 4; newState.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); newState.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(newState, batter); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off walk! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); } applyComposure(pitcher, newState, 'walk'); return newState; }
   newState.pitchResult = resolvePitch(newState, pitchType);
