@@ -451,7 +451,7 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
             runnerAt3rd.gameStats.cs = (runnerAt3rd.gameStats.cs || 0) + 1;
             state.bases[2] = null;
             if (!state._pendingBaseOuts) state._pendingBaseOuts = [];
-            state._pendingBaseOuts.push({ text: `❌ ${runnerAt3rd.name} — ${pickLine(RUNNER_FIRST_TO_HOME_OUT_LINES)}` });
+            state._pendingBaseOuts.push({ text: `${runnerAt3rd.name} — ${pickLine(RUNNER_FIRST_TO_HOME_OUT_LINES)}` });
           } else {
             runnerAt3rd.gameStats.runs++; scoreRun(state); rbi++; state.bases[2] = null;
             state.log.push({ type: 'info', text: `${runnerAt3rd.name} hustles all the way home from first!` });
@@ -473,7 +473,7 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
               runnerAt2nd.gameStats.cs = (runnerAt2nd.gameStats.cs || 0) + 1;
               state.bases[1] = null;
               if (!state._pendingBaseOuts) state._pendingBaseOuts = [];
-              state._pendingBaseOuts.push({ text: `❌ ${runnerAt2nd.name} — ${pickLine(RUNNER_FIRST_TO_THIRD_OUT_LINES)}` });
+              state._pendingBaseOuts.push({ text: `${runnerAt2nd.name} — ${pickLine(RUNNER_FIRST_TO_THIRD_OUT_LINES)}` });
             } else if (!state.bases[2]) {
               // Only move to 3rd if the base isn't already occupied (e.g., runner from 2nd stayed)
               state.bases[2] = runnerAt2nd; state.bases[1] = null;
@@ -496,7 +496,7 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
             runnerAt3rd.gameStats.cs = (runnerAt3rd.gameStats.cs || 0) + 1;
             state.bases[2] = null;
             if (!state._pendingBaseOuts) state._pendingBaseOuts = [];
-            state._pendingBaseOuts.push({ text: `❌ ${runnerAt3rd.name} — ${pickLine(RUNNER_SECOND_TO_HOME_OUT_LINES)}` });
+            state._pendingBaseOuts.push({ text: `${runnerAt3rd.name} — ${pickLine(RUNNER_SECOND_TO_HOME_OUT_LINES)}` });
           } else {
             runnerAt3rd.gameStats.runs++; scoreRun(state); rbi++; state.bases[2] = null;
             state.log.push({ type: 'info', text: `${runnerAt3rd.name} scores from second on the single!` });
@@ -599,7 +599,7 @@ export function attemptSteal(state, baseIndex) {
     else { newState.bases[baseIndex + 1] = runner; newState.bases[baseIndex] = null; const stxt = `🏃 ${runner.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, ['second','third','home'][baseIndex])}`; newState.log.push({ type: 'steal', text: stxt }); newState.lastPlay = { type: 'steal', text: stxt }; newState._celebrationBubble = stxt; }
   } else {
     runner.gameStats.cs = (runner.gameStats.cs || 0) + 1; newState.bases[baseIndex] = null; recordOut(newState);
-    const cstxt = `❌ ${runner.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, ['second','third','home'][baseIndex])} — ${pickLine(CAUGHT_STEALING_LINES)}`; newState.log.push({ type: 'caughtstealing', text: cstxt }); newState.lastPlay = { type: 'caughtstealing', text: cstxt }; newState._celebrationBubble = cstxt;
+    const cstxt = `${runner.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, ['second','third','home'][baseIndex])} — ${pickLine(CAUGHT_STEALING_LINES)}`; newState.log.push({ type: 'caughtstealing', text: cstxt }); newState.lastPlay = { type: 'caughtstealing', text: cstxt }; newState._celebrationBubble = cstxt;
   }
   newState.pendingSteal = null;
   return newState;
@@ -974,7 +974,7 @@ function resolveSwing(state, swingType, pitch) {
     const isGrounder = !isFlyBall;
     if (isGrounder) {
       const fielder = defenders[out.pos];
-      if (fielder) { const adjF = getAdjustedPlayer(fielder); if (Math.random() < getErrorChance(fielder.name) * adjF.errorMult * errorWx) { batter.gameStats.ab++; pitcher.gameStats.er++; advanceRunners(state, 1, batter, false); const errText = `❌ ${fielder.name} ${pickLine(ERROR_LINES)} ${batter.name} reaches on an error!`; state.log.push({ type: 'error', text: errText }); state.lastPlay = { type: 'error', text: errText }; state.balls = 0; state.strikes = 0; advanceBatter(state); return; } }
+      if (fielder) { const adjF = getAdjustedPlayer(fielder); if (Math.random() < getErrorChance(fielder.name) * adjF.errorMult * errorWx) { batter.gameStats.ab++; pitcher.gameStats.er++; advanceRunners(state, 1, batter, false); const errText = `${fielder.name} ${pickLine(ERROR_LINES)} ${batter.name} reaches on an error!`; state.log.push({ type: 'error', text: errText }); state.lastPlay = { type: 'error', text: errText }; state.balls = 0; state.strikes = 0; advanceBatter(state); return; } }
     }
     if (isGrounder) {
       // ── Apply alignment modifiers (Phase 3.0) ──
@@ -1215,7 +1215,7 @@ function processPostHitBaserunning(state, hitType, batter, defenders) {
     else if (hitType === 'triple') state.bases[2] = null;
     state.log.push({ type: 'info', text: stretch.text });
     if (state.lastPlay && state.lastPlay.text) state.lastPlay.text = `${state.lastPlay.text} — ${stretch.text}`;
-    state._celebrationBubble = `❌ ${stretch.text}`;
+    state._celebrationBubble = `${stretch.text}`;
     recordOut(state);
   } else if (stretch.type === 'safe_double') {
     state.bases[1] = batter; state.bases[0] = null;
@@ -1258,7 +1258,7 @@ function processFlyoutTagUps(state, out, defenders, batter) {
         // Thrown out at home!
         r.gameStats.cs = (r.gameStats.cs || 0) + 1;
         state.bases[2] = null; batter.gameStats.ab--;
-        const outText = `❌ ${r.name} — ${pickLine(TAG_UP_THIRD_TO_HOME_OUT_LINES)}`;
+        const outText = `${r.name} — ${pickLine(TAG_UP_THIRD_TO_HOME_OUT_LINES)}`;
         state.log.push({ type: 'info', text: outText }); state.lastPlay = { type: 'info', text: outText };
         state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
         return true;
@@ -1282,7 +1282,7 @@ function processFlyoutTagUps(state, out, defenders, batter) {
             if (Math.random() < Math.max(0.03, Math.min(r2Caught, 0.25))) {
               r2.gameStats.cs = (r2.gameStats.cs || 0) + 1;
               state.bases[1] = null;
-              state.log.push({ type: 'info', text: `❌ ${r2.name} — ${pickLine(TAG_UP_SECOND_TO_THIRD_OUT_LINES)}` });
+              state.log.push({ type: 'info', text: `${r2.name} — ${pickLine(TAG_UP_SECOND_TO_THIRD_OUT_LINES)}` });
             } else {
               state.bases[2] = r2; state.bases[1] = null;
               state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); state._celebrationBubble = `🏃 ${r2.name} tags up and advances to third!`;
@@ -1307,7 +1307,7 @@ function processFlyoutTagUps(state, out, defenders, batter) {
         if (Math.random() < Math.max(0.03, Math.min(caughtChance, 0.25))) {
           r.gameStats.cs = (r.gameStats.cs || 0) + 1;
           state.bases[1] = null; batter.gameStats.ab--;
-          const outText = `❌ ${r.name} — ${pickLine(TAG_UP_SECOND_TO_THIRD_OUT_LINES)}`;
+          const outText = `${r.name} — ${pickLine(TAG_UP_SECOND_TO_THIRD_OUT_LINES)}`;
           state.log.push({ type: 'info', text: outText }); state.lastPlay = { type: 'info', text: outText };
           state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
           return true;
@@ -1329,7 +1329,7 @@ function processFlyoutTagUps(state, out, defenders, batter) {
       if (Math.random() < Math.max(0.05, Math.min(caughedChance, 0.35))) {
         r.gameStats.cs = (r.gameStats.cs || 0) + 1;
         state.bases[0] = null; batter.gameStats.ab--;
-        const outText = `❌ ${r.name} — ${pickLine(TAG_UP_FIRST_TO_SECOND_OUT_LINES)}`;
+        const outText = `${r.name} — ${pickLine(TAG_UP_FIRST_TO_SECOND_OUT_LINES)}`;
         state.log.push({ type: 'info', text: outText }); state.lastPlay = { type: 'info', text: outText };
         state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
         return true;
@@ -1366,8 +1366,8 @@ function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
   } else {
     const orr = Math.random();
     if (orr < 0.45) { const gps = ['SS','2B','3B','SP','1B']; const gp = gps[Math.floor(Math.random() * gps.length)]; let sn = []; for (let i = 2; i >= 0; i--) { const r = state.bases[i]; if (!r) continue; if (i + 1 >= 3) { r.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; sn.push(r.name.split(' ').pop()); state.bases[i] = null; } else if (!state.bases[i + 1]) { state.bases[i + 1] = r; state.bases[i] = null; } } const goText = `${batter.name} grounds out to ${pn[gp]}${sn.length ? ` — ${sn.join(', ')} scores` : ''} — runners advance on the hit-and-run`; state.log.push({ type: 'groundout', text: goText }); state.lastPlay = { type: 'groundout', text: goText }; recordOut(state); }
-    else if (orr < 0.68) { const fpk = ['LF','CF','RF']; const fp = fpk[Math.floor(Math.random() * fpk.length)]; const dr = Math.random(); const isD = dr < 0.35, isS = dr > 0.65; let foText; if (isS) foText = `${pickLine(SHALLOW_FLYOUT_LINES)} ${defenders[fp]?.name || pn[fp]} makes the catch — caught on the hit-and-run.`; else if (isD) foText = `${pickLine(DEEP_FLYOUT_LINES)} ${defenders[fp]?.name || pn[fp]} makes the catch — caught on the hit-and-run.`; else foText = `${pickLine(MEDIUM_FLYOUT_LINES)} ${defenders[fp]?.name || pn[fp]} makes the catch — caught on the hit-and-run.`; state.log.push({ type: 'flyout', text: foText }); state.lastPlay = { type: 'flyout', text: foText }; recordOut(state); if (!state.gameOver) { for (let i = 0; i < 3; i++) { const r = state.bases[i]; if (!r) continue; if (isD && i === 2 && state.outs < 3) { const tc = 0.15 + (r.speed / 10) * 0.40; if (Math.random() < tc) { r.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; state.bases[i] = null; batter.gameStats.ab--; state.log.push({ type: 'sacfly', text: `${r.name} tags and scores on the deep fly!` }); } } else if (isS && state.outs < 3) { let ct = false, tb = ''; if (fp === 'RF' && i <= 1) { ct = true; tb = i === 0 ? 'first' : 'second'; } else if (fp === 'CF' && i === 1) { ct = true; tb = 'second'; } else if (fp === 'LF' && i >= 1) { ct = true; tb = i === 1 ? 'second' : 'third'; } if (ct) { const ofa = (defenders[fp]?.arm || 5) / 10; if (Math.random() < Math.max(0.05, Math.min(0.18 + ofa * 0.25 - (r.speed / 10) * 0.12, 0.50))) { state.bases[i] = null; state.log.push({ type: 'info', text: `❌ ${r.name} can't get back to ${tb} — doubled off on the hit-and-run!` }); recordOut(state); break; } } } } } }
-    else if (orr < 0.88) { const lpk = ['3B','SS','1B','2B']; const lp = lpk[Math.floor(Math.random() * lpk.length)]; const f = defenders[lp]; const loText = `${pickLine(Math.random() < 0.5 ? INFIELD_LINEOUT_SOFT_LINES : INFIELD_LINEOUT_HARD_LINES)} ${f?.name || pn[lp]} makes the catch — caught on the hit-and-run.`; state.log.push({ type: 'lineout', text: loText }); state.lastPlay = { type: 'lineout', text: loText }; recordOut(state); if (!state.gameOver) { for (let i = 0; i < 3; i++) { const r = state.bases[i]; if (!r) continue; const doc = 0.50 + ((f?.arm || 5) / 10) * 0.15 - (r.speed / 10) * 0.10; if (state.outs < 3 && Math.random() < Math.max(0.25, Math.min(doc, 0.75))) { state.bases[i] = null; state.log.push({ type: 'info', text: `❌ ${r.name} doubled off ${['first','second','third'][i]} — caught on the hit-and-run!` }); recordOut(state); break; } } } }
+    else if (orr < 0.68) { const fpk = ['LF','CF','RF']; const fp = fpk[Math.floor(Math.random() * fpk.length)]; const dr = Math.random(); const isD = dr < 0.35, isS = dr > 0.65; let foText; if (isS) foText = `${pickLine(SHALLOW_FLYOUT_LINES)} ${defenders[fp]?.name || pn[fp]} makes the catch — caught on the hit-and-run.`; else if (isD) foText = `${pickLine(DEEP_FLYOUT_LINES)} ${defenders[fp]?.name || pn[fp]} makes the catch — caught on the hit-and-run.`; else foText = `${pickLine(MEDIUM_FLYOUT_LINES)} ${defenders[fp]?.name || pn[fp]} makes the catch — caught on the hit-and-run.`; state.log.push({ type: 'flyout', text: foText }); state.lastPlay = { type: 'flyout', text: foText }; recordOut(state); if (!state.gameOver) { for (let i = 0; i < 3; i++) { const r = state.bases[i]; if (!r) continue; if (isD && i === 2 && state.outs < 3) { const tc = 0.15 + (r.speed / 10) * 0.40; if (Math.random() < tc) { r.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++; state.bases[i] = null; batter.gameStats.ab--; state.log.push({ type: 'sacfly', text: `${r.name} tags and scores on the deep fly!` }); } } else if (isS && state.outs < 3) { let ct = false, tb = ''; if (fp === 'RF' && i <= 1) { ct = true; tb = i === 0 ? 'first' : 'second'; } else if (fp === 'CF' && i === 1) { ct = true; tb = 'second'; } else if (fp === 'LF' && i >= 1) { ct = true; tb = i === 1 ? 'second' : 'third'; } if (ct) { const ofa = (defenders[fp]?.arm || 5) / 10; if (Math.random() < Math.max(0.05, Math.min(0.18 + ofa * 0.25 - (r.speed / 10) * 0.12, 0.50))) { state.bases[i] = null; state.log.push({ type: 'info', text: `${r.name} can't get back to ${tb} — doubled off on the hit-and-run!` }); recordOut(state); break; } } } } } }
+    else if (orr < 0.88) { const lpk = ['3B','SS','1B','2B']; const lp = lpk[Math.floor(Math.random() * lpk.length)]; const f = defenders[lp]; const loText = `${pickLine(Math.random() < 0.5 ? INFIELD_LINEOUT_SOFT_LINES : INFIELD_LINEOUT_HARD_LINES)} ${f?.name || pn[lp]} makes the catch — caught on the hit-and-run.`; state.log.push({ type: 'lineout', text: loText }); state.lastPlay = { type: 'lineout', text: loText }; recordOut(state); if (!state.gameOver) { for (let i = 0; i < 3; i++) { const r = state.bases[i]; if (!r) continue; const doc = 0.50 + ((f?.arm || 5) / 10) * 0.15 - (r.speed / 10) * 0.10; if (state.outs < 3 && Math.random() < Math.max(0.25, Math.min(doc, 0.75))) { state.bases[i] = null; state.log.push({ type: 'info', text: `${r.name} doubled off ${['first','second','third'][i]} — caught on the hit-and-run!` }); recordOut(state); break; } } } }
     else { const ppk = ['C','2B','3B']; const pp = ppk[Math.floor(Math.random() * ppk.length)]; const f = defenders[pp]; const poText = `${pickLine(INFIELD_POPUP_LINES)} ${f?.name || pn[pp]} makes the catch — runners hold on the hit-and-run.`; state.log.push({ type: 'popout', text: poText }); state.lastPlay = { type: 'popout', text: poText }; recordOut(state); }
   }
   state.balls = 0; state.strikes = 0; advanceBatter(state);
@@ -1383,12 +1383,12 @@ function advanceHitAndRunRunners(state, batter) {
 }
 
 function handleHitAndRunCaught(state) {
-  for (let i = 0; i < 3; i++) { const r = state.bases[i]; if (!r) continue; const cc = 0.50 - (r.speed / 10) * 0.30; if (Math.random() < cc) { r.gameStats.cs = (r.gameStats.cs || 0) + 1; state.bases[i] = null; recordOut(state); const tb = i + 1; const bn = tb === 1 ? 'second' : tb === 2 ? 'third' : 'home'; state.log.push({ type: 'info', text: `❌ ${r.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, bn)} on the hit-and-run!` }); break; } else { if (i + 1 < 3) { state.bases[i + 1] = r; state.bases[i] = null; state.log.push({ type: 'info', text: `${r.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, ['second','third'][i])} on the hit-and-run!` }); } } }
+  for (let i = 0; i < 3; i++) { const r = state.bases[i]; if (!r) continue; const cc = 0.50 - (r.speed / 10) * 0.30; if (Math.random() < cc) { r.gameStats.cs = (r.gameStats.cs || 0) + 1; state.bases[i] = null; recordOut(state); const tb = i + 1; const bn = tb === 1 ? 'second' : tb === 2 ? 'third' : 'home'; state.log.push({ type: 'info', text: `${r.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, bn)} on the hit-and-run!` }); break; } else { if (i + 1 < 3) { state.bases[i + 1] = r; state.bases[i] = null; state.log.push({ type: 'info', text: `${r.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, ['second','third'][i])} on the hit-and-run!` }); } } }
   state.hitAndRun = false;
 }
 
 function handleHitAndRunMiss(state) {
-  for (let i = 0; i < 2; i++) { const r = state.bases[i]; if (!r || state.bases[i + 1]) continue; const d = getDefensivePlayers(state); const ca = getCatcherArm(d); const sc = 0.20 + (r.speed / 10) * 0.55 - (ca / 10) * 0.12; if (Math.random() < Math.max(0.10, Math.min(sc, 0.75))) { r.gameStats.sb = (r.gameStats.sb || 0) + 1; state.bases[i + 1] = r; state.bases[i] = null; state.log.push({ type: 'info', text: `${r.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, i === 0 ? 'second' : 'third')} on the hit-and-run` }); } else { r.gameStats.cs = (r.gameStats.cs || 0) + 1; state.bases[i] = null; state.log.push({ type: 'info', text: `❌ ${r.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, i === 0 ? 'second' : 'third')} on the hit-and-run!` }); recordOut(state); } break; }
+  for (let i = 0; i < 2; i++) { const r = state.bases[i]; if (!r || state.bases[i + 1]) continue; const d = getDefensivePlayers(state); const ca = getCatcherArm(d); const sc = 0.20 + (r.speed / 10) * 0.55 - (ca / 10) * 0.12; if (Math.random() < Math.max(0.10, Math.min(sc, 0.75))) { r.gameStats.sb = (r.gameStats.sb || 0) + 1; state.bases[i + 1] = r; state.bases[i] = null; state.log.push({ type: 'info', text: `${r.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, i === 0 ? 'second' : 'third')} on the hit-and-run` }); } else { r.gameStats.cs = (r.gameStats.cs || 0) + 1; state.bases[i] = null; state.log.push({ type: 'info', text: `${r.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, i === 0 ? 'second' : 'third')} on the hit-and-run!` }); recordOut(state); } break; }
 }
 
 function runInjuryChecks(newState, batter) {
