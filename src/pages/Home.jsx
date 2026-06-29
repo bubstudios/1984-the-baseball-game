@@ -175,7 +175,6 @@ export default function Home() {
   const [showSummary, setShowSummary] = useState(false);
   const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
-  const [celebrationPopupBubble, setCelebrationPopupBubble] = useState(null);
   const [inlineGameEvent, setInlineGameEvent] = useState(null); // { type: 'celebration'|'caughtstealing'|'ballpark', event: data }
   const prevCelebrationBubble = useRef(null);
 
@@ -478,11 +477,12 @@ export default function Home() {
     // No need to double-process here — trackGameCompleted is not idempotent.
   }, [gameState]);
 
-  // Celebration bubble from game engine — surface whenever the engine sets a bubble (#28)
+  // Celebration bubble from game engine — route to inline banner
   useEffect(() => {
     if (gameState?._celebrationBubble && gameState._celebrationBubble !== prevCelebrationBubble.current) {
       prevCelebrationBubble.current = gameState._celebrationBubble;
-      setCelebrationPopupBubble(gameState._celebrationBubble);
+      setInlineGameEvent({ type: 'celebration', event: gameState._celebrationBubble });
+      setTimeout(() => setInlineGameEvent(null), 7500);
     }
   }, [gameState]);
 
@@ -1031,15 +1031,6 @@ export default function Home() {
   const reachBackUses = gameState._reachBackUses || 0;
   const isStarter = pitcher?.pos === 'SP' || pitcher?.assignedPos === 'SP';
   const reachBackMax = isStarter ? 3 : 1;
-
-  // Dedupe: suppress celebration bubble when same text is already in CommentaryBanner's stats flash
-  const _hitTypes = ['single', 'double', 'triple', 'homerun', 'peskyPole', 'basketHR', 'shortPorch', 'offMonster', 'ivyStuck', 'triangle'];
-  const _norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const _celebText = celebrationPopupBubble;
-  const _lastPlayText = gameState?.lastPlay?.text || '';
-  const _isDupeBubble = _celebText && _hitTypes.includes(gameState?.lastPlay?.type) &&
-    _norm(_celebText).length > 8 &&
-    (_norm(_lastPlayText).includes(_norm(_celebText)) || _norm(_celebText).includes(_norm(_lastPlayText)));
 
   const situationalBatter = getSituationalBatter(gameState);
   const battingTeamKey = getBattingTeam(gameState) === 'home' ? homeTeam : awayTeam;
