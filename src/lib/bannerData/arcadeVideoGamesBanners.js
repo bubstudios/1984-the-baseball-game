@@ -1,0 +1,195 @@
+// National Arcade & Video Games Banner (#081–095) — 15 windows, mixed into ALL 26 ballparks
+// Quarter-drop nostalgia meets neon-grid reverence
+// All game names, publishers, and facts are real 1984-era references in ORIGINAL wording.
+// No reproduced in-game text, manuals, or ad copy. All descriptive copy is original.
+// Hidden achievement: "Golden Age" — open all 15 arcade windows
+
+export const ARCADE_BANNER = {
+  id: 'arcadebanner_081',
+  title: '🕹️ "Insert coin — step into the arcade! High scores and quarter heaven!"',
+  subtitle: '(neon-grid nostalgia meets quarter-drop culture)',
+  icon: '🕹️',
+  hiddenAchievement: '🕹️ "Golden Age"',
+  popups: [
+    // ── WINDOW 01: PAC-MAN ──
+    {
+      num: 1,
+      emoji: '🟡',
+      title: 'PAC-MAN',
+      tagline: 'Waka waka waka',
+      whatItWas: 'The maze-chomping phenomenon — a yellow circle gobbling dots and dodging four colored ghosts named Blinky, Pinky, Inky, and Clyde. The arcade game that became a hit song, a cartoon, and a merchandise empire all at once.',
+      howChanged: 'Took arcades from bars and bowling alleys into every mall and restaurant in America — the first true crossover video-game superstar, recognized by people who never touched a joystick.',
+      craze: 'Pac-Man fever was real — lunchboxes, cereal, a Top 40 record, and a Saturday morning cartoon. The yellow circle was everywhere.',
+      howAged: 'Immortal. The most recognized video-game character of all time, still chomping decades later. 🟡',
+      achievement: '🟡 *Chomp Champion*',
+    },
+    // ── WINDOW 02: DRAGON'S LAIR ──
+    {
+      num: 2,
+      emoji: '🐉',
+      title: 'DRAGON\'S LAIR',
+      tagline: 'The arcade game that looked like a cartoon',
+      whatItWas: 'Fifty cents a play — double the going rate — and worth every quarter. Stored on LaserDisc, it played like an animated movie you controlled at key moments, guiding Dirk the Daring through a dangerous castle.',
+      howChanged: 'Stunned players with animation quality no cabinet had ever shown. More movie than game, it proved arcades could deliver a cinematic experience.',
+      craze: 'The first arcade game to draw crowds of spectators who just watched others play. The fifty-cent price tag didn\'t slow anyone down.',
+      howAged: 'A cult classic. The animation still looks gorgeous; the gameplay still frustrates and delights in equal measure. 🐉',
+      achievement: '🐉 *Dirk the Daring*',
+    },
+    // ── WINDOW 03: MARBLE MADNESS ──
+    {
+      num: 3,
+      emoji: '🔵',
+      title: 'MARBLE MADNESS',
+      tagline: 'Roll with it',
+      whatItWas: 'A 1984 release that had players guiding a glass marble through isometric obstacle courses using a trackball controller — ramps, narrow paths, hazards, and a ticking clock.',
+      howChanged: 'One of the first arcade games to use true isometric 3D perspective, and among the first with a genuine stereo soundtrack. Every cabinet that followed owed it something.',
+      craze: 'A trackball wizard\'s dream — precision and speed in a beautiful package. Players competed for the fastest clear times.',
+      howAged: 'A landmark. Still admired for its clean design and that unforgettable look. 🔵',
+      achievement: '🔵 *Keep Rolling*',
+    },
+    // ── WINDOW 04: DIG DUG ──
+    {
+      num: 4,
+      emoji: '⛏️',
+      title: 'DIG DUG',
+      tagline: 'Dig deep, pump hard',
+      whatItWas: 'Tunnel through layers of dirt and dispatch the round Pookas and fire-breathing Fygars — either by inflating them with a pump until they pop, or by loosening rocks to drop on them from above.',
+      howChanged: 'A cute-and-clever maze-digging classic that rewarded creative thinking over pure reflexes. Drop a rock on two enemies at once and feel like a genius.',
+      craze: 'Beloved for its charm and strategy. The pump-until-they-pop mechanic was instantly iconic.',
+      howAged: 'A golden-age gem. Those puffed-up monsters still make people smile. ⛏️',
+      achievement: '⛏️ *Pump It Up*',
+    },
+    // ── WINDOW 05: DONKEY KONG ──
+    {
+      num: 5,
+      emoji: '🦍',
+      title: 'DONKEY KONG (birth of Mario)',
+      tagline: 'How high can you get?',
+      whatItWas: 'The barrel-jumping classic — a mustachioed carpenter climbs girders and ladders to rescue a damsel from a giant ape. That hero, first called "Jumpman," is Mario, about to become the most famous character in all of gaming.',
+      howChanged: 'Launched an empire and made its young Japanese publisher a household name. The chase for its perfect score becomes legendary; the carpenter becomes a plumber, then a superstar.',
+      craze: 'A monster hit that proved a single platform game could carry a whole cabinet — and a whole company. Every kid knew the ape and the girders.',
+      howAged: 'Foundational. Without this cabinet, the face of gaming looks completely different. 🦍',
+      achievement: '🦍 *How High Can You Get?*',
+    },
+    // ── WINDOW 06: THE GAME MAKERS ──
+    {
+      num: 6,
+      emoji: '🏢',
+      title: 'THE GAME MAKERS',
+      tagline: 'Behind every cabinet',
+      whatItWas: 'The 1984 arcade floor was ruled by a handful of legendary makers — Japanese houses cranking out maze games, diggers, and shooters, alongside American coin-op titans behind the vector classics and pinball.',
+      howChanged: 'At its peak, the arcade business out-earned Hollywood and pop music combined. Behind every cabinet was a publisher betting big, and the young, often anonymous, brilliant creators became the first generation of video-game auteurs.',
+      craze: 'Some names became eternal royalty. The art form only grew — these were the studios that built an industry from circuit boards and imagination.',
+      howAged: 'Legendary. The makers behind the cabinets are now recognized as the founding architects of a global entertainment medium. 🏢',
+      achievement: '🏢 *Quarters to Empires*',
+    },
+    // ── WINDOW 07: ATARI 2600 ──
+    {
+      num: 7,
+      emoji: '🎮',
+      title: 'ATARI 2600',
+      tagline: 'The one that brought the arcade home',
+      whatItWas: 'The wood-grain console that put video games in millions of living rooms — a one-button joystick, a cartridge slot, and blocky-but-magical graphics. For a generation, "video games at home" meant the 2600.',
+      howChanged: 'Defined the first home-console boom. Plug in a cartridge and play on your own TV — then sat at the center of the 1983 crash when a flood of junk cartridges tanked the market.',
+      craze: 'Under $100 for the console, cartridges around twenty to thirty dollars. Every kid who had one was the most popular house on the block.',
+      howAged: 'The granddaddy of home gaming. Wood grain and all, it\'s the console that started the living-room revolution. 🎮',
+      achievement: '🎮 *Wood Grain Warrior*',
+    },
+    // ── WINDOW 08: THE GREAT VIDEO GAME CRASH OF 1983 ──
+    {
+      num: 8,
+      emoji: '📉',
+      title: 'THE GREAT VIDEO GAME CRASH OF 1983',
+      tagline: 'When the bubble burst',
+      whatItWas: 'The home video-game industry\'s spectacular collapse. After years of explosive growth, the market flooded with too many consoles and awful rushed games. Confidence evaporated, retailers dumped inventory at pennies.',
+      howChanged: 'By 1984, the American home-console business was in tatters. Billions wiped out. One publisher\'s infamous unsold cartridges ended up buried in a desert landfill — the cautionary tale of gaming.',
+      craze: 'The crash cleared the board entirely. Nobody in \'84 sees the comeback coming, but the rubble is exactly where the next era takes root.',
+      howAged: 'Legendary in its own right. The crash is why the Japanese console revival of \'85 was so shocking — the market was written off as dead. 📉',
+      achievement: '📉 *Survived the Crash*',
+    },
+    // ── WINDOW 09: GALAGA & THE SHOOTERS ──
+    {
+      num: 9,
+      emoji: '🚀',
+      title: 'GALAGA & THE SHOOTERS',
+      tagline: 'Defend the galaxy, one wave at a time',
+      whatItWas: 'The beloved fixed-shooter — blast formations of swooping alien insects, and in its signature twist, let the enemy capture your ship so you can rescue it and fly dual-cannon for double firepower.',
+      howChanged: 'The pinnacle of the Space Invaders and Galaxian lineage. Shoot the divers, dodge their fire, time the rescue, chase the score. One of the most enduring, replayed arcade games ever made.',
+      craze: 'The dual-ship mechanic was a revelation — risk your last life to double your firepower. Players spent fortunes mastering the perfect rescue.',
+      howAged: 'Still played, still loved. Galaga cabinets still earn their keep in bars and arcades everywhere. 🚀',
+      achievement: '🚀 *Double Ship*',
+    },
+    // ── WINDOW 10: DEFENDER & ROBOTRON ──
+    {
+      num: 10,
+      emoji: '🕹️',
+      title: 'DEFENDER & ROBOTRON',
+      tagline: 'For the reflexes of the gods',
+      whatItWas: 'The notoriously hard, control-heavy classics that separated casuals from legends. Defender had you protecting humans on a side-scrolling planet with a cockpit\'s worth of buttons; Robotron: 2084 pioneered dual-joystick mayhem — one stick to move, one to shoot.',
+      howChanged: 'Total sensory overload and brutal difficulty; mastery was a badge of honor. These were the games the hotshots gathered around, building the cult of the high-score champion.',
+      craze: 'The cabinets that made heroes. Watching a master play Robotron was like watching someone play piano in a hurricane.',
+      howAged: 'Revered by purists. The hardest games in the arcade are still the most respected. 🕹️',
+      achievement: '🕹️ *Reflexes of the Gods*',
+    },
+    // ── WINDOW 11: THE ARCADE ITSELF ──
+    {
+      num: 11,
+      emoji: '🏛️',
+      title: 'THE ARCADE ITSELF',
+      tagline: 'The neon temple of the quarter',
+      whatItWas: 'Dark room, glowing cabinets, the wall of sound — bleeps, explosions, the clack of joysticks and the clink of quarters. The arcade in 1984 was THE teenage hangout: line your quarters on the marquee to claim "next game."',
+      howChanged: 'A genuine social institution — a clubhouse, a proving ground. America fed billions of quarters into these machines. Chase the high score, put your three initials up for all to see.',
+      craze: 'The arcade was where you went after school, on weekends, on dates. Home consoles eventually emptied the arcades, making the neon room a cherished memory.',
+      howAged: 'Mythologized. The dark, glowing, noisy arcade is the cathedral of \'80s youth culture. 🏛️',
+      achievement: '🏛️ *Next Game\'s Mine*',
+    },
+    // ── WINDOW 12: THE HIGH SCORE ──
+    {
+      num: 12,
+      emoji: '🔤',
+      title: 'THE HIGH SCORE',
+      tagline: 'Three letters, eternal glory',
+      whatItWas: 'The ultimate arcade prize wasn\'t money — it was getting your initials onto the high-score screen for every stranger to see. Three letters of immortality, defended jealously, knocked off cruelly.',
+      howChanged: 'Kids agonized over their three-letter tag, and a legendary local score could stand for months. The high-score table invented competitive gaming culture from scratch.',
+      craze: 'In 1984, the first national score-keeping organizations are even crowning official champions. It all grows into competitive gaming and speed-running.',
+      howAged: 'Eternal. The three-initial high score is the original esports trophy. 🔤',
+      achievement: '🔤 *Enter Your Initials*',
+    },
+    // ── WINDOW 13: TRON & GAMES-MEET-HOLLYWOOD ──
+    {
+      num: 13,
+      emoji: '💿',
+      title: 'TRON & GAMES-MEET-HOLLYWOOD',
+      tagline: 'Game becomes movie becomes game',
+      whatItWas: 'The early-\'80s moment when arcades and Hollywood collided — a hit sci-fi movie set inside a video game, spun off into its own popular cabinet of light-cycle and disc-battle mini-games.',
+      howChanged: 'Games were suddenly big enough to inspire movies, cartoons, songs, and lunchboxes. Light cycles, glowing grids, and the dream of being inside the machine captured the era.',
+      craze: 'Marked video games\' arrival as full-blown pop culture. Games-and-movies becomes a permanent marriage; that neon grid never stops being cool.',
+      howAged: 'Iconic. The Tron aesthetic — neon lines on black — is shorthand for "the future" to this day. 💿',
+      achievement: '💿 *Into the Grid*',
+    },
+    // ── WINDOW 14: Q*BERT, FROGGER & FRIENDS ──
+    {
+      num: 14,
+      emoji: '🐸',
+      title: 'Q*BERT, FROGGER & FRIENDS',
+      tagline: 'The arcade gets cute',
+      whatItWas: 'The wave of lovable-character games that made arcades family-friendly — the nose-hopping orange creature bouncing across a pyramid of cubes; the frog dodging traffic and rivers to get home; a whole menagerie of merchandisable mascots.',
+      howChanged: 'Simple addictive hooks wrapped around instantly likable characters. These cuddly stars sold lunchboxes, plush, cereal, and cartoons — proving a great character was worth as much as a great game.',
+      craze: 'The arcade gets cute and the whole family shows up. Suddenly it\'s not just teenagers — it\'s kids, parents, grandparents.',
+      howAged: 'Beloved icons. That hopping frog is shorthand for "classic arcade" forever. 🐸',
+      achievement: '🐸 *Hop to It*',
+    },
+    // ── WINDOW 15: HANDHELD & TABLETOP GAMES ──
+    {
+      num: 15,
+      emoji: '🔦',
+      title: 'HANDHELD & TABLETOP GAMES',
+      tagline: 'Pocket arcade, parents\' nightmare',
+      whatItWas: 'Before the arcade fit in your pocket for real, there were gloriously primitive handhelds — beeping red-LED football games played under the covers, single-game tabletop versions of arcade hits with tiny glowing screens, electronic memory and quiz toys.',
+      howChanged: 'A few blinking red dashes were a "running back"; your imagination did the rest. Massive sellers — every kid wanted the handheld football game. Around twenty to sixty dollars apiece.',
+      craze: 'The direct ancestors of every handheld system to come. Pure beepy nostalgia. Every kid had one; batteries never lasted long enough.',
+      howAged: 'Cherished. Those red-LED dashes are the fondest memory of a million childhoods. 🔦',
+      achievement: '🔦 *Under the Covers*',
+    },
+  ],
+};
