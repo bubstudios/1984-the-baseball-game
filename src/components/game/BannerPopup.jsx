@@ -129,10 +129,16 @@ export default function BannerPopup({ banner, onClose }) {
   // If banner has a `popups` array, pick a random one once on mount
   const selectedPopup = useMemo(() => {
     // Use pre-selected popup if available (persists across open/close cycles)
-    if (banner?._selectedPopup) return banner._selectedPopup;
-    const pool = banner?.popups || banner?.windows || banner?.entries || banner?.items;
+    if (!banner) return null;
+    if (banner._selectedPopup) return banner._selectedPopup;
+    const pool = banner.popups || banner.windows || banner.entries || banner.items;
     if (pool && Array.isArray(pool) && pool.length > 0) {
-      return pool[Math.floor(Math.random() * pool.length)];
+      try {
+        return pool[Math.floor(Math.random() * pool.length)];
+      } catch (e) {
+        console.error('Popup selection failed:', e);
+        return null;
+      }
     }
     return null;
   }, [banner]);
@@ -140,15 +146,23 @@ export default function BannerPopup({ banner, onClose }) {
   // Unlock the banner's achievement when the popup is opened
   // Checks both the banner-level achievementId and the selected popup's achievementId
   useEffect(() => {
-    const bannerAchId = banner?.achievementId;
+    if (!banner) return;
+    const bannerAchId = banner.achievementId;
     const popupAchId = selectedPopup?.achievementId;
     const achId = popupAchId || bannerAchId;
     if (achId) {
-      unlockAchievement(achId);
-      checkBannerMetaAchievements(unlockAchievement);
-      checkNationalCategoryAchievements(unlockAchievement);
+      try {
+        unlockAchievement(achId);
+        checkBannerMetaAchievements(unlockAchievement);
+        checkNationalCategoryAchievements(unlockAchievement);
+      } catch (e) {
+        console.error('Banner achievement unlock failed:', e);
+      }
     }
   }, [banner?.achievementId, selectedPopup?.achievementId]);
+
+  // Guard: don't render if no banner
+  if (!banner) return null;
 
   const handleClose = () => {
     setIsClosing(true);

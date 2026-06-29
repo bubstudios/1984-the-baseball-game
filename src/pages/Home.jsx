@@ -429,6 +429,8 @@ export default function Home() {
     prevLogLength.current = gameState.log.length;
 
     // ── Trigger banner once per completed inning (end of innings 1-8 only) ──
+    // DISABLED: Banner system temporarily inactive
+    /*
     const currentInning = gameState.inning;
     if (prevInning.current !== null && prevInning.current !== currentInning && !gameState.gameOver) {
       const completedInning = prevInning.current;
@@ -474,6 +476,7 @@ export default function Home() {
       }
     }
     prevInning.current = currentInning;
+    */
 
     // Game-over: handler path processes achievements via finally block.
     // No need to double-process here — trackGameCompleted is not idempotent.
