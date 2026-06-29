@@ -9,7 +9,7 @@ export const RUNNER_INJURY_TYPES = [
 ];
 
 export function rollRunnerInjury() {
-  const chance = 0.02; // 2% every time a runner moves
+  const chance = 0.004; // 0.4% every time a runner moves
   if (Math.random() >= chance) return null;
   const injuryType = RUNNER_INJURY_TYPES[Math.floor(Math.random() * RUNNER_INJURY_TYPES.length)];
   return { ...injuryType, outForGame: true };

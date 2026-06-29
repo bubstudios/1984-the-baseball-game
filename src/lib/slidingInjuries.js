@@ -16,7 +16,7 @@ export function getSlideChance(destinationBase) {
 }
 
 export function rollSlidingInjury(hasContact) {
-  const chance = hasContact ? 0.14 : 0.07; // 7% base, 14% with fielder contact
+  const chance = hasContact ? 0.06 : 0.03; // 3% base, 6% with fielder contact
   if (Math.random() >= chance) return null;
   const injuryType = SLIDING_INJURY_TYPES[Math.floor(Math.random() * SLIDING_INJURY_TYPES.length)];
   return { ...injuryType, outForGame: true };

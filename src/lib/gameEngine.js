@@ -1719,7 +1719,7 @@ export function processAtBat(state, pitchType, swingType) {
 
   // ── HOLDING GAME: Throw-overs & Balks ──
   const holdingResult = processHoldingGame(newState);
-  if (holdingResult?.balk || holdingResult?.pickoff) {
+  if (holdingResult) {
     if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) {
       newState.gameOver = true; newState.waitingForInput = false;
       newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` });

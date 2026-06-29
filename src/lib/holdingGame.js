@@ -55,7 +55,7 @@ export function getPitcherHand(pitcher) {
 // Runner is "steal-relevant" if they might steal (speed-based)
 export function isStealRelevant(runner, outs) {
   if (!runner) return false;
-  if (runner.speed <= 2) return false;
+  if (runner.speed < 6) return false;
   return true;
 }
 
@@ -74,6 +74,9 @@ export function decideThrowOver(state) {
   const runner = state.bases[0];
   if (!runner) return null;
   if (!isStealRelevant(runner, state.outs)) return null;
+
+  // Only throw over to the lead runner — skip if runners are ahead on 2nd or 3rd
+  if (state.bases[1] || state.bases[2]) return null;
 
   // Cap throw-overs per plate appearance
   const paKey = `${state.halfInning}_${state.inning}_${state.awayBatterIndex}_${state.homeBatterIndex}`;
