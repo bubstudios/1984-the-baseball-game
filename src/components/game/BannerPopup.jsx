@@ -110,6 +110,8 @@ export default function BannerPopup({ banner, onClose }) {
 
   // If banner has a `popups` array, pick a random one once on mount
   const selectedPopup = useMemo(() => {
+    // Use pre-selected popup if available (persists across open/close cycles)
+    if (banner?._selectedPopup) return banner._selectedPopup;
     const pool = banner?.popups || banner?.windows || banner?.entries || banner?.items;
     if (pool && Array.isArray(pool) && pool.length > 0) {
       return pool[Math.floor(Math.random() * pool.length)];

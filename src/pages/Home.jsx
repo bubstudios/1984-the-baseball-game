@@ -460,7 +460,13 @@ export default function Home() {
         ].filter(Boolean);
 
         if (allBanners.length > 0) {
-          const randomBanner = allBanners[Math.floor(Math.random() * allBanners.length)];
+          const picked = allBanners[Math.floor(Math.random() * allBanners.length)];
+          // Pre-select popup so reopening the same banner always shows the same text
+          const randomBanner = { ...picked };
+          const popupPool = picked.popups || picked.windows || picked.entries || picked.items;
+          if (popupPool && Array.isArray(popupPool) && popupPool.length > 0) {
+            randomBanner._selectedPopup = popupPool[Math.floor(Math.random() * popupPool.length)];
+          }
           setActiveBanner(null);  // Clear first to force remount (resets auto-hide timer)
           setBannerSeq(s => s + 1);
           setActiveBanner(randomBanner);
