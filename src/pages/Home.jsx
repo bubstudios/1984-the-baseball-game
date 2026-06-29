@@ -176,6 +176,7 @@ export default function Home() {
   const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
   const [inlineGameEvent, setInlineGameEvent] = useState(null); // { type: 'celebration'|'caughtstealing'|'ballpark', event: data }
+  const [hrDistancePopup, setHrDistancePopup] = useState(null); // { distance, batterName, isNewRecord }
   const prevCelebrationBubble = useRef(null);
 
   // Auto-show tutorial on first visit & init stats
@@ -377,7 +378,8 @@ export default function Home() {
           const isUserBatter = [...userLineup, ...userHistory].some(p => p.name === entry.batterName);
           if (isUserBatter) {
             try {
-              trackHomeRunDistance(entry.hrDistance, entry.batterName, userTeam);
+              const newRecord = trackHomeRunDistance(entry.hrDistance, entry.batterName, userTeam);
+              setHrDistancePopup({ distance: entry.hrDistance, batterName: entry.batterName, isNewRecord: newRecord });
             } catch (e) { console.error('trackHomeRunDistance failed:', e); }
           }
         }
@@ -1391,6 +1393,16 @@ export default function Home() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Home Run Distance Popup — shows distance for user team HRs */}
+      {hrDistancePopup && (
+        <HomeRunDistancePopup
+          distance={hrDistancePopup.distance}
+          batterName={hrDistancePopup.batterName}
+          isNewRecord={hrDistancePopup.isNewRecord}
+          onClose={() => setHrDistancePopup(null)}
+        />
       )}
 
       {/* Card Award Modal — Tigers home win */}
