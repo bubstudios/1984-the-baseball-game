@@ -187,7 +187,7 @@ function resolveSacBunt(batter, game) {
     // ── FORCE AT LEAD BASE ──
     return {
       type: 'bunt_force',
-      text: `${batter.name} bunts into a force out at the lead base — rally is killed.`,
+      text: `${batter.name} bunts into a force out at the lead base.`,
       batterOut: true,
       success: false,
       composureDelta: -8,  // Moderate penalty (killed the rally)
