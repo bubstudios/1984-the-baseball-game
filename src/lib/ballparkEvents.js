@@ -185,21 +185,21 @@ export const BALLPARK_EVENTS = [
 // ── Roll for events ──
 // Called at the start of each half-inning; ~20-30% of games have at least one event.
 
-// Track if we've already had an event this game (one per game is enough)
-let eventFired = false;
+// Track ballpark events fired this game (2-3 per game)
+let eventsFired = 0;
+const MAX_EVENTS = 3;
 
 export function resetBallparkEvents() {
-  eventFired = false;
+  eventsFired = 0;
 }
 
 export function rollBallparkEvent(gameState) {
-  if (!gameState || gameState.gameOver || eventFired) return null;
+  if (!gameState || gameState.gameOver || eventsFired >= MAX_EVENTS) return null;
 
-  // ~5% chance per half-inning → roughly 30% of 9-inning games get an event
-  if (Math.random() > 0.05) return null;
+  // ~7% chance per at-bat check → roughly 2-3 events per 9-inning game
+  if (Math.random() > 0.07) return null;
 
-  // Even if the roll passes, only one event per game
-  eventFired = true;
+  eventsFired++;
 
   // Determine if the last play involved bat-on-ball contact
   const lastPlayType = gameState.lastPlay?.type;

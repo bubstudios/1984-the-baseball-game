@@ -164,6 +164,7 @@ export default function Home() {
   const gameStartTimeRef = useRef(null);
   const prevLogLength = useRef(0);
   const prevInning = useRef(null);
+  const prevBallparkPlay = useRef(null);
   const [showStretch, setShowStretch] = useState(null);
   const [bannerQueue, setBannerQueue] = useState([]);
   const [activeBanner, setActiveBanner] = useState(null);
@@ -491,21 +492,27 @@ export default function Home() {
     checkForArgumentLogic(gameState);
   }, [gameState, homeTeam, awayTeam]);
 
-  const checkForArgumentLogic = useCallback((state) => {
-    if (!state || state.gameOver) return state;
+  // Ballpark events — separate effect (not blocked by prevLastPlay consumption in main effect)
+  useEffect(() => {
+    if (!gameState || gameState.gameOver || !gameState.lastPlay) return;
+    if (gameState.lastPlay === prevBallparkPlay.current) return;
+    prevBallparkPlay.current = gameState.lastPlay;
 
-    // Check for random ballpark event (one per game) — trigger between at-bats
-    const isBetweenAtBats = state.balls === 0 && state.strikes === 0;
+    // Trigger between at-bats (count reset for new batter)
+    const isBetweenAtBats = gameState.balls === 0 && gameState.strikes === 0;
     if (isBetweenAtBats) {
-      const bpEvent = rollBallparkEvent(state);
+      const bpEvent = rollBallparkEvent(gameState);
       if (bpEvent) {
         setBallparkEvent(bpEvent);
-        // Track Groover Easter eggs
         if (bpEvent.id === 'rainbow_horse' || bpEvent.id === 'reds_streaker') {
           trackGrooverSighting(bpEvent.id);
         }
       }
     }
+  }, [gameState]);
+
+  const checkForArgumentLogic = useCallback((state) => {
+    if (!state || state.gameOver) return state;
 
     // First: check for a real play-based argument
     const severity = state.lastPlay ? getArgumentSeverity(state.lastPlay, state, state._argTopicCounts) : null;
