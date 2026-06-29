@@ -4,6 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { determinePitcherDecisions } from '@/lib/pitcherDecisions';
 
 function BatterRow({ p }) {
+  const isPitcher = ['SP','RP','CL'].includes(p.assignedPos || p.pos);
   return (
     <tr className="border-b border-border/30">
       <td className="py-1 px-1.5 text-foreground font-medium truncate max-w-[120px]">{p.name}</td>
@@ -13,7 +14,7 @@ function BatterRow({ p }) {
       <td className="text-center py-1 px-1">{p.gameStats.runs}</td>
       <td className="text-center py-1 px-1">{p.gameStats.rbi}</td>
       <td className="text-center py-1 px-1">{p.gameStats.bb}</td>
-      <td className="text-center py-1 px-1">{p.gameStats.so}</td>
+      <td className="text-center py-1 px-1">{isPitcher ? '-' : p.gameStats.so}</td>
       <td className="text-center py-1 px-1 text-primary font-semibold">{p.gameStats.hr || '-'}</td>
       <td className="text-center py-1 px-1">{p.gameStats.sb || '-'}</td>
       <td className="text-center py-1 px-1">{p.gameStats.cs || '-'}</td>
