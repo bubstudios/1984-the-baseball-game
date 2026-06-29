@@ -19,7 +19,6 @@ import ArgumentsBanner from '@/components/game/ArgumentsBanner';
 import BallparkEventBanner from '@/components/game/BallparkEventBanner';
 import InjuryBanner from '@/components/game/InjuryBanner';
 import PitcherIsPumpedPopup from '@/components/game/PitcherIsPumpedPopup';
-import CatcherThrowOutPopup from '@/components/game/CatcherThrowOutPopup';
 import IncidentLog from '@/components/game/IncidentLog';
 
 import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
@@ -130,7 +129,7 @@ import CardAwardModal from '@/components/game/CardAwardModal';
 import { getRandomCardForTeam, addCard, loadFromStorage, saveToStorage, migrateLegacyStorage, getCollectedIds } from '@/lib/baseballCards';
 import FanChirpToast from '@/components/game/FanChirpToast';
 import { checkAndResolveIncident } from '@/lib/incidentIntegration';
-import CelebrationBubble from '@/components/game/CelebrationBubble';
+
 
 export default function Home() {
   const [gameState, setGameState] = useState(null);
@@ -174,8 +173,6 @@ export default function Home() {
   const [beanballEvent, setBeanballEvent] = useState(null);
   const [cardAward, setCardAward] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
-  const [celebrationPopup, setCelebrationPopup] = useState(null);
-  const [caughtStealingPopup, setCaughtStealingPopup] = useState(null);
   const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
   const [celebrationPopupBubble, setCelebrationPopupBubble] = useState(null);
@@ -399,12 +396,7 @@ export default function Home() {
              setTimeout(() => setInlineGameEvent(null), 7500);
            }
          }
-        // Trigger catcher popup on caught stealing
-        if (entry.type === 'caughtstealing' && entry.text) {
-          const runnerMatch = entry.text.match(/❌\s+(.+?)\s+—/);
-          const runnerName = runnerMatch ? runnerMatch[1] : 'the runner';
-          setCatcherThrowOut({ catcher: 'The catcher', runner: runnerName });
-        }
+
       });
     }
 
@@ -1043,7 +1035,7 @@ export default function Home() {
   // Dedupe: suppress celebration bubble when same text is already in CommentaryBanner's stats flash
   const _hitTypes = ['single', 'double', 'triple', 'homerun', 'peskyPole', 'basketHR', 'shortPorch', 'offMonster', 'ivyStuck', 'triangle'];
   const _norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const _celebText = celebrationPopupBubble || celebrationPopup;
+  const _celebText = celebrationPopupBubble;
   const _lastPlayText = gameState?.lastPlay?.text || '';
   const _isDupeBubble = _celebText && _hitTypes.includes(gameState?.lastPlay?.type) &&
     _norm(_celebText).length > 8 &&
@@ -1323,8 +1315,7 @@ export default function Home() {
         <FanChirpToast trigger={gameState.log.length} homeTeamKey={homeTeam} />
       )}
 
-      {/* Celebration Bubble — fire-themed popup for pitcher pumped moments */}
-      <CelebrationBubble celebration={_isDupeBubble ? null : (celebrationPopupBubble || celebrationPopup)} />
+
 
       {/* Fireworks */}
       <Fireworks trigger={hrTrigger} type="hr" />
@@ -1350,14 +1341,7 @@ export default function Home() {
 
 
 
-      {/* Catcher Throw-Out Popup (Caught Stealing Celebration) */}
-      {catcherThrowOut && (
-        <CatcherThrowOutPopup
-          playerName={catcherThrowOut.catcher}
-          runnerName={catcherThrowOut.runner}
-          onDismiss={() => setCatcherThrowOut(null)}
-        />
-      )}
+
 
       {/* Collision Popup */}
       {collisionPopup && (
