@@ -65,7 +65,7 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
   if (!('speechSynthesis' in window)) return;
 
   // Strip emojis — speech synth reads them literally (e.g. 💥 = "collision")
-  const cleanedText = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B50}\u{2B55}\u{2702}-\u{27B0}\u{1F900}-\u{1F9FF}\u{200D}\u{FE0F}]/gu, '').trim();
+  const cleanedText = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B50}\u{2B55}\u{2702}-\u{27B0}\u{1F900}-\u{1F9FF}\u{200D}\u{FE0F}]/gu, '').replace(/\s*—\s*/g, ', ').trim();
   if (!cleanedText) return;
 
   const doSpeak = () => {
