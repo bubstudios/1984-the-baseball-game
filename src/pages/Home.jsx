@@ -25,6 +25,7 @@ import GameSummary from '@/components/game/GameSummary';
 import HomeRunDistancePopup from '@/components/game/HomeRunDistancePopup';
 import GameEventBanner from '@/components/game/GameEventBanner';
 import PitcherInjuryModal from '@/components/game/PitcherInjuryModal';
+import BatterInjuryModal from '@/components/game/BatterInjuryModal';
 
 import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
@@ -128,6 +129,7 @@ import { getRandomCardForTeam, addCard, loadFromStorage, saveToStorage, migrateL
 import FanChirpToast from '@/components/game/FanChirpToast';
 import { checkAndResolveIncident } from '@/lib/incidentIntegration';
 import { checkPitcherInjury } from '@/lib/pitcherInjuries';
+import { rollBatterInjury, replaceInjuredBatter } from '@/lib/batterInjuries';
 
 
 export default function Home() {
@@ -158,6 +160,7 @@ export default function Home() {
   const [ballparkEvent, setBallparkEvent] = useState(null);
   const [ejectionResult, setEjectionResult] = useState(null);
   const [pitcherInjury, setPitcherInjury] = useState(null);
+  const [batterInjury, setBatterInjury] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
@@ -207,6 +210,7 @@ export default function Home() {
     setBallparkEvent(null);
     setBeanballEvent(null);
     setPitcherInjury(null);
+    setBatterInjury(null);
     resetBallparkEvents();
     const stadium = TEAMS[home]?.stadium || null;
     setGameStadium(stadium);
@@ -347,6 +351,32 @@ export default function Home() {
           const newReliever = sorted[0];
           const newState = changePitcher(gameState, newReliever, injury.side);
           delete newState._pendingPitcherInjury;
+          setGameState(prev => newState);
+        }
+      }
+      return;
+    }
+
+    // Batter injury — show modal for user's team, auto-replace for CPU
+    if (gameState._pendingBatterInjury && !batterInjury) {
+      const injury = gameState._pendingBatterInjury;
+      const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
+                         (injury.side === 'away' && userTeam === gameState.awayTeam);
+      if (isUserTeam) {
+        setBatterInjury(injury);
+      } else {
+        // CPU — auto-select best bench player
+        const bench = injury.bench || [];
+        if (bench.length > 0) {
+          const sorted = [...bench].sort((a, b) => (b.contact + b.power) - (a.contact + a.power));
+          const replacement = sorted[0];
+          let newState;
+          if (injury.stillAtPlate) {
+            newState = pinchHit(gameState, replacement);
+          } else {
+            newState = replaceInjuredBatter(gameState, injury.batterName, injury.side, replacement, injury.name);
+          }
+          delete newState._pendingBatterInjury;
           setGameState(prev => newState);
         }
       }
@@ -774,6 +804,8 @@ export default function Home() {
          } catch (e) { console.error('ballpark card award failed:', e); }
        }
 
+       // Batter injury — 2% chance on every swing
+       checkBatterInjury(updatedState, afterSubs);
 
     } catch (e) {
       console.error('handlePitch error:', e);
@@ -819,6 +851,8 @@ export default function Home() {
         } catch (e) { console.error('ballpark card award failed:', e); }
       }
 
+      // Batter injury — 2% chance on every swing
+      checkBatterInjury(gameState, afterSubs);
 
     } catch (e) {
       console.error('handleSwing error:', e);
@@ -846,6 +880,9 @@ export default function Home() {
       checkPitcherInjury(stealPending, afterSubs);
       if (afterSubs.gameOver) endingState = afterSubs;
       setGameState(afterSubs);
+
+      // Batter injury — 2% chance on every swing (steal attempt = swing)
+      checkBatterInjury(stealPending, afterSubs);
     } catch (e) {
       console.error('handleSteal error:', e);
     } finally {
@@ -934,6 +971,60 @@ export default function Home() {
     setPitcherInjury(null);
   };
 
+  const checkBatterInjury = (prevState, newState) => {
+    // Batter injury — 2% chance on every swing
+    const injury = rollBatterInjury();
+    if (!injury) return newState;
+
+    // Use PRE-play state to find the batter who swung (index may have advanced after the play)
+    const battingSide = prevState.halfInning === 'top' ? 'away' : 'home';
+    const prevLineup = battingSide === 'home' ? prevState.homeLineup : prevState.awayLineup;
+    const prevBatterIdx = battingSide === 'home' ? prevState.homeBatterIndex : prevState.awayBatterIndex;
+    const batter = prevLineup[prevBatterIdx % prevLineup.length];
+    if (!batter) return newState;
+
+    // Check if batter is still at the plate (at-bat not complete — foul/miss)
+    const newBatterIdx = battingSide === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
+    const stillAtPlate = prevState.halfInning === newState.halfInning && prevBatterIdx === newBatterIdx;
+
+    // Find available bench players
+    const teamKey = battingSide === 'home' ? newState.homeTeam : newState.awayTeam;
+    const fullBench = TEAMS[teamKey]?.bench || [];
+    const benchUsed = battingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || []);
+    const playerHistory = battingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || []);
+    const currentLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
+    const usedNames = new Set();
+    [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
+    const availableBench = fullBench.filter(p => !usedNames.has(p.name));
+
+    newState._pendingBatterInjury = {
+      ...injury,
+      side: battingSide,
+      batterName: batter.name,
+      bench: availableBench,
+      stillAtPlate,
+    };
+
+    newState.log.push({ type: 'injury', text: `🚑 ${batter.name} is done — ${injury.name}!` });
+
+    return newState;
+  };
+
+  const handleBatterInjuryReplacement = (chosenPlayer) => {
+    if (!gameState || !batterInjury) return;
+    let newState;
+    if (batterInjury.stillAtPlate) {
+      // Batter is still at the plate — pinchHit handles the at-bat swap
+      newState = pinchHit(gameState, chosenPlayer);
+    } else {
+      // Batter completed their at-bat — replace directly in the lineup
+      newState = replaceInjuredBatter(gameState, batterInjury.batterName, batterInjury.side, chosenPlayer, batterInjury.name);
+    }
+    delete newState._pendingBatterInjury;
+    setGameState(newState);
+    setBatterInjury(null);
+  };
+
   const handleNewGame = () => {
     setGameState(null);
     setBallparkPhase(null);
@@ -962,6 +1053,7 @@ export default function Home() {
     setCardAward(null);
     setShowSummary(false);
     setPitcherInjury(null);
+    setBatterInjury(null);
   };
 
   if (ballparkPhase) {
@@ -1369,6 +1461,15 @@ export default function Home() {
           injury={pitcherInjury}
           bullpen={pitcherInjury.bullpen}
           onSelect={handlePitcherInjuryReplacement}
+        />
+      )}
+
+      {/* Batter Injury Modal — user picks pinch hitter from bench */}
+      {batterInjury && (
+        <BatterInjuryModal
+          injury={batterInjury}
+          bench={batterInjury.bench}
+          onSelect={handleBatterInjuryReplacement}
         />
       )}
 
