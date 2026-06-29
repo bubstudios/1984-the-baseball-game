@@ -131,6 +131,7 @@ import { checkAndResolveIncident } from '@/lib/incidentIntegration';
 import { checkPitcherInjury } from '@/lib/pitcherInjuries';
 import { rollBatterInjury, rollHBPIfBatter, replaceInjuredBatter } from '@/lib/batterInjuries';
 import { rollRunnerInjury } from '@/lib/runnerInjuries';
+import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 
 
 export default function Home() {
@@ -163,6 +164,7 @@ export default function Home() {
   const [pitcherInjury, setPitcherInjury] = useState(null);
   const [batterInjury, setBatterInjury] = useState(null);
   const [runnerInjury, setRunnerInjury] = useState(null);
+  const [slidingInjury, setSlidingInjury] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
@@ -214,6 +216,7 @@ export default function Home() {
     setPitcherInjury(null);
     setBatterInjury(null);
     setRunnerInjury(null);
+    setSlidingInjury(null);
     resetBallparkEvents();
     const stadium = TEAMS[home]?.stadium || null;
     setGameStadium(stadium);
@@ -405,6 +408,31 @@ export default function Home() {
             newState = replaceInjuredBatter(gameState, injury.runnerName, injury.side, replacement, injury.name);
           }
           delete newState._pendingRunnerInjury;
+          setGameState(prev => newState);
+        }
+      }
+      return;
+    }
+
+    // Sliding injury — show modal for user's team, auto-replace for CPU
+    if (gameState._pendingSlidingInjury && !slidingInjury) {
+      const injury = gameState._pendingSlidingInjury;
+      const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
+                         (injury.side === 'away' && userTeam === gameState.awayTeam);
+      if (isUserTeam) {
+        setSlidingInjury(injury);
+      } else {
+        const bench = injury.bench || [];
+        if (bench.length > 0) {
+          const sorted = [...bench].sort((a, b) => b.speed - a.speed);
+          const replacement = sorted[0];
+          let newState;
+          if (injury.baseIndex >= 0) {
+            newState = pinchRun(gameState, injury.baseIndex, replacement);
+          } else {
+            newState = replaceInjuredBatter(gameState, injury.runnerName, injury.side, replacement, injury.name);
+          }
+          delete newState._pendingSlidingInjury;
           setGameState(prev => newState);
         }
       }
@@ -838,6 +866,9 @@ export default function Home() {
        // Runner injury — 2% chance when a runner moves
        checkRunnerInjury(updatedState, afterSubs);
 
+       // Sliding injury — 7%/14% chance on slides
+       checkSlidingInjury(updatedState, afterSubs);
+
     } catch (e) {
       console.error('handlePitch error:', e);
       console.error('Stack:', e.stack);
@@ -888,6 +919,9 @@ export default function Home() {
       // Runner injury — 2% chance when a runner moves
       checkRunnerInjury(gameState, afterSubs);
 
+      // Sliding injury — 7%/14% chance on slides
+      checkSlidingInjury(gameState, afterSubs);
+
     } catch (e) {
       console.error('handleSwing error:', e);
       console.error('Stack:', e.stack);
@@ -920,6 +954,9 @@ export default function Home() {
 
       // Runner injury — 2% chance when a runner moves (steal attempt)
       checkRunnerInjury(stealPending, afterSubs);
+
+      // Sliding injury — 7%/14% chance on slides (steal attempt)
+      checkSlidingInjury(stealPending, afterSubs);
     } catch (e) {
       console.error('handleSteal error:', e);
     } finally {
@@ -1166,6 +1203,97 @@ export default function Home() {
     setRunnerInjury(null);
   };
 
+  const checkSlidingInjury = (prevState, newState) => {
+    // Skip if half-inning changed (inning ended, bases cleared)
+    if (prevState.halfInning !== newState.halfInning) return newState;
+    // Skip walks (no sliding)
+    if (newState.lastPlay?.type === 'walk') return newState;
+
+    const battingSide = prevState.halfInning === 'top' ? 'away' : 'home';
+    const pendingInjuryName = newState._pendingBatterInjury?.batterName ||
+      newState._pendingRunnerInjury?.runnerName;
+
+    // Determine if contact was made during this play (collision, takeout slide)
+    const hasContact = newState.lastPlay?.collision === true ||
+      /takeout|broken up|bowls over/i.test(newState.lastPlay?.text || '');
+
+    const movedRunners = [];
+
+    // Check existing runners who advanced or scored/were put out
+    for (let i = 0; i < 3; i++) {
+      const prevRunner = prevState.bases[i];
+      if (!prevRunner || prevRunner.name === pendingInjuryName) continue;
+      let destBase = -1;
+      for (let j = 0; j < 3; j++) {
+        if (newState.bases[j]?.name === prevRunner.name) {
+          destBase = j;
+          break;
+        }
+      }
+      if (destBase !== i) movedRunners.push({ name: prevRunner.name, destBase });
+    }
+
+    // Check batter who ran on a ball in play
+    const BALL_IN_PLAY_TYPES = ['single', 'double', 'triple', 'homerun', 'groundout', 'flyout', 'lineout', 'popout', 'error', 'fc', 'doubleplay', 'sacfly'];
+    const prevLineup = battingSide === 'home' ? prevState.homeLineup : prevState.awayLineup;
+    const prevBatterIdx = battingSide === 'home' ? prevState.homeBatterIndex : prevState.awayBatterIndex;
+    const batter = prevLineup[prevBatterIdx % prevLineup.length];
+    if (batter && batter.name !== pendingInjuryName && BALL_IN_PLAY_TYPES.includes(newState.lastPlay?.type)) {
+      if (!movedRunners.find(r => r.name === batter.name)) {
+        const baseIdx = newState.bases.findIndex(b => b?.name === batter.name);
+        movedRunners.push({ name: batter.name, destBase: baseIdx >= 0 ? baseIdx : -1 });
+      }
+    }
+
+    // For each moved runner, determine if they slid → roll sliding injury
+    for (const runner of movedRunners) {
+      const slideChance = getSlideChance(runner.destBase);
+      const didSlide = Math.random() < slideChance;
+      if (!didSlide) continue;
+
+      // Runner slid — roll sliding injury (7% base, 14% with contact)
+      const injury = rollSlidingInjury(hasContact);
+      if (injury) {
+        const teamKey = battingSide === 'home' ? newState.homeTeam : newState.awayTeam;
+        const fullBench = TEAMS[teamKey]?.bench || [];
+        const benchUsed = battingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || []);
+        const playerHistory = battingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || []);
+        const currentLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
+        const usedNames = new Set();
+        [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
+        const availableBench = fullBench.filter(p => !usedNames.has(p.name));
+
+        newState._pendingSlidingInjury = {
+          ...injury,
+          side: battingSide,
+          runnerName: runner.name,
+          batterName: runner.name,
+          baseIndex: runner.destBase,
+          bench: availableBench,
+          contact: hasContact,
+        };
+
+        newState.log.push({ type: 'injury', text: `🚑 ${runner.name} is done — ${injury.name} on the slide!` });
+        break;
+      }
+    }
+
+    return newState;
+  };
+
+  const handleSlidingInjuryReplacement = (chosenPlayer) => {
+    if (!gameState || !slidingInjury) return;
+    let newState;
+    if (slidingInjury.baseIndex >= 0) {
+      newState = pinchRun(gameState, slidingInjury.baseIndex, chosenPlayer);
+    } else {
+      newState = replaceInjuredBatter(gameState, slidingInjury.runnerName, slidingInjury.side, chosenPlayer, slidingInjury.name);
+    }
+    delete newState._pendingSlidingInjury;
+    setGameState(newState);
+    setSlidingInjury(null);
+  };
+
   const handleNewGame = () => {
     setGameState(null);
     setBallparkPhase(null);
@@ -1196,6 +1324,7 @@ export default function Home() {
     setPitcherInjury(null);
     setBatterInjury(null);
     setRunnerInjury(null);
+    setSlidingInjury(null);
   };
 
   if (ballparkPhase) {
@@ -1621,6 +1750,15 @@ export default function Home() {
           injury={runnerInjury}
           bench={runnerInjury.bench}
           onSelect={handleRunnerInjuryReplacement}
+        />
+      )}
+
+      {/* Sliding Injury Modal — user picks replacement after slide injury */}
+      {slidingInjury && (
+        <BatterInjuryModal
+          injury={slidingInjury}
+          bench={slidingInjury.bench}
+          onSelect={handleSlidingInjuryReplacement}
         />
       )}
 
