@@ -163,7 +163,7 @@ export default function Home() {
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
   const prevLogLength = useRef(0);
-  const prevHalfInning = useRef(null);
+  const prevInning = useRef(null);
   const [showStretch, setShowStretch] = useState(null);
   const [bannerQueue, setBannerQueue] = useState([]);
   const [activeBanner, setActiveBanner] = useState(null);
@@ -427,43 +427,52 @@ export default function Home() {
 
     prevLogLength.current = gameState.log.length;
 
-    // ── Trigger banner at inning end (innings 1-8 only, never 9+, skip game start) ──
-    const currentHalf = gameState.halfInning;
-    if (prevHalfInning.current !== null && prevHalfInning.current !== currentHalf && !gameState.gameOver) {
-      // Mix team-specific banners with national banners (movies + electronics + general products)
-      const teamBanners = getBannersForTeam(homeTeam);
-      const allBanners = [
-        ...(teamBanners || []),
-        ...MOVIES_1984_BANNERS,
-        ELECTRONICS_COMPUTERS_BANNER,
-        GENERAL_PRODUCTS_BANNER,
-        WRESTLING_BANNER,
-        OLYMPICS_1984_BANNER,
-        SPACE_AVIATION_BANNER,
-        NEWSPAPERS_BANNER,
-        PHONE_WARS_BANNER,
-        CAMERAS_FILM_BANNER,
-        SCREAM_1984_BANNER,
-        MALL_CULTURE_BANNER,
-        FORMAT_WARS_BANNER,
-        COUNTY_FAIR_BANNER,
-        MUSIC_MTV_BANNER,
-        CARS_ROAD_BANNER,
-        SATURDAY_CARTOONS_BANNER,
-        CEREAL_BANNER,
-        PROMO_NIGHTS_BANNER,
-        ...NATIONAL_TV_BANNERS,
-        ARCADE_BANNER,
-      ];
-      const completedInning = gameState.inning;
-      if (allBanners.length > 0 && completedInning <= 8) {
-        const randomBanner = allBanners[Math.floor(Math.random() * allBanners.length)];
-        setActiveBanner(null);  // Clear first to force remount (resets auto-hide timer)
-        setBannerSeq(s => s + 1);
-        setActiveBanner(randomBanner);
+    // ── Trigger banner once per completed inning (end of innings 1-8 only) ──
+    const currentInning = gameState.inning;
+    if (prevInning.current !== null && prevInning.current !== currentInning && !gameState.gameOver) {
+      const completedInning = prevInning.current;
+      if (completedInning >= 1 && completedInning <= 8) {
+        // Category-based selection: 25% team banners, 75% national (equal weight per topic)
+        const teamBanners = getBannersForTeam(homeTeam);
+        const nationalSets = [
+          MOVIES_1984_BANNERS,
+          [ELECTRONICS_COMPUTERS_BANNER],
+          [GENERAL_PRODUCTS_BANNER],
+          [WRESTLING_BANNER],
+          [OLYMPICS_1984_BANNER],
+          [SPACE_AVIATION_BANNER],
+          [NEWSPAPERS_BANNER],
+          [PHONE_WARS_BANNER],
+          [CAMERAS_FILM_BANNER],
+          [SCREAM_1984_BANNER],
+          [MALL_CULTURE_BANNER],
+          [FORMAT_WARS_BANNER],
+          [COUNTY_FAIR_BANNER],
+          [MUSIC_MTV_BANNER],
+          [CARS_ROAD_BANNER],
+          [SATURDAY_CARTOONS_BANNER],
+          [CEREAL_BANNER],
+          [PROMO_NIGHTS_BANNER],
+          NATIONAL_TV_BANNERS,
+          [ARCADE_BANNER],
+        ].filter(set => Array.isArray(set) && set.length > 0);
+
+        let selectedSet;
+        if (teamBanners && teamBanners.length > 0 && Math.random() < 0.25) {
+          selectedSet = teamBanners;
+        } else if (nationalSets.length > 0) {
+          selectedSet = nationalSets[Math.floor(Math.random() * nationalSets.length)];
+        }
+
+        if (selectedSet && selectedSet.length > 0) {
+          const randomBanner = selectedSet[Math.floor(Math.random() * selectedSet.length)];
+          setActiveBanner(null);  // Clear first to force remount (resets auto-hide timer)
+          setBannerSeq(s => s + 1);
+          setActiveBanner(randomBanner);
+        }
       }
     }
-    prevHalfInning.current = currentHalf;
+    prevInning.current = currentInning;
 
     // Game-over: handler path processes achievements via finally block.
     // No need to double-process here — trackGameCompleted is not idempotent.
@@ -927,7 +936,7 @@ export default function Home() {
     setInjuryResult(null);
     prevGameOver.current = false;
     prevLogLength.current = 0;
-    prevHalfInning.current = null;
+    prevInning.current = null;
     setShowStretch(null);
     setActiveBanner(null);
     setBannerSeq(0);
