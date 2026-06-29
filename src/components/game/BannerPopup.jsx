@@ -1,5 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { unlockAchievement } from '@/lib/achievements';
+import { unlockBannerAchievement } from '@/lib/bannerAchievements';
 
 // ── Markdown + metadata helpers for team-banner paragraphs ──
 
@@ -107,6 +109,13 @@ function PopupContent({ popup }) {
 
 export default function BannerPopup({ banner, onClose }) {
   const [isClosing, setIsClosing] = useState(false);
+
+  // Unlock the banner's achievement when the popup is opened
+  useEffect(() => {
+    if (banner?.achievementId) {
+      unlockBannerAchievement(banner.achievementId, unlockAchievement);
+    }
+  }, [banner?.achievementId]);
 
   // If banner has a `popups` array, pick a random one once on mount
   const selectedPopup = useMemo(() => {
