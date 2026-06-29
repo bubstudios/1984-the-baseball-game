@@ -173,6 +173,7 @@ export default function Home() {
   const [pregameIllnesses, setPregameIllnesses] = useState(null);
   const [injuryAlert, setInjuryAlert] = useState(null);
   const prevLastPlay = useRef(null);
+  const prevArgPlay = useRef(null);
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
   const prevLogLength = useRef(0);
@@ -559,12 +560,13 @@ export default function Home() {
   }, [gameState, processing]);
 
   // Argument check via effect after a play resolves
+  // Uses its own ref (prevArgPlay) so the main effect's prevLastPlay doesn't block it
   useEffect(() => {
     if (!gameState || gameState.gameOver || !gameState.lastPlay) return;
     
     // Only check once per play
-    if (gameState.lastPlay === prevLastPlay.current) return;
-    prevLastPlay.current = gameState.lastPlay;
+    if (gameState.lastPlay === prevArgPlay.current) return;
+    prevArgPlay.current = gameState.lastPlay;
 
     checkForArgumentLogic(gameState);
   }, [gameState, homeTeam, awayTeam]);
@@ -1473,6 +1475,7 @@ export default function Home() {
     setArgumentResult(null);
     setSelectedUmpire(null);
     prevGameOver.current = false;
+    prevArgPlay.current = null;
     prevLogLength.current = 0;
     prevInning.current = null;
     setShowStretch(null);
