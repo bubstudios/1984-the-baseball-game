@@ -469,13 +469,10 @@ export default function Home() {
     // No need to double-process here — trackGameCompleted is not idempotent.
   }, [gameState]);
 
-  // Celebration bubble from game engine — only surface for important event types (#28)
+  // Celebration bubble from game engine — surface whenever the engine sets a bubble (#28)
   useEffect(() => {
     if (gameState?._celebrationBubble && gameState._celebrationBubble !== prevCelebrationBubble.current) {
       prevCelebrationBubble.current = gameState._celebrationBubble;
-      const BUBBLE_SURFACE_TYPES = new Set(['homerun', 'info', 'steal', 'caughtstealing', 'sacfly', 'error', 'injury', 'ejection', 'doubleplay']);
-      const playType = gameState.lastPlay?.type;
-      if (playType && !BUBBLE_SURFACE_TYPES.has(playType)) return;
       setCelebrationPopupBubble(gameState._celebrationBubble);
     }
   }, [gameState]);

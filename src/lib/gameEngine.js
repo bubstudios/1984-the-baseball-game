@@ -890,7 +890,7 @@ function resolveSwing(state, swingType, pitch) {
        const hrCall = maybeGetAnnouncerHRCall(battingTeamKey, { isGrandSlam: gs2, rbi, batterName: batter.name });
        if (hrCall) state.log.push({ type: 'homerun', text: `🎙️ ${hrCall}` });
        state.log.push({ type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name };
-       const hrAdmire = rollHRAdmire(batter); if (hrAdmire) state.log.push({ type: 'info', text: `✨ ${hrAdmire}` });
+       const hrAdmire = rollHRAdmire(batter); if (hrAdmire) { state.log.push({ type: 'info', text: `✨ ${hrAdmire}` }); state._celebrationBubble = `✨ ${hrAdmire}`; }
     } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.10 + sf2 * 0.18) * doubleMod) {
       const rbi = advanceRunners(state, 3, batter, true, hitDirection);
       let tripFlavor = '';
@@ -901,7 +901,7 @@ function resolveSwing(state, swingType, pitch) {
       const tripText = `${pickHitLine(TRIPLE_LINES, batter.name)}${tripFlavor}${rbi ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'triple', text: tripText });
       state.lastPlay = { type: 'triple', text: tripText };
-      const tripleCeleb = rollHitCelebration(batter, true); if (tripleCeleb) state.log.push({ type: 'info', text: `🔥 ${tripleCeleb}` });
+      const tripleCeleb = rollHitCelebration(batter, true); if (tripleCeleb) { state.log.push({ type: 'info', text: `🔥 ${tripleCeleb}` }); state._celebrationBubble = `🔥 ${tripleCeleb}`; }
     } else if (hr2 < effPwr * 0.38 * doubleMod) {
       const rbi = advanceRunners(state, 2, batter, true, hitDirection);
       let dblFlavor = '';
@@ -1183,12 +1183,12 @@ function resolveSwing(state, swingType, pitch) {
     state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
     // Celebrations on diving catch or inning-ending out
     if (out.isDivingCatch) {
-      const fc = rollFielderCelebration(TEAMS[state.homeTeam]?.stadium); if (fc) state.log.push({ type: 'info', text: `🎉 ${fc}` });
+      const fc = rollFielderCelebration(TEAMS[state.homeTeam]?.stadium); if (fc) { state.log.push({ type: 'info', text: `🎉 ${fc}` }); state._celebrationBubble = `🎉 ${fc}`; }
     }
     // Only celebrate retire-side on actual inning-ending 3rd out — check AFTER recordOut
     if (state.outs >= 3 && state._pitcherRetiredSideName && !state.gameOver) {
       const pitcherObj = { name: state._pitcherRetiredSideName };
-      const rc = rollPitcherRetireSide(pitcherObj); if (rc) state.log.push({ type: 'info', text: `🔥 ${rc}` });
+      const rc = rollPitcherRetireSide(pitcherObj); if (rc) { state.log.push({ type: 'info', text: `🔥 ${rc}` }); state._celebrationBubble = `🔥 ${rc}`; }
       delete state._pitcherRetiredSideName;
     }
   }
@@ -1508,6 +1508,7 @@ function getControllingTeam(state, context) {
 export function processAtBat(state, pitchType, swingType) {
    const home = TEAMS[state.homeTeam], away = TEAMS[state.awayTeam];
    const newState = JSON.parse(JSON.stringify(state));
+   delete newState._celebrationBubble;
 
    // Track lead state BEFORE play for lead-change penalty detection
    const userSide = newState.homeTeam === newState.userTeam ? 'home' : 'away';
