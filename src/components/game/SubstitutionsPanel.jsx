@@ -32,20 +32,26 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
 
   const runners = gameState.bases.map((b, i) => b ? { ...b, baseIndex: i } : null).filter(Boolean);
 
-  // Available bench players for the user's team — exclude players already used
+  // Track all bench players who have been used this game (pinch-hit, pinch-run, or defensive sub)
   const benchUsed = userIsHome ? (gameState.homeBenchUsed || []) : (gameState.awayBenchUsed || []);
   const usedNames = useMemo(() => {
     const names = new Set();
     const allLineup = [...gameState.homeLineup, ...gameState.awayLineup];
     allLineup.forEach(p => names.add(p.name));
     benchUsed.forEach(p => names.add(p.name));
+    // Also include players in history (substituted out earlier)
+    (gameState.homePlayerHistory || []).forEach(p => names.add(p.name));
+    (gameState.awayPlayerHistory || []).forEach(p => names.add(p.name));
     return names;
-  }, [gameState.homeLineup, gameState.awayLineup, benchUsed]);
+  }, [gameState.homeLineup, gameState.awayLineup, benchUsed, gameState.homePlayerHistory, gameState.awayPlayerHistory]);
 
+  // Show ALL bench players — used ones will be grayed out
   const myBench = useMemo(() => {
     if (!myTeam?.bench) return [];
-    return myTeam.bench.filter(p => !usedNames.has(p.name));
-  }, [myTeam, usedNames]);
+    return myTeam.bench;
+  }, [myTeam]);
+
+  const isBenchUsed = (player) => usedNames.has(player.name);
 
   // Use in-game bullpen (relievers are removed as they're used)
   const bullpen = userIsHome ? (gameState.homeBullpen || []) : (gameState.awayBullpen || []);
@@ -106,7 +112,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
               </div>
 
               <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground">
-                Available Bench ({myBench.length}) — {myTeam?.name}
+                Bench ({myBench.length}) — {myTeam?.name}
               </div>
 
               {myBench.length === 0 ? (
@@ -119,16 +125,24 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                     const matchNote = vsSameHand ? 'vs same hand' : 'platoon adv.';
                     const conDelta = p.contact - (batter?.contact || 0);
                     const pwrDelta = p.power - (batter?.power || 0);
+                    const used = isBenchUsed(p);
 
                     return (
                     <button
                       key={i}
-                      onClick={() => onPinchHit(p)}
-                      className="w-full text-left p-3 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-all"
+                      onClick={() => !used && onPinchHit(p)}
+                      disabled={used}
+                      className={`w-full text-left p-3 rounded-lg border transition-all ${
+                        used
+                          ? 'border-border/40 opacity-40 cursor-not-allowed'
+                          : 'border-border hover:border-primary hover:bg-primary/5'
+                      }`}
                     >
                       <div className="flex justify-between items-center">
-                        <span className="font-heading font-bold text-sm text-foreground">{p.name}</span>
-                        <span className="text-[10px] text-muted-foreground">{p.pos} ({p.bats})</span>
+                        <span className={`font-heading font-bold text-sm ${used ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{p.name}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {used ? 'USED' : `${p.pos} (${p.bats})`}
+                        </span>
                       </div>
                       <div className="flex gap-3 mt-1 text-[10px] items-center">
                         <span className="text-primary">
@@ -148,9 +162,11 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                           )}
                         </span>
                         <span className="text-cyan-400">SPD {p.speed}</span>
-                        <span className={`ml-auto text-[9px] ${vsSameHand ? 'text-red-400/60' : 'text-green-400/70'}`}>
-                          {matchNote}
-                        </span>
+                        {!used && (
+                          <span className={`ml-auto text-[9px] ${vsSameHand ? 'text-red-400/60' : 'text-green-400/70'}`}>
+                            {matchNote}
+                          </span>
+                        )}
                       </div>
                     </button>
                     );
@@ -174,31 +190,43 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
 
                   <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-1">Replace with</div>
                   <div className="space-y-1">
-                    {myBench.filter(p => p.speed > runner.speed).length === 0 && myBench.length === 0 && (
+                    {myBench.length === 0 && (
                       <p className="text-xs text-muted-foreground italic">No bench players available</p>
                     )}
                     {/* Show faster bench players first */}
-                    {[...myBench].sort((a, b) => b.speed - a.speed).map((p, i) => (
+                    {[...myBench].sort((a, b) => b.speed - a.speed).map((p, i) => {
+                      const used = isBenchUsed(p);
+                      return (
                       <button
                         key={i}
-                        onClick={() => onPinchRun(runner.baseIndex, p)}
+                        onClick={() => !used && p.speed > runner.speed && onPinchRun(runner.baseIndex, p)}
+                        disabled={used || p.speed <= runner.speed}
                         className={`w-full text-left p-2 rounded-lg border transition-all ${
-                          p.speed > runner.speed
-                            ? 'border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/10'
-                            : 'border-border/50 hover:border-primary/30 opacity-60'
+                          used
+                            ? 'border-border/40 opacity-40 cursor-not-allowed'
+                            : p.speed > runner.speed
+                              ? 'border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/10'
+                              : 'border-border/50 opacity-60 cursor-not-allowed'
                         }`}
                       >
                         <div className="flex justify-between items-center">
-                          <span className="font-heading font-bold text-xs text-foreground">{p.name}</span>
+                          <span className={`font-heading font-bold text-xs ${used ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{p.name}</span>
                           <div className="flex items-center gap-2">
-                            {p.speed > runner.speed && (
-                              <span className="text-[9px] text-cyan-400">↑{p.speed - runner.speed} SPD</span>
+                            {used ? (
+                              <span className="text-[9px] text-muted-foreground">USED</span>
+                            ) : (
+                              <>
+                                {p.speed > runner.speed && (
+                                  <span className="text-[9px] text-cyan-400">↑{p.speed - runner.speed} SPD</span>
+                                )}
+                                <span className="text-[10px] text-cyan-400 font-semibold">SPD {p.speed}</span>
+                              </>
                             )}
-                            <span className="text-[10px] text-cyan-400 font-semibold">SPD {p.speed}</span>
                           </div>
                         </div>
                       </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ))}
@@ -268,7 +296,9 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                         >
                           <option value="">-- Select bench player --</option>
                           {myBench.map((p, i) => (
-                            <option key={i} value={p.name}>{p.name} ({p.pos}, CON {p.contact})</option>
+                            <option key={i} value={p.name} disabled={isBenchUsed(p)}>
+                              {p.name} ({p.pos}, CON {p.contact}){isBenchUsed(p) ? ' — USED' : ''}
+                            </option>
                           ))}
                         </select>
                       </div>

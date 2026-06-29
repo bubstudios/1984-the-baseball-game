@@ -1717,7 +1717,14 @@ export function processAtBat(state, pitchType, swingType) {
    if (isPitcherBatting && isCpuBatting) {
     const battingTeamSide = getBattingTeam(newState) === 'home' ? 'home' : 'away';
     const benchTeam = battingTeamSide === 'home' ? newState.homeTeam : newState.awayTeam;
-    const benchList = TEAMS[benchTeam]?.bench || [];
+    const fullBench = TEAMS[benchTeam]?.bench || [];
+    // Filter out bench players already used this game
+    const benchUsedList = battingTeamSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || []);
+    const benchHistoryList = battingTeamSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || []);
+    const battingLineup = battingTeamSide === 'home' ? newState.homeLineup : newState.awayLineup;
+    const usedBenchNames = new Set();
+    [...benchUsedList, ...benchHistoryList, ...battingLineup].forEach(p => usedBenchNames.add(p.name));
+    const benchList = fullBench.filter(p => !usedBenchNames.has(p.name));
     const bullpen = battingTeamSide === 'home' ? newState.homeBullpen : newState.awayBullpen;
     const cpuPitcherObj = battingTeamSide === 'home' ? newState.homePitcher : newState.awayPitcher;
 
@@ -2147,7 +2154,14 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     
     // ── PHASE 3.1: Double switch evaluation (NL parks only) ──
     const dsLineup = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
-    const dsBench = TEAMS[cpuPitchingSide === 'home' ? newState.homeTeam : newState.awayTeam]?.bench || [];
+    const dsFullBench = TEAMS[cpuPitchingSide === 'home' ? newState.homeTeam : newState.awayTeam]?.bench || [];
+    // Filter out bench players already used this game
+    const dsUsedNames = new Set();
+    [...(cpuPitchingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || [])),
+     ...(cpuPitchingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || [])),
+     ...dsLineup
+    ].forEach(p => dsUsedNames.add(p.name));
+    const dsBench = dsFullBench.filter(p => !dsUsedNames.has(p.name));
     if (!hasDH && should_double_switch({
       park_has_dh: hasDH,
       making_pitcher_change: true,
