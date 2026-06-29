@@ -1104,10 +1104,12 @@ export default function Home() {
       </div>
 
       {/* Middle content — single centered column on all screens */}
-      <div className="flex-1 overflow-y-auto px-3 md:px-6 py-2 w-full max-w-2xl mx-auto">
+      <div className="flex-1 overflow-y-auto px-3 md:px-6 py-2 w-full max-w-2xl md:max-w-5xl mx-auto">
         <div className="space-y-2">
             {tab === 'game' && (
-              <>
+              <div className="md:grid md:grid-cols-2 md:gap-4 space-y-2 md:space-y-0">
+                {/* LEFT column: Scoreboard + Diamond */}
+                <div className="space-y-2">
                 {/* Scoreboard — compact */}
                 <div className="bg-card border border-border rounded-lg px-2 py-1.5">
                   <Scoreboard
@@ -1141,7 +1143,10 @@ export default function Home() {
                     <p className="text-[9px] text-muted-foreground/40 mt-2 font-heading">tap to continue</p>
                   </div>
                 )}
+                </div>{/* end LEFT column */}
 
+                {/* RIGHT column: Banner + Commentary + Matchup + Controls */}
+                <div className="space-y-2">
                 {/* Inline Sponsor Banner */}
                 <InlineSponsorBanner
                   banner={activeBanner}
@@ -1198,7 +1203,39 @@ export default function Home() {
                     onDismiss={() => setShowAchievementPopup(false)}
                   />
                 )}
-              </>
+
+                {/* Desktop: Action Panel in right column */}
+                {!gameState.gameOver && (
+                  <div className="hidden md:block bg-card border border-border rounded-xl p-4">
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <span className="text-xs text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
+                      <span className="text-sm text-primary font-heading font-bold">
+                        {isUserBatting ? 'Batting' : 'Pitching'}
+                      </span>
+                    </div>
+                    <ActionPanel
+                      isPitching={isUserPitching}
+                      onPitch={handlePitch}
+                      onSwing={handleSwing}
+                      onSteal={handleSteal}
+                      onHitAndRun={handleHitAndRun}
+                      onIntBB={handleIntBB}
+                      disabled={processing}
+                      bases={gameState.bases}
+                      hitAndRun={gameState.hitAndRun}
+                      pitcherPitches={pitcher.pitches}
+                      pitcherNeedsReplacement={pitcherNeedsReplacement}
+                      onNeedReliever={() => { setSubsTab('pitching'); setShowSubs(true); }}
+                      pitcherSpecialty={pitcherSpecialty}
+                      reachBackUses={reachBackUses}
+                      reachBackMax={reachBackMax}
+                      situationalBatter={situationalBatter}
+                      lastPlay={gameState.lastPlay}
+                    />
+                  </div>
+                )}
+                </div>{/* end RIGHT column */}
+              </div>
             )}
 
             {tab === 'log' && (
@@ -1220,9 +1257,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Action Panel — pinned to bottom on all screens */}
+      {/* Action Panel — pinned to bottom on mobile only */}
       {!gameState.gameOver && (
-        <div className="shrink-0 border-t border-border bg-card/90 backdrop-blur px-3 md:px-6 py-2 w-full max-w-2xl mx-auto">
+        <div className="shrink-0 border-t border-border bg-card/90 backdrop-blur px-3 py-2 w-full max-w-2xl mx-auto md:hidden">
           <div className="flex items-center justify-center gap-2 mb-1">
             <span className="text-[10px] md:text-xs text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
             <span className="text-[11px] md:text-sm text-primary font-heading font-bold">
