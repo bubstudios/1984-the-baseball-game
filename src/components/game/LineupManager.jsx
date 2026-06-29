@@ -96,26 +96,26 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
   );
 }
 
-export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, onConfirm, onBack }) {
-  const [selectedPitcher, setSelectedPitcher] = useState(teamData.rotation[0]?.name || '');
-  const rotationPitchers = useMemo(() => teamData.rotation || [], [teamData]);
+export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [] }) {
+  const illSet = useMemo(() => new Set(illPlayerNames), [illPlayerNames]);
+  const oppIllSet = useMemo(() => new Set(opponentIllPlayerNames), [opponentIllPlayerNames]);
+  const rotationPitchers = useMemo(() => (teamData.rotation || []).filter(p => !illSet.has(p.name)), [teamData, illSet]);
+  const [selectedPitcher, setSelectedPitcher] = useState(rotationPitchers[0]?.name || '');
   const selectedPitcherData = useMemo(() => {
     return rotationPitchers.find(p => p.name === selectedPitcher) || rotationPitchers[0] || null;
   }, [rotationPitchers, selectedPitcher]);
 
   // Opponent starting pitcher selection
-  const opponentRotation = useMemo(() => opponentTeamData?.rotation || [], [opponentTeamData]);
+  const opponentRotation = useMemo(() => (opponentTeamData?.rotation || []).filter(p => !oppIllSet.has(p.name)), [opponentTeamData, oppIllSet]);
   const [opponentSP, setOpponentSP] = useState(opponentRotation[0]?.name || '');
   const opponentSPData = useMemo(() => {
     return opponentRotation.find(p => p.name === opponentSP) || opponentRotation[0] || null;
   }, [opponentRotation, opponentSP]);
 
   const allPositionPlayers = useMemo(() => {
-    const players = [...teamData.lineup];
-    if (teamData.bench) players.push(...teamData.bench);
-    // Without DH, pitchers are available to hit — preserve full pitcher object for pitching stats
+    const players = [...teamData.lineup, ...(teamData.bench || [])].filter(p => !illSet.has(p.name));
     if (!useDH) {
-      const allPitchers = [...teamData.rotation, ...teamData.bullpen];
+      const allPitchers = [...teamData.rotation, ...teamData.bullpen].filter(p => !illSet.has(p.name));
       allPitchers.forEach(p => {
         players.push({
           ...p,
@@ -126,34 +126,51 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
       });
     }
     return players;
-  }, [teamData, useDH]);
+  }, [teamData, useDH, illSet]);
 
   const availablePositions = useMemo(() => {
     return useDH ? ALL_POSITIONS : [...ALL_POSITIONS.filter(p => p !== 'DH'), 'SP'];
   }, [useDH]);
 
   const defaultLineup = useMemo(() => {
+    const healthyLineup = teamData.lineup.filter(p => !illSet.has(p.name));
+    const healthyBench = (teamData.bench || []).filter(p => !illSet.has(p.name));
+    const usedNames = new Set();
+
     if (useDH) {
-      return teamData.lineup.slice(0, 9).map(p => ({
-        name: p.name,
-        naturalPos: p.pos,
-        assignedPos: p.pos,
-      }));
+      const slots = healthyLineup.slice(0, 9).map(p => {
+        usedNames.add(p.name);
+        return { name: p.name, naturalPos: p.pos, assignedPos: p.pos };
+      });
+      let benchIdx = 0;
+      while (slots.length < 9 && benchIdx < healthyBench.length) {
+        const bp = healthyBench[benchIdx++];
+        if (!usedNames.has(bp.name)) {
+          usedNames.add(bp.name);
+          slots.push({ name: bp.name, naturalPos: bp.pos, assignedPos: bp.pos });
+        }
+      }
+      return slots;
     }
     // No DH: 8 position players + starting pitcher in 9th spot
-    const slots = teamData.lineup.slice(0, 8).map(p => ({
-      name: p.name,
-      naturalPos: p.pos,
-      assignedPos: p.pos,
-    }));
-    const sp = teamData.rotation[0];
-    slots.push({
-      name: sp.name,
-      naturalPos: 'SP',
-      assignedPos: 'SP',
+    const slots = healthyLineup.slice(0, 8).map(p => {
+      usedNames.add(p.name);
+      return { name: p.name, naturalPos: p.pos, assignedPos: p.pos };
     });
+    let benchIdx = 0;
+    while (slots.length < 8 && benchIdx < healthyBench.length) {
+      const bp = healthyBench[benchIdx++];
+      if (!usedNames.has(bp.name)) {
+        usedNames.add(bp.name);
+        slots.push({ name: bp.name, naturalPos: bp.pos, assignedPos: bp.pos });
+      }
+    }
+    const sp = rotationPitchers[0];
+    if (sp) {
+      slots.push({ name: sp.name, naturalPos: 'SP', assignedPos: 'SP' });
+    }
     return slots;
-  }, [teamData, useDH]);
+  }, [teamData, useDH, illSet, rotationPitchers]);
 
   const [lineup, setLineup] = useState(defaultLineup);
 

@@ -26,6 +26,7 @@ import HomeRunDistancePopup from '@/components/game/HomeRunDistancePopup';
 import GameEventBanner from '@/components/game/GameEventBanner';
 import PitcherInjuryModal from '@/components/game/PitcherInjuryModal';
 import BatterInjuryModal from '@/components/game/BatterInjuryModal';
+import PregameIllnessModal from '@/components/game/PregameIllnessModal';
 
 import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
@@ -133,6 +134,7 @@ import { rollBatterInjury, rollHBPIfBatter, replaceInjuredBatter } from '@/lib/b
 import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
+import { rollIllnessesForTeam } from '@/lib/illnessSystem';
 
 
 export default function Home() {
@@ -167,6 +169,7 @@ export default function Home() {
   const [runnerInjury, setRunnerInjury] = useState(null);
   const [slidingInjury, setSlidingInjury] = useState(null);
   const [fielderInjury, setFielderInjury] = useState(null);
+  const [pregameIllnesses, setPregameIllnesses] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
@@ -254,12 +257,43 @@ export default function Home() {
     // Ballpark's team is always home; swap if needed
     const homeTeam = parkTeam;
     const awayTeam = parkTeam === ballparkPhase.home ? ballparkPhase.away : ballparkPhase.home;
-    setLineupPhase({ home: homeTeam, away: awayTeam, useDH: useDHFlag, parkTeam, weather });
+    // Roll pre-game illnesses (1% per player on roster)
+    const homeIll = rollIllnessesForTeam(TEAMS[homeTeam]);
+    const awayIll = rollIllnessesForTeam(TEAMS[awayTeam]);
+    const illPlayers = { home: homeIll, away: awayIll };
+    setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
+    setLineupPhase({ home: homeTeam, away: awayTeam, useDH: useDHFlag, parkTeam, weather, illPlayers });
     setBallparkPhase(null);
   }, [ballparkPhase]);
 
   const handleLineupConfirm = useCallback((customLineup, startingPitcher, opponentStartingPitcher) => {
-    startGame(lineupPhase.home, lineupPhase.away, customLineup, null, lineupPhase.useDH, lineupPhase.weather, startingPitcher, opponentStartingPitcher);
+    // Build CPU away lineup with ill players replaced by bench
+    const awayIll = lineupPhase.illPlayers?.away || [];
+    let customAwayLineup = null;
+    let adjustedOpponentSP = opponentStartingPitcher;
+    if (awayIll.length > 0) {
+      const awayData = TEAMS[lineupPhase.away];
+      const illNames = new Set(awayIll.map(p => p.name));
+      const usedNames = new Set(illNames);
+      const healthyBench = (awayData.bench || []).filter(p => !illNames.has(p.name));
+      customAwayLineup = awayData.lineup.map(p => {
+        if (illNames.has(p.name)) {
+          const replacement = healthyBench.find(b => !usedNames.has(b.name));
+          if (replacement) {
+            usedNames.add(replacement.name);
+            return replacement;
+          }
+        }
+        usedNames.add(p.name);
+        return p;
+      });
+      // Replace opponent SP if ill
+      if (adjustedOpponentSP && illNames.has(adjustedOpponentSP.name)) {
+        const healthyPitchers = (awayData.rotation || []).filter(p => !illNames.has(p.name));
+        adjustedOpponentSP = healthyPitchers[0] || adjustedOpponentSP;
+      }
+    }
+    startGame(lineupPhase.home, lineupPhase.away, customLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, startingPitcher, adjustedOpponentSP);
   }, [lineupPhase, startGame]);
 
   // Fireworks: detect home team HRs and wins
@@ -1439,6 +1473,7 @@ export default function Home() {
     setRunnerInjury(null);
     setSlidingInjury(null);
     setFielderInjury(null);
+    setPregameIllnesses(null);
   };
 
   if (ballparkPhase) {
@@ -1465,7 +1500,17 @@ export default function Home() {
         parkTeam={lineupPhase.parkTeam}
         onConfirm={handleLineupConfirm}
         onBack={() => { setLineupPhase(null); setBallparkPhase({ home: lineupPhase.home, away: lineupPhase.away }); }}
+        illPlayerNames={(lineupPhase.illPlayers?.home || []).map(p => p.name)}
+        opponentIllPlayerNames={(lineupPhase.illPlayers?.away || []).map(p => p.name)}
       />
+      {pregameIllnesses && (
+        <PregameIllnessModal
+          illnesses={pregameIllnesses}
+          homeTeamKey={lineupPhase.home}
+          awayTeamKey={lineupPhase.away}
+          onClose={() => setPregameIllnesses(null)}
+        />
+      )}
       </ErrorBoundary>
     );
   }
