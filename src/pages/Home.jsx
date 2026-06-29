@@ -26,6 +26,7 @@ import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
 import BeanballBanner from '@/components/game/BeanballBanner';
 import GameSummary from '@/components/game/GameSummary';
 import HomeRunDistancePopup from '@/components/game/HomeRunDistancePopup';
+import GameEventBanner from '@/components/game/GameEventBanner';
 
 import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
@@ -178,7 +179,8 @@ export default function Home() {
   const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
   const [celebrationPopupBubble, setCelebrationPopupBubble] = useState(null);
-   const prevCelebrationBubble = useRef(null);
+  const [inlineGameEvent, setInlineGameEvent] = useState(null); // { type: 'celebration'|'caughtstealing'|'ballpark', event: data }
+  const prevCelebrationBubble = useRef(null);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -393,8 +395,8 @@ export default function Home() {
            const isStaredown = entry.text.includes('watched the batter') || entry.text.includes('lingers on the mound') || entry.text.includes('stares in');
            
            if (isBatFlip || isHRAdmire || isHitCeleb || isTripleHustle || isStaredown) {
-             setCelebrationPopup(entry.text);
-             setTimeout(() => setCelebrationPopup(null), 7500);
+             setInlineGameEvent({ type: 'celebration', event: entry.text });
+             setTimeout(() => setInlineGameEvent(null), 7500);
            }
          }
         // Trigger catcher popup on caught stealing
@@ -418,7 +420,9 @@ export default function Home() {
     // Detect caught stealing plays
     if (lastPlay && lastPlay.type === 'caughtstealing' && lastPlay !== prevLastPlay.current) {
       const caughtPhrases = ['Got him!', 'He\'s out!', 'Dead to rights!', 'Not this time!', 'Picked off clean!', 'No dice!'];
-      setCaughtStealingPopup(caughtPhrases[Math.floor(Math.random() * caughtPhrases.length)]);
+      const phrase = caughtPhrases[Math.floor(Math.random() * caughtPhrases.length)];
+      setInlineGameEvent({ type: 'caughtstealing', event: phrase });
+      setTimeout(() => setInlineGameEvent(null), 5000);
     }
 
     // Detect collision plays (but not on HRs)
@@ -512,7 +516,8 @@ export default function Home() {
     if (isBetweenAtBats) {
       const bpEvent = rollBallparkEvent(gameState);
       if (bpEvent) {
-        setBallparkEvent(bpEvent);
+        setInlineGameEvent({ type: 'ballpark', event: bpEvent });
+        setTimeout(() => setInlineGameEvent(null), 10000);
         if (bpEvent.id === 'rainbow_horse' || bpEvent.id === 'reds_streaker') {
           trackGrooverSighting(bpEvent.id);
         }
@@ -1163,11 +1168,11 @@ export default function Home() {
 
                 {/* RIGHT column: Banner + Commentary + Matchup + Controls */}
                 <div className="space-y-2">
-                {/* Inline Sponsor Banner */}
-                <InlineSponsorBanner
-                  banner={activeBanner}
-                  onTap={() => setBannerPopup(activeBanner)}
-                  onHide={() => setActiveBanner(null)}
+                {/* Game Event Banner (celebrations, caught stealing, ballpark events) */}
+                <GameEventBanner
+                  event={inlineGameEvent?.event}
+                  type={inlineGameEvent?.type}
+                  onClose={() => setInlineGameEvent(null)}
                 />
 
                 {/* Commentary */}
@@ -1354,23 +1359,6 @@ export default function Home() {
         />
       )}
 
-      {/* Caught Stealing Popup */}
-      {caughtStealingPopup && (
-        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 animate-in zoom-in-95 fade-in duration-300">
-          <div className="bg-card border-2 border-destructive rounded-xl px-3 py-2 shadow-2xl text-center max-w-[150px]">
-            <div className="text-xl mb-1">🎯</div>
-            <p className="font-heading text-[11px] font-bold text-destructive mb-1.5">{caughtStealingPopup}</p>
-            <p className="text-[9px] text-muted-foreground mb-1.5">Runner caught stealing</p>
-            <button
-              onClick={() => setCaughtStealingPopup(null)}
-              className="font-heading text-[10px] px-3 py-1 bg-destructive/10 hover:bg-destructive/20 text-destructive rounded-lg transition-colors"
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Collision Popup */}
       {collisionPopup && (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 animate-in zoom-in-95 fade-in duration-300">
@@ -1386,14 +1374,6 @@ export default function Home() {
             </button>
           </div>
         </div>
-      )}
-
-      {/* Ballpark Event Banner */}
-      {ballparkEvent && (
-        <BallparkEventBanner
-          event={ballparkEvent}
-          onDismiss={() => setBallparkEvent(null)}
-        />
       )}
 
       {/* Injury Banner — standard notification when no bench choice needed */}
