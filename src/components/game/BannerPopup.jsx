@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { unlockAchievement } from '@/lib/achievements';
-import { unlockBannerAchievement } from '@/lib/bannerAchievements';
+import { unlockBannerAchievement, checkBannerMetaAchievements } from '@/lib/bannerAchievements';
+import { checkNationalCategoryAchievements } from '@/lib/nationalBannerAchievements';
 
 // ── Markdown + metadata helpers for team-banner paragraphs ──
 
@@ -111,11 +112,17 @@ export default function BannerPopup({ banner, onClose }) {
   const [isClosing, setIsClosing] = useState(false);
 
   // Unlock the banner's achievement when the popup is opened
+  // Checks both the banner-level achievementId and the selected popup's achievementId
   useEffect(() => {
-    if (banner?.achievementId) {
-      unlockBannerAchievement(banner.achievementId, unlockAchievement);
+    const bannerAchId = banner?.achievementId;
+    const popupAchId = selectedPopup?.achievementId;
+    const achId = popupAchId || bannerAchId;
+    if (achId) {
+      unlockAchievement(achId);
+      checkBannerMetaAchievements(unlockAchievement);
+      checkNationalCategoryAchievements(unlockAchievement);
     }
-  }, [banner?.achievementId]);
+  }, [banner?.achievementId, selectedPopup?.achievementId]);
 
   // If banner has a `popups` array, pick a random one once on mount
   const selectedPopup = useMemo(() => {

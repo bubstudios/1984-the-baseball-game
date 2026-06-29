@@ -5,6 +5,7 @@ import { TEAMS } from './gameData';
 import { LEADER_LISTS } from './leaders1984';
 import { EXTENDED_TEAM_ACHIEVEMENTS, checkExtendedTeamAchievements, checkExtendedShutout } from './teamAchievementsExtended';
 import { BANNER_ACHIEVEMENTS, BANNER_META_ACHIEVEMENTS } from './bannerAchievements';
+import { NATIONAL_BANNER_ACHIEVEMENTS } from './nationalBannerAchievements';
 
 export const ACHIEVEMENTS = [
   // ── FIRST-TIME ──
@@ -415,9 +416,12 @@ export const ACHIEVEMENTS = [
   // ── EXTENDED TEAM-SPECIFIC (final 15 teams) ──
   ...EXTENDED_TEAM_ACHIEVEMENTS,
 
-  // ── BANNER ACHIEVEMENTS (466 banner popups + 3 meta) ──
+  // ── BANNER ACHIEVEMENTS (466 team banner popups + 3 meta) ──
   ...BANNER_ACHIEVEMENTS,
   ...BANNER_META_ACHIEVEMENTS,
+
+  // ── NATIONAL BANNER ACHIEVEMENTS (354 window + 16 hidden category) ──
+  ...NATIONAL_BANNER_ACHIEVEMENTS,
 ];
 
 // ── Stats storage ──
