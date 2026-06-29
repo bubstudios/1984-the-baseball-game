@@ -12,10 +12,10 @@ export const PITCHER_INJURY_TYPES = [
 
 // Injury chance by fatigue level (matches MatchupCard labels)
 export function getPitcherInjuryChance(fatigueLevel) {
-  if (fatigueLevel >= 3) return 0.004; // GASSED
-  if (fatigueLevel >= 2) return 0.003; // TIRING
-  if (fatigueLevel >= 1) return 0.002; // FADING
-  return 0.001;                        // Base rate
+  if (fatigueLevel >= 3) return 0.0004; // GASSED
+  if (fatigueLevel >= 2) return 0.0003; // TIRING
+  if (fatigueLevel >= 1) return 0.0002; // FADING
+  return 0.0001;                        // Base rate
 }
 
 export function rollPitcherInjury(fatigueLevel) {

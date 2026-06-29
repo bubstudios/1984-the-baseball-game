@@ -10,9 +10,9 @@ export const FIELDER_INJURY_TYPES = [
 
 // Trigger chances: diving stop 3%, diving catch 10%, collision 14%
 const TRIGGER_CHANCES = {
-  divingStop: 0.02,
-  divingCatch: 0.06,
-  collision: 0.09,
+  divingStop: 0.002,
+  divingCatch: 0.006,
+  collision: 0.009,
 };
 
 export function rollFielderInjury(triggerType) {

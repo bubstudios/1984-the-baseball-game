@@ -18,14 +18,14 @@ export const HBP_INJURY_TYPES = [
 ];
 
 export function rollBatterInjury() {
-  const chance = 0.002; // 0.2% on every swing
+  const chance = 0.0002; // 0.02% on every swing
   if (Math.random() >= chance) return null;
   const injuryType = BATTER_INJURY_TYPES[Math.floor(Math.random() * BATTER_INJURY_TYPES.length)];
   return { ...injuryType, outForGame: true };
 }
 
 export function rollHBPIfBatter(hbpCount) {
-  const chance = hbpCount >= 2 ? 0.03 : 0.015; // 1.5% first HBP, 3% on 2nd+ HBP same batter
+  const chance = hbpCount >= 2 ? 0.003 : 0.0015; // 0.15% first HBP, 0.3% on 2nd+ HBP same batter
   if (Math.random() >= chance) return null;
   const injuryType = HBP_INJURY_TYPES[Math.floor(Math.random() * HBP_INJURY_TYPES.length)];
   return { ...injuryType, outForGame: true };

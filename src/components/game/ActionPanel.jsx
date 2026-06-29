@@ -249,6 +249,15 @@ export default function ActionPanel({
                 </button>
               );
             })}
+            {bases[0] && bases[1] && !bases[2] && (
+              <button
+                disabled={disabled}
+                onClick={() => onSteal('double')}
+                className="h-8 px-3 rounded-lg border border-orange-500/50 hover:border-orange-400 hover:bg-orange-500/10 text-[11px] font-heading font-bold text-orange-400 bg-orange-500/5 transition-all disabled:opacity-30"
+              >
+                🏃🏃 Double Steal
+              </button>
+            )}
             <button
               disabled={disabled}
               onClick={onHitAndRun}

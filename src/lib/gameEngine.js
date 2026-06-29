@@ -603,6 +603,76 @@ export function attemptSteal(state, baseIndex) {
 
 export function hasRunnersOnBase(state) { return state.bases.some(b => b !== null); }
 
+// --- DOUBLE STEAL ---
+export function attemptDoubleSteal(state) {
+  const r1 = state.bases[0], r2 = state.bases[1];
+  if (!r1 || !r2) return state;
+  const newState = JSON.parse(JSON.stringify(state));
+  delete newState._wasReachBack;
+  const pitcher = getCurrentPitcher(newState);
+  const effP = getEffectivePitcher(newState) || pitcher;
+  const defenders = getDefensivePlayers(newState);
+  const catcherArm = getCatcherArm(defenders);
+  const pSpeed = effP.effectivePitchSpeed || effP.pitchSpeed;
+  const pCtrl = effP.effectiveControl || effP.control;
+
+  // Lead runner (2nd -> 3rd)
+  const sf2 = r2.speed / 10;
+  let sc2 = 0.20 + sf2 * 0.55 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - (pSpeed / 10) * 0.13;
+  if (r2._heldClose) { sc2 -= HOLDING_GAME_RATES.stealSuccessPenalty; delete newState.bases[1]._heldClose; }
+  sc2 = Math.max(0.08, Math.min(sc2, 0.80));
+
+  // Trailing runner (1st -> 2nd) - much higher success: catcher threw to 3rd
+  const sf1 = r1.speed / 10;
+  let sc1 = 0.40 + sf1 * 0.45 - (catcherArm / 10) * 0.04;
+  sc1 = Math.max(0.20, Math.min(sc1, 0.92));
+
+  if (Math.random() < sc2) {
+    // Lead runner safe at 3rd
+    r2.gameStats.sb = (r2.gameStats.sb || 0) + 1;
+    newState.bases[2] = r2; newState.bases[1] = null;
+    newState.log.push({ type: 'steal', text: `🏃 ${r2.name} steals third on the double steal!` });
+    // Trailing runner
+    if (Math.random() < sc1) {
+      r1.gameStats.sb = (r1.gameStats.sb || 0) + 1;
+      newState.bases[1] = r1; newState.bases[0] = null;
+      const txt = `🏃 ${r1.name} swipes second - double steal success!`;
+      newState.log.push({ type: 'steal', text: txt });
+      newState.lastPlay = { type: 'steal', text: txt };
+      newState._celebrationBubble = txt;
+    } else {
+      r1.gameStats.cs = (r1.gameStats.cs || 0) + 1;
+      newState.bases[0] = null; recordOut(newState);
+      const txt = `${r1.name} is caught stealing second - lead runner safe but double steal broken up!`;
+      newState.log.push({ type: 'caughtstealing', text: txt });
+      newState.lastPlay = { type: 'caughtstealing', text: txt };
+      newState._celebrationBubble = txt;
+    }
+  } else {
+    // Lead runner thrown out at 3rd
+    r2.gameStats.cs = (r2.gameStats.cs || 0) + 1;
+    newState.bases[1] = null; recordOut(newState);
+    // Trailing runner likely safe (catcher threw to 3rd)
+    if (Math.random() < Math.min(sc1 + 0.15, 0.95)) {
+      r1.gameStats.sb = (r1.gameStats.sb || 0) + 1;
+      newState.bases[1] = r1; newState.bases[0] = null;
+      const txt = `${r2.name} is thrown out at third, but ${r1.name} steals second on the back end!`;
+      newState.log.push({ type: 'caughtstealing', text: txt });
+      newState.lastPlay = { type: 'caughtstealing', text: txt };
+      newState._celebrationBubble = txt;
+    } else {
+      r1.gameStats.cs = (r1.gameStats.cs || 0) + 1;
+      newState.bases[0] = null; recordOut(newState);
+      const txt = `Double steal backfires - ${r2.name} nailed at third, ${r1.name} gunned down at second!`;
+      newState.log.push({ type: 'caughtstealing', text: txt });
+      newState.lastPlay = { type: 'caughtstealing', text: txt };
+      newState._celebrationBubble = txt;
+    }
+  }
+  newState.pendingSteal = null;
+  return newState;
+}
+
 // --- HIT AND RUN ---
 export function setHitAndRun(state, active) { const ns = JSON.parse(JSON.stringify(state)); ns.hitAndRun = active; return ns; }
 
@@ -1708,7 +1778,8 @@ export function processAtBat(state, pitchType, swingType) {
     return newState;
     }
 
-  if (newState.pendingSteal !== null && newState.pendingSteal !== undefined) { const sr = attemptSteal(newState, newState.pendingSteal); Object.assign(newState, sr); if (newState.gameOver) return newState; if (sr.lastPlay?.type === 'caughtstealing') { applyComposure(getCurrentPitcher(newState), newState, 'caughtstealing'); return newState; } }
+  if (newState.pendingSteal === 'double') { const sr = attemptDoubleSteal(newState); Object.assign(newState, sr); if (newState.gameOver) return newState; if (sr.lastPlay?.type === 'caughtstealing') { applyComposure(getCurrentPitcher(newState), newState, 'caughtstealing'); return newState; } }
+  else if (newState.pendingSteal !== null && newState.pendingSteal !== undefined) { const sr = attemptSteal(newState, newState.pendingSteal); Object.assign(newState, sr); if (newState.gameOver) return newState; if (sr.lastPlay?.type === 'caughtstealing') { applyComposure(getCurrentPitcher(newState), newState, 'caughtstealing'); return newState; } }
   // Clear reach-back flag - it was consumed by the last render
   delete newState._wasReachBack;
   const pitcher = getCurrentPitcher(newState), effP = getEffectivePitcher(newState) || pitcher;
@@ -2123,12 +2194,12 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       // Mop-up duty - exclude closers, use worst available
       candidates = [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => a.control - b.control);
       if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => a.control - b.control);
-    } else if (inning < 8) {
-      // Before 8th inning - never use closers, pick best non-closer
+    } else if (inning < 7) {
+      // Before 7th inning - never use closers, pick best non-closer
       candidates = [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => b.control - a.control);
       if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
     } else {
-      // 8th inning+ - closers allowed, best pitcher first
+      // 7th inning+ - closers allowed, best pitcher first
       candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
     }
     const newPitcher = candidates[0];
