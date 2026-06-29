@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS, PITCH_TYPES, SWING_TYPES, MANAGERS } from '@/lib/gameData';
-import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk } from '@/lib/gameEngine';
+import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk, cpuCheckPinchHit } from '@/lib/gameEngine';
 import { applyWeatherEffects } from '@/lib/weather';
 import TeamSelect from '@/components/game/TeamSelect';
 import BallparkSelect from '@/components/game/BallparkSelect';
@@ -483,6 +483,17 @@ export default function Home() {
       setTimeout(() => setInlineGameEvent(null), 7500);
     }
   }, [gameState]);
+
+  // CPU pinch-hit pre-check — apply the substitution BEFORE the user throws a pitch
+  // so the pinch-hitter is visible on screen and the user can decide on a pitching change.
+  // The existing pinch-hit gate inside processAtBat acts as a fallback if this doesn't fire.
+  useEffect(() => {
+    if (!gameState || gameState.gameOver || processing) return;
+    const newState = cpuCheckPinchHit(gameState);
+    if (newState) {
+      setGameState(newState);
+    }
+  }, [gameState, processing]);
 
   // Argument check via effect after a play resolves
   useEffect(() => {

@@ -2187,4 +2187,86 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   return newState;
 }
 
+// ── CPU PINCH-HIT PRE-CHECK ──
+// Runs BEFORE the user throws a pitch so the pinch-hitter is visible on screen,
+// allowing the human user to react with a pitching change.
+// Returns a new state with the pinch-hitter applied, or null if no pinch-hit.
+export function cpuCheckPinchHit(state) {
+  if (!state || state.gameOver) return null;
+  if (state.balls !== 0 || state.strikes !== 0) return null;
+
+  const isCpuBatting = getControllingTeam(state, 'batting') === 'cpu';
+  if (!isCpuBatting) return null;
+
+  const bjb = getCurrentBatter(state);
+  const isPitcherBatting = bjb.is_pitcher || bjb.pos === 'SP' || bjb.pos === 'RP' || bjb.pos === 'CL' || (bjb.assignedPos && ['SP', 'RP', 'CL'].includes(bjb.assignedPos));
+  if (!isPitcherBatting) return null;
+
+  const battingTeamSide = getBattingTeam(state) === 'home' ? 'home' : 'away';
+  const benchTeam = battingTeamSide === 'home' ? state.homeTeam : state.awayTeam;
+  const fullBench = TEAMS[benchTeam]?.bench || [];
+  const benchUsedList = battingTeamSide === 'home' ? (state.homeBenchUsed || []) : (state.awayBenchUsed || []);
+  const benchHistoryList = battingTeamSide === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
+  const battingLineup = battingTeamSide === 'home' ? state.homeLineup : state.awayLineup;
+  const usedBenchNames = new Set();
+  [...benchUsedList, ...benchHistoryList, ...battingLineup].forEach(p => usedBenchNames.add(p.name));
+  const benchList = fullBench.filter(p => !usedBenchNames.has(p.name));
+  const bullpen = battingTeamSide === 'home' ? state.homeBullpen : state.awayBullpen;
+  const cpuPitcherObj = battingTeamSide === 'home' ? state.homePitcher : state.awayPitcher;
+
+  const battingScore = state.score[getBattingTeam(state)];
+  const fieldingScore = state.score[getBattingTeam(state) === 'home' ? 'away' : 'home'];
+
+  const phGate = shouldPinchHit({
+    runners_in_scoring_position: !!state.bases[2] && (!!state.bases[0] || !!state.bases[1]),
+    runners_on: !!state.bases[0] || !!state.bases[1] || !!state.bases[2],
+    outs: state.outs,
+    inning: state.inning,
+    score_margin: battingScore === fieldingScore ? 0 : battingScore - fieldingScore,
+    available_bench: benchList,
+    current_pitcher_ip: cpuPitcherObj.gameStats.ip || 0,
+    bullpen: bullpen,
+    used_this_inning: [],
+    is_starter: cpuPitcherObj.pos === 'SP',
+    pitcher_runs_allowed: cpuPitcherObj.gameStats.r || 0,
+    pitcher_walks_allowed: cpuPitcherObj.gameStats.bb || 0,
+  });
+
+  if (!phGate) return null;
+
+  const phitter = choose_pinch_hitter({
+    available_bench: benchList,
+    runners_in_scoring_position: !!state.bases[2] && (!!state.bases[0] || !!state.bases[1]),
+    need_baserunner: battingScore < fieldingScore,
+  });
+
+  if (!phitter) return null;
+
+  // Apply the pinch-hit substitution (deep copy to avoid mutating current state)
+  const newState = JSON.parse(JSON.stringify(state));
+  const afterPH = pinchHit(newState, phitter);
+
+  if (battingTeamSide === 'home') {
+    newState.homeLineup = afterPH.homeLineup;
+    newState.homeBatterIndex = afterPH.homeBatterIndex;
+    if (!newState.homePlayerHistory) newState.homePlayerHistory = [];
+    afterPH.homePlayerHistory?.forEach(p => { if (!newState.homePlayerHistory.find(h => h.name === p.name)) newState.homePlayerHistory.push(p); });
+    if (!newState.homeBenchUsed) newState.homeBenchUsed = [];
+    afterPH.homeBenchUsed?.forEach(p => { if (!newState.homeBenchUsed.find(h => h.name === p.name)) newState.homeBenchUsed.push(p); });
+  } else {
+    newState.awayLineup = afterPH.awayLineup;
+    newState.awayBatterIndex = afterPH.awayBatterIndex;
+    if (!newState.awayPlayerHistory) newState.awayPlayerHistory = [];
+    afterPH.awayPlayerHistory?.forEach(p => { if (!newState.awayPlayerHistory.find(h => h.name === p.name)) newState.awayPlayerHistory.push(p); });
+    if (!newState.awayBenchUsed) newState.awayBenchUsed = [];
+    afterPH.awayBenchUsed?.forEach(p => { if (!newState.awayBenchUsed.find(h => h.name === p.name)) newState.awayBenchUsed.push(p); });
+  }
+
+  newState.log = afterPH.log;
+  newState._pitcher_due_for_replacement = true;
+  newState.log.push({ type: 'info', text: `🔄 ${phitter.name} pinch-hits for ${bjb.name}` });
+
+  return newState;
+}
+
 export { getCurrentBatter, getCurrentPitcher, getBattingTeam };
