@@ -132,6 +132,7 @@ import { checkPitcherInjury } from '@/lib/pitcherInjuries';
 import { rollBatterInjury, rollHBPIfBatter, replaceInjuredBatter } from '@/lib/batterInjuries';
 import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
+import { rollFielderInjury } from '@/lib/fielderInjuries';
 
 
 export default function Home() {
@@ -165,6 +166,7 @@ export default function Home() {
   const [batterInjury, setBatterInjury] = useState(null);
   const [runnerInjury, setRunnerInjury] = useState(null);
   const [slidingInjury, setSlidingInjury] = useState(null);
+  const [fielderInjury, setFielderInjury] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
@@ -217,6 +219,7 @@ export default function Home() {
     setBatterInjury(null);
     setRunnerInjury(null);
     setSlidingInjury(null);
+    setFielderInjury(null);
     resetBallparkEvents();
     const stadium = TEAMS[home]?.stadium || null;
     setGameStadium(stadium);
@@ -433,6 +436,26 @@ export default function Home() {
             newState = replaceInjuredBatter(gameState, injury.runnerName, injury.side, replacement, injury.name);
           }
           delete newState._pendingSlidingInjury;
+          setGameState(prev => newState);
+        }
+      }
+      return;
+    }
+
+    // Fielder injury — show modal for user's team, auto-replace for CPU
+    if (gameState._pendingFielderInjury && !fielderInjury) {
+      const injury = gameState._pendingFielderInjury;
+      const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
+                         (injury.side === 'away' && userTeam === gameState.awayTeam);
+      if (isUserTeam) {
+        setFielderInjury(injury);
+      } else {
+        const bench = injury.bench || [];
+        if (bench.length > 0) {
+          const sorted = [...bench].sort((a, b) => (b.contact + b.power) - (a.contact + a.power));
+          const replacement = sorted[0];
+          const newState = replaceInjuredBatter(gameState, injury.fielderName, injury.side, replacement, injury.name);
+          delete newState._pendingFielderInjury;
           setGameState(prev => newState);
         }
       }
@@ -869,6 +892,9 @@ export default function Home() {
        // Sliding injury — 7%/14% chance on slides
        checkSlidingInjury(updatedState, afterSubs);
 
+       // Fielder injury — 3%/10%/14% on diving stops/catches/collisions
+       checkFielderInjury(updatedState, afterSubs);
+
     } catch (e) {
       console.error('handlePitch error:', e);
       console.error('Stack:', e.stack);
@@ -922,6 +948,9 @@ export default function Home() {
       // Sliding injury — 7%/14% chance on slides
       checkSlidingInjury(gameState, afterSubs);
 
+      // Fielder injury — 3%/10%/14% on diving stops/catches/collisions
+      checkFielderInjury(gameState, afterSubs);
+
     } catch (e) {
       console.error('handleSwing error:', e);
       console.error('Stack:', e.stack);
@@ -957,6 +986,9 @@ export default function Home() {
 
       // Sliding injury — 7%/14% chance on slides (steal attempt)
       checkSlidingInjury(stealPending, afterSubs);
+
+      // Fielder injury — 3%/10%/14% on diving stops/catches/collisions
+      checkFielderInjury(stealPending, afterSubs);
     } catch (e) {
       console.error('handleSteal error:', e);
     } finally {
@@ -1294,6 +1326,87 @@ export default function Home() {
     setSlidingInjury(null);
   };
 
+  const checkFielderInjury = (prevState, newState) => {
+    const lastPlay = newState.lastPlay;
+    if (!lastPlay) return newState;
+
+    // Determine trigger type and fielder name from lastPlay flags
+    let fielderName = null;
+    let triggerType = null;
+
+    if (lastPlay.collision && lastPlay.collisionFielder) {
+      fielderName = lastPlay.collisionFielder;
+      triggerType = 'collision';
+    } else if (lastPlay.divingCatch && lastPlay.divingCatchFielder) {
+      fielderName = lastPlay.divingCatchFielder;
+      triggerType = 'divingCatch';
+    } else if (lastPlay.divingStop && lastPlay.divingStopFielder) {
+      fielderName = lastPlay.divingStopFielder;
+      triggerType = 'divingStop';
+    }
+
+    if (!fielderName || !triggerType) return newState;
+
+    // Skip if another injury is already pending for this player
+    const pendingNames = [
+      newState._pendingBatterInjury?.batterName,
+      newState._pendingRunnerInjury?.runnerName,
+      newState._pendingSlidingInjury?.runnerName,
+    ].filter(Boolean);
+    if (pendingNames.includes(fielderName)) return newState;
+
+    // Find the fielder in either lineup
+    let fieldingSide = null;
+    let fielder = null;
+    if (newState.homeLineup.find(p => p.name === fielderName)) {
+      fieldingSide = 'home';
+      fielder = newState.homeLineup.find(p => p.name === fielderName);
+    } else if (newState.awayLineup.find(p => p.name === fielderName)) {
+      fieldingSide = 'away';
+      fielder = newState.awayLineup.find(p => p.name === fielderName);
+    }
+    if (!fielder) return newState;
+
+    // Skip pitcher — has its own injury system
+    const fielderPos = fielder.assignedPos || fielder.pos;
+    if (['SP', 'RP', 'CL'].includes(fielderPos)) return newState;
+
+    // Roll fielder injury
+    const injury = rollFielderInjury(triggerType);
+    if (!injury) return newState;
+
+    // Find available bench
+    const teamKey = fieldingSide === 'home' ? newState.homeTeam : newState.awayTeam;
+    const fullBench = TEAMS[teamKey]?.bench || [];
+    const benchUsed = fieldingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || []);
+    const playerHistory = fieldingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || []);
+    const currentLineup = fieldingSide === 'home' ? newState.homeLineup : newState.awayLineup;
+    const usedNames = new Set();
+    [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
+    const availableBench = fullBench.filter(p => !usedNames.has(p.name));
+
+    newState._pendingFielderInjury = {
+      ...injury,
+      side: fieldingSide,
+      fielderName: fielderName,
+      batterName: fielderName,
+      pos: fielderPos,
+      trigger: triggerType,
+      bench: availableBench,
+    };
+
+    newState.log.push({ type: 'injury', text: `🚑 ${fielderName} is done — ${injury.name}!` });
+    return newState;
+  };
+
+  const handleFielderInjuryReplacement = (chosenPlayer) => {
+    if (!gameState || !fielderInjury) return;
+    const newState = replaceInjuredBatter(gameState, fielderInjury.fielderName, fielderInjury.side, chosenPlayer, fielderInjury.name);
+    delete newState._pendingFielderInjury;
+    setGameState(newState);
+    setFielderInjury(null);
+  };
+
   const handleNewGame = () => {
     setGameState(null);
     setBallparkPhase(null);
@@ -1325,6 +1438,7 @@ export default function Home() {
     setBatterInjury(null);
     setRunnerInjury(null);
     setSlidingInjury(null);
+    setFielderInjury(null);
   };
 
   if (ballparkPhase) {
@@ -1759,6 +1873,15 @@ export default function Home() {
           injury={slidingInjury}
           bench={slidingInjury.bench}
           onSelect={handleSlidingInjuryReplacement}
+        />
+      )}
+
+      {/* Fielder Injury Modal — user picks replacement after fielding injury */}
+      {fielderInjury && (
+        <BatterInjuryModal
+          injury={fielderInjury}
+          bench={fielderInjury.bench}
+          onSelect={handleFielderInjuryReplacement}
         />
       )}
 

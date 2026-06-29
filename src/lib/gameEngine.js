@@ -399,8 +399,10 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
         // Collision check for runners scoring at home
         const collision = rollCollision('home', state.bases[i].speed, 7);
         if (collision) {
+          const fLineup = state.halfInning === 'top' ? state.homeLineup : state.awayLineup;
+          const catcher = fLineup.find(p => p.assignedPos === 'C' || p.pos === 'C');
           state.log.push({ type: 'info', text: `💥 ${collision.text}` });
-          state.lastPlay = { ...state.lastPlay, collision: true };
+          state.lastPlay = { ...state.lastPlay, collision: true, collisionFielder: catcher?.name };
         }
         state.bases[i] = null;
       }
@@ -1045,7 +1047,7 @@ function resolveSwing(state, swingType, pitch) {
             state.bases[0] = batter; batter.gameStats.ab++;
             state.bases[1] = null; // r1 is out at 2nd
             state.log.push({ type: 'groundout', text: `${batter.name} grounds to ${out.posName || out.pos} — ${takeout.text}` });
-            state.lastPlay = { type: 'groundout', text: `${batter.name} grounds — DP broken up` };
+            state.lastPlay = { type: 'groundout', text: `${batter.name} grounds — DP broken up`, collision: true, collisionFielder: defenders['2B']?.name || defenders['SS']?.name };
             state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
             return;
           }
@@ -1117,6 +1119,7 @@ function resolveSwing(state, swingType, pitch) {
         const dcCall = getDivingCatchCall(state.homeTeam, fielder.name, out.pos);
         out.text = dcCall;
         out.isDivingCatch = true;
+        out.divingCatchFielder = fielder.name;
       }
     } else if (out.type === 'groundout') {
       // Diving ground-ball stop
@@ -1128,6 +1131,7 @@ function resolveSwing(state, swingType, pitch) {
           out.text = dsResult.text;
           out.divingStopOut = true;
           out.divingStopPos = dsResult.pos;
+          out.divingStopFielder = fielder.name;
         } else if (dsResult.type === 'knockdown') {
           // Knocked down — ball stayed in the infield, runners advance conservatively
           batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
@@ -1136,7 +1140,7 @@ function resolveSwing(state, swingType, pitch) {
           if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
           state.bases[0] = batter;
           state.log.push({ type: 'single', text: dsResult.text, divingStopPos: dsResult.pos });
-          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, infield: true };
+          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, infield: true, divingStop: true, divingStopFielder: fielder.name };
           state.balls = 0; state.strikes = 0; advanceBatter(state);
           return;
         } else {
@@ -1147,7 +1151,7 @@ function resolveSwing(state, swingType, pitch) {
           if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
           state.bases[0] = batter;
           state.log.push({ type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true });
-          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true, infield: true };
+          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true, infield: true, divingStop: true, divingStopFielder: fielder.name };
           state.balls = 0; state.strikes = 0; advanceBatter(state);
           return;
         }
@@ -1156,6 +1160,8 @@ function resolveSwing(state, swingType, pitch) {
 
     const outExtra = {};
     if (out.divingStopOut) { outExtra.divingStopOut = true; outExtra.divingStopPos = out.divingStopPos; }
+    if (out.divingCatchFielder) { outExtra.divingCatch = true; outExtra.divingCatchFielder = out.divingCatchFielder; }
+    if (out.divingStopFielder) { outExtra.divingStop = true; outExtra.divingStopFielder = out.divingStopFielder; }
     state.log.push({ type: isFlyBall ? 'flyout' : 'groundout', text: out.text, ...outExtra });
     state.lastPlay = { type: isFlyBall ? 'flyout' : 'groundout', text: out.text, ...outExtra };
     state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
