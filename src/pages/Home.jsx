@@ -432,40 +432,34 @@ export default function Home() {
     if (prevInning.current !== null && prevInning.current !== currentInning && !gameState.gameOver) {
       const completedInning = prevInning.current;
       if (completedInning >= 1 && completedInning <= 8) {
-        // Category-based selection: 25% team banners, 75% national (equal weight per topic)
+        // Flat pool: every banner (team-specific + national) has equal probability
         const teamBanners = getBannersForTeam(homeTeam);
-        const nationalSets = [
-          MOVIES_1984_BANNERS,
-          [ELECTRONICS_COMPUTERS_BANNER],
-          [GENERAL_PRODUCTS_BANNER],
-          [WRESTLING_BANNER],
-          [OLYMPICS_1984_BANNER],
-          [SPACE_AVIATION_BANNER],
-          [NEWSPAPERS_BANNER],
-          [PHONE_WARS_BANNER],
-          [CAMERAS_FILM_BANNER],
-          [SCREAM_1984_BANNER],
-          [MALL_CULTURE_BANNER],
-          [FORMAT_WARS_BANNER],
-          [COUNTY_FAIR_BANNER],
-          [MUSIC_MTV_BANNER],
-          [CARS_ROAD_BANNER],
-          [SATURDAY_CARTOONS_BANNER],
-          [CEREAL_BANNER],
-          [PROMO_NIGHTS_BANNER],
-          NATIONAL_TV_BANNERS,
-          [ARCADE_BANNER],
-        ].filter(set => Array.isArray(set) && set.length > 0);
+        const allBanners = [
+          ...(teamBanners || []),
+          ...MOVIES_1984_BANNERS,
+          ELECTRONICS_COMPUTERS_BANNER,
+          GENERAL_PRODUCTS_BANNER,
+          WRESTLING_BANNER,
+          OLYMPICS_1984_BANNER,
+          SPACE_AVIATION_BANNER,
+          NEWSPAPERS_BANNER,
+          PHONE_WARS_BANNER,
+          CAMERAS_FILM_BANNER,
+          SCREAM_1984_BANNER,
+          MALL_CULTURE_BANNER,
+          FORMAT_WARS_BANNER,
+          COUNTY_FAIR_BANNER,
+          MUSIC_MTV_BANNER,
+          CARS_ROAD_BANNER,
+          SATURDAY_CARTOONS_BANNER,
+          CEREAL_BANNER,
+          PROMO_NIGHTS_BANNER,
+          ...NATIONAL_TV_BANNERS,
+          ARCADE_BANNER,
+        ].filter(Boolean);
 
-        let selectedSet;
-        if (teamBanners && teamBanners.length > 0 && Math.random() < 0.25) {
-          selectedSet = teamBanners;
-        } else if (nationalSets.length > 0) {
-          selectedSet = nationalSets[Math.floor(Math.random() * nationalSets.length)];
-        }
-
-        if (selectedSet && selectedSet.length > 0) {
-          const randomBanner = selectedSet[Math.floor(Math.random() * selectedSet.length)];
+        if (allBanners.length > 0) {
+          const randomBanner = allBanners[Math.floor(Math.random() * allBanners.length)];
           setActiveBanner(null);  // Clear first to force remount (resets auto-hide timer)
           setBannerSeq(s => s + 1);
           setActiveBanner(randomBanner);
