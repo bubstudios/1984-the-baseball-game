@@ -32,7 +32,6 @@ import {
   pickHitLine,
 } from './commentaryLines';
 import { checkBatterStretch } from './aggressiveBaserunning';
-import { checkPitcherInjury, checkPlayInjury, getPlayerDurability } from './injuries';
 import { getUmpireZoneEffect, maybeMissedCall } from './umpires';
 import { pinchHit, pinchRun, defensiveSwitch, changePitcher } from './substitutions';
 import { isWallRobable, rollHRRobbery, getRobberyCall, rollDivingCatch, getDivingCatchCall, rollDivingStop, getDivingStopResult, rollRareCatchEvent, getRareCatchCall } from './defensivePlays';
@@ -59,13 +58,12 @@ function getPitcherFatigue(inningsPitched, pitcher) {
   const stamina = pitcher.stamina || 5;
   const isReliever = ['RP', 'CL'].includes(pitcher.pos) || ['RP', 'CL'].includes(pitcher.assignedPos);
   const threshold = isReliever ? stamina * 0.4 : Math.max(4.2, stamina * 0.7);
-  if (inningsPitched <= threshold) return { fatigueLevel: 0, speedPen: 0, controlPen: 0, injuryMult: 1 };
+  if (inningsPitched <= threshold) return { fatigueLevel: 0, speedPen: 0, controlPen: 0 };
   const overThreshold = inningsPitched - threshold;
   const speedPen = Math.min(5, Math.round(overThreshold * 0.5));
   const controlPen = Math.min(5, Math.round(overThreshold * 0.7));
   const fatigueLevel = Math.min(4, Math.floor(overThreshold));
-  const injuryMult = inningsPitched >= 8 ? 2.5 : inningsPitched >= 6 ? 1.5 : 1;
-  return { fatigueLevel, speedPen, controlPen, injuryMult };
+  return { fatigueLevel, speedPen, controlPen };
 }
 
 export function getEffectivePitcher(state) {
@@ -84,7 +82,6 @@ export function getEffectivePitcher(state) {
     fatigueLevel: fatigue.fatigueLevel,
     fatigueSpeedPen: fatigue.speedPen,
     fatigueControlPen: fatigue.controlPen,
-    injuryRiskMult: fatigue.injuryMult,
   };
 }
 
@@ -182,7 +179,6 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     useDH: !!useDH,
     homePlayerHistory: [], awayPlayerHistory: [],
     runLog: [],
-    injuries_enabled: true, // §6 toggle — set false to fully disable injury checks
   };
 }
 
@@ -405,15 +401,6 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
         if (collision) {
           state.log.push({ type: 'info', text: `💥 ${collision.text}` });
           state.lastPlay = { ...state.lastPlay, collision: true };
-          if (collision.injuryTrigger) {
-            const runner = state.bases[i];
-            const catcher = getDefensivePlayers(state)['C'] || null;
-            state._pendingCollisionInjury = {
-              runner: (collision.injuredParty === 'runner' || collision.injuredParty === 'both') ? runner : null,
-              fielder: (collision.injuredParty === 'fielder' || collision.injuredParty === 'both') ? catcher : null,
-              trigger: collision.injuryTrigger,
-            };
-          }
         }
         state.bases[i] = null;
       }
@@ -1060,15 +1047,6 @@ function resolveSwing(state, swingType, pitch) {
             state.log.push({ type: 'groundout', text: `${batter.name} grounds to ${out.posName || out.pos} — ${takeout.text}` });
             state.lastPlay = { type: 'groundout', text: `${batter.name} grounds — DP broken up` };
             state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
-            if (takeout.injuryTrigger) {
-              const mi = getDefensivePlayers(state);
-              const fielder2B = mi['2B'] || mi['SS'] || null;
-              state._pendingCollisionInjury = {
-                runner: (takeout.injuredParty === 'runner' || takeout.injuredParty === 'both') ? r1 : null,
-                fielder: (takeout.injuredParty === 'fielder' || takeout.injuredParty === 'both') ? fielder2B : null,
-                trigger: takeout.injuryTrigger,
-              };
-            }
             return;
           }
           if (r1 && r2 && !isMI) { const r3 = state.bases[2]; if (r3 && state.outs < 2) { r3.gameStats.runs++; scoreRun(state); batter.gameStats.rbi++; pitcher.gameStats.r++; pitcher.gameStats.er++; } state.bases[2] = null; state.bases[1] = r1 || null; state.bases[0] = null; }
@@ -1391,103 +1369,6 @@ function handleHitAndRunMiss(state) {
   for (let i = 0; i < 2; i++) { const r = state.bases[i]; if (!r || state.bases[i + 1]) continue; const d = getDefensivePlayers(state); const ca = getCatcherArm(d); const sc = 0.20 + (r.speed / 10) * 0.55 - (ca / 10) * 0.12; if (Math.random() < Math.max(0.10, Math.min(sc, 0.75))) { r.gameStats.sb = (r.gameStats.sb || 0) + 1; state.bases[i + 1] = r; state.bases[i] = null; state.log.push({ type: 'info', text: `${r.name} ${pickLine(STEAL_LINES.success).replace(/second|third|home/, i === 0 ? 'second' : 'third')} on the hit-and-run` }); } else { r.gameStats.cs = (r.gameStats.cs || 0) + 1; state.bases[i] = null; state.log.push({ type: 'info', text: `${r.name} ${pickLine(STEAL_LINES.caught).replace(/second|third|home/, i === 0 ? 'second' : 'third')} on the hit-and-run!` }); recordOut(state); } break; }
 }
 
-function runInjuryChecks(newState, batter) {
-  const lp = newState.lastPlay; if (!lp) return;
-  // §1 QUALIFYING events only — no checks on routine plays
-  let eventType = null;
-  let targetName = batter.name;
-
-  if (lp.type === 'walk' && lp.isHBP) {
-    // HBP: scale intensity by pitch speed
-    const pitcher = getCurrentPitcher(newState);
-    const pitchSpeed = pitcher?.pitchSpeed || 6;
-    const r = checkPlayInjury(newState, 'hit_by_pitch', batter.name);
-    // Pass pitch speed context via manual maybeInjure isn't exposed — the default is fine; pitchSpeed
-    // modifier is handled via options but checkPlayInjury passes state; intensity is internal.
-    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
-    return;
-  }
-
-  if (lp.type === 'steal') {
-    // Sprint injury on successful steal
-    const runner = newState.bases.find(b => b && b.name !== batter.name) || batter;
-    const r = checkPlayInjury(newState, 'steal_success', runner.name);
-    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
-    return;
-  }
-
-  if (lp.type === 'caughtstealing') {
-    // Hard slide on caught stealing
-    const runner = newState.bases.find(b => b) || batter;
-    const r = checkPlayInjury(newState, 'steal_attempt', runner.name);
-    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
-    return;
-  }
-
-  // ── Takeout slide: check when a double-play or FC is explicitly broken up ──
-  if (lp.type === 'groundout' && lp.text?.toLowerCase().includes('takeout')) {
-    // Both the pivot man and the runner can be hurt
-    const r = checkPlayInjury(newState, 'takeout_slide', batter.name);
-    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
-    return;
-  }
-
-  // ── Home-plate collision: explicit collision text ──
-  if (lp.collision) {
-    // The runner or the catcher — collision flag set by rollCollision
-    const r = checkPlayInjury(newState, 'collision', batter.name);
-    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
-    return;
-  }
-
-  // ── Diving catch: outfield diving play ──
-  if (lp.isDivingCatch || lp.divingCatch) {
-    const pitcher = getCurrentPitcher(newState);
-    const defenders = getDefensivePlayers(newState);
-    const outfielders = ['LF', 'CF', 'RF'];
-    let fielder = null;
-    for (const pos of outfielders) {
-      if (defenders[pos]) { fielder = defenders[pos]; break; }
-    }
-    if (fielder) {
-      const r = checkPlayInjury(newState, 'diving_catch', fielder.name);
-      if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
-    }
-    return;
-  }
-
-  // ── Sprint pull: triple (hard leg push) — optional rare wildcard ──
-  if (lp.type === 'triple') {
-    const r = checkPlayInjury(newState, 'sprint_pull', batter.name);
-    if (r) { newState.lastInjury = r; applyInjuryState(newState, r); newState.log.push({ type: 'injury', text: `🚑 ${r.commentary}` }); }
-    return;
-  }
-
-  // Everything else: no injury check (clean single, flyout, strikeout, HR, etc.)
-}
-
-function applyInjuryState(newState, injuryResult) {
-  if (!injuryResult) return;
-  // Scares or minor injuries that stay in don't need substitution
-  if (injuryResult.isScare || injuryResult.severity === 'MINOR') return;
-  const pn = injuryResult.player;
-  const ai = newState.awayLineup.findIndex(p => p.name === pn), hi = newState.homeLineup.findIndex(p => p.name === pn);
-  const isA = ai >= 0; const tl = isA ? newState.awayLineup : newState.homeLineup; const ti = isA ? ai : hi;
-  const tk = isA ? newState.awayTeam : newState.homeTeam; const td = TEAMS[tk];
-  const bench = td?.bench || []; const bp2 = isA ? newState.awayBullpen : newState.homeBullpen;
-  if (tl && ti >= 0) {
-    const ip = tl[ti]; const iPs = ip.pos === 'SP' || ip.pos === 'RP' || ip.pos === 'CL' || (ip.assignedPos && ['SP','RP','CL'].includes(ip.assignedPos));
-    const iCb = (isA && newState.awayBatterIndex % newState.awayLineup.length === ti) || (!isA && newState.homeBatterIndex % newState.homeLineup.length === ti);
-    const hk = isA ? 'awayPlayerHistory' : 'homePlayerHistory';
-    if (!newState[hk].find(p => p.name === pn)) newState[hk].push({ ...ip, injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name });
-    let bo = []; if (iPs && bp2.length > 0) bo = [...bp2].map(rp => ({ ...rp, pos: 'RP', reason: 'reliever' })); else if (bench.length > 0) bo = [...bench];
-    if (bo.length > 0) { newState._pendingInjury = { ...injuryResult, isPitcher: iPs, isCurrentBatter: iCb, oldPos: ip.assignedPos || ip.pos, benchOptions: bo, isAway: isA, targetIdx: ti, injuryType: injuryResult.severity }; tl[ti] = { ...ip, injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name, _injured: true }; }
-    else { tl[ti] = { ...ip, injured: true, injuryType: injuryResult.severity, injuryName: injuryResult.injury.name }; newState.log.push({ type: 'info', text: `🚑 ${pn} injured — no bench replacements available!` }); }
-  }
-  if (newState.homePitcher?.name === pn && newState.homePitcher && !newState.homePitcher.injured) newState.homePitcher = { ...newState.homePitcher, injured: true, injuryType: injuryResult.severity };
-  if (newState.awayPitcher?.name === pn && newState.awayPitcher && !newState.awayPitcher.injured) newState.awayPitcher = { ...newState.awayPitcher, injured: true, injuryType: injuryResult.severity };
-}
-
 // ── Single source of truth for control-side logic ──
 function getControllingTeam(state, context) {
   // context: 'batting' | 'pitching' | null (either team)
@@ -1673,8 +1554,6 @@ export function processAtBat(state, pitchType, swingType) {
       else newState.awayPitcher = origPitcher;
     }
     if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); }
-    if (!newState.gameOver) runInjuryChecks(newState, bjb);
-    if (!newState.gameOver && !newState.lastInjury) { const pi = checkPitcherInjury(newState); if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); } }
     applyComposureFromLastPlay(newState, pitcher);
 
     // ── Symmetric lead-change penalty: whichever pitcher blew the lead gets penalized ──
@@ -1787,11 +1666,6 @@ export function processAtBat(state, pitchType, swingType) {
           newState.gameOver = true; newState.waitingForInput = false;
           newState.log.push({ type: 'info', text: `🎉 Walk-off! ${TEAMS[newState.homeTeam].name} win ${newState.score.home}-${newState.score.away}!` });
         }
-        if (!newState.gameOver) runInjuryChecks(newState, newBatter);
-        if (!newState.gameOver && !newState.lastInjury) {
-          const pi = checkPitcherInjury(newState);
-          if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); }
-        }
         applyComposureFromLastPlay(newState, newPitcher);
         processComposureEvents(newState, newPitcher);
         return newState;
@@ -1870,11 +1744,6 @@ export function processAtBat(state, pitchType, swingType) {
       }
 
       // ── Run post-play checks (injury, composure, collision) — same as normal swings ──
-      if (!newState.gameOver) runInjuryChecks(newState, bjb);
-      if (!newState.gameOver && !newState.lastInjury) {
-        const pi = checkPitcherInjury(newState);
-        if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); }
-      }
       const pitcher = getCurrentPitcher(newState);
       applyComposureFromLastPlay(newState, pitcher);
       processComposureEvents(newState, pitcher);
@@ -1885,23 +1754,6 @@ export function processAtBat(state, pitchType, swingType) {
 
   resolveSwing(newState, swingType, newState.pitchResult);
   if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); }
-  if (!newState.gameOver) runInjuryChecks(newState, bjb);
-  if (!newState.gameOver && !newState.lastInjury) { const pi = checkPitcherInjury(newState); if (pi) { newState.lastInjury = pi; applyInjuryState(newState, pi); newState.log.push({ type: 'injury', text: `🚑 ${pi.commentary}` }); } }
-  // Collision injury from home plate collision or takeout slide — can injure runner, fielder, or both
-  if (!newState.gameOver && newState._pendingCollisionInjury) {
-    const { runner, fielder, trigger } = newState._pendingCollisionInjury;
-    delete newState._pendingCollisionInjury;
-    const allPlayers = [...newState.homeLineup, ...newState.awayLineup];
-    const candidates = [runner, fielder].filter(Boolean);
-    for (const p of candidates) {
-      if (newState.lastInjury) break; // only one injury per play
-      const colPlayer = allPlayers.find(pl => pl.name === p.name) || p;
-      if (colPlayer) {
-        const ci = checkPlayInjury(newState, trigger || 'collision', colPlayer.name);
-        if (ci) { newState.lastInjury = ci; applyInjuryState(newState, ci); newState.log.push({ type: 'injury', text: `🚑 ${ci.commentary}` }); }
-      }
-    }
-  }
   // ── Symmetric lead-change penalty: whichever pitcher blew the lead gets penalized ──
   const _mainPitchSide = state.halfInning === 'top' ? 'home' : 'away';
   const _mainPostPitch = newState.score[_mainPitchSide];

@@ -17,11 +17,9 @@ import SubstitutionsPanel from '@/components/game/SubstitutionsPanel';
 import Fireworks from '@/components/game/Fireworks';
 import ArgumentsBanner from '@/components/game/ArgumentsBanner';
 import BallparkEventBanner from '@/components/game/BallparkEventBanner';
-import InjuryBanner from '@/components/game/InjuryBanner';
 import PitcherIsPumpedPopup from '@/components/game/PitcherIsPumpedPopup';
 import IncidentLog from '@/components/game/IncidentLog';
 
-import InjuryReplacementModal from '@/components/game/InjuryReplacementModal';
 import BeanballBanner from '@/components/game/BeanballBanner';
 import GameSummary from '@/components/game/GameSummary';
 import HomeRunDistancePopup from '@/components/game/HomeRunDistancePopup';
@@ -29,7 +27,6 @@ import GameEventBanner from '@/components/game/GameEventBanner';
 
 import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
-import { applyInjuryReplacement } from '@/lib/injuryReplacement';
 import { getArgumentSeverity, resolveArgument, getEjectionCommentary, maybeDugoutChirp } from '@/lib/umpireArguments';
 import { pickUmpire, getManagerUmpireRelation } from '@/lib/umpires';
 import { rollBallparkEvent, resetBallparkEvents } from '@/lib/ballparkEvents';
@@ -157,7 +154,6 @@ export default function Home() {
   const [selectedUmpire, setSelectedUmpire] = useState(null);
   const [ejectionCount, setEjectionCount] = useState(0);
   const [ballparkEvent, setBallparkEvent] = useState(null);
-  const [injuryResult, setInjuryResult] = useState(null);
   const [ejectionResult, setEjectionResult] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
@@ -206,7 +202,6 @@ export default function Home() {
     setEjectionCount(0);
     setArgumentResult(null);
     setBallparkEvent(null);
-    setInjuryResult(null);
     setBeanballEvent(null);
     resetBallparkEvents();
     const stadium = TEAMS[home]?.stadium || null;
@@ -331,31 +326,7 @@ export default function Home() {
       return;
     }
 
-    // Check for injuries — only show once per injury
-    if (gameState._pendingInjury && !injuryResult) {
-      const isUserTeam = gameState._pendingInjury.isAway
-        ? userTeam === gameState.awayTeam
-        : userTeam === gameState.homeTeam;
-      if (isUserTeam) {
-        // User must pick a replacement for their own team's injury
-        setInjuryResult({ ...gameState._pendingInjury, _pending: true });
-      } else {
-        // CPU team injury — auto-select first bench option
-        const benchOptions = gameState._pendingInjury.benchOptions || [];
-        if (benchOptions.length > 0) {
-          const newState = applyInjuryReplacement(gameState, benchOptions[0]);
-          setGameState(prev => newState);
-        }
-      }
-      return;
-    }
-    if (gameState.lastInjury && !injuryResult && !gameState._injuryShown) {
-      // If injury was already auto-handled (no bench), show the standard banner
-      if (!gameState._pendingInjury) {
-        setInjuryResult(gameState.lastInjury);
-      }
-      setGameState(prev => prev ? { ...prev, _injuryShown: true } : prev);
-    }
+
 
     // Ballpark Event Handler — Award card if bobblehead
     if (ballparkEvent && ballparkEvent.id === 'homestand_bobblehead' && !cardAward) {
@@ -919,13 +890,6 @@ export default function Home() {
     setShowSubs(false);
   }, [userTeam]);
 
-  const handleInjuryReplacement = (chosenPlayer) => {
-    if (!gameState || !gameState._pendingInjury) return;
-    const newState = applyInjuryReplacement(gameState, chosenPlayer);
-    setGameState(newState);
-    setInjuryResult(null);
-  };
-
   const handleEjectionReplacement = (chosenPitcher) => {
     if (!gameState || !ejectionResult) return;
     const newState = changePitcher(gameState, chosenPitcher, ejectionResult.ejectedSide);
@@ -949,7 +913,6 @@ export default function Home() {
     setShowAchievementPopup(false);
     setArgumentResult(null);
     setSelectedUmpire(null);
-    setInjuryResult(null);
     prevGameOver.current = false;
     prevLogLength.current = 0;
     prevInning.current = null;
@@ -1360,21 +1323,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Injury Banner — standard notification when no bench choice needed */}
-      {injuryResult && !injuryResult._pending && (
-        <InjuryBanner
-          injury={injuryResult}
-          onDismiss={() => setInjuryResult(null)}
-        />
-      )}
 
-      {/* Injury Replacement Modal — forced bench selection */}
-      {injuryResult && injuryResult._pending && (
-        <InjuryReplacementModal
-          pendingInjury={injuryResult}
-          onSelect={handleInjuryReplacement}
-        />
-      )}
 
       {/* Ejection Replacement Modal — user picks replacement pitcher */}
       {ejectionResult && (
