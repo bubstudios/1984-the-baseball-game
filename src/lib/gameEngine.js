@@ -788,7 +788,7 @@ function resolveSwing(state, swingType, pitch) {
   const adjBatter = getSituationalBatter(state);
   const contactRating = adjBatter.contact / 10;
   const isPitcherBatting = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let contactChance = 0.34 + contactRating * 0.35;
+  let contactChance = 0.40 + contactRating * 0.38;
   if (isPitcherBatting) contactChance *= 0.55; // Pitchers are much worse hitters
   if (isPower) contactChance -= 0.10; if (isContact) contactChance += 0.12; if (!pitch.isStrike) contactChance -= 0.20;
   if (state.hitAndRun) { contactChance -= 0.08; contactChance = Math.max(0.03, contactChance); }
@@ -842,7 +842,7 @@ function resolveSwing(state, swingType, pitch) {
   const hitDirection = getHitDirection(adjBatter.bats);
   const powerRating = adjBatter.power / 10;
   const isPitcherBatting2 = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let hitChance = 0.165 + (contactRating + contactWx / 10) * 0.24;
+  let hitChance = 0.22 + (contactRating + contactWx / 10) * 0.28;
   if (isPitcherBatting2) hitChance *= 0.45; // Pitchers rarely get hits
   if (isPower) hitChance -= 0.04; if (isContact) hitChance += 0.06;
   const effP3 = getEffectivePitcher(state) || pitcher;
