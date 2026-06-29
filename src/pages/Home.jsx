@@ -130,6 +130,7 @@ import FanChirpToast from '@/components/game/FanChirpToast';
 import { checkAndResolveIncident } from '@/lib/incidentIntegration';
 import { checkPitcherInjury } from '@/lib/pitcherInjuries';
 import { rollBatterInjury, rollHBPIfBatter, replaceInjuredBatter } from '@/lib/batterInjuries';
+import { rollRunnerInjury } from '@/lib/runnerInjuries';
 
 
 export default function Home() {
@@ -161,6 +162,7 @@ export default function Home() {
   const [ejectionResult, setEjectionResult] = useState(null);
   const [pitcherInjury, setPitcherInjury] = useState(null);
   const [batterInjury, setBatterInjury] = useState(null);
+  const [runnerInjury, setRunnerInjury] = useState(null);
   const prevLastPlay = useRef(null);
   const prevGameOver = useRef(false);
   const gameStartTimeRef = useRef(null);
@@ -211,6 +213,7 @@ export default function Home() {
     setBeanballEvent(null);
     setPitcherInjury(null);
     setBatterInjury(null);
+    setRunnerInjury(null);
     resetBallparkEvents();
     const stadium = TEAMS[home]?.stadium || null;
     setGameStadium(stadium);
@@ -377,6 +380,31 @@ export default function Home() {
             newState = replaceInjuredBatter(gameState, injury.batterName, injury.side, replacement, injury.name);
           }
           delete newState._pendingBatterInjury;
+          setGameState(prev => newState);
+        }
+      }
+      return;
+    }
+
+    // Runner injury — show modal for user's team, auto-replace for CPU
+    if (gameState._pendingRunnerInjury && !runnerInjury) {
+      const injury = gameState._pendingRunnerInjury;
+      const isUserTeam = (injury.side === 'home' && userTeam === gameState.homeTeam) ||
+                         (injury.side === 'away' && userTeam === gameState.awayTeam);
+      if (isUserTeam) {
+        setRunnerInjury(injury);
+      } else {
+        const bench = injury.bench || [];
+        if (bench.length > 0) {
+          const sorted = [...bench].sort((a, b) => b.speed - a.speed);
+          const replacement = sorted[0];
+          let newState;
+          if (injury.baseIndex >= 0) {
+            newState = pinchRun(gameState, injury.baseIndex, replacement);
+          } else {
+            newState = replaceInjuredBatter(gameState, injury.runnerName, injury.side, replacement, injury.name);
+          }
+          delete newState._pendingRunnerInjury;
           setGameState(prev => newState);
         }
       }
@@ -807,6 +835,9 @@ export default function Home() {
        // Batter injury — 2% chance on every swing
        checkBatterInjury(updatedState, afterSubs);
 
+       // Runner injury — 2% chance when a runner moves
+       checkRunnerInjury(updatedState, afterSubs);
+
     } catch (e) {
       console.error('handlePitch error:', e);
       console.error('Stack:', e.stack);
@@ -854,6 +885,9 @@ export default function Home() {
       // Batter injury — 2% chance on every swing
       checkBatterInjury(gameState, afterSubs);
 
+      // Runner injury — 2% chance when a runner moves
+      checkRunnerInjury(gameState, afterSubs);
+
     } catch (e) {
       console.error('handleSwing error:', e);
       console.error('Stack:', e.stack);
@@ -883,6 +917,9 @@ export default function Home() {
 
       // Batter injury — 2% chance on every swing (steal attempt = swing)
       checkBatterInjury(stealPending, afterSubs);
+
+      // Runner injury — 2% chance when a runner moves (steal attempt)
+      checkRunnerInjury(stealPending, afterSubs);
     } catch (e) {
       console.error('handleSteal error:', e);
     } finally {
@@ -1046,6 +1083,89 @@ export default function Home() {
     setBatterInjury(null);
   };
 
+  const checkRunnerInjury = (prevState, newState) => {
+    // Skip if half-inning changed (inning ended, bases cleared)
+    if (prevState.halfInning !== newState.halfInning) return newState;
+    // Skip walks (no running involved)
+    if (newState.lastPlay?.type === 'walk') return newState;
+
+    const battingSide = prevState.halfInning === 'top' ? 'away' : 'home';
+    const pendingBatterName = newState._pendingBatterInjury?.batterName;
+
+    const movedRunners = [];
+
+    // Check existing runners who advanced or scored/were put out
+    for (let i = 0; i < 3; i++) {
+      const prevRunner = prevState.bases[i];
+      if (!prevRunner || prevRunner.name === pendingBatterName) continue;
+      let found = false;
+      for (let j = 0; j < 3; j++) {
+        if (newState.bases[j]?.name === prevRunner.name) {
+          if (j !== i) movedRunners.push({ name: prevRunner.name, baseIndex: j });
+          found = true;
+          break;
+        }
+      }
+      if (!found) movedRunners.push({ name: prevRunner.name, baseIndex: -1 });
+    }
+
+    // Check batter who ran on a ball in play
+    const BALL_IN_PLAY_TYPES = ['single', 'double', 'triple', 'homerun', 'groundout', 'flyout', 'lineout', 'popout', 'error', 'fc', 'doubleplay', 'sacfly'];
+    const prevLineup = battingSide === 'home' ? prevState.homeLineup : prevState.awayLineup;
+    const prevBatterIdx = battingSide === 'home' ? prevState.homeBatterIndex : prevState.awayBatterIndex;
+    const batter = prevLineup[prevBatterIdx % prevLineup.length];
+    if (batter && batter.name !== pendingBatterName && BALL_IN_PLAY_TYPES.includes(newState.lastPlay?.type)) {
+      if (!movedRunners.find(r => r.name === batter.name)) {
+        const baseIdx = newState.bases.findIndex(b => b?.name === batter.name);
+        movedRunners.push({ name: batter.name, baseIndex: baseIdx >= 0 ? baseIdx : -1 });
+      }
+    }
+
+    // Roll 2% for each moved runner — first injury only
+    for (const runner of movedRunners) {
+      const injury = rollRunnerInjury();
+      if (injury) {
+        const teamKey = battingSide === 'home' ? newState.homeTeam : newState.awayTeam;
+        const fullBench = TEAMS[teamKey]?.bench || [];
+        const benchUsed = battingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || []);
+        const playerHistory = battingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || []);
+        const currentLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
+        const usedNames = new Set();
+        [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
+        const availableBench = fullBench.filter(p => !usedNames.has(p.name));
+
+        newState._pendingRunnerInjury = {
+          ...injury,
+          side: battingSide,
+          runnerName: runner.name,
+          batterName: runner.name,
+          baseIndex: runner.baseIndex,
+          bench: availableBench,
+        };
+
+        newState.log.push({ type: 'injury', text: `🚑 ${runner.name} is done — ${injury.name}!` });
+        break;
+      }
+    }
+
+    return newState;
+  };
+
+  const handleRunnerInjuryReplacement = (chosenPlayer) => {
+    if (!gameState || !runnerInjury) return;
+    let newState;
+    if (runnerInjury.baseIndex >= 0) {
+      // Runner is on base — use pinchRun
+      newState = pinchRun(gameState, runnerInjury.baseIndex, chosenPlayer);
+    } else {
+      // Runner scored/was out — replace directly in lineup
+      newState = replaceInjuredBatter(gameState, runnerInjury.runnerName, runnerInjury.side, chosenPlayer, runnerInjury.name);
+    }
+    delete newState._pendingRunnerInjury;
+    setGameState(newState);
+    setRunnerInjury(null);
+  };
+
   const handleNewGame = () => {
     setGameState(null);
     setBallparkPhase(null);
@@ -1075,6 +1195,7 @@ export default function Home() {
     setShowSummary(false);
     setPitcherInjury(null);
     setBatterInjury(null);
+    setRunnerInjury(null);
   };
 
   if (ballparkPhase) {
@@ -1491,6 +1612,15 @@ export default function Home() {
           injury={batterInjury}
           bench={batterInjury.bench}
           onSelect={handleBatterInjuryReplacement}
+        />
+      )}
+
+      {/* Runner Injury Modal — user picks pinch runner / replacement */}
+      {runnerInjury && (
+        <BatterInjuryModal
+          injury={runnerInjury}
+          bench={runnerInjury.bench}
+          onSelect={handleRunnerInjuryReplacement}
         />
       )}
 
