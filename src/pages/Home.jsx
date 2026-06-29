@@ -129,7 +129,7 @@ import { getRandomCardForTeam, addCard, loadFromStorage, saveToStorage, migrateL
 import FanChirpToast from '@/components/game/FanChirpToast';
 import { checkAndResolveIncident } from '@/lib/incidentIntegration';
 import { checkPitcherInjury } from '@/lib/pitcherInjuries';
-import { rollBatterInjury, replaceInjuredBatter } from '@/lib/batterInjuries';
+import { rollBatterInjury, rollHBPIfBatter, replaceInjuredBatter } from '@/lib/batterInjuries';
 
 
 export default function Home() {
@@ -972,16 +972,37 @@ export default function Home() {
   };
 
   const checkBatterInjury = (prevState, newState) => {
-    // Batter injury — 2% chance on every swing
-    const injury = rollBatterInjury();
-    if (!injury) return newState;
+    const lastPlay = newState.lastPlay;
+    if (!lastPlay) return newState;
 
-    // Use PRE-play state to find the batter who swung (index may have advanced after the play)
+    // Determine injury type: HBP vs. swing vs. called pitch (no check)
+    const isHBP = lastPlay.isHBP === true;
+    const NON_SWING_TYPES = ['ball', 'strike'];
+    const isWalk = lastPlay.type === 'walk';
+    const isSwing = !isHBP && !isWalk && !NON_SWING_TYPES.includes(lastPlay.type);
+
+    // No injury check on called balls/strikes or non-HBP walks
+    if (!isHBP && !isSwing) return newState;
+
+    // Use PRE-play state to find the batter (index may have advanced after the play)
     const battingSide = prevState.halfInning === 'top' ? 'away' : 'home';
     const prevLineup = battingSide === 'home' ? prevState.homeLineup : prevState.awayLineup;
     const prevBatterIdx = battingSide === 'home' ? prevState.homeBatterIndex : prevState.awayBatterIndex;
     const batter = prevLineup[prevBatterIdx % prevLineup.length];
     if (!batter) return newState;
+
+    // Roll the appropriate injury
+    let injury;
+    if (isHBP) {
+      // Track HBP count for this batter — chance doubles on 2nd+ HBP
+      if (!newState._hbpCounts) newState._hbpCounts = {};
+      newState._hbpCounts[batter.name] = (newState._hbpCounts[batter.name] || 0) + 1;
+      injury = rollHBPIfBatter(newState._hbpCounts[batter.name]);
+    } else {
+      injury = rollBatterInjury();
+    }
+
+    if (!injury) return newState;
 
     // Check if batter is still at the plate (at-bat not complete — foul/miss)
     const newBatterIdx = battingSide === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
