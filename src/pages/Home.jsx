@@ -1107,7 +1107,7 @@ export default function Home() {
       <div className="flex-1 overflow-y-auto px-3 md:px-6 py-2 w-full max-w-2xl md:max-w-5xl mx-auto">
         <div className="space-y-2">
             {tab === 'game' && (
-              <div className="md:grid md:grid-cols-2 md:gap-4 space-y-2 md:space-y-0">
+              <div className="md:grid md:grid-cols-[2fr_3fr] md:gap-4 space-y-2 md:space-y-0">
                 {/* LEFT column: Scoreboard + Diamond */}
                 <div className="space-y-2">
                 {/* Scoreboard — compact */}
