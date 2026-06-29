@@ -126,6 +126,17 @@ function PopupContent({ popup }) {
 export default function BannerPopup({ banner, onClose }) {
   const [isClosing, setIsClosing] = useState(false);
 
+  // If banner has a `popups` array, pick a random one once on mount
+  const selectedPopup = useMemo(() => {
+    // Use pre-selected popup if available (persists across open/close cycles)
+    if (banner?._selectedPopup) return banner._selectedPopup;
+    const pool = banner?.popups || banner?.windows || banner?.entries || banner?.items;
+    if (pool && Array.isArray(pool) && pool.length > 0) {
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+    return null;
+  }, [banner]);
+
   // Unlock the banner's achievement when the popup is opened
   // Checks both the banner-level achievementId and the selected popup's achievementId
   useEffect(() => {
@@ -138,17 +149,6 @@ export default function BannerPopup({ banner, onClose }) {
       checkNationalCategoryAchievements(unlockAchievement);
     }
   }, [banner?.achievementId, selectedPopup?.achievementId]);
-
-  // If banner has a `popups` array, pick a random one once on mount
-  const selectedPopup = useMemo(() => {
-    // Use pre-selected popup if available (persists across open/close cycles)
-    if (banner?._selectedPopup) return banner._selectedPopup;
-    const pool = banner?.popups || banner?.windows || banner?.entries || banner?.items;
-    if (pool && Array.isArray(pool) && pool.length > 0) {
-      return pool[Math.floor(Math.random() * pool.length)];
-    }
-    return null;
-  }, [banner]);
 
   const handleClose = () => {
     setIsClosing(true);
