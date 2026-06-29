@@ -1530,6 +1530,8 @@ function processHoldingGame(state) {
   const paKey = `${state.halfInning}_${state.inning}_${state.awayBatterIndex}_${state.homeBatterIndex}`;
   if (!state._throwOverCount) state._throwOverCount = {};
   state._throwOverCount[paKey] = (state._throwOverCount[paKey] || 0) + 1;
+  // Track per-runner pickoff attempts
+  if (state.bases[0]) state.bases[0]._pickoffAttempts = (state.bases[0]._pickoffAttempts || 0) + 1;
 
   const outcome = resolveThrowOverOutcome(decision.hand, decision.runner.name, decision.pitcherName);
 
@@ -1809,8 +1811,7 @@ export function processAtBat(state, pitchType, swingType) {
       newState.gameOver = true; newState.waitingForInput = false;
       newState.log.push({ type: 'info', text: `🎉 Walk-off! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
     }
-    applyComposureFromLastPlay(newState, pitcher);
-    processComposureEvents(newState, pitcher);
+    // Pickoff/throw-over events do NOT affect the composure meter
     return newState;
   }
 

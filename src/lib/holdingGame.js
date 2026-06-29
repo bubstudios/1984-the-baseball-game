@@ -4,12 +4,13 @@
 export const HOLDING_GAME_RATES = {
   throwOverBaseChance: 0.50,
   lhpThrowOverMult: 1.4,
-  pickoffOut: { R: 0.018, L: 0.045 },
+  pickoffOut: { R: 0.009, L: 0.0225 },
   wildThrow: { R: 0.003, L: 0.004 },
   wildThrowDoubleAdvance: 0.20,
   stealSuccessPenalty: 0.10,
   stealAttemptPenaltyRel: 0.25,
-  maxThrowOversPerPA: 3,
+  maxThrowOversPerPA: 2,
+  maxThrowOversPerRunner: 2,
   balkPerPitch: 0.0007,
   lhpThrowOverBalkChance: 0.005,
   globalMultiplier: 1.0,
@@ -78,10 +79,12 @@ export function decideThrowOver(state) {
   // Only throw over to the lead runner - skip if runners are ahead on 2nd or 3rd
   if (state.bases[1] || state.bases[2]) return null;
 
-  // Cap throw-overs per plate appearance
+  // Cap throw-overs per plate appearance AND per runner
   const paKey = `${state.halfInning}_${state.inning}_${state.awayBatterIndex}_${state.homeBatterIndex}`;
   const count = (state._throwOverCount?.[paKey]) || 0;
   if (count >= HOLDING_GAME_RATES.maxThrowOversPerPA) return null;
+  const runnerAttempts = runner._pickoffAttempts || 0;
+  if (runnerAttempts >= HOLDING_GAME_RATES.maxThrowOversPerRunner) return null;
 
   const pitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
   const hand = getPitcherHand(pitcher);
