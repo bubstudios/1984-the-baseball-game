@@ -1,6 +1,50 @@
 import React, { useState, useMemo } from 'react';
 import { X } from 'lucide-react';
 
+// ── Markdown + metadata helpers for team-banner paragraphs ──
+
+function renderInlineMarkdown(text) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-bold text-yellow-200">{part.slice(2, -2)}</strong>;
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
+function isMetadataParagraph(text) {
+  return /\*?Achievement\b/i.test(text) ||
+         /\*?Set achievement\b/i.test(text) ||
+         /\*?Grand achievement\b/i.test(text) ||
+         /\*?Meta-achievement\b/i.test(text) ||
+         /Cooperstown of Bobbleheads/i.test(text) ||
+         /Bobblehead Shelf/i.test(text);
+}
+
+function stripMetadataTail(text) {
+  const markers = [
+    /\*Achievement\b/i,
+    /\*Achievement \(per/i,
+    /\*Set achievement\b/i,
+    /\*Grand achievement\b/i,
+    /\*Meta-achievement\b/i,
+  ];
+  let earliest = -1;
+  for (const re of markers) {
+    const m = text.match(re);
+    if (m && m.index !== undefined) {
+      if (earliest === -1 || m.index < earliest) earliest = m.index;
+    }
+  }
+  if (earliest === -1) return text;
+  return text.slice(0, earliest).trim();
+}
+
+function cleanPlaceholders(text) {
+  return text.replace(/\[Player\]/gi, 'this player');
+}
+
 // Field renderers for popup entries — handles electronics, movies, and general products structures
 const FIELD_RENDERERS = [
   { key: 'tagline', label: null, render: (v) => <p className="text-sm text-yellow-200 font-heading italic">— {v}</p> },
@@ -116,12 +160,26 @@ export default function BannerPopup({ banner, onClose }) {
           {/* National banners with popups array — show the selected popup's detail content */}
           {selectedPopup && <PopupContent popup={selectedPopup} />}
 
-          {/* Team banners with paragraphs array */}
-          {!selectedPopup && banner.paragraphs && banner.paragraphs.map((para, i) => (
-            <p key={i} className="text-sm leading-relaxed">
-              {para}
-            </p>
-          ))}
+          {/* Bobblehead wobble + friendly intro — shown for bobblehead banners */}
+          {!selectedPopup && banner.id && banner.id.endsWith('_bobblehead') && (
+            <>
+              <div className="flex justify-center py-2">
+                <div className="bobble-wobble text-6xl" aria-hidden="true">⚾</div>
+              </div>
+              <p className="text-sm leading-relaxed text-yellow-200 font-heading">
+                ⚾ Congrats – tonight's giveaway bobblehead is yours! Added to your collection. Collect all five... and keep an eye out for all 26 teams!
+              </p>
+            </>
+          )}
+
+          {/* Team banners with paragraphs array — cleaned: strips metadata, renders bold, fixes placeholders */}
+          {!selectedPopup && banner.paragraphs && banner.paragraphs
+            .filter((para) => !isMetadataParagraph(para))
+            .map((para) => stripMetadataTail(cleanPlaceholders(para)))
+            .filter((para) => para && para.trim().length > 0)
+            .map((para, i) => (
+              <p key={i} className="text-sm leading-relaxed">{renderInlineMarkdown(para)}</p>
+            ))}
 
           {banner.content && (
             <div
@@ -154,6 +212,18 @@ export default function BannerPopup({ banner, onClose }) {
             ✓ Close
           </button>
         </div>
+
+        <style>{`
+          @keyframes bobblehead-bob {
+            0%, 100% { transform: rotate(-8deg); }
+            50% { transform: rotate(8deg); }
+          }
+          .bobble-wobble {
+            display: inline-block;
+            transform-origin: 50% 90%;
+            animation: bobblehead-bob 1.1s ease-in-out infinite;
+          }
+        `}</style>
       </div>
     </div>
   );
