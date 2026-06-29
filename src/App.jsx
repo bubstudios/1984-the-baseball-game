@@ -9,6 +9,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import Home from '@/pages/Home';
 import GateLogin, { isAuthenticated } from '@/components/GateLogin';
+import MobileGate from '@/components/MobileGate';
 import { useState, useEffect } from 'react';
 // Add page imports here
 import ThankYou from '@/pages/ThankYou';
@@ -70,11 +71,13 @@ function App() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <ScrollToTop />
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
+        <MobileGate>
+          <Router>
+            <ScrollToTop />
+            <AuthenticatedApp />
+          </Router>
+          <Toaster />
+        </MobileGate>
       </QueryClientProvider>
     </AuthProvider>
   )
