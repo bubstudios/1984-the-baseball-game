@@ -260,6 +260,15 @@ export default function Home() {
       if (['homerun', 'peskyPole', 'basketHR', 'shortPorch'].includes(lastPlay.type) && battingTeam === 'home') {
         setHrTrigger(t => t + 1);
       }
+      // Caught stealing → inline GameEventBanner (same spot as celebrations)
+      if (lastPlay.type === 'caughtstealing') {
+        setInlineGameEvent({ type: 'caughtstealing', event: lastPlay.text });
+        setTimeout(() => setInlineGameEvent(null), 5000);
+      }
+      // Collision at the plate (but not on HRs)
+      if (lastPlay.type !== 'homerun' && lastPlay.text?.includes('bowls over')) {
+        setCollisionPopup(lastPlay.text);
+      }
     }
     if (gameState.gameOver && !gameState._victoryCallLogged) {
       const isHomeWin = gameState.score.home > gameState.score.away;
@@ -408,19 +417,6 @@ export default function Home() {
       if (stretchEntry && !gameState.gameOver) {
         setShowStretch(stretchEntry.text);
       }
-    }
-
-    // Detect caught stealing plays
-    if (lastPlay && lastPlay.type === 'caughtstealing' && lastPlay !== prevLastPlay.current) {
-      const caughtPhrases = ['Got him!', 'He\'s out!', 'Dead to rights!', 'Not this time!', 'Picked off clean!', 'No dice!'];
-      const phrase = caughtPhrases[Math.floor(Math.random() * caughtPhrases.length)];
-      setInlineGameEvent({ type: 'caughtstealing', event: phrase });
-      setTimeout(() => setInlineGameEvent(null), 5000);
-    }
-
-    // Detect collision plays (but not on HRs)
-    if (lastPlay && lastPlay.type !== 'homerun' && lastPlay.text?.includes('bowls over') && lastPlay !== prevLastPlay.current) {
-      setCollisionPopup(lastPlay.text);
     }
 
     prevLogLength.current = gameState.log.length;
