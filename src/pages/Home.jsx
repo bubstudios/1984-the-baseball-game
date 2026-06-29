@@ -1341,13 +1341,13 @@ export default function Home() {
       {/* Caught Stealing Popup */}
       {caughtStealingPopup && (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 animate-in zoom-in-95 fade-in duration-300">
-          <div className="bg-card border-2 border-destructive rounded-xl px-4 py-3 shadow-2xl text-center max-w-[200px]">
-            <div className="text-2xl mb-1.5">🎯</div>
-            <p className="font-heading text-sm font-bold text-destructive mb-2">{caughtStealingPopup}</p>
-            <p className="text-[11px] text-muted-foreground mb-2">Runner caught stealing</p>
+          <div className="bg-card border-2 border-destructive rounded-xl px-3 py-2 shadow-2xl text-center max-w-[150px]">
+            <div className="text-xl mb-1">🎯</div>
+            <p className="font-heading text-[11px] font-bold text-destructive mb-1.5">{caughtStealingPopup}</p>
+            <p className="text-[9px] text-muted-foreground mb-1.5">Runner caught stealing</p>
             <button
               onClick={() => setCaughtStealingPopup(null)}
-              className="font-heading text-xs px-4 py-1.5 bg-destructive/10 hover:bg-destructive/20 text-destructive rounded-lg transition-colors"
+              className="font-heading text-[10px] px-3 py-1 bg-destructive/10 hover:bg-destructive/20 text-destructive rounded-lg transition-colors"
             >
               Continue
             </button>
