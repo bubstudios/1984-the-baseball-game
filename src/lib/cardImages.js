@@ -272,7 +272,7 @@ export const CARD_IMAGES = {
   'Garth Iorg':       BASE + '7e43912f2_images39.jpeg',
   'Willie Aikens':    BASE + 'f3737b453_images43.jpeg',
   'Rick Leach':       BASE + 'fb9a3b399_images46.jpeg',
-  'Jim Gott':         BASE + 'baf810d77_generated_image.png',
+  'Jim Gott':         BASE + '131dfcc7a_images4.jpeg',
 
   // ── CLEVELAND INDIANS ──
   'Bert Blyleven':    BASE + 'fa77732ba_images.jpeg',
