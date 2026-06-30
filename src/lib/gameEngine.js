@@ -2117,6 +2117,17 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const newState = JSON.parse(JSON.stringify(state));
   if (newState.gameOver) return newState;
   
+  // HARD GUARD: Enforce 9 batters max in any lineup - trim if somehow exceeded
+  const enforceLineupNine = (lineup) => {
+    if (lineup.length > 9) {
+      console.warn(`Lineup has ${lineup.length} batters - trimming to 9`);
+      return lineup.slice(0, 9);
+    }
+    return lineup;
+  };
+  newState.homeLineup = enforceLineupNine(newState.homeLineup);
+  newState.awayLineup = enforceLineupNine(newState.awayLineup);
+  
   // ── PHASE 3.1: DOUBLE SWITCH (NL parks only, when changing pitchers) ──
   const ballpark = TEAMS[newState.homeTeam]?.stadium;
   const has_dh = newState.useDH;
