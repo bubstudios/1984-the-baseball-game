@@ -204,10 +204,13 @@ export const CARD_IMAGES = {
   'Joe Beckwith':     BASE + '959acda91_generated_image.png',
   'Gary Christenson': BASE + '959acda91_generated_image.png',
   'Dane Iorg':        BASE + 'fc71e138a_generated_image.png',
-  'Buddy Biancalana': BASE + '322ec5ce9_generated_image.png',
-  'John Wathan':      BASE + '322ec5ce9_generated_image.png',
-  'Greg Pryor':       BASE + '322ec5ce9_generated_image.png',
+  'Buddy Biancalana': BASE + '94911586d_images2.jpeg',
+  'John Wathan':      BASE + '22d1bf5dd_images3.jpeg',
+  'Greg Pryor':       BASE + '433b474d1_images5.jpeg',
   'Cesar Geronimo':   BASE + 'd4d836490_generated_image.png',
+  'Lynn Jones':       BASE + 'dfc97935d_images1.jpeg',
+  'U.L. Washington':  BASE + '4611ea56c_images8.jpeg',
+  'Don Slaught':      BASE + '6a54f967b_images9.jpeg',
 
   // ── LOS ANGELES DODGERS ──
   'Fernando Valenzuela': BASE + 'df968d4be_generated_image.png',
