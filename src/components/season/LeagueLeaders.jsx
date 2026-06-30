@@ -49,14 +49,13 @@ export default function LeagueLeaders({ seasonId }) {
       const leagueStats = allStats.filter(s => leagueTeams.includes(s.team));
 
       // Sort by selected category
-      const sortField = isPitching 
-        ? (BATTING_CATEGORIES.find(c => c.key === category)?.sortField || category)
-        : (BATTING_CATEGORIES.find(c => c.key === category)?.sortField || category);
+      const categories = isPitching ? PITCHING_CATEGORIES : BATTING_CATEGORIES;
+      const cat = categories.find(c => c.key === category);
+      const localSortField = cat?.sortField || category;
       
       const sorted = leagueStats.sort((a, b) => {
-        const aVal = a[sortField] || 0;
-        const bVal = b[sortField] || 0;
-        const cat = isPitching ? PITCHING_CATEGORIES.find(c => c.key === category) : BATTING_CATEGORIES.find(c => c.key === category);
+        const aVal = a[localSortField] || 0;
+        const bVal = b[localSortField] || 0;
         return cat?.lowerIsBetter ? aVal - bVal : bVal - aVal;
       }).slice(0, 10);
 
@@ -70,6 +69,7 @@ export default function LeagueLeaders({ seasonId }) {
 
   const currentCategories = isPitching ? PITCHING_CATEGORIES : BATTING_CATEGORIES;
   const currentCategory = currentCategories.find(c => c.key === category);
+  const sortField = currentCategory?.sortField || category;
 
   return (
     <div className="space-y-4">
@@ -164,7 +164,7 @@ export default function LeagueLeaders({ seasonId }) {
                     <td className="py-2 px-2 text-muted-foreground uppercase text-[10px]">{leader.team}</td>
                     <td className="py-2 px-2 text-right font-heading font-bold text-primary">
                       {(() => {
-                        const val = leader[isPitching ? (BATTING_CATEGORIES.find(c => c.key === category)?.sortField || category) : (BATTING_CATEGORIES.find(c => c.key === category)?.sortField || category)];
+                        const val = leader[sortField] || 0;
                         if (category === 'battingAverage' || category === 'ops' || category === 'era' || category === 'whip') {
                           return (val || 0).toFixed(3);
                         }
