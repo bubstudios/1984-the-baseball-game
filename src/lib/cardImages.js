@@ -218,6 +218,7 @@ export const CARD_IMAGES = {
   'Lynn Jones':       BASE + 'dfc97935d_images1.jpeg',
   'U.L. Washington':  BASE + '4611ea56c_images8.jpeg',
   'Don Slaught':      BASE + '6a54f967b_images9.jpeg',
+  'Paul Splittorff':  BASE + '393b28a76_images9.jpeg',
 
   // ── LOS ANGELES DODGERS ──
   'Fernando Valenzuela': BASE + '24e2c8d28_images6.jpeg',
