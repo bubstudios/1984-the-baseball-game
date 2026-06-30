@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Trophy, Lock, Calendar } from 'lucide-react';
+import { Trophy, Lock, Calendar, MessageSquare } from 'lucide-react';
+import FeedbackModal from './FeedbackModal';
 
 export default function ModeSelect({ onSelectMode, onBack }) {
+  const [showFeedback, setShowFeedback] = useState(false);
+
   return (
-    <div className="min-h-[100dvh] bg-background flex flex-col">
+    <div className="min-h-[100dvh] bg-background flex flex-col relative">
       {/* Header */}
       <div className="shrink-0 border-b border-border bg-card/50 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -89,8 +92,21 @@ export default function ModeSelect({ onSelectMode, onBack }) {
               Exhibition Mode includes all game features: pitch-by-pitch control, substitutions, injuries, and 1984-era atmosphere.
             </p>
           </div>
+
+          {/* Feedback Button */}
+          <div className="flex justify-center pt-2">
+            <button
+              onClick={() => setShowFeedback(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all text-sm font-heading"
+            >
+              <MessageSquare className="w-4 h-4" />
+              Report a Bug / Send Feedback
+            </button>
+          </div>
         </div>
       </div>
+
+      {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
     </div>
   );
 }
