@@ -1529,6 +1529,9 @@ function processHoldingGame(state) {
 
   // ── THROW-OVER CHECK (runner on 1st, no steal pending) ──
   if (state.pendingSteal !== null && state.pendingSteal !== undefined) return null;
+  
+  // Prevent back-to-back pickoff attempts - must throw at least 1 pitch to home between pickoffs
+  if (state._lastActionWasPickoff) return null;
 
   const decision = decideThrowOver(state);
   if (!decision) return null;
@@ -1570,8 +1573,9 @@ function processHoldingGame(state) {
       state.bases[0] = null;
     }
     state.log.push({ type: 'pickoff', text: outcome.text });
-    state.lastPlay = { type: 'pickoff', text: outcome.text };
+    state.lastPlay = { type: 'pickoff', text: outcome.text, _seq: Date.now() + Math.random() };
     state._celebrationBubble = outcome.text;
+    state._lastActionWasPickoff = true;  // Flag: must throw pitch to home before next pickoff
     recordOut(state);
     return { pickoff: true };
   }
@@ -1600,6 +1604,7 @@ function processHoldingGame(state) {
     }
     state.log.push({ type: 'error', text: outcome.text, isWildPickoff: true });
     state._celebrationBubble = outcome.text;
+    state._lastActionWasPickoff = true;  // Flag: must throw pitch to home before next pickoff
     return { wildThrow: true };
   }
 
@@ -1617,6 +1622,8 @@ export function processAtBat(state, pitchType, swingType) {
    const home = TEAMS[state.homeTeam], away = TEAMS[state.awayTeam];
    const newState = JSON.parse(JSON.stringify(state));
    delete newState._celebrationBubble;
+   // Clear pickoff flag - a pitch to home is being thrown
+   delete newState._lastActionWasPickoff;
 
    // Track lead state BEFORE play for lead-change penalty detection
    const userSide = newState.homeTeam === newState.userTeam ? 'home' : 'away';
