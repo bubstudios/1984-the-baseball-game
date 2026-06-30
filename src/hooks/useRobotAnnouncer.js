@@ -65,7 +65,8 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
   if (!('speechSynthesis' in window)) return;
 
   // Strip emojis - speech synth reads them literally (e.g. 💥 = "collision")
-  const cleanedText = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B50}\u{2B55}\u{2702}-\u{27B0}\u{1F900}-\u{1F9FF}\u{200D}\u{FE0F}]/gu, '').replace(/\s*-\s*/g, ', ').trim();
+  // Keep dashes intact - they're important for proper phrasing
+  const cleanedText = text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B50}\u{2B55}\u{2702}-\u{27B0}\u{1F900}-\u{1F9FF}\u{200D}\u{FE0F}]/gu, '').trim();
   if (!cleanedText) return;
 
   const doSpeak = () => {
@@ -84,11 +85,19 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
     if (!voice) voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
 
     // Split text into chunks by detecting player names via the roster set
-    const words = cleanedText.split(' ');
+    // First, normalize multiple spaces and preserve dashes as word boundaries
+    const normalizedText = cleanedText.replace(/\s+/g, ' ');
+    const words = normalizedText.split(' ');
     const chunks = [];
     let i = 0;
 
     while (i < words.length) {
+      // Skip empty words or standalone dashes/punctuation
+      if (!words[i] || words[i] === '-' || words[i] === '–' || words[i] === '—') {
+        i++;
+        continue;
+      }
+      
       // Try 3-word name (e.g. "Cal Ripken Jr.")
       if (i + 2 < words.length) {
         const threeWord = `${words[i]} ${words[i+1]} ${words[i+2]}`;
@@ -107,9 +116,19 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
           continue;
         }
       }
-      // Collect normal text
-      { let normalWords = [];
+      // Collect normal text until we hit a player name
+      let normalWords = [];
       while (i < words.length) {
+        // Skip standalone dashes
+        if (words[i] === '-' || words[i] === '–' || words[i] === '—') {
+          if (normalWords.length > 0) {
+            chunks.push({ text: normalWords.join(' '), slow: false });
+            normalWords = [];
+          }
+          i++;
+          continue;
+        }
+        
         let isNextName = false;
         if (i + 2 < words.length && PLAYER_NAMES.has(`${words[i]} ${words[i+1]} ${words[i+2]}`)) isNextName = true;
         else if (i + 1 < words.length && PLAYER_NAMES.has(`${words[i]} ${words[i+1]}`)) isNextName = true;
@@ -119,7 +138,7 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
       }
       if (normalWords.length > 0) {
         chunks.push({ text: normalWords.join(' '), slow: false });
-      } }
+      }
     }
 
     // Play chunks sequentially using onend for reliable chaining
