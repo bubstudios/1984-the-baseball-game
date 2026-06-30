@@ -108,6 +108,12 @@ export const CARD_IMAGES = {
   'Jesse Orosco':     BASE + '6e43b18e6_images8.jpeg',
   'Ron Darling':      BASE + '8a6cdfe68_images5.jpeg',
   'Bruce Berenyi':    BASE + '29fe750de_images7.jpeg',
+  'Doug Sisk':        BASE + '9c715093f_images9.jpeg',
+  'Brent Gaff':       BASE + '098e00042_images10.jpeg',
+  'Tom Gorman':       BASE + 'b654306b6_images11.jpeg',
+  'Ed Lynch':         BASE + '20404f832_images12.jpeg',
+  'Tim Leary':        BASE + '3369de80a_images14.jpeg',
+  'Sid Fernandez':    BASE + '1d216ad68_images13.jpeg',
 
   // ── BOSTON RED SOX ──
   'Wade Boggs':       BASE + '4d062bf9f_images2.jpeg',
