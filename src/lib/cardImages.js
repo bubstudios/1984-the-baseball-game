@@ -186,7 +186,7 @@ export const CARD_IMAGES = {
 
   // ── KANSAS CITY ROYALS ──
   'George Brett':     BASE + 'c2a3c6fd1_images5.jpeg',
-  'Dan Quisenberry':  BASE + '959acda91_generated_image.png',
+  'Dan Quisenberry':  BASE + 'a40d16dc0_images.jpeg',
   'Bret Saberhagen':  BASE + 'e576158b2_images1.jpeg',
   'Willie Wilson':    BASE + '30672994f_images1.jpeg',
   'Frank White':      BASE + '558cc486e_images4.jpeg',
@@ -200,8 +200,10 @@ export const CARD_IMAGES = {
   'Charlie Leibrandt':BASE + '82c1de50d_images4.jpeg',
   'Mark Gubicza':     BASE + '73c72f860_images6.jpeg',
   'Steve Farr':       BASE + '959acda91_generated_image.png',
-  'Mike Jones':       BASE + '959acda91_generated_image.png',
-  'Joe Beckwith':     BASE + '959acda91_generated_image.png',
+  'Mike Jones':       BASE + '4e271af80_images1.jpeg',
+  'Joe Beckwith':     BASE + 'b5662ef99_images3.jpeg',
+  'Larry Gura':       BASE + '01d66ab34_images4.jpeg',
+  'Mark Huismann':    BASE + 'f02269bb0_images5.jpeg',
   'Gary Christenson': BASE + '959acda91_generated_image.png',
   'Dane Iorg':        BASE + 'fc71e138a_generated_image.png',
   'Buddy Biancalana': BASE + '94911586d_images2.jpeg',
