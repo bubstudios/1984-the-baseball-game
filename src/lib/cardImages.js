@@ -191,6 +191,7 @@ export const CARD_IMAGES = {
   'Lenn Sakata':      BASE + 'd01618746_images48.jpeg',
   'Joe Nolan':        BASE + '8ddbb2153_images51.jpeg',
   'John Lowenstein':  BASE + '220660fcb_images57.jpeg',
+  'Dennis Martinez':  BASE + '0376add1d_images3.jpeg',
 
   // ── KANSAS CITY ROYALS ──
   'George Brett':     BASE + 'c2a3c6fd1_images5.jpeg',
