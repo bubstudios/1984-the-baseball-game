@@ -17,7 +17,7 @@ export const ALL_ROSTERS = {
     { id: 10, name: 'Jack Morris',     position: 'SP',   number: 46, ba: '-',    hr: '-', rbi: '-', era: '3.60', role: 'Ace Pitcher',          rarity: 'rare'     },
     { id: 11, name: 'Dan Petry',       position: 'SP',   number: 38, ba: '-',    hr: '-', rbi: '-', era: '3.97', role: 'Starting Pitcher',     rarity: 'uncommon' },
     { id: 12, name: 'Milt Wilcox',     position: 'SP',   number: 40, ba: '-',    hr: '-', rbi: '-', era: '4.74', role: 'Starting Pitcher',     rarity: 'common'   },
-    { id: 13, name: 'Juan Berenguer',  position: 'RP',   number: 34, ba: '-',    hr: '-', rbi: '-', era: '3.49', role: 'Relief Pitcher',       rarity: 'common'   },
+    { id: 13, name: 'Juan Berenguer',  position: 'SP',   number: 34, ba: '-',    hr: '-', rbi: '-', era: '3.49', role: 'Starting Pitcher',     rarity: 'common'   },
     { id: 14, name: 'Willie Hernandez',position: 'CL',   number: 28, ba: '-',    hr: '-', rbi: '-', era: '1.92', role: 'Closer/MVP',           rarity: 'rare'     },
     { id: 15, name: 'Aurelio Lopez',   position: 'RP',   number: 36, ba: '-',    hr: '-', rbi: '-', era: '2.90', role: 'Relief Ace',           rarity: 'uncommon' },
     { id: 16, name: 'Doug Bair',       position: 'RP',   number: 52, ba: '-',    hr: '-', rbi: '-', era: '3.42', role: 'Relief Pitcher',       rarity: 'common'   },

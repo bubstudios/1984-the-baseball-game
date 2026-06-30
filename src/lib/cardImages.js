@@ -29,6 +29,7 @@ export const CARD_IMAGES = {
   'Rusty Kuntz':      BASE + '8b34102be_images5.jpeg',
   'Ruppert Jones':    BASE + '5bcd9102e_images8.jpeg',
   'Johnny Grubb':     BASE + '50c8ce5a3_images.jpeg',
+  'Dave Rozema':      BASE + 'f14dc7d4c_images.jpeg',
 
   // ── CHICAGO CUBS ──
   'Ryne Sandberg':    BASE + '6a50d9211_images1.jpeg',
