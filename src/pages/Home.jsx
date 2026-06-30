@@ -193,6 +193,7 @@ export default function Home() {
   const [collisionPopup, setCollisionPopup] = useState(null);
   const [inlineGameEvent, setInlineGameEvent] = useState(null); // { type: 'celebration'|'caughtstealing'|'ballpark', event: data }
   const [hrDistancePopup, setHrDistancePopup] = useState(null); // { distance, batterName, isNewRecord }
+  const [gameOverPopup, setGameOverPopup] = useState(null); // { winner, score, finalPlay }
   const prevCelebrationBubble = useRef(null);
 
   // Auto-show tutorial on first visit & init stats
@@ -330,6 +331,14 @@ export default function Home() {
         log: [...prev.log, { type: 'gameover', text: `🎙️ ${call}` }],
         _victoryCallLogged: true,
       } : prev);
+      // Show game-over popup with winner info
+      setGameOverPopup({
+        winner: winningTeam,
+        score: `${gameState.score.home}-${gameState.score.away}`,
+        finalPlay: gameState.lastPlay?.text || 'Game over',
+      });
+      // Auto-switch to Game tab so user sees the final state
+      setTab('game');
     }
     if (gameState.gameOver && gameState.score.home > gameState.score.away) {
       // Only trigger once per game
@@ -2023,6 +2032,33 @@ export default function Home() {
           card={cardAward}
           onDismiss={() => setCardAward(null)}
         />
+      )}
+
+      {/* Game Over Popup - shows when game ends with winner announcement */}
+      {gameOverPopup && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-in fade-in duration-300">
+          <div className="bg-card border-2 border-primary/50 rounded-xl px-8 py-6 shadow-2xl text-center max-w-md w-full mx-4 animate-in zoom-in-95 duration-300">
+            <Trophy className="w-12 h-12 text-primary mx-auto mb-3" />
+            <h2 className="font-heading text-2xl font-bold text-foreground mb-2">GAME OVER!</h2>
+            <p className="font-heading text-lg text-primary font-bold mb-1">
+              {TEAMS[gameOverPopup.winner]?.name} Win!
+            </p>
+            <p className="text-sm text-muted-foreground mb-3">{gameOverPopup.score}</p>
+            <div className="bg-muted/50 rounded-lg px-3 py-2 mb-4">
+              <p className="text-xs text-foreground/80 italic">{gameOverPopup.finalPlay}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={() => { setShowSummary(true); setGameOverPopup(null); }} variant="outline" className="flex-1 gap-2">
+                <Trophy className="w-4 h-4" />
+                <span className="font-heading">Summary</span>
+              </Button>
+              <Button onClick={handleNewGame} className="flex-1 gap-2">
+                <RotateCcw className="w-4 h-4" />
+                <span className="font-heading">New Game</span>
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Game Summary Modal */}
