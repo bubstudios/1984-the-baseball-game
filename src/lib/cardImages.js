@@ -397,7 +397,7 @@ export const CARD_IMAGES = {
 
   // ── CHICAGO WHITE SOX ──
   'Carlton Fisk':     BASE + '42012b082_images3.jpeg',
-  'Harold Baines':    BASE + '034343ae9_generated_image.png',
+  'Harold Baines':    BASE + '3da871073_images.jpeg',
   'Tom Seaver':       BASE + '29243a2ee_images3.jpeg',
   'LaMarr Hoyt':      BASE + 'd52d9b72e_images.jpeg',
   'Greg Walker':      BASE + '9a6753a11_images5.jpeg',
@@ -420,7 +420,6 @@ export const CARD_IMAGES = {
   'Joel Skinner':     BASE + '6a0ee5961_images2.jpeg',
   'Mike Squires':     BASE + '383b52823_images5.jpeg',
   'Jerry Dybzinski':  BASE + '8b94f7498_images4.jpeg',
-  'Britt Burns':      BASE + '9cb8341b7_generated_image.png',
 
   // ── SEATTLE MARINERS ──
   'Mark Langston':    BASE + '984217a46_generated_image.png',
