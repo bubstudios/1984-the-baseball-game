@@ -285,8 +285,7 @@ export const EXTRA_ROSTERS = {
     { id: 2,  name: 'Bruce Sutter',     position: 'CL',  number: 42, ba: '-',    hr: '-', rbi: '-', era: '1.54', role: 'Closer/HOF Splitter',  rarity: 'rare'     },
     { id: 3,  name: 'Joaquin Andujar',  position: 'SP',  number: 47, ba: '-',    hr: '-', rbi: '-', era: '3.34', role: 'Ace/One Tough Dominican', rarity: 'rare'  },
     { id: 4,  name: 'Willie McGee',     position: 'CF',  number: 51, ba: '.291', hr: 6,  rbi: 50,  era: '-',    role: 'Center Field/MVP',     rarity: 'rare'     },
-    { id: 5,  name: 'Vince Coleman',    position: 'LF',  number: 29, ba: '.267', hr: 1,  rbi: 40,  era: '-',    role: 'Left Field/Speed Demon', rarity: 'uncommon' },
-    { id: 6,  name: 'George Hendrick',  position: '1B',  number: 25, ba: '.277', hr: 9,  rbi: 69,  era: '-',    role: 'First Base',           rarity: 'common'   },
+    { id: 5,  name: 'George Hendrick',  position: '1B',  number: 25, ba: '.277', hr: 9,  rbi: 69,  era: '-',    role: 'First Base',           rarity: 'common'   },
     { id: 7,  name: 'Ken Oberkfell',    position: '3B',  number: 26, ba: '.293', hr: 5,  rbi: 50,  era: '-',    role: 'Third Base',           rarity: 'common'   },
     { id: 8,  name: 'Tom Herr',         position: '2B',  number: 28, ba: '.281', hr: 4,  rbi: 49,  era: '-',    role: 'Second Base',          rarity: 'common'   },
     { id: 9,  name: 'Lonnie Smith',     position: 'RF',  number: 27, ba: '.250', hr: 4,  rbi: 30,  era: '-',    role: 'Right Field/Skates',   rarity: 'common'   },
@@ -298,6 +297,13 @@ export const EXTRA_ROSTERS = {
     { id: 15, name: 'Ralph Citarella',  position: 'RP',  number: 41, ba: '-',    hr: '-', rbi: '-', era: '5.40', role: 'Relief Pitcher',       rarity: 'common'   },
     { id: 16, name: 'Mike Jorgensen',   position: '1B',  number: 13, ba: '.248', hr: 5,  rbi: 22,  era: '-',    role: 'Bench/First Base',     rarity: 'common'   },
     { id: 17, name: 'Tom Nieto',        position: 'C',   number: 8,  ba: '.217', hr: 2,  rbi: 10,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
+    { id: 18, name: 'Terry Pendleton',  position: '3B',  number: 18, ba: '.244', hr: 5,  rbi: 32,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
+    { id: 19, name: 'Tito Landrum',     position: 'OF',  number: 20, ba: '.253', hr: 3,  rbi: 18,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
+    { id: 20, name: 'Andy Van Slyke',   position: 'OF',  number: 21, ba: '.261', hr: 6,  rbi: 31,  era: '-',    role: 'Bench/Future Star',    rarity: 'uncommon' },
+    { id: 21, name: 'David Green',      position: '1B',  number: 22, ba: '.259', hr: 4,  rbi: 19,  era: '-',    role: 'Bench/First Base',     rarity: 'common'   },
+    { id: 22, name: 'Bob Forsch',       position: 'SP',  number: 32, ba: '-',    hr: '-', rbi: '-', era: '4.03', role: 'Starting Pitcher',     rarity: 'common'   },
+    { id: 23, name: 'John Stuper',      position: 'SP',  number: 38, ba: '-',    hr: '-', rbi: '-', era: '4.18', role: 'Starting Pitcher',     rarity: 'common'   },
+    { id: 24, name: 'Danny Cox',        position: 'SP',  number: 31, ba: '-',    hr: '-', rbi: '-', era: '3.92', role: 'Starting Pitcher',     rarity: 'common'   },
   ],
 
   pirates: [

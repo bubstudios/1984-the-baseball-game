@@ -523,7 +523,6 @@ export const CARD_IMAGES = {
   'Bruce Sutter':     BASE + 'd4e609f38_images1.jpeg',
   'Joaquin Andujar':  BASE + '0e454ed68_images8.jpeg',
   'Willie McGee':     BASE + '4bf5cb407_images.jpeg',
-  'Vince Coleman':    BASE + 'beb69a009_generated_image.png',
   'George Hendrick':  BASE + '4211fafb0_images1.jpeg',
   'Ken Oberkfell':    BASE + '18d2e8743_images2.jpeg',
   'Tom Herr':         BASE + '00d0ab355_images5.jpeg',
