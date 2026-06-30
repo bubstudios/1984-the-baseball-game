@@ -1045,6 +1045,8 @@ function resolveSwing(state, swingType, pitch) {
     const oo = [{ text: pf, pos: pp, type: 'popout' },{ text: lt, pos: lp, type: 'lineout' },{ text: olt, pos: olp, type: 'lineout' }];
     const ao = [...gts, ...fts, ...oo]; const out = ao[Math.floor(Math.random() * ao.length)];
     const isFlyBall = ['CF','RF','LF'].includes(out.pos) || out.type === 'popout' || out.type === 'lineout';
+    // Cancel any pending steal on a fly ball / popup — runners cannot steal while ball is in the air
+    if (isFlyBall) { state.pendingSteal = null; }
     if (isFlyBall && out.type !== 'popout') {
       const q = checkBallparkQuirk(stadiumName, adjBatter.bats, hitDirection, state.weather);
       if (q && q.isHit) {
@@ -1801,7 +1803,17 @@ export function processAtBat(state, pitchType, swingType) {
     }
 
   if (newState.pendingSteal === 'double') { const sr = attemptDoubleSteal(newState); Object.assign(newState, sr); if (newState.gameOver) return newState; if (sr.lastPlay?.type === 'caughtstealing') { applyComposure(getCurrentPitcher(newState), newState, 'caughtstealing'); return newState; } }
-  else if (newState.pendingSteal !== null && newState.pendingSteal !== undefined) { const sr = attemptSteal(newState, newState.pendingSteal); Object.assign(newState, sr); if (newState.gameOver) return newState; if (sr.lastPlay?.type === 'caughtstealing') { applyComposure(getCurrentPitcher(newState), newState, 'caughtstealing'); return newState; } }
+  else if (newState.pendingSteal !== null && newState.pendingSteal !== undefined) {
+    // Only allow steal of 2nd (base 0) or 3rd (base 1) — never steal of home on a pitch (handled separately)
+    // Also, only attempt steal if the runner is actually on the expected base
+    const stealBase = newState.pendingSteal;
+    const runnerExists = typeof stealBase === 'number' && newState.bases[stealBase] !== null;
+    if (runnerExists) {
+      const sr = attemptSteal(newState, stealBase); Object.assign(newState, sr); if (newState.gameOver) return newState; if (sr.lastPlay?.type === 'caughtstealing') { applyComposure(getCurrentPitcher(newState), newState, 'caughtstealing'); return newState; }
+    } else {
+      newState.pendingSteal = null;
+    }
+  }
   // Clear reach-back flag - it was consumed by the last render
   delete newState._wasReachBack;
   const pitcher = getCurrentPitcher(newState), effP = getEffectivePitcher(newState) || pitcher;
