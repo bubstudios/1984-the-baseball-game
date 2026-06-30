@@ -294,9 +294,8 @@ export const EXTRA_ROSTERS = {
     { id: 13, name: 'Neil Allen',       position: 'RP',  number: 39, ba: '-',    hr: '-', rbi: '-', era: '4.50', role: 'Relief Pitcher',       rarity: 'common'   },
     { id: 14, name: 'Jeff Lahti',       position: 'RP',  number: 34, ba: '-',    hr: '-', rbi: '-', era: '2.93', role: 'Relief Pitcher',       rarity: 'common'   },
     { id: 15, name: 'Ralph Citarella',  position: 'RP',  number: 41, ba: '-',    hr: '-', rbi: '-', era: '5.40', role: 'Relief Pitcher',       rarity: 'common'   },
-    { id: 16, name: 'Dane Iorg',        position: 'OF',  number: 16, ba: '.276', hr: 4,  rbi: 25,  era: '-',    role: 'Bench/Utility',        rarity: 'common'   },
-    { id: 17, name: 'Mike Jorgensen',   position: '1B',  number: 13, ba: '.248', hr: 5,  rbi: 22,  era: '-',    role: 'Bench/First Base',     rarity: 'common'   },
-    { id: 18, name: 'Tom Nieto',        position: 'C',   number: 8,  ba: '.217', hr: 2,  rbi: 10,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
+    { id: 16, name: 'Mike Jorgensen',   position: '1B',  number: 13, ba: '.248', hr: 5,  rbi: 22,  era: '-',    role: 'Bench/First Base',     rarity: 'common'   },
+    { id: 17, name: 'Tom Nieto',        position: 'C',   number: 8,  ba: '.217', hr: 2,  rbi: 10,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
   ],
 
   pirates: [
