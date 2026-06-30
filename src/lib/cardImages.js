@@ -662,16 +662,16 @@ export const CARD_IMAGES = {
   'Sixto Lezcano':    BASE + 'bf6d003cf_images4.jpeg',
 
   // ── CINCINNATI REDS ──
-  'Pete Rose':        BASE + '1919ce9fc_generated_image.png',
-  'Dave Parker':      BASE + '98dd74427_generated_image.png',
-  'Mario Soto':       BASE + '1c4edd2e5_generated_image.png',
-  'Dave Concepcion':  BASE + '8e7e9b936_generated_image.png',
+  'Pete Rose':        BASE + '70827cfc9_images1.jpeg',
+  'Dave Parker':      BASE + '908113b99_images2.jpeg',
+  'Mario Soto':       BASE + '34544eb2b_images7.jpeg',
+  'Dave Concepcion':  BASE + '7da654190_images4.jpeg',
   'John Franco':      BASE + '4c71fba4c_generated_image.png',
-  'Gary Redus':       BASE + '0c50af9f9_generated_image.png',
+  'Gary Redus':       BASE + '7c9a357e4_images.jpeg',
   'Cesar Cedeno':     BASE + '98dd74427_generated_image.png',
-  'Nick Esasky':      BASE + '1919ce9fc_generated_image.png',
-  'Ron Oester':       BASE + '8e7e9b936_generated_image.png',
-  'Dann Bilardello':  BASE + '8e7e9b936_generated_image.png',
+  'Nick Esasky':      BASE + 'e881c1fdc_images5.jpeg',
+  'Ron Oester':       BASE + '5f4e99ea9_images6.jpeg',
+  'Dann Bilardello':  BASE + 'bda4f8304_images8.jpeg',
   'Jeff Russell':     BASE + '1c4edd2e5_generated_image.png',
   'Joe Price':        BASE + '1c4edd2e5_generated_image.png',
   'Jay Tibbs':        BASE + '1c4edd2e5_generated_image.png',
@@ -683,6 +683,7 @@ export const CARD_IMAGES = {
   'Tom Lawless':      BASE + '8e7e9b936_generated_image.png',
   'Wayne Krenchicki': BASE + '1919ce9fc_generated_image.png',
   'Eric Davis':       BASE + '0c50af9f9_generated_image.png',
+  'Eddie Milner':     BASE + 'c85670531_images3.jpeg',
 
   };
 
