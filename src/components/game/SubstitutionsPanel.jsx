@@ -249,63 +249,61 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                 const rawPos = player.assignedPos || player.pos;
                 const currentPos = normalizePos(rawPos);
                 const isPitcher = ['SP', 'RP', 'CL', 'P'].includes(rawPos);
+                const isUsed = isBenchUsed(player);
+                
                 return (
-                  <div key={idx} className="flex items-center gap-2 bg-muted/30 rounded-lg p-2">
-                    <span className="font-heading font-bold text-xs text-foreground flex-1 truncate">{player.name}</span>
-                    <select
-                      value={currentPos}
-                      onChange={(e) => onDefensiveSwitch(actualIdx, e.target.value, null)}
-                      disabled={isPitcher}
-                      className="w-14 bg-input border border-border rounded-md px-1.5 py-1 text-[10px] text-foreground text-center focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60"
-                    >
-                      {ALL_POSITIONS.map(pos => (
-                        <option key={pos} value={pos}>{pos}</option>
-                      ))}
-                    </select>
-                    {currentPos !== normalizePos(player.pos) && !isPitcher && (
-                      <AlertTriangle className="w-3 h-3 text-amber-400 flex-shrink-0" />
+                  <div key={idx} className="space-y-2">
+                    <div className="flex items-center gap-2 bg-muted/30 rounded-lg p-2">
+                      <span className="font-heading font-bold text-xs text-foreground flex-1 truncate">{player.name}</span>
+                      <select
+                        value={currentPos}
+                        onChange={(e) => onDefensiveSwitch(actualIdx, e.target.value, null)}
+                        disabled={isPitcher}
+                        className="w-14 bg-input border border-border rounded-md px-1.5 py-1 text-[10px] text-foreground text-center focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60"
+                      >
+                        {ALL_POSITIONS.map(pos => (
+                          <option key={pos} value={pos}>{pos}</option>
+                        ))}
+                      </select>
+                      {currentPos !== normalizePos(player.pos) && !isPitcher && (
+                        <AlertTriangle className="w-3 h-3 text-amber-400 flex-shrink-0" />
+                      )}
+                    </div>
+                    
+                    {/* Replace with bench player */}
+                    {myBench.length > 0 && !isPitcher && (
+                      <div className="pl-2 space-y-1">
+                        <div className="text-[9px] text-muted-foreground">Replace with bench:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {myBench.map((benchPlayer, bi) => {
+                            const used = isBenchUsed(benchPlayer);
+                            return (
+                              <button
+                                key={bi}
+                                onClick={() => !used && onDefensiveSwitch(actualIdx, normalizePos(benchPlayer.pos), benchPlayer)}
+                                disabled={used}
+                                className={`text-[9px] px-2 py-1 rounded border transition-all ${
+                                  used
+                                    ? 'border-border/40 opacity-40 cursor-not-allowed text-muted-foreground'
+                                    : 'border-border hover:border-primary hover:bg-primary/10 text-foreground'
+                                }`}
+                              >
+                                {benchPlayer.name.split(' ').pop()} ({normalizePos(benchPlayer.pos)})
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {isPitcher && (
+                      <div className="text-[9px] text-amber-400 italic pl-1">
+                        ⚠ Use Pitching tab to replace pitcher
+                      </div>
                     )}
                   </div>
                 );
               })}
-
-              {/* Replace fielder with bench player */}
-              {myBench.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-border">
-                  <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-2">
-                    Replace Fielder with Bench Player - {myTeam?.name}
-                  </div>
-                  {myFieldingLineup.filter(p => (p.assignedPos || p.pos) !== 'DH').map((player, fieldIdx) => {
-                    const actualIdx = myFieldingLineup.indexOf(player);
-                    const currentPos = normalizePos(player.assignedPos || player.pos);
-                    const isPitcher = ['SP', 'RP', 'CL', 'P'].includes(player.assignedPos || player.pos);
-                    return (
-                      <div key={fieldIdx} className="mb-2">
-                        <div className="text-[10px] text-muted-foreground mb-1">
-                          Replace {player.name} ({currentPos}) with:{isPitcher && <span className="text-amber-400 ml-1">(P - use Pitching tab)</span>}
-                        </div>
-                        <select
-                          value=""
-                          onChange={(e) => {
-                            if (e.target.value) {
-                              const benchPlayer = myBench.find(p => p.name === e.target.value);
-                              if (benchPlayer) onDefensiveSwitch(actualIdx, currentPos, benchPlayer);
-                            }
-                          }}
-                          className="w-full bg-input border border-border rounded-md px-2 py-1 text-[10px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                        >
-                          <option value="">-- Select bench player --</option>
-                          {myBench.map((p, i) => (
-                            <option key={i} value={p.name} disabled={isBenchUsed(p)}>
-                              {p.name} ({p.pos}, CON {p.contact}){isBenchUsed(p) ? ' - USED' : ''}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           )}
 
