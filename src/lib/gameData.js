@@ -773,7 +773,6 @@ export const TEAMS = {
       { name: "Tom Burgmeier", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 5, offSpeed: 7, control: 7, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Rick Langford", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Chuck Rainey", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
-      { name: "Curt Young", pos: "RP", throws: "L", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 4, speed: 2 },
     ],
   },
 
@@ -1328,7 +1327,7 @@ export const PLAYER_ERRORS = {
   "Dwayne Murphy": 2, "Mike Davis": 3, "Bruce Bochte": 4, "Mike Heath": 5, "Tony Phillips": 9,
   "Dave Lopes": 5, "Donnie Hill": 5, "Jim Essian": 3, "Jeff Burroughs": 1, "Dan Meyer": 3, "Bill Almon": 10,
   "Ray Burris": 2, "Steve McCatty": 2, "Bill Krueger": 1, "Chris Codiroli": 3,
-  "Bill Caudill": 1, "Keith Atherton": 1, "Tom Burgmeier": 1, "Rick Langford": 2, "Chuck Rainey": 1, "Curt Young": 2,
+  "Bill Caudill": 1, "Keith Atherton": 1, "Tom Burgmeier": 1, "Rick Langford": 2, "Chuck Rainey": 1,
   // Angels
   "Rod Carew": 4, "Brian Downing": 2, "Fred Lynn": 2, "Reggie Jackson": 0,
   "Doug DeCinces": 10, "Bobby Grich": 6, "Gary Pettis": 3, "Bob Boone": 5, "Dick Schofield": 12,

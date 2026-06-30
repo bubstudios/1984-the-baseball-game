@@ -367,7 +367,6 @@ export const CARD_IMAGES = {
   'Jim Essian':       BASE + '24155ab27_images2.jpeg',
   'Dan Meyer':        BASE + 'efc4fa38f_images4.jpeg',
   'Bill Almon':       BASE + 'a0b99fd16_images5.jpeg',
-  'Curt Young':       BASE + '9b4731d96_generated_image.png',
 
   // ── CALIFORNIA ANGELS ──
   'Reggie Jackson':   BASE + 'fe5d2fba3_generated_image.png',
