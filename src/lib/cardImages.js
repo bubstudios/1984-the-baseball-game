@@ -654,7 +654,6 @@ export const CARD_IMAGES = {
   'Dusty Baker':      BASE + 'c99421878_images8.jpeg',
   'Chris Brown':      BASE + '58abf5871_images2.jpeg',
   'Brad Wellman':     BASE + 'e51e6863e_images.jpeg',
-  'Dan Driessen':     BASE + '3504769e9_generated_image.png',
   'Gene Richards':    BASE + '2c2593033_images4.jpeg',
 
   // ── PHILADELPHIA PHILLIES ──
