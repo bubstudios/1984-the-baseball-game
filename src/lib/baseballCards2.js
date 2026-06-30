@@ -329,6 +329,9 @@ export const EXTRA_ROSTERS = {
     { id: 20, name: 'Jim Morrison',     position: 'IF',  number: 13, ba: '.252', hr: 11, rbi: 39,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
     { id: 21, name: 'Joe Orsulak',      position: 'OF',  number: 17, ba: '.249', hr: 1,  rbi: 15,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 22, name: 'Benny Distefano',  position: '1B',  number: 28, ba: '.235', hr: 2,  rbi: 10,  era: '-',    role: 'Bench/First Base',     rarity: 'common'   },
+    { id: 23, name: 'Amos Otis',        position: 'OF',  number: 26, ba: '.245', hr: 8,  rbi: 35,  era: '-',    role: 'Bench Outfielder/Veteran', rarity: 'common' },
+    { id: 24, name: 'Bob Walk',         position: 'SP',  number: 38, ba: '-',    hr: '-', rbi: '-', era: '3.76', role: 'Starting Pitcher',     rarity: 'common'   },
+    { id: 25, name: 'Larry McWilliams', position: 'SP',  number: 49, ba: '-',    hr: '-', rbi: '-', era: '4.22', role: 'Starting Pitcher',     rarity: 'common'   },
   ],
 
   braves: [
