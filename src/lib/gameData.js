@@ -395,6 +395,7 @@ export const TEAMS = {
       { name: "Tom Underwood", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 5, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Bill Swaggerty", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "John Pacella", pos: "RP", throws: "R", bats: "R", stamina: 3, pitchSpeed: 7, offSpeed: 4, control: 4, contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Dennis Martinez", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 7, control: 6, contact: 2, power: 1, bunting: 3, speed: 2 },
     ],
   },
 
