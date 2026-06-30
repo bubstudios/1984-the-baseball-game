@@ -572,6 +572,16 @@ export const CARD_IMAGES = {
   'Gerald Perry':     BASE + 'c3cee830b_images5.jpeg',
   'Bruce Benedict':   BASE + '7584f502b_images6.jpeg',
   'Pascual Perez':    BASE + 'c46c38f8d_images7.jpeg',
+  'Rick Mahler':      BASE + '749105de3_images7.jpeg',
+  'Craig McMurtry':   BASE + '36c22357b_images6.jpeg',
+
+  // ── ATLANTA BRAVES (continued) ──
+  'Albert Hall':      BASE + 'be08f63bb_images5.jpeg',
+  'Milt Thompson':    BASE + 'e888be903_images4.jpeg',
+  'Alex Trevino':     BASE + 'f4ef61f31_images3.jpeg',
+  'Brad Komminsk':    BASE + 'c898f664c_images2.jpeg',
+  'Jerry Royster':    BASE + '9cc006369_images1.jpeg',
+  'Randy Johnson':    BASE + '11d326e08_images.jpeg',
 
   // ── HOUSTON ASTROS ──
   'Nolan Ryan':       BASE + 'e87eebb57_generated_image.png',
