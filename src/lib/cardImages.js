@@ -674,7 +674,7 @@ export const CARD_IMAGES = {
   'Dann Bilardello':  BASE + 'bda4f8304_images8.jpeg',
   'Jeff Russell':     BASE + '46f6b337f_images7.jpeg',
   'Joe Price':        BASE + 'd49ed3354_images8.jpeg',
-  'Jay Tibbs':        BASE + '1c4edd2e5_generated_image.png',
+
   'Ted Power':        BASE + '4911a613a_images2.jpeg',
   'Tom Hume':         BASE + '9e067a4b5_images3.jpeg',
   'Bob Owchinko':     BASE + '91373fee9_images4.jpeg',
