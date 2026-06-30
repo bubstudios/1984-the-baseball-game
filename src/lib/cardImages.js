@@ -433,6 +433,7 @@ export const CARD_IMAGES = {
   'Joel Skinner':     BASE + '6a0ee5961_images2.jpeg',
   'Mike Squires':     BASE + '383b52823_images5.jpeg',
   'Jerry Dybzinski':  BASE + '8b94f7498_images4.jpeg',
+  'Britt Burns':      BASE + 'd6fcedfd9_images11.jpeg',
 
   // ── SEATTLE MARINERS ──
   'Mark Langston':    BASE + '94668d524_images.jpeg',
