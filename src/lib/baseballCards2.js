@@ -110,7 +110,6 @@ export const EXTRA_ROSTERS = {
     { id: 22, name: 'Lenny Faedo',      position: 'SS',  number: 9,  ba: '.228', hr: 2,  rbi: 15,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
     { id: 23, name: 'Jim Eisenreich',   position: 'OF',  number: 23, ba: '.304', hr: 0,  rbi: 5,   era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 24, name: 'Darrell Brown',    position: 'OF',  number: 26, ba: '.273', hr: 1,  rbi: 19,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
-    { id: 25, name: 'Albert Williams',  position: 'RP',  number: 28, ba: '-',    hr: '-', rbi: '-', era: '5.77', role: 'Relief/Swingman',       rarity: 'common'   },
   ],
 
   athletics: [

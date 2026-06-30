@@ -340,7 +340,6 @@ export const CARD_IMAGES = {
   'Lenny Faedo':      BASE + '2b511f638_images3.jpeg',
   'Jim Eisenreich':   BASE + '6011f22c5_images2.jpeg',
   'Darrell Brown':    BASE + 'beccc418f_images5.jpeg',
-  'Albert Williams':  BASE + 'e07e5dc6e_generated_image.png',
 
   // ── OAKLAND ATHLETICS ──
   'Rickey Henderson': BASE + 'd4c6c9824_images2.jpeg',
