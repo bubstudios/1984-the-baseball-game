@@ -80,6 +80,9 @@ export const ALL_ROSTERS = {
     { id: 20, name: 'Henry Cotto',     position: 'OF',   number: 17, ba: '.261', hr: 2,  rbi: 11,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
     { id: 21, name: 'Steve Lake',      position: 'C',    number: 16, ba: '.231', hr: 3,  rbi: 14,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 22, name: 'Dave Owen',       position: 'SS',   number: 13, ba: '.215', hr: 3,  rbi: 12,  era: '-',    role: 'Backup Shortstop',     rarity: 'common'   },
+    { id: 23, name: 'Rich Bordi',      position: 'SP',   number: 33, ba: '-',    hr: '-', rbi: '-', era: '3.94', role: 'Starting Pitcher',     rarity: 'common'   },
+    { id: 24, name: 'Dick Ruthven',    position: 'SP',   number: 35, ba: '-',    hr: '-', rbi: '-', era: '4.32', role: 'Starting Pitcher',     rarity: 'common'   },
+    { id: 25, name: 'Gary Woods',      position: 'OF',   number: 19, ba: '.258', hr: 2,  rbi: 15,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
   ],
 
   mets: [
