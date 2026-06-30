@@ -385,6 +385,9 @@ export const EXTRA_ROSTERS = {
     { id: 20, name: 'Denny Walling',    position: '3B',  number: 11, ba: '.286', hr: 6,  rbi: 30,  era: '-',    role: 'Bench/Utility',        rarity: 'common'   },
     { id: 21, name: 'Dickie Thon',      position: 'SS',  number: 5,  ba: '.251', hr: 6,  rbi: 29,  era: '-',    role: 'Shortstop/Recovery',   rarity: 'uncommon' },
     { id: 22, name: 'Ray Knight',       position: '3B',  number: 7,  ba: '.250', hr: 4,  rbi: 24,  era: '-',    role: 'Bench/Utility',        rarity: 'common'   },
+    { id: 23, name: 'Jim Pankovits',    position: 'OF',  number: 19, ba: '.245', hr: 3,  rbi: 18,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
+    { id: 24, name: 'Mike Madden',      position: 'SP',  number: 37, ba: '-',    hr: '-', rbi: '-', era: '4.52', role: 'Starting Pitcher',     rarity: 'common'   },
+    { id: 25, name: 'Mike LaCoss',      position: 'SP',  number: 42, ba: '-',    hr: '-', rbi: '-', era: '4.01', role: 'Starting Pitcher',     rarity: 'common'   },
   ],
 
   giants: [
