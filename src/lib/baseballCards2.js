@@ -413,6 +413,9 @@ export const EXTRA_ROSTERS = {
     { id: 20, name: 'Chris Brown',      position: '3B',  number: 5,  ba: '.271', hr: 7,  rbi: 31,  era: '-',    role: 'Bench/Future Star',    rarity: 'common'   },
     { id: 21, name: 'Brad Wellman',     position: 'IF',  number: 17, ba: '.214', hr: 2,  rbi: 11,  era: '-',    role: 'Backup Infielder',     rarity: 'common'   },
     { id: 22, name: 'Dan Driessen',     position: '1B',  number: 19, ba: '.265', hr: 7,  rbi: 25,  era: '-',    role: 'Bench/First Base',     rarity: 'common'   },
+    { id: 23, name: 'Mark Grant',       position: 'RP',  number: 44, ba: '-',    hr: '-', rbi: '-', era: '3.84', role: 'Relief Pitcher',       rarity: 'common'   },
+    { id: 24, name: 'Randy Lerch',      position: 'RP',  number: 42, ba: '-',    hr: '-', rbi: '-', era: '4.15', role: 'Relief Pitcher',       rarity: 'common'   },
+    { id: 25, name: 'Gene Richards',    position: 'OF',  number: 16, ba: '.275', hr: 3,  rbi: 22,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
   ],
 
 };
