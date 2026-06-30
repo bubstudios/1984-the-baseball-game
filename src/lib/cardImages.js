@@ -213,9 +213,9 @@ export const CARD_IMAGES = {
   'Don Slaught':      BASE + '6a54f967b_images9.jpeg',
 
   // ── LOS ANGELES DODGERS ──
-  'Fernando Valenzuela': BASE + 'df968d4be_generated_image.png',
+  'Fernando Valenzuela': BASE + '24e2c8d28_images6.jpeg',
   'Pedro Guerrero':   BASE + 'ea2bd8c9f_images2.jpeg',
-  'Orel Hershiser':   BASE + '7b6a64d35_generated_image.png',
+  'Orel Hershiser':   BASE + 'f77618fba_images7.jpeg',
   'Steve Sax':        BASE + '9f9588076_images.jpeg',
   'Mike Scioscia':    BASE + '111e6155d_images4.jpeg',
   'Ken Landreaux':    BASE + '9df42c459_images1.jpeg',
@@ -230,11 +230,12 @@ export const CARD_IMAGES = {
   'Carlos Diaz':      BASE + '7b6a64d35_generated_image.png',
   'Tom Niedenfuer':   BASE + '7b6a64d35_generated_image.png',
   'Burt Hooton':      BASE + '7b6a64d35_generated_image.png',
-  'Bill Russell':     BASE + '785514ee0_generated_image.png',
-  'Candy Maldonado':  BASE + '785514ee0_generated_image.png',
-  'Bob Bailor':       BASE + '785514ee0_generated_image.png',
-  'Steve Yeager':     BASE + '47324feb5_generated_image.png',
-  'R.J. Reynolds':    BASE + '785514ee0_generated_image.png',
+  'Bill Russell':     BASE + 'e2b9108ec_images.jpeg',
+  'Candy Maldonado':  BASE + '2c81ea780_images1.jpeg',
+  'Bob Bailor':       BASE + 'eee18e699_images3.jpeg',
+  'Steve Yeager':     BASE + '36ce81c48_images4.jpeg',
+  'German Rivera':    BASE + 'b9f3ce414_images5.jpeg',
+  'R.J. Reynolds':    BASE + 'ef9d9b5e4_images2.jpeg',
 
   // ── TORONTO BLUE JAYS ──
   'Dave Stieb':       BASE + 'a94ddf16c_images50.jpeg',
