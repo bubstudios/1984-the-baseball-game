@@ -422,7 +422,7 @@ export const CARD_IMAGES = {
   'Jerry Dybzinski':  BASE + '8b94f7498_images4.jpeg',
 
   // ── SEATTLE MARINERS ──
-  'Mark Langston':    BASE + '984217a46_generated_image.png',
+  'Mark Langston':    BASE + '94668d524_images.jpeg',
   'Alvin Davis':      BASE + '08e4945c6_images2.jpeg',
   'Phil Bradley':     BASE + 'b7ebd61af_images1.jpeg',
   'Dave Henderson':   BASE + '432f52135_images4.jpeg',
@@ -432,9 +432,9 @@ export const CARD_IMAGES = {
   'Al Cowens':        BASE + '387f08b7d_images5.jpeg',
   'Bob Kearney':      BASE + '94185bea3_images7.jpeg',
   'Spike Owen':       BASE + '6155fe215_images8.jpeg',
-  'Mike Moore':       BASE + '984217a46_generated_image.png',
-  'Jim Beattie':      BASE + '984217a46_generated_image.png',
-  'Matt Young':       BASE + '984217a46_generated_image.png',
+  'Mike Moore':       BASE + '1345f4796_images1.jpeg',
+  'Jim Beattie':      BASE + 'd67274fdc_images2.jpeg',
+  'Matt Young':       BASE + '52a3e7050_images3.jpeg',
   'Mike Stanton':     BASE + '984217a46_generated_image.png',
   'Edwin Nunez':      BASE + '984217a46_generated_image.png',
   'Dave Beard':       BASE + '984217a46_generated_image.png',
