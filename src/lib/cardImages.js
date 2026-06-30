@@ -567,9 +567,9 @@ export const CARD_IMAGES = {
   'Jim Morrison':     BASE + '9801b541f_images3.jpeg',
   'Joe Orsulak':      BASE + 'c6e8cf3ae_images4.jpeg',
   'Benny Distefano':  BASE + 'd76fe1688_images2.jpeg',
-  'Amos Otis':        BASE + '95f0ee233_images5.jpeg',
-  'Bob Walk':         BASE + '31a2ffe8f_images7.jpeg',
-  'Larry McWilliams': BASE + '4e8860b86_images6.jpeg',
+  'Amos Otis':        BASE + '516d3da87_images16.jpeg',
+  'Bob Walk':         BASE + '54cd537bd_images17.jpeg',
+  'Larry McWilliams': BASE + 'c9f584006_images18.jpeg',
 
   // ── ATLANTA BRAVES ──
   'Dale Murphy':      BASE + '631cee889_images2.jpeg',
