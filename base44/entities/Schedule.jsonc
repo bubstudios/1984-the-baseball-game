@@ -1,0 +1,84 @@
+{
+  "name": "Schedule",
+  "type": "object",
+  "properties": {
+    "seasonId": {
+      "type": "string",
+      "description": "Reference to Season entity"
+    },
+    "gameDay": {
+      "type": "integer",
+      "description": "Day of season (1-162)"
+    },
+    "gameDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Scheduled date"
+    },
+    "homeTeam": {
+      "type": "string",
+      "description": "Home team key"
+    },
+    "awayTeam": {
+      "type": "string",
+      "description": "Away team key"
+    },
+    "stadium": {
+      "type": "string",
+      "description": "Stadium name"
+    },
+    "isUserGame": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if this is the user's team playing"
+    },
+    "isPlayoff": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if playoff game"
+    },
+    "playoffRound": {
+      "type": "string",
+      "enum": [
+        "ALCS",
+        "NLCS",
+        "WorldSeries"
+      ],
+      "description": "Playoff round if applicable"
+    },
+    "gameNumber": {
+      "type": "integer",
+      "default": 1,
+      "description": "Game number in series (for playoffs)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "in_progress",
+        "completed",
+        "postponed"
+      ],
+      "default": "scheduled"
+    },
+    "gameResultId": {
+      "type": "string",
+      "description": "Reference to GameResult entity if completed"
+    },
+    "homeScore": {
+      "type": "integer",
+      "description": "Final home score if completed"
+    },
+    "awayScore": {
+      "type": "integer",
+      "description": "Final away score if completed"
+    }
+  },
+  "required": [
+    "seasonId",
+    "gameDay",
+    "gameDate",
+    "homeTeam",
+    "awayTeam"
+  ]
+}

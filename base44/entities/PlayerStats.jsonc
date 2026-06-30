@@ -1,0 +1,176 @@
+{
+  "name": "PlayerStats",
+  "type": "object",
+  "properties": {
+    "seasonId": {
+      "type": "string",
+      "description": "Reference to Season entity"
+    },
+    "playerName": {
+      "type": "string",
+      "description": "Player full name"
+    },
+    "team": {
+      "type": "string",
+      "description": "Team key"
+    },
+    "gamesPlayed": {
+      "type": "integer",
+      "default": 0
+    },
+    "atBats": {
+      "type": "integer",
+      "default": 0
+    },
+    "runs": {
+      "type": "integer",
+      "default": 0
+    },
+    "hits": {
+      "type": "integer",
+      "default": 0
+    },
+    "doubles": {
+      "type": "integer",
+      "default": 0
+    },
+    "triples": {
+      "type": "integer",
+      "default": 0
+    },
+    "homeRuns": {
+      "type": "integer",
+      "default": 0
+    },
+    "rbi": {
+      "type": "integer",
+      "default": 0
+    },
+    "walks": {
+      "type": "integer",
+      "default": 0
+    },
+    "strikeouts": {
+      "type": "integer",
+      "default": 0
+    },
+    "stolenBases": {
+      "type": "integer",
+      "default": 0
+    },
+    "caughtStealing": {
+      "type": "integer",
+      "default": 0
+    },
+    "battingAverage": {
+      "type": "number",
+      "default": 0
+    },
+    "onBasePercentage": {
+      "type": "number",
+      "default": 0
+    },
+    "sluggingPercentage": {
+      "type": "number",
+      "default": 0
+    },
+    "ops": {
+      "type": "number",
+      "default": 0
+    },
+    "pitchingGames": {
+      "type": "integer",
+      "default": 0
+    },
+    "pitchingGamesStarted": {
+      "type": "integer",
+      "default": 0
+    },
+    "inningsPitched": {
+      "type": "number",
+      "default": 0
+    },
+    "pitchingHits": {
+      "type": "integer",
+      "default": 0
+    },
+    "pitchingRuns": {
+      "type": "integer",
+      "default": 0
+    },
+    "pitchingEarnedRuns": {
+      "type": "integer",
+      "default": 0
+    },
+    "pitchingWalks": {
+      "type": "integer",
+      "default": 0
+    },
+    "pitchingStrikeouts": {
+      "type": "integer",
+      "default": 0
+    },
+    "pitchingHomeRuns": {
+      "type": "integer",
+      "default": 0
+    },
+    "wins": {
+      "type": "integer",
+      "default": 0
+    },
+    "losses": {
+      "type": "integer",
+      "default": 0
+    },
+    "saves": {
+      "type": "integer",
+      "default": 0
+    },
+    "era": {
+      "type": "number",
+      "default": 0
+    },
+    "whip": {
+      "type": "number",
+      "default": 0
+    },
+    "longestHR": {
+      "type": "integer",
+      "default": 0,
+      "description": "Longest home run distance"
+    },
+    "currentStreak": {
+      "type": "string",
+      "description": "Current hitting streak (games with hit)"
+    },
+    "monthlyStats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string"
+          },
+          "hits": {
+            "type": "integer"
+          },
+          "homeRuns": {
+            "type": "integer"
+          },
+          "rbi": {
+            "type": "integer"
+          },
+          "average": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Stats broken down by month"
+    }
+  },
+  "required": [
+    "seasonId",
+    "playerName",
+    "team"
+  ]
+}

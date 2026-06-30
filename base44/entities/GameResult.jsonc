@@ -1,0 +1,136 @@
+{
+  "name": "GameResult",
+  "type": "object",
+  "properties": {
+    "seasonId": {
+      "type": "string",
+      "description": "Reference to Season entity"
+    },
+    "gameDay": {
+      "type": "integer",
+      "description": "Day of season (1-162)"
+    },
+    "gameDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Simulated game date"
+    },
+    "homeTeam": {
+      "type": "string",
+      "description": "Home team key"
+    },
+    "awayTeam": {
+      "type": "string",
+      "description": "Away team key"
+    },
+    "homeScore": {
+      "type": "integer",
+      "description": "Home team final score"
+    },
+    "awayScore": {
+      "type": "integer",
+      "description": "Away team final score"
+    },
+    "winner": {
+      "type": "string",
+      "description": "Winning team key"
+    },
+    "isUserGame": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if user played this game"
+    },
+    "homeHits": {
+      "type": "integer",
+      "description": "Home team total hits"
+    },
+    "awayHits": {
+      "type": "integer",
+      "description": "Away team total hits"
+    },
+    "homeHRs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "playerName": {
+            "type": "string"
+          },
+          "distance": {
+            "type": "integer"
+          },
+          "inning": {
+            "type": "integer"
+          }
+        }
+      },
+      "description": "Home runs hit by home team"
+    },
+    "awayHRs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "playerName": {
+            "type": "string"
+          },
+          "distance": {
+            "type": "integer"
+          },
+          "inning": {
+            "type": "integer"
+          }
+        }
+      },
+      "description": "Home runs hit by away team"
+    },
+    "winningPitcher": {
+      "type": "string",
+      "description": "Pitcher name credited with win"
+    },
+    "losingPitcher": {
+      "type": "string",
+      "description": "Pitcher name charged with loss"
+    },
+    "savePitcher": {
+      "type": "string",
+      "description": "Pitcher name credited with save"
+    },
+    "attendance": {
+      "type": "integer",
+      "description": "Simulated attendance"
+    },
+    "stadium": {
+      "type": "string",
+      "description": "Stadium name"
+    },
+    "weather": {
+      "type": "string",
+      "description": "Game weather conditions"
+    },
+    "innings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "home": {
+            "type": "integer"
+          },
+          "away": {
+            "type": "integer"
+          }
+        }
+      },
+      "description": "Line score by inning"
+    }
+  },
+  "required": [
+    "seasonId",
+    "gameDay",
+    "homeTeam",
+    "awayTeam",
+    "homeScore",
+    "awayScore",
+    "winner"
+  ]
+}

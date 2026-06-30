@@ -1,0 +1,61 @@
+{
+  "name": "Season",
+  "type": "object",
+  "properties": {
+    "year": {
+      "type": "integer",
+      "description": "Season year (e.g., 1984)"
+    },
+    "startDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Season start date"
+    },
+    "endDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Season end date"
+    },
+    "currentGameDay": {
+      "type": "integer",
+      "default": 1,
+      "description": "Current day number (1-162)"
+    },
+    "currentDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Current simulated date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "paused"
+      ],
+      "default": "active"
+    },
+    "userTeam": {
+      "type": "string",
+      "description": "Team key the user is managing"
+    },
+    "champion": {
+      "type": "string",
+      "description": "World Series winner team key"
+    },
+    "completedGames": {
+      "type": "integer",
+      "default": 0,
+      "description": "Total games completed"
+    },
+    "totalGames": {
+      "type": "integer",
+      "default": 2430,
+      "description": "Total season games (162 * 15 opponents)"
+    }
+  },
+  "required": [
+    "year",
+    "userTeam"
+  ]
+}

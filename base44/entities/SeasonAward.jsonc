@@ -1,0 +1,57 @@
+{
+  "name": "SeasonAward",
+  "type": "object",
+  "properties": {
+    "seasonId": {
+      "type": "string",
+      "description": "Reference to Season entity"
+    },
+    "awardType": {
+      "type": "string",
+      "enum": [
+        "ROY",
+        "MVP",
+        "CyYoung",
+        "ManagerOfTheYear",
+        "PlayerOfTheWeek",
+        "PlayerOfTheMonth",
+        "PitcherOfTheWeek",
+        "PitcherOfTheMonth",
+        "RookieOfTheWeek",
+        "RookieOfTheMonth"
+      ],
+      "description": "Award type"
+    },
+    "winner": {
+      "type": "string",
+      "description": "Winner name (player or manager)"
+    },
+    "team": {
+      "type": "string",
+      "description": "Winner's team key"
+    },
+    "weekNumber": {
+      "type": "integer",
+      "description": "Week number for weekly awards (1-26)"
+    },
+    "month": {
+      "type": "string",
+      "description": "Month for monthly awards (April-September)"
+    },
+    "stats": {
+      "type": "object",
+      "description": "Key stats that won the award"
+    },
+    "awardDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date award was given"
+    }
+  },
+  "required": [
+    "seasonId",
+    "awardType",
+    "winner",
+    "team"
+  ]
+}
