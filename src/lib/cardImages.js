@@ -440,12 +440,12 @@ export const CARD_IMAGES = {
   'Dave Beard':       BASE + '984217a46_generated_image.png',
   'Paul Mirabella':   BASE + '984217a46_generated_image.png',
   'Bob Stoddard':     BASE + '984217a46_generated_image.png',
-  'Gorman Thomas':    BASE + 'eb26b0c1a_generated_image.png',
-  'Barry Bonnell':    BASE + 'eb26b0c1a_generated_image.png',
-  'Steve Henderson':  BASE + 'eb26b0c1a_generated_image.png',
-  'Orlando Mercado':  BASE + 'eb26b0c1a_generated_image.png',
-  'Domingo Ramos':    BASE + 'eb26b0c1a_generated_image.png',
-  'Larry Milbourne':  BASE + 'eb26b0c1a_generated_image.png',
+  'Gorman Thomas':    BASE + '78302387e_images2.jpeg',
+  'Barry Bonnell':    BASE + 'da25397bd_images.jpeg',
+  'Steve Henderson':  BASE + '359a89bce_images1.jpeg',
+  'Orlando Mercado':  BASE + 'ae9ae2099_images3.jpeg',
+  'Domingo Ramos':    BASE + '38f4257d9_images5.jpeg',
+  'Larry Milbourne':  BASE + '840455603_images6.jpeg',
   'Ed Vande Berg':    BASE + '984217a46_generated_image.png',
 
   // ── TEXAS RANGERS ──
