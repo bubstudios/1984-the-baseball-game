@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Calendar, TrendingUp, Users, Play } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
+import FullSchedule from '@/components/season/FullSchedule';
 
 export default function SeasonDashboard() {
   const [season, setSeason] = useState(null);
@@ -79,8 +80,12 @@ export default function SeasonDashboard() {
   };
 
   const generateSchedule = async (seasonId) => {
-    // Placeholder - would generate 162-game schedule for all 26 teams
-    console.log('Generating schedule for season', seasonId);
+    try {
+      const response = await base44.functions.invoke('generateSchedule', { seasonId });
+      console.log('Schedule generated:', response.data);
+    } catch (error) {
+      console.error('Failed to generate schedule:', error);
+    }
   };
 
   const simulateDay = async () => {
@@ -269,71 +274,23 @@ export default function SeasonDashboard() {
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto px-6 py-4">
-        {activeTab === 'schedule' && (
-          <div className="space-y-3">
-            <h2 className="font-heading text-lg font-bold text-foreground mb-4">
-              Games for {season?.currentDate || 'Day ' + (season?.currentGameDay || 1)}
-            </h2>
-            {schedule.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p className="font-heading">No games scheduled</p>
-              </div>
-            ) : (
-              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {schedule.map((game) => (
-                  <div
-                    key={game.id}
-                    className={`bg-card border rounded-lg p-4 ${
-                      game.isUserGame ? 'border-primary/50 bg-primary/5' : 'border-border'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs text-muted-foreground font-heading">
-                        {game.stadium || 'Stadium'}
-                      </span>
-                      {game.isUserGame && (
-                        <span className="text-[10px] bg-primary text-primary-foreground px-2 py-0.5 rounded font-heading">
-                          YOUR GAME
-                        </span>
-                      )}
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-heading text-sm font-bold text-foreground">
-                          {TEAMS[game.awayTeam]?.abbr || game.awayTeam}
-                        </span>
-                        {game.status === 'completed' && (
-                          <span className="font-heading text-lg font-bold text-foreground">
-                            {game.awayScore}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="font-heading text-sm font-bold text-foreground">
-                          {TEAMS[game.homeTeam]?.abbr || game.homeTeam}
-                        </span>
-                        {game.status === 'completed' && (
-                          <span className="font-heading text-lg font-bold text-foreground">
-                            {game.homeScore}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {game.status === 'completed' && (
-                      <div className="mt-2 text-xs text-muted-foreground font-heading">
-                        Winner: {TEAMS[game.winner]?.name || game.winner}
-                      </div>
-                    )}
-                    {game.status === 'pending_user' && (
-                      <div className="mt-2 text-xs text-primary font-heading">
-                        Awaiting user play
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+        {activeTab === 'schedule' && season && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-heading text-lg font-bold text-foreground">
+                Full Season Schedule
+              </h2>
+              <Button
+                onClick={() => generateSchedule(season.id)}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+              >
+                <Calendar className="w-4 h-4" />
+                Regenerate
+              </Button>
+            </div>
+            <FullSchedule seasonId={season.id} userTeam={season.userTeam} />
           </div>
         )}
 
