@@ -1306,10 +1306,27 @@ function processPostHitBaserunning(state, hitType, batter, defenders) {
     state._celebrationBubble = stretch.text;
     recordOut(state);
   } else if (stretch.type === 'safe_double') {
+    // If 2nd base is occupied by another runner, push them to 3rd (or score them)
+    if (state.bases[1] && state.bases[1].name !== batter.name) {
+      if (!state.bases[2]) {
+        state.bases[2] = state.bases[1];
+        state.log.push({ type: 'info', text: `${state.bases[1].name} advances to third on the stretch!` });
+      } else {
+        state.bases[1].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++;
+        getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++;
+        state.log.push({ type: 'info', text: `${state.bases[1].name} scores on the stretch!` });
+      }
+    }
     state.bases[1] = batter; state.bases[0] = null;
     state.log.push({ type: 'info', text: stretch.text });
     if (state.lastPlay && state.lastPlay.text) state.lastPlay.text = `${state.lastPlay.text} - ${stretch.text}`;
   } else if (stretch.type === 'safe_triple') {
+    // If 3rd base is occupied by another runner, they score
+    if (state.bases[2] && state.bases[2].name !== batter.name) {
+      state.bases[2].gameStats.runs++; scoreRun(state); batter.gameStats.rbi++;
+      getCurrentPitcher(state).gameStats.r++; getCurrentPitcher(state).gameStats.er++;
+      state.log.push({ type: 'info', text: `${state.bases[2].name} scores on the stretch to third!` });
+    }
     state.bases[2] = batter; state.bases[1] = null;
     state.log.push({ type: 'info', text: stretch.text });
     if (state.lastPlay && state.lastPlay.text) state.lastPlay.text = `${state.lastPlay.text} - ${stretch.text}`;
