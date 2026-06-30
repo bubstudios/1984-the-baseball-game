@@ -221,7 +221,6 @@ export const EXTRA_ROSTERS = {
     { id: 22, name: 'Orlando Mercado',  position: 'C',   number: 8,  ba: '.209', hr: 1,  rbi: 6,   era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 23, name: 'Domingo Ramos',    position: 'SS',  number: 6,  ba: '.218', hr: 1,  rbi: 9,   era: '-',    role: 'Backup Infielder',     rarity: 'common'   },
     { id: 24, name: 'Larry Milbourne',  position: '3B',  number: 10, ba: '.265', hr: 1,  rbi: 22,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
-    { id: 25, name: 'Ed Vande Berg',    position: 'RP',  number: 32, ba: '-',    hr: '-', rbi: '-', era: '4.00', role: 'Lefty Reliever',        rarity: 'common'   },
   ],
 
   rangers: [

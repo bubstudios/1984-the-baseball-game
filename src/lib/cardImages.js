@@ -446,7 +446,6 @@ export const CARD_IMAGES = {
   'Orlando Mercado':  BASE + 'ae9ae2099_images3.jpeg',
   'Domingo Ramos':    BASE + '38f4257d9_images5.jpeg',
   'Larry Milbourne':  BASE + '840455603_images6.jpeg',
-  'Ed Vande Berg':    BASE + '984217a46_generated_image.png',
 
   // ── TEXAS RANGERS ──
   'Charlie Hough':    BASE + '85086f37d_generated_image.png',
