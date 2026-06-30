@@ -23,7 +23,6 @@ import IncidentLog from '@/components/game/IncidentLog';
 
 import BeanballBanner from '@/components/game/BeanballBanner';
 import GameSummary from '@/components/game/GameSummary';
-import HomeRunDistancePopup from '@/components/game/HomeRunDistancePopup';
 import GameEventBanner from '@/components/game/GameEventBanner';
 import PitcherInjuryModal from '@/components/game/PitcherInjuryModal';
 import BatterInjuryModal from '@/components/game/BatterInjuryModal';
@@ -194,7 +193,6 @@ export default function Home() {
   const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
   const [inlineGameEvent, setInlineGameEvent] = useState(null); // { type: 'celebration'|'caughtstealing'|'ballpark', event: data }
-  const [hrDistancePopup, setHrDistancePopup] = useState(null); // { distance, batterName, isNewRecord }
   const [gameOverPopup, setGameOverPopup] = useState(null); // { winner, score, finalPlay }
   const prevCelebrationBubble = useRef(null);
 
@@ -478,8 +476,7 @@ export default function Home() {
           const isUserBatter = [...userLineup, ...userHistory].some(p => p.name === entry.batterName);
           if (isUserBatter) {
             try {
-              const newRecord = trackHomeRunDistance(entry.hrDistance, entry.batterName, userTeam);
-              setHrDistancePopup({ distance: entry.hrDistance, batterName: entry.batterName, isNewRecord: newRecord });
+              trackHomeRunDistance(entry.hrDistance, entry.batterName, userTeam);
             } catch (e) { console.error('trackHomeRunDistance failed:', e); }
           }
         }
@@ -2044,16 +2041,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Home Run Distance Popup - shows distance for user team HRs */}
-      {hrDistancePopup && (
-        <HomeRunDistancePopup
-          distance={hrDistancePopup.distance}
-          batterName={hrDistancePopup.batterName}
-          isNewRecord={hrDistancePopup.isNewRecord}
-          onClose={() => setHrDistancePopup(null)}
-        />
       )}
 
       {/* Card Award Modal - Tigers home win */}
