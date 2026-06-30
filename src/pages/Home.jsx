@@ -328,6 +328,11 @@ export default function Home() {
         setInlineGameEvent({ type: 'caughtstealing', event: lastPlay.text });
         setTimeout(() => setInlineGameEvent(null), 5000);
       }
+      // Stolen base → inline GameEventBanner
+      if (lastPlay.type === 'steal') {
+        setInlineGameEvent({ type: 'steal', event: lastPlay.text });
+        setTimeout(() => setInlineGameEvent(null), 5000);
+      }
       // Collision at the plate (but not on HRs)
       if (lastPlay.type !== 'homerun' && lastPlay.text?.includes('bowls over')) {
         setCollisionPopup(lastPlay.text);

@@ -136,3 +136,18 @@ export function rollStaredown(actor, isPitcher = true) {
   const name = actor.name?.split(' ').pop() || actor.name;
   return line.replace(/{pitcher}/g, name).replace(/{batter}/g, name);
 }
+
+// Stolen base celebration: ~60% chance
+export function rollStolenBaseCelebration(runner, base) {
+  if (Math.random() > 0.60) return null;
+  const baseName = base === 0 ? 'second' : base === 1 ? 'third' : 'home';
+  const lines = [
+    `{runner} swipes {base}!`,
+    `{runner} is safe at {base} - clean steal!`,
+    `{runner} takes {base} on a dirty steal!`,
+    `{runner} motors to {base} - no play!`,
+    `{runner} jumps to {base} - got a good jump!`,
+  ];
+  const line = lines[Math.floor(Math.random() * lines.length)];
+  return line.replace(/{runner}/g, runner.name?.split(' ').pop() || runner.name).replace(/{base}/g, baseName);
+}

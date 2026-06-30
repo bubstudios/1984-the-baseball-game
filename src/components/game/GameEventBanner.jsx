@@ -7,6 +7,7 @@ export default function GameEventBanner({ event, type, onClose }) {
   const getIcon = () => {
     if (type === 'celebration') return <Trophy className="w-4 h-4 text-primary" />;
     if (type === 'caughtstealing') return <Target className="w-4 h-4 text-destructive" />;
+    if (type === 'steal') return <Zap className="w-4 h-4 text-cyan-400" />;
     if (type === 'ballpark') return <Zap className="w-4 h-4 text-primary" />;
     return <Radio className="w-4 h-4 text-primary" />;
   };
@@ -14,6 +15,7 @@ export default function GameEventBanner({ event, type, onClose }) {
   const getBorderColor = () => {
     if (type === 'celebration') return 'border-primary/40';
     if (type === 'caughtstealing') return 'border-destructive/40';
+    if (type === 'steal') return 'border-cyan-400/40';
     if (type === 'ballpark') return 'border-primary/40';
     return 'border-primary/40';
   };
@@ -21,6 +23,7 @@ export default function GameEventBanner({ event, type, onClose }) {
   const getTitle = () => {
     if (type === 'celebration') return 'Celebration';
     if (type === 'caughtstealing') return 'Caught Stealing';
+    if (type === 'steal') return 'Stolen Base';
     if (type === 'ballpark') return 'Ballpark Event';
     return 'Game Event';
   };
