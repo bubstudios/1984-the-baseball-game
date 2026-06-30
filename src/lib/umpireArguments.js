@@ -71,17 +71,17 @@ export function getArgumentSeverity(lastPlay, gameState, usedTopics) {
   }
 
   // ── CATCH / NO CATCH (low to major) ──
-  // Lineout → infield trap dispute
+  // Lineout → infield trap dispute (only infield-appropriate calls)
   if (["lineout"].includes(type) && r < 0.10) {
     if (!capped("trappedBall", 1))
-      return arg(pick(["did the infielder trap it?","short hop or clean catch?","ball hit the dirt first","shoestring grab or did it bounce?","diving catch - did the ball touch grass?"]), "low", 2, "trappedBall", "major");
+      return arg(pick(["did the infielder trap it?","short hop or clean catch?","ball hit the dirt first","shoestring grab or did it bounce?"]), "low", 2, "trappedBall", "major");
   }
-  // Flyout/popout/sacfly → outfield trap dispute (only when ball went to outfield)
+  // Flyout/sacfly → outfield trap dispute
   if (["flyout","sacfly"].includes(type) && r < 0.04) {
     if (!capped("trappedBall", 1)) {
-      const inPlay = text && !text.includes("pop-up") && !text.includes("infield");
-      const calls = inPlay
-        ? ["trapped or clean catch?","outfielder claims he caught it","ball glanced off the wall first","did he squeeze it before it hit the wall?","catch made in the crowd - fan interference?"]
+      const isDeepOutfield = text && !text.includes("pop-up") && !text.includes("infield") && !text.includes("popout");
+      const calls = isDeepOutfield
+        ? ["trapped or clean catch?","outfielder claims he caught it","catch made in the crowd - fan interference?","did he squeeze it before it hit the wall?","ball glanced off the wall first"]
         : ["did the infielder trap it?","short hop or clean catch?","ball hit the dirt first","did it bounce?"];
       return arg(pick(calls), "low", 2, "trappedBall", "major");
     }
