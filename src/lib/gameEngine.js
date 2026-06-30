@@ -3,7 +3,7 @@ import { applyWeatherEffects } from './weather';
 import { BALLPARKS, getBallparkEffect, getHitDirection, checkBallparkQuirk } from './ballparks';
 import {
   pickLine, STRIKEOUT_LINES, WALK_LINES, INTENTIONAL_WALK_LINES,
-  SINGLE_LINES, DOUBLE_LINES, TRIPLE_LINES, HOME_RUN_LINES,
+  SINGLE_LINES, INFIELD_SINGLE_LINES, DOUBLE_LINES, TRIPLE_LINES, HOME_RUN_LINES,
   WILD_PITCH_LINES, GROUNDOUT_LINES, FLYOUT_LINES,
   DOUBLE_PLAY_LINES, END_INNING_LINES, LINEOUT_LINES,
   SOFT_GROUNDOUT_LINES, HARD_GROUNDOUT_LINES,
@@ -998,10 +998,15 @@ function resolveSwing(state, swingType, pitch) {
       state.log.push({ type: 'double', text: dblText });
       state.lastPlay = { type: 'double', text: dblText };
     } else {
-      const rbi = advanceRunners(state, 1, batter, true, hitDirection);
-      const singleText = `${pickHitLine(SINGLE_LINES, batter.name)}${rbi ? ` ${rbi} RBI!` : ''}`;
+      const singleLine = pickHitLine(SINGLE_LINES, batter.name);
+      // Detect infield hit commentary: these lines describe a play that stays in the infield
+      // so runners should only advance one base max (no extra outfield advancement)
+      const isInfieldHitLine = INFIELD_SINGLE_LINES.some(l => singleLine.includes(l.text));
+      const effectiveDirection = isInfieldHitLine ? null : hitDirection;
+      const rbi = advanceRunners(state, 1, batter, !isInfieldHitLine, effectiveDirection);
+      const singleText = `${singleLine}${rbi ? ` ${rbi} RBI!` : ''}`;
       state.log.push({ type: 'single', text: singleText });
-      state.lastPlay = { type: 'single', text: singleText };
+      state.lastPlay = { type: 'single', text: singleText, infield: isInfieldHitLine };
     }
     state.balls = 0; state.strikes = 0; advanceBatter(state);
     // Only process aggressive base advancement on OUTFIELD hits (single to OF or beyond), not infield plays
