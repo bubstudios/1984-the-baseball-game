@@ -406,7 +406,7 @@ export const CARD_IMAGES = {
   'Daryl Sconiers':   BASE + 'e6f768b72_images2.jpeg',
   'Derrel Thomas':    BASE + '9967092f6_images4.jpeg',
   'Jerry Narron':     BASE + 'e0e7931e5_images5.jpeg',
-  'Jim Slaton':       BASE + 'fe5d2fba3_generated_image.png',
+  'Jim Slaton':       BASE + 'cd390edbc_images10.jpeg',
 
   // ── CHICAGO WHITE SOX ──
   'Carlton Fisk':     BASE + '42012b082_images3.jpeg',
