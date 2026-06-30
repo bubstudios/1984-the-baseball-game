@@ -55,6 +55,9 @@ export const ALL_ROSTERS = {
     { id: 20, name: 'Bruce Bochy',     position: 'C',    number: 8,  ba: '.234', hr: 5,  rbi: 16,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
     { id: 21, name: 'Tim Flannery',    position: '2B',   number: 10, ba: '.275', hr: 3,  rbi: 22,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
     { id: 22, name: 'Champ Summers',   position: 'OF',   number: 25, ba: '.255', hr: 6,  rbi: 20,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
+    { id: 23, name: 'Luis Salazar',    position: '3B',   number: 15, ba: '.253', hr: 7,  rbi: 28,  era: '-',    role: 'Utility Infielder',    rarity: 'common'   },
+    { id: 24, name: 'Mark Thurmond',   position: 'SP',   number: 42, ba: '-',    hr: '-', rbi: '-', era: '3.86', role: 'Starting Pitcher',     rarity: 'common'   },
+    { id: 25, name: 'Floyd Chiffer',   position: 'RP',   number: 50, ba: '-',    hr: '-', rbi: '-', era: '4.15', role: 'Relief Pitcher',       rarity: 'common'   },
   ],
 
   cubs: [
