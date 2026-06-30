@@ -137,6 +137,7 @@ export const CARD_IMAGES = {
   'Rick Miller':      BASE + 'ee6491ba3_images36.jpeg',
   'Jerry Remy':       BASE + '93f502973_images37.jpeg',
   'Glenn Hoffman':    BASE + 'b10f476ad_images42.jpeg',
+  'Roger Clemens':    BASE + '922d94adf_images1.jpeg',
 
   // ── NEW YORK YANKEES ──
   'Don Mattingly':    BASE + '90214ed09_images7.jpeg',
