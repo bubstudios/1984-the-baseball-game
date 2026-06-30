@@ -13,6 +13,7 @@ import MobileGate from '@/components/MobileGate';
 import { useState, useEffect } from 'react';
 // Add page imports here
 import ThankYou from '@/pages/ThankYou';
+import SeasonDashboard from '@/pages/SeasonDashboard';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -51,6 +52,7 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/ThankYou" element={<ThankYou />} />
+      <Route path="/season" element={<SeasonDashboard />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
