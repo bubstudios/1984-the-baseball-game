@@ -334,12 +334,12 @@ export const CARD_IMAGES = {
   'Rick Lysander':    BASE + 'e07e5dc6e_generated_image.png',
   'Curt Wardle':      BASE + 'e07e5dc6e_generated_image.png',
   'Len Whitehouse':   BASE + 'e07e5dc6e_generated_image.png',
-  'Tim Laudner':      BASE + 'e07e5dc6e_generated_image.png',
-  'Ron Washington':   BASE + 'ed78490ab_generated_image.png',
-  'Greg Gagne':       BASE + 'ed78490ab_generated_image.png',
-  'Lenny Faedo':      BASE + 'ed78490ab_generated_image.png',
-  'Jim Eisenreich':   BASE + 'ed78490ab_generated_image.png',
-  'Darrell Brown':    BASE + 'ed78490ab_generated_image.png',
+  'Tim Laudner':      BASE + 'd0b97253d_images.jpeg',
+  'Ron Washington':   BASE + '47a3d1242_images1.jpeg',
+  'Greg Gagne':       BASE + '31b543494_images4.jpeg',
+  'Lenny Faedo':      BASE + '2b511f638_images3.jpeg',
+  'Jim Eisenreich':   BASE + '6011f22c5_images2.jpeg',
+  'Darrell Brown':    BASE + 'beccc418f_images5.jpeg',
   'Albert Williams':  BASE + 'e07e5dc6e_generated_image.png',
 
   // ── OAKLAND ATHLETICS ──
