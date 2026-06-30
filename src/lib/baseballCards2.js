@@ -357,6 +357,9 @@ export const EXTRA_ROSTERS = {
     { id: 20, name: 'Jerry Royster',    position: 'UT',  number: 6,  ba: '.260', hr: 2,  rbi: 19,  era: '-',    role: 'Utility Player',       rarity: 'common'   },
     { id: 21, name: 'Brad Komminsk',    position: 'OF',  number: 21, ba: '.202', hr: 8,  rbi: 28,  era: '-',    role: 'Outfield/Future Star', rarity: 'common'   },
     { id: 22, name: 'Milt Thompson',    position: 'OF',  number: 23, ba: '.257', hr: 2,  rbi: 14,  era: '-',    role: 'Bench Outfielder',     rarity: 'common'   },
+    { id: 23, name: 'Albert Hall',      position: 'OF',  number: 24, ba: '.267', hr: 1,  rbi: 12,  era: '-',    role: 'Bench Outfielder/Speed', rarity: 'common' },
+    { id: 24, name: 'Pete Falcone',     position: 'SP',  number: 38, ba: '-',    hr: '-', rbi: '-', era: '4.76', role: 'Starting Pitcher',     rarity: 'common'   },
+    { id: 25, name: 'Rick Camp',        position: 'RP',  number: 42, ba: '-',    hr: '-', rbi: '-', era: '4.09', role: 'Relief Pitcher',       rarity: 'common'   },
   ],
 
   astros: [
