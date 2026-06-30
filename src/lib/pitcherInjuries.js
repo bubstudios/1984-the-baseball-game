@@ -10,16 +10,19 @@ export const PITCHER_INJURY_TYPES = [
   { id: 'oblique_strain', name: 'Oblique Strain', emoji: '🤕' },
 ];
 
-// Injury chance by fatigue level (matches MatchupCard labels)
-export function getPitcherInjuryChance(fatigueLevel) {
-  if (fatigueLevel >= 3) return 0.0004; // GASSED
-  if (fatigueLevel >= 2) return 0.0003; // TIRING
-  if (fatigueLevel >= 1) return 0.0002; // FADING
-  return 0.0001;                        // Base rate
+// Season rates per pitch (0.005% base, scales with fatigue)
+// Exhibition rates: double each
+export function getPitcherInjuryChance(fatigueLevel, isExhibition = false) {
+  let base;
+  if (fatigueLevel >= 3) base = 0.00020; // GASSED
+  else if (fatigueLevel >= 2) base = 0.00015; // TIRING
+  else if (fatigueLevel >= 1) base = 0.00010; // FADING
+  else base = 0.00005;                         // Base rate (0.005%)
+  return isExhibition ? base * 2 : base;
 }
 
-export function rollPitcherInjury(fatigueLevel) {
-  const chance = getPitcherInjuryChance(fatigueLevel);
+export function rollPitcherInjury(fatigueLevel, isExhibition = false) {
+  const chance = getPitcherInjuryChance(fatigueLevel, isExhibition);
   if (Math.random() >= chance) return null;
   const injuryType = PITCHER_INJURY_TYPES[Math.floor(Math.random() * PITCHER_INJURY_TYPES.length)];
   return { ...injuryType, outForGame: true };
@@ -36,7 +39,8 @@ export function checkPitcherInjury(prevState, newState) {
 
   const ip = pitcherObj.gameStats?.ip || 0;
   const fatigue = getPitcherFatigue(ip, pitcherObj);
-  const injury = rollPitcherInjury(fatigue.fatigueLevel);
+  const isExhibition = !prevState.seasonId;
+  const injury = rollPitcherInjury(fatigue.fatigueLevel, isExhibition);
 
   if (injury) {
     // Mark pitcher as injured (out for rest of game)

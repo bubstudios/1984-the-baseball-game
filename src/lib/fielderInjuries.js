@@ -8,15 +8,17 @@ export const FIELDER_INJURY_TYPES = [
   { id: 'ankle_strain', name: 'Ankle Strain/Sprain', emoji: '🦶' },
 ];
 
-// Trigger chances: diving stop 3%, diving catch 10%, collision 14%
+// Season rates: diving stop 0.25%, diving catch 0.70%, collision 1.25%
+// Exhibition rates: double each
 const TRIGGER_CHANCES = {
-  divingStop: 0.002,
-  divingCatch: 0.006,
-  collision: 0.009,
+  divingStop: 0.0025,
+  divingCatch: 0.007,
+  collision: 0.0125,
 };
 
-export function rollFielderInjury(triggerType) {
-  const chance = TRIGGER_CHANCES[triggerType] || 0;
+export function rollFielderInjury(triggerType, isExhibition = false) {
+  const base = TRIGGER_CHANCES[triggerType] || 0;
+  const chance = isExhibition ? base * 2 : base;
   if (chance === 0 || Math.random() >= chance) return null;
   const injuryType = FIELDER_INJURY_TYPES[Math.floor(Math.random() * FIELDER_INJURY_TYPES.length)];
   return { ...injuryType, outForGame: true, trigger: triggerType };

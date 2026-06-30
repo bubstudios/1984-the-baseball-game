@@ -8,8 +8,9 @@ export const RUNNER_INJURY_TYPES = [
   { id: 'calf_strain', name: 'Calf Strain', emoji: '🦵' },
 ];
 
-export function rollRunnerInjury() {
-  const chance = 0.0004; // 0.04% every time a runner moves
+export function rollRunnerInjury(isExhibition = false) {
+  const base = 0.0006; // 0.06% Season; 0.12% Exhibition
+  const chance = isExhibition ? base * 2 : base;
   if (Math.random() >= chance) return null;
   const injuryType = RUNNER_INJURY_TYPES[Math.floor(Math.random() * RUNNER_INJURY_TYPES.length)];
   return { ...injuryType, outForGame: true };

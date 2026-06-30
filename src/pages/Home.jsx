@@ -272,9 +272,10 @@ export default function Home() {
     // Ballpark's team is always home; swap if needed
     const homeTeam = parkTeam;
     const awayTeam = parkTeam === ballparkPhase.home ? ballparkPhase.away : ballparkPhase.home;
-    // Roll pre-game illnesses (1% per player on roster)
-    const homeIll = rollIllnessesForTeam(TEAMS[homeTeam]);
-    const awayIll = rollIllnessesForTeam(TEAMS[awayTeam]);
+    // Roll pre-game illnesses (Season: ~2% per team; Exhibition: ~4% per team)
+    const isExhibitionMode = gameMode === 'exhibition';
+    const homeIll = rollIllnessesForTeam(TEAMS[homeTeam], isExhibitionMode);
+    const awayIll = rollIllnessesForTeam(TEAMS[awayTeam], isExhibitionMode);
     const illPlayers = { home: homeIll, away: awayIll };
     setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
     setLineupPhase({ home: homeTeam, away: awayTeam, useDH: useDHFlag, parkTeam, weather, illPlayers });
@@ -1076,6 +1077,8 @@ export default function Home() {
     setPitcherInjury(null);
   };
 
+  const isExhibition = gameMode === 'exhibition';
+
   const checkBatterInjury = (prevState, newState) => {
     const lastPlay = newState.lastPlay;
     if (!lastPlay) return newState;
@@ -1102,9 +1105,9 @@ export default function Home() {
       // Track HBP count for this batter - chance doubles on 2nd+ HBP
       if (!newState._hbpCounts) newState._hbpCounts = {};
       newState._hbpCounts[batter.name] = (newState._hbpCounts[batter.name] || 0) + 1;
-      injury = rollHBPIfBatter(newState._hbpCounts[batter.name]);
+      injury = rollHBPIfBatter(newState._hbpCounts[batter.name], isExhibition);
     } else {
-      injury = rollBatterInjury();
+      injury = rollBatterInjury(isExhibition);
     }
 
     if (!injury) return newState;
@@ -1191,7 +1194,7 @@ export default function Home() {
 
     // Roll 2% for each moved runner - first injury only
     for (const runner of movedRunners) {
-      const injury = rollRunnerInjury();
+      const injury = rollRunnerInjury(isExhibition);
       if (injury) {
         const teamKey = battingSide === 'home' ? newState.homeTeam : newState.awayTeam;
         const fullBench = TEAMS[teamKey]?.bench || [];
@@ -1283,7 +1286,7 @@ export default function Home() {
       if (!didSlide) continue;
 
       // Runner slid - roll sliding injury (7% base, 14% with contact)
-      const injury = rollSlidingInjury(hasContact);
+      const injury = rollSlidingInjury(hasContact, isExhibition);
       if (injury) {
         const teamKey = battingSide === 'home' ? newState.homeTeam : newState.awayTeam;
         const fullBench = TEAMS[teamKey]?.bench || [];
@@ -1371,7 +1374,7 @@ export default function Home() {
     if (['SP', 'RP', 'CL'].includes(fielderPos)) return newState;
 
     // Roll fielder injury
-    const injury = rollFielderInjury(triggerType);
+    const injury = rollFielderInjury(triggerType, isExhibition);
     if (!injury) return newState;
 
     // Find available bench

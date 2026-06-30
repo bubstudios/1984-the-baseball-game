@@ -17,15 +17,19 @@ export const HBP_INJURY_TYPES = [
   { id: 'bruised_foot', name: 'Bruised Foot', emoji: '🦶' },
 ];
 
-export function rollBatterInjury() {
-  const chance = 0.0002; // 0.02% on every swing
+export function rollBatterInjury(isExhibition = false) {
+  const base = 0.0003; // 0.03% Season; 0.06% Exhibition
+  const chance = isExhibition ? base * 2 : base;
   if (Math.random() >= chance) return null;
   const injuryType = BATTER_INJURY_TYPES[Math.floor(Math.random() * BATTER_INJURY_TYPES.length)];
   return { ...injuryType, outForGame: true };
 }
 
-export function rollHBPIfBatter(hbpCount) {
-  const chance = hbpCount >= 2 ? 0.003 : 0.0015; // 0.15% first HBP, 0.3% on 2nd+ HBP same batter
+export function rollHBPIfBatter(hbpCount, isExhibition = false) {
+  // Season: 1.00% first HBP, 2.00% on 2nd+ HBP same batter
+  // Exhibition: double those rates
+  const base = hbpCount >= 2 ? 0.02 : 0.01;
+  const chance = isExhibition ? base * 2 : base;
   if (Math.random() >= chance) return null;
   const injuryType = HBP_INJURY_TYPES[Math.floor(Math.random() * HBP_INJURY_TYPES.length)];
   return { ...injuryType, outForGame: true };
