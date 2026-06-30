@@ -988,6 +988,7 @@ function trackHRRobberies(count) {
 
 export function checkGameAchievements(gameState, userTeam) {
   const newlyUnlocked = [];
+  const newProgress = [];  // Track leader challenge progress for UI
   const u = (id) => { if (unlockAchievement(id)) newlyUnlocked.push(id); };
 
   // Determine user side from team key (supports both 'home'/'away' legacy and team key like 'cubs')
@@ -1399,14 +1400,15 @@ export function checkGameAchievements(gameState, userTeam) {
 
 
   // ── 1984 LEADER CHALLENGES (cumulative per-player tracking) ──
-  trackLeaderAchievements(allUserPlayers, userPitchers, log, userWon, userScore, opponentScore, u);
+  trackLeaderAchievements(allUserPlayers, userPitchers, log, userWon, userScore, opponentScore, u, newProgress);
 
-  return newlyUnlocked;
+  return { newlyUnlocked, newProgress };
 }
 
 // ── 1984 Leader Achievement Tracking ──
 // Accumulates per-player stats across games and unlocks when every player on a list meets the threshold
-function trackLeaderAchievements(allUserPlayers, userPitchers, log, userWon, userScore, opponentScore, unlockFn) {
+// Returns array of {challengeName, playerName, playerProgress, totalPlayers, statType, icon} for new progress made
+function trackLeaderAchievements(allUserPlayers, userPitchers, log, userWon, userScore, opponentScore, unlockFn, progressArray) {
   const stats = loadStats();
   if (!stats.leaderStats) stats.leaderStats = {};
   const ls = stats.leaderStats;
@@ -1444,10 +1446,13 @@ function trackLeaderAchievements(allUserPlayers, userPitchers, log, userWon, use
 
   // --- Hitter stats: accumulate and check ---
   const hitterConfigs = ['hr', 'runs', 'rbi', 'hits', 'doubles', 'triples', 'sb'];
+  const statIcons = { hr: '💥', runs: '🏃', rbi: '🎯', hits: '⚡', doubles: '✌️', triples: '💨', sb: '🥷' };
+  const statLabels = { hr: 'Home run', runs: 'Run scored', rbi: 'RBI', hits: 'Hit', doubles: 'Double', triples: 'Triple', sb: 'Stolen base' };
   hitterConfigs.forEach(statType => {
     const config = LEADER_LISTS[statType];
     if (!ls[config.statKey]) ls[config.statKey] = {};
     const store = ls[config.statKey];
+    const oldStore = { ...store };
 
     config.players.forEach(playerName => {
       const gs = hitterGameStats[playerName];
@@ -1455,6 +1460,28 @@ function trackLeaderAchievements(allUserPlayers, userPitchers, log, userWon, use
       const value = gs[statType] || 0;
       if (value > 0) {
         store[playerName] = (store[playerName] || 0) + value;
+      }
+    });
+
+    // Detect new progress for players who just crossed threshold or made first progress
+    config.players.forEach(playerName => {
+      const gs = hitterGameStats[playerName];
+      if (!gs || (gs[statType] || 0) === 0) return;
+      const oldVal = oldStore[playerName] || 0;
+      const newVal = store[playerName] || 0;
+      const oldMet = oldVal >= config.threshold;
+      const newMet = newVal >= config.threshold;
+      // Show popup if: just crossed threshold, OR made first progress (0→something)
+      if ((!oldMet && newMet) || (oldVal === 0 && newVal > 0)) {
+        const progressCount = config.players.filter(name => (store[name] || 0) >= config.threshold).length;
+        progressArray.push({
+          challengeName: config.title,
+          playerName,
+          playerProgress: progressCount,
+          totalPlayers: config.players.length,
+          statType: statLabels[statType],
+          icon: statIcons[statType],
+        });
       }
     });
 

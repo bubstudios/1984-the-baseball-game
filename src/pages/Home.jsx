@@ -41,6 +41,7 @@ import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
 import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement, trackHomeRunDistance, trackGameRecords, trackPlayersUsed, trackTimePlayed } from '@/lib/achievements';
 import AchievementPopup from '@/components/game/AchievementPopup';
+import LeaderProgressPopup from '@/components/game/LeaderProgressPopup';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 import InlineSponsorBanner from '@/components/game/InlineSponsorBanner';
 import BannerPopup from '@/components/game/BannerPopup';
@@ -160,6 +161,7 @@ export default function Home() {
   const [loadingScreen, setLoadingScreen] = useState(true);
   const [newAchievements, setNewAchievements] = useState([]);
   const [showAchievementPopup, setShowAchievementPopup] = useState(false);
+  const [leaderProgress, setLeaderProgress] = useState(null);  // {challengeName, playerName, playerProgress, totalPlayers, statType, icon}
   const [argumentResult, setArgumentResult] = useState(null);
   const [selectedUmpire, setSelectedUmpire] = useState(null);
   const [ejectionCount, setEjectionCount] = useState(0);
@@ -790,10 +792,16 @@ export default function Home() {
     }
 
     try {
-      const newOnes = checkGameAchievements(state, userTeam);
+      const result = checkGameAchievements(state, userTeam);
+      const newOnes = result.newlyUnlocked || [];
+      const progress = result.newProgress || [];
       if (newOnes.length > 0) {
         setNewAchievements(newOnes);
         setTimeout(() => setShowAchievementPopup(true), 3500);
+      }
+      if (progress.length > 0) {
+        // Show first progress item (could queue multiple)
+        setLeaderProgress(progress[0]);
       }
     } catch (e) {
       console.error('checkGameAchievements failed:', e);
@@ -1762,6 +1770,14 @@ export default function Home() {
                   <AchievementPopup
                     achievementIds={newAchievements}
                     onDismiss={() => setShowAchievementPopup(false)}
+                  />
+                )}
+
+                {/* Leader Challenge Progress popup */}
+                {leaderProgress && (
+                  <LeaderProgressPopup
+                    progress={leaderProgress}
+                    onDismiss={() => setLeaderProgress(null)}
                   />
                 )}
 
