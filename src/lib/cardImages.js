@@ -448,7 +448,7 @@ export const CARD_IMAGES = {
   'Larry Milbourne':  BASE + '840455603_images6.jpeg',
 
   // ── TEXAS RANGERS ──
-  'Charlie Hough':    BASE + '85086f37d_generated_image.png',
+  'Charlie Hough':    BASE + 'b5df9e827_images.jpeg',
   'Buddy Bell':       BASE + 'c10af539c_images.jpeg',
   'Larry Parrish':    BASE + '4d6afa9d0_images3.jpeg',
   'Gary Ward':        BASE + '00ec107cd_images5.jpeg',
@@ -464,9 +464,9 @@ export const CARD_IMAGES = {
   'Tommy Dunbar':     BASE + '0940d582a_images3.jpeg',
   'Jeff Kunkel':      BASE + '3224c4247_images5.jpeg',
   'Bob Jones':        BASE + 'b2972aa10_images4.jpeg',
-  'Frank Tanana':     BASE + '85086f37d_generated_image.png',
-  'Danny Darwin':     BASE + '85086f37d_generated_image.png',
-  'Mike Mason':       BASE + '85086f37d_generated_image.png',
+  'Frank Tanana':     BASE + '37eac0553_images1.jpeg',
+  'Danny Darwin':     BASE + 'd30c9db0b_images2.jpeg',
+  'Mike Mason':       BASE + 'de2e30ca1_images3.jpeg',
   'Dave Schmidt':     BASE + '85086f37d_generated_image.png',
   'Dave Stewart':     BASE + '85086f37d_generated_image.png',
   'Tom Henke':        BASE + '85086f37d_generated_image.png',
