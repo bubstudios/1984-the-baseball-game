@@ -260,7 +260,9 @@ export default function Home() {
     if (mode === 'exhibition') {
       setGameMode('exhibition');
     }
-    // Season mode is locked - do nothing
+    if (mode === 'season') {
+      window.location.href = '/season';
+    }
   }, []);
 
   const handleTeamSelect = useCallback((home, away) => {
