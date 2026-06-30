@@ -328,7 +328,7 @@ export default function Home() {
         setInlineGameEvent({ type: 'caughtstealing', event: lastPlay.text });
         setTimeout(() => setInlineGameEvent(null), 5000);
       }
-      // Stolen base → inline GameEventBanner
+      // Stolen base (including hit-and-run steals) → inline GameEventBanner
       if (lastPlay.type === 'steal') {
         setInlineGameEvent({ type: 'steal', event: lastPlay.text });
         setTimeout(() => setInlineGameEvent(null), 5000);
@@ -575,8 +575,11 @@ export default function Home() {
         : gameState._celebrationBubble;
       if (key !== prevCelebrationBubble.current) {
         prevCelebrationBubble.current = key;
-        setInlineGameEvent({ type: 'celebration', event: gameState._celebrationBubble });
-        setTimeout(() => setInlineGameEvent(null), 7500);
+        // Steal/caught-stealing events are already handled by lastPlay detection - use correct type
+        const lpType = gameState.lastPlay?.type;
+        const eventType = lpType === 'steal' ? 'steal' : lpType === 'caughtstealing' ? 'caughtstealing' : 'celebration';
+        setInlineGameEvent({ type: eventType, event: gameState._celebrationBubble });
+        setTimeout(() => setInlineGameEvent(null), lpType === 'steal' || lpType === 'caughtstealing' ? 5000 : 7500);
       }
     }
   }, [gameState]);
