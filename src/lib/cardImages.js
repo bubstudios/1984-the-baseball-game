@@ -387,12 +387,12 @@ export const CARD_IMAGES = {
   'Doug Corbett':     BASE + 'fe5d2fba3_generated_image.png',
   'Bruce Kison':      BASE + 'fe5d2fba3_generated_image.png',
   'Curt Kaufman':     BASE + 'fe5d2fba3_generated_image.png',
-  'Juan Beniquez':    BASE + 'ddd558c07_generated_image.png',
-  'Rob Wilfong':      BASE + 'ddd558c07_generated_image.png',
-  'Rick Burleson':    BASE + 'ddd558c07_generated_image.png',
-  'Daryl Sconiers':   BASE + 'ddd558c07_generated_image.png',
-  'Derrel Thomas':    BASE + 'ddd558c07_generated_image.png',
-  'Jerry Narron':     BASE + 'ddd558c07_generated_image.png',
+  'Juan Beniquez':    BASE + '511061314_images1.jpeg',
+  'Rob Wilfong':      BASE + '745b38db0_images.jpeg',
+  'Rick Burleson':    BASE + 'd39ea9ea3_images3.jpeg',
+  'Daryl Sconiers':   BASE + 'e6f768b72_images2.jpeg',
+  'Derrel Thomas':    BASE + '9967092f6_images4.jpeg',
+  'Jerry Narron':     BASE + 'e0e7931e5_images5.jpeg',
   'Jim Slaton':       BASE + 'fe5d2fba3_generated_image.png',
 
   // ── CHICAGO WHITE SOX ──
