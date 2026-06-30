@@ -454,6 +454,7 @@ export const CARD_IMAGES = {
   'Dave Beard':       BASE + '98fc4cff8_images1.jpeg',
   'Paul Mirabella':   BASE + '1dc8fcc1f_images2.jpeg',
   'Bob Stoddard':     BASE + 'da4111eb5_images4.jpeg',
+  'Ed Vande Berg':    BASE + '5183c01e4_images12.jpeg',
   'Gorman Thomas':    BASE + '78302387e_images2.jpeg',
   'Barry Bonnell':    BASE + 'da25397bd_images.jpeg',
   'Steve Henderson':  BASE + '359a89bce_images1.jpeg',
