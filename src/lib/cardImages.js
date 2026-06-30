@@ -633,11 +633,13 @@ export const CARD_IMAGES = {
   'Larry Andersen':   BASE + '4e2d6f62b_generated_image.png',
   'Bill Campbell':    BASE + '4e2d6f62b_generated_image.png',
   'Don Carman':       BASE + '4e2d6f62b_generated_image.png',
-  'Len Matuszek':     BASE + '4bac78b6d_generated_image.png',
-  'Greg Gross':       BASE + 'af8bd61d0_generated_image.png',
-  'Derrel Thomas':    BASE + '8bba97a00_generated_image.png',
-  'Bo Diaz':          BASE + '8645a633a_generated_image.png',
-  'Sixto Lezcano':    BASE + 'af8bd61d0_generated_image.png',
+  'Len Matuszek':     BASE + '77075f548_images.jpeg',
+  'Greg Gross':       BASE + '0b2e2f61e_images1.jpeg',
+  'Johnny Wockenfuss':BASE + 'ed077cda2_images2.jpeg',
+  'Tim Corcoran':     BASE + 'da2a16166_images5.jpeg',
+  'Steve Jeltz':      BASE + '951c75eaf_images6.jpeg',
+  'Bo Diaz':          BASE + '5761dcbd6_images3.jpeg',
+  'Sixto Lezcano':    BASE + 'bf6d003cf_images4.jpeg',
 
   // ── CINCINNATI REDS ──
   'Pete Rose':        BASE + '1919ce9fc_generated_image.png',
