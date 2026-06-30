@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Calendar, TrendingUp, Users, Play } from 'lucide-react';
@@ -7,12 +8,14 @@ import LeagueLeaders from '@/components/season/LeagueLeaders';
 import FullSchedule from '@/components/season/FullSchedule';
 
 export default function SeasonDashboard() {
+  const location = useLocation();
   const [season, setSeason] = useState(null);
   const [schedule, setSchedule] = useState([]);
   const [gameResults, setGameResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [activeTab, setActiveTab] = useState('schedule'); // schedule, results, leaders, standings
+  const pendingUserTeam = location.state?.userTeam || null;
 
   // Load current season
   useEffect(() => {
@@ -25,7 +28,12 @@ export default function SeasonDashboard() {
       // Get active season
       const seasons = await base44.entities.Season.filter({ status: 'active' });
       if (seasons.length === 0) {
-        // No active season - create one
+        // No active season and no team selected - send to team selection
+        if (!pendingUserTeam) {
+          window.location.href = '/season-setup';
+          return;
+        }
+        // No active season - create one with selected team
         await createNewSeason();
         return;
       }
@@ -56,21 +64,22 @@ export default function SeasonDashboard() {
   };
 
   const createNewSeason = async () => {
+    const userTeam = pendingUserTeam || 'tigers';
     try {
       const newSeason = await base44.entities.Season.create({
         year: 1984,
-        startDate: '1984-04-02',
+        startDate: '1984-04-03',
         endDate: '1984-10-14',
         currentGameDay: 1,
-        currentDate: '1984-04-02',
+        currentDate: '1984-04-03',
         status: 'active',
-        userTeam: 'cubs', // Default - would be selected in real flow
+        userTeam,
         completedGames: 0,
-        totalGames: 2430
+        totalGames: 2106
       });
       
-      // Generate full schedule
-      await generateSchedule(newSeason.id);
+      // Generate full schedule with user's team
+      await generateSchedule(newSeason.id, userTeam);
       
       setSeason(newSeason);
       loadSeason();
@@ -79,9 +88,9 @@ export default function SeasonDashboard() {
     }
   };
 
-  const generateSchedule = async (seasonId) => {
+  const generateSchedule = async (seasonId, team) => {
     try {
-      const response = await base44.functions.invoke('generateSchedule', { seasonId });
+      const response = await base44.functions.invoke('generateSchedule', { seasonId, userTeam: team });
       console.log('Schedule generated:', response.data);
     } catch (error) {
       console.error('Failed to generate schedule:', error);
@@ -149,9 +158,14 @@ export default function SeasonDashboard() {
           <div className="flex items-center gap-3">
             <Trophy className="w-6 h-6 text-primary" />
             <div>
-              <h1 className="font-heading text-xl font-bold text-foreground">1984 Season</h1>
+              <h1 className="font-heading text-xl font-bold text-foreground">
+                1984 Season
+                {season?.userTeam && (
+                  <span className="text-primary"> · {TEAMS[season.userTeam]?.name || season.userTeam}</span>
+                )}
+              </h1>
               <p className="text-xs text-muted-foreground font-heading">
-                Day {season?.currentGameDay || 1} of 162 · {season?.currentDate || 'April 2, 1984'}
+                Day {season?.currentGameDay || 1} of 162 · {season?.currentDate || 'April 3, 1984'}
               </p>
             </div>
           </div>
@@ -221,7 +235,7 @@ export default function SeasonDashboard() {
             )}
           </div>
           <div className="text-sm text-muted-foreground font-heading">
-            {season?.completedGames || 0} / 2430 games completed
+            {season?.completedGames || 0} / {season?.totalGames || 2106} games completed
           </div>
         </div>
       </div>
@@ -281,7 +295,7 @@ export default function SeasonDashboard() {
                 Full Season Schedule
               </h2>
               <Button
-                onClick={() => generateSchedule(season.id)}
+                onClick={() => generateSchedule(season.id, season.userTeam)}
                 variant="outline"
                 size="sm"
                 className="gap-2"

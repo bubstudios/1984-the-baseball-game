@@ -14,6 +14,7 @@ import { useState, useEffect } from 'react';
 // Add page imports here
 import ThankYou from '@/pages/ThankYou';
 import SeasonDashboard from '@/pages/SeasonDashboard';
+import SeasonTeamSelect from '@/pages/SeasonTeamSelect';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -52,6 +53,7 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/ThankYou" element={<ThankYou />} />
+      <Route path="/season-setup" element={<SeasonTeamSelect />} />
       <Route path="/season" element={<SeasonDashboard />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
