@@ -361,12 +361,12 @@ export const CARD_IMAGES = {
   'Tom Burgmeier':    BASE + '9b4731d96_generated_image.png',
   'Rick Langford':    BASE + '9b4731d96_generated_image.png',
   'Chuck Rainey':     BASE + '9b4731d96_generated_image.png',
-  'Dave Lopes':       BASE + '665ba6702_generated_image.png',
-  'Donnie Hill':      BASE + '665ba6702_generated_image.png',
-  'Jeff Burroughs':   BASE + '665ba6702_generated_image.png',
-  'Jim Essian':       BASE + '665ba6702_generated_image.png',
-  'Dan Meyer':        BASE + '665ba6702_generated_image.png',
-  'Bill Almon':       BASE + '665ba6702_generated_image.png',
+  'Dave Lopes':       BASE + '1c1dab5e0_images.jpeg',
+  'Donnie Hill':      BASE + '141b00c08_images1.jpeg',
+  'Jeff Burroughs':   BASE + '431301e9c_images3.jpeg',
+  'Jim Essian':       BASE + '24155ab27_images2.jpeg',
+  'Dan Meyer':        BASE + 'efc4fa38f_images4.jpeg',
+  'Bill Almon':       BASE + 'a0b99fd16_images5.jpeg',
   'Curt Young':       BASE + '9b4731d96_generated_image.png',
 
   // ── CALIFORNIA ANGELS ──
