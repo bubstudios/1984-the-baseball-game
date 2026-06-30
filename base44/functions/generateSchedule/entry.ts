@@ -26,9 +26,6 @@ Deno.serve(async (req) => {
     const NL_EAST = ['phillies', 'mets', 'cardinals', 'cubs', 'pirates', 'expos'];
     const NL_WEST = ['reds', 'braves', 'dodgers', 'giants', 'padres', 'astros'];
 
-    const AL_TEAMS = [...AL_EAST, ...AL_WEST];
-    const NL_TEAMS = [...NL_EAST, ...NL_WEST];
-
     // Stadium lookup
     const STADIUMS = {
       yankees: 'Yankee Stadium', redsox: 'Fenway Park', orioles: 'Memorial Stadium',
@@ -42,16 +39,31 @@ Deno.serve(async (req) => {
       giants: 'Candlestick Park', padres: 'Jack Murphy Stadium', astros: 'Astrodome',
     };
 
-    // Generate matchups using round-robin for each league separately
-    // Each pair of same-league teams plays multiple series
-    function generateMatchups(teams, gamesPerPair) {
+    // 1984 MLB schedule structure (historically accurate):
+    // NL (12 teams, 6 per division): 18 games vs 5 division rivals (90) + 12 games vs 6 cross-division (72) = 162
+    // AL (14 teams, 7 per division): 13 games vs 6 division rivals (78) + 12 games vs 7 cross-division (84) = 162
+    function generateMatchups(divA, divB, inDivGames, crossDivGames) {
       const matchups = [];
-      for (let i = 0; i < teams.length; i++) {
-        for (let j = i + 1; j < teams.length; j++) {
-          const team1 = teams[i];
-          const team2 = teams[j];
-          for (let g = 0; g < gamesPerPair; g++) {
-            // Alternate home/away
+      // In-division matchups
+      for (const div of [divA, divB]) {
+        for (let i = 0; i < div.length; i++) {
+          for (let j = i + 1; j < div.length; j++) {
+            const team1 = div[i];
+            const team2 = div[j];
+            for (let g = 0; g < inDivGames; g++) {
+              const homeTeam = g % 2 === 0 ? team1 : team2;
+              const awayTeam = g % 2 === 0 ? team2 : team1;
+              matchups.push({ home: homeTeam, away: awayTeam });
+            }
+          }
+        }
+      }
+      // Cross-division matchups
+      for (let i = 0; i < divA.length; i++) {
+        for (let j = 0; j < divB.length; j++) {
+          const team1 = divA[i];
+          const team2 = divB[j];
+          for (let g = 0; g < crossDivGames; g++) {
             const homeTeam = g % 2 === 0 ? team1 : team2;
             const awayTeam = g % 2 === 0 ? team2 : team1;
             matchups.push({ home: homeTeam, away: awayTeam });
@@ -61,34 +73,10 @@ Deno.serve(async (req) => {
       return matchups;
     }
 
-    // AL: 14 teams, each plays 162 games
-    // Division rivals (6): ~18 games each = 108
-    // Non-division AL (7): ~8 games each = 54... total 162? No, 108+54=162. 
-    // Actually: 13 opponents. 162/13 ≈ 12.5. Use 13 games per pair = 169, trim to 162.
-    // Simpler: use round-robin. 14 teams, 13 rounds per cycle.
-    // 162 / 13 ≈ 12.5 cycles. Use 13 cycles = 169 games, then trim last 7 games per team.
-    // For simplicity: 12 games per pair in AL = 12 * 13 = 156. Need 6 more per team.
-    // Add extra series vs division rivals: +1 game per division rival (6 games) = 162.
-
-    const alMatchups = generateMatchups(AL_TEAMS, 12);
-    // Add extra division games for AL
-    for (const div of [AL_EAST, AL_WEST]) {
-      for (let i = 0; i < div.length; i++) {
-        for (let j = i + 1; j < div.length; j++) {
-          const homeTeam = Math.random() < 0.5 ? div[i] : div[j];
-          const awayTeam = homeTeam === div[i] ? div[j] : div[i];
-          alMatchups.push({ home: homeTeam, away: awayTeam });
-        }
-      }
-    }
-
-    // NL: 12 teams, each plays 162 games
-    // 11 opponents. 162/11 ≈ 14.7. Use 15 games per pair = 165, trim 3 per team.
-    // Simpler: 15 games per pair = 165. Close enough.
-    const nlMatchups = generateMatchups(NL_TEAMS, 15);
-    // Trim: remove ~3 games per team (remove 18 games total: 3 per team / 2 = 18 games)
-    // Actually 165 - 162 = 3 extra per team. 12 teams * 3 / 2 = 18 games to remove.
-    // For simplicity, just keep 165 - it's close enough for a simulation.
+    // AL: 13 in-division, 12 cross-division = 78 + 84 = 162 per team
+    const alMatchups = generateMatchups(AL_EAST, AL_WEST, 13, 12);
+    // NL: 18 in-division, 12 cross-division = 90 + 72 = 162 per team
+    const nlMatchups = generateMatchups(NL_EAST, NL_WEST, 18, 12);
 
     const allMatchups = [...alMatchups, ...nlMatchups];
 
