@@ -1300,9 +1300,10 @@ function processPostHitBaserunning(state, hitType, batter, defenders) {
     if (hitType === 'single') state.bases[0] = null;
     else if (hitType === 'double') state.bases[1] = null;
     else if (hitType === 'triple') state.bases[2] = null;
-    state.log.push({ type: 'info', text: stretch.text });
-    if (state.lastPlay && state.lastPlay.text) state.lastPlay.text = `${state.lastPlay.text} - ${stretch.text}`;
-    state._celebrationBubble = `${stretch.text}`;
+    state.log.push({ type: 'caughtstealing', text: stretch.text });
+    // Update lastPlay to reflect the out (not the hit), so UI commentary and audio cues fire correctly
+    state.lastPlay = { type: 'caughtstealing', text: stretch.text };
+    state._celebrationBubble = stretch.text;
     recordOut(state);
   } else if (stretch.type === 'safe_double') {
     state.bases[1] = batter; state.bases[0] = null;
