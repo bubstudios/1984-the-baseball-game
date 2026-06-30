@@ -631,7 +631,7 @@ export const CARD_IMAGES = {
   'Charles Hudson':   BASE + '3532b39b3_images2.jpeg',
   'Al Holland':       BASE + 'd8294c097_images3.jpeg',
   'Larry Andersen':   BASE + '9085ef253_images4.jpeg',
-  'Bill Campbell':    BASE + '4e2d6f62b_generated_image.png',
+  'Bill Campbell':    BASE + '40a7f6eae_images.jpeg',
   'Don Carman':       BASE + '956274cee_images5.jpeg',
   'Jerry Koosman':    BASE + '34e2927c7_images8.jpeg',
   'Len Matuszek':     BASE + '77075f548_images.jpeg',
