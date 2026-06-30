@@ -487,6 +487,8 @@ export const CARD_IMAGES = {
   'Tom Henke':        BASE + 'f4d707847_images4.jpeg',
   'Odell Jones':      BASE + 'e976e2516_images2.jpeg',
   'Dave Tobik':       BASE + '2fcfc649b_images3.jpeg',
+  'Jim Bibby':        BASE + '5ed961183_images13.jpeg',
+  'Jim Bibby':        BASE + '5ed961183_images13.jpeg',
 
   // ── MONTREAL EXPOS ──
   'Tim Raines':       BASE + '638fe80b1_images.jpeg',
