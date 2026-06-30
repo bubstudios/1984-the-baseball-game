@@ -79,7 +79,7 @@ export const CARD_IMAGES = {
   'Luis Salazar':     BASE + '082f2a560_generated_image.png',
 
   // ── NEW YORK METS ──
-  'Dwight Gooden':    BASE + '603201e2b_generated_image.png',
+  'Dwight Gooden':    BASE + '53a1dd5d2_images15.jpeg',
   'Darryl Strawberry':BASE + '971bb71bb_images3.jpeg',
   'Keith Hernandez':  BASE + '1b0455494_images2.jpeg',
   'Wally Backman':    BASE + 'e6a2ec799_images.jpeg',
@@ -90,7 +90,7 @@ export const CARD_IMAGES = {
   'Ron Darling':      BASE + '8a6cdfe68_images5.jpeg',
   'Mike Fitzgerald':  BASE + '2bac5d8e8_images6.jpeg',
   'Jose Oquendo':     BASE + 'c9b3972ae_images7.jpeg',
-  'Walt Terrell':     BASE + 'd262929cf_generated_image.png',
+  'Walt Terrell':     BASE + 'c2308be15_images17.jpeg',
   'Bruce Berenyi':    BASE + '29fe750de_images7.jpeg',
   'Doug Sisk':        BASE + '9c715093f_images9.jpeg',
   'Brent Gaff':       BASE + '098e00042_images10.jpeg',
@@ -98,8 +98,7 @@ export const CARD_IMAGES = {
   'Ed Lynch':         BASE + '20404f832_images12.jpeg',
   'Ron Gardenhire':   BASE + 'c8f7cf4bc_images.jpeg',
   'Kelvin Chapman':   BASE + '0d63fac18_images1.jpeg',
-  'John Gibbons':     BASE + 'e2953ca61_generated_image.png',
-  'Danny Heep':       BASE + '0aa1c7327_generated_image.png',
+  'Danny Heep':       BASE + '9909e0276_images16.jpeg',
   'Rusty Staub':      BASE + '7632b714f_images4.jpeg',
   'Tim Leary':        BASE + '3369de80a_images14.jpeg',
   'Ron Hodges':       BASE + '6eec1771a_images2.jpeg',
