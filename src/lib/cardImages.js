@@ -619,7 +619,7 @@ export const CARD_IMAGES = {
   'Mike Schmidt':     BASE + '61e572ec3_images2.jpeg',
   'Steve Carlton':    BASE + '900aac045_images7.jpeg',
   'Juan Samuel':      BASE + 'f4a687c27_images.jpeg',
-  'Tug McGraw':       BASE + '4e2d6f62b_generated_image.png',
+  'Tug McGraw':       BASE + '15885041a_images6.jpeg',
   'Von Hayes':        BASE + '598c0367b_images3.jpeg',
   'Garry Maddox':     BASE + 'd256435e9_images6.jpeg',
   'Glenn Wilson':     BASE + '378436928_images4.jpeg',
@@ -631,9 +631,8 @@ export const CARD_IMAGES = {
   'Charles Hudson':   BASE + '3532b39b3_images2.jpeg',
   'Al Holland':       BASE + 'd8294c097_images3.jpeg',
   'Larry Andersen':   BASE + '9085ef253_images4.jpeg',
-  'Bill Campbell':    BASE + 'ad89472b3_images7.jpeg',
+  'Bill Campbell':    BASE + '4e2d6f62b_generated_image.png',
   'Don Carman':       BASE + '956274cee_images5.jpeg',
-  'Tug McGraw':       BASE + '15885041a_images6.jpeg',
   'Jerry Koosman':    BASE + '34e2927c7_images8.jpeg',
   'Len Matuszek':     BASE + '77075f548_images.jpeg',
   'Greg Gross':       BASE + '0b2e2f61e_images1.jpeg',
@@ -666,8 +665,6 @@ export const CARD_IMAGES = {
   'Wayne Krenchicki': BASE + '1919ce9fc_generated_image.png',
   'Eric Davis':       BASE + '0c50af9f9_generated_image.png',
 
-  // ── MISSING PLAYERS (now added) ──
-  'Jerry Koosman':    BASE + 'b71634c67_generated_image.png',  // Phillies pitcher
   };
 
 /**
