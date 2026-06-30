@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Calendar, TrendingUp, Users, Play } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
+import LeagueLeaders from '@/components/season/LeagueLeaders';
 
 export default function SeasonDashboard() {
   const [season, setSeason] = useState(null);
@@ -396,16 +397,12 @@ export default function SeasonDashboard() {
           </div>
         )}
 
-        {activeTab === 'leaders' && (
+        {activeTab === 'leaders' && season && (
           <div className="space-y-6">
             <h2 className="font-heading text-lg font-bold text-foreground">
               League Leaders
             </h2>
-            <div className="text-center py-12 text-muted-foreground">
-              <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p className="font-heading">Coming Soon</p>
-              <p className="text-sm mt-2">Batting, Pitching, and Fielding stats</p>
-            </div>
+            <LeagueLeaders seasonId={season.id} />
           </div>
         )}
 
