@@ -1,228 +1,215 @@
 /**
- * Phase 2.7 - Situational Bunting Decision Gate
- * 
- * Bunting is a PRE-SWING decision, not a swing option.
- * Evaluated separately before normal hitting logic based on situation + batter traits.
- * Two types: sacrifice (runners + <2 outs) and bunt-for-hit (rare, speed+low-power guys).
+ * Phase 2.7 - Situational Bunting Decision Gate (TUNED)
+ *
+ * Bunting is a PRE-SWING decision. Two types:
+ * - sacrifice (runners + <2 outs, weak hitters / pitchers, clear sac spots)
+ * - bunt-for-hit (rare surprise from fast, low-power guys)
+ *
+ * Tuned to be RARE and SITUATIONAL. Most hitters in most spots should NOT bunt.
  */
 
-const SAC_THRESHOLD = 50;    // Score needed to trigger sacrifice bunt (SP in NL park case: ~60 is baseline)
-const HIT_THRESHOLD = 45;    // Score for bunt-for-hit attempt (~40% chance if score >= threshold)
+const SAC_THRESHOLD = 75; // Raised from 50 - requires a genuine sac situation, not just 'close & late'
+const HIT_THRESHOLD = 70; // Raised from 45 - bunt-for-hit must be a strong fit
 
-/**
- * Determine if batter should bunt in current situation.
- * Called BEFORE normal swing logic.
- * Returns: 'sacrifice' | 'bunt_for_hit' | null
- */
 export function shouldBunt(batter, game) {
   if (!batter || !game) return null;
-  
-  // Check if batter is a pitcher (critical flag)
+
   const isPitcher = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP', 'RP', 'CL'].includes(batter.assignedPos));
-  
-  // ── SACRIFICE BUNT TRIGGER ──
-  const sacScore = sac_bunt_score(batter, game);
-  if (sacScore >= SAC_THRESHOLD && sacScore >= (hitBuntScore(batter, game) || 0)) {
-    return 'sacrifice';
+
+  // — SACRIFICE BUNT —
+  const sacScore = sac_bunt_score(batter, game, isPitcher);
+  if (sacScore >= SAC_THRESHOLD) {
+    // Even when it qualifies, don't ALWAYS bunt - add a probability gate so it's not robotic.
+    // Pitchers bunt nearly always in a sac spot; position players much less often.
+    const sacChance = isPitcher ? 0.85 : 0.45;
+    if (Math.random() < sacChance) return 'sacrifice';
   }
-  
-  // ── BUNT-FOR-HIT TRIGGER (rare) ──
+
+  // — BUNT-FOR-HIT (rare surprise)
   const hitScore = hitBuntScore(batter, game);
-  if (hitScore >= HIT_THRESHOLD && Math.random() < 0.40) {
+  if (hitScore >= HIT_THRESHOLD && Math.random() < 0.12) { // was 0.40 - now a true rarity
     return 'bunt_for_hit';
   }
-  
+
   return null;
 }
 
 /**
  * Sacrifice bunt score - evaluated when runners are on and <2 outs.
  */
-function sac_bunt_score(batter, game) {
-   if (!game.runner_on_1st && !game.runner_on_2nd && !game.runner_on_3rd || game.outs >= 2) {
-     return 0;
-   }
+function sac_bunt_score(batter, game, isPitcher) {
+  // Must have runner to advance and <2 outs
+  if (!game.runner_on_1st && !game.runner_on_2nd && !game.runner_on_3rd) return 0;
+  if (game.outs >= 2) return 0;
 
-   // HARD SUPPRESSOR: Power hitters (PWR >= 7) or cleanup/middle-order bats never sac bunt
-   if (batter.power >= 7) {
-     return 0;  // Cleanup hitters do not sacrifice
-   }
+  // Runner must be in sac-appropriate spot (1st or 2nd)
+  const runnerInSacSpot = game.runner_on_1st || game.runner_on_2nd;
+  if (!runnerInSacSpot) return 0;
 
-   let s = 0;
+  // HARD SUPPRESSORS: Good hitters never sac bunt
+  if ((batter.power || 0) >= 6) return 0; // was >= 7 - now even power-6 sluggers don't bunt
+  if (!isPitcher && (batter.contact || 0) >= 7) return 0; // Contact >= 7 non-pitchers never sac
 
-   // THE HEADLINE CASE - pitcher hitting (esp. AL pitcher in NL park, no DH)
-   const isPitcherBatting = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP', 'RP', 'CL'].includes(batter.assignedPos));
-   if (isPitcherBatting) {
-     s += 60;  // AL pitcher bunting = near-automatic in this situation
-   }
-  
+  // EARLY-INNING SUPPRESSOR: Non-pitchers don't sac before 6th
+  if (!isPitcher && game.inning < 6) return 0;
+
+  let s = 0;
+
+  // Pitcher batting = near-automatic sac consideration
+  if (isPitcher) {
+    s += 70; // baseline for pitcher
+  }
+
   // Runner advancement value
-  if (game.runner_on_1st && !game.runner_on_2nd) {
-    s += 15;
+  if (game.runner_on_1st && !game.runner_on_2nd && !game.runner_on_3rd) {
+    s += 12; // 1st only, modest value
   }
   if (game.runner_on_2nd && !game.runner_on_3rd) {
-    s += 20;  // Move runner to third with <2 outs = big
+    s += 20; // 2nd to 3rd with <2 outs = big
   }
-  if (game.runner_on_1st && game.runner_on_2nd) {
-    s += 18;
+  if (game.runner_on_1st && game.runner_on_2nd && !game.runner_on_3rd) {
+    s += 22; // move both up
   }
-  
-  // Game situation
-  if (game.inning >= 7) {
-    s += 15;  // Late, play for one run
+
+  // Game situation - late & close only
+  if (game.inning >= 8) {
+    s += 18; // very late
+  } else if (game.inning >= 7) {
+    s += 12; // late
   }
   if (Math.abs(game.score_margin) <= 1) {
-    s += 15;  // Close game
+    s += 15; // close game
   }
   if (game.score_margin === 0 && game.inning >= 8) {
-    s += 10;  // Tie, very late - manufacture a run
+    s += 12; // tie, very late
   }
-  
-  // Weak hitter - bunting costs little
-  if (batter.power <= 3) {
-    s += 10;
+
+  // Only play for one run when TIED or DOWN by 1 late - never sacrifice when trailing big or leading big
+  if (game.score_margin <= -2 || game.score_margin >= 2) {
+    s -= 25; // don't sac when up/down by multiple runs
   }
-  if (batter.contact <= 3) {
-    s += 8;
-  }
-  
+
+  // Genuinely weak hitter - bunting costs little
+  if (batter.power <= 3) s += 12;
+  if (batter.contact <= 4) s += 8;
+
   return s;
 }
 
 /**
- * Bunt-for-hit score - evaluated for fast, low-power guys only.
+ * Bunt-for-hit score. Fast, low-power guys only, and only as an occasional surprise.
  */
 function hitBuntScore(batter, game) {
-  if (game.outs >= 2) {
-    return 0;
-  }
-  
+  if (game.outs >= 2) return 0;
+
+  // Speed is the entire premise - must be genuinely fast
+  if ((batter.speed || 0) < 7) return 0; // was 6; now only real speed qualifies
+
+  // Must be low power - this is a slap-bunt profile, not a hitter giving up an AB
+  if ((batter.power || 5) > 4) return 0;
+
   let s = 0;
-  
-  // Speed is the entire premise
-  if (batter.speed >= 8) {
-    s += 25;  // Speed is the entire premise
-  } else if (batter.speed >= 6) {
-    s += 12;
-  } else {
-    return 0;  // Slow guys don't bunt for hit
-  }
-  
-  // Weak power only
-  if (batter.power <= 2) {
-    s += 15;  // Slap-hitter profile
-  }
-  
-  // Third baseman playing back (optional, improves realism)
-  if (game.third_baseman_playing_back) {
-    s += 15;  // Defense is conceding it
-  }
-  
-  // Late-inning leadoff baserunner in close game
+
+  if (batter.speed >= 9) s += 35;
+  else if (batter.speed >= 8) s += 28;
+  else s += 20; // speed 7
+
+  if (batter.power <= 2) s += 18; // true slap-hitter
+  else if (batter.power <= 3) s += 10;
+
+  if (game.third_baseman_playing_back) s += 18; // defense conceding it
+
+  // Best as a leadoff baserunner late in a close game
   if (game.bases_empty && game.inning >= 7 && Math.abs(game.score_margin) <= 1) {
-    s += 10;  // Leadoff baserunner late in a close game
+    s += 12;
   }
-  
-  // Add low random gate so it stays unpredictable / rare
-  s += Math.random() * 10;
-  
+
+  // Don't bunt for a hit with runners in scoring position you'd strand / a rally going
+  if (game.runner_on_2nd || game.runner_on_3rd) {
+    s -= 20;
+  }
+
+  s += Math.random() * 8; // small unpredictability
+
   return s;
 }
 
 /**
- * Resolve a bunt attempt as its own mini-event.
- * Returns: { type, text, batterOut, success }
+ * Resolve a bunt attempt.
  */
 export function resolveBunt(buntType, batter, game) {
-  if (buntType === 'sacrifice') {
-    return resolveSacBunt(batter, game);
-  } else if (buntType === 'bunt_for_hit') {
-    return resolveBuntForHit(batter, game);
-  }
+  if (buntType === 'sacrifice') return resolveSacBunt(batter, game);
+  if (buntType === 'bunt_for_hit') return resolveBuntForHit(batter, game);
   return null;
 }
 
 function resolveSacBunt(batter, game) {
-  // Bunting skill scales off CON (or dedicated bunt rating).
-  // Pitchers in 1984 were generally decent sac bunters - give them a solid clean-sac rate.
   const isPitcher = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP', 'RP', 'CL'].includes(batter.assignedPos));
   const conRating = (batter.contact || 3) / 10;
-  const pitcherBonus = isPitcher ? 0.15 : 0;  // Pitchers 1984 were decent bunters
-  
-  const cleanSacChance = 0.30 + conRating * 0.35 + pitcherBonus;  // High if competent
+  const pitcherBonus = isPitcher ? 0.10 : 0;
+
+  const cleanSacChance = 0.45 + conRating * 0.30 + pitcherBonus; // competent sac success
   const roll = Math.random();
-  
+
   if (roll < cleanSacChance) {
-    // ── CLEAN SAC (SUCCESS) ──
-    // Pitcher got the out, but conceded a base advancement.
-    // Small penalty - roughly neutral, but not a positive.
     return {
       type: 'sacrifice_success',
-      text: `${batter.name} lays down a perfect sacrifice bunt - runner advances, batter out.`,
+      text: `${batter.name} lays down a sacrifice bunt - runner advances, batter out.`,
       batterOut: true,
       success: true,
-      composureDelta: -2,  // Small penalty for conceding base, slight morale sting
+      composureDelta: -2,
     };
-  } else if (roll < cleanSacChance + 0.15) {
-    // ── BUNT SINGLE (rare, good defense slow) ──
-    // A BUNT SINGLE IS A HIT - bunt attempt failed, batter got on = pitcher allowed a hit.
-    // Composure penalty like any other hit.
+  } else if (roll < cleanSacChance + 0.08) {
+    // Bunt single - rarer now (was 0.15)
     return {
       type: 'bunt_single',
       text: `${batter.name} sneaks a bunt single through the infield! Runners advance.`,
       batterOut: false,
       success: true,
-      composureDelta: -8,  // Pitcher allowed a hit - negative
+      composureDelta: -8,
     };
-  } else if (roll < cleanSacChance + 0.30) {
-    // ── POP-UP / LINEOUT ──
+  } else if (roll < cleanSacChance + 0.26) {
     return {
       type: 'bunt_pop',
-      text: `${batter.name} pops up the bunt attempt - caught by the catcher!`,
+      text: `${batter.name} pops up the bunt attempt - caught!`,
       batterOut: true,
       success: false,
-      composureDelta: -5,  // Small penalty (failed execution)
+      composureDelta: -5,
     };
   } else {
-    // ── FORCE AT LEAD BASE ──
     return {
       type: 'bunt_force',
-      text: `${batter.name} bunts into a force out at the lead base.`,
+      text: `${batter.name} bunts into a force out at the lead base - rally killed.`,
       batterOut: true,
       success: false,
-      composureDelta: -8,  // Moderate penalty (killed the rally)
+      composureDelta: -8,
     };
   }
 }
 
 function resolveBuntForHit(batter, game) {
-  // Speed is the key - scales heavily off SPD.
-  // Slow guys make outs (which is why they shouldn't attempt).
   const spdRating = (batter.speed || 5) / 10;
   const pwrRating = (batter.power || 5) / 10;
-  
-  // High SPD beats defense, low PWR forces bunts to be short/weak (easier to field)
-  const contactChance = 0.45 * spdRating - pwrRating * 0.10;
-  
-  if (Math.random() >= contactChance) {
-    // ── MAKE AN OUT (most likely for slow guys) ──
-    return {
-      type: 'bunt_for_hit_out',
-      text: `${batter.name} swings for the hills but bunts weakly - easy out.`,
-      batterOut: true,
-      success: false,
-      composureDelta: -10,  // Moderate penalty
-    };
-  } else {
-    // ── BUNT SINGLE ──
-    // A bunt-for-hit single is still a hit allowed by the pitcher.
-    // Pitcher composure goes down like any other hit.
+
+  // Realistic bunt-for-hit success: even fast guys only beat it out ~30-40% of the time.
+  // (was effectively ~38% for any qualifying guy AND fired far too often)
+  const successChance = Math.max(0.10, Math.min(0.40, 0.30 * spdRating + 0.10 - pwrRating * 0.05));
+
+  if (Math.random() < successChance) {
     return {
       type: 'bunt_for_hit_single',
       text: `${batter.name} beats out a bunt single on the infield!`,
       batterOut: false,
       success: true,
-      composureDelta: -9,  // Pitcher allowed a hit - negative
+      composureDelta: -9,
+    };
+  } else {
+    return {
+      type: 'bunt_for_hit_out',
+      text: `${batter.name} tries to bunt for a hit but is thrown out at first.`,
+      batterOut: true,
+      success: false,
+      composureDelta: -6,
     };
   }
 }
