@@ -582,6 +582,14 @@ export const CARD_IMAGES = {
   'Brad Komminsk':    BASE + 'c898f664c_images2.jpeg',
   'Jerry Royster':    BASE + '9cc006369_images1.jpeg',
   'Randy Johnson':    BASE + '11d326e08_images.jpeg',
+  'Pete Falcone':     BASE + 'f08efff31_images7.jpeg',
+  'Rick Camp':        BASE + 'b7ad7c4b5_images6.jpeg',
+  'Jeff Dedmon':      BASE + 'eda3f8aee_images5.jpeg',
+  'Gene Garber':      BASE + '106eed694_images4.jpeg',
+  'Terry Forster':    BASE + '9858a6cd0_images3.jpeg',
+  'Steve Bedrosian':  BASE + '4aadc110f_images2.jpeg',
+  'Len Barker':       BASE + '13abc7930_images1.jpeg',
+  'Donnie Moore':     BASE + '0b49354bd_images.jpeg',
 
   // ── HOUSTON ASTROS ──
   'Nolan Ryan':       BASE + 'e87eebb57_generated_image.png',
