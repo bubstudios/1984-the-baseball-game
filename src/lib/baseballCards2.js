@@ -249,7 +249,6 @@ export const EXTRA_ROSTERS = {
     { id: 23, name: 'Dave Hostetler',   position: '1B',  number: 21, ba: '.209', hr: 8,  rbi: 22,  era: '-',    role: 'Bench/Power',          rarity: 'common'   },
     { id: 24, name: 'Bob Jones',        position: 'OF',  number: 34, ba: '.259', hr: 4,  rbi: 22,  era: '-',    role: 'Bench/Utility',        rarity: 'common'   },
     { id: 25, name: 'Jeff Kunkel',      position: 'C',   number: 10, ba: '.221', hr: 2,  rbi: 7,   era: '-',    role: 'Bench/Rookie Catcher', rarity: 'uncommon' },
-    { id: 26, name: 'Jim Bibby',        position: 'RP',  number: 39, ba: '-',    hr: '-', rbi: '-', era: '4.41', role: 'Relief/Veteran',       rarity: 'uncommon' },
   ],
 
   expos: [
