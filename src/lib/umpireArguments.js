@@ -35,13 +35,15 @@ export function getArgumentSeverity(lastPlay, gameState, usedTopics) {
 
   // ── BALL / STRIKE ARGUMENTS (routine - unlimited) ──
   if (["strike","foul"].includes(type)) {
-    if (text.includes("Strike 3") || text.includes("strike 3") || text.includes("called strike three")) {
+    // Only allow grumbling on CALLED strikes, not swinging strikes
+    const isSwingingStrike = text.includes("Swinging") || text.includes("Swing and") || text.includes("swings and misses");
+    if ((text.includes("Strike 3") || text.includes("strike 3") || text.includes("called strike three")) && !isSwingingStrike) {
       const calls = ["called strike three","high strike - above the letters","low strike - was it at the knees?","inside strike - batter says off the plate","outside corner - catcher pulled it back"];
       return arg(pick(calls), "medium", 3, "strikeZone", "routine");
     }
     if ((text.includes("takes a") || text.includes("watches it")) && r < 0.22)
       return arg("borderline strike call", "low", 1, "strikeZone", "routine");
-    if ((text.includes("Swinging") || text.includes("Swing and")) && r < 0.10)
+    if (isSwingingStrike && r < 0.10)
       return arg("pitch looked outside", "chirp", 0, "strikeZone", "routine");
     return null;
   }
