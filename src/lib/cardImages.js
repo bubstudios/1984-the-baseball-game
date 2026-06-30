@@ -36,8 +36,8 @@ export const CARD_IMAGES = {
   'Rick Sutcliffe':   BASE + '1bb0af303_images8.jpeg',
   'Leon Durham':      BASE + '778ad175f_images3.jpeg',
   'Lee Smith':        BASE + 'dcf2be29f_images.jpeg',
-  'Rich Bordi':       BASE + 'efd8ddf0c_images7.jpeg',
-  'Dick Ruthven':     BASE + 'af95d8a63_images6.jpeg',
+  'Rich Bordi':       BASE + '6aca2ea72_images19.jpeg',
+  'Dick Ruthven':     BASE + '0431fe0c7_images20.jpeg',
   'Bob Dernier':      BASE + '1c28568aa_images.jpeg',
   'Gary Matthews':    BASE + '87546bf71_images2.jpeg',
   'Keith Moreland':   BASE + '0ab1d2041_images4.jpeg',
@@ -56,7 +56,7 @@ export const CARD_IMAGES = {
   'Henry Cotto':      BASE + '1bad14c69_images1.jpeg',
   'Steve Lake':       BASE + 'ae921b403_images3.jpeg',
   'Dave Owen':        BASE + '1c442ea54_images4.jpeg',
-  'Gary Woods':       BASE + '3498ecc77_images5.jpeg',
+  'Gary Woods':       BASE + '1395bc7f2_images21.jpeg',
 
   // ── SAN DIEGO PADRES ──
   'Tony Gwynn':       BASE + 'f732721d5_images1.jpeg',
