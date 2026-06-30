@@ -232,6 +232,7 @@ export const CARD_IMAGES = {
   'Carlos Diaz':      BASE + '26648da70_images3.jpeg',
   'Tom Niedenfuer':   BASE + 'dbdd4b581_images5.jpeg',
   'Burt Hooton':      BASE + 'cdf6bf467_images4.jpeg',
+  'Rick Honeycutt':   BASE + '44c2fe7c5_images7.jpeg',
   'Bill Russell':     BASE + 'e2b9108ec_images.jpeg',
   'Candy Maldonado':  BASE + '2c81ea780_images1.jpeg',
   'Bob Bailor':       BASE + 'eee18e699_images3.jpeg',
