@@ -164,6 +164,7 @@ export const CARD_IMAGES = {
   'Brian Dayett':     BASE + '4c636d598_images48.jpeg',
   'Tim Foli':         BASE + '2df2b544e_images49.jpeg',
   'Omar Moreno':      BASE + '1b736a7cd_images56.jpeg',
+  'Jose Rijo':        BASE + '7d842bf01_images2.jpeg',
 
   // ── BALTIMORE ORIOLES ──
   'Cal Ripken Jr.':   BASE + 'b02f8f458_images6.jpeg',
