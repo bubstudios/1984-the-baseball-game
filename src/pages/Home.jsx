@@ -541,10 +541,16 @@ export default function Home() {
 
   // Celebration bubble from game engine - route to inline banner
   useEffect(() => {
-    if (gameState?._celebrationBubble && gameState._celebrationBubble !== prevCelebrationBubble.current) {
-      prevCelebrationBubble.current = gameState._celebrationBubble;
-      setInlineGameEvent({ type: 'celebration', event: gameState._celebrationBubble });
-      setTimeout(() => setInlineGameEvent(null), 7500);
+    if (gameState?._celebrationBubble) {
+      // Use lastPlay._seq if available to distinguish identical back-to-back events
+      const key = gameState.lastPlay?._seq
+        ? `${gameState._celebrationBubble}__${gameState.lastPlay._seq}`
+        : gameState._celebrationBubble;
+      if (key !== prevCelebrationBubble.current) {
+        prevCelebrationBubble.current = key;
+        setInlineGameEvent({ type: 'celebration', event: gameState._celebrationBubble });
+        setTimeout(() => setInlineGameEvent(null), 7500);
+      }
     }
   }, [gameState]);
 

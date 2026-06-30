@@ -1606,6 +1606,7 @@ function processHoldingGame(state) {
     state.bases[0]._heldClose = true;
   }
   state.log.push({ type: 'info', text: outcome.text });
+  state.lastPlay = { type: 'pickoff', text: outcome.text, _seq: Date.now() + Math.random() };
   state._celebrationBubble = outcome.text;
   return { nothing: true };
 }
