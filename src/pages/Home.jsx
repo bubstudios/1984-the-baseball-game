@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { TEAMS, PITCH_TYPES, SWING_TYPES, MANAGERS } from '@/lib/gameData';
 import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk, cpuCheckPinchHit, pickCpuReliever } from '@/lib/gameEngine';
 import { applyWeatherEffects } from '@/lib/weather';
+import ModeSelect from '@/components/game/ModeSelect';
 import TeamSelect from '@/components/game/TeamSelect';
 import BallparkSelect from '@/components/game/BallparkSelect';
 import LineupManager from '@/components/game/LineupManager';
@@ -140,6 +141,7 @@ import { rollIllnessesForTeam } from '@/lib/illnessSystem';
 
 
 export default function Home() {
+  const [gameMode, setGameMode] = useState(null); // 'exhibition' | 'season'
   const [gameState, setGameState] = useState(null);
   const [homeTeam, setHomeTeam] = useState(null);
   const [awayTeam, setAwayTeam] = useState(null);
@@ -252,6 +254,13 @@ export default function Home() {
     setGameState(state);
     setLineupPhase(null);
     gameStartTimeRef.current = Date.now();
+  }, []);
+
+  const handleModeSelect = useCallback((mode) => {
+    if (mode === 'exhibition') {
+      setGameMode('exhibition');
+    }
+    // Season mode is locked - do nothing
   }, []);
 
   const handleTeamSelect = useCallback((home, away) => {
@@ -1482,6 +1491,7 @@ export default function Home() {
   }, [injuryAlert, gameState, userTeam]);
 
   const handleNewGame = () => {
+    setGameMode(null);
     setGameState(null);
     setBallparkPhase(null);
     setLineupPhase(null);
@@ -1561,6 +1571,16 @@ export default function Home() {
     if (loadingScreen) {
       return <RetroLoading onComplete={() => setLoadingScreen(false)} />;
     }
+    // Mode selection screen
+    if (!gameMode) {
+      return (
+        <>
+          <ModeSelect onSelectMode={handleModeSelect} onBack={() => setGameMode(null)} />
+          {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
+        </>
+      );
+    }
+    // Team selection (Exhibition mode only)
     return (
       <>
         <div className="fixed top-4 right-4 z-40 flex gap-2">
