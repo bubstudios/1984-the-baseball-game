@@ -297,7 +297,6 @@ export const EXTRA_ROSTERS = {
     { id: 16, name: 'Dane Iorg',        position: 'OF',  number: 16, ba: '.276', hr: 4,  rbi: 25,  era: '-',    role: 'Bench/Utility',        rarity: 'common'   },
     { id: 17, name: 'Mike Jorgensen',   position: '1B',  number: 13, ba: '.248', hr: 5,  rbi: 22,  era: '-',    role: 'Bench/First Base',     rarity: 'common'   },
     { id: 18, name: 'Tom Nieto',        position: 'C',   number: 8,  ba: '.217', hr: 2,  rbi: 10,  era: '-',    role: 'Backup Catcher',       rarity: 'common'   },
-    { id: 19, name: 'Ivan DeJesus',     position: 'SS',  number: 4,  ba: '.232', hr: 1,  rbi: 12,  era: '-',    role: 'Backup Shortstop',     rarity: 'common'   },
   ],
 
   pirates: [
