@@ -415,11 +415,11 @@ export const CARD_IMAGES = {
   'Salome Barojas':   BASE + '9cb8341b7_generated_image.png',
   'Dan Spillner':     BASE + '9cb8341b7_generated_image.png',
   'Tom Paciorek':     BASE + '0cfec192f_images8.jpeg',
-  'Jerry Hairston':   BASE + '034343ae9_generated_image.png',
-  'Marc Hill':        BASE + 'b3849e764_generated_image.png',
-  'Joel Skinner':     BASE + 'b3849e764_generated_image.png',
-  'Mike Squires':     BASE + '034343ae9_generated_image.png',
-  'Jerry Dybzinski':  BASE + '034343ae9_generated_image.png',
+  'Jerry Hairston':   BASE + 'e59c1e4e4_images.jpeg',
+  'Marc Hill':        BASE + '56dff6527_images1.jpeg',
+  'Joel Skinner':     BASE + '6a0ee5961_images2.jpeg',
+  'Mike Squires':     BASE + '383b52823_images5.jpeg',
+  'Jerry Dybzinski':  BASE + '8b94f7498_images4.jpeg',
   'Britt Burns':      BASE + '9cb8341b7_generated_image.png',
 
   // ── SEATTLE MARINERS ──
