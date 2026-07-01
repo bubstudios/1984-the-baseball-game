@@ -183,6 +183,7 @@ export default function Home() {
   const prevLogLength = useRef(0);
   const prevInning = useRef(null);
   const prevBallparkPlay = useRef(null);
+  const achievementsQueuedRef = useRef(false);
   const [showStretch, setShowStretch] = useState(null);
   const [bannerQueue, setBannerQueue] = useState([]);
   const [activeBanner, setActiveBanner] = useState(null);
@@ -805,18 +806,20 @@ export default function Home() {
     }
 
     // Award a baseball card ONLY on user wins (not CPU wins)
+    let cardWillAward = false;
     if (userWon && userTeam) {
       try {
         loadFromStorage(userTeam);
         const card = getRandomCardForTeam(userTeam);
         if (card) {
+          cardWillAward = true;
           const isNew = !getCollectedIds(userTeam).includes(card.id);
           const achievementIds = addCard(userTeam, card.id);
           saveToStorage(userTeam);
           setTimeout(() => setCardAward({ ...card, isNew }), 3000);
           if (achievementIds.length > 0) {
             setNewAchievements(prev => [...prev, ...achievementIds]);
-            setTimeout(() => setShowAchievementPopup(true), 3500);
+            achievementsQueuedRef.current = true;
           }
         }
       } catch (e) { console.error('cardAward failed:', e); }
@@ -828,13 +831,22 @@ export default function Home() {
       const progress = result.newProgress || [];
       if (newOnes.length > 0) {
         setNewAchievements(newOnes);
-        setTimeout(() => setShowAchievementPopup(true), 3500);
+        achievementsQueuedRef.current = true;
       }
       if (progress.length > 0) {
         setLeaderProgress(progress[0]);
       }
     } catch (e) {
       console.error('checkGameAchievements failed:', e);
+    }
+    // Fallback: if no card modal will appear, show achievements after a delay
+    if (achievementsQueuedRef.current && !cardWillAward) {
+      setTimeout(() => {
+        if (achievementsQueuedRef.current) {
+          achievementsQueuedRef.current = false;
+          setShowAchievementPopup(true);
+        }
+      }, 5000);
     }
 
     // Analytics: game completed
@@ -1559,6 +1571,7 @@ export default function Home() {
     setFielderInjury(null);
     setPregameIllnesses(null);
     setInjuryAlert(null);
+    achievementsQueuedRef.current = false;
   };
 
   if (ballparkPhase) {
@@ -2075,7 +2088,13 @@ export default function Home() {
       {cardAward && (
         <CardAwardModal
           card={cardAward}
-          onDismiss={() => setCardAward(null)}
+          onDismiss={() => {
+            setCardAward(null);
+            if (achievementsQueuedRef.current) {
+              achievementsQueuedRef.current = false;
+              setShowAchievementPopup(true);
+            }
+          }}
         />
       )}
 
