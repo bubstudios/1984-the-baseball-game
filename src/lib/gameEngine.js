@@ -2166,12 +2166,26 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const inning = newState.inning, stamina = cpuPitcher.stamina || 5;
   const isReliever = ['RP','CL'].includes(cpuPitcher.pos) || ['RP','CL'].includes(cpuPitcher.assignedPos);
   const maxInnings = isReliever ? stamina * 0.4 : Math.max(4.2, stamina * 0.7);
-  const fatiguePull = ip >= maxInnings + 0.5, walksPull = bbi >= 5, blowupPull = inning < 6 && runs >= 5;
   const cpuScore = newState.score[cpuPitchingSide], userScore = newState.score[cpuBattingSide];
-  const lateClose = inning >= 7 && Math.abs(cpuScore - userScore) <= 2 && ip >= 2;
-  const recentCollapse = (runs >= 2 && bbi >= 2 && inning >= 5), severeFatigue = ip >= maxInnings + 2;
-  // Don't pull starters with a lead unless severely fatigued
   const hasLead = cpuScore > userScore;
+  const margin = Math.abs(cpuScore - userScore);
+  
+  // — BLOWUP PULL — now works in ALL innings (was gated to inning < 6, which let
+  // a shelled reliever stay in forever late in games). Pull anyone giving up a
+  // crooked number. Relievers get a tighter leash than starters. —
+  const fatiguePull = ip >= maxInnings + 0.5;
+  const walksPull = bbi >= 5;
+  const blowupPull =
+    (isReliever && runs >= 4) ||  // any reliever who's given up 4+ in his outing
+    (isReliever && runs >= 5 && inning < 6) || // early-game starter blowup (original rule)
+    (isReliever && runs >= 6); // starter giving up 6+ at any point
+  
+  // — LATE-CLOSE — only bring in a fresh high-leverage arm to PROTECT A LEAD (or in a
+  // tie), never when trailing. A losing team has no save to protect. —
+  const lateClose = inning >= 7 && (hasLead || margin === 0) && margin <= 3 && ip >= 2;
+  
+  const severeFatigue = ip >= maxInnings + 2;
+  // Don't pull a pitcher who's cruising with a lead unless he's clearly done.
   const notSeverelyFatigued = !severeFatigue && !fatiguePull;
   // Fresh starter in early innings stays in - 1984 starters routinely went 7-9 innings
   if (!isReliever && inning < 6 && !severeFatigue && !fatiguePull && runs < 5 && bbi < 5) return newState;
@@ -2180,22 +2194,27 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const shouldChange = (severeFatigue || fatiguePull || walksPull || blowupPull || lateClose) && cpuBullpen.length > 0;
   if (shouldChange) {
     making_pitching_change = true;  // Flag for double-switch evaluation
-    // Bullpen management: closers only in 8th+, mop-up guys in blowouts
+    // Bullpen management - closers are for protecting late leads only.
     const trailing = cpuScore < userScore;
-    const bigDeficit = Math.abs(cpuScore - userScore) >= 4;
+    const bigDeficit = margin >= 4;
+    // A real save situation: leading by 1-3, 8th inning or later.
+    const saveSituation = hasLead && margin <= 3 && inning >= 8;
     const isCloser = (p) => p.pos === 'CL' || p.assignedPos === 'CL';
     let candidates;
-    if (trailing && bigDeficit && inning <= 7) {
-      // Mop-up duty - exclude closers, use worst available
+    if (trailing && bigDeficit) {
+      // Getting blown out - mop-up duty, save the good arms. Never a closer.
       candidates = [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => a.control - b.control);
       if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => a.control - b.control);
-    } else if (inning < 7) {
-      // Before 7th inning - never use closers, pick best non-closer
-      candidates = [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => b.control - a.control);
+    } else if (saveSituation) {
+      // Protecting a late lead - bring in the closer if available, else best arm.
+      const closers = [...cpuBullpen].filter(isCloser).sort((a, b) => b.control - a.control);
+      candidates = closers.length > 0 ? closers : [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => b.control - a.control);
       if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
     } else {
-      // 7th inning+ - closers allowed, best pitcher first
-      candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
+      // Everything else (trailing close, tied, middle innings) - best NON-closer arm.
+      // Save the closer for a save situation; don't burn him when behind or in a tie mid-game.
+      candidates = [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => b.control - a.control);
+      if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
     }
     const newPitcher = candidates[0];
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
