@@ -7,7 +7,8 @@
 
 /**
  * Calculate situational ratings for a batter vs opposing pitcher
- * @param {Object} batter - Player object with contact, power, bats
+ * Matches the game engine's getSituationalBatter() logic (without count modifiers)
+ * @param {Object} batter - Player object with contact, power, bats, splits
  * @param {Object} opposingPitcher - Pitcher object with throws
  * @param {Object} gameConditions - { isNight, isHome, h2hStats }
  * @returns {Object} { contact: 1-10, power: 1-10, factors: string[] }
@@ -16,85 +17,52 @@ export function calculateSituationalRatings(batter, opposingPitcher, gameConditi
   if (!batter) return { contact: 0, power: 0, factors: [] };
   
   const factors = [];
-  let contactMod = 0;
-  let powerMod = 0;
   
-  // Base ratings from player card
-  const baseContact = batter.contact || 0;
-  const basePower = batter.power || 0;
+  // Start with base card ratings
+  let adjContact = batter.contact || 0;
+  let adjPower = batter.power || 0;
   
-  // 1. Platoon advantage/disadvantage
-  if (opposingPitcher) {
-    const batterBats = batter.bats;
-    const pitcherThrows = opposingPitcher.throws;
-    
-    if (batterBats && pitcherThrows) {
-      if (batterBats === 'L' && pitcherThrows === 'R') {
-        contactMod += 1;
-        powerMod += 1;
-        factors.push('L vs RHP');
-      } else if (batterBats === 'R' && pitcherThrows === 'L') {
-        contactMod += 1;
-        powerMod += 1;
-        factors.push('R vs LHP');
-      } else if (batterBats === pitcherThrows) {
-        contactMod -= 2;
-        powerMod -= 2;
-        factors.push('Same hand');
-      }
+  // 1. Splits adjustment (vs LHP/RHP) - matches game engine's getSplitAdjustedPlayer
+  if (opposingPitcher && batter.splits) {
+    const pitcherHand = opposingPitcher.throws;
+    const split = pitcherHand === 'L' ? batter.splits.vsLHP : batter.splits.vsRHP;
+    if (split && split.ab >= 20) {
+      const vl = batter.splits.vsLHP;
+      const vr = batter.splits.vsRHP;
+      const ta = vl.ab + vr.ab;
+      const th = vl.ba * vl.ab + vr.ba * vr.ab;
+      const oBA = ta > 0 ? th / ta : 0.250;
+      const tHR = vl.hr + vr.hr;
+      const oHRR = ta > 0 ? tHR / ta : 0.020;
+      const baR = oBA > 0 ? split.ba / oBA : 1;
+      adjContact = Math.max(1, Math.min(10, Math.round(batter.contact * baR)));
+      const sHRR = split.ab > 0 ? split.hr / split.ab : 0;
+      const hRR = oHRR > 0 ? sHRR / oHRR : 1;
+      const cHRR = Math.max(0.4, Math.min(hRR, 1.8));
+      adjPower = Math.max(1, Math.min(10, Math.round(batter.power * cHRR)));
+      factors.push(pitcherHand === 'L' ? 'vs LHP' : 'vs RHP');
     }
   }
   
-  // 2. Day/Night splits (simulated - would need actual stats)
-  if (gameConditions.isNight !== undefined) {
-    // Some players hit better at night under lights
-    // For now, apply small random modifier based on player name hash
-    const nameHash = batter.name.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-    if (gameConditions.isNight) {
-      if (nameHash % 3 === 0) {
-        contactMod += 1;
-        factors.push('Night hitter');
-      } else if (nameHash % 3 === 1) {
-        contactMod -= 1;
-        powerMod -= 1;
-        factors.push('Day hitter');
-      }
-    }
-  }
+  // 2. Home/Road splits (3% boost at home)
+  const isHome = gameConditions.isHome || false;
+  const hcm = isHome ? 1.03 : 0.98;
+  const hpm = isHome ? 1.03 : 0.97;
+  adjContact = Math.round(adjContact * hcm);
+  adjPower = Math.round(adjPower * hpm);
+  factors.push(isHome ? 'Home field' : 'Road');
   
-  // 3. Home/Road splits
-  if (gameConditions.isHome !== undefined) {
-    if (gameConditions.isHome) {
-      contactMod += 1;
-      factors.push('Home field');
-    } else {
-      contactMod -= 1;
-      factors.push('Road');
-    }
-  }
+  // 3. Day/Night (2% boost for day hitters)
+  const isDay = gameConditions.isNight === false;
+  const dcm = isDay ? 1.02 : 0.99;
+  const dpm = isDay ? 1.01 : 1.00;
+  adjContact = Math.round(adjContact * dcm);
+  adjPower = Math.round(adjPower * dpm);
+  if (isDay) factors.push('Day game');
   
-  // 4. Head-to-head history (if available)
-  if (gameConditions.h2hStats) {
-    const { ab, hits, hr, avg } = gameConditions.h2hStats;
-    if (ab >= 10) { // Need meaningful sample
-      if (avg >= 0.350) {
-        contactMod += 2;
-        factors.push('Owns this pitcher');
-      } else if (avg <= 0.150) {
-        contactMod -= 2;
-        powerMod -= 1;
-        factors.push('Struggles vs this pitcher');
-      }
-      if (hr >= 2) {
-        powerMod += 1;
-        factors.push('HR history');
-      }
-    }
-  }
-  
-  // Apply modifiers and clamp to 1-10
-  const finalContact = Math.max(1, Math.min(10, baseContact + contactMod));
-  const finalPower = Math.max(1, Math.min(10, basePower + powerMod));
+  // Clamp final ratings to 1-10
+  const finalContact = Math.max(1, Math.min(10, adjContact));
+  const finalPower = Math.max(1, Math.min(10, adjPower));
   
   return {
     contact: finalContact,
@@ -105,11 +73,16 @@ export function calculateSituationalRatings(batter, opposingPitcher, gameConditi
 
 /**
  * Get CSS class for rating badge based on situational vs base rating
+ * Shows green if boosted, red if reduced, otherwise color by absolute value
  * @param {number} situational - Adjusted rating (1-10)
  * @param {number} base - Original rating (1-10)
  * @returns {string} CSS class
  */
 export function getRatingBadgeClass(situational, base) {
+  // Show direction of adjustment
+  if (situational > base) return 'text-emerald-400 font-bold';  // Boosted
+  if (situational < base) return 'text-red-400 font-bold';      // Reduced
+  // Neutral - color by absolute value
   if (situational >= 8) return 'text-emerald-400 font-bold';
   if (situational >= 6) return 'text-foreground font-bold';
   if (situational >= 4) return 'text-amber-400 font-bold';
