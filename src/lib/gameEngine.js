@@ -1267,6 +1267,10 @@ function resolveSwing(state, swingType, pitch) {
     if (out.divingStopFielder) { outExtra.divingStop = true; outExtra.divingStopFielder = out.divingStopFielder; }
     state.log.push({ type: isFlyBall ? 'flyout' : 'groundout', text: out.text, ...outExtra });
     state.lastPlay = { type: isFlyBall ? 'flyout' : 'groundout', text: out.text, ...outExtra };
+    // Surface diving catches and diving stops to the main gameplay banner
+    if (out.isDivingCatch || out.divingStopOut) {
+      state._celebrationBubble = out.text;
+    }
     state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
     // Celebrations on diving catch or inning-ending out
     if (out.isDivingCatch) {
