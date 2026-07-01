@@ -1578,6 +1578,7 @@ export default function Home() {
     return (
       <ErrorBoundary>
       <LineupManager
+        key={`${lineupPhase.home}-${lineupPhase.away}-${lineupPhase.useDH}`}
         teamKey={lineupPhase.home}
         teamData={TEAMS[lineupPhase.home]}
         opponentTeamData={TEAMS[lineupPhase.away]}

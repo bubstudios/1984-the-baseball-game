@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
 import { ArrowUp, ArrowDown, X, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
@@ -49,8 +49,8 @@ function getPlatoonAdvantage(batter, opposingPitcher) {
   if (batterBats === pitcherThrows) {
     return { type: 'disadvantage', label: 'Same handedness - Platoon disadvantage' };
   }
-  // Switch hitter = neutral
-  return { type: 'neutral', label: 'Switch hitter - Neutral' };
+  // Switch hitter = always advantage (bats from opposite side of pitcher)
+  return { type: 'advantage', label: 'Switch hitter - Platoon advantage' };
 }
 
 function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePositions, opposingPitcher, gameConditions, onPlayerChange, onPositionChange, onMoveUp, onMoveDown, onRemove }) {
@@ -169,6 +169,15 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
     return opponentRotation.find(p => p.name === opponentSP) || opponentRotation[0] || null;
   }, [opponentRotation, opponentSP]);
 
+  // Sync state when team data changes (new team selection)
+  useEffect(() => {
+    setSelectedPitcher(rotationPitchers[0]?.name || '');
+  }, [rotationPitchers]);
+
+  useEffect(() => {
+    setOpponentSP(opponentRotation[0]?.name || '');
+  }, [opponentRotation]);
+
   const allPositionPlayers = useMemo(() => {
     const players = [...teamData.lineup, ...(teamData.bench || [])].filter(p => !illSet.has(p.name));
     if (!useDH) {
@@ -230,6 +239,11 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
   }, [teamData, useDH, illSet, rotationPitchers]);
 
   const [lineup, setLineup] = useState(defaultLineup);
+
+  // Sync lineup when team data changes (new team selection)
+  useEffect(() => {
+    setLineup(defaultLineup);
+  }, [defaultLineup]);
 
   const usedPlayerIds = useMemo(() => {
     const ids = new Set();
