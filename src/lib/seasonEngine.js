@@ -1,70 +1,82 @@
-/**
- * Season Engine - Headless game simulation wrapper
- * 
- * This module provides stateless functions for simulating games
- * without UI dependencies. Used by backend functions and Season Mode.
- */
+// Season Engine - Headless game simulation + canonical GameResult extraction
+// Uses the ONE true engine (gameEngine.js) for all simulation, user and CPU.
+// Tracks scoring events and hit types during headless sim for accurate W/L/S decisions.
 
-import { TEAMS, DEFAULT_PITCHES } from './gameData';
-import { 
-  createGameState, 
-  processAtBat, 
-  cpuSelectPitch, 
-  cpuSelectSwing, 
-  cpuDecideSubstitutions,
-  getCurrentBatter,
-  getCurrentPitcher
+import { TEAMS } from './gameData';
+import {
+  createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing,
+  cpuDecideSubstitutions, getCurrentBatter, getCurrentPitcher,
 } from './gameEngine';
+import { playerId } from './seasonStore';
 
 /**
- * Simulate a complete game headlessly
- * @param {string} homeTeam - Home team key
- * @param {string} awayTeam - Away team key
- * @param {object} options - Simulation options
- * @returns {object} Final game state with stats
+ * Simulate a complete game headlessly (CPU vs CPU).
+ * Instruments the sim to track scoring events, hit types, and HR data
+ * for accurate W/L/S decisions and complete stat extraction.
+ * @returns {object} Final game state (with _tracking data attached)
  */
 export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
-  const {
-    useDH = false,
-    weather = null,
-    umpire = null,
-    homeLineup = null,
-    awayLineup = null
-  } = options;
+  const { useDH = false, weather = null, umpire = null, homeLineup = null, awayLineup = null } = options;
 
-  // Create initial state
-  let state = createGameState(
-    homeTeam, 
-    awayTeam, 
-    homeLineup, 
-    awayLineup, 
-    useDH, 
-    weather, 
-    umpire
-  );
-  
+  let state = createGameState(homeTeam, awayTeam, homeLineup, awayLineup, useDH, weather, umpire);
   state._headlessMode = true;
 
-  // Safety limit to prevent infinite loops
+  // Tracking data
+  const scoringEvents = []; // { inning, battingSide, pitchingSide, pitcherName, runs }
+  const hitTracking = {};   // playerId → { doubles, triples }
+  const hrTracking = [];    // { name, teamKey, inning }
+  const bfTracking = {};    // pitcherPlayerId → batters faced count
+  const hrAllowedTracking = {}; // pitcherPlayerId → HR count
+
   const maxIterations = 500;
   let iterations = 0;
 
   while (!state.gameOver && iterations < maxIterations) {
     iterations++;
-    
-    // Get current batter and pitcher
+
+    const battingSide = state.halfInning === 'top' ? 'away' : 'home';
+    const pitchingSide = battingSide === 'home' ? 'away' : 'home';
+    const battingTeamKey = battingSide === 'home' ? state.homeTeam : state.awayTeam;
+    const pitchingTeamKey = pitchingSide === 'home' ? state.homeTeam : state.awayTeam;
+    const currentPitcher = pitchingSide === 'home' ? state.homePitcher : state.awayPitcher;
+    const pitcherPid = playerId(pitchingTeamKey, currentPitcher.name);
     const batter = getCurrentBatter(state);
-    const pitcher = getCurrentPitcher(state);
-    
-    // CPU vs CPU - both sides use AI
-    const pitchType = cpuSelectPitch(state);
-    const swingType = cpuSelectSwing(state);
-    
-    // Process the at-bat
-    state = processAtBat(state, pitchType, swingType);
-    
-    // Handle substitutions between at-bats
+    const prevBattingScore = state.score[battingSide];
+
+    // Track batters faced
+    if (!bfTracking[pitcherPid]) bfTracking[pitcherPid] = 0;
+    bfTracking[pitcherPid]++;
+
+    // Process at-bat
+    state = processAtBat(state, cpuSelectPitch(state), cpuSelectSwing(state));
     state = cpuDecideSubstitutions(state, null);
+
+    // Track scoring
+    const runsScored = state.score[battingSide] - prevBattingScore;
+    if (runsScored > 0) {
+      scoringEvents.push({
+        inning: state.inning,
+        battingSide,
+        pitchingSide,
+        pitcherName: currentPitcher.name,
+        runs: runsScored,
+        scoreAfter: { ...state.score },
+      });
+    }
+
+    // Track hit types (doubles/triples not in engine gameStats)
+    if (state.lastPlay) {
+      const batterPid = playerId(battingTeamKey, batter.name);
+      if (!hitTracking[batterPid]) hitTracking[batterPid] = { doubles: 0, triples: 0 };
+      const lpType = state.lastPlay.type;
+      if (lpType === 'double') hitTracking[batterPid].doubles++;
+      else if (lpType === 'triple') hitTracking[batterPid].triples++;
+      else if (lpType === 'homerun') {
+        hrTracking.push({ name: batter.name, teamKey: battingTeamKey, inning: state.inning });
+        if (!hrAllowedTracking[pitcherPid]) hrAllowedTracking[pitcherPid] = 0;
+        hrAllowedTracking[pitcherPid]++;
+      }
+    }
   }
 
   if (iterations >= maxIterations) {
@@ -72,219 +84,294 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     state.gameOver = true;
   }
 
+  // Attach tracking for buildGameResultFromState
+  state._tracking = { scoringEvents, hitTracking, hrTracking, bfTracking, hrAllowedTracking };
   return state;
 }
 
 /**
- * Extract game summary from final state
+ * Build canonical GameResult from a final game state.
+ * Works for both headless (with _tracking) and UI (without) paths.
  * @param {object} state - Final game state
- * @returns {object} Game summary for database storage
+ * @param {object} options - { tracking: { scoringEvents, hitTracking, ... } } (optional, from headless sim)
+ * @returns {object} Canonical GameResult
  */
-export function extractGameSummary(state) {
-  const homeHRs = (state.homePlayerHistory || [])
-    .filter(p => p.gameStats?.hr > 0)
-    .map(p => ({
-      playerName: p.name,
-      distance: p.gameStats?.lastHRDistance || 0,
-      inning: p.gameStats?.hrInning || 0
-    }));
+export function buildGameResultFromState(state, options = {}) {
+  const tracking = options.tracking || state._tracking || {};
+  const hitTracking = tracking.hitTracking || extractHitTypesFromLog(state);
+  const hrTracking = tracking.hrTracking || extractHRsFromLog(state);
+  const bfTracking = tracking.bfTracking || {};
+  const hrAllowedTracking = tracking.hrAllowedTracking || {};
+  const scoringEvents = tracking.scoringEvents || null;
 
-  const awayHRs = (state.awayPlayerHistory || [])
-    .filter(p => p.gameStats?.hr > 0)
-    .map(p => ({
-      playerName: p.name,
-      distance: p.gameStats?.lastHRDistance || 0,
-      inning: p.gameStats?.hrInning || 0
-    }));
+  const homeWon = state.score.home > state.score.away;
+  const winner = homeWon ? state.homeTeam : state.awayTeam;
+  const loser = homeWon ? state.awayTeam : state.homeTeam;
 
-  const homeHits = state.homeLineup.reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
-  const awayHits = state.awayLineup.reduce((sum, p) => sum + (p.gameStats?.hits || 0), 0);
+  // Build batting arrays
+  const batting = [];
+  collectBatting(state, 'home', state.homeTeam, batting, hitTracking);
+  collectBatting(state, 'away', state.awayTeam, batting, hitTracking);
+
+  // Build pitching arrays
+  const pitching = [];
+  collectPitching(state, 'home', state.homeTeam, pitching, bfTracking, hrAllowedTracking);
+  collectPitching(state, 'away', state.awayTeam, pitching, bfTracking, hrAllowedTracking);
+
+  // Determine W/L/S decisions
+  const decisions = scoringEvents
+    ? determineDecisionsFromEvents(state, scoringEvents)
+    : determineDecisionsSimplified(state);
+
+  // Mark W/L/S on pitching entries
+  for (const p of pitching) {
+    if (decisions.winner && p.playerId === decisions.winner) p.w = 1;
+    if (decisions.loser && p.playerId === decisions.loser) p.l = 1;
+    if (decisions.save && p.playerId === decisions.save) p.sv = 1;
+  }
+
+  // Build homeRuns list
+  const homeRuns = hrTracking.map(hr => ({
+    playerId: playerId(hr.teamKey, hr.name),
+    name: hr.name,
+    teamKey: hr.teamKey,
+    inning: hr.inning || 0,
+  }));
 
   return {
+    homeTeam: state.homeTeam,
+    awayTeam: state.awayTeam,
     homeScore: state.score.home,
     awayScore: state.score.away,
-    winner: state.score.home > state.score.away ? state.homeTeam : state.awayTeam,
-    homeHits,
-    awayHits,
-    homeHRs,
-    awayHRs,
+    winner,
     innings: state.innings,
-    log: state.log // Keep for debugging
+    decisions,
+    batting,
+    pitching,
+    homeRuns,
   };
 }
 
-/**
- * Generate a full 162-game schedule for a team
- * @param {string} teamKey - Team to generate schedule for
- * @param {number} year - Season year
- * @returns {array} Array of game objects
- */
-export function generateTeamSchedule(teamKey, year = 1984) {
-  const schedule = [];
-  const allTeams = Object.keys(TEAMS).filter(t => t !== teamKey);
-  
-  // Simplified schedule generation
-  // In reality, this would follow MLB scheduling rules
-  
-  let gameDay = 1;
-  const startDate = new Date(`${year}-04-02`);
-  
-  // Each team plays 162 games
-  // 12 games vs each division mate (4 teams × 12 = 48)
-  // 6-7 games vs other teams in league
-  // Interleague play (in 1984 there was none, but we'll add some for fun)
-  
-  const divisionRivals = getDivisionRivals(teamKey);
-  const leagueTeams = getLeagueTeams(teamKey);
-  const otherLeagueTeams = allTeams.filter(t => !leagueTeams.includes(t));
+// ── Backward-compatible wrapper ──
+export function extractGameSummary(state) {
+  const result = buildGameResultFromState(state);
+  return {
+    homeScore: result.homeScore,
+    awayScore: result.awayScore,
+    winner: result.winner,
+    homeHits: result.batting.filter(b => b.teamKey === state.homeTeam).reduce((s, b) => s + b.h, 0),
+    awayHits: result.batting.filter(b => b.teamKey === state.awayTeam).reduce((s, b) => s + b.h, 0),
+    homeHRs: result.homeRuns.filter(hr => hr.teamKey === state.homeTeam),
+    awayHRs: result.homeRuns.filter(hr => hr.teamKey === state.awayTeam),
+    innings: result.innings,
+    winningPitcher: result.decisions.winner,
+    losingPitcher: result.decisions.loser,
+    savePitcher: result.decisions.save,
+  };
+}
 
-  // Division games (12 games each)
-  divisionRivals.forEach(rival => {
-    for (let i = 0; i < 12; i++) {
-      const isHome = i % 2 === 0;
-      schedule.push({
-        gameDay,
-        gameDate: new Date(startDate.getTime() + (gameDay - 1) * 86400000).toISOString().split('T')[0],
-        homeTeam: isHome ? teamKey : rival,
-        awayTeam: isHome ? rival : teamKey,
-        isUserGame: true
+// ── Collect batting stats from lineup + history ──
+function collectBatting(state, side, teamKey, out, hitTracking) {
+  const lineup = side === 'home' ? state.homeLineup : state.awayLineup;
+  const history = side === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
+  const seen = new Set();
+  for (const player of [...lineup, ...history]) {
+    if (seen.has(player.name)) continue;
+    seen.add(player.name);
+    const gs = player.gameStats || {};
+    if (gs.ab > 0 || gs.bb > 0 || gs.hits > 0 || gs.hr > 0 || gs.rbi > 0) {
+      const pid = playerId(teamKey, player.name);
+      const ht = hitTracking[pid] || {};
+      out.push({
+        playerId: pid,
+        teamKey,
+        name: player.name,
+        ab: gs.ab || 0,
+        h: gs.hits || 0,
+        doubles: ht.doubles || 0,
+        triples: ht.triples || 0,
+        hr: gs.hr || 0,
+        rbi: gs.rbi || 0,
+        r: gs.runs || 0,
+        bb: gs.bb || 0,
+        so: gs.so || 0,
+        sb: gs.sb || 0,
       });
-      gameDay++;
     }
-  });
+  }
+}
 
-  // Fill remaining games with league and interleague opponents
-  while (schedule.length < 162) {
-    const remaining = 162 - schedule.length;
-    
-    // Pick opponent
-    let opponent;
-    if (remaining > 50) {
-      opponent = leagueTeams[Math.floor(Math.random() * leagueTeams.length)];
-    } else if (remaining > 20) {
-      opponent = otherLeagueTeams[Math.floor(Math.random() * otherLeagueTeams.length)];
-    } else {
-      opponent = divisionRivals[Math.floor(Math.random() * divisionRivals.length)];
-    }
-
-    const isHome = Math.random() > 0.5;
-    schedule.push({
-      gameDay,
-      gameDate: new Date(startDate.getTime() + (gameDay - 1) * 86400000).toISOString().split('T')[0],
-      homeTeam: isHome ? teamKey : opponent,
-      awayTeam: isHome ? opponent : teamKey,
-      isUserGame: true
+// ── Collect pitching stats from history + current pitcher ──
+function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTracking) {
+  const pitchers = getPitcherList(state, side);
+  for (let i = 0; i < pitchers.length; i++) {
+    const pitcher = pitchers[i];
+    const gs = pitcher.gameStats || {};
+    const pid = playerId(teamKey, pitcher.name);
+    const ip = gs.ip || 0;
+    const outs = Math.round(ip * 3); // Convert fractional IP to integer outs
+    out.push({
+      playerId: pid,
+      teamKey,
+      name: pitcher.name,
+      gs: i === 0 ? 1 : 0,
+      outs,
+      h: gs.h || 0,
+      r: gs.r || 0,
+      er: gs.er || 0,
+      bb: gs.bb || 0,
+      so: gs.so || 0,
+      hr: hrAllowedTracking[pid] || 0,
+      bf: bfTracking[pid] || 0,
     });
-    gameDay++;
   }
-
-  return schedule.slice(0, 162);
 }
 
-/**
- * Get division rivals for a team
- */
-function getDivisionRivals(teamKey) {
-  const divisions = {
-    ALEast: ['yankees', 'redsox', 'orioles', 'bluejays', 'brewers'],
-    ALCentral: ['whitesox', 'royals', 'twins', 'indians', 'tigers'],
-    ALWest: ['athletics', 'angels', 'mariners', 'rangers'],
-    NLEast: ['mets', 'phillies', 'expos', 'pirates', 'cubs'],
-    NLCentral: ['cardinals', ['braves'], ['reds'], ['astros']],
-    NLWest: ['dodgers', ['giants'], ['padres'], ['reds']]
-  };
+// ── Get ordered pitcher list (starter first, current last) ──
+function getPitcherList(state, side) {
+  const current = side === 'home' ? state.homePitcher : state.awayPitcher;
+  const history = side === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
+  const pastPitchers = history.filter(p =>
+    ['SP', 'RP', 'CL'].includes(p.pos) || ['SP', 'RP', 'CL'].includes(p.assignedPos)
+  );
+  const all = [...pastPitchers];
+  if (!all.find(p => p.name === current?.name)) {
+    all.push(current);
+  }
+  return all;
+}
 
-  // Find which division the team is in
-  for (const [div, teams] of Object.entries(divisions)) {
-    if (teams.includes(teamKey)) {
-      return teams.filter(t => t !== teamKey);
+// ── W/L/S from scoring events (headless sim path - accurate) ──
+function determineDecisionsFromEvents(state, scoringEvents) {
+  const homeWon = state.score.home > state.score.away;
+  const winningSide = homeWon ? 'home' : 'away';
+  const losingSide = homeWon ? 'away' : 'home';
+  const winningTeamKey = winningSide === 'home' ? state.homeTeam : state.awayTeam;
+  const losingTeamKey = losingSide === 'home' ? state.homeTeam : state.awayTeam;
+
+  // Find the last lead change - the pitcher who gave up the go-ahead is the loser
+  let scoreHome = 0, scoreAway = 0;
+  let lastLeadChangePitcher = null;
+  let currentLeader = null;
+
+  for (const event of scoringEvents) {
+    if (event.battingSide === 'home') scoreHome += event.runs;
+    else scoreAway += event.runs;
+    const newLeader = scoreHome > scoreAway ? 'home' : (scoreAway > scoreHome ? 'away' : null);
+    if (newLeader && newLeader !== currentLeader) {
+      lastLeadChangePitcher = event.pitcherName;
+      currentLeader = newLeader;
     }
   }
 
-  return [];
-}
+  // Winning pitcher: starter if 15+ outs (5 IP) and left with lead; else most effective reliever
+  const winningPitchers = getPitcherList(state, winningSide);
+  const winningStarter = winningPitchers[0];
+  const starterOuts = Math.round((winningStarter?.gameStats?.ip || 0) * 3);
+  let winnerPitcher;
+  if (starterOuts >= 15) {
+    winnerPitcher = winningStarter;
+  } else {
+    winnerPitcher = winningPitchers.slice(1).sort((a, b) =>
+      (a.gameStats?.r || 0) - (b.gameStats?.r || 0)
+    )[0] || winningPitchers[0];
+  }
 
-/**
- * Get all teams in the same league
- */
-function getLeagueTeams(teamKey) {
-  const AL = ['yankees', 'redsox', 'orioles', 'bluejays', 'brewers', 'whitesox', 'royals', 'twins', 'indians', 'tigers', 'athletics', 'angels', 'mariners', 'rangers'];
-  const NL = ['mets', 'phillies', 'expos', 'pirates', 'cubs', 'cardinals', 'braves', 'reds', 'astros', 'dodgers', 'giants', 'padres'];
+  // Losing pitcher: the one who gave up the go-ahead run
+  const losingPitchers = getPitcherList(state, losingSide);
+  const loserPitcher = losingPitchers.find(p => p.name === lastLeadChangePitcher) || losingPitchers[0];
 
-  if (AL.includes(teamKey)) return AL.filter(t => t !== teamKey);
-  if (NL.includes(teamKey)) return NL.filter(t => t !== teamKey);
-  return [];
-}
-
-/**
- * Calculate batting statistics from game data
- */
-export function calculateBattingStats(playerGames) {
-  const stats = playerGames.reduce((acc, game) => {
-    acc.atBats += game.ab || 0;
-    acc.hits += game.hits || 0;
-    acc.homeRuns += game.hr || 0;
-    acc.rbi += game.rbi || 0;
-    acc.runs += game.runs || 0;
-    acc.walks += game.bb || 0;
-    acc.strikeouts += game.so || 0;
-    acc.doubles += game.doubles || 0;
-    acc.triples += game.triples || 0;
-    acc.stolenBases += game.sb || 0;
-    return acc;
-  }, {
-    atBats: 0, hits: 0, homeRuns: 0, rbi: 0, runs: 0,
-    walks: 0, strikeouts: 0, doubles: 0, triples: 0, stolenBases: 0
-  });
-
-  const avg = stats.atBats > 0 ? stats.hits / stats.atBats : 0;
-  const obp = (stats.atBats + stats.walks) > 0 
-    ? (stats.hits + stats.walks) / (stats.atBats + stats.walks) 
-    : 0;
-  const slg = stats.atBats > 0 
-    ? (stats.hits + stats.doubles + 2 * stats.triples + 3 * stats.homeRuns) / stats.atBats 
-    : 0;
+  // Save: reliever (not winner) who finished, if margin <= 3
+  const margin = Math.abs(state.score.home - state.score.away);
+  let savePitcher = null;
+  if (margin <= 3 && winningPitchers.length > 1) {
+    const finalPitcher = winningPitchers[winningPitchers.length - 1];
+    if (finalPitcher.name !== winnerPitcher.name) {
+      savePitcher = finalPitcher;
+    }
+  }
 
   return {
-    ...stats,
-    battingAverage: avg,
-    onBasePercentage: obp,
-    sluggingPercentage: slg,
-    ops: obp + slg
+    winner: winnerPitcher ? playerId(winningTeamKey, winnerPitcher.name) : null,
+    loser: loserPitcher ? playerId(losingTeamKey, loserPitcher.name) : null,
+    save: savePitcher ? playerId(winningTeamKey, savePitcher.name) : null,
   };
 }
 
-/**
- * Calculate pitching statistics from game data
- */
-export function calculatePitchingStats(playerGames) {
-  const stats = playerGames.reduce((acc, game) => {
-    acc.inningsPitched += game.ip || 0;
-    acc.hits += game.h || 0;
-    acc.runs += game.r || 0;
-    acc.earnedRuns += game.er || 0;
-    acc.walks += game.bb || 0;
-    acc.strikeouts += game.so || 0;
-    acc.homeRuns += game.hr || 0;
-    acc.wins += game.w || 0;
-    acc.losses += game.l || 0;
-    acc.saves += game.sv || 0;
-    return acc;
-  }, {
-    inningsPitched: 0, hits: 0, runs: 0, earnedRuns: 0,
-    walks: 0, strikeouts: 0, homeRuns: 0, wins: 0, losses: 0, saves: 0
-  });
+// ── W/L/S simplified (UI path - no scoring events) ──
+function determineDecisionsSimplified(state) {
+  const homeWon = state.score.home > state.score.away;
+  const winningSide = homeWon ? 'home' : 'away';
+  const losingSide = homeWon ? 'away' : 'home';
+  const winningTeamKey = winningSide === 'home' ? state.homeTeam : state.awayTeam;
+  const losingTeamKey = losingSide === 'home' ? state.homeTeam : state.awayTeam;
 
-  const era = stats.inningsPitched > 0 
-    ? (stats.earnedRuns * 9) / stats.inningsPitched 
-    : 0;
-  const whip = stats.inningsPitched > 0 
-    ? (stats.hits + stats.walks) / stats.inningsPitched 
-    : 0;
+  const winningPitchers = getPitcherList(state, winningSide);
+  const losingPitchers = getPitcherList(state, losingSide);
+
+  // Winner: starter if 5+ IP, else best reliever
+  const starterOuts = Math.round((winningPitchers[0]?.gameStats?.ip || 0) * 3);
+  let winnerPitcher;
+  if (starterOuts >= 15) {
+    winnerPitcher = winningPitchers[0];
+  } else {
+    winnerPitcher = winningPitchers.slice(1).sort((a, b) =>
+      (a.gameStats?.r || 0) - (b.gameStats?.r || 0)
+    )[0] || winningPitchers[0];
+  }
+
+  // Loser: starter (simplified - no scoring event data for UI path)
+  const loserPitcher = losingPitchers[0];
+
+  // Save: last reliever if margin <= 3
+  const margin = Math.abs(state.score.home - state.score.away);
+  let savePitcher = null;
+  if (margin <= 3 && winningPitchers.length > 1) {
+    const finalPitcher = winningPitchers[winningPitchers.length - 1];
+    if (finalPitcher.name !== winnerPitcher.name) savePitcher = finalPitcher;
+  }
 
   return {
-    ...stats,
-    era,
-    whip
+    winner: winnerPitcher ? playerId(winningTeamKey, winnerPitcher.name) : null,
+    loser: loserPitcher ? playerId(losingTeamKey, loserPitcher.name) : null,
+    save: savePitcher ? playerId(winningTeamKey, savePitcher.name) : null,
   };
+}
+
+// ── Fallback: extract doubles/triples from game log (for UI path) ──
+function extractHitTypesFromLog(state) {
+  const hitTypes = {};
+  const allBatters = [
+    ...(state.homeLineup || []).map(p => ({ name: p.name, team: state.homeTeam })),
+    ...(state.awayLineup || []).map(p => ({ name: p.name, team: state.awayTeam })),
+    ...((state.homePlayerHistory || []).map(p => ({ name: p.name, team: state.homeTeam }))),
+    ...((state.awayPlayerHistory || []).map(p => ({ name: p.name, team: state.awayTeam }))),
+  ];
+  for (const entry of (state.log || [])) {
+    if (entry.type === 'double' || entry.type === 'triple') {
+      for (const batter of allBatters) {
+        if (entry.text && entry.text.includes(batter.name)) {
+          const pid = playerId(batter.team, batter.name);
+          if (!hitTypes[pid]) hitTypes[pid] = { doubles: 0, triples: 0 };
+          if (entry.type === 'double') hitTypes[pid].doubles++;
+          if (entry.type === 'triple') hitTypes[pid].triples++;
+          break;
+        }
+      }
+    }
+  }
+  return hitTypes;
+}
+
+// ── Fallback: extract HRs from game log (for UI path) ──
+function extractHRsFromLog(state) {
+  const hrs = [];
+  for (const entry of (state.log || [])) {
+    if (entry.type === 'homerun' && entry.batterName) {
+      const teamKey = (state.homeLineup || []).concat(state.homePlayerHistory || []).some(p => p.name === entry.batterName)
+        ? state.homeTeam : state.awayTeam;
+      hrs.push({ name: entry.batterName, teamKey, inning: 0 });
+    }
+  }
+  return hrs;
 }
