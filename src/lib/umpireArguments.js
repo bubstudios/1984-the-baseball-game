@@ -34,17 +34,19 @@ export function getArgumentSeverity(lastPlay, gameState, usedTopics) {
   function capped(key, max) { return (tc[key] || 0) >= max; }
 
   // ── BALL / STRIKE ARGUMENTS (routine - unlimited) ──
-  if (["strike","foul"].includes(type)) {
-    // Only allow grumbling on CALLED strikes, not swinging strikes
-    const isSwingingStrike = text.includes("Swinging") || text.includes("Swing and") || text.includes("swings and misses");
+  // Grumbling only on CALLED strikes (batter takes the pitch), NOT swinging strikes
+  if (type === "strike") {
+    const isSwingingStrike = text.includes("Swinging") || text.includes("Swing and") || text.includes("swings and misses") || text.includes("whiffs");
+    // Only allow grumbling if batter TOOK the pitch (called strike)
+    const isCalledStrike = text.includes("takes") || text.includes("watches") || text.includes("looking") || (!isSwingingStrike && text.includes("Strike"));
+    if (!isCalledStrike || isSwingingStrike) return null;  // No grumbling on swinging strikes!
+    
     if ((text.includes("Strike 3") || text.includes("strike 3") || text.includes("called strike three")) && !isSwingingStrike) {
       const calls = ["called strike three","high strike - above the letters","low strike - was it at the knees?","inside strike - batter says off the plate","outside corner - catcher pulled it back"];
       return arg(pick(calls), "medium", 3, "strikeZone", "routine");
     }
     if ((text.includes("takes a") || text.includes("watches it")) && r < 0.22)
       return arg("borderline strike call", "low", 1, "strikeZone", "routine");
-    if (isSwingingStrike && r < 0.10)
-      return arg("pitch looked outside", "chirp", 0, "strikeZone", "routine");
     return null;
   }
   if (type === "ball") {
