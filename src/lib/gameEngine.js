@@ -390,6 +390,10 @@ function scoreRun(state) {
   }
 }
 
+function isWalkOff(state) {
+  return state.halfInning === 'bottom' && state.inning >= 9 && state.score.home > state.score.away;
+}
+
 function advanceRunners(state, bases, batter, isHit = false, hitDirection = null) {
   let runsScored = 0;
   const pitcher = getCurrentPitcher(state);
@@ -417,9 +421,20 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
   for (let i = 2; i >= 0; i--) {
     if (state.bases[i]) {
       const newBase = i + bases;
-      if (newBase >= 3) { state.bases[i].gameStats.runs++; scoreRun(state); rbi++; state.bases[i] = null; }
+      if (newBase >= 3) {
+        // Walk-off guard: once the winning run scores on a non-HR, no more runs count
+        if (rbi > 0 && isWalkOff(state)) { state.bases[2] = state.bases[i]; state.bases[i] = null; }
+        else { state.bases[i].gameStats.runs++; scoreRun(state); rbi++; state.bases[i] = null; }
+      }
       else { state.bases[newBase] = state.bases[i]; state.bases[i] = null; }
     }
+  }
+  // Walk-off guard: skip extra base advancement scoring if the winning run already scored
+  if (isWalkOff(state)) {
+    if (bases <= 3) state.bases[bases - 1] = batter;
+    batter.gameStats.rbi += rbi;
+    pitcher.gameStats.r += rbi; pitcher.gameStats.er += rbi;
+    return runsScored + rbi;
   }
   const defenders = getDefensivePlayers(state);
   const isOutfieldHit = hitDirection && ['LF', 'CF', 'RF', 'LCF', 'RCF'].some(d => hitDirection.includes(d));
