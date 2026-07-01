@@ -43,8 +43,9 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // Game gate — single shared login
-  if (!gateAuthed) {
+  // Game gate — single shared login (season routes bypass for preview)
+  const isSeasonRoute = window.location.pathname.startsWith('/season');
+  if (!gateAuthed && !isSeasonRoute) {
     return <GateLogin />;
   }
 
