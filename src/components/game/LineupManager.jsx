@@ -469,11 +469,40 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
           );
         })()}
 
+        {/* Opponent Starting Pitcher — shown first because it drives the C/P ratings */}
+        {opponentTeamData && opponentRotation.length > 1 && (
+          <div className="bg-card border border-primary/40 rounded-xl p-3 mb-4">
+            <h3 className="font-heading text-sm font-bold text-foreground mb-2">
+              Opponent Starting Pitcher
+            </h3>
+            <p className="text-[10px] text-primary mb-2 font-body font-medium">
+              This drives the Contact/Power ratings above — pick who you'll face from {opponentTeamData.city} {opponentTeamData.name}'s rotation.
+            </p>
+            <select
+              value={opponentSP}
+              onChange={(e) => setOpponentSP(e.target.value)}
+              className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              {opponentRotation.map(p => (
+                <option key={p.name} value={p.name}>
+                  {p.name} — SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}
+                </option>
+              ))}
+            </select>
+            {opponentSPData && (
+              <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground">
+                <span>Throws: <span className="text-foreground font-bold">{opponentSPData.throws || 'R'}</span></span>
+                <span>Stamina: <span className="text-foreground font-bold">{opponentSPData.stamina}/10</span></span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Starting Pitcher selector — only when DH is on */}
         {useDH && (
           <div className="bg-card border border-border rounded-xl p-3 mb-4">
             <h3 className="font-heading text-sm font-bold text-foreground mb-2">
-              Starting Pitcher
+              Your Starting Pitcher
             </h3>
             <p className="text-[10px] text-muted-foreground mb-2 font-body">
               Choose your starter — they won't bat with the DH rule in effect.
@@ -493,35 +522,6 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
               <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground">
                 <span>Throws: <span className="text-foreground font-bold">{selectedPitcherData.throws || 'R'}</span></span>
                 <span>Stamina: <span className="text-foreground font-bold">{selectedPitcherData.stamina}/10</span></span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Opponent Starting Pitcher — always shown when opponent data available */}
-        {opponentTeamData && opponentRotation.length > 1 && (
-          <div className="bg-card border border-border rounded-xl p-3 mb-4">
-            <h3 className="font-heading text-sm font-bold text-foreground mb-2">
-              Opponent Starting Pitcher
-            </h3>
-            <p className="text-[10px] text-muted-foreground mb-2 font-body">
-              Choose who you'll face — pick from {opponentTeamData.city} {opponentTeamData.name}'s rotation.
-            </p>
-            <select
-              value={opponentSP}
-              onChange={(e) => setOpponentSP(e.target.value)}
-              className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              {opponentRotation.map(p => (
-                <option key={p.name} value={p.name}>
-                  {p.name} — SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}
-                </option>
-              ))}
-            </select>
-            {opponentSPData && (
-              <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground">
-                <span>Throws: <span className="text-foreground font-bold">{opponentSPData.throws || 'R'}</span></span>
-                <span>Stamina: <span className="text-foreground font-bold">{opponentSPData.stamina}/10</span></span>
               </div>
             )}
           </div>
