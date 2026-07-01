@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Trophy, Calendar, MessageSquare } from 'lucide-react';
+import { Trophy, Lock, Calendar, MessageSquare } from 'lucide-react';
 import FeedbackModal from './FeedbackModal';
 
 export default function ModeSelect({ onSelectMode, onBack }) {
@@ -55,27 +55,35 @@ export default function ModeSelect({ onSelectMode, onBack }) {
               </div>
             </button>
 
-            {/* Season Mode - Preview */}
-            <button
-              onClick={() => onSelectMode('season')}
-              className="w-full bg-card border-2 border-secondary/50 hover:border-secondary rounded-xl p-6 text-left transition-all group"
-            >
+            {/* Season Mode - Locked */}
+            <div className="w-full bg-card border-2 border-border rounded-xl p-6 text-left opacity-60">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
-                  <Calendar className="w-6 h-6 text-secondary" />
+                <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                  <Lock className="w-6 h-6 text-muted-foreground" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-heading text-lg font-bold text-foreground mb-1">Season Mode</h3>
                   <p className="text-sm text-muted-foreground mb-3">
                     Manage your team through a full 162-game season. Track stats and chase the pennant.
                   </p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-heading text-secondary bg-secondary/10 px-2 py-1 rounded">PREVIEW</span>
-                    <span className="text-xs font-heading text-secondary/80 group-hover:text-secondary transition-colors">Start Season →</span>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-heading text-muted-foreground bg-muted px-2 py-1 rounded">COMING SOON</span>
+                  </div>
+                  <div className="bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border border-primary/30 rounded-lg px-4 py-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="w-4 h-4 text-primary" />
+                      <span className="text-xs font-heading text-primary font-bold uppercase tracking-wide">In Development</span>
+                    </div>
+                    <p className="text-sm text-foreground/90 font-heading">
+                      Launching before the end of summer!
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Stay tuned for roster management, standings, playoffs, and more.
+                    </p>
                   </div>
                 </div>
               </div>
-            </button>
+            </div>
           </div>
 
           {/* Info Note */}
