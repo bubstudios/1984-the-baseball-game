@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Calendar, TrendingUp, Users, Play } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
+import { generateSchedule as buildSchedule, verifySchedule } from '@/lib/seasonSchedule';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
 import FullSchedule from '@/components/season/FullSchedule';
 
@@ -90,10 +91,42 @@ export default function SeasonDashboard() {
 
   const generateSchedule = async (seasonId, team) => {
     try {
-      const response = await base44.functions.invoke('generateSchedule', { seasonId, userTeam: team });
-      console.log('Schedule generated:', response.data);
+      // Build the schedule locally with the verified generator.
+      const days = buildSchedule(team); // Array<{ day, date, games: [{home, away, isUser}] }>
+
+      // Integrity check before persisting - do not write a broken schedule.
+      const errors = verifySchedule(days);
+      if (errors.length > 0) {
+        console.error('Schedule failed verification, not saving:', errors);
+        alert('Schedule generation failed integrity check. See console.');
+        return;
+      }
+
+      // Flatten Day objects into Schedule entity rows.
+      const rows = [];
+      for (const d of days) {
+        for (const g of d.games) {
+          rows.push({
+            seasonId,
+            gameDay: d.day,
+            gameDate: d.date,
+            homeTeam: g.home,
+            awayTeam: g.away,
+            isUserGame: g.isUser,
+            status: 'scheduled',
+          });
+        }
+      }
+
+      // Bulk-create the schedule rows.
+      const CHUNK = 100;
+      for (let i = 0; i < rows.length; i += CHUNK) {
+        await base44.entities.Schedule.bulkCreate(rows.slice(i, i + CHUNK));
+      }
+      console.log(`Schedule generated locally: ${rows.length} games across ${days.length} days.`);
     } catch (error) {
       console.error('Failed to generate schedule:', error);
+      alert('Failed to generate schedule: ' + error.message);
     }
   };
 
