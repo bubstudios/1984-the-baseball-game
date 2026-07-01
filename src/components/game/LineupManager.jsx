@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
-import { ArrowUp, ArrowDown, X, AlertTriangle } from 'lucide-react';
+import { ArrowUp, ArrowDown, X, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
 
 const ALL_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
 
@@ -12,9 +12,8 @@ const POSITION_GROUPS = {
 };
 
 function getPositionPenalty(naturalPos, assignedPos) {
-  if (assignedPos === 'DH' || naturalPos === assignedPos) return null; // no penalty
+  if (assignedPos === 'DH' || naturalPos === assignedPos) return null;
 
-  // Combo positions: "C/3B" can play C or 3B without penalty
   const naturalParts = naturalPos.split('/').map(p => p.trim());
   if (naturalParts.includes(assignedPos)) return null;
 
@@ -23,16 +22,41 @@ function getPositionPenalty(naturalPos, assignedPos) {
   if (!naturalGroup || !assignedGroup) return null;
 
   if (naturalGroup === assignedGroup) {
-    // Same group (e.g., LF→RF or 2B→SS): minor
     return { label: 'Slight penalty', defenseMod: -1, errorMult: 1.5, severity: 'low' };
   }
-  // Cross-group (e.g., 2B→CF): major
   return { label: 'Major penalty', defenseMod: -3, errorMult: 3.0, severity: 'high' };
 }
 
-function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePositions, onPlayerChange, onPositionChange, onMoveUp, onMoveDown, onRemove }) {
+// Calculate platoon advantage vs opposing pitcher
+function getPlatoonAdvantage(batter, opposingPitcher) {
+  if (!batter || !opposingPitcher) return { type: 'neutral', label: 'No matchup data' };
+  
+  const batterBats = batter.bats;
+  const pitcherThrows = opposingPitcher.throws;
+  
+  if (!batterBats || !pitcherThrows) return { type: 'neutral', label: 'Unknown handedness' };
+  
+  // Lefty batter vs RHP = advantage
+  // Righty batter vs LHP = advantage
+  // Same handedness = disadvantage
+  if (batterBats === 'L' && pitcherThrows === 'R') {
+    return { type: 'advantage', label: 'L vs R - Platoon advantage' };
+  }
+  if (batterBats === 'R' && pitcherThrows === 'L') {
+    return { type: 'advantage', label: 'R vs L - Platoon advantage' };
+  }
+  if (batterBats === pitcherThrows) {
+    return { type: 'disadvantage', label: 'Same handedness - Platoon disadvantage' };
+  }
+  // Switch hitter = neutral
+  return { type: 'neutral', label: 'Switch hitter - Neutral' };
+}
+
+function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePositions, onPlayerChange, onPositionChange, onMoveUp, onMoveDown, onRemove, opposingPitcher }) {
   const penalty = getPositionPenalty(slot.naturalPos, slot.assignedPos);
   const availablePlayers = allPlayers.filter(p => !usedIds.has(p.name) || p.name === slot.name);
+  const playerData = availablePlayers.find(p => p.name === slot.name);
+  const platoonAdvantage = getPlatoonAdvantage(playerData, opposingPitcher);
 
   return (
     <div className={`flex items-center gap-2 p-2 rounded-lg ${penalty?.severity === 'high' ? 'bg-red-500/10 border border-red-500/30' : penalty?.severity === 'low' ? 'bg-amber-500/10 border border-amber-500/30' : 'bg-muted/30'}`}>
@@ -59,6 +83,19 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
           <option key={pos} value={pos}>{pos}</option>
         ))}
       </select>
+
+      {/* Platoon advantage indicator */}
+      {opposingPitcher && platoonAdvantage.type !== 'neutral' && (
+        <div
+          className={`flex-shrink-0 ${platoonAdvantage.type === 'advantage' ? 'text-emerald-400' : 'text-red-400'}`}
+          title={platoonAdvantage.label}
+        >
+          {platoonAdvantage.type === 'advantage'
+            ? <TrendingUp className="w-3.5 h-3.5" />
+            : <TrendingDown className="w-3.5 h-3.5" />
+          }
+        </div>
+      )}
 
       {/* Penalty indicator */}
       {penalty && (
@@ -285,20 +322,33 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
           </span>
         </div>
 
-        {/* Position penalty legend */}
+        {/* Legends */}
         <div className="bg-card border border-border rounded-xl p-3 mb-4 space-y-1.5">
-          <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground">Position Penalties</div>
+          <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-1">Lineup Guide</div>
+          {opponentSPData && (
+            <div className="pb-2 mb-2 border-b border-border/50">
+              <div className="text-[10px] font-heading text-muted-foreground mb-1">vs. {opponentSPData.name} ({opponentSPData.throws || 'R'}HP)</div>
+              <div className="flex items-center gap-2 text-xs font-body">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                <span className="text-foreground/80">Platoon advantage (opposite hand)</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-body mt-0.5">
+                <TrendingDown className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                <span className="text-foreground/80">Platoon disadvantage (same hand)</span>
+              </div>
+            </div>
+          )}
           <div className="flex items-center gap-2 text-xs font-body">
             <span className="w-2 h-2 rounded-full bg-green-500"></span>
             <span className="text-foreground/80">Natural position — no penalty</span>
           </div>
           <div className="flex items-center gap-2 text-xs font-body">
             <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-            <span className="text-foreground/80">Same group (OF↔OF, IF↔IF) — slight defense drop, more errors</span>
+            <span className="text-foreground/80">Same group (OF↔OF, IF↔IF) — slight defense drop</span>
           </div>
           <div className="flex items-center gap-2 text-xs font-body">
             <span className="w-2 h-2 rounded-full bg-red-500"></span>
-            <span className="text-foreground/80">Cross-group (IF→OF, OF→IF) — major defense drop, many errors</span>
+            <span className="text-foreground/80">Cross-group (IF→OF, OF→IF) — major defense drop</span>
           </div>
         </div>
 
@@ -337,6 +387,7 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
                 allPlayers={allPositionPlayers}
                 usedIds={usedPlayerIds}
                 availablePositions={availablePositions}
+                opposingPitcher={opponentSPData}
                 onPlayerChange={handlePlayerChange}
                 onPositionChange={handlePositionChange}
                 onMoveUp={handleMoveUp}
@@ -346,6 +397,30 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
             ))}
           </div>
         </div>
+
+        {/* Bench matchup overview — shows bench players' platoon advantage vs opponent SP */}
+        {opponentSPData && (() => {
+          const benchPlayers = [...(teamData.bench || [])].filter(p => !illSet.has(p.name) && !usedPlayerIds.has(p.name));
+          if (benchPlayers.length === 0) return null;
+          const withMatchup = benchPlayers.map(p => ({ ...p, matchup: getPlatoonAdvantage(p, opponentSPData) }));
+          const advantages = withMatchup.filter(p => p.matchup.type === 'advantage');
+          if (advantages.length === 0) return null;
+          return (
+            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-3 mb-4">
+              <div className="text-[10px] font-heading uppercase tracking-widest text-emerald-400 mb-2">Bench - Platoon Advantages vs {opponentSPData.throws || 'R'}HP</div>
+              <div className="space-y-1">
+                {advantages.map(p => (
+                  <div key={p.name} className="flex items-center gap-2 text-xs font-body">
+                    <TrendingUp className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                    <span className="text-foreground font-bold">{p.name}</span>
+                    <span className="text-muted-foreground">({p.pos}, {p.bats}B)</span>
+                    <span className="text-muted-foreground ml-auto">C:{p.contact} P:{p.power}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Starting Pitcher selector — only when DH is on */}
         {useDH && (
