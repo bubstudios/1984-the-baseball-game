@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
 import { ArrowUp, ArrowDown, X, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
+import { calculateSituationalRatings, getRatingBadgeClass } from '@/lib/situationalRatings';
 
 const ALL_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
 
@@ -52,11 +53,12 @@ function getPlatoonAdvantage(batter, opposingPitcher) {
   return { type: 'neutral', label: 'Switch hitter - Neutral' };
 }
 
-function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePositions, onPlayerChange, onPositionChange, onMoveUp, onMoveDown, onRemove, opposingPitcher }) {
+function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePositions, opposingPitcher, gameConditions, onPlayerChange, onPositionChange, onMoveUp, onMoveDown, onRemove }) {
   const penalty = getPositionPenalty(slot.naturalPos, slot.assignedPos);
   const availablePlayers = allPlayers.filter(p => !usedIds.has(p.name) || p.name === slot.name);
   const playerData = availablePlayers.find(p => p.name === slot.name);
   const platoonAdvantage = getPlatoonAdvantage(playerData, opposingPitcher);
+  const situational = calculateSituationalRatings(playerData, opposingPitcher, gameConditions);
 
   return (
     <div className={`flex items-center gap-2 p-2 rounded-lg ${penalty?.severity === 'high' ? 'bg-red-500/10 border border-red-500/30' : penalty?.severity === 'low' ? 'bg-amber-500/10 border border-amber-500/30' : 'bg-muted/30'}`}>
@@ -83,6 +85,24 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
           <option key={pos} value={pos}>{pos}</option>
         ))}
       </select>
+
+      {/* Situational ratings display (1-10 scale) */}
+      {playerData && opposingPitcher && (
+        <div className="flex items-center gap-1.5 flex-shrink-0" title={situational.factors.join(', ')}>
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-[8px] text-muted-foreground leading-none">C</span>
+            <span className={`text-xs font-bold leading-none ${getRatingBadgeClass(situational.contact, playerData.contact)}`}>
+              {situational.contact}
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-[8px] text-muted-foreground leading-none">P</span>
+            <span className={`text-xs font-bold leading-none ${getRatingBadgeClass(situational.power, playerData.power)}`}>
+              {situational.power}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Platoon advantage indicator */}
       {opposingPitcher && platoonAdvantage.type !== 'neutral' && (
@@ -388,6 +408,11 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
                 usedIds={usedPlayerIds}
                 availablePositions={availablePositions}
                 opposingPitcher={opponentSPData}
+                gameConditions={{
+                  isNight: true, // Would come from game settings
+                  isHome: parkTeam === teamKey,
+                  h2hStats: null, // Would come from player history vs pitcher
+                }}
                 onPlayerChange={handlePlayerChange}
                 onPositionChange={handlePositionChange}
                 onMoveUp={handleMoveUp}
@@ -398,7 +423,7 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
           </div>
         </div>
 
-        {/* Bench matchup overview — shows bench players' platoon advantage vs opponent SP */}
+        {/* Bench matchup overview — shows bench players' platoon advantage vs opponent SP with situational ratings */}
         {opponentSPData && (() => {
           const benchPlayers = [...(teamData.bench || [])].filter(p => !illSet.has(p.name) && !usedPlayerIds.has(p.name));
           if (benchPlayers.length === 0) return null;
@@ -409,14 +434,21 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
             <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-3 mb-4">
               <div className="text-[10px] font-heading uppercase tracking-widest text-emerald-400 mb-2">Bench - Platoon Advantages vs {opponentSPData.throws || 'R'}HP</div>
               <div className="space-y-1">
-                {advantages.map(p => (
-                  <div key={p.name} className="flex items-center gap-2 text-xs font-body">
-                    <TrendingUp className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                    <span className="text-foreground font-bold">{p.name}</span>
-                    <span className="text-muted-foreground">({p.pos}, {p.bats}B)</span>
-                    <span className="text-muted-foreground ml-auto">C:{p.contact} P:{p.power}</span>
-                  </div>
-                ))}
+                {advantages.map(p => {
+                  const adjContact = Math.max(1, Math.min(10, p.contact));
+                  const adjPower = Math.max(1, Math.min(10, p.power));
+                  return (
+                    <div key={p.name} className="flex items-center gap-2 text-xs font-body">
+                      <TrendingUp className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                      <span className="text-foreground font-bold">{p.name}</span>
+                      <span className="text-muted-foreground">({p.pos}, {p.bats}B)</span>
+                      <div className="flex items-center gap-2 ml-auto">
+                        <span className="text-[10px] text-muted-foreground">C:<span className={`${adjContact >= 7 ? 'text-emerald-400' : adjContact <= 4 ? 'text-red-400' : 'text-foreground'}`}>{adjContact}</span></span>
+                        <span className="text-[10px] text-muted-foreground">P:<span className={`${adjPower >= 7 ? 'text-emerald-400' : adjPower <= 4 ? 'text-red-400' : 'text-foreground'}`}>{adjPower}</span></span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
