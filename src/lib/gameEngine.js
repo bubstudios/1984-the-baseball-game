@@ -1967,9 +1967,16 @@ export function processAtBat(state, pitchType, swingType) {
   if (buntDecision) {
     const buntResult = resolveBunt(buntDecision, bjb, newState);
     if (buntResult) {
-      newState.log.push({ type: 'info', text: buntResult.text });
+      // Map bunt result types to proper play types for announcer & UI persistence
+      const buntPlayType = buntResult.type === 'sacrifice_success' ? 'groundout' :
+                           buntResult.type === 'bunt_single' ? 'single' :
+                           buntResult.type === 'bunt_pop' ? 'popout' :
+                           buntResult.type === 'bunt_force' ? 'fc' :
+                           buntResult.type === 'bunt_for_hit_single' ? 'single' :
+                           buntResult.type === 'bunt_for_hit_out' ? 'groundout' : 'groundout';
+      newState.log.push({ type: buntPlayType, text: buntResult.text });
       newState._celebrationBubble = buntResult.text;
-      newState.lastPlay = { type: buntDecision === 'sacrifice' ? 'groundout' : 'single', text: buntResult.text };
+      newState.lastPlay = { type: buntPlayType, text: buntResult.text };
 
       if (buntResult.batterOut) {
         bjb.gameStats.ab++;
