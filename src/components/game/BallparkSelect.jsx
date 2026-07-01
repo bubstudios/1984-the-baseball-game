@@ -255,6 +255,22 @@ export default function BallparkSelect({ userTeam, cpuTeam, onConfirm, onBack })
                 {umpire.temperament?.quickEject && (
                   <span className="text-[9px] font-heading px-1.5 py-0.5 rounded bg-red-500/10 text-red-400">Quick Hook</span>
                 )}
+                {!umpire.temperament?.quickEject && umpire.temperament?.warningChance != null && (
+                  umpire.temperament.warningChance >= 0.70 ? (
+                    <span className="text-[9px] font-heading px-1.5 py-0.5 rounded bg-green-500/10 text-green-400">Long Fuse</span>
+                  ) : umpire.temperament.warningChance <= 0.35 ? (
+                    <span className="text-[9px] font-heading px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400">Short Fuse</span>
+                  ) : (
+                    <span className="text-[9px] font-heading px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground">Even Temper</span>
+                  )
+                )}
+                {umpire.consistency != null && (
+                  umpire.consistency < 75 ? (
+                    <span className="text-[9px] font-heading px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">Unpredictable</span>
+                  ) : umpire.consistency >= 95 ? (
+                    <span className="text-[9px] font-heading px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-400">Rock Steady</span>
+                  ) : null
+                )}
               </div>
             </div>
           </div>
