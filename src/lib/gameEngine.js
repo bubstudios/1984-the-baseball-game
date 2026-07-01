@@ -1974,8 +1974,9 @@ export function processAtBat(state, pitchType, swingType) {
       if (buntResult.batterOut) {
         bjb.gameStats.ab++;
         // SACRIFICE: advance all existing runners exactly one base (scoring from 3rd) BEFORE recording the out.
+        // ONLY on successful sac bunts - NOT on pop-ups or force outs!
         const pitcherForSac = getCurrentPitcher(newState);
-        if (buntResult.type === 'sacrifice_success' || buntDecision === 'sacrifice') {
+        if (buntResult.type === 'sacrifice_success') {
           for (let b = 2; b >= 0; b--) {
             if (newState.bases[b]) {
               if (b + 1 >= 3) {
