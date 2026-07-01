@@ -149,8 +149,8 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
 
       if (chunk.slow) {
         // Player names: distinct cadence but still intelligible
-        utterance.pitch = Math.max(0.30, profile.pitch * 0.65);
-        utterance.rate = Math.max(0.60, profile.rate * 0.70);
+        utterance.pitch = Math.max(0.30, profile.pitch * 0.55);
+        utterance.rate = Math.max(0.50, profile.rate * 0.55);
       } else {
         utterance.pitch = profile.pitch;
         utterance.rate = profile.rate;
