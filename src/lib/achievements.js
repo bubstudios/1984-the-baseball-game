@@ -4,6 +4,7 @@
 import { TEAMS } from './gameData';
 import { LEADER_LISTS } from './leaders1984';
 import { EXTENDED_TEAM_ACHIEVEMENTS, checkExtendedTeamAchievements, checkExtendedShutout } from './teamAchievementsExtended';
+import { SCORECARD_ACHIEVEMENTS, checkSessionAchievements, checkWinPercentageAchievements } from './scorecardAchievements';
 
 export const ACHIEVEMENTS = [
   // ── FIRST-TIME ──
@@ -400,6 +401,9 @@ export const ACHIEVEMENTS = [
   { id: 'leaders_wins', name: 'Wins Challenge', desc: 'Earn a win with each of the 1984 Wins Leaders (10 pitchers)', icon: '🏆', category: 'leaders' },
   { id: 'leaders_saves', name: 'Saves Challenge', desc: 'Record a save with each of the 1984 Saves Leaders (11 pitchers)', icon: '🛡️', category: 'leaders' },
   { id: 'leaders_so', name: 'Strikeout Challenge', desc: 'Strike out 50 batters with each of the 1984 K Leaders (10 pitchers)', icon: '🎳', category: 'leaders' },
+
+  // ── SCORECARD MILESTONES ──
+  ...SCORECARD_ACHIEVEMENTS,
 
   // ── THE GROOVERS ──
   // Unlock by witnessing all 6 rare 1984 Easter eggs:
@@ -815,10 +819,25 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
   checkThreshold('games_25', stats.gamesCompleted);
   checkThreshold('games_50', stats.gamesCompleted);
   checkThreshold('games_100', stats.gamesCompleted);
+  checkThreshold('century_club', stats.gamesCompleted);
+  checkThreshold('double_century', stats.gamesCompleted);
+  checkThreshold('three_century', stats.gamesCompleted);
   checkThreshold('games_250', stats.gamesCompleted);
   checkThreshold('games_250_total', stats.gamesCompleted);
   checkThreshold('games_500', stats.gamesCompleted);
   checkThreshold('games_1000', stats.gamesCompleted);
+
+  // Team loyalty - check max games with any single team
+  const maxTeamGames = stats.teamsUsed.length > 0 ? Math.max(...stats.teamsUsed.map(t => stats.teamGames[t] || 0)) : 0;
+  checkThreshold('team_loyalist_25', maxTeamGames);
+  checkThreshold('team_loyalist_50', maxTeamGames);
+  checkThreshold('team_loyalist_100', maxTeamGames);
+
+  // Home/Road wins
+  const totalHomeWins = Object.values(stats.teamHomeWins || {}).reduce((a, b) => a + b, 0);
+  const totalRoadWins = Object.values(stats.teamRoadWins || {}).reduce((a, b) => a + b, 0);
+  checkThreshold('home_field_advantage', totalHomeWins);
+  checkThreshold('road_dominance', totalRoadWins);
 
   // Wins thresholds
   checkThreshold('wins_1', stats.wins);
@@ -847,6 +866,10 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
   // Ballparks thresholds
   checkThreshold('parks_5', stats.ballparksVisited.length);
   checkThreshold('parks_10', stats.ballparksVisited.length);
+  checkThreshold('ballpark_tourist', stats.ballparksVisited.length);
+  checkThreshold('ballpark_expert', stats.ballparksVisited.length);
+  checkThreshold('road_warrior_wins', stats.ballparksWon.length);
+  checkThreshold('road_conqueror', stats.ballparksWon.length);
 
   // Streak thresholds
   checkThreshold('streak_2', stats.currentStreak);
@@ -857,6 +880,12 @@ export function trackGameCompleted(userWon, userTeam, opponentTeam, stadiumName,
   // Session-based
   if (stats.gamesInSession >= 3) unlockAchievement('just_one_more');
   if (stats.gamesInSession >= 10) unlockAchievement('marathon');
+  
+  // Scorecard session achievements
+  checkSessionAchievements(stats, unlockAchievement);
+  
+  // Win percentage achievements
+  checkWinPercentageAchievements(stats, unlockAchievement);
 
   // Funny / hidden: Mendoza Line (win with 3 or fewer hits)
   if (userWon && userHitCount !== undefined && userHitCount <= 3) unlockAchievement('mendoza_line');
@@ -886,8 +915,9 @@ export function trackHomeRunDistance(distance, batterName, teamKey) {
   // Unlock distance achievements
   if (distance >= 400) unlockAchievement('hr_400ft');
   if (distance >= 425) unlockAchievement('hr_425ft');
-  if (distance >= 450) unlockAchievement('hr_450ft');
-  if (distance >= 475) unlockAchievement('hr_475ft');
+  if (distance >= 450) unlockAchievement('longest_hr_450');
+  if (distance >= 475) unlockAchievement('longest_hr_475');
+  if (distance >= 500) unlockAchievement('longest_hr_500');
   if (distance >= 500) unlockAchievement('no_doubter');
 
   return newRecord;
@@ -902,11 +932,22 @@ export function trackGameRecords(userScore, opponentScore, userWon, userTeam, op
     stats.mostRunsInGameTeam = userTeam || '';
     stats.mostRunsInGameOpponent = opponentTeam || '';
     changed = true;
+    
+    // Check run explosion achievements
+    if (userScore >= 15) unlockAchievement('runs_explosion_15');
+    if (userScore >= 18) unlockAchievement('runs_explosion_18');
+    if (userScore >= 20) unlockAchievement('runs_explosion_20');
+    if (userScore >= 21) unlockAchievement('twenty_one_guns');
   }
   if (userWon && (userScore - opponentScore) > (stats.largestVictoryMargin || 0)) {
     stats.largestVictoryMargin = userScore - opponentScore;
     stats.largestVictoryMarginTeam = userTeam || '';
     changed = true;
+    
+    // Check blowout achievements
+    if (userScore - opponentScore >= 12) unlockAchievement('blowout_12');
+    if (userScore - opponentScore >= 15) unlockAchievement('blowout_15');
+    if (userScore - opponentScore >= 15) unlockAchievement('mercy');
   }
   if (changed) saveStats(stats);
 }
