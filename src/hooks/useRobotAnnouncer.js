@@ -36,22 +36,22 @@ Object.values(TEAMS).forEach(team => {
 // Voice profiles - each with a sex flag so broadcast pairs sound like two different people
 // Lead announcers use 'male', color commentators use 'female' (or solo if only one announcer)
 const ANNOUNCER_PROFILES = {
-  'Harry Caray':    { pitch: 0.78, rate: 0.85, modFreq: 55,  modGain: 0.22, sex: 'male' },
-  'Steve Stone':    { pitch: 1.30, rate: 0.95, modFreq: 105, modGain: 0.08, sex: 'female' },
-  'Ned Martin':     { pitch: 0.52, rate: 0.92, modFreq: 78,  modGain: 0.16, sex: 'male' },
-  'Bob Montgomery': { pitch: 1.25, rate: 0.98, modFreq: 90,  modGain: 0.09, sex: 'female' },
-  'Ernie Harwell':  { pitch: 0.58, rate: 0.88, modFreq: 82,  modGain: 0.15, sex: 'male' },
-  'Paul Carey':     { pitch: 1.20, rate: 0.95, modFreq: 100, modGain: 0.10, sex: 'female' },
-  'Jerry Coleman':  { pitch: 0.62, rate: 1.05, modFreq: 95,  modGain: 0.12, sex: 'male' },
-  'Dave Campbell':  { pitch: 1.35, rate: 0.98, modFreq: 110, modGain: 0.07, sex: 'female' },
-  'Phil Rizzuto':   { pitch: 0.68, rate: 1.10, modFreq: 105, modGain: 0.11, sex: 'male' },
-  'Bill White':     { pitch: 1.15, rate: 0.92, modFreq: 85,  modGain: 0.09, sex: 'female' },
-  'Chuck Thompson': { pitch: 0.52, rate: 0.95, modFreq: 78,  modGain: 0.15, sex: 'male' },
-  'Brooks Robinson':{ pitch: 1.28, rate: 0.90, modFreq: 92,  modGain: 0.08, sex: 'female' },
-  'Vin Scully':     { pitch: 0.50, rate: 0.88, modFreq: 72,  modGain: 0.14, sex: 'male' },
-  'Ralph Kiner':    { pitch: 0.54, rate: 0.95, modFreq: 82,  modGain: 0.15, sex: 'male' },
-  'Tim McCarver':   { pitch: 1.22, rate: 1.00, modFreq: 95,  modGain: 0.08, sex: 'female' },
-  'default':        { pitch: 0.50, rate: 1.05, modFreq: 80,  modGain: 0.15, sex: 'male' },
+  'Harry Caray':    { pitch: 0.78, rate: 0.95, modFreq: 55,  modGain: 0.22, sex: 'male' },
+  'Steve Stone':    { pitch: 1.30, rate: 1.05, modFreq: 105, modGain: 0.08, sex: 'female' },
+  'Ned Martin':     { pitch: 0.52, rate: 1.02, modFreq: 78,  modGain: 0.16, sex: 'male' },
+  'Bob Montgomery': { pitch: 1.25, rate: 1.08, modFreq: 90,  modGain: 0.09, sex: 'female' },
+  'Ernie Harwell':  { pitch: 0.58, rate: 0.98, modFreq: 82,  modGain: 0.15, sex: 'male' },
+  'Paul Carey':     { pitch: 1.20, rate: 1.05, modFreq: 100, modGain: 0.10, sex: 'female' },
+  'Jerry Coleman':  { pitch: 0.62, rate: 1.15, modFreq: 95,  modGain: 0.12, sex: 'male' },
+  'Dave Campbell':  { pitch: 1.35, rate: 1.08, modFreq: 110, modGain: 0.07, sex: 'female' },
+  'Phil Rizzuto':   { pitch: 0.68, rate: 1.20, modFreq: 105, modGain: 0.11, sex: 'male' },
+  'Bill White':     { pitch: 1.15, rate: 1.02, modFreq: 85,  modGain: 0.09, sex: 'female' },
+  'Chuck Thompson': { pitch: 0.52, rate: 1.05, modFreq: 78,  modGain: 0.15, sex: 'male' },
+  'Brooks Robinson':{ pitch: 1.28, rate: 1.00, modFreq: 92,  modGain: 0.08, sex: 'female' },
+  'Vin Scully':     { pitch: 0.50, rate: 0.98, modFreq: 72,  modGain: 0.14, sex: 'male' },
+  'Ralph Kiner':    { pitch: 0.54, rate: 1.05, modFreq: 82,  modGain: 0.15, sex: 'male' },
+  'Tim McCarver':   { pitch: 1.22, rate: 1.10, modFreq: 95,  modGain: 0.08, sex: 'female' },
+  'default':        { pitch: 0.50, rate: 1.15, modFreq: 80,  modGain: 0.15, sex: 'male' },
 };
 
 // Ball-in-play types that get the retro micro-pause treatment
@@ -134,8 +134,8 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
 
       if (chunk.slow) {
         // Player names: distinct cadence but still intelligible
-        utterance.pitch = Math.max(0.30, profile.pitch * 0.55);
-        utterance.rate = Math.max(0.50, profile.rate * 0.55);
+        utterance.pitch = Math.max(0.30, profile.pitch * 0.65);
+        utterance.rate = Math.max(0.60, profile.rate * 0.70);
       } else {
         utterance.pitch = profile.pitch;
         utterance.rate = profile.rate;
