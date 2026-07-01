@@ -1584,6 +1584,7 @@ export default function Home() {
         opponentTeamData={TEAMS[lineupPhase.away]}
         useDH={lineupPhase.useDH}
         parkTeam={lineupPhase.parkTeam}
+        weather={lineupPhase.weather}
         onConfirm={handleLineupConfirm}
         onBack={() => { setLineupPhase(null); setBallparkPhase({ home: lineupPhase.home, away: lineupPhase.away }); }}
         illPlayerNames={(lineupPhase.illPlayers?.home || []).map(p => p.name)}

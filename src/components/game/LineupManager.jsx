@@ -153,7 +153,7 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
   );
 }
 
-export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [] }) {
+export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, weather, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [] }) {
   const illSet = useMemo(() => new Set(illPlayerNames), [illPlayerNames]);
   const oppIllSet = useMemo(() => new Set(opponentIllPlayerNames), [opponentIllPlayerNames]);
   const rotationPitchers = useMemo(() => (teamData.rotation || []).filter(p => !illSet.has(p.name)), [teamData, illSet]);
@@ -423,9 +423,9 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
                 availablePositions={availablePositions}
                 opposingPitcher={opponentSPData}
                 gameConditions={{
-                  isNight: true, // Would come from game settings
+                  isNight: weather ? !weather.isDay : true,
                   isHome: parkTeam === teamKey,
-                  h2hStats: null, // Would come from player history vs pitcher
+                  h2hStats: null,
                 }}
                 onPlayerChange={handlePlayerChange}
                 onPositionChange={handlePositionChange}
@@ -449,7 +449,7 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
               <div className="text-[10px] font-heading uppercase tracking-widest text-emerald-400 mb-2">Bench - Platoon Advantages vs {opponentSPData.throws || 'R'}HP</div>
               <div className="space-y-1">
                 {advantages.map(p => {
-                  const situational = calculateSituationalRatings(p, opponentSPData, { isNight: true, isHome: parkTeam === teamKey });
+                  const situational = calculateSituationalRatings(p, opponentSPData, { isNight: weather ? !weather.isDay : true, isHome: parkTeam === teamKey });
                   const adjContact = situational.contact;
                   const adjPower = situational.power;
                   return (
