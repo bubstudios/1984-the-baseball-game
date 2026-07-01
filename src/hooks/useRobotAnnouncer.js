@@ -90,6 +90,7 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
     const words = normalizedText.split(' ');
     const chunks = [];
     let i = 0;
+    let normalTextBuffer = [];
 
     while (i < words.length) {
       // Skip empty words
@@ -98,27 +99,41 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
         continue;
       }
       
+      // Flush any buffered normal text before a name chunk
+      const tryName = (nameWords) => {
+        if (normalTextBuffer.length > 0) {
+          chunks.push({ text: normalTextBuffer.join(' '), slow: false });
+          normalTextBuffer = [];
+        }
+        chunks.push({ text: nameWords.join(' '), slow: true });
+        i += nameWords.length;
+        return true;
+      };
+
       // Try 3-word name (e.g. "Cal Ripken Jr.")
       if (i + 2 < words.length) {
-        const threeWord = `${words[i]} ${words[i+1]} ${words[i+2]}`;
-        if (PLAYER_NAMES.has(threeWord)) {
-          chunks.push({ text: threeWord, slow: true });
-          i += 3;
+        const threeWord = [words[i], words[i+1], words[i+2]];
+        if (PLAYER_NAMES.has(threeWord.join(' '))) {
+          tryName(threeWord);
           continue;
         }
       }
       // Try 2-word name (e.g. "Tony Gwynn")
       if (i + 1 < words.length) {
-        const twoWord = `${words[i]} ${words[i+1]}`;
-        if (PLAYER_NAMES.has(twoWord)) {
-          chunks.push({ text: twoWord, slow: true });
-          i += 2;
+        const twoWord = [words[i], words[i+1]];
+        if (PLAYER_NAMES.has(twoWord.join(' '))) {
+          tryName(twoWord);
           continue;
         }
       }
-      // Not a name - add this word to normal text
-      chunks.push({ text: words[i], slow: false });
+      // Not a name - buffer this word for normal text
+      normalTextBuffer.push(words[i]);
       i++;
+    }
+
+    // Flush any remaining buffered normal text
+    if (normalTextBuffer.length > 0) {
+      chunks.push({ text: normalTextBuffer.join(' '), slow: false });
     }
 
     // Play chunks sequentially using onend for reliable chaining
