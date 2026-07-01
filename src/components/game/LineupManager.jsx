@@ -449,8 +449,9 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
               <div className="text-[10px] font-heading uppercase tracking-widest text-emerald-400 mb-2">Bench - Platoon Advantages vs {opponentSPData.throws || 'R'}HP</div>
               <div className="space-y-1">
                 {advantages.map(p => {
-                  const adjContact = Math.max(1, Math.min(10, p.contact));
-                  const adjPower = Math.max(1, Math.min(10, p.power));
+                  const situational = calculateSituationalRatings(p, opponentSPData, { isNight: true, isHome: parkTeam === teamKey });
+                  const adjContact = situational.contact;
+                  const adjPower = situational.power;
                   return (
                     <div key={p.name} className="flex items-center gap-2 text-xs font-body">
                       <TrendingUp className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />

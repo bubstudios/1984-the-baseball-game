@@ -60,6 +60,16 @@ export function calculateSituationalRatings(batter, opposingPitcher, gameConditi
   adjPower = Math.round(adjPower * dpm);
   if (isDay) factors.push('Day game');
   
+  // 4. Pitcher quality adjustment — different pitchers produce different ratings
+  // Control mainly affects contact, pitchSpeed mainly affects power, offSpeed affects both
+  if (opposingPitcher) {
+    const controlDiff = (opposingPitcher.control || 6) - 6;
+    const speedDiff = (opposingPitcher.pitchSpeed || 6) - 6;
+    const offDiff = (opposingPitcher.offSpeed || 6) - 6;
+    adjContact -= controlDiff + Math.round(offDiff * 0.5);
+    adjPower -= speedDiff + Math.round(offDiff * 0.5);
+  }
+  
   // Clamp final ratings to 1-10
   const finalContact = Math.max(1, Math.min(10, adjContact));
   const finalPower = Math.max(1, Math.min(10, adjPower));
