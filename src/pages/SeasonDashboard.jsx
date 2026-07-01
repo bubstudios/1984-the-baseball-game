@@ -91,6 +91,11 @@ export default function SeasonDashboard() {
 
   const generateSchedule = async (seasonId, team) => {
     try {
+      // Clear any existing schedule rows for this season FIRST.
+      // Without this, regeneration appends to the old (possibly broken) schedule.
+      await base44.entities.Schedule.deleteMany({ seasonId });
+      console.log('Cleared existing schedule rows before regenerating.');
+
       // Build the schedule locally with the verified generator.
       const days = buildSchedule(team); // Array<{ day, date, games: [{home, away, isUser}] }>
 
