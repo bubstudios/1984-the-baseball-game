@@ -2001,13 +2001,22 @@ export function getSituationalBatter(state) {
   const isHome = getBattingTeam(state) === 'home'; const isDay = state.weather?.isDay ?? true;
   const hcm = isHome ? 1.03 : 0.98, hpm = isHome ? 1.03 : 0.97;
   const dcm = isDay ? 1.02 : 0.99, dpm = isDay ? 1.01 : 1.00;
+  // ── Pitcher quality adjustment (matches LineupManager situational ratings) ──
+  // Elite pitchers (high control/speed/off-speed) depress batter ratings.
+  // Uses effective ratings so fatigue recovers some batter rating.
+  const effP = getEffectivePitcher(state) || p;
+  const pControl = effP.effectiveControl || effP.control || 6;
+  const pSpeed = effP.effectivePitchSpeed || effP.pitchSpeed || 6;
+  const pOff = effP.effectiveOffSpeed || effP.offSpeed || 6;
+  const pitcherContactAdj = (pControl - 6) + Math.round((pOff - 6) * 0.5);
+  const pitcherPowerAdj = (pSpeed - 6) + Math.round((pOff - 6) * 0.5);
   // ── Count-based modifiers (additive after base/situation multipliers) ──
   const balls = state.balls || 0, strikes = state.strikes || 0;
-  const adjContact = Math.round(adj.contact * hcm * dcm);
-  const adjPower = Math.round(adj.power * hpm * dpm);
+  const adjContact = Math.max(1, Math.min(10, Math.round(adj.contact * hcm * dcm) - pitcherContactAdj));
+  const adjPower = Math.max(1, Math.min(10, Math.round(adj.power * hpm * dpm) - pitcherPowerAdj));
   // Base ratings before count modifiers (for MatchupCard arrow display)
-  const baseContact = Math.max(1, Math.min(10, adjContact));
-  const basePower = Math.max(1, Math.min(10, adjPower));
+  const baseContact = adjContact;
+  const basePower = adjPower;
   let finalContact = adjContact, finalPower = adjPower, countModReason = null;
   if (balls === 3 && strikes === 0) {
     finalPower += 2; finalContact += 1;
