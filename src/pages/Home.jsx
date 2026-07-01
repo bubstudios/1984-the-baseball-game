@@ -703,10 +703,12 @@ export default function Home() {
     // Use coach name if manager was ejected
     if (isManagerEjected) {
       result.managerName = manager?.coach || 'The Acting Manager';
+      result.isActingManager = true;
       if (result.escaLevel > 2) result.escaLevel = 2;
       result.ejected = false;
     } else {
       result.managerName = manager?.name || 'The Manager';
+      result.isActingManager = false;
     }
 
     // Track topic usage
