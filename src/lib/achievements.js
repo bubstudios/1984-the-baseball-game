@@ -407,9 +407,9 @@ export const ACHIEVEMENTS = [
   //   2. Reds streaker (sombrero, pillow, Spock bust)
   //   3. "I bet I could hit .220" fan chirp (Reds)
   //   4. "I ordered a pound of fries!" fan chirp (Cubs)
-  //   5. Clark & Behb Detective Agency TV popup
-  //   6. Carmie TV popup
-  { id: 'the_groovers', name: 'The Groovers', desc: 'Witness all 6 rare Easter eggs: the rainbow horse, the Riverfront streaker, the .220 guy, the fries guy, Clark & Behb, and Carmie', icon: '🌈', category: 'hidden' },
+  //   5. Clark & Bub Detective Agency sign falls (ballpark event)
+  //   6. "uhhhh hi, Becky" fan chirp (Cubs)
+  { id: 'the_groovers', name: 'The Groovers', desc: 'Witness all 6 rare Easter eggs: the rainbow horse, the Riverfront streaker, the .220 guy, the fries guy, Clark & Bub, and Becky', icon: '🌈', category: 'hidden' },
 
   // ── EXTENDED TEAM-SPECIFIC (final 15 teams) ──
   ...EXTENDED_TEAM_ACHIEVEMENTS,
@@ -546,8 +546,8 @@ const GROOVER_ITEMS = [
   'reds_streaker',     // ballpark event
   'fan_220',           // fan chirp (Reds)
   'fan_fries',         // fan chirp (Cubs)
-  'tv_clark_behb',     // National TV popup (tv_511)
-  'tv_carmie',         // National TV popup (tv_512)
+  'clark_bub_sign',    // ballpark event
+  'fan_becky',         // fan chirp (Cubs)
 ];
 
 /**

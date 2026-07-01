@@ -162,6 +162,7 @@ export const TEAM_FAN_YELLS = {
     "Make Harry sing!",
     "Hey hey, holy cow!",
     "Come on, Chicago!",
+    "uhhhh hi, Becky",
   ],
   padres: [
     "Tony, slap one through!",
@@ -1001,6 +1002,10 @@ export function pickFanYell(homeTeamKey = null) {
   if (homeTeamKey === 'reds' && Math.random() < 0.004) {
     return "I bet I could hit .220 in the big leagues";
   }
+  // "uhhhh hi, Becky" - Cubs-only Easter egg (same rarity)
+  if (homeTeamKey === 'cubs' && Math.random() < 0.004) {
+    return "uhhhh hi, Becky";
+  }
 
   const teamYells = homeTeamKey && TEAM_FAN_YELLS[homeTeamKey];
   const useTeam = teamYells && teamYells.length > 0 && Math.random() < 0.5;
@@ -1106,6 +1111,9 @@ export function trackFanYell(text) {
     }
     if (text === "I ordered a pound of fries! They shorted me!") {
       trackGrooverSighting('fan_fries');
+    }
+    if (text === "uhhhh hi, Becky") {
+      trackGrooverSighting('fan_becky');
     }
   } catch (e) { /* ignore */ }
 

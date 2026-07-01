@@ -180,6 +180,16 @@ export const BALLPARK_EVENTS = [
     rarity: "legendary",
     weight: 0.15, // only 15% of legendary-pool picks become the rainbow horse
   },
+  // ── LEGENDARY: Clark & Bub Detective Agency ──
+  // Another legendary Easter egg for The Groovers achievement
+  {
+    id: "clark_bub_sign",
+    category: "legendary",
+    text: "The Clark & Bub Detective Agency ad sign just fell down! The grounds crew is clearing the debris from the warning track.",
+    delay: 45,
+    rarity: "legendary",
+    weight: 0.15, // only 15% of legendary-pool picks become this event
+  },
 ];
 
 // ── Roll for events ──

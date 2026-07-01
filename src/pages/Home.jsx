@@ -618,7 +618,7 @@ export default function Home() {
       if (bpEvent) {
         setInlineGameEvent({ type: 'ballpark', event: bpEvent });
         setTimeout(() => setInlineGameEvent(null), 10000);
-        if (bpEvent.id === 'rainbow_horse' || bpEvent.id === 'reds_streaker') {
+        if (bpEvent.id === 'rainbow_horse' || bpEvent.id === 'reds_streaker' || bpEvent.id === 'clark_bub_sign') {
           trackGrooverSighting(bpEvent.id);
         }
       }
