@@ -40,6 +40,7 @@ import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal'
 import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
 import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement, trackHomeRunDistance, trackGameRecords, trackPlayersUsed, trackTimePlayed } from '@/lib/achievements';
+import { base44 } from '@/api/base44Client';
 import AchievementPopup from '@/components/game/AchievementPopup';
 import LeaderProgressPopup from '@/components/game/LeaderProgressPopup';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
@@ -204,6 +205,7 @@ export default function Home() {
     ensureStatsInit();
     trackSessionStart();
     migrateLegacyStorage();
+    try { base44.analytics.track({ eventName: 'session_start' }); } catch (e) { /* analytics optional */ }
   }, []);
 
   // Robot announcer - use stadium's lead announcer voice
@@ -252,6 +254,7 @@ export default function Home() {
     setGameState(state);
     setLineupPhase(null);
     gameStartTimeRef.current = Date.now();
+    try { base44.analytics.track({ eventName: 'game_started', properties: { home_team: home, away_team: away, use_dh: useDHFlag, mode: gameMode || 'exhibition' } }); } catch (e) { /* analytics optional */ }
   }, []);
 
   const handleModeSelect = useCallback((mode) => {
@@ -828,12 +831,30 @@ export default function Home() {
         setTimeout(() => setShowAchievementPopup(true), 3500);
       }
       if (progress.length > 0) {
-        // Show first progress item (could queue multiple)
         setLeaderProgress(progress[0]);
       }
     } catch (e) {
       console.error('checkGameAchievements failed:', e);
     }
+
+    // Analytics: game completed
+    try {
+      const durationMin = gameStartTimeRef.current ? Math.max(1, Math.round((Date.now() - gameStartTimeRef.current) / 60000)) : 0;
+      base44.analytics.track({
+        eventName: 'game_completed',
+        properties: {
+          user_team: effectiveUserTeam,
+          opponent_team: opponentTeam,
+          user_won: userWon,
+          user_score: state.score[userSide],
+          opponent_score: state.score[opponentSide],
+          innings: state.inning,
+          duration_minutes: durationMin,
+          stadium: stadium,
+          mode: gameMode || 'exhibition',
+        },
+      });
+    } catch (e) { /* analytics optional */ }
   }, [userTeam, gameStadium]);
 
   const isUserBatting = gameState && (
