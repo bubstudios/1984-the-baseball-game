@@ -92,8 +92,8 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
     let i = 0;
 
     while (i < words.length) {
-      // Skip empty words or standalone dashes/punctuation
-      if (!words[i] || words[i] === '-' || words[i] === '–' || words[i] === '—') {
+      // Skip empty words
+      if (!words[i]) {
         i++;
         continue;
       }
@@ -116,29 +116,9 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
           continue;
         }
       }
-      // Collect normal text until we hit a player name
-      let normalWords = [];
-      while (i < words.length) {
-        // Skip standalone dashes
-        if (words[i] === '-' || words[i] === '–' || words[i] === '—') {
-          if (normalWords.length > 0) {
-            chunks.push({ text: normalWords.join(' '), slow: false });
-            normalWords = [];
-          }
-          i++;
-          continue;
-        }
-        
-        let isNextName = false;
-        if (i + 2 < words.length && PLAYER_NAMES.has(`${words[i]} ${words[i+1]} ${words[i+2]}`)) isNextName = true;
-        else if (i + 1 < words.length && PLAYER_NAMES.has(`${words[i]} ${words[i+1]}`)) isNextName = true;
-        if (isNextName) break;
-        normalWords.push(words[i]);
-        i++;
-      }
-      if (normalWords.length > 0) {
-        chunks.push({ text: normalWords.join(' '), slow: false });
-      }
+      // Not a name - add this word to normal text
+      chunks.push({ text: words[i], slow: false });
+      i++;
     }
 
     // Play chunks sequentially using onend for reliable chaining
