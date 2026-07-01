@@ -152,8 +152,9 @@ function speakRobot(text, audioCtx, announcerName, delayMs = 0) {
         utterance.pitch = Math.max(0.30, profile.pitch * 0.55);
         utterance.rate = Math.max(0.50, profile.rate * 0.55);
       } else {
-        utterance.pitch = profile.pitch;
-        utterance.rate = profile.rate;
+        // Regular commentary: slowed down for retro robot effect
+        utterance.pitch = profile.pitch * 0.85;
+        utterance.rate = profile.rate * 0.70;
       }
 
       let osc = null, gain = null, analyser = null;
