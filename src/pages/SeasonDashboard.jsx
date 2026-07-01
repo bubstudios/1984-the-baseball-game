@@ -91,6 +91,7 @@ export default function SeasonDashboard() {
 
   const generateSchedule = async (seasonId, team) => {
     try {
+      setLoading(true);
       // Clear any existing schedule rows for this season FIRST.
       // Without this, regeneration appends to the old (possibly broken) schedule.
       await base44.entities.Schedule.deleteMany({ seasonId });
@@ -123,15 +124,25 @@ export default function SeasonDashboard() {
         }
       }
 
-      // Bulk-create the schedule rows.
-      const CHUNK = 100;
+      // Fix stale totalGames on the season entity (old backend may have set 2430).
+      await base44.entities.Season.update(seasonId, { totalGames: 2106 });
+
+      // Bulk-create the schedule rows in max-size chunks with a delay to avoid rate limits.
+      const CHUNK = 500;
+      const delay = (ms) => new Promise(r => setTimeout(r, ms));
       for (let i = 0; i < rows.length; i += CHUNK) {
         await base44.entities.Schedule.bulkCreate(rows.slice(i, i + CHUNK));
+        if (i + CHUNK < rows.length) await delay(800);
       }
       console.log(`Schedule generated locally: ${rows.length} games across ${days.length} days.`);
+
+      // Reload the season + schedule so the UI reflects the fresh data.
+      await loadSeason();
     } catch (error) {
       console.error('Failed to generate schedule:', error);
       alert('Failed to generate schedule: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -337,9 +348,19 @@ export default function SeasonDashboard() {
                 variant="outline"
                 size="sm"
                 className="gap-2"
+                disabled={loading}
               >
-                <Calendar className="w-4 h-4" />
-                Regenerate
+                {loading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Calendar className="w-4 h-4" />
+                    Regenerate
+                  </>
+                )}
               </Button>
             </div>
             <FullSchedule seasonId={season.id} userTeam={season.userTeam} />
