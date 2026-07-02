@@ -181,11 +181,11 @@ export default function SeasonDashboard() {
 
   const playUserGame = () => {
     const userGame = schedule.find(g => g.isUserGame);
-    if (userGame) {
-      // Launch game in exhibition mode with season context
-      // This would integrate with existing Home.jsx game flow
-      alert(`Playing: ${userGame.awayTeam} @ ${userGame.homeTeam}`);
-    }
+    if (!userGame || !season) return;
+    const userTeam = season.userTeam;
+    const opponent = userGame.homeTeam === userTeam ? userGame.awayTeam : userGame.homeTeam;
+    // Navigate to Home with season game context - user's team is always "home" in the game UI
+    window.location.href = `/?seasonGame=${userTeam},${opponent}`;
   };
 
   if (loading) {

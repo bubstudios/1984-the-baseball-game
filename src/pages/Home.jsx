@@ -200,6 +200,19 @@ export default function Home() {
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
+    // Detect season game launch (?seasonGame=userTeam,opponent) and jump straight to ballpark phase
+    const urlParams = new URLSearchParams(window.location.search);
+    const seasonGame = urlParams.get('seasonGame');
+    if (seasonGame) {
+      const [userTeam, opponent] = seasonGame.split(',');
+      if (userTeam && opponent && TEAMS[userTeam] && TEAMS[opponent]) {
+        setGameMode('exhibition');
+        setBallparkPhase({ home: userTeam, away: opponent });
+        setLoadingScreen(false);
+      }
+      // Clean the URL so a subsequent "New Game" doesn't re-trigger
+      window.history.replaceState({}, '', '/');
+    }
     if (!hasSeenTutorial()) {
       setShowTutorial(true);
     }
