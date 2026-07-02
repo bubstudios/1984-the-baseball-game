@@ -3,6 +3,7 @@
 // Pitching IP stored as integer outs; display via formatIP().
 
 import { TEAMS } from './gameData';
+import { base44 } from '@/api/base44Client';
 import { DIVISIONS, getLeague } from './seasonSchedule';
 
 // ── Player ID helper ──
@@ -277,4 +278,80 @@ export function getLeagueLeaders(seasonState, stat, type, limit = 10) {
     const rates = type === 'batting' ? computeBattingRateStats(p) : computePitchingRateStats(p);
     return { ...p, ...rates };
   });
+}
+
+// ── Rotation logic (4-day starter cooldown) ──
+// rotationState persists on the Season entity: { teamKey: { lastStarted: { pitcherName: gameDay } } }
+
+export function pickStarter(teamKey, gameDay, rotationState) {
+  const team = TEAMS[teamKey];
+  const rot = team.rotation || [];
+  if (rot.length === 0) return null;
+
+  const rs = rotationState?.[teamKey];
+  if (!rs || !rs.lastStarted) return rot[0];
+
+  // First available starter in rotation order (>=4 days rest)
+  const available = rot.filter(p => (gameDay - (rs.lastStarted[p.name] ?? -99)) >= 4);
+  if (available.length > 0) return available[0];
+
+  // Nobody rested enough - "bullpen/long-man day": use the most-rested arm
+  let best = rot[0], bestRest = -Infinity;
+  for (const p of rot) {
+    const rest = gameDay - (rs.lastStarted[p.name] ?? -99);
+    if (rest > bestRest) { bestRest = rest; best = p; }
+  }
+  return best;
+}
+
+// Call AFTER a game to record that a starter was used. Mutates rotationState in place.
+export function recordStart(teamKey, pitcherName, gameDay, rotationState) {
+  if (!rotationState[teamKey]) rotationState[teamKey] = { lastStarted: {} };
+  rotationState[teamKey].lastStarted[pitcherName] = gameDay;
+}
+
+export async function loadRotationStateForActiveSeason() {
+  try {
+    const seasons = await base44.entities.Season.filter({ status: 'active' });
+    if (seasons.length === 0) return {};
+    return seasons[0].rotationState || {};
+  } catch (e) {
+    console.error('Failed to load rotation state:', e);
+    return {};
+  }
+}
+
+export async function persistRotationState(seasonId, rotationState) {
+  try {
+    await base44.entities.Season.update(seasonId, { rotationState });
+  } catch (e) {
+    console.error('Failed to persist rotation state:', e);
+  }
+}
+
+// Build a GameResult entity from the final game state + season context
+export function buildSeasonGameResultFromState(state, ctx) {
+  const homeWon = state.score.home > state.score.away;
+  const winner = homeWon ? state.homeTeam : state.awayTeam;
+
+  const homeAll = [...state.homeLineup, ...(state.homePlayerHistory || [])];
+  const awayAll = [...state.awayLineup, ...(state.awayPlayerHistory || [])];
+  const homeHits = homeAll.reduce((s, p) => s + (p.gameStats?.hits || 0), 0);
+  const awayHits = awayAll.reduce((s, p) => s + (p.gameStats?.hits || 0), 0);
+
+  return {
+    seasonId: ctx.seasonId,
+    gameDay: ctx.gameDay,
+    gameDate: ctx.gameDate || null,
+    homeTeam: state.homeTeam,
+    awayTeam: state.awayTeam,
+    homeScore: state.score.home,
+    awayScore: state.score.away,
+    winner,
+    isUserGame: true,
+    homeHits,
+    awayHits,
+    stadium: TEAMS[state.homeTeam]?.stadium || null,
+    innings: (state.innings || []).map(inn => ({ home: inn.home || 0, away: inn.away || 0 })),
+  };
 }

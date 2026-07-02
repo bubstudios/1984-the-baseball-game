@@ -183,7 +183,7 @@ export default function SeasonDashboard() {
     const userGame = schedule.find(g => g.isUserGame);
     if (!userGame || !season) return;
     // Pass actual schedule home/away + user's team so the game respects the schedule
-    window.location.href = `/?seasonGame=${userGame.homeTeam},${userGame.awayTeam},${season.userTeam}`;
+    window.location.href = `/?seasonGame=${userGame.homeTeam},${userGame.awayTeam},${season.userTeam},${season.id},${userGame.gameDay}`;
   };
 
   if (loading) {

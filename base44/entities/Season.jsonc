@@ -52,6 +52,10 @@
       "type": "integer",
       "default": 2430,
       "description": "Total season games (162 * 15 opponents)"
+    },
+    "rotationState": {
+      "type": "object",
+      "description": "Per-team rotation cooldown tracking: { teamKey: { lastStarted: { pitcherName: gameDay } } }"
     }
   },
   "required": [

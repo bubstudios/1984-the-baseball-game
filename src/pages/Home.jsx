@@ -139,6 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
+import { pickStarter, recordStart, loadRotationStateForActiveSeason, persistRotationState, buildSeasonGameResultFromState } from '@/lib/seasonStore';
 
 
 export default function Home() {
@@ -148,6 +149,7 @@ export default function Home() {
   const [awayTeam, setAwayTeam] = useState(null);
   const [userTeam, setUserTeam] = useState(null);
   const [seasonUserTeam, setSeasonUserTeam] = useState(null);
+  const [forcedStarters, setForcedStarters] = useState(null); // { user, cpu } in season mode; null in exhibition
   const [processing, setProcessing] = useState(false);
   const [tab, setTab] = useState('game');
   const [ballparkPhase, setBallparkPhase] = useState(null); // { home, away }
@@ -178,6 +180,8 @@ export default function Home() {
   const [fielderInjury, setFielderInjury] = useState(null);
   const [pregameIllnesses, setPregameIllnesses] = useState(null);
   const [injuryAlert, setInjuryAlert] = useState(null);
+  const seasonContextRef = useRef(null); // { seasonId, gameDay, homeTeam, awayTeam, userTeam }
+  const seasonRotationStateRef = useRef({}); // persisted to Season entity
   const prevLastPlay = useRef(null);
   const prevArgPlay = useRef(null);
   const prevGameOver = useRef(false);
@@ -206,13 +210,26 @@ export default function Home() {
     const urlParams = new URLSearchParams(window.location.search);
     const seasonGame = urlParams.get('seasonGame');
     if (seasonGame) {
-      const parts = seasonGame.split(',');
-      const homeTeamKey = parts[0];
-      const awayTeamKey = parts[1];
-      const userTeamParam = parts[2] || homeTeamKey;
-      if (homeTeamKey && awayTeamKey && TEAMS[homeTeamKey] && TEAMS[awayTeamKey]) {
-        setGameMode('exhibition');
+      // Clean the URL so a subsequent "New Game" doesn't re-trigger
+      window.history.replaceState({}, '', '/');
+      (async () => {
+        const parts = seasonGame.split(',');
+        const homeTeamKey = parts[0];
+        const awayTeamKey = parts[1];
+        const userTeamParam = parts[2] || homeTeamKey;
+        const seasonId = parts[3] || null;
+        const gameDayNum = parts[4] ? parseInt(parts[4], 10) : 1;
+        if (!homeTeamKey || !awayTeamKey || !TEAMS[homeTeamKey] || !TEAMS[awayTeamKey]) return;
+        setGameMode('season');
         setSeasonUserTeam(userTeamParam);
+        seasonContextRef.current = { seasonId, gameDay: gameDayNum, homeTeam: homeTeamKey, awayTeam: awayTeamKey, userTeam: userTeamParam };
+        // Load rotation state and pick starters (4-day cooldown enforced)
+        const rotState = await loadRotationStateForActiveSeason();
+        seasonRotationStateRef.current = rotState;
+        const oppTeamKey = (userTeamParam === homeTeamKey) ? awayTeamKey : homeTeamKey;
+        const userStarter = pickStarter(userTeamParam, gameDayNum, rotState);
+        const cpuStarter = pickStarter(oppTeamKey, gameDayNum, rotState);
+        setForcedStarters({ user: userStarter, cpu: cpuStarter });
         // Season games use the home team's stadium (schedule-determined) - skip BallparkSelect
         const stadium = TEAMS[homeTeamKey].stadium;
         let weather;
@@ -231,9 +248,7 @@ export default function Home() {
         setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
         setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam });
         setLoadingScreen(false);
-      }
-      // Clean the URL so a subsequent "New Game" doesn't re-trigger
-      window.history.replaceState({}, '', '/');
+      })();
     }
     if (!hasSeenTutorial()) {
       setShowTutorial(true);
@@ -284,6 +299,8 @@ export default function Home() {
     }
     const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire, homeSP, awaySP);
     state.userTeam = effectiveUserTeam; // CRITICAL: gates in getControllingTeam() read state.userTeam to distinguish CPU from user
+    state.homeStartingPitcherName = homeSP?.name || null;
+    state.awayStartingPitcherName = awaySP?.name || null;
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
@@ -378,8 +395,14 @@ export default function Home() {
         adjustedOpponentSP = healthyPitchers[0] || adjustedOpponentSP;
       }
     }
-    startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, startingPitcher, adjustedOpponentSP, seasonUser);
-  }, [lineupPhase, startGame]);
+    // Season mode: rotation dictates starters - ignore any UI selection of opponent SP
+    let effectiveUserStarter = startingPitcher;
+    if (gameMode === 'season' && forcedStarters) {
+      adjustedOpponentSP = forcedStarters.cpu;
+      effectiveUserStarter = forcedStarters.user;
+    }
+    startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, effectiveUserStarter, adjustedOpponentSP, seasonUser);
+  }, [lineupPhase, startGame, gameMode, forcedStarters]);
 
   // Fireworks: detect home team HRs and wins
   useEffect(() => {
@@ -914,6 +937,23 @@ export default function Home() {
       }, 5000);
     }
 
+    // Season mode: persist result, advance rotation cooldown
+    if (gameMode === 'season' && seasonContextRef.current) {
+      const ctx = seasonContextRef.current;
+      (async () => {
+        try {
+          const result = buildSeasonGameResultFromState(state, ctx);
+          await base44.entities.GameResult.create(result);
+          const rotState = seasonRotationStateRef.current;
+          if (state.homeStartingPitcherName) recordStart(state.homeTeam, state.homeStartingPitcherName, ctx.gameDay, rotState);
+          if (state.awayStartingPitcherName) recordStart(state.awayTeam, state.awayStartingPitcherName, ctx.gameDay, rotState);
+          if (ctx.seasonId) await persistRotationState(ctx.seasonId, rotState);
+        } catch (e) {
+          console.error('Season result save failed:', e);
+        }
+      })();
+    }
+
     // Analytics: game completed
     try {
       const durationMin = gameStartTimeRef.current ? Math.max(1, Math.round((Date.now() - gameStartTimeRef.current) / 60000)) : 0;
@@ -932,7 +972,7 @@ export default function Home() {
         },
       });
     } catch (e) { /* analytics optional */ }
-  }, [userTeam, gameStadium]);
+  }, [userTeam, gameStadium, gameMode]);
 
   const isUserBatting = gameState && (
     (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
@@ -1601,6 +1641,10 @@ export default function Home() {
   }, [injuryAlert, gameState, userTeam]);
 
   const handleNewGame = () => {
+    if (gameMode === 'season') {
+      window.location.href = '/season';
+      return;
+    }
     setGameMode(null);
     setGameState(null);
     setBallparkPhase(null);
@@ -1613,12 +1657,15 @@ export default function Home() {
     setAwayTeam(null);
     setUserTeam(null);
     setSeasonUserTeam(null);
+    setForcedStarters(null);
     setTab('game');
     setNewAchievements([]);
     setShowAchievementPopup(false);
     setArgumentResult(null);
     setSelectedUmpire(null);
     prevGameOver.current = false;
+    seasonContextRef.current = null;
+    seasonRotationStateRef.current = {};
     prevArgPlay.current = null;
     prevLogLength.current = 0;
     prevInning.current = null;
@@ -1671,6 +1718,8 @@ export default function Home() {
         onBack={() => { setLineupPhase(null); setBallparkPhase({ home: lineupPhase.home, away: lineupPhase.away }); }}
         illPlayerNames={(lineupPhase.illPlayers?.[userIsHome ? 'home' : 'away'] || []).map(p => p.name)}
         opponentIllPlayerNames={(lineupPhase.illPlayers?.[userIsHome ? 'away' : 'home'] || []).map(p => p.name)}
+        seasonMode={gameMode === 'season'}
+        forcedOpponentSP={forcedStarters?.cpu || null}
       />
       {pregameIllnesses && (
         <PregameIllnessModal
@@ -2185,10 +2234,17 @@ export default function Home() {
                 <Trophy className="w-4 h-4" />
                 <span className="font-heading">Summary</span>
               </Button>
-              <Button onClick={handleNewGame} className="flex-1 gap-2">
-                <RotateCcw className="w-4 h-4" />
-                <span className="font-heading">New Game</span>
-              </Button>
+              {gameMode === 'season' ? (
+                <Button onClick={() => { window.location.href = '/season'; }} className="flex-1 gap-2">
+                  <Trophy className="w-4 h-4" />
+                  <span className="font-heading">Back to Season</span>
+                </Button>
+              ) : (
+                <Button onClick={handleNewGame} className="flex-1 gap-2">
+                  <RotateCcw className="w-4 h-4" />
+                  <span className="font-heading">New Game</span>
+                </Button>
+              )}
             </div>
           </div>
         </div>

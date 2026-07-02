@@ -153,7 +153,7 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
   );
 }
 
-export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, weather, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [] }) {
+export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, weather, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [], seasonMode = false, forcedOpponentSP = null }) {
   const illSet = useMemo(() => new Set(illPlayerNames), [illPlayerNames]);
   const oppIllSet = useMemo(() => new Set(opponentIllPlayerNames), [opponentIllPlayerNames]);
   const rotationPitchers = useMemo(() => (teamData.rotation || []).filter(p => !illSet.has(p.name)), [teamData, illSet]);
@@ -164,7 +164,7 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
 
   // Opponent starting pitcher selection
   const opponentRotation = useMemo(() => (opponentTeamData?.rotation || []).filter(p => !oppIllSet.has(p.name)), [opponentTeamData, oppIllSet]);
-  const [opponentSP, setOpponentSP] = useState(opponentRotation[0]?.name || '');
+  const [opponentSP, setOpponentSP] = useState(forcedOpponentSP?.name || opponentRotation[0]?.name || '');
   const opponentSPData = useMemo(() => {
     return opponentRotation.find(p => p.name === opponentSP) || opponentRotation[0] || null;
   }, [opponentRotation, opponentSP]);
@@ -175,8 +175,8 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
   }, [rotationPitchers]);
 
   useEffect(() => {
-    setOpponentSP(opponentRotation[0]?.name || '');
-  }, [opponentRotation]);
+    setOpponentSP(forcedOpponentSP?.name || opponentRotation[0]?.name || '');
+  }, [opponentRotation, forcedOpponentSP]);
 
   const allPositionPlayers = useMemo(() => {
     const players = [...teamData.lineup, ...(teamData.bench || [])].filter(p => !illSet.has(p.name));
@@ -470,25 +470,38 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
         })()}
 
         {/* Opponent Starting Pitcher — shown first because it drives the C/P ratings */}
-        {opponentTeamData && opponentRotation.length > 1 && (
+        {opponentTeamData && opponentSPData && (
           <div className="bg-card border border-primary/40 rounded-xl p-3 mb-4">
             <h3 className="font-heading text-sm font-bold text-foreground mb-2">
               Opponent Starting Pitcher
             </h3>
-            <p className="text-[10px] text-primary mb-2 font-body font-medium">
-              This drives the Contact/Power ratings above — pick who you'll face from {opponentTeamData.city} {opponentTeamData.name}'s rotation.
-            </p>
-            <select
-              value={opponentSP}
-              onChange={(e) => setOpponentSP(e.target.value)}
-              className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              {opponentRotation.map(p => (
-                <option key={p.name} value={p.name}>
-                  {p.name} — SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}
-                </option>
-              ))}
-            </select>
+            {seasonMode ? (
+              <>
+                <p className="text-[10px] text-muted-foreground mb-2 font-body">
+                  Set by {opponentTeamData.city} {opponentTeamData.name}'s rotation. You face:
+                </p>
+                <div className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm font-body text-foreground">
+                  {opponentSPData.name} — SPD {opponentSPData.pitchSpeed} | OFF {opponentSPData.offSpeed} | CTL {opponentSPData.control} | STA {opponentSPData.stamina}
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-[10px] text-primary mb-2 font-body font-medium">
+                  This drives the Contact/Power ratings above — pick who you'll face from {opponentTeamData.city} {opponentTeamData.name}'s rotation.
+                </p>
+                <select
+                  value={opponentSP}
+                  onChange={(e) => setOpponentSP(e.target.value)}
+                  className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  {opponentRotation.map(p => (
+                    <option key={p.name} value={p.name}>
+                      {p.name} — SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
             {opponentSPData && (
               <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground">
                 <span>Throws: <span className="text-foreground font-bold">{opponentSPData.throws || 'R'}</span></span>
