@@ -20,7 +20,7 @@ export function calculateSituationalRatings(batter, opposingPitcher, gameConditi
   let adjContact = batter.contact || 0;
   let adjPower = batter.power || 0;
 
-  // 1. Platoon/splits adjustment (±1-2 points) — based on real career BA/HR splits vs LHP/RHP
+  // 1. Platoon/splits adjustment (±1 point) — additive, based on real career BA/HR splits vs LHP/RHP
   if (opposingPitcher && batter.splits) {
     const pitcherHand = opposingPitcher.throws;
     const split = pitcherHand === 'L' ? batter.splits.vsLHP : batter.splits.vsRHP;
@@ -33,11 +33,13 @@ export function calculateSituationalRatings(batter, opposingPitcher, gameConditi
       const tHR = vl.hr + vr.hr;
       const oHRR = ta > 0 ? tHR / ta : 0.020;
       const baR = oBA > 0 ? split.ba / oBA : 1;
-      adjContact = Math.max(1, Math.min(10, Math.round(batter.contact * baR)));
+      // Additive: +1 for strong platoon edge, -1 for strong disadvantage
+      if (baR >= 1.12) adjContact += 1;
+      else if (baR <= 0.88) adjContact -= 1;
       const sHRR = split.ab > 0 ? split.hr / split.ab : 0;
       const hRR = oHRR > 0 ? sHRR / oHRR : 1;
-      const cHRR = Math.max(0.4, Math.min(hRR, 1.8));
-      adjPower = Math.max(1, Math.min(10, Math.round(batter.power * cHRR)));
+      if (hRR >= 1.30) adjPower += 1;
+      else if (hRR <= 0.70) adjPower -= 1;
       factors.push(pitcherHand === 'L' ? `vs LHP (.${(split.ba * 1000 | 0)} BA)` : `vs RHP (.${(split.ba * 1000 | 0)} BA)`);
     }
   }
@@ -64,13 +66,13 @@ export function calculateSituationalRatings(batter, opposingPitcher, gameConditi
     factors.push('Night game');
   }
 
-  // 4. Pitcher quality — based on pitcher's real control, pitchSpeed, offSpeed ratings
+  // 4. Pitcher quality — halved deltas to compress range
   if (opposingPitcher) {
     const controlDiff = (opposingPitcher.control || 6) - 6;
     const speedDiff = (opposingPitcher.pitchSpeed || 6) - 6;
     const offDiff = (opposingPitcher.offSpeed || 6) - 6;
-    const contactAdj = controlDiff + Math.round(offDiff * 0.5);
-    const powerAdj = speedDiff + Math.round(offDiff * 0.5);
+    const contactAdj = Math.round(controlDiff * 0.5) + Math.round(offDiff * 0.25);
+    const powerAdj = Math.round(speedDiff * 0.5) + Math.round(offDiff * 0.25);
     adjContact -= contactAdj;
     adjPower -= powerAdj;
     const parts = [];
