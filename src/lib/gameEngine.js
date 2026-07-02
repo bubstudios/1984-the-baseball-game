@@ -2021,8 +2021,8 @@ export function getSituationalBatter(state) {
   const pControl = effP.effectiveControl || effP.control || 6;
   const pSpeed = effP.effectivePitchSpeed || effP.pitchSpeed || 6;
   const pOff = effP.effectiveOffSpeed || effP.offSpeed || 6;
-  const pitcherContactAdj = (pControl - 6) + Math.round((pOff - 6) * 0.5);
-  const pitcherPowerAdj = (pSpeed - 6) + Math.round((pOff - 6) * 0.5);
+  const pitcherContactAdj = Math.round((pControl - 6) * 0.5) + Math.round((pOff - 6) * 0.25);
+  const pitcherPowerAdj = Math.round((pSpeed - 6) * 0.5) + Math.round((pOff - 6) * 0.25);
   // ── Count-based modifiers (additive after base/situation multipliers) ──
   const balls = state.balls || 0, strikes = state.strikes || 0;
   // Home/road and day/night: additive ±1 (matches LineupManager calculateSituationalRatings)
@@ -2071,10 +2071,13 @@ function getSplitAdjustedPlayer(player, pitcherHand) {
   const vl = player.splits.vsLHP, vr = player.splits.vsRHP; const ta = vl.ab + vr.ab, th = vl.ba * vl.ab + vr.ba * vr.ab;
   const oBA = ta > 0 ? th / ta : 0.250, tHR = vl.hr + vr.hr, oHRR = ta > 0 ? tHR / ta : 0.020;
   const baR = oBA > 0 ? split.ba / oBA : 1;
-  const ac = Math.max(1, Math.min(10, Math.round(player.contact * baR)));
+  let contactAdj = 0, powerAdj = 0;
+  if (baR >= 1.12) contactAdj = 1;
+  else if (baR <= 0.88) contactAdj = -1;
   const sHRR = split.ab > 0 ? split.hr / split.ab : 0, hRR = oHRR > 0 ? sHRR / oHRR : 1;
-  const cHRR = Math.max(0.4, Math.min(hRR, 1.8));
-  return { ...player, contact: ac, power: Math.max(1, Math.min(10, Math.round(player.power * cHRR))) };
+  if (hRR >= 1.30) powerAdj = 1;
+  else if (hRR <= 0.70) powerAdj = -1;
+  return { ...player, contact: Math.max(1, Math.min(10, player.contact + contactAdj)), power: Math.max(1, Math.min(10, player.power + powerAdj)) };
 }
 
 // --- INTENTIONAL WALK ---
