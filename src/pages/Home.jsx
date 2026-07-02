@@ -146,6 +146,7 @@ export default function Home() {
   const [homeTeam, setHomeTeam] = useState(null);
   const [awayTeam, setAwayTeam] = useState(null);
   const [userTeam, setUserTeam] = useState(null);
+  const [seasonUserTeam, setSeasonUserTeam] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [tab, setTab] = useState('game');
   const [ballparkPhase, setBallparkPhase] = useState(null); // { home, away }
@@ -200,14 +201,18 @@ export default function Home() {
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
-    // Detect season game launch (?seasonGame=userTeam,opponent) and jump straight to ballpark phase
+    // Detect season game launch (?seasonGame=homeTeam,awayTeam,userTeam) and jump straight to ballpark phase
     const urlParams = new URLSearchParams(window.location.search);
     const seasonGame = urlParams.get('seasonGame');
     if (seasonGame) {
-      const [userTeam, opponent] = seasonGame.split(',');
-      if (userTeam && opponent && TEAMS[userTeam] && TEAMS[opponent]) {
+      const parts = seasonGame.split(',');
+      const homeTeam = parts[0];
+      const awayTeam = parts[1];
+      const userTeamParam = parts[2] || homeTeam;
+      if (homeTeam && awayTeam && TEAMS[homeTeam] && TEAMS[awayTeam]) {
         setGameMode('exhibition');
-        setBallparkPhase({ home: userTeam, away: opponent });
+        setBallparkPhase({ home: homeTeam, away: awayTeam });
+        setSeasonUserTeam(userTeamParam);
         setLoadingScreen(false);
       }
       // Clean the URL so a subsequent "New Game" doesn't re-trigger
@@ -229,10 +234,11 @@ export default function Home() {
   useRobotAnnouncer(gameState, robotVoice, announcerName);
   useRetroAudio(gameState, retroAudio);
 
-  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, startingPitcher, opponentStartingPitcher) => {
+  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, startingPitcher, opponentStartingPitcher, seasonUserTeam) => {
     setHomeTeam(home);
     setAwayTeam(away);
-    setUserTeam(home); // user controls home team
+    const effectiveUserTeam = seasonUserTeam || home;
+    setUserTeam(effectiveUserTeam);
     setUseDH(useDHFlag);
     const umpire = selectedUmpire || pickUmpire();
     setSelectedUmpire(umpire);
@@ -249,8 +255,18 @@ export default function Home() {
     const stadium = TEAMS[home]?.stadium || null;
     setGameStadium(stadium);
     setGameWeather(weather || null);
-    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire, startingPitcher, opponentStartingPitcher);
-    state.userTeam = home; // CRITICAL: gates in getControllingTeam() read state.userTeam to distinguish CPU from user
+    // Map SPs: startingPitcher = user's SP, opponentStartingPitcher = CPU's SP
+    // createGameState expects: param 8 = home SP, param 9 = away SP
+    let homeSP, awaySP;
+    if (effectiveUserTeam === home) {
+      homeSP = startingPitcher;
+      awaySP = opponentStartingPitcher;
+    } else {
+      homeSP = opponentStartingPitcher;
+      awaySP = startingPitcher;
+    }
+    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire, homeSP, awaySP);
+    state.userTeam = effectiveUserTeam; // CRITICAL: gates in getControllingTeam() read state.userTeam to distinguish CPU from user
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
@@ -289,27 +305,41 @@ export default function Home() {
     // Ballpark's team is always home; swap if needed
     const homeTeam = parkTeam;
     const awayTeam = parkTeam === ballparkPhase.home ? ballparkPhase.away : ballparkPhase.home;
+    // If park selection caused a swap, update seasonUserTeam to match
+    let updatedSeasonUser = seasonUserTeam;
+    if (seasonUserTeam && homeTeam !== ballparkPhase.home) {
+      updatedSeasonUser = seasonUserTeam === ballparkPhase.home ? awayTeam : homeTeam;
+    }
     // Roll pre-game illnesses (Season: ~2% per team; Exhibition: ~4% per team)
     const isExhibitionMode = gameMode === 'exhibition';
     const homeIll = rollIllnessesForTeam(TEAMS[homeTeam], isExhibitionMode);
     const awayIll = rollIllnessesForTeam(TEAMS[awayTeam], isExhibitionMode);
     const illPlayers = { home: homeIll, away: awayIll };
     setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
-    setLineupPhase({ home: homeTeam, away: awayTeam, useDH: useDHFlag, parkTeam, weather, illPlayers });
+    setLineupPhase({ home: homeTeam, away: awayTeam, useDH: useDHFlag, parkTeam, weather, illPlayers, seasonUserTeam: updatedSeasonUser });
     setBallparkPhase(null);
-  }, [ballparkPhase]);
+  }, [ballparkPhase, seasonUserTeam, gameMode]);
 
   const handleLineupConfirm = useCallback((customLineup, startingPitcher, opponentStartingPitcher) => {
-    // Build CPU away lineup with ill players replaced by bench
-    const awayIll = lineupPhase.illPlayers?.away || [];
-    let customAwayLineup = null;
+    const seasonUser = lineupPhase.seasonUserTeam;
+    const userIsHome = !seasonUser || seasonUser === lineupPhase.home;
+
+    // The CPU team is the one the user is NOT managing
+    const cpuTeamKey = userIsHome ? lineupPhase.away : lineupPhase.home;
+    const cpuIllKey = userIsHome ? 'away' : 'home';
+    const cpuIll = lineupPhase.illPlayers?.[cpuIllKey] || [];
+
+    let customHomeLineup = userIsHome ? customLineup : null;
+    let customAwayLineup = userIsHome ? null : customLineup;
     let adjustedOpponentSP = opponentStartingPitcher;
-    if (awayIll.length > 0) {
-      const awayData = TEAMS[lineupPhase.away];
-      const illNames = new Set(awayIll.map(p => p.name));
+
+    // Build CPU lineup with ill players replaced by bench
+    if (cpuIll.length > 0) {
+      const cpuData = TEAMS[cpuTeamKey];
+      const illNames = new Set(cpuIll.map(p => p.name));
       const usedNames = new Set(illNames);
-      const healthyBench = (awayData.bench || []).filter(p => !illNames.has(p.name));
-      customAwayLineup = awayData.lineup.map(p => {
+      const healthyBench = (cpuData.bench || []).filter(p => !illNames.has(p.name));
+      const cpuLineup = cpuData.lineup.map(p => {
         if (illNames.has(p.name)) {
           const replacement = healthyBench.find(b => !usedNames.has(b.name));
           if (replacement) {
@@ -320,13 +350,18 @@ export default function Home() {
         usedNames.add(p.name);
         return p;
       });
-      // Replace opponent SP if ill
+      if (userIsHome) {
+        customAwayLineup = cpuLineup;
+      } else {
+        customHomeLineup = cpuLineup;
+      }
+      // Replace CPU SP if ill
       if (adjustedOpponentSP && illNames.has(adjustedOpponentSP.name)) {
-        const healthyPitchers = (awayData.rotation || []).filter(p => !illNames.has(p.name));
+        const healthyPitchers = (cpuData.rotation || []).filter(p => !illNames.has(p.name));
         adjustedOpponentSP = healthyPitchers[0] || adjustedOpponentSP;
       }
     }
-    startGame(lineupPhase.home, lineupPhase.away, customLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, startingPitcher, adjustedOpponentSP);
+    startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, startingPitcher, adjustedOpponentSP, seasonUser);
   }, [lineupPhase, startGame]);
 
   // Fireworks: detect home team HRs and wins
@@ -1560,6 +1595,7 @@ export default function Home() {
     setHomeTeam(null);
     setAwayTeam(null);
     setUserTeam(null);
+    setSeasonUserTeam(null);
     setTab('game');
     setNewAchievements([]);
     setShowAchievementPopup(false);
@@ -1601,20 +1637,23 @@ export default function Home() {
   }
 
   if (lineupPhase) {
+    const userIsHome = !lineupPhase.seasonUserTeam || lineupPhase.seasonUserTeam === lineupPhase.home;
+    const userTeamKey = userIsHome ? lineupPhase.home : lineupPhase.away;
+    const oppTeamKey = userIsHome ? lineupPhase.away : lineupPhase.home;
     return (
       <ErrorBoundary>
       <LineupManager
         key={`${lineupPhase.home}-${lineupPhase.away}-${lineupPhase.useDH}`}
-        teamKey={lineupPhase.home}
-        teamData={TEAMS[lineupPhase.home]}
-        opponentTeamData={TEAMS[lineupPhase.away]}
+        teamKey={userTeamKey}
+        teamData={TEAMS[userTeamKey]}
+        opponentTeamData={TEAMS[oppTeamKey]}
         useDH={lineupPhase.useDH}
         parkTeam={lineupPhase.parkTeam}
         weather={lineupPhase.weather}
         onConfirm={handleLineupConfirm}
         onBack={() => { setLineupPhase(null); setBallparkPhase({ home: lineupPhase.home, away: lineupPhase.away }); }}
-        illPlayerNames={(lineupPhase.illPlayers?.home || []).map(p => p.name)}
-        opponentIllPlayerNames={(lineupPhase.illPlayers?.away || []).map(p => p.name)}
+        illPlayerNames={(lineupPhase.illPlayers?.[userIsHome ? 'home' : 'away'] || []).map(p => p.name)}
+        opponentIllPlayerNames={(lineupPhase.illPlayers?.[userIsHome ? 'away' : 'home'] || []).map(p => p.name)}
       />
       {pregameIllnesses && (
         <PregameIllnessModal
