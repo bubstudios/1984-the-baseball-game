@@ -20,6 +20,9 @@ export function calculateSituationalRatings(batter, opposingPitcher, gameConditi
   let adjContact = batter.contact || 0;
   let adjPower = batter.power || 0;
 
+  // TEMPORARY: Reset to base norms — no adjustments applied
+  return { contact: Math.max(1, Math.min(10, adjContact)), power: Math.max(1, Math.min(10, adjPower)), factors: ['Base norm'] };
+
   // 1. Platoon/splits adjustment (±1 point) — additive, based on real career BA/HR splits vs LHP/RHP
   if (opposingPitcher && batter.splits) {
     const pitcherHand = opposingPitcher.throws;
