@@ -86,23 +86,33 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
         ))}
       </select>
 
-      {/* Situational ratings display (1-10 scale) */}
-      {playerData && opposingPitcher && (
-        <div className="flex items-center gap-1.5 flex-shrink-0" title={situational.factors.join(', ')}>
-          <div className="flex flex-col items-center gap-0.5">
-            <span className="text-[8px] text-muted-foreground leading-none">C</span>
-            <span className={`text-xs font-bold leading-none ${getRatingBadgeClass(situational.contact, playerData.contact)}`}>
-              {situational.contact}
-            </span>
+      {/* Situational ratings display (amplified card + delta arrow) */}
+      {playerData && opposingPitcher && (() => {
+        const cDelta = situational.contact - situational.baseContact;
+        const pDelta = situational.power - situational.basePower;
+        const cArrow = cDelta > 0 ? '▲' : cDelta < 0 ? '▼' : '';
+        const pArrow = pDelta > 0 ? '▲' : pDelta < 0 ? '▼' : '';
+        const cColor = cDelta > 0 ? 'text-emerald-400' : cDelta < 0 ? 'text-red-400' : 'text-muted-foreground';
+        const pColor = pDelta > 0 ? 'text-emerald-400' : pDelta < 0 ? 'text-red-400' : 'text-muted-foreground';
+        return (
+          <div className="flex items-center gap-1.5 flex-shrink-0" title={situational.factors.join(', ')}>
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-[8px] text-muted-foreground leading-none">C</span>
+              <div className="flex items-center gap-0.5">
+                <span className={`text-xs font-bold leading-none ${getRatingBadgeClass(situational.contact)}`}>{situational.contact}</span>
+                {cDelta !== 0 && <span className={`text-[8px] ${cColor}`}>{cArrow}{Math.abs(cDelta) >= 2 ? Math.abs(cDelta) : ''}</span>}
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-[8px] text-muted-foreground leading-none">P</span>
+              <div className="flex items-center gap-0.5">
+                <span className={`text-xs font-bold leading-none ${getRatingBadgeClass(situational.power)}`}>{situational.power}</span>
+                {pDelta !== 0 && <span className={`text-[8px] ${pColor}`}>{pArrow}{Math.abs(pDelta) >= 2 ? Math.abs(pDelta) : ''}</span>}
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-0.5">
-            <span className="text-[8px] text-muted-foreground leading-none">P</span>
-            <span className={`text-xs font-bold leading-none ${getRatingBadgeClass(situational.power, playerData.power)}`}>
-              {situational.power}
-            </span>
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Platoon advantage indicator */}
       {opposingPitcher && platoonAdvantage.type !== 'neutral' && (
@@ -452,14 +462,18 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
                   const situational = calculateSituationalRatings(p, opponentSPData, { isNight: weather ? !weather.isDay : true, isHome: parkTeam === teamKey });
                   const adjContact = situational.contact;
                   const adjPower = situational.power;
+                  const cDelta = adjContact - situational.baseContact;
+                  const pDelta = adjPower - situational.basePower;
+                  const cArrow = cDelta > 0 ? '▲' : cDelta < 0 ? '▼' : '';
+                  const pArrow = pDelta > 0 ? '▲' : pDelta < 0 ? '▼' : '';
                   return (
                     <div key={p.name} className="flex items-center gap-2 text-xs font-body">
                       <TrendingUp className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
                       <span className="text-foreground font-bold">{p.name}</span>
                       <span className="text-muted-foreground">({p.pos}, {p.bats}B)</span>
                       <div className="flex items-center gap-2 ml-auto">
-                        <span className="text-[10px] text-muted-foreground">C:<span className={`${adjContact >= 7 ? 'text-emerald-400' : adjContact <= 4 ? 'text-red-400' : 'text-foreground'}`}>{adjContact}</span></span>
-                        <span className="text-[10px] text-muted-foreground">P:<span className={`${adjPower >= 7 ? 'text-emerald-400' : adjPower <= 4 ? 'text-red-400' : 'text-foreground'}`}>{adjPower}</span></span>
+                        <span className="text-[10px] text-muted-foreground">C:<span className={`${adjContact >= 7 ? 'text-emerald-400' : adjContact <= 4 ? 'text-red-400' : 'text-foreground'}`}>{adjContact}</span>{cDelta !== 0 && <span className={`text-[8px] ${cDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>{cArrow}{Math.abs(cDelta) >= 2 ? Math.abs(cDelta) : ''}</span>}</span>
+                        <span className="text-[10px] text-muted-foreground">P:<span className={`${adjPower >= 7 ? 'text-emerald-400' : adjPower <= 4 ? 'text-red-400' : 'text-foreground'}`}>{adjPower}</span>{pDelta !== 0 && <span className={`text-[8px] ${pDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>{pArrow}{Math.abs(pDelta) >= 2 ? Math.abs(pDelta) : ''}</span>}</span>
                       </div>
                     </div>
                   );

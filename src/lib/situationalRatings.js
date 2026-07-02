@@ -1,134 +1,121 @@
-// Situational ratings calculator for lineup manager
-// Adjusts player ratings (1-10 scale) based on:
-// - Platoon matchup (±1 point) — uses real career BA/HR splits
-// - Home/road (±1 point)
-// - Day/night (±1 point)
-// - Pitcher quality (BAA & XBH/AB vs 1984 league averages)
-// - Head-to-head history (when available, ±1-2 points)
+// Situational ratings calculator — multiplicative, split-driven
+// Card shows amplified numbers for readability; engine uses gentle multipliers.
 
-import { getPitcherPenalty } from './pitcherQuality';
+// League-average situational effects (small, honest, applied to everyone).
+// Home field = +3% offense; day games = +1.5%. These are seasoning, not the meal.
+const HOME_MULT = 1.03;
+const ROAD_MULT = 0.985;
+const DAY_MULT = 1.015;
+const NIGHT_MULT = 1.0;
 
-/**
- * Calculate situational ratings for a batter vs opposing pitcher
- * @param {Object} batter - Player object with contact, power, bats, splits
- * @param {Object} opposingPitcher - Pitcher object with throws, control, pitchSpeed, offSpeed
- * @param {Object} gameConditions - { isNight, isHome, h2hStats }
- * @returns {Object} { contact: 1-10, power: 1-10, factors: string[] }
- */
+// How much the CARD amplifies the true effect for readability.
+// engineMult moves gently; displayed rating exaggerates the same direction.
+const CARD_AMPLIFY = 2.2;
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
 export function calculateSituationalRatings(batter, opposingPitcher, gameConditions = {}) {
-  if (!batter) return { contact: 0, power: 0, factors: [] };
+  if (!batter) return { contact: 0, power: 0, baseContact: 0, basePower: 0, contactMult: 1, powerMult: 1, factors: [] };
 
+  const baseContact = batter.contact || 0;
+  const basePower = batter.power || 0;
   const factors = [];
-  let adjContact = batter.contact || 0;
-  let adjPower = batter.power || 0;
 
-  // 1. Platoon/splits adjustment (±1 point) — additive, based on real career BA/HR splits vs LHP/RHP
+  // Multipliers accumulate around 1.0.
+  let contactMult = 1;
+  let powerMult = 1;
+
+  // 1. PLATOON - the star. Real per-player split ratio vs the pitcher's hand.
   if (opposingPitcher && batter.splits) {
-    const pitcherHand = opposingPitcher.throws;
-    const split = pitcherHand === 'L' ? batter.splits.vsLHP : batter.splits.vsRHP;
-    if (split && split.ab >= 20) {
-      const vl = batter.splits.vsLHP;
-      const vr = batter.splits.vsRHP;
-      const ta = vl.ab + vr.ab;
-      const th = vl.ba * vl.ab + vr.ba * vr.ab;
-      const oBA = ta > 0 ? th / ta : 0.250;
-      const tHR = vl.hr + vr.hr;
-      const oHRR = ta > 0 ? tHR / ta : 0.020;
-      const baR = oBA > 0 ? split.ba / oBA : 1;
-      // Additive: +1 for strong platoon edge, -1 for strong disadvantage
-      if (baR >= 1.12) adjContact += 1;
-      else if (baR <= 0.88) adjContact -= 1;
-      const sHRR = split.ab > 0 ? split.hr / split.ab : 0;
-      const hRR = oHRR > 0 ? sHRR / oHRR : 1;
-      if (hRR >= 1.30) adjPower += 1;
-      else if (hRR <= 0.70) adjPower -= 1;
-      factors.push(pitcherHand === 'L' ? `vs LHP (.${(split.ba * 1000 | 0)} BA)` : `vs RHP (.${(split.ba * 1000 | 0)} BA)`);
+    const hand = opposingPitcher.throws;
+    const split = hand === 'L' ? batter.splits.vsLHP : batter.splits.vsRHP;
+    const vl = batter.splits.vsLHP, vr = batter.splits.vsRHP;
+    if (split && split.ab >= 20 && vl && vr) {
+      const totalAB = vl.ab + vr.ab;
+      const overallBA = totalAB > 0 ? (vl.ba * vl.ab + vr.ba * vr.ab) / totalAB : 0.250;
+      const overallHRR = totalAB > 0 ? (vl.hr + vr.hr) / totalAB : 0.020;
+
+      // Contact ratio vs this hand, dampened so extreme small-sample splits don't explode.
+      const rawBaRatio = overallBA > 0 ? split.ba / overallBA : 1;
+      const baRatio = 1 + (rawBaRatio - 1) * 0.8; // 80% of the real gap
+      contactMult *= clamp(baRatio, 0.75, 1.30);
+
+      const splitHRR = split.ab > 0 ? split.hr / split.ab : overallHRR;
+      const rawHRRatio = overallHRR > 0 ? splitHRR / overallHRR : 1;
+      const hrRatio = 1 + (rawHRRatio - 1) * 0.7;
+      powerMult *= clamp(hrRatio, 0.6, 1.5);
+
+      factors.push(hand === 'L'
+        ? `vs LHP .${(split.ba * 1000) | 0}`
+        : `vs RHP .${(split.ba * 1000) | 0}`);
     }
   }
 
-  // 2. Home/Road (±1 point)
+  // 2. HOME/ROAD - league-average multiplier (no per-player data, keep modest).
   const isHome = gameConditions.isHome || false;
-  if (isHome) {
-    adjContact += 1;
-    adjPower += 1;
-    factors.push('Home +1');
-  } else {
-    adjContact -= 1;
-    adjPower -= 1;
-    factors.push('Road -1');
-  }
+  contactMult *= isHome ? HOME_MULT : ROAD_MULT;
+  powerMult *= isHome ? HOME_MULT : ROAD_MULT;
+  factors.push(isHome ? 'Home' : 'Road');
 
-  // 3. Day/Night (±1 point)
+  // 3. DAY/NIGHT - league-average multiplier.
   const isNight = gameConditions.isNight !== false;
-  if (!isNight) {
-    adjContact += 1;
-    adjPower += 1;
-    factors.push('Day game +1');
-  } else {
-    factors.push('Night game');
-  }
+  if (!isNight) { contactMult *= DAY_MULT; powerMult *= DAY_MULT; factors.push('Day'); }
 
-  // 4. Pitcher quality — BAA & XBH/AB vs 1984 league averages
+  // 4. PITCHER QUALITY - modest, multiplicative, capped so it can't swamp identity.
   if (opposingPitcher) {
-    const penalty = getPitcherPenalty(opposingPitcher);
-    adjContact += penalty.contactAdj;
-    adjPower += penalty.powerAdj;
-    const parts = [];
-    if (penalty.contactAdj < 0) parts.push(`BAA .${(penalty.baa * 1000 | 0)} (${penalty.contactAdj})`);
-    else if (penalty.contactAdj > 0) parts.push(`BAA .${(penalty.baa * 1000 | 0)} (+${penalty.contactAdj})`);
-    if (penalty.powerAdj < 0) parts.push(`XBH ${((penalty.xbhPerAB * 100).toFixed(1))}% (${penalty.powerAdj})`);
-    else if (penalty.powerAdj > 0) parts.push(`XBH ${((penalty.xbhPerAB * 100).toFixed(1))}% (+${penalty.powerAdj})`);
-    if (parts.length > 0) factors.push(`Pitcher: ${parts.join(', ')}`);
+    // control drives contact suppression; pitchSpeed drives power suppression;
+    // offSpeed splits between the two. Ratings ~6 = league average -> multiplier 1.
+    const ctl = (opposingPitcher.effectiveControl || opposingPitcher.control || 6);
+    const spd = (opposingPitcher.effectivePitchSpeed || opposingPitcher.pitchSpeed || 6);
+    const off = (opposingPitcher.effectiveOffSpeed || opposingPitcher.offSpeed || 6);
+    // Each point above/below 6 = ~2.5% swing; offSpeed half-weighted to both.
+    const contactPitchMult = 1 - ((ctl - 6) * 0.025 + (off - 6) * 0.0125);
+    const powerPitchMult = 1 - ((spd - 6) * 0.025 + (off - 6) * 0.0125);
+    contactMult *= clamp(contactPitchMult, 0.82, 1.18);
+    powerMult *= clamp(powerPitchMult, 0.82, 1.18);
+    if (ctl >= 8 && spd >= 8 && off >= 8) factors.push('Tough arm');
+    else if (ctl <= 4 && spd <= 4) factors.push('Soft arm');
   }
 
-  // 5. Head-to-head history (when available, ±1-2 points)
-  if (gameConditions.h2hStats && opposingPitcher) {
+  // 5. HEAD-TO-HEAD (optional, if provided) - small nudge, real data only.
+  if (gameConditions.h2hStats && gameConditions.h2hStats.ab >= 15) {
     const h2h = gameConditions.h2hStats;
-    if (h2h.ab >= 10) {
-      const h2hBA = h2h.ba || 0.250;
-      const batterOverall = batter.splits
-        ? (() => {
-            const vl = batter.splits.vsLHP;
-            const vr = batter.splits.vsRHP;
-            const ta = (vl?.ab || 0) + (vr?.ab || 0);
-            const th = (vl?.ba || 0) * (vl?.ab || 0) + (vr?.ba || 0) * (vr?.ab || 0);
-            return ta > 0 ? th / ta : 0.250;
-          })()
-        : 0.250;
-      const ratio = batterOverall > 0 ? h2hBA / batterOverall : 1;
-      if (ratio > 1.15) {
-        adjContact += 2;
-        adjPower += 1;
-        factors.push(`H2H: .${(h2hBA * 1000 | 0)} BA (+2)`);
-      } else if (ratio > 1.05) {
-        adjContact += 1;
-        factors.push(`H2H: .${(h2hBA * 1000 | 0)} BA (+1)`);
-      } else if (ratio < 0.85) {
-        adjContact -= 2;
-        adjPower -= 1;
-        factors.push(`H2H: .${(h2hBA * 1000 | 0)} BA (-2)`);
-      } else if (ratio < 0.95) {
-        adjContact -= 1;
-        factors.push(`H2H: .${(h2hBA * 1000 | 0)} BA (-1)`);
-      }
-    }
+    const overallBA = batter.splits
+      ? (() => {
+          const vl = batter.splits.vsLHP, vr = batter.splits.vsRHP;
+          const ta = (vl?.ab || 0) + (vr?.ab || 0);
+          return ta > 0 ? ((vl?.ba || 0) * (vl?.ab || 0) + (vr?.ba || 0) * (vr?.ab || 0)) / ta : 0.250;
+        })()
+      : 0.250;
+    const r = overallBA > 0 ? (h2h.ba || 0.250) / overallBA : 1;
+    const h2hMult = 1 + (r - 1) * 0.3; // small
+    contactMult *= clamp(h2hMult, 0.85, 1.20);
+    if (r > 1.1) factors.push(`Owns him .${((h2h.ba || 0) * 1000) | 0}`);
+    else if (r < 0.9) factors.push(`Struggles .${((h2h.ba || 0) * 1000) | 0}`);
   }
 
-  // Clamp final ratings to 1-10
-  const finalContact = Math.max(1, Math.min(10, adjContact));
-  const finalPower = Math.max(1, Math.min(10, adjPower));
+  // — Produce the AMPLIFIED display rating (card) —
+  // Displayed delta = base * (mult - 1) * CARD_AMPLIFY, added to base, then round+clamp.
+  // This makes a modest true edge SHOW as a bigger, jump-out number.
+  const dispContact = clamp(Math.round(baseContact + baseContact * (contactMult - 1) * CARD_AMPLIFY), 1, 10);
+  const dispPower = clamp(Math.round(basePower + basePower * (powerMult - 1) * CARD_AMPLIFY), 1, 10);
 
-  return { contact: finalContact, power: finalPower, factors };
+  return {
+    contact: dispContact, // amplified, for the card
+    power: dispPower, // amplified, for the card
+    baseContact, // so the card can draw the arrow vs base
+    basePower,
+    contactMult, // GENTLE true multiplier, for the engine
+    powerMult, // GENTLE true multiplier, for the engine
+    factors,
+  };
 }
 
 /**
  * Get CSS class for rating badge based on absolute value
  * Green: 8-10, White: 6-7, Amber: 4-5, Red: 1-3
- * @param {number} situational - Adjusted rating (1-10)
- * @param {number} base - Original rating (1-10, unused but kept for API compat)
- * @returns {string} CSS class
  */
-export function getRatingBadgeClass(situational, base) {
+export function getRatingBadgeClass(situational) {
   if (situational >= 8) return 'text-emerald-400 font-bold';
   if (situational >= 6) return 'text-foreground font-bold';
   if (situational >= 4) return 'text-amber-400 font-bold';
