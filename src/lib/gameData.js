@@ -478,8 +478,8 @@ export const TEAMS = {
         splits: { vsLHP: { ab: 38, ba: .184, hr: 0 }, vsRHP: { ab: 296, ba: .291, hr: 9 } } },
       { name: "Darryl Motley", pos: "LF", bats: "R", contact: 5, power: 6, bunting: 3, speed: 5, defense: 6, arm: 6,
         splits: { vsLHP: { ab: 110, ba: .300, hr: 4 }, vsRHP: { ab: 324, ba: .278, hr: 11 } } },
-      { name: "Jamie Quirk", pos: "C", bats: "L", contact: 5, power: 4, bunting: 3, speed: 2, defense: 5, arm: 6,
-        splits: estSplits(.238, 5, 152, 45, "L") },
+      { name: "John Wathan", pos: "C", bats: "R", contact: 5, power: 3, bunting: 4, speed: 4, defense: 5, arm: 6,
+        splits: estSplits(.249, 4, 181, 52, "R") },
       { name: "Onix Concepcion", pos: "SS", bats: "R", contact: 5, power: 2, bunting: 5, speed: 5, defense: 7, arm: 6,
         splits: { vsLHP: { ab: 121, ba: .248, hr: 0 }, vsRHP: { ab: 296, ba: .250, hr: 1 } } },
     ],
@@ -488,8 +488,6 @@ export const TEAMS = {
         splits: estSplits(.301, 2, 115, 35, "R") },
       { name: "Buddy Biancalana", pos: "SS", bats: "S", contact: 4, power: 2, bunting: 5, speed: 6, defense: 6, arm: 5,
         splits: estSplits(.188, 2, 98, 28, "S") },
-      { name: "John Wathan", pos: "C/OF", bats: "R", contact: 5, power: 3, bunting: 4, speed: 4, defense: 5, arm: 6,
-        splits: estSplits(.249, 4, 181, 52, "R") },
       { name: "Greg Pryor", pos: "INF", bats: "R", contact: 5, power: 2, bunting: 5, speed: 4, defense: 6, arm: 5,
         splits: estSplits(.231, 2, 134, 38, "R") },
       { name: "UL Washington", pos: "SS", bats: "R", contact: 5, power: 2, bunting: 5, speed: 5, defense: 7, arm: 6, splits: estSplits(.224, 1, 170, 50, "R") },
@@ -1310,7 +1308,7 @@ export const PLAYER_ERRORS = {
   "Brad Gulden": 3, "Duane Walker": 3, "Tom Lawless": 5, "Wayne Krenchicki": 6, "Eric Davis": 2, "Dave Van Gorder": 2, "Dave Pastore": 1, "Ron Robinson": 1,
   // Royals
   "Willie Wilson": 6, "Frank White": 8, "George Brett": 22, "Hal McRae": 0,
-  "Steve Balboni": 17, "Pat Sheridan": 5, "Darryl Motley": 6, "Jamie Quirk": 7, "Onix Concepcion": 21,
+  "Steve Balboni": 17, "Pat Sheridan": 5, "Darryl Motley": 6, "Onix Concepcion": 21,
   "Dane Iorg": 4, "Buddy Biancalana": 5, "John Wathan": 5, "Greg Pryor": 6, "UL Washington": 14, "Don Slaught": 5,
   // Cardinals
   "Willie McGee": 0, "Lonnie Smith": 0, "George Hendrick": 0,
