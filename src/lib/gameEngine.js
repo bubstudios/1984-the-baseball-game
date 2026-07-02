@@ -51,6 +51,7 @@ import { choose_alignment, apply_alignment_modifiers, expect_bunt } from './defe
 import { should_double_switch, find_double_switch_partner, execute_double_switch } from './doubleSwitch';
 import { logRun } from './pitcherDecisions';
 import { HOLDING_GAME_RATES, decideBalk, decideThrowOver, resolveThrowOverOutcome, fillHoldingTemplate, pickHoldingLine, BALK_LINES } from './holdingGame';
+import { getPitcherPenalty } from './pitcherQuality';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -2015,14 +2016,12 @@ export function getSituationalBatter(state) {
   const adj = getSplitAdjustedPlayer(b, p.throws);
   const isHome = getBattingTeam(state) === 'home'; const isDay = state.weather?.isDay ?? true;
   // ── Pitcher quality adjustment (matches LineupManager situational ratings) ──
-  // Elite pitchers (high control/speed/off-speed) depress batter ratings.
-  // Uses effective ratings so fatigue recovers some batter rating.
+  // Uses BAA & XBH/AB vs 1984 league averages for data-driven penalties.
+  // Effective pitcher is used so fatigue makes pitchers easier to hit.
   const effP = getEffectivePitcher(state) || p;
-  const pControl = effP.effectiveControl || effP.control || 6;
-  const pSpeed = effP.effectivePitchSpeed || effP.pitchSpeed || 6;
-  const pOff = effP.effectiveOffSpeed || effP.offSpeed || 6;
-  const pitcherContactAdj = Math.round((pControl - 6) * 0.5) + Math.round((pOff - 6) * 0.25);
-  const pitcherPowerAdj = Math.round((pSpeed - 6) * 0.5) + Math.round((pOff - 6) * 0.25);
+  const penalty = getPitcherPenalty(effP);
+  const pitcherContactAdj = penalty.contactAdj;
+  const pitcherPowerAdj = penalty.powerAdj;
   // ── Count-based modifiers (additive after base/situation multipliers) ──
   const balls = state.balls || 0, strikes = state.strikes || 0;
   // Home/road and day/night: additive ±1 (matches LineupManager calculateSituationalRatings)

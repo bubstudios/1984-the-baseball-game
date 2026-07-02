@@ -1,10 +1,12 @@
 // Situational ratings calculator for lineup manager
 // Adjusts player ratings (1-10 scale) based on:
-// - Platoon matchup (±1-2 points) — uses real career BA/HR splits
+// - Platoon matchup (±1 point) — uses real career BA/HR splits
 // - Home/road (±1 point)
 // - Day/night (±1 point)
-// - Pitcher quality (based on real pitcher ratings)
+// - Pitcher quality (BAA & XBH/AB vs 1984 league averages)
 // - Head-to-head history (when available, ±1-2 points)
+
+import { getPitcherPenalty } from './pitcherQuality';
 
 /**
  * Calculate situational ratings for a batter vs opposing pitcher
@@ -19,9 +21,6 @@ export function calculateSituationalRatings(batter, opposingPitcher, gameConditi
   const factors = [];
   let adjContact = batter.contact || 0;
   let adjPower = batter.power || 0;
-
-  // TEMPORARY: Reset to base norms — no adjustments applied
-  return { contact: Math.max(1, Math.min(10, adjContact)), power: Math.max(1, Math.min(10, adjPower)), factors: ['Base norm'] };
 
   // 1. Platoon/splits adjustment (±1 point) — additive, based on real career BA/HR splits vs LHP/RHP
   if (opposingPitcher && batter.splits) {
@@ -69,20 +68,16 @@ export function calculateSituationalRatings(batter, opposingPitcher, gameConditi
     factors.push('Night game');
   }
 
-  // 4. Pitcher quality — halved deltas to compress range
+  // 4. Pitcher quality — BAA & XBH/AB vs 1984 league averages
   if (opposingPitcher) {
-    const controlDiff = (opposingPitcher.control || 6) - 6;
-    const speedDiff = (opposingPitcher.pitchSpeed || 6) - 6;
-    const offDiff = (opposingPitcher.offSpeed || 6) - 6;
-    const contactAdj = Math.round(controlDiff * 0.5) + Math.round(offDiff * 0.25);
-    const powerAdj = Math.round(speedDiff * 0.5) + Math.round(offDiff * 0.25);
-    adjContact -= contactAdj;
-    adjPower -= powerAdj;
+    const penalty = getPitcherPenalty(opposingPitcher);
+    adjContact += penalty.contactAdj;
+    adjPower += penalty.powerAdj;
     const parts = [];
-    if (contactAdj > 0) parts.push(`CTL -${contactAdj}`);
-    else if (contactAdj < 0) parts.push(`CTL +${-contactAdj}`);
-    if (powerAdj > 0) parts.push(`SPD -${powerAdj}`);
-    else if (powerAdj < 0) parts.push(`SPD +${-powerAdj}`);
+    if (penalty.contactAdj < 0) parts.push(`BAA .${(penalty.baa * 1000 | 0)} (${penalty.contactAdj})`);
+    else if (penalty.contactAdj > 0) parts.push(`BAA .${(penalty.baa * 1000 | 0)} (+${penalty.contactAdj})`);
+    if (penalty.powerAdj < 0) parts.push(`XBH ${((penalty.xbhPerAB * 100).toFixed(1))}% (${penalty.powerAdj})`);
+    else if (penalty.powerAdj > 0) parts.push(`XBH ${((penalty.xbhPerAB * 100).toFixed(1))}% (+${penalty.powerAdj})`);
     if (parts.length > 0) factors.push(`Pitcher: ${parts.join(', ')}`);
   }
 
