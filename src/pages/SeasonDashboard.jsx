@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Calendar, TrendingUp, Users, Play } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import { generateSchedule as buildSchedule, verifySchedule } from '@/lib/seasonSchedule';
+import { simulateGameHeadless, buildGameResultFromState } from '@/lib/seasonEngine';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
 import FullSchedule from '@/components/season/FullSchedule';
 
@@ -148,19 +149,89 @@ export default function SeasonDashboard() {
 
   const simulateDay = async () => {
     if (!season) return;
-    
+
     try {
       setSimulating(true);
-      
-      const response = await base44.functions.invoke('simulateDay', {
+      const gameDay = season.currentGameDay || 1;
+
+      // Load the full day's schedule from the Schedule entity
+      const daySchedule = await base44.entities.Schedule.filter({
         seasonId: season.id,
-        gameDay: season.currentGameDay || 1
+        gameDay,
       });
 
-      if (response.data?.success) {
-        // Refresh data
-        await loadSeason();
+      // Sim every game the USER is not playing (the user game is played via playUserGame)
+      const toSim = daySchedule.filter(g => !g.isUserGame && g.status !== 'final');
+
+      const resultRows = [];
+      for (const g of toSim) {
+        const homeTeam = g.homeTeam;
+        const awayTeam = g.awayTeam;
+        const useDH = TEAMS[homeTeam]?.league === 'AL';
+
+        const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH });
+        const result = buildGameResultFromState(finalState, { headless: true });
+
+        // Extract pitcher names from decisions (playerId format: "teamKey|name")
+        const winnerName = result.decisions.winner ? result.decisions.winner.split('|')[1] : null;
+        const loserName = result.decisions.loser ? result.decisions.loser.split('|')[1] : null;
+        const saveName = result.decisions.save ? result.decisions.save.split('|')[1] : null;
+
+        const homeHRs = result.homeRuns.filter(hr => hr.teamKey === homeTeam).map(hr => ({
+          playerName: hr.name,
+          inning: hr.inning,
+        }));
+        const awayHRs = result.homeRuns.filter(hr => hr.teamKey === awayTeam).map(hr => ({
+          playerName: hr.name,
+          inning: hr.inning,
+        }));
+
+        const homeHits = result.batting.filter(b => b.teamKey === homeTeam).reduce((s, b) => s + b.h, 0);
+        const awayHits = result.batting.filter(b => b.teamKey === awayTeam).reduce((s, b) => s + b.h, 0);
+
+        resultRows.push({
+          seasonId: season.id,
+          gameDay,
+          homeTeam,
+          awayTeam,
+          homeScore: result.homeScore,
+          awayScore: result.awayScore,
+          winner: result.winner,
+          isUserGame: false,
+          homeHits,
+          awayHits,
+          homeHRs,
+          awayHRs,
+          winningPitcher: winnerName,
+          losingPitcher: loserName,
+          savePitcher: saveName,
+          stadium: TEAMS[homeTeam]?.stadium || null,
+          innings: result.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
+        });
+
+        // Yield to UI between games to avoid blocking
+        await new Promise(r => setTimeout(r, 0));
       }
+
+      // Persist all simmed results
+      if (resultRows.length > 0) {
+        const CHUNK = 50;
+        for (let i = 0; i < resultRows.length; i += CHUNK) {
+          await Promise.all(resultRows.slice(i, i + CHUNK).map(r => base44.entities.GameResult.create(r)));
+        }
+      }
+
+      // Mark those schedule rows final so they aren't re-simmed
+      for (const g of toSim) {
+        try { await base44.entities.Schedule.update(g.id, { status: 'final' }); } catch (e) { /* non-fatal */ }
+      }
+
+      // Update season completed-games count
+      await base44.entities.Season.update(season.id, {
+        completedGames: (season.completedGames || 0) + resultRows.length,
+      });
+
+      await loadSeason();
     } catch (error) {
       console.error('Simulation failed:', error);
       alert('Simulation failed: ' + error.message);
