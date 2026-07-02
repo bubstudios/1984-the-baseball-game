@@ -2,7 +2,8 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS, PITCH_TYPES, SWING_TYPES, MANAGERS } from '@/lib/gameData';
 import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk, cpuCheckPinchHit, pickCpuReliever } from '@/lib/gameEngine';
-import { applyWeatherEffects } from '@/lib/weather';
+import { applyWeatherEffects, generateWeather, generateIndoorWeather } from '@/lib/weather';
+import { STADIUM_WEATHER_CITIES, DOMED_STADIUMS } from '@/lib/ballparks';
 import ModeSelect from '@/components/game/ModeSelect';
 import TeamSelect from '@/components/game/TeamSelect';
 import BallparkSelect from '@/components/game/BallparkSelect';
@@ -206,13 +207,29 @@ export default function Home() {
     const seasonGame = urlParams.get('seasonGame');
     if (seasonGame) {
       const parts = seasonGame.split(',');
-      const homeTeam = parts[0];
-      const awayTeam = parts[1];
-      const userTeamParam = parts[2] || homeTeam;
-      if (homeTeam && awayTeam && TEAMS[homeTeam] && TEAMS[awayTeam]) {
+      const homeTeamKey = parts[0];
+      const awayTeamKey = parts[1];
+      const userTeamParam = parts[2] || homeTeamKey;
+      if (homeTeamKey && awayTeamKey && TEAMS[homeTeamKey] && TEAMS[awayTeamKey]) {
         setGameMode('exhibition');
-        setBallparkPhase({ home: homeTeam, away: awayTeam });
         setSeasonUserTeam(userTeamParam);
+        // Season games use the home team's stadium (schedule-determined) - skip BallparkSelect
+        const stadium = TEAMS[homeTeamKey].stadium;
+        let weather;
+        if (DOMED_STADIUMS.has(stadium)) {
+          weather = generateIndoorWeather();
+        } else {
+          const weatherCity = STADIUM_WEATHER_CITIES[stadium] || TEAMS[homeTeamKey].city;
+          weather = generateWeather(weatherCity);
+        }
+        const umpire = pickUmpire();
+        setSelectedUmpire(umpire);
+        const useDHFlag = TEAMS[homeTeamKey].league === 'AL';
+        const homeIll = rollIllnessesForTeam(TEAMS[homeTeamKey], false);
+        const awayIll = rollIllnessesForTeam(TEAMS[awayTeamKey], false);
+        const illPlayers = { home: homeIll, away: awayIll };
+        setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
+        setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam });
         setLoadingScreen(false);
       }
       // Clean the URL so a subsequent "New Game" doesn't re-trigger
