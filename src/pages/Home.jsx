@@ -554,7 +554,7 @@ export default function Home() {
           setCardAward({ ...card, isNew });
           if (achievementIds.length > 0) {
             setNewAchievements(prev => [...prev, ...achievementIds]);
-            setShowAchievementPopup(true);
+            achievementsQueuedRef.current = true;
           }
         }
       } catch (e) { console.error('bobblehead card award failed:', e); }
@@ -1021,7 +1021,7 @@ export default function Home() {
              setCardAward({ ...card, isNew });
              if (achievementIds.length > 0) {
                setNewAchievements(prev => [...prev, ...achievementIds]);
-               setShowAchievementPopup(true);
+               achievementsQueuedRef.current = true;
              }
            }
          } catch (e) { console.error('ballpark card award failed:', e); }
