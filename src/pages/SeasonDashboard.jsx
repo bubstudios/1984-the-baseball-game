@@ -6,6 +6,7 @@ import { RotateCcw, Trophy, Calendar, TrendingUp, Users, Play } from 'lucide-rea
 import { TEAMS } from '@/lib/gameData';
 import { generateSchedule as buildSchedule, verifySchedule } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState } from '@/lib/seasonEngine';
+import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons } from '@/lib/seasonStore';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
 import FullSchedule from '@/components/season/FullSchedule';
 
@@ -14,6 +15,7 @@ export default function SeasonDashboard() {
   const [season, setSeason] = useState(null);
   const [schedule, setSchedule] = useState([]);
   const [gameResults, setGameResults] = useState([]);
+  const [currentUserGame, setCurrentUserGame] = useState(null);
   const [loading, setLoading] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [activeTab, setActiveTab] = useState('schedule'); // schedule, results, leaders, standings
@@ -58,6 +60,10 @@ export default function SeasonDashboard() {
       );
       setGameResults(results);
 
+      // Resolve the user's current (next unplayed) game via the single source of truth
+      const userGame = await getCurrentUserGame(currentSeason);
+      setCurrentUserGame(userGame);
+
     } catch (error) {
       console.error('Failed to load season:', error);
     } finally {
@@ -68,6 +74,8 @@ export default function SeasonDashboard() {
   const createNewSeason = async () => {
     const userTeam = pendingUserTeam || 'tigers';
     try {
+      // Archive any existing active seasons to prevent duplicate-season pollution
+      await archiveActiveSeasons();
       const newSeason = await base44.entities.Season.create({
         year: 1984,
         startDate: '1984-04-03',
@@ -231,6 +239,9 @@ export default function SeasonDashboard() {
         completedGames: (season.completedGames || 0) + resultRows.length,
       });
 
+      // Auto-advance the day if all games (CPU + user) for this day are now final
+      await maybeAdvanceDay(season);
+
       await loadSeason();
     } catch (error) {
       console.error('Simulation failed:', error);
@@ -256,10 +267,9 @@ export default function SeasonDashboard() {
   };
 
   const playUserGame = () => {
-    const userGame = schedule.find(g => g.isUserGame);
-    if (!userGame || !season) return;
-    // Pass actual schedule home/away + user's team so the game respects the schedule
-    window.location.href = `/?seasonGame=${userGame.homeTeam},${userGame.awayTeam},${season.userTeam},${season.id},${userGame.gameDay}`;
+    if (!currentUserGame || !season) return;
+    // Pass the schedule row ID so the atomic commit can mark exactly this game as played
+    window.location.href = `/?seasonGame=${currentUserGame.homeTeam},${currentUserGame.awayTeam},${season.userTeam},${season.id},${currentUserGame.gameDay},${currentUserGame.id}`;
   };
 
   if (loading) {
@@ -346,7 +356,7 @@ export default function SeasonDashboard() {
               <Calendar className="w-4 h-4" />
               Next Day
             </Button>
-            {schedule.some(g => g.isUserGame) && (
+            {currentUserGame && (
               <Button
                 onClick={playUserGame}
                 variant="secondary"

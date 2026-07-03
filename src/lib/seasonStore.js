@@ -355,3 +355,68 @@ export function buildSeasonGameResultFromState(state, ctx) {
     innings: (state.innings || []).map(inn => ({ home: inn.home || 0, away: inn.away || 0 })),
   };
 }
+
+// ── Current user game resolver — the ONE source of truth for "what game is next" ──
+export async function getCurrentUserGame(season) {
+  if (!season?.id) return null;
+  try {
+    const games = await base44.entities.Schedule.filter({
+      seasonId: season.id,
+      isUserGame: true,
+    }, 'gameDay', 50);
+    const next = games.find(g => g.status !== 'final');
+    // Consistency guard: if the next unplayed user game is before the day pointer, desync exists
+    if (next && next.gameDay < (season.currentGameDay || 1)) {
+      console.error(`[seasonStore] DESYNC: next unplayed user game is day ${next.gameDay} but season pointer is day ${season.currentGameDay || 1}`);
+    }
+    return next || null;
+  } catch (e) {
+    console.error('Failed to get current user game:', e);
+    return null;
+  }
+}
+
+// Mark a schedule row as final (the game has been played)
+export async function markScheduleRowFinal(scheduleId) {
+  if (!scheduleId) return;
+  try {
+    await base44.entities.Schedule.update(scheduleId, { status: 'final' });
+  } catch (e) {
+    console.error('Failed to mark schedule row final:', e);
+  }
+}
+
+// Auto-advance the league day if ALL games for the current day are final
+export async function maybeAdvanceDay(season) {
+  if (!season?.id) return season;
+  const day = season.currentGameDay || 1;
+  try {
+    const dayGames = await base44.entities.Schedule.filter({
+      seasonId: season.id, gameDay: day,
+    });
+    if (dayGames.length === 0) return season;
+    if (!dayGames.every(g => g.status === 'final')) return season;
+    const nextDay = day + 1;
+    const update = { currentGameDay: nextDay };
+    // Derive the next date from the schedule if available
+    const nextSched = await base44.entities.Schedule.filter({ seasonId: season.id, gameDay: nextDay });
+    if (nextSched.length > 0 && nextSched[0].gameDate) update.currentDate = nextSched[0].gameDate;
+    await base44.entities.Season.update(season.id, update);
+    return { ...season, ...update };
+  } catch (e) {
+    console.error('Failed to check/advance day:', e);
+    return season;
+  }
+}
+
+// Archive any existing active seasons before creating a new one (prevents duplicates)
+export async function archiveActiveSeasons() {
+  try {
+    const active = await base44.entities.Season.filter({ status: 'active' });
+    for (const s of active) {
+      await base44.entities.Season.update(s.id, { status: 'completed' });
+    }
+  } catch (e) {
+    console.error('Failed to archive active seasons:', e);
+  }
+}

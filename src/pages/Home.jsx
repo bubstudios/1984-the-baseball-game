@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { pickStarter, recordStart, loadRotationStateForActiveSeason, persistRotationState, buildSeasonGameResultFromState } from '@/lib/seasonStore';
+import { pickStarter, recordStart, loadRotationStateForActiveSeason, persistRotationState, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -221,10 +221,11 @@ export default function Home() {
         const userTeamParam = parts[2] || homeTeamKey;
         const seasonId = parts[3] || null;
         const gameDayNum = parts[4] ? parseInt(parts[4], 10) : 1;
+        const scheduleId = parts[5] || null;
         if (!homeTeamKey || !awayTeamKey || !TEAMS[homeTeamKey] || !TEAMS[awayTeamKey]) return;
         setGameMode('season');
         setSeasonUserTeam(userTeamParam);
-        seasonContextRef.current = { seasonId, gameDay: gameDayNum, homeTeam: homeTeamKey, awayTeam: awayTeamKey, userTeam: userTeamParam };
+        seasonContextRef.current = { seasonId, gameDay: gameDayNum, homeTeam: homeTeamKey, awayTeam: awayTeamKey, userTeam: userTeamParam, scheduleId };
         // Load rotation state and pick starters (4-day cooldown enforced)
         const rotState = await loadRotationStateForActiveSeason();
         seasonRotationStateRef.current = rotState;
@@ -952,6 +953,10 @@ export default function Home() {
           if (state.homeStartingPitcherName) recordStart(state.homeTeam, state.homeStartingPitcherName, ctx.gameDay, rotState);
           if (state.awayStartingPitcherName) recordStart(state.awayTeam, state.awayStartingPitcherName, ctx.gameDay, rotState);
           if (ctx.seasonId) await persistRotationState(ctx.seasonId, rotState);
+          // Atomic commit: mark the schedule row as played so it can't be re-launched
+          if (ctx.scheduleId) await markScheduleRowFinal(ctx.scheduleId);
+          // Auto-advance the league day if all games for this day are now complete
+          if (ctx.seasonId) await maybeAdvanceDay({ id: ctx.seasonId, currentGameDay: ctx.gameDay });
         } catch (e) {
           console.error('Season result save failed:', e);
         }

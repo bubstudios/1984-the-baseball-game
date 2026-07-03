@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TEAMS } from '@/lib/gameData';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Trophy } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 const DIVISIONS = [
   { label: 'AL East', teams: ['yankees', 'redsox', 'orioles', 'bluejays', 'brewers', 'tigers', 'indians'] },
@@ -14,6 +15,32 @@ const DIVISIONS = [
 export default function SeasonTeamSelect() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
+  const [checking, setChecking] = useState(true);
+
+  // Root Cause A fix: if an active season already exists, skip team selection
+  // and go straight to the dashboard. Prevents re-entry from forcing team selection.
+  useEffect(() => {
+    (async () => {
+      try {
+        const seasons = await base44.entities.Season.filter({ status: 'active' });
+        if (seasons.length > 0) {
+          navigate('/season', { replace: true });
+          return;
+        }
+      } catch (e) {
+        console.error('Failed to check for active season:', e);
+      }
+      setChecking(false);
+    })();
+  }, [navigate]);
+
+  if (checking) {
+    return (
+      <div className="min-h-[100dvh] flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   const handleConfirm = async () => {
     if (!selected) return;
