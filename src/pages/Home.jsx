@@ -197,6 +197,7 @@ export default function Home() {
   const [bannerPopup, setBannerPopup] = useState(null);
   const [beanballEvent, setBeanballEvent] = useState(null);
   const [cardAward, setCardAward] = useState(null);
+  const [cardPending, setCardPending] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [catcherThrowOut, setCatcherThrowOut] = useState(null);
   const [collisionPopup, setCollisionPopup] = useState(null);
@@ -904,6 +905,7 @@ export default function Home() {
           const isNew = !getCollectedIds(userTeam).includes(card.id);
           const achievementIds = addCard(userTeam, card.id);
           saveToStorage(userTeam);
+          setCardPending(true);
           setTimeout(() => setCardAward({ ...card, isNew }), 3000);
           if (achievementIds.length > 0) {
             setNewAchievements(prev => [...prev, ...achievementIds]);
@@ -927,15 +929,7 @@ export default function Home() {
     } catch (e) {
       console.error('checkGameAchievements failed:', e);
     }
-    // Fallback: if no card modal will appear, show achievements after a delay
-    if (achievementsQueuedRef.current && !cardWillAward) {
-      setTimeout(() => {
-        if (achievementsQueuedRef.current) {
-          achievementsQueuedRef.current = false;
-          setShowAchievementPopup(true);
-        }
-      }, 5000);
-    }
+    // Achievements are shown via effect once gameOverPopup AND cardAward are both closed
 
     // Season mode: persist result, advance rotation cooldown
     if (gameMode === 'season' && seasonContextRef.current) {
@@ -973,6 +967,14 @@ export default function Home() {
       });
     } catch (e) { /* analytics optional */ }
   }, [userTeam, gameStadium, gameMode]);
+
+  // Show queued achievements only after game-over popup AND card modal are both closed
+  useEffect(() => {
+    if (achievementsQueuedRef.current && !gameOverPopup && !cardAward && !cardPending && newAchievements.length > 0) {
+      achievementsQueuedRef.current = false;
+      setShowAchievementPopup(true);
+    }
+  }, [gameOverPopup, cardAward, cardPending, newAchievements]);
 
   const isUserBatting = gameState && (
     (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
@@ -1676,6 +1678,7 @@ export default function Home() {
     setBeanballEvent(null);
     setEjectionResult(null);
     setCardAward(null);
+    setCardPending(false);
     setShowSummary(false);
     setPitcherInjury(null);
     setBatterInjury(null);
@@ -2208,10 +2211,7 @@ export default function Home() {
           card={cardAward}
           onDismiss={() => {
             setCardAward(null);
-            if (achievementsQueuedRef.current) {
-              achievementsQueuedRef.current = false;
-              setShowAchievementPopup(true);
-            }
+            setCardPending(false);
           }}
         />
       )}

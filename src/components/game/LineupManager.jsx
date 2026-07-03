@@ -114,6 +114,20 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
         );
       })()}
 
+      {/* Speed & Defense base ratings */}
+      {playerData && (
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-[8px] text-muted-foreground leading-none">S</span>
+            <span className="text-xs font-bold leading-none text-foreground">{playerData.speed || 0}</span>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-[8px] text-muted-foreground leading-none">D</span>
+            <span className={`text-xs font-bold leading-none ${(penalty?.defenseMod || 0) < 0 ? 'text-amber-400' : 'text-foreground'}`}>{Math.max(0, (playerData.defense || 0) + (penalty?.defenseMod || 0))}</span>
+          </div>
+        </div>
+      )}
+
       {/* Platoon advantage indicator */}
       {opposingPitcher && platoonAdvantage.type !== 'neutral' && (
         <div
@@ -419,7 +433,10 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
               <span className="w-6"></span>
               <span className="flex-1 text-[9px] font-heading uppercase text-muted-foreground tracking-wider">Player</span>
               <span className="w-16 text-center text-[9px] font-heading uppercase text-muted-foreground tracking-wider">Pos</span>
-              <span className="w-14"></span>
+              <span className="text-[9px] font-heading uppercase text-muted-foreground tracking-wider">C</span>
+              <span className="text-[9px] font-heading uppercase text-muted-foreground tracking-wider">P</span>
+              <span className="text-[9px] font-heading uppercase text-muted-foreground tracking-wider">S</span>
+              <span className="text-[9px] font-heading uppercase text-muted-foreground tracking-wider">D</span>
             </div>
 
             {lineup.map((slot, i) => (
@@ -474,6 +491,8 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
                       <div className="flex items-center gap-2 ml-auto">
                         <span className="text-[10px] text-muted-foreground">C:<span className={`${adjContact >= 7 ? 'text-emerald-400' : adjContact <= 4 ? 'text-red-400' : 'text-foreground'}`}>{adjContact}</span>{cDelta !== 0 && <span className={`text-[8px] ${cDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>{cArrow}{Math.abs(cDelta) >= 2 ? Math.abs(cDelta) : ''}</span>}</span>
                         <span className="text-[10px] text-muted-foreground">P:<span className={`${adjPower >= 7 ? 'text-emerald-400' : adjPower <= 4 ? 'text-red-400' : 'text-foreground'}`}>{adjPower}</span>{pDelta !== 0 && <span className={`text-[8px] ${pDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>{pArrow}{Math.abs(pDelta) >= 2 ? Math.abs(pDelta) : ''}</span>}</span>
+                        <span className="text-[10px] text-muted-foreground">S:<span className="text-foreground font-bold">{p.speed || 0}</span></span>
+                        <span className="text-[10px] text-muted-foreground">D:<span className="text-foreground font-bold">{p.defense || 0}</span></span>
                       </div>
                     </div>
                   );
