@@ -2042,27 +2042,12 @@ export function getSituationalBatter(state) {
     ...b,
     contact: Math.max(1, Math.min(10, finalContact)),
     power: Math.max(1, Math.min(10, finalPower)),
-    baseContact: sit.baseContact,
-    basePower: sit.basePower,
+    baseContact: sit.contact,
+    basePower: sit.power,
     countModReason,
     contactMult: sit.contactMult,
     powerMult: sit.powerMult,
   };
-}
-
-function getSplitAdjustedPlayer(player, pitcherHand) {
-  if (!player.splits || !pitcherHand) return player;
-  const split = pitcherHand === 'L' ? player.splits.vsLHP : player.splits.vsRHP; if (!split || split.ab < 20) return player;
-  const vl = player.splits.vsLHP, vr = player.splits.vsRHP; const ta = vl.ab + vr.ab, th = vl.ba * vl.ab + vr.ba * vr.ab;
-  const oBA = ta > 0 ? th / ta : 0.250, tHR = vl.hr + vr.hr, oHRR = ta > 0 ? tHR / ta : 0.020;
-  const baR = oBA > 0 ? split.ba / oBA : 1;
-  let contactAdj = 0, powerAdj = 0;
-  if (baR >= 1.12) contactAdj = 1;
-  else if (baR <= 0.88) contactAdj = -1;
-  const sHRR = split.ab > 0 ? split.hr / split.ab : 0, hRR = oHRR > 0 ? sHRR / oHRR : 1;
-  if (hRR >= 1.30) powerAdj = 1;
-  else if (hRR <= 0.70) powerAdj = -1;
-  return { ...player, contact: Math.max(1, Math.min(10, player.contact + contactAdj)), power: Math.max(1, Math.min(10, player.power + powerAdj)) };
 }
 
 // --- INTENTIONAL WALK ---
