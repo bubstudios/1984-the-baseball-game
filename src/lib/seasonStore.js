@@ -280,34 +280,125 @@ export function getLeagueLeaders(seasonState, stat, type, limit = 10) {
   });
 }
 
-// ── Rotation logic (4-day starter cooldown) ──
-// rotationState persists on the Season entity: { teamKey: { lastStarted: { pitcherName: gameDay } } }
+// ── Rotation logic (4-man rotation + 4-day rest enforcement) ──
+// rotationState persists on the Season entity:
+// { [teamKey]: { rotation: [name1,name2,name3,name4], rotationIndex, lastStartByPitcher: {name: gameDay}, lastGameRelievers: {name: outs} } }
 
-export function pickStarter(teamKey, gameDay, rotationState) {
+function ensureTeamRotationState(rotationState, teamKey) {
+  const team = TEAMS[teamKey];
+  const rot = team.rotation || [];
+  if (!rotationState[teamKey]) {
+    rotationState[teamKey] = {
+      rotation: rot.map(p => p.name),
+      rotationIndex: 0,
+      lastStartByPitcher: {},
+      lastGameRelievers: {},
+    };
+  }
+  const rs = rotationState[teamKey];
+  // Migrate old format (lastStarted -> lastStartByPitcher)
+  if (rs.lastStarted && !rs.lastStartByPitcher) {
+    rs.lastStartByPitcher = rs.lastStarted;
+    delete rs.lastStarted;
+  }
+  if (!rs.rotation) rs.rotation = rot.map(p => p.name);
+  if (rs.rotationIndex === undefined) rs.rotationIndex = 0;
+  if (!rs.lastStartByPitcher) rs.lastStartByPitcher = {};
+  if (!rs.lastGameRelievers) rs.lastGameRelievers = {};
+  return rs;
+}
+
+// Eligibility: a starter is eligible if he hasn't started in the last 3 team games (>=4 days rest)
+export function isStarterEligible(rotationState, teamKey, pitcherName, teamGameNumber) {
+  const rs = rotationState?.[teamKey];
+  if (!rs) return true;
+  const last = rs.lastStartByPitcher?.[pitcherName];
+  if (last === undefined) return true;
+  return (teamGameNumber - last) >= 4;
+}
+
+// Days of rest for a pitcher (Infinity = never started / no data)
+export function getRestDays(rotationState, teamKey, pitcherName, teamGameNumber) {
+  const rs = rotationState?.[teamKey];
+  if (!rs) return Infinity;
+  const last = rs.lastStartByPitcher?.[pitcherName];
+  if (last === undefined) return Infinity;
+  return teamGameNumber - last;
+}
+
+// THE single resolver: returns the probable starter object for a team's next game.
+export function getProbableStarter(rotationState, teamKey, teamGameNumber) {
   const team = TEAMS[teamKey];
   const rot = team.rotation || [];
   if (rot.length === 0) return null;
 
-  const rs = rotationState?.[teamKey];
-  if (!rs || !rs.lastStarted) return rot[0];
+  const rs = ensureTeamRotationState(rotationState, teamKey);
+  const rotation = rs.rotation;
+  const idx = rs.rotationIndex % rotation.length;
 
-  // First available starter in rotation order (>=4 days rest)
-  const available = rot.filter(p => (gameDay - (rs.lastStarted[p.name] ?? -99)) >= 4);
-  if (available.length > 0) return available[0];
+  const candidateName = rotation[idx];
+  const candidate = rot.find(p => p.name === candidateName) || rot[0];
 
-  // Nobody rested enough - "bullpen/long-man day": use the most-rested arm
+  if (isStarterEligible(rotationState, teamKey, candidateName, teamGameNumber)) {
+    return candidate;
+  }
+
+  // Data corruption: pointer's pitcher is ineligible. Skip to next eligible.
+  console.error(`[rotation] ${teamKey}: rotation[${idx}] (${candidateName}) ineligible on day ${teamGameNumber} - skipping to next eligible SP`);
+  for (let i = 1; i <= rotation.length; i++) {
+    const nextName = rotation[(idx + i) % rotation.length];
+    if (isStarterEligible(rotationState, teamKey, nextName, teamGameNumber)) {
+      return rot.find(p => p.name === nextName) || rot[0];
+    }
+  }
+
+  // Nobody eligible - use most-rested (shouldn't happen with 4-man/4-day)
+  console.error(`[rotation] ${teamKey}: NO eligible starters on day ${teamGameNumber} - using most rested`);
   let best = rot[0], bestRest = -Infinity;
   for (const p of rot) {
-    const rest = gameDay - (rs.lastStarted[p.name] ?? -99);
+    const rest = teamGameNumber - (rs.lastStartByPitcher?.[p.name] ?? -99);
     if (rest > bestRest) { bestRest = rest; best = p; }
   }
   return best;
 }
 
-// Call AFTER a game to record that a starter was used. Mutates rotationState in place.
+// Call AFTER a game commits to record the start and advance the rotation pointer.
+export function advanceRotation(rotationState, teamKey, starterName, teamGameNumber) {
+  const team = TEAMS[teamKey];
+  const rot = team.rotation || [];
+  if (rot.length === 0) return;
+  const rs = ensureTeamRotationState(rotationState, teamKey);
+  rs.lastStartByPitcher[starterName] = teamGameNumber;
+  rs.rotationIndex = ((rs.rotationIndex || 0) + 1) % rs.rotation.length;
+}
+
+// Record yesterday's reliever usage. Call after each game with that team's pitching line.
+export function recordRelieverUsage(rotationState, teamKey, pitchingLine) {
+  const rs = ensureTeamRotationState(rotationState, teamKey);
+  rs.lastGameRelievers = {};
+  for (const p of pitchingLine) {
+    if (p.gs) continue; // skip the starter
+    if ((p.outs || 0) > 6) { // >2 innings = >6 outs
+      rs.lastGameRelievers[p.name] = p.outs;
+    }
+  }
+}
+
+// Get unavailable reliever names for a team (threw >2 IP yesterday)
+export function getUnavailableRelievers(rotationState, teamKey) {
+  const rs = rotationState?.[teamKey];
+  if (!rs || !rs.lastGameRelievers) return [];
+  return Object.keys(rs.lastGameRelievers);
+}
+
+// Backward-compatible wrapper
+export function pickStarter(teamKey, gameDay, rotationState) {
+  return getProbableStarter(rotationState, teamKey, gameDay);
+}
+
+// Backward-compatible wrapper - delegates to advanceRotation
 export function recordStart(teamKey, pitcherName, gameDay, rotationState) {
-  if (!rotationState[teamKey]) rotationState[teamKey] = { lastStarted: {} };
-  rotationState[teamKey].lastStarted[pitcherName] = gameDay;
+  advanceRotation(rotationState, teamKey, pitcherName, gameDay);
 }
 
 export async function loadRotationStateForActiveSeason() {

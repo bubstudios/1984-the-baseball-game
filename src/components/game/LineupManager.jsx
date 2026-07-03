@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
 import { ArrowUp, ArrowDown, X, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
 import { calculateSituationalRatings, getRatingBadgeClass } from '@/lib/situationalRatings';
+import { isStarterEligible, getRestDays } from '@/lib/seasonStore';
 
 const ALL_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
 
@@ -177,11 +178,11 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
   );
 }
 
-export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, weather, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [], seasonMode = false, forcedOpponentSP = null }) {
+export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, weather, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [], seasonMode = false, forcedOpponentSP = null, forcedUserSP = null, seasonGameDay = null, seasonRotationState = null }) {
   const illSet = useMemo(() => new Set(illPlayerNames), [illPlayerNames]);
   const oppIllSet = useMemo(() => new Set(opponentIllPlayerNames), [opponentIllPlayerNames]);
   const rotationPitchers = useMemo(() => (teamData.rotation || []).filter(p => !illSet.has(p.name)), [teamData, illSet]);
-  const [selectedPitcher, setSelectedPitcher] = useState(rotationPitchers[0]?.name || '');
+  const [selectedPitcher, setSelectedPitcher] = useState(forcedUserSP?.name || rotationPitchers[0]?.name || '');
   const selectedPitcherData = useMemo(() => {
     return rotationPitchers.find(p => p.name === selectedPitcher) || rotationPitchers[0] || null;
   }, [rotationPitchers, selectedPitcher]);
@@ -195,8 +196,8 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
 
   // Sync state when team data changes (new team selection)
   useEffect(() => {
-    setSelectedPitcher(rotationPitchers[0]?.name || '');
-  }, [rotationPitchers]);
+    setSelectedPitcher(forcedUserSP?.name || rotationPitchers[0]?.name || '');
+  }, [rotationPitchers, forcedUserSP]);
 
   useEffect(() => {
     setOpponentSP(forcedOpponentSP?.name || opponentRotation[0]?.name || '');
@@ -255,7 +256,7 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
         slots.push({ name: bp.name, naturalPos: bp.pos, assignedPos: bp.pos });
       }
     }
-    const sp = rotationPitchers[0];
+    const sp = forcedUserSP || rotationPitchers[0];
     if (sp) {
       slots.push({ name: sp.name, naturalPos: 'SP', assignedPos: 'SP' });
     }
@@ -336,6 +337,15 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
   };
 
   const handleConfirm = () => {
+    // Season mode: validate no ineligible SP is selected
+    if (seasonMode && seasonRotationState && seasonGameDay) {
+      const spToCheck = useDH ? selectedPitcherData : (lineup.find(s => s.assignedPos === 'SP') ? { name: lineup.find(s => s.assignedPos === 'SP').name } : null);
+      if (spToCheck && !isStarterEligible(seasonRotationState, teamKey, spToCheck.name, seasonGameDay)) {
+        const restDays = getRestDays(seasonRotationState, teamKey, spToCheck.name, seasonGameDay);
+        alert(`${spToCheck.name} is on ${restDays}d rest and cannot start today. Minimum 4 days rest required.`);
+        return;
+      }
+    }
     // Build full player objects with assignedPos
     const customLineup = lineup.map((slot, order) => {
       const player = allPositionPlayers.find(p => p.name === slot.name);
@@ -558,11 +568,15 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
               onChange={(e) => setSelectedPitcher(e.target.value)}
               className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             >
-              {rotationPitchers.map(p => (
-                <option key={p.name} value={p.name}>
-                  {p.name} — SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}
-                </option>
-              ))}
+              {rotationPitchers.map(p => {
+                const eligible = !seasonMode || !seasonRotationState || isStarterEligible(seasonRotationState, teamKey, p.name, seasonGameDay);
+                const restDays = seasonMode && seasonRotationState ? getRestDays(seasonRotationState, teamKey, p.name, seasonGameDay) : Infinity;
+                return (
+                  <option key={p.name} value={p.name} disabled={!eligible}>
+                    {p.name} — SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}{!eligible ? ` (${restDays}d rest)` : ''}
+                  </option>
+                );
+              })}
             </select>
             {selectedPitcherData && (
               <div className="flex items-center gap-4 mt-2 text-[10px] text-muted-foreground">

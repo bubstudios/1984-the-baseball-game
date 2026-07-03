@@ -16,10 +16,22 @@ import { playerId } from './seasonStore';
  * @returns {object} Final game state (with _tracking data attached)
  */
 export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
-  const { useDH = false, weather = null, umpire = null, homeLineup = null, awayLineup = null } = options;
+  const { useDH = false, weather = null, umpire = null, homeLineup = null, awayLineup = null, homeSP = null, awaySP = null, unavailableRelievers = null } = options;
 
-  let state = createGameState(homeTeam, awayTeam, homeLineup, awayLineup, useDH, weather, umpire);
+  let state = createGameState(homeTeam, awayTeam, homeLineup, awayLineup, useDH, weather, umpire, homeSP, awaySP);
   state._headlessMode = true;
+  state.homeStartingPitcherName = homeSP?.name || null;
+  state.awayStartingPitcherName = awaySP?.name || null;
+
+  // Filter out unavailable relievers (threw >2 IP yesterday) from both bullpens
+  if (unavailableRelievers) {
+    if (unavailableRelievers.home?.length) {
+      state.homeBullpen = state.homeBullpen.filter(p => !unavailableRelievers.home.includes(p.name));
+    }
+    if (unavailableRelievers.away?.length) {
+      state.awayBullpen = state.awayBullpen.filter(p => !unavailableRelievers.away.includes(p.name));
+    }
+  }
 
   // Tracking data
   const scoringEvents = []; // { inning, battingSide, pitchingSide, pitcherName, runs }

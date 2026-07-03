@@ -6,7 +6,7 @@ import { RotateCcw, Trophy, Calendar, TrendingUp, Users, Play } from 'lucide-rea
 import { TEAMS } from '@/lib/gameData';
 import { generateSchedule as buildSchedule, verifySchedule } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState } from '@/lib/seasonEngine';
-import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons } from '@/lib/seasonStore';
+import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordRelieverUsage, getUnavailableRelievers } from '@/lib/seasonStore';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
 import FullSchedule from '@/components/season/FullSchedule';
 
@@ -16,6 +16,7 @@ export default function SeasonDashboard() {
   const [schedule, setSchedule] = useState([]);
   const [gameResults, setGameResults] = useState([]);
   const [currentUserGame, setCurrentUserGame] = useState(null);
+  const [probableStarters, setProbableStarters] = useState(null);
   const [loading, setLoading] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [activeTab, setActiveTab] = useState('schedule'); // schedule, results, leaders, standings
@@ -63,6 +64,18 @@ export default function SeasonDashboard() {
       // Resolve the user's current (next unplayed) game via the single source of truth
       const userGame = await getCurrentUserGame(currentSeason);
       setCurrentUserGame(userGame);
+
+      // Compute probable starters for the user's next game (dashboard display)
+      if (userGame) {
+        const rotState = await loadRotationStateForActiveSeason();
+        const oppTeam = userGame.homeTeam === currentSeason.userTeam ? userGame.awayTeam : userGame.homeTeam;
+        setProbableStarters({
+          userSP: getProbableStarter(rotState, currentSeason.userTeam, userGame.gameDay),
+          oppSP: getProbableStarter(rotState, oppTeam, userGame.gameDay),
+        });
+      } else {
+        setProbableStarters(null);
+      }
 
     } catch (error) {
       console.error('Failed to load season:', error);
@@ -171,14 +184,30 @@ export default function SeasonDashboard() {
       // Sim every game the USER is not playing (the user game is played via playUserGame)
       const toSim = daySchedule.filter(g => !g.isUserGame && g.status !== 'final');
 
+      // Load rotation state for starter selection and rest enforcement
+      const rotState = await loadRotationStateForActiveSeason();
+
       const resultRows = [];
       for (const g of toSim) {
         const homeTeam = g.homeTeam;
         const awayTeam = g.awayTeam;
         const useDH = TEAMS[homeTeam]?.league === 'AL';
 
-        const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH });
+        const homeSP = getProbableStarter(rotState, homeTeam, gameDay);
+        const awaySP = getProbableStarter(rotState, awayTeam, gameDay);
+        const unavailableRelievers = {
+          home: getUnavailableRelievers(rotState, homeTeam),
+          away: getUnavailableRelievers(rotState, awayTeam),
+        };
+
+        const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
         const result = buildGameResultFromState(finalState, { headless: true });
+
+        // Advance rotation + record reliever usage for both teams
+        if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, gameDay);
+        if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, gameDay);
+        recordRelieverUsage(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam));
+        recordRelieverUsage(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam));
 
         // Extract pitcher names from decisions (playerId format: "teamKey|name")
         const winnerName = result.decisions.winner ? result.decisions.winner.split('|')[1] : null;
@@ -220,6 +249,21 @@ export default function SeasonDashboard() {
         // Yield to UI between games to avoid blocking
         await new Promise(r => setTimeout(r, 0));
       }
+
+      // Day-commit assertion: no team may have two results on the same day
+      const teamResultCounts = {};
+      for (const r of resultRows) {
+        teamResultCounts[r.homeTeam] = (teamResultCounts[r.homeTeam] || 0) + 1;
+        teamResultCounts[r.awayTeam] = (teamResultCounts[r.awayTeam] || 0) + 1;
+      }
+      for (const [team, count] of Object.entries(teamResultCounts)) {
+        if (count > 1) {
+          console.error(`[day-commit] ASSERTION FAILED: ${team} has ${count} results on day ${gameDay} - duplicate schedule detected`);
+        }
+      }
+
+      // Persist rotation state (starters + reliever usage tracked during sim)
+      await persistRotationState(season.id, rotState);
 
       // Persist all simmed results
       if (resultRows.length > 0) {
@@ -357,14 +401,22 @@ export default function SeasonDashboard() {
               Next Day
             </Button>
             {currentUserGame && (
-              <Button
-                onClick={playUserGame}
-                variant="secondary"
-                className="gap-2"
-              >
-                <Play className="w-4 h-4" />
-                Play My Game
-              </Button>
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={playUserGame}
+                  variant="secondary"
+                  className="gap-2"
+                >
+                  <Play className="w-4 h-4" />
+                  Play My Game
+                </Button>
+                {probableStarters && (
+                  <div className="text-[10px] text-muted-foreground font-heading leading-tight">
+                    <div><span className="text-primary">{probableStarters.userSP?.name || 'TBD'}</span> (you)</div>
+                    <div>vs <span className="text-foreground">{probableStarters.oppSP?.name || 'TBD'}</span></div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
           <div className="text-sm text-muted-foreground font-heading">

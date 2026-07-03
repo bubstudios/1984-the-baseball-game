@@ -90,7 +90,7 @@ export function getEffectivePitcher(state) {
 export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null, umpire = null, startingPitcher = null, opponentStartingPitcher = null) {
   const home = TEAMS[homeTeam];
   const away = TEAMS[awayTeam];
-  const buildLineup = (lineupData, defaultLineup, teamData) => {
+  const buildLineup = (lineupData, defaultLineup, teamData, spName) => {
     if (lineupData && lineupData.length >= 9) {
       return lineupData.slice(0, 9).map((p, i) => ({
         ...p, order: i + 1, assignedPos: p.assignedPos || p.pos,
@@ -110,9 +110,10 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
       // Strip any DH players from the default lineup - pitcher will bat
       lineup = lineup.filter(p => p.pos !== 'DH');
       if (teamData?.rotation?.length > 0) {
-        const spName = teamData.rotation[0].name;
-        if (!lineup.find(p => p.name === spName)) {
-          lineup.push({ ...teamData.rotation[0], assignedPos: 'SP',
+        const starterName = spName || teamData.rotation[0].name;
+        const spPlayer = teamData.rotation.find(p => p.name === starterName) || teamData.rotation[0];
+        if (!lineup.find(p => p.name === starterName)) {
+          lineup.push({ ...spPlayer, assignedPos: 'SP',
             gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
             order: lineup.length + 1 });
         }
@@ -120,7 +121,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     }
     return lineup;
   };
-  const enforceNineBatters = (lineup, teamData) => {
+  const enforceNineBatters = (lineup, teamData, startingSPName) => {
     let result = [...lineup];
     // Trim to 9 if over
     if (result.length > 9) result = result.slice(0, 9);
@@ -132,10 +133,11 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     }
     // In non-DH, ensure the starting pitcher appears exactly once
     if (!useDH && teamData?.rotation?.length > 0) {
-      const spName = teamData.rotation[0].name;
+      const spName = startingSPName || teamData.rotation[0].name;
       const spCount = result.filter(p => p.name === spName).length;
       if (spCount === 0) {
-        result.push({ ...teamData.rotation[0], assignedPos: 'SP', order: result.length + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+        const spPlayer = teamData.rotation.find(p => p.name === spName) || teamData.rotation[0];
+        result.push({ ...spPlayer, assignedPos: 'SP', order: result.length + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
       } else if (spCount > 1) {
         // Remove duplicates - keep the first occurrence
         let seen = false;
@@ -152,15 +154,22 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     }
     return result;
   };
-  const homeLineup = enforceNineBatters(buildLineup(customHomeLineup, home.lineup, home), home);
-  let awayLineup = enforceNineBatters(buildLineup(customAwayLineup, away.lineup, away), away);
-  // Override away SP if user selected a specific opponent starter
+  const homeLineup = enforceNineBatters(buildLineup(customHomeLineup, home.lineup, home, startingPitcher?.name), home, startingPitcher?.name);
+  let awayLineup = enforceNineBatters(buildLineup(customAwayLineup, away.lineup, away, opponentStartingPitcher?.name), away, opponentStartingPitcher?.name);
+  // Override away SP if a specific opponent starter is provided
   const awaySPOverride = opponentStartingPitcher ? away.rotation.find(p => p.name === opponentStartingPitcher.name) : null;
-  // Swap opponent SP if user selected a specific starter
   if (awaySPOverride && !useDH) {
     const spIdx = awayLineup.findIndex(p => p.assignedPos === 'SP');
     if (spIdx >= 0) {
       awayLineup[spIdx] = { ...awaySPOverride, order: awayLineup[spIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+    }
+  }
+  // Override home SP if a specific starter is provided (season rotation - fixes carryover bug)
+  const homeSPOverride = startingPitcher ? home.rotation.find(p => p.name === startingPitcher.name) : null;
+  if (homeSPOverride && !useDH) {
+    const spIdx = homeLineup.findIndex(p => p.assignedPos === 'SP');
+    if (spIdx >= 0) {
+      homeLineup[spIdx] = { ...homeSPOverride, order: homeLineup[spIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
     }
   }
   const homeSP = homeLineup.find(p => p.assignedPos === 'SP') || (useDH && startingPitcher ? startingPitcher : home.rotation[0]);

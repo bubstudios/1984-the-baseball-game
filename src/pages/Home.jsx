@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { pickStarter, recordStart, loadRotationStateForActiveSeason, persistRotationState, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay } from '@/lib/seasonStore';
+import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, recordRelieverUsage, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -230,8 +230,8 @@ export default function Home() {
         const rotState = await loadRotationStateForActiveSeason();
         seasonRotationStateRef.current = rotState;
         const oppTeamKey = (userTeamParam === homeTeamKey) ? awayTeamKey : homeTeamKey;
-        const userStarter = pickStarter(userTeamParam, gameDayNum, rotState);
-        const cpuStarter = pickStarter(oppTeamKey, gameDayNum, rotState);
+        const userStarter = getProbableStarter(rotState, userTeamParam, gameDayNum);
+        const cpuStarter = getProbableStarter(rotState, oppTeamKey, gameDayNum);
         setForcedStarters({ user: userStarter, cpu: cpuStarter });
         // Season games use the home team's stadium (schedule-determined) - skip BallparkSelect
         const stadium = TEAMS[homeTeamKey].stadium;
@@ -249,7 +249,7 @@ export default function Home() {
         const awayIll = rollIllnessesForTeam(TEAMS[awayTeamKey], false);
         const illPlayers = { home: homeIll, away: awayIll };
         setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
-        setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam });
+        setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum });
         setLoadingScreen(false);
       })();
     }
@@ -304,6 +304,17 @@ export default function Home() {
     state.userTeam = effectiveUserTeam; // CRITICAL: gates in getControllingTeam() read state.userTeam to distinguish CPU from user
     state.homeStartingPitcherName = homeSP?.name || null;
     state.awayStartingPitcherName = awaySP?.name || null;
+    // Season mode: filter CPU bullpen for unavailable relievers + track user's unavailable relievers
+    if (gameMode === 'season' && seasonRotationStateRef.current) {
+      const cpuSide = effectiveUserTeam === home ? 'away' : 'home';
+      const cpuTeamKey = cpuSide === 'home' ? home : away;
+      const cpuUnavailable = getUnavailableRelievers(seasonRotationStateRef.current, cpuTeamKey);
+      if (cpuUnavailable.length > 0) {
+        const bullpenKey = cpuSide === 'home' ? 'homeBullpen' : 'awayBullpen';
+        state[bullpenKey] = state[bullpenKey].filter(p => !cpuUnavailable.includes(p.name));
+      }
+      state._unavailableRelievers = getUnavailableRelievers(seasonRotationStateRef.current, effectiveUserTeam);
+    }
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
     state.log.push({ type: 'info', text: `⚾ Play ball! ${awayName} at ${homeName}` });
@@ -404,7 +415,8 @@ export default function Home() {
     let effectiveUserStarter = startingPitcher;
     if (gameMode === 'season' && forcedStarters) {
       adjustedOpponentSP = forcedStarters.cpu;
-      effectiveUserStarter = forcedStarters.user;
+      // Respect the user's SP selection (DH mode); fall back to probable starter (no-DH or no selection)
+      effectiveUserStarter = startingPitcher || forcedStarters.user;
     }
     startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, effectiveUserStarter, adjustedOpponentSP, seasonUser);
   }, [lineupPhase, startGame, gameMode, forcedStarters]);
@@ -950,8 +962,10 @@ export default function Home() {
           result.awayHRs = summary.homeRuns.filter(hr => hr.teamKey === state.awayTeam).map(hr => ({ playerName: hr.name, inning: hr.inning || 0 }));
           await base44.entities.GameResult.create(result);
           const rotState = seasonRotationStateRef.current;
-          if (state.homeStartingPitcherName) recordStart(state.homeTeam, state.homeStartingPitcherName, ctx.gameDay, rotState);
-          if (state.awayStartingPitcherName) recordStart(state.awayTeam, state.awayStartingPitcherName, ctx.gameDay, rotState);
+          if (state.homeStartingPitcherName) advanceRotation(rotState, state.homeTeam, state.homeStartingPitcherName, ctx.gameDay);
+          if (state.awayStartingPitcherName) advanceRotation(rotState, state.awayTeam, state.awayStartingPitcherName, ctx.gameDay);
+          recordRelieverUsage(rotState, state.homeTeam, summary.pitching.filter(p => p.teamKey === state.homeTeam));
+          recordRelieverUsage(rotState, state.awayTeam, summary.pitching.filter(p => p.teamKey === state.awayTeam));
           if (ctx.seasonId) await persistRotationState(ctx.seasonId, rotState);
           // Atomic commit: mark the schedule row as played so it can't be re-launched
           if (ctx.scheduleId) await markScheduleRowFinal(ctx.scheduleId);
@@ -1738,6 +1752,9 @@ export default function Home() {
         opponentIllPlayerNames={(lineupPhase.illPlayers?.[userIsHome ? 'away' : 'home'] || []).map(p => p.name)}
         seasonMode={gameMode === 'season'}
         forcedOpponentSP={forcedStarters?.cpu || null}
+        forcedUserSP={forcedStarters?.user || null}
+        seasonGameDay={lineupPhase.gameDay}
+        seasonRotationState={lineupPhase.rotationState}
       />
       {pregameIllnesses && (
         <PregameIllnessModal
@@ -2288,6 +2305,7 @@ export default function Home() {
           onDefensiveSwitch={handleDefensiveSwitch}
           onChangePitcher={handlePitchingChange}
           initialTab={subsTab}
+          unavailableRelievers={gameState._unavailableRelievers || []}
         />
       )}
     </div>
