@@ -108,11 +108,9 @@ const STEPS = [
       <>
         When your team is at the plate, choose your swing:<br />
         <br />
-        - <strong>Normal Swing</strong> - Balanced contact and power. The safe default.<br />
-        - <strong>Contact Swing</strong> - +2 contact, -2 power. Put the ball in play, avoid strikeouts.<br />
-        - <strong>Power Swing</strong> - +2 power, -2 contact. Swing for the fences, risk missing.<br />
-        - <strong>Take Pitch</strong> - Do not swing. Let the pitch go by, hope for a ball.<br />
-        - <strong>Bunt</strong> - Lay one down. Good for advancing runners (sacrifice) or surprising the defense.<br />
+        - <strong>Swing</strong> - Standard swing. Balanced contact and power. The safe default for most counts.<br />
+        - <strong>Power</strong> - Swing for the fences. Boosts power at the cost of contact. Risk striking out.<br />
+        - <strong>Bunt</strong> - Lay one down. Good for advancing runners (sacrifice) or beating the shift with a fast hitter.<br />
         <br />
         The CPU pitcher selects pitches and locations against you. Watch the count - your ratings shift based on balls and strikes!
       </>
