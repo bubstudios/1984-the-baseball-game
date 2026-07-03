@@ -140,6 +140,7 @@ import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
 import { pickStarter, recordStart, loadRotationStateForActiveSeason, persistRotationState, buildSeasonGameResultFromState } from '@/lib/seasonStore';
+import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
 export default function Home() {
@@ -939,6 +940,13 @@ export default function Home() {
       (async () => {
         try {
           const result = buildSeasonGameResultFromState(state, ctx);
+          // Use the shared summary function (same one headless sim uses) for W/L/S decisions
+          const summary = buildGameResultFromState(state);
+          if (summary.decisions.winner) result.winningPitcher = summary.decisions.winner.split('|')[1];
+          if (summary.decisions.loser) result.losingPitcher = summary.decisions.loser.split('|')[1];
+          if (summary.decisions.save) result.savePitcher = summary.decisions.save.split('|')[1];
+          result.homeHRs = summary.homeRuns.filter(hr => hr.teamKey === state.homeTeam).map(hr => ({ playerName: hr.name, inning: hr.inning || 0 }));
+          result.awayHRs = summary.homeRuns.filter(hr => hr.teamKey === state.awayTeam).map(hr => ({ playerName: hr.name, inning: hr.inning || 0 }));
           await base44.entities.GameResult.create(result);
           const rotState = seasonRotationStateRef.current;
           if (state.homeStartingPitcherName) recordStart(state.homeTeam, state.homeStartingPitcherName, ctx.gameDay, rotState);

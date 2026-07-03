@@ -47,9 +47,14 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
 
   // Show ALL bench players - used ones will be grayed out
   const myBench = useMemo(() => {
-    if (!myTeam?.bench) return [];
-    return myTeam.bench;
-  }, [myTeam]);
+    if (!myTeam) return [];
+    // DERIVED bench: full position-player roster minus anyone currently in the
+    // game or already removed by an in-game substitution.  This ensures displaced
+    // starters (pre-game lineup swaps) are available and starting players are not
+    // listed.  Pre-game swaps never set a "used" flag.
+    const fullRoster = [...(myTeam.lineup || []), ...(myTeam.bench || [])];
+    return fullRoster.filter(p => !usedNames.has(p.name));
+  }, [myTeam, usedNames]);
 
   const isBenchUsed = (player) => usedNames.has(player.name);
 

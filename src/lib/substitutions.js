@@ -3,6 +3,14 @@ import { initializePitcherComposure } from './pitcherComposure';
 
 // Re-export functions that are used internally
 export function pinchHit(state, newPlayer) {
+  // Idempotency guard: if the player is already in the lineup, this is a duplicate
+  // call (double-execution would corrupt lineup/bench state and duplicate the log).
+  const isAwayCheck = state.halfInning === 'top';
+  const lineupCheck = isAwayCheck ? state.awayLineup : state.homeLineup;
+  if (lineupCheck.some(p => p.name === newPlayer.name)) {
+    console.warn(`[pinchHit] ${newPlayer.name} is already in the lineup - skipping duplicate sub`);
+    return state;
+  }
   const newState = JSON.parse(JSON.stringify(state));
   const isAway = newState.halfInning === 'top';
   const lineup = isAway ? newState.awayLineup : newState.homeLineup;
@@ -118,7 +126,8 @@ export function changePitcher(state, newPitcher, side) {
   const isHome = side ? side === 'home' : newState.halfInning === 'top';
   const archetype = newPitcher.temperament || 'PROFESSIONAL';
   const composureState = initializePitcherComposure(newPitcher, archetype);
-  const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: composureState };
+  const pitcherRole = newPitcher.pos || 'SP';
+  const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: composureState, _reachBackUses: 0, _reachBackPitcher: newPitcher.name };
 
   const oldPitcher = isHome ? newState.homePitcher : newState.awayPitcher;
   if (isHome) {
@@ -140,11 +149,11 @@ export function changePitcher(state, newPitcher, side) {
     if (slotIdx < 0 && oldPitcher.order) slotIdx = lineup.findIndex(p => p.order === oldPitcher.order);
     if (slotIdx < 0) slotIdx = lineup.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
     if (slotIdx >= 0) {
-      const lineupEntry = { ...newPitcher, order: lineup[slotIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      const lineupEntry = { ...newPitcher, order: lineup[slotIdx].order, assignedPos: pitcherRole, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
       lineup[slotIdx] = lineupEntry;
       // Persist order + assignedPos on the pitcher state so future lookups can find their slot
       newP.order = lineupEntry.order;
-      newP.assignedPos = 'SP';
+      newP.assignedPos = pitcherRole;
     }
     // Never push a new entry - avoids creating a phantom batting slot
   }

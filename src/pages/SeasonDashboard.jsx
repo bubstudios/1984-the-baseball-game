@@ -240,14 +240,19 @@ export default function SeasonDashboard() {
     }
   };
 
-  const advanceToNextDay = () => {
+  const advanceToNextDay = async () => {
     if (!season) return;
-    // Just update the day - user will simulate
-    setSeason(prev => ({
-      ...prev,
-      currentGameDay: (prev.currentGameDay || 1) + 1
-    }));
-    loadSeason();
+    const nextDay = (season.currentGameDay || 1) + 1;
+    // Derive the calendar date from the schedule for the new day (single source of truth)
+    let nextDate = season.currentDate;
+    try {
+      const nextSched = await base44.entities.Schedule.filter({ seasonId: season.id, gameDay: nextDay });
+      if (nextSched.length > 0 && nextSched[0].gameDate) nextDate = nextSched[0].gameDate;
+    } catch (e) { /* non-fatal - keep existing date */ }
+    // Persist the increment so the Season entity is the ONE owner of "what day is it"
+    await base44.entities.Season.update(season.id, { currentGameDay: nextDay, currentDate: nextDate });
+    setSeason(prev => ({ ...prev, currentGameDay: nextDay, currentDate: nextDate }));
+    await loadSeason();
   };
 
   const playUserGame = () => {
@@ -283,7 +288,7 @@ export default function SeasonDashboard() {
                 )}
               </h1>
               <p className="text-xs text-muted-foreground font-heading">
-                Day {season?.currentGameDay || 1} of 162 · {season?.currentDate || 'April 3, 1984'}
+                Day {season?.currentGameDay || 1} of 162 · {schedule[0]?.gameDate || season?.currentDate || 'April 3, 1984'}
               </p>
             </div>
           </div>
