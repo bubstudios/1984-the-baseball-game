@@ -340,8 +340,10 @@ export default function Home() {
     // Ballpark's team is always home; swap if needed
     const homeTeam = parkTeam;
     const awayTeam = parkTeam === ballparkPhase.home ? ballparkPhase.away : ballparkPhase.home;
-    // If park selection caused a swap, update seasonUserTeam to match
-    let updatedSeasonUser = seasonUserTeam;
+    // Preserve the user's selected team through the park swap.
+    // In exhibition, ballparkPhase.home IS the user's team (TeamSelect passes userTeam first).
+    // In season, seasonUserTeam is already set; if a swap happened, map it to the new home/away.
+    let updatedSeasonUser = seasonUserTeam || ballparkPhase.home;
     if (seasonUserTeam && homeTeam !== ballparkPhase.home) {
       updatedSeasonUser = seasonUserTeam === ballparkPhase.home ? awayTeam : homeTeam;
     }
