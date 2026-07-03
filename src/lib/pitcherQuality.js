@@ -88,3 +88,40 @@ export function getPitcherPenalty(pitcher) {
     xbhPerAB,
   };
 }
+
+/**
+ * Get pitcher's tier based on SPD + OFF + CTL sum.
+ * Elite: >= 21, Mid: 17-20, Subpar: <= 16.
+ * Uses stored tier if available and no fatigue adjustments.
+ * Uses effective ratings when available (fatigue).
+ */
+export function getPitcherTier(p) {
+  if (!p) return 'Mid';
+  // Use stored tier if available and no fatigue adjustments
+  if (p.tier && p.effectivePitchSpeed == null && p.effectiveControl == null && p.effectiveOffSpeed == null) {
+    return p.tier;
+  }
+  // Compute from ratings (effective if available, otherwise base)
+  const spd = p.effectivePitchSpeed != null ? p.effectivePitchSpeed : p.pitchSpeed;
+  const off = p.effectiveOffSpeed != null ? p.effectiveOffSpeed : p.offSpeed;
+  const ctl = p.effectiveControl != null ? p.effectiveControl : p.control;
+  if (spd == null || off == null || ctl == null) {
+    console.error('Pitcher ' + (p.name || 'unknown') + ' missing required stats for tier calculation');
+    return 'Mid';
+  }
+  const sum = spd + off + ctl;
+  if (sum >= 21) return 'Elite';
+  if (sum <= 16) return 'Subpar';
+  return 'Mid';
+}
+
+/**
+ * Get Contact/Power modifier based on pitcher tier.
+ * Elite: -1 to batter Contact/Power. Subpar: +1. Mid: 0.
+ */
+export function getPitcherTierModifier(p) {
+  const tier = getPitcherTier(p);
+  if (tier === 'Elite') return { contactAdj: -1, powerAdj: -1 };
+  if (tier === 'Subpar') return { contactAdj: 1, powerAdj: 1 };
+  return { contactAdj: 0, powerAdj: 0 };
+}

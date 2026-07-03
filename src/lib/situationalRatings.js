@@ -1,6 +1,8 @@
 // Situational ratings calculator — multiplicative, split-driven
 // Card shows amplified numbers for readability; engine uses gentle multipliers.
 
+import { getPitcherTier } from './pitcherQuality';
+
 // League-average situational effects (small, honest, applied to everyone).
 // Home field = +3% offense; day games = +1.5%. These are seasoning, not the meal.
 const HOME_MULT = 1.03;
@@ -61,20 +63,20 @@ export function calculateSituationalRatings(batter, opposingPitcher, gameConditi
   const isNight = gameConditions.isNight !== false;
   if (!isNight) { contactMult *= DAY_MULT; powerMult *= DAY_MULT; factors.push('Day'); }
 
-  // 4. PITCHER QUALITY - modest, multiplicative, capped so it can't swamp identity.
+  // 4. PITCHER TIER - Elite/Mid/Subpar based on SPD+OFF+CTL sum.
+  // Elite (>=21): batter -1 C/P. Subpar (<=16): batter +1 C/P. Mid: no change.
+  // Engine multiplier 0.92/1.08 yields exactly +/-1 on the amplified display rating.
   if (opposingPitcher) {
-    // control drives contact suppression; pitchSpeed drives power suppression;
-    // offSpeed splits between the two. Ratings ~6 = league average -> multiplier 1.
-    const ctl = (opposingPitcher.effectiveControl || opposingPitcher.control || 6);
-    const spd = (opposingPitcher.effectivePitchSpeed || opposingPitcher.pitchSpeed || 6);
-    const off = (opposingPitcher.effectiveOffSpeed || opposingPitcher.offSpeed || 6);
-    // Each point above/below 6 = ~2.5% swing; offSpeed half-weighted to both.
-    const contactPitchMult = 1 - ((ctl - 6) * 0.025 + (off - 6) * 0.0125);
-    const powerPitchMult = 1 - ((spd - 6) * 0.025 + (off - 6) * 0.0125);
-    contactMult *= clamp(contactPitchMult, 0.82, 1.18);
-    powerMult *= clamp(powerPitchMult, 0.82, 1.18);
-    if (ctl >= 8 && spd >= 8 && off >= 8) factors.push('Tough arm');
-    else if (ctl <= 4 && spd <= 4) factors.push('Soft arm');
+    const tier = getPitcherTier(opposingPitcher);
+    if (tier === 'Elite') {
+      contactMult *= 0.92;
+      powerMult *= 0.92;
+      factors.push('Tough arm');
+    } else if (tier === 'Subpar') {
+      contactMult *= 1.08;
+      powerMult *= 1.08;
+      factors.push('Soft arm');
+    }
   }
 
   // 5. HEAD-TO-HEAD (optional, if provided) - small nudge, real data only.
