@@ -281,7 +281,7 @@ export const TEAMS = {
       { name: "John Henry Johnson", pos: "RP", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 5, control: 5, tier: "Subpar", contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Steve Crawford", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 6, tier: "Mid", contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Charlie Mitchell", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, tier: "Subpar", contact: 2, power: 1, bunting: 3, speed: 2 },
-      { name: "Roger Clemens", pos: "RP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 9, offSpeed: 9, control: 7, tier: "Elite", contact: 2, power: 1, bunting: 3, speed: 3 },
+      { name: "Roger Clemens", pos: "RP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 9, offSpeed: 7, control: 5, tier: "Elite", contact: 2, power: 1, bunting: 3, speed: 3 },
     ],
   },
 
@@ -594,12 +594,12 @@ export const TEAMS = {
     ],
     rotation: [
       { name: "Dave Stieb", pos: "SP", throws: "R", bats: "R", stamina: 9, pitchSpeed: 8, offSpeed: 9, control: 8, tier: "Elite", contact: 3, power: 1, bunting: 4, speed: 3 },
-      { name: "Doyle Alexander", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 6, offSpeed: 6, control: 7, tier: "Elite", contact: 3, power: 1, bunting: 4, speed: 2 },
+      { name: "Doyle Alexander", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 6, offSpeed: 8, control: 7, tier: "Elite", contact: 3, power: 1, bunting: 4, speed: 2 },
       { name: "Jim Clancy", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 6, control: 6, tier: "Mid", contact: 3, power: 1, bunting: 4, speed: 2 },
       { name: "Luis Leal", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 5, offSpeed: 6, control: 6, tier: "Mid", contact: 3, power: 1, bunting: 4, speed: 2 },
     ],
     bullpen: [
-      { name: "Roy Lee Jackson", pos: "CL", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 7, control: 7, tier: "Mid", contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Roy Lee Jackson", pos: "CL", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 5, control: 5, tier: "Mid", contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Dennis Lamp", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 7, control: 7, tier: "Mid", contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Jimmy Key", pos: "RP", throws: "L", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 8, control: 8, tier: "Elite", contact: 3, power: 1, bunting: 4, speed: 2 },
       { name: "Jim Acker", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 6, offSpeed: 6, control: 6, tier: "Mid", contact: 2, power: 1, bunting: 3, speed: 2 },
@@ -1113,7 +1113,7 @@ export const TEAMS = {
     rotation: [
       { name: "Pascual Perez", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 8, offSpeed: 7, control: 6, tier: "Elite", contact: 4, power: 2, bunting: 5, speed: 4 },
       { name: "Craig McMurtry", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 6, offSpeed: 6, control: 6, tier: "Mid", contact: 3, power: 1, bunting: 4, speed: 3 },
-      { name: "Rick Mahler", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 7, offSpeed: 7, control: 7, tier: "Elite", contact: 4, power: 2, bunting: 5, speed: 3 },
+      { name: "Rick Mahler", pos: "SP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 6, offSpeed: 7, control: 6, tier: "Mid", contact: 4, power: 2, bunting: 5, speed: 3 },
       { name: "Len Barker", pos: "SP", throws: "R", bats: "R", stamina: 7, pitchSpeed: 7, offSpeed: 6, control: 5, tier: "Mid", contact: 3, power: 1, bunting: 4, speed: 2 },
     ],
     bullpen: [
@@ -1160,8 +1160,8 @@ export const TEAMS = {
     ],
     bullpen: [
       { name: "Frank DiPino", pos: "CL", throws: "L", bats: "L", stamina: 4, pitchSpeed: 6, offSpeed: 7, control: 6, tier: "Mid", contact: 2, power: 1, bunting: 3, speed: 2 },
-      { name: "Dave Smith", pos: "RP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 6, offSpeed: 7, control: 7, tier: "Elite", contact: 2, power: 1, bunting: 3, speed: 2 },
-      { name: "Bill Dawley", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 5, offSpeed: 5, control: 5, tier: "Mid", contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Dave Smith", pos: "RP", throws: "R", bats: "R", stamina: 8, pitchSpeed: 7, offSpeed: 7, control: 8, tier: "Elite", contact: 2, power: 1, bunting: 3, speed: 2 },
+      { name: "Bill Dawley", pos: "RP", throws: "R", bats: "R", stamina: 4, pitchSpeed: 7, offSpeed: 5, control: 5, tier: "Mid", contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Vern Ruhle", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 7, tier: "Mid", contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Julio Solano", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 6, offSpeed: 6, control: 5, tier: "Subpar", contact: 2, power: 1, bunting: 3, speed: 2 },
       { name: "Mike Lacoss", pos: "RP", throws: "R", bats: "R", stamina: 5, pitchSpeed: 5, offSpeed: 6, control: 5, tier: "Mid", contact: 2, power: 1, bunting: 3, speed: 2 },
