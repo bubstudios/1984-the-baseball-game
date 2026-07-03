@@ -295,55 +295,110 @@ export function playHalfInningBreak() {
   });
 }
 
-// ─── Star Spangled Banner - ~15 seconds, game opening ──────────────
+// ─── Star Spangled Banner - orchestral, game opening ──────────────
+// Layered voices: sustained bass + chord pad + warm brass-style melody
+// with detuned ensemble oscillators and smooth legato envelopes.
 
 export function playAnthem() {
   ensureResumed();
   const ctx = getAudioCtx();
   const now = ctx.currentTime;
 
-  // Note frequencies
-  const C3 = 131, D3 = 147, Eb3 = 156, F3 = 175, G3 = 196, Ab3 = 208, Bb3 = 233;
+  // Note frequencies (Eb major)
+  const Eb2 = 78, Ab2 = 104, Bb2 = 117;
+  const Eb3 = 156, G3 = 196, Ab3 = 208, Bb3 = 233;
   const C4 = 262, D4 = 294, Eb4 = 311, F4 = 349, G4 = 392, Ab4 = 415, Bb4 = 466;
   const C5 = 523;
 
-  // Melody: [freq, duration_sec, gap_sec]
-  const melody = [
-    // "Oh say can you see"
-    [G4, 0.30, 0.02], [C4, 0.50, 0.02], [Eb4, 0.28, 0.02], [G4, 0.25, 0.02],
-    [C5, 0.50, 0.02], [Eb4, 0.25, 0.02],
-    // "by the dawn's early light"
-    [D4, 0.30, 0.02], [C4, 0.28, 0.02], [Bb3, 0.30, 0.02], [G3, 0.50, 0.02],
-    [Eb4, 0.25, 0.02], [D4, 0.30, 0.02], [C4, 0.50, 0.15],
-    // "What so proudly we hailed"
-    [G4, 0.30, 0.02], [G4, 0.25, 0.02], [Ab4, 0.25, 0.02], [Bb4, 0.25, 0.02],
-    [C5, 0.50, 0.02], [Bb4, 0.25, 0.02], [Ab4, 0.25, 0.02],
-    // "at the twilight's last gleaming"
-    [G4, 0.25, 0.02], [F4, 0.25, 0.02], [G4, 0.25, 0.02], [Eb4, 0.50, 0.02],
-    [D4, 0.25, 0.02], [C4, 0.50, 0.15],
-    // "Whose broad stripes and bright stars"
-    [G4, 0.30, 0.02], [C4, 0.50, 0.02], [Eb4, 0.25, 0.02], [G4, 0.25, 0.02],
-    [C5, 0.50, 0.02], [Eb4, 0.25, 0.02],
-    // "through the perilous fight"
-    [D4, 0.30, 0.02], [C4, 0.25, 0.02], [Bb3, 0.30, 0.02], [G3, 0.50, 0.25],
-    // "O'er the ramparts we watched"
-    [C5, 0.30, 0.02], [Bb4, 0.25, 0.02], [Ab4, 0.25, 0.02], [Bb4, 0.25, 0.02],
-    [C5, 0.30, 0.02], [Bb4, 0.35, 0.02], [Ab4, 0.40, 0.15],
+  // Each phrase: { chord: [3 notes], bass: freq, notes: [[freq, dur, gap], ...] }
+  const phrases = [
+    { // "Oh say can you see" — Eb (I)
+      chord: [Eb3, G3, Bb3], bass: Eb2,
+      notes: [[G4, 0.30, 0.02], [C4, 0.50, 0.02], [Eb4, 0.28, 0.02], [G4, 0.25, 0.02], [C5, 0.50, 0.02], [Eb4, 0.25, 0.02]],
+    },
+    { // "by the dawn's early light" — Ab (IV)
+      chord: [Ab3, C4, Eb4], bass: Ab2,
+      notes: [[D4, 0.30, 0.02], [C4, 0.28, 0.02], [Bb3, 0.30, 0.02], [G3, 0.50, 0.02], [Eb4, 0.25, 0.02], [D4, 0.30, 0.02], [C4, 0.50, 0.15]],
+    },
+    { // "What so proudly we hailed" — Ab (IV)
+      chord: [Ab3, C4, Eb4], bass: Ab2,
+      notes: [[G4, 0.30, 0.02], [G4, 0.25, 0.02], [Ab4, 0.25, 0.02], [Bb4, 0.25, 0.02], [C5, 0.50, 0.02], [Bb4, 0.25, 0.02], [Ab4, 0.25, 0.02]],
+    },
+    { // "at the twilight's last gleaming" — Eb (I)
+      chord: [Eb3, G3, Bb3], bass: Eb2,
+      notes: [[G4, 0.25, 0.02], [F4, 0.25, 0.02], [G4, 0.25, 0.02], [Eb4, 0.50, 0.02], [D4, 0.25, 0.02], [C4, 0.50, 0.15]],
+    },
+    { // "Whose broad stripes and bright stars" — Eb (I)
+      chord: [Eb3, G3, Bb3], bass: Eb2,
+      notes: [[G4, 0.30, 0.02], [C4, 0.50, 0.02], [Eb4, 0.25, 0.02], [G4, 0.25, 0.02], [C5, 0.50, 0.02], [Eb4, 0.25, 0.02]],
+    },
+    { // "through the perilous fight" — Bb7 (V7)
+      chord: [Bb3, D4, F4], bass: Bb2,
+      notes: [[D4, 0.30, 0.02], [C4, 0.25, 0.02], [Bb3, 0.30, 0.02], [G3, 0.50, 0.25]],
+    },
+    { // "O'er the ramparts we watched" — Eb (I)
+      chord: [Eb3, G3, Bb3], bass: Eb2,
+      notes: [[C5, 0.30, 0.02], [Bb4, 0.25, 0.02], [Ab4, 0.25, 0.02], [Bb4, 0.25, 0.02], [C5, 0.30, 0.02], [Bb4, 0.35, 0.02], [Ab4, 0.40, 0.15]],
+    },
   ];
 
-  let t = 0;
-  melody.forEach(([freq, dur, gap]) => {
+  // Sustained pad/bass voice with smooth attack-release envelope
+  const playPad = (freq, start, dur, peak, type) => {
     const osc = ctx.createOscillator();
-    osc.type = 'square';
+    osc.type = type;
     osc.frequency.value = freq;
     const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.10, now + t);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + t + dur);
+    const atk = Math.min(0.3, dur * 0.3);
+    const rel = Math.min(0.4, dur * 0.3);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(peak, start + atk);
+    gain.gain.setValueAtTime(peak, start + Math.max(atk, dur - rel));
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.start(now + t);
-    osc.stop(now + t + dur + 0.02);
-    t += dur + gap;
+    osc.start(start);
+    osc.stop(start + dur + 0.05);
+  };
+
+  // Melody note: two detuned triangle oscillators (warm brass ensemble)
+  const playMelody = (freq, start, dur, peak) => {
+    [-5, 5].forEach(detune => {
+      const osc = ctx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      osc.detune.value = detune;
+      const gain = ctx.createGain();
+      const atk = 0.04;
+      const rel = 0.10;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(peak, start + atk);
+      gain.gain.setValueAtTime(peak, start + Math.max(atk, dur - rel));
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + dur + 0.05);
+    });
+  };
+
+  let t = 0;
+  phrases.forEach(({ chord, bass, notes }) => {
+    const start = now + t;
+    const phraseDur = notes.reduce((s, [, d, g]) => s + d + g, 0);
+
+    // Bass voice (sine, warm low end)
+    playPad(bass, start, phraseDur, 0.07, 'sine');
+    // Chord pad (3 sine voices, soft)
+    chord.forEach(f => playPad(f, start, phraseDur, 0.035, 'sine'));
+
+    // Melody (triangle, detuned ensemble)
+    let mt = t;
+    notes.forEach(([freq, dur, gap]) => {
+      playMelody(freq, now + mt, dur, 0.09);
+      mt += dur + gap;
+    });
+
+    t += phraseDur;
   });
 }
 
