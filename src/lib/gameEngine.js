@@ -2245,6 +2245,10 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
    const cpuPitchingSide = newState.halfInning === 'top' ? 'home' : 'away';
   if (cpuPitchingSide !== cpuSide) return newState;
+  // Session 9: declare early so the pinch-hit-for-pitcher path below can use them
+  const inning = newState.inning;
+  const cpuScore = newState.score[cpuPitchingSide];
+  const userScore = newState.score[cpuBattingSide];
   const cpuBullpen = cpuSide === 'away' ? newState.awayBullpen : newState.homeBullpen;
   const cpuLineupField = cpuSide === 'away' ? newState.awayLineup : newState.homeLineup;
   const cpuPitcherField = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
@@ -2301,10 +2305,9 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
   const cpuPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
   const ip = cpuPitcher.gameStats.ip || 0, bbi = cpuPitcher.gameStats.bb || 0, runs = cpuPitcher.gameStats.r || 0;
-  const inning = newState.inning, stamina = cpuPitcher.stamina || 5;
+  const stamina = cpuPitcher.stamina || 5;
   const isReliever = ['RP','CL'].includes(cpuPitcher.pos) || ['RP','CL'].includes(cpuPitcher.assignedPos);
   const maxInnings = isReliever ? stamina * 0.4 : Math.max(4.2, stamina * 0.7);
-  const cpuScore = newState.score[cpuPitchingSide], userScore = newState.score[cpuBattingSide];
   const hasLead = cpuScore > userScore;
   const margin = Math.abs(cpuScore - userScore);
   

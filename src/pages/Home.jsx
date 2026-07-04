@@ -1030,6 +1030,7 @@ export default function Home() {
   const handlePitch = useCallback((pitchName) => {
     if (!gameState || gameState.gameOver) return;
     setProcessing(true);
+    const prePitchSnapshot = JSON.parse(JSON.stringify(gameState));
     let endingState = null;
     try {
       // CPU may attempt steal when user is pitching
@@ -1084,6 +1085,7 @@ export default function Home() {
     } catch (e) {
       console.error('handlePitch error:', e);
       console.error('Stack:', e.stack);
+      setGameState(prePitchSnapshot);
       alert(`Pitch error: ${e.message}`);
     } finally {
       if (endingState) {
@@ -1096,6 +1098,7 @@ export default function Home() {
   const handleSwing = useCallback((swingIndex) => {
     if (!gameState || gameState.gameOver) return;
     setProcessing(true);
+    const prePitchSnapshot = JSON.parse(JSON.stringify(gameState));
     let endingState = null;
     try {
       const cpuPitch = cpuSelectPitch(gameState);
@@ -1140,6 +1143,7 @@ export default function Home() {
     } catch (e) {
       console.error('handleSwing error:', e);
       console.error('Stack:', e.stack);
+      setGameState(prePitchSnapshot);
       alert(`Swing error: ${e.message}`);
     } finally {
       if (endingState) {
@@ -1152,6 +1156,7 @@ export default function Home() {
   const handleSteal = useCallback((baseIndex) => {
     if (!gameState || gameState.gameOver) return;
     setProcessing(true);
+    const prePitchSnapshot = JSON.parse(JSON.stringify(gameState));
     let endingState = null;
     try {
       // Steal attempt: runner goes on the pitch, batter takes automatically
@@ -1177,6 +1182,7 @@ export default function Home() {
       checkFielderInjury(stealPending, afterSubs);
     } catch (e) {
       console.error('handleSteal error:', e);
+      setGameState(prePitchSnapshot);
     } finally {
       if (endingState) {
         try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
@@ -1194,6 +1200,7 @@ export default function Home() {
   const handleIntBB = useCallback(() => {
     if (!gameState || gameState.gameOver) return;
     setProcessing(true);
+    const prePitchSnapshot = JSON.parse(JSON.stringify(gameState));
     let endingState = null;
     try {
       const newState = intentionalWalk(gameState);
@@ -1202,6 +1209,7 @@ export default function Home() {
       setGameState(newState);
     } catch (e) {
       console.error('handleIntBB error:', e);
+      setGameState(prePitchSnapshot);
     } finally {
       if (endingState) {
         try { processGameOver(endingState); } catch (e) { console.error('processGameOver failed:', e); }
