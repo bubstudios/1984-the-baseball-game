@@ -6,7 +6,7 @@ import { RotateCcw, Trophy, Calendar, TrendingUp, Users, Play } from 'lucide-rea
 import { TEAMS } from '@/lib/gameData';
 import { generateSchedule as buildSchedule, verifySchedule, formatGameDate } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState } from '@/lib/seasonEngine';
-import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordRelieverUsage, getUnavailableRelievers } from '@/lib/seasonStore';
+import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordPitcherWorkload, getUnavailableRelievers } from '@/lib/seasonStore';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
 import FullSchedule from '@/components/season/FullSchedule';
 
@@ -208,8 +208,8 @@ export default function SeasonDashboard() {
         const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
         const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
         const unavailableRelievers = {
-          home: getUnavailableRelievers(rotState, homeTeam),
-          away: getUnavailableRelievers(rotState, awayTeam),
+          home: getUnavailableRelievers(rotState, homeTeam, g.gameDate),
+          away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
         };
 
         const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
@@ -218,8 +218,8 @@ export default function SeasonDashboard() {
         // Advance rotation + record reliever usage for both teams
         if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
         if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
-        recordRelieverUsage(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam));
-        recordRelieverUsage(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam));
+        recordPitcherWorkload(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam), g.gameDate);
+        recordPitcherWorkload(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam), g.gameDate);
 
         // Extract pitcher names from decisions (playerId format: "teamKey|name")
         const winnerName = result.decisions.winner ? result.decisions.winner.split('|')[1] : null;

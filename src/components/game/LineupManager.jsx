@@ -185,7 +185,7 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
   const [selectedPitcher, setSelectedPitcher] = useState(forcedUserSP?.name || rotationPitchers[0]?.name || '');
   const bullpenPitchers = useMemo(() => {
     if (!isBullpenDay) return [];
-    const unavailable = new Set(seasonRotationState ? getUnavailableRelievers(seasonRotationState, teamKey) : []);
+    const unavailable = new Set(seasonRotationState ? getUnavailableRelievers(seasonRotationState, teamKey, seasonGameDate) : []);
     return (teamData.bullpen || []).filter(p => !illSet.has(p.name) && !unavailable.has(p.name));
   }, [teamData, isBullpenDay, illSet, seasonRotationState, teamKey]);
   const selectedPitcherData = useMemo(() => {

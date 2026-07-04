@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, recordRelieverUsage, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard } from '@/lib/seasonStore';
+import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -204,6 +204,8 @@ export default function Home() {
   const [collisionPopup, setCollisionPopup] = useState(null);
   const [inlineGameEvent, setInlineGameEvent] = useState(null); // { type: 'celebration'|'caughtstealing'|'ballpark', event: data }
   const [gameOverPopup, setGameOverPopup] = useState(null); // { winner, score, finalPlay }
+  const [seasonCommitting, setSeasonCommitting] = useState(false);
+  const seasonCommitPromiseRef = useRef(null);
   const prevCelebrationBubble = useRef(null);
 
   // Auto-show tutorial on first visit & init stats
@@ -309,12 +311,14 @@ export default function Home() {
     if (gameMode === 'season' && seasonRotationStateRef.current) {
       const cpuSide = effectiveUserTeam === home ? 'away' : 'home';
       const cpuTeamKey = cpuSide === 'home' ? home : away;
-      const cpuUnavailable = getUnavailableRelievers(seasonRotationStateRef.current, cpuTeamKey);
+      const gameDate = seasonContextRef.current?.gameDate || null;
+      const cpuUnavailable = getUnavailableRelievers(seasonRotationStateRef.current, cpuTeamKey, gameDate);
       if (cpuUnavailable.length > 0) {
         const bullpenKey = cpuSide === 'home' ? 'homeBullpen' : 'awayBullpen';
         state[bullpenKey] = state[bullpenKey].filter(p => !cpuUnavailable.includes(p.name));
       }
-      state._unavailableRelievers = getUnavailableRelievers(seasonRotationStateRef.current, effectiveUserTeam);
+      state._unavailableRelievers = getUnavailableRelievers(seasonRotationStateRef.current, effectiveUserTeam, gameDate);
+      state._unavailableRelieverReasons = getUnavailableRelieverReasons(seasonRotationStateRef.current, effectiveUserTeam, gameDate);
     }
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
@@ -958,7 +962,8 @@ export default function Home() {
     // Season mode: persist result, advance rotation cooldown
     if (gameMode === 'season' && seasonContextRef.current) {
       const ctx = seasonContextRef.current;
-      (async () => {
+      setSeasonCommitting(true);
+      seasonCommitPromiseRef.current = (async () => {
         try {
           const result = buildSeasonGameResultFromState(state, ctx);
           // Use the shared summary function (same one headless sim uses) for W/L/S decisions
@@ -972,8 +977,8 @@ export default function Home() {
           const rotState = seasonRotationStateRef.current;
           if (state.homeStartingPitcherName) advanceRotation(rotState, state.homeTeam, state.homeStartingPitcherName, ctx.gameDate);
           if (state.awayStartingPitcherName) advanceRotation(rotState, state.awayTeam, state.awayStartingPitcherName, ctx.gameDate);
-          recordRelieverUsage(rotState, state.homeTeam, summary.pitching.filter(p => p.teamKey === state.homeTeam));
-          recordRelieverUsage(rotState, state.awayTeam, summary.pitching.filter(p => p.teamKey === state.awayTeam));
+          recordPitcherWorkload(rotState, state.homeTeam, summary.pitching.filter(p => p.teamKey === state.homeTeam), ctx.gameDate);
+          recordPitcherWorkload(rotState, state.awayTeam, summary.pitching.filter(p => p.teamKey === state.awayTeam), ctx.gameDate);
           if (ctx.seasonId) await persistRotationState(ctx.seasonId, rotState);
           // Atomic commit: mark the schedule row as played so it can't be re-launched
           if (ctx.scheduleId) await markScheduleRowFinal(ctx.scheduleId);
@@ -988,6 +993,9 @@ export default function Home() {
           if (ctx.seasonId) await maybeAdvanceDay({ id: ctx.seasonId, currentGameDay: ctx.gameDay });
         } catch (e) {
           console.error('Season result save failed:', e);
+        } finally {
+          setSeasonCommitting(false);
+          seasonCommitPromiseRef.current = null;
         }
       })();
     }
@@ -1743,6 +1751,8 @@ export default function Home() {
     setPregameIllnesses(null);
     setInjuryAlert(null);
     achievementsQueuedRef.current = false;
+    setSeasonCommitting(false);
+    seasonCommitPromiseRef.current = null;
   };
 
   if (ballparkPhase) {
@@ -2295,9 +2305,28 @@ export default function Home() {
                 <span className="font-heading">Summary</span>
               </Button>
               {gameMode === 'season' ? (
-                <Button onClick={() => { window.location.href = '/season'; }} className="flex-1 gap-2">
-                  <Trophy className="w-4 h-4" />
-                  <span className="font-heading">Back to Season</span>
+                <Button
+                  onClick={async () => {
+                    if (seasonCommitPromiseRef.current) {
+                      setSeasonCommitting(true);
+                      await seasonCommitPromiseRef.current;
+                    }
+                    window.location.href = '/season';
+                  }}
+                  disabled={seasonCommitting}
+                  className="flex-1 gap-2"
+                >
+                  {seasonCommitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                      <span className="font-heading">Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trophy className="w-4 h-4" />
+                      <span className="font-heading">Back to Season</span>
+                    </>
+                  )}
                 </Button>
               ) : (
                 <Button onClick={handleNewGame} className="flex-1 gap-2">
@@ -2333,7 +2362,7 @@ export default function Home() {
           onDefensiveSwitch={handleDefensiveSwitch}
           onChangePitcher={handlePitchingChange}
           initialTab={subsTab}
-          unavailableRelievers={gameState._unavailableRelievers || []}
+          unavailableRelievers={gameState._unavailableRelieverReasons || {}}
         />
       )}
     </div>

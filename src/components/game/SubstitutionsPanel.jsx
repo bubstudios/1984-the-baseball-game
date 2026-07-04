@@ -10,7 +10,7 @@ function normalizePos(pos) {
   return pos;
 }
 
-export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher, initialTab = 'pinchhit', unavailableRelievers = [] }) {
+export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher, initialTab = 'pinchhit', unavailableRelievers = {} }) {
   const [tab, setTab] = useState(initialTab);
 
   // Determine which side the user's team is on
@@ -335,7 +335,8 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
               ) : (
                 <div className="space-y-1.5">
                   {bullpen.map((p, i) => {
-                    const unavailable = unavailableRelievers.includes(p.name);
+                    const unavailableReason = unavailableRelievers[p.name];
+                    const unavailable = !!unavailableReason;
                     return (
                     <button
                       key={i}
@@ -357,7 +358,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                         <span className="text-blue-400">CTL {p.control}</span>
                         <span className="text-muted-foreground">STA {p.stamina}</span>
                       </div>
-                      {unavailable && <div className="text-[9px] text-amber-400 mt-1">Threw 2+ IP yesterday</div>}
+                      {unavailable && <div className="text-[9px] text-amber-400 mt-1">{unavailableReason}</div>}
                     </button>
                     );
                   })}

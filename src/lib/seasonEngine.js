@@ -235,6 +235,7 @@ function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTrackin
       so: gs.so || 0,
       hr: hrAllowedTracking[pid] || 0,
       bf: bfTracking[pid] || 0,
+      pitches: gs.pitches || 0,
     });
   }
 }

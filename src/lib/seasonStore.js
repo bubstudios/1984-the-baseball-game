@@ -282,7 +282,7 @@ export function getLeagueLeaders(seasonState, stat, type, limit = 10) {
 
 // ── Rotation logic (day-based rest: 4 full calendar days between starts) ──
 // rotationState persists on the Season entity:
-// { [teamKey]: { rotation: [name1,name2,name3,name4], rotationIndex, lastStartDateByPitcher: {name: 'YYYY-MM-DD'}, lastGameRelievers: {name: outs} } }
+// { [teamKey]: { rotation: [name1,name2,name3,name4], rotationIndex, lastStartDateByPitcher: {name: 'YYYY-MM-DD'}, workload: { name: [{date, pitches, outs}] } } }
 
 // Compute calendar days between two ISO date strings
 function daysBetween(dateStr1, dateStr2) {
@@ -290,6 +290,13 @@ function daysBetween(dateStr1, dateStr2) {
   const d1 = new Date(dateStr1 + 'T00:00:00Z');
   const d2 = new Date(dateStr2 + 'T00:00:00Z');
   return Math.round((d2 - d1) / 86400000);
+}
+
+function shiftDate(dateStr, days) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().split('T')[0];
 }
 
 function ensureTeamRotationState(rotationState, teamKey) {
@@ -300,7 +307,7 @@ function ensureTeamRotationState(rotationState, teamKey) {
       rotation: rot.map(p => p.name),
       rotationIndex: 0,
       lastStartDateByPitcher: {},
-      lastGameRelievers: {},
+      workload: {},
     };
   }
   const rs = rotationState[teamKey];
@@ -313,7 +320,12 @@ function ensureTeamRotationState(rotationState, teamKey) {
   if (!rs.rotation) rs.rotation = rot.map(p => p.name);
   if (rs.rotationIndex === undefined) rs.rotationIndex = 0;
   if (!rs.lastStartDateByPitcher) rs.lastStartDateByPitcher = {};
-  if (!rs.lastGameRelievers) rs.lastGameRelievers = {};
+  // Migrate old lastGameRelievers → workload ledger
+  if (rs.lastGameRelievers && !rs.workload) {
+    rs.workload = {};
+    delete rs.lastGameRelievers;
+  }
+  if (!rs.workload) rs.workload = {};
   return rs;
 }
 
@@ -336,10 +348,10 @@ export function getRestDays(rotationState, teamKey, pitcherName, gameDate) {
 }
 
 // Bullpen day opener: highest-STA reliever excluding closer, subject to unavailability rule.
-export function getBullpenDayOpener(rotationState, teamKey) {
+export function getBullpenDayOpener(rotationState, teamKey, gameDate) {
   const team = TEAMS[teamKey];
   const bullpen = team.bullpen || [];
-  const unavailable = new Set(getUnavailableRelievers(rotationState, teamKey));
+  const unavailable = new Set(getUnavailableRelievers(rotationState, teamKey, gameDate));
 
   const candidates = bullpen.filter(p => {
     const pos = p.pos || p.assignedPos || '';
@@ -348,7 +360,10 @@ export function getBullpenDayOpener(rotationState, teamKey) {
 
   if (candidates.length === 0) {
     const fallback = bullpen.filter(p => !unavailable.has(p.name));
-    return fallback[0] || bullpen[0] || null;
+    if (fallback.length > 0) return fallback[0];
+    // Emergency valve: all arms unavailable - use least-recently-used
+    console.error(`[rotation] ${teamKey}: all bullpen arms unavailable on ${gameDate} - using least-recently-used`);
+    return getLeastRecentlyUsedArm(rotationState, teamKey, bullpen, gameDate);
   }
 
   candidates.sort((a, b) => {
@@ -384,11 +399,14 @@ export function getProbableStarter(rotationState, teamKey, gameDate) {
   const candidate = rot.find(p => p.name === starterName) || rot[0];
 
   if (isStarterEligible(rotationState, teamKey, starterName, gameDate)) {
-    return candidate;
+    // Also check workload rest (starter may have relieved recently)
+    const avail = isPitcherAvailable(rotationState, teamKey, starterName, gameDate);
+    if (avail.available) return candidate;
+    console.error(`[rotation] ${teamKey}: ${starterName} start-eligible but workload-rest blocked: ${avail.reason}`);
   }
 
   // Next SP not yet rested - bullpen day fallback (pointer does NOT advance)
-  return getBullpenDayOpener(rotationState, teamKey);
+  return getBullpenDayOpener(rotationState, teamKey, gameDate);
 }
 
 // Guard: verify a pitcher about to start satisfies rest eligibility.
@@ -422,22 +440,133 @@ export function advanceRotation(rotationState, teamKey, starterName, gameDate) {
   }
 }
 
-// Record yesterday's reliever usage. Call after each game with that team's pitching line.
-export function recordRelieverUsage(rotationState, teamKey, pitchingLine) {
+// ── Reliever workload rest (Session 11) ──
+// Per-pitcher, per-date workload ledger. Replaces the old "2+ IP yesterday" rule.
+// One isPitcherAvailable() function; every consumer calls it.
+
+// Estimate pitches from outs if pitch data unavailable (~5 pitches per out)
+function estimatePitches(outs) {
+  return outs * 5;
+}
+
+// Required full rest days after a workload on day D (table from spec)
+function getRequiredRestDays(pitches) {
+  if (pitches >= 60) return 4;  // D+5 = 4 full rest days
+  if (pitches >= 36) return 2;  // D+3 = 2 full rest days
+  if (pitches >= 16) return 1;  // D+2 = 1 full rest day
+  return 0;                      // D+1 = available next day (0 rest days)
+}
+
+// Least-recently-used arm for emergency valve
+function getLeastRecentlyUsedArm(rotationState, teamKey, bullpen, gameDate) {
+  const rs = rotationState?.[teamKey];
+  if (!rs || !rs.workload) return bullpen[0] || null;
+  return [...bullpen].sort((a, b) => {
+    const aLast = (rs.workload[a.name] || []).slice(-1)[0]?.date || '0000-01-01';
+    const bLast = (rs.workload[b.name] || []).slice(-1)[0]?.date || '0000-01-01';
+    return aLast.localeCompare(bLast);
+  })[0] || bullpen[0] || null;
+}
+
+// Record pitcher workload after a game commits. Writes to the same ledger as starts.
+export function recordPitcherWorkload(rotationState, teamKey, pitchingLine, gameDate) {
+  if (!gameDate) return;
   const rs = ensureTeamRotationState(rotationState, teamKey);
-  rs.lastGameRelievers = {};
   for (const p of pitchingLine) {
-    if ((p.outs || 0) > 6) { // >2 innings = >6 outs
-      rs.lastGameRelievers[p.name] = p.outs;
+    if (!p.name) continue;
+    const pitches = p.pitches || estimatePitches(p.outs || 0);
+    if (pitches === 0 && !p.outs) continue;
+    if (!rs.workload[p.name]) rs.workload[p.name] = [];
+    // Idempotent: remove existing entry for this date
+    rs.workload[p.name] = rs.workload[p.name].filter(e => e.date !== gameDate);
+    rs.workload[p.name].push({ date: gameDate, pitches, outs: p.outs || 0 });
+    // Keep last 10 entries
+    if (rs.workload[p.name].length > 10) {
+      rs.workload[p.name] = rs.workload[p.name].slice(-10);
     }
   }
 }
 
-// Get unavailable reliever names for a team (threw >2 IP yesterday)
-export function getUnavailableRelievers(rotationState, teamKey) {
+// THE ONE availability function. Returns { available, reason }.
+export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate) {
+  if (!gameDate) return { available: true, reason: null };
   const rs = rotationState?.[teamKey];
-  if (!rs || !rs.lastGameRelievers) return [];
-  return Object.keys(rs.lastGameRelievers);
+  if (!rs || !rs.workload || !rs.workload[pitcherName]) {
+    return { available: true, reason: null };
+  }
+  const history = rs.workload[pitcherName];
+  if (!history || history.length === 0) {
+    return { available: true, reason: null };
+  }
+
+  // Consecutive-days cap: appeared on D-1 AND D-2 → unavailable on D
+  const dayBefore = shiftDate(gameDate, -1);
+  const twoDaysBefore = shiftDate(gameDate, -2);
+  const appearedYesterday = history.find(e => e.date === dayBefore);
+  const appearedDayBefore = history.find(e => e.date === twoDaysBefore);
+  if (appearedYesterday && appearedDayBefore) {
+    return { available: false, reason: '3 straight days' };
+  }
+
+  // Check ALL appearances: if any appearance's rest requirement isn't met, unavailable
+  let blockingEntry = null;
+  let blockingPitches = 0;
+  for (const entry of history) {
+    const pitches = entry.pitches || estimatePitches(entry.outs || 0);
+    const requiredRest = getRequiredRestDays(pitches);
+    if (requiredRest === 0) continue; // 1-15 pitches, available next day
+    const daysSince = daysBetween(entry.date, gameDate);
+    if (daysSince <= requiredRest) {
+      if (!blockingEntry || pitches > blockingPitches) {
+        blockingEntry = entry;
+        blockingPitches = pitches;
+      }
+    }
+  }
+
+  if (blockingEntry) {
+    const daysSince = daysBetween(blockingEntry.date, gameDate);
+    const when = daysSince === 1 ? 'yesterday' : `${daysSince} days ago`;
+    const ip = blockingEntry.outs ? ` (${Math.floor(blockingEntry.outs / 3)}.${blockingEntry.outs % 3} IP)` : '';
+    return { available: false, reason: `${blockingPitches} pitches ${when}${ip}` };
+  }
+
+  return { available: true, reason: null };
+}
+
+// Backward-compatible: returns array of unavailable reliever names
+export function getUnavailableRelievers(rotationState, teamKey, gameDate) {
+  const rs = rotationState?.[teamKey];
+  if (!rs || !rs.workload) return [];
+  const team = TEAMS[teamKey];
+  if (!team) return [];
+  const allPitchers = [...(team.bullpen || []), ...(team.rotation || [])];
+  const unavailable = [];
+  for (const p of allPitchers) {
+    const result = isPitcherAvailable(rotationState, teamKey, p.name, gameDate);
+    if (!result.available) unavailable.push(p.name);
+  }
+  return unavailable;
+}
+
+// Returns { [pitcherName]: reason } for UI display
+export function getUnavailableRelieverReasons(rotationState, teamKey, gameDate) {
+  const rs = rotationState?.[teamKey];
+  if (!rs || !rs.workload) return {};
+  const team = TEAMS[teamKey];
+  if (!team) return {};
+  const allPitchers = [...(team.bullpen || []), ...(team.rotation || [])];
+  const reasons = {};
+  for (const p of allPitchers) {
+    const result = isPitcherAvailable(rotationState, teamKey, p.name, gameDate);
+    if (!result.available) reasons[p.name] = result.reason;
+  }
+  return reasons;
+}
+
+// Backward-compatible wrapper
+export function recordRelieverUsage(rotationState, teamKey, pitchingLine, gameDate) {
+  recordPitcherWorkload(rotationState, teamKey, pitchingLine, gameDate);
 }
 
 // Backward-compatible wrapper
