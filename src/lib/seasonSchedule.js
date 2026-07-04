@@ -81,121 +81,138 @@ function generateMatchups(divA, divB, inDivGames, crossDivGames) {
   return matchups;
 }
 
+// Split a game count into series of 3-4 games (avoids 1-2 game series)
+function splitIntoSeries(total) {
+  const series = [];
+  let remaining = total;
+  while (remaining > 0) {
+    if (remaining >= 7) {
+      series.push(Math.random() < 0.4 ? 4 : 3);
+      remaining -= series[series.length - 1];
+    } else if (remaining === 6) {
+      series.push(3); series.push(3);
+      remaining = 0;
+    } else if (remaining === 5) {
+      series.push(3); series.push(2);
+      remaining = 0;
+    } else {
+      series.push(remaining);
+      remaining = 0;
+    }
+  }
+  // Merge any 2-game remainder into previous series
+  for (let i = series.length - 1; i >= 0; i--) {
+    if (series[i] <= 2 && i > 0) {
+      series[i - 1] += series[i];
+      series.splice(i, 1);
+    }
+  }
+  return series;
+}
+
 /**
  * Generate a full 162-game schedule as an array of Day objects.
- * Each Day holds all games across both leagues for that date.
- * No team appears more than once per day.
- * Every team gets exactly 81 home and 81 away games.
+ * Series-based: matchups are grouped into 3-4 game series and placed on
+ * consecutive calendar days, producing realistic homestands/road trips
+ * and natural off days. No day-by-day pairing that strands remainders.
  * @param {string} userTeam - Team key for the user's team (marks isUser games)
  * @returns {Array<{day, date, games: [{home, away, isUser}]}>}
  */
 export function generateSchedule(userTeam) {
   const alMatchups = generateMatchups(DIVISIONS.AL_East, DIVISIONS.AL_West, 13, 12);
   const nlMatchups = generateMatchups(DIVISIONS.NL_East, DIVISIONS.NL_West, 18, 12);
-  let all = [...alMatchups, ...nlMatchups];
+  const all = [...alMatchups, ...nlMatchups];
 
-  // Shuffle for random day assignment
-  for (let i = all.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [all[i], all[j]] = [all[j], all[i]];
+  // Group matchups by (home, away) pair — each group becomes one or more series
+  const seriesMap = {};
+  for (const m of all) {
+    const key = `${m.home}|${m.away}`;
+    if (!seriesMap[key]) seriesMap[key] = [];
+    seriesMap[key].push(m);
   }
+
+  // Split each group into series of 3-4 games
+  const seriesList = [];
+  for (const [, matchups] of Object.entries(seriesMap)) {
+    const lengths = splitIntoSeries(matchups.length);
+    for (const len of lengths) {
+      seriesList.push({ home: matchups[0].home, away: matchups[0].away, length: len });
+    }
+  }
+
+  // Shuffle then sort by length (longer series are harder to place — do them first)
+  for (let i = seriesList.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [seriesList[i], seriesList[j]] = [seriesList[j], seriesList[i]];
+  }
+  seriesList.sort((a, b) => b.length - a.length);
 
   // Build calendar: Apr 3 to Sept 30, 1984, excluding All-Star break (July 9-11)
   const allStarBreak = new Set(['1984-07-09', '1984-07-10', '1984-07-11']);
   const calendarDates = [];
-  const calDate = new Date(Date.UTC(1984, 3, 3)); // April 3, 1984
-  const calEnd = new Date(Date.UTC(1984, 8, 30)); // September 30, 1984
+  const calDate = new Date(Date.UTC(1984, 3, 3));
+  const calEnd = new Date(Date.UTC(1984, 8, 30));
   while (calDate <= calEnd) {
     const dateStr = calDate.toISOString().split('T')[0];
-    if (!allStarBreak.has(dateStr)) {
-      calendarDates.push(dateStr);
-    }
+    if (!allStarBreak.has(dateStr)) calendarDates.push(dateStr);
     calDate.setUTCDate(calDate.getUTCDate() + 1);
   }
 
-  // Track consecutive games and total games per team
-  const consecutiveGames = {};
-  const totalGames = {};
-  for (const teamKey of Object.keys(TEAMS)) {
-    consecutiveGames[teamKey] = 0;
-    totalGames[teamKey] = 0;
+  // Place each series on the earliest block of consecutive dates where both teams are free
+  const teamBusy = {};
+  for (const team of Object.keys(TEAMS)) teamBusy[team] = new Set();
+  const dateToGames = {};
+  const unplaced = [];
+
+  for (const series of seriesList) {
+    let placed = false;
+    for (let start = 0; start <= calendarDates.length - series.length; start++) {
+      const block = calendarDates.slice(start, start + series.length);
+      if (block.every(d => !teamBusy[series.home].has(d) && !teamBusy[series.away].has(d))) {
+        for (const dateStr of block) {
+          teamBusy[series.home].add(dateStr);
+          teamBusy[series.away].add(dateStr);
+          if (!dateToGames[dateStr]) dateToGames[dateStr] = [];
+          dateToGames[dateStr].push({
+            home: series.home,
+            away: series.away,
+            isUser: !!(userTeam && (series.home === userTeam || series.away === userTeam)),
+          });
+        }
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) unplaced.push(series);
   }
 
-  const MAX_CONSECUTIVE = 13;
-  const schedule = [];
-  let remaining = [...all];
-
-  // Phase 1: Greedy assignment with consecutive-game limit
-  for (const dateStr of calendarDates) {
-    if (remaining.length === 0) break;
-
-    // Teams at 13+ consecutive games get a forced off day
-    const needsOffDay = new Set();
-    for (const teamKey of Object.keys(TEAMS)) {
-      if (consecutiveGames[teamKey] >= MAX_CONSECUTIVE) {
-        needsOffDay.add(teamKey);
+  // Safety net: place any unplaced series as individual games
+  for (const series of unplaced) {
+    for (let g = 0; g < series.length; g++) {
+      let gamePlaced = false;
+      for (const dateStr of calendarDates) {
+        if (!teamBusy[series.home].has(dateStr) && !teamBusy[series.away].has(dateStr)) {
+          teamBusy[series.home].add(dateStr);
+          teamBusy[series.away].add(dateStr);
+          if (!dateToGames[dateStr]) dateToGames[dateStr] = [];
+          dateToGames[dateStr].push({
+            home: series.home, away: series.away,
+            isUser: !!(userTeam && (series.home === userTeam || series.away === userTeam)),
+          });
+          gamePlaced = true;
+          break;
+        }
       }
-    }
-
-    const playing = new Set();
-    const games = [];
-
-    for (let i = remaining.length - 1; i >= 0; i--) {
-      const m = remaining[i];
-      if (needsOffDay.has(m.home) || needsOffDay.has(m.away)) continue;
-      if (playing.has(m.home) || playing.has(m.away)) continue;
-      if (totalGames[m.home] >= 162 || totalGames[m.away] >= 162) continue;
-
-      games.push({
-        home: m.home,
-        away: m.away,
-        isUser: !!(userTeam && (m.home === userTeam || m.away === userTeam)),
-      });
-      playing.add(m.home);
-      playing.add(m.away);
-      totalGames[m.home]++;
-      totalGames[m.away]++;
-      remaining.splice(i, 1);
-    }
-
-    // Update consecutive game counts (off day resets to 0)
-    for (const teamKey of Object.keys(TEAMS)) {
-      if (playing.has(teamKey)) {
-        consecutiveGames[teamKey]++;
-      } else {
-        consecutiveGames[teamKey] = 0;
+      if (!gamePlaced) {
+        console.error(`[schedule] Failed to place game: ${series.away} at ${series.home}`);
       }
-    }
-
-    if (games.length > 0) {
-      schedule.push({ day: schedule.length + 1, date: dateStr, games });
     }
   }
 
-  // Phase 2: Safety net - assign any remaining matchups without consecutive limit
-  if (remaining.length > 0) {
-    const extDate = new Date(Date.UTC(1984, 9, 1)); // October 1
-    const hardLimit = new Date(Date.UTC(1984, 10, 15)); // Nov 15 hard stop
-    while (remaining.length > 0 && extDate <= hardLimit) {
-      const dateStr = extDate.toISOString().split('T')[0];
-      const playing = new Set();
-      const games = [];
-      for (let i = remaining.length - 1; i >= 0; i--) {
-        const m = remaining[i];
-        if (playing.has(m.home) || playing.has(m.away)) continue;
-        if (totalGames[m.home] >= 162 || totalGames[m.away] >= 162) continue;
-        games.push({
-          home: m.home, away: m.away,
-          isUser: !!(userTeam && (m.home === userTeam || m.away === userTeam)),
-        });
-        playing.add(m.home); playing.add(m.away);
-        totalGames[m.home]++; totalGames[m.away]++;
-        remaining.splice(i, 1);
-      }
-      if (games.length > 0) schedule.push({ day: schedule.length + 1, date: dateStr, games });
-      extDate.setUTCDate(extDate.getUTCDate() + 1);
-    }
-  }
+  // Build schedule sorted by date
+  const schedule = Object.entries(dateToGames)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([date, games], i) => ({ day: i + 1, date, games }));
 
   return schedule;
 }
@@ -211,14 +228,16 @@ export function formatGameDate(dateStr) {
 }
 
 /**
- * Verify schedule integrity: every team has exactly 162 games,
- * exactly 81 home and 81 away, and no team plays twice on the same day.
+ * Verify schedule integrity: every team has exactly 162 games (81H/81A),
+ * correct opponent-mix counts, no team plays twice on the same date,
+ * All-Star break is clear, and off-day counts are in range.
  * @returns {string[]} Array of error strings (empty = valid)
  */
 export function verifySchedule(schedule) {
   const counts = {};
   const homeAway = {};
   const teamGameDays = {};
+  const opponentCounts = {}; // "home|away" -> games at home team's park
   const allGameDates = new Set();
   const errors = [];
 
@@ -238,8 +257,10 @@ export function verifySchedule(schedule) {
       homeAway[game.away].away++;
       teamGameDays[game.home].add(day.date);
       teamGameDays[game.away].add(day.date);
-      if (seen.has(game.home)) errors.push(`Day ${day.day}: ${game.home} appears twice`);
-      if (seen.has(game.away)) errors.push(`Day ${day.day}: ${game.away} appears twice`);
+      const oKey = `${game.home}|${game.away}`;
+      opponentCounts[oKey] = (opponentCounts[oKey] || 0) + 1;
+      if (seen.has(game.home)) errors.push(`Day ${day.day} (${day.date}): ${game.home} appears twice`);
+      if (seen.has(game.away)) errors.push(`Day ${day.day} (${day.date}): ${game.away} appears twice`);
       seen.add(game.home);
       seen.add(game.away);
     }
@@ -254,25 +275,42 @@ export function verifySchedule(schedule) {
     if (data.away !== 81) errors.push(`${team}: ${data.away} away games (expected 81)`);
   }
 
-  // All-Star break: no games on July 9-11
-  const allStarBreak = ['1984-07-09', '1984-07-10', '1984-07-11'];
-  for (const date of allStarBreak) {
-    if (allGameDates.has(date)) {
-      errors.push(`All-Star break: games scheduled on ${date}`);
+  // Opponent-mix check: AL intra=13, NL intra=18, cross=12
+  const checkedPairs = new Set();
+  for (const team of Object.keys(TEAMS)) {
+    const teamLeague = getLeague(team);
+    const teamDiv = getDivision(team);
+    for (const opp of Object.keys(TEAMS)) {
+      if (opp === team) continue;
+      if (getLeague(opp) !== teamLeague) continue; // interleague out of scope
+      const pairKey = [team, opp].sort().join('|');
+      if (checkedPairs.has(pairKey)) continue;
+      checkedPairs.add(pairKey);
+      const total = (opponentCounts[`${team}|${opp}`] || 0) + (opponentCounts[`${opp}|${team}`] || 0);
+      const expected = (getDivision(opp) === teamDiv)
+        ? (teamLeague === 'AL' ? 13 : 18)
+        : 12;
+      if (total !== expected) {
+        errors.push(`${team} vs ${opp}: ${total} games (expected ${expected})`);
+      }
     }
   }
 
+  // All-Star break: no games on July 9-11
+  for (const date of ['1984-07-09', '1984-07-10', '1984-07-11']) {
+    if (allGameDates.has(date)) errors.push(`All-Star break: games scheduled on ${date}`);
+  }
+
   // Off days per team (15-22, including All-Star break)
-  const allStarBreakCount = 3;
   for (const team of Object.keys(TEAMS)) {
     const daysPlayed = teamGameDays[team].size;
-    const offDays = (allGameDates.size - daysPlayed) + allStarBreakCount;
+    const offDays = (allGameDates.size - daysPlayed) + 3;
     if (offDays < 14 || offDays > 24) {
       errors.push(`${team}: ${offDays} off days (expected 15-22)`);
     }
   }
 
-  // Last scheduled date should be Sept 27-Oct 5 (safety net allows Oct extension)
+  // Last scheduled date should be in September (or early Oct from safety net)
   const sortedDates = [...allGameDates].sort();
   if (sortedDates.length > 0) {
     const lastDate = sortedDates[sortedDates.length - 1];

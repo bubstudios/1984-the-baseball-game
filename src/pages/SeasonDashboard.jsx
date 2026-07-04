@@ -135,8 +135,10 @@ export default function SeasonDashboard() {
       // Integrity check before persisting - do not write a broken schedule.
       const errors = verifySchedule(days);
       if (errors.length > 0) {
-        console.error('Schedule failed verification, not saving:', errors);
-        alert('Schedule generation failed integrity check. See console.');
+        console.error('Schedule failed verification:', errors);
+        const shown = errors.slice(0, 8).join('\n');
+        const more = errors.length > 8 ? `\n...and ${errors.length - 8} more` : '';
+        alert(`Schedule generation failed integrity check:\n\n${shown}${more}`);
         return;
       }
 
