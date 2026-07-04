@@ -3,6 +3,35 @@ import { TEAMS } from '@/lib/gameData';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { determinePitcherDecisions } from '@/lib/pitcherDecisions';
 
+function lastName(name) {
+  if (!name) return '';
+  return name.split(' ').pop();
+}
+
+function buildFootnotes(allBatters) {
+  const parts = [];
+  const fmt = (players, key) => {
+    const filtered = players.filter(p => (p.gameStats?.[key] || 0) > 0);
+    if (filtered.length === 0) return null;
+    return filtered.map(p => {
+      const n = lastName(p.name);
+      const c = p.gameStats[key];
+      return c > 1 ? `${n} ${c}` : n;
+    }).join(', ');
+  };
+
+  const dbl = fmt(allBatters, 'doubles');
+  if (dbl) parts.push(`2B \u2013 ${dbl}`);
+  const tpl = fmt(allBatters, 'triples');
+  if (tpl) parts.push(`3B \u2013 ${tpl}`);
+  const hr = fmt(allBatters, 'hr');
+  if (hr) parts.push(`HR \u2013 ${hr}`);
+  const sb = fmt(allBatters, 'sb');
+  if (sb) parts.push(`SB \u2013 ${sb}`);
+
+  return parts.length > 0 ? parts.join('. ') + '.' : null;
+}
+
 function BatterRow({ p }) {
   const isPitcher = ['SP','RP','CL'].includes(p.assignedPos || p.pos);
   return (
@@ -27,6 +56,7 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
   const activeNames = new Set(lineup.map(p => p.name));
   const historical = (playerHistory || []).filter(p => !activeNames.has(p.name));
   const allBatters = [...lineup, ...historical];
+  const footnotes = buildFootnotes(allBatters);
 
   // Collect all pitchers: current pitcher + history + lineup pitchers who pitched
   const pitcherNames = new Set();
@@ -79,6 +109,13 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
           </tbody>
         </table>
       </div>
+
+      {/* Footnotes - 1984 newspaper style */}
+      {footnotes && (
+        <div className="text-[10px] font-body text-muted-foreground px-1 py-1 italic">
+          {footnotes}
+        </div>
+      )}
 
       {/* Pitchers */}
       {allPitchers.length > 0 && (

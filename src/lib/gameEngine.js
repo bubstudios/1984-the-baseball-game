@@ -52,6 +52,7 @@ import { should_double_switch, find_double_switch_partner, execute_double_switch
 import { logRun } from './pitcherDecisions';
 import { HOLDING_GAME_RATES, decideBalk, decideThrowOver, resolveThrowOverOutcome, fillHoldingTemplate, pickHoldingLine, BALK_LINES } from './holdingGame';
 import { calculateSituationalRatings } from './situationalRatings';
+import { deepCopyState } from './deepCopyState';
 
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
@@ -94,16 +95,16 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     if (lineupData && lineupData.length >= 9) {
       return lineupData.slice(0, 9).map((p, i) => ({
         ...p, order: i + 1, assignedPos: p.assignedPos || p.pos,
-        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
       }));
     }
     let lineup = defaultLineup.map((p, i) => ({
       ...p, order: i + 1, assignedPos: p.pos,
-      gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+      gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
     }));
     if (useDH && lineup.length < 9 && teamData?.bench?.length > 0) {
       lineup.push({ ...teamData.bench[0], pos: 'DH', assignedPos: 'DH', defense: 0, arm: 0,
-        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
         order: lineup.length + 1 });
     }
     if (!useDH) {
@@ -114,7 +115,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
         const spPlayer = teamData.rotation.find(p => p.name === starterName) || (teamData.bullpen || []).find(p => p.name === starterName) || teamData.rotation[0];
         if (!lineup.find(p => p.name === starterName)) {
           lineup.push({ ...spPlayer, assignedPos: 'SP',
-            gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 },
+            gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
             order: lineup.length + 1 });
         }
       }
@@ -129,7 +130,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     while (result.length < 9 && teamData?.bench?.length > 0) {
       const nextBench = teamData.bench.find(b => !result.some(p => p.name === b.name));
       if (!nextBench) break;
-      result.push({ ...nextBench, assignedPos: nextBench.assignedPos || nextBench.pos || 'DH', order: result.length + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+      result.push({ ...nextBench, assignedPos: nextBench.assignedPos || nextBench.pos || 'DH', order: result.length + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } });
     }
     // In non-DH, ensure the starting pitcher appears exactly once
     if (!useDH && teamData?.rotation?.length > 0) {
@@ -137,7 +138,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
       const spCount = result.filter(p => p.name === spName).length;
       if (spCount === 0) {
         const spPlayer = teamData.rotation.find(p => p.name === spName) || (teamData.bullpen || []).find(p => p.name === spName) || teamData.rotation[0];
-        result.push({ ...spPlayer, assignedPos: 'SP', order: result.length + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } });
+        result.push({ ...spPlayer, assignedPos: 'SP', order: result.length + 1, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } });
       } else if (spCount > 1) {
         // Remove duplicates - keep the first occurrence
         let seen = false;
@@ -161,7 +162,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
   if (awaySPOverride && !useDH) {
     const spIdx = awayLineup.findIndex(p => p.assignedPos === 'SP');
     if (spIdx >= 0) {
-      awayLineup[spIdx] = { ...awaySPOverride, order: awayLineup[spIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      awayLineup[spIdx] = { ...awaySPOverride, order: awayLineup[spIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
     }
   }
   // Override home SP if a specific starter is provided (season rotation - fixes carryover bug)
@@ -169,7 +170,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
   if (homeSPOverride && !useDH) {
     const spIdx = homeLineup.findIndex(p => p.assignedPos === 'SP');
     if (spIdx >= 0) {
-      homeLineup[spIdx] = { ...homeSPOverride, order: homeLineup[spIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+      homeLineup[spIdx] = { ...homeSPOverride, order: homeLineup[spIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
     }
   }
   const homeSP = homeLineup.find(p => p.assignedPos === 'SP') || (useDH && startingPitcher ? startingPitcher : home.rotation[0]);
@@ -609,7 +610,7 @@ function endHalfInning(state) {
 export function attemptSteal(state, baseIndex) {
   const runner = state.bases[baseIndex];
   if (!runner) return state;
-  const newState = JSON.parse(JSON.stringify(state));
+  const newState = deepCopyState(state);
   // Clear one-shot flags from previous play
   delete newState._wasReachBack;
   const speedFactor = runner.speed / 10;
@@ -644,7 +645,7 @@ export function hasRunnersOnBase(state) { return state.bases.some(b => b !== nul
 export function attemptDoubleSteal(state) {
   const r1 = state.bases[0], r2 = state.bases[1];
   if (!r1 || !r2) return state;
-  const newState = JSON.parse(JSON.stringify(state));
+  const newState = deepCopyState(state);
   delete newState._wasReachBack;
   const pitcher = getCurrentPitcher(newState);
   const effP = getEffectivePitcher(newState) || pitcher;
@@ -778,7 +779,7 @@ export function pickCpuReliever(bullpen, inning, context = {}) {
 }
 
 // --- HIT AND RUN ---
-export function setHitAndRun(state, active) { const ns = JSON.parse(JSON.stringify(state)); ns.hitAndRun = active; return ns; }
+export function setHitAndRun(state, active) { const ns = deepCopyState(state); ns.hitAndRun = active; return ns; }
 
 // --- CPU DECISIONS ---
 export function cpuDecideSteal(state) {
@@ -1072,6 +1073,7 @@ function resolveSwing(state, swingType, pitch) {
        const hrAdmire = rollHRAdmire(batter); if (hrAdmire) { state.log.push({ type: 'info', text: `✨ ${hrAdmire}` }); state._celebrationBubble = `✨ ${hrAdmire}`; }
     } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.085 + sf2 * 0.02) * doubleMod) {
       const rbi = advanceRunners(state, 3, batter, true, hitDirection);
+      batter.gameStats.triples = (batter.gameStats.triples || 0) + 1;
       let tripFlavor = '';
       const bpTrp = BALLPARKS[stadiumName];
       if (bpTrp?.quirks?.includes('hugeOutfield') || bpTrp?.quirks?.includes('fountains')) {
@@ -1083,6 +1085,7 @@ function resolveSwing(state, swingType, pitch) {
       const tripleCeleb = rollHitCelebration(batter, true); if (tripleCeleb) { state.log.push({ type: 'info', text: `🔥 ${tripleCeleb}` }); state._celebrationBubble = `🔥 ${tripleCeleb}`; }
     } else if (hr2 < effPwr * 0.38 * doubleMod) {
       const rbi = advanceRunners(state, 2, batter, true, hitDirection);
+      batter.gameStats.doubles = (batter.gameStats.doubles || 0) + 1;
       let dblFlavor = '';
       const bpDbl = BALLPARKS[stadiumName];
       if (bpDbl?.quirks?.includes('hugeOutfield') || bpDbl?.quirks?.includes('fountains')) {
@@ -1627,7 +1630,7 @@ function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
   batter.gameStats.hits++; pitcher.gameStats.h++;
   const hrr = Math.random();
   if (hrr < pr * 0.065 * hrMod) { batter.gameStats.hr++; const hrRbi = advanceRunners(state, 4, batter); const hrDirHR = getHitDirection(adjBatter.bats); const hrDistanceHR = calculateHomeRunDistance(batter, pitcher, state, hrDirHR, false, false); batter.gameStats.lastHRDistance = hrDistanceHR; batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, hrDistanceHR); const battingTeamKeyHR = state.halfInning === 'top' ? state.awayTeam : state.homeTeam; const hrCallHR = maybeGetAnnouncerHRCall(battingTeamKeyHR, { isGrandSlam: false, rbi: hrRbi, batterName: batter.name }); if (hrCallHR) state.log.push({ type: 'homerun', text: `🎙️ ${hrCallHR}` }); const hrText = `💥 ${batter.name} crushes one on the hit-and-run - HOME RUN at ${hrDistanceHR} feet!`; state.log.push({ type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }; }
-  else if (hrr < pr * 0.32 * doubleMod) { advanceRunners(state, 2, batter, true); const e = advanceHitAndRunRunners(state, batter); const dblText = e ? `${batter.name} rips a double on the hit-and-run! ${e}` : `${batter.name} doubles on the hit-and-run!`; state.log.push({ type: 'double', text: dblText }); state.lastPlay = { type: 'double', text: dblText }; }
+  else if (hrr < pr * 0.32 * doubleMod) { advanceRunners(state, 2, batter, true); batter.gameStats.doubles = (batter.gameStats.doubles || 0) + 1; const e = advanceHitAndRunRunners(state, batter); const dblText = e ? `${batter.name} rips a double on the hit-and-run! ${e}` : `${batter.name} doubles on the hit-and-run!`; state.log.push({ type: 'double', text: dblText }); state.lastPlay = { type: 'double', text: dblText }; }
   else { advanceRunners(state, 1, batter, true); const e = advanceHitAndRunRunners(state, batter); const sglText = e ? `${batter.name} slaps a single - hit-and-run! ${e}` : `${batter.name} singles on the hit-and-run!`; state.log.push({ type: 'single', text: sglText }); state.lastPlay = { type: 'single', text: sglText }; }
   } else {
     const orr = Math.random();
@@ -1712,7 +1715,7 @@ function processHoldingGame(state) {
 
 export function processAtBat(state, pitchType, swingType) {
    const home = TEAMS[state.homeTeam], away = TEAMS[state.awayTeam];
-   const newState = JSON.parse(JSON.stringify(state));
+   const newState = deepCopyState(state);
    delete newState._celebrationBubble;
    // Clear pickoff flag - a pitch to home is being thrown
    delete newState._lastActionWasPickoff;
@@ -2191,7 +2194,7 @@ export function getSituationalBatter(state) {
 
 // --- INTENTIONAL WALK ---
 export function intentionalWalk(state) {
-  const newState = JSON.parse(JSON.stringify(state));
+  const newState = deepCopyState(state);
   const batter = getCurrentBatter(newState), pitcher = getCurrentPitcher(newState);
   batter.gameStats.bb++; pitcher.gameStats.bb++; pitcher.gameStats.pitches += 4;
   const msg = `${batter.name} - ${pickLine(INTENTIONAL_WALK_LINES)}`;
@@ -2202,7 +2205,7 @@ export function intentionalWalk(state) {
 
 // --- CPU SUBSTITUTION LOGIC ---
 export function cpuDecideSubstitutions(state, userTeam = 'home') {
-  const newState = JSON.parse(JSON.stringify(state));
+  const newState = deepCopyState(state);
   if (newState.gameOver) return newState;
   
   // HARD GUARD: Enforce 9 batters max in any lineup - trim if somehow exceeded
@@ -2266,12 +2269,12 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       let si2 = cpuLineupField.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
       if (si2 < 0) si2 = cpuLineupField.findIndex(p => p._replacedPitcher);
       if (si2 >= 0) {
-        cpuLineupField[si2] = { ...oldP, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+        cpuLineupField[si2] = { ...oldP, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
       } else {
         // Fallback: replace the last slot - NEVER create a 10th entry
         const lastIdx = cpuLineupField.length - 1;
         if (lastIdx >= 0) {
-          cpuLineupField[lastIdx] = { ...oldP, order: cpuLineupField[lastIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+          cpuLineupField[lastIdx] = { ...oldP, order: cpuLineupField[lastIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
         }
       }
       return newState;
@@ -2289,13 +2292,13 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       if (si2 < 0) si2 = cpuLineupField.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
       if (si2 < 0) si2 = cpuLineupField.findIndex(p => p._replacedPitcher);
       if (si2 >= 0) {
-        const le2 = { ...newPitcher, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+        const le2 = { ...newPitcher, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
         cpuLineupField[si2] = le2;
       } else {
         // Fallback: replace the last slot - NEVER create a 10th entry
         const lastIdx = cpuLineupField.length - 1;
         if (lastIdx >= 0) {
-          cpuLineupField[lastIdx] = { ...newPitcher, order: cpuLineupField[lastIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+          cpuLineupField[lastIdx] = { ...newPitcher, order: cpuLineupField[lastIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
         }
       }
       newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
@@ -2361,7 +2364,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       if (si < 0) si = fl.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
       if (si < 0) si = fl.findIndex(p => p._replacedPitcher);
       if (si >= 0) {
-        const en = { ...newPitcher, order: fl[si].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
+        const en = { ...newPitcher, order: fl[si].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
         fl[si] = en;
       }
     }
@@ -2459,7 +2462,7 @@ export function cpuCheckPinchHit(state) {
   if (!phitter) return null;
 
   // Apply the pinch-hit substitution (deep copy to avoid mutating current state)
-  const newState = JSON.parse(JSON.stringify(state));
+  const newState = deepCopyState(state);
   const afterPH = pinchHit(newState, phitter);
 
   if (battingTeamSide === 'home') {
