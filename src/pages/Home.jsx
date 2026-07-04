@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, recordRelieverUsage, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay } from '@/lib/seasonStore';
+import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, recordRelieverUsage, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDay } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -1755,6 +1755,7 @@ export default function Home() {
         forcedUserSP={forcedStarters?.user || null}
         seasonGameDay={lineupPhase.gameDay}
         seasonRotationState={lineupPhase.rotationState}
+        isBullpenDay={lineupPhase.gameDay ? isBullpenDay(lineupPhase.gameDay) : false}
       />
       {pregameIllnesses && (
         <PregameIllnessModal

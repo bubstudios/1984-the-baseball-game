@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
 import { ArrowUp, ArrowDown, X, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
 import { calculateSituationalRatings, getRatingBadgeClass } from '@/lib/situationalRatings';
-import { isStarterEligible, getRestDays } from '@/lib/seasonStore';
+import { isStarterEligible, getRestDays, getUnavailableRelievers } from '@/lib/seasonStore';
 
 const ALL_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
 
@@ -178,14 +178,23 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
   );
 }
 
-export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, weather, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [], seasonMode = false, forcedOpponentSP = null, forcedUserSP = null, seasonGameDay = null, seasonRotationState = null }) {
+export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, weather, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [], seasonMode = false, forcedOpponentSP = null, forcedUserSP = null, seasonGameDay = null, seasonRotationState = null, isBullpenDay = false }) {
   const illSet = useMemo(() => new Set(illPlayerNames), [illPlayerNames]);
   const oppIllSet = useMemo(() => new Set(opponentIllPlayerNames), [opponentIllPlayerNames]);
   const rotationPitchers = useMemo(() => (teamData.rotation || []).filter(p => !illSet.has(p.name)), [teamData, illSet]);
   const [selectedPitcher, setSelectedPitcher] = useState(forcedUserSP?.name || rotationPitchers[0]?.name || '');
+  const bullpenPitchers = useMemo(() => {
+    if (!isBullpenDay) return [];
+    const unavailable = new Set(seasonRotationState ? getUnavailableRelievers(seasonRotationState, teamKey) : []);
+    return (teamData.bullpen || []).filter(p => !illSet.has(p.name) && !unavailable.has(p.name));
+  }, [teamData, isBullpenDay, illSet, seasonRotationState, teamKey]);
   const selectedPitcherData = useMemo(() => {
-    return rotationPitchers.find(p => p.name === selectedPitcher) || rotationPitchers[0] || null;
-  }, [rotationPitchers, selectedPitcher]);
+    return rotationPitchers.find(p => p.name === selectedPitcher)
+      || bullpenPitchers.find(p => p.name === selectedPitcher)
+      || forcedUserSP
+      || rotationPitchers[0]
+      || null;
+  }, [rotationPitchers, bullpenPitchers, selectedPitcher, forcedUserSP]);
 
   // Opponent starting pitcher selection
   const opponentRotation = useMemo(() => (opponentTeamData?.rotation || []).filter(p => !oppIllSet.has(p.name)), [opponentTeamData, oppIllSet]);
@@ -342,7 +351,7 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
       const spToCheck = useDH ? selectedPitcherData : (lineup.find(s => s.assignedPos === 'SP') ? { name: lineup.find(s => s.assignedPos === 'SP').name } : null);
       if (spToCheck && !isStarterEligible(seasonRotationState, teamKey, spToCheck.name, seasonGameDay)) {
         const restDays = getRestDays(seasonRotationState, teamKey, spToCheck.name, seasonGameDay);
-        alert(`${spToCheck.name} is on ${restDays}d rest and cannot start today. Minimum 4 days rest required.`);
+        alert(`${spToCheck.name} is on ${restDays}d rest and cannot start today. Minimum 5 days rest required.`);
         return;
       }
     }
@@ -558,22 +567,29 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
         {useDH && (
           <div className="bg-card border border-border rounded-xl p-3 mb-4">
             <h3 className="font-heading text-sm font-bold text-foreground mb-2">
-              Your Starting Pitcher
+              {isBullpenDay ? 'Bullpen Day - Opener' : 'Your Starting Pitcher'}
             </h3>
             <p className="text-[10px] text-muted-foreground mb-2 font-body">
-              Choose your starter — they won't bat with the DH rule in effect.
+              {isBullpenDay
+                ? 'Your rotation is on rest. Select an opener from the bullpen.'
+                : 'Choose your starter - they will not bat with the DH rule in effect.'}
             </p>
             <select
               value={selectedPitcher}
               onChange={(e) => setSelectedPitcher(e.target.value)}
               className="w-full bg-input border border-border rounded-md px-3 py-2 text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             >
+              {isBullpenDay && bullpenPitchers.map(p => (
+                <option key={p.name} value={p.name}>
+                  {p.name} - SPD {p.pitchSpeed} | CTL {p.control} | STA {p.stamina} ({p.pos})
+                </option>
+              ))}
               {rotationPitchers.map(p => {
                 const eligible = !seasonMode || !seasonRotationState || isStarterEligible(seasonRotationState, teamKey, p.name, seasonGameDay);
                 const restDays = seasonMode && seasonRotationState ? getRestDays(seasonRotationState, teamKey, p.name, seasonGameDay) : Infinity;
                 return (
-                  <option key={p.name} value={p.name} disabled={!eligible}>
-                    {p.name} — SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}{!eligible ? ` (${restDays}d rest)` : ''}
+                  <option key={p.name} value={p.name} disabled={isBullpenDay || !eligible}>
+                    {p.name} - SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}{isBullpenDay ? ' (rest)' : !eligible ? ` (${restDays}d rest)` : ''}
                   </option>
                 );
               })}

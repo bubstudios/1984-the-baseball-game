@@ -308,13 +308,13 @@ function ensureTeamRotationState(rotationState, teamKey) {
   return rs;
 }
 
-// Eligibility: a starter is eligible if he hasn't started in the last 3 team games (>=4 days rest)
+// Eligibility: a starter is eligible if at least 5 team games have passed since his last start
 export function isStarterEligible(rotationState, teamKey, pitcherName, teamGameNumber) {
   const rs = rotationState?.[teamKey];
   if (!rs) return true;
   const last = rs.lastStartByPitcher?.[pitcherName];
   if (last === undefined) return true;
-  return (teamGameNumber - last) >= 4;
+  return (teamGameNumber - last) >= 5;
 }
 
 // Days of rest for a pitcher (Infinity = never started / no data)
@@ -326,33 +326,73 @@ export function getRestDays(rotationState, teamKey, pitcherName, teamGameNumber)
   return teamGameNumber - last;
 }
 
+// Bullpen day opener: highest-STA reliever excluding closer, subject to unavailability rule.
+// Ties broken by higher tier sum (pitchSpeed + offSpeed + control).
+export function getBullpenDayOpener(rotationState, teamKey) {
+  const team = TEAMS[teamKey];
+  const bullpen = team.bullpen || [];
+  const unavailable = new Set(getUnavailableRelievers(rotationState, teamKey));
+
+  const candidates = bullpen.filter(p => {
+    const pos = p.pos || p.assignedPos || '';
+    return pos !== 'CL' && !unavailable.has(p.name);
+  });
+
+  if (candidates.length === 0) {
+    const fallback = bullpen.filter(p => !unavailable.has(p.name));
+    return fallback[0] || bullpen[0] || null;
+  }
+
+  candidates.sort((a, b) => {
+    const staDiff = (b.stamina || 0) - (a.stamina || 0);
+    if (staDiff !== 0) return staDiff;
+    const aTier = (a.pitchSpeed || 0) + (a.offSpeed || 0) + (a.control || 0);
+    const bTier = (b.pitchSpeed || 0) + (b.offSpeed || 0) + (b.control || 0);
+    return bTier - aTier;
+  });
+
+  return candidates[0];
+}
+
+// Check if a team's game is a bullpen day (slot 4 of the 5-day cycle)
+export function isBullpenDay(teamGameNumber) {
+  return ((teamGameNumber - 1) % 5) === 4;
+}
+
 // THE single resolver: returns the probable starter object for a team's next game.
+// 5-day cycle: slots 0-3 = rotation[0-3], slot 4 = bullpen day.
 export function getProbableStarter(rotationState, teamKey, teamGameNumber) {
   const team = TEAMS[teamKey];
   const rot = team.rotation || [];
-  if (rot.length === 0) return null;
+  if (rot.length === 0) return getBullpenDayOpener(rotationState, teamKey);
 
   const rs = ensureTeamRotationState(rotationState, teamKey);
   const rotation = rs.rotation;
-  const idx = rs.rotationIndex % rotation.length;
+  const slot = (teamGameNumber - 1) % 5;
 
-  const candidateName = rotation[idx];
-  const candidate = rot.find(p => p.name === candidateName) || rot[0];
+  // Bullpen day (slot 4)
+  if (slot >= rotation.length) {
+    return getBullpenDayOpener(rotationState, teamKey);
+  }
 
-  if (isStarterEligible(rotationState, teamKey, candidateName, teamGameNumber)) {
+  // Regular starter slot
+  const starterName = rotation[slot];
+  const candidate = rot.find(p => p.name === starterName) || rot[0];
+
+  if (isStarterEligible(rotationState, teamKey, starterName, teamGameNumber)) {
     return candidate;
   }
 
-  // Data corruption: pointer's pitcher is ineligible. Skip to next eligible.
-  console.error(`[rotation] ${teamKey}: rotation[${idx}] (${candidateName}) ineligible on day ${teamGameNumber} - skipping to next eligible SP`);
+  // Data corruption: slot's pitcher is ineligible. Skip to next eligible SP.
+  console.error(`[rotation] ${teamKey}: rotation[${slot}] (${starterName}) ineligible on day ${teamGameNumber} - skipping to next eligible SP`);
   for (let i = 1; i <= rotation.length; i++) {
-    const nextName = rotation[(idx + i) % rotation.length];
+    const nextName = rotation[(slot + i) % rotation.length];
     if (isStarterEligible(rotationState, teamKey, nextName, teamGameNumber)) {
       return rot.find(p => p.name === nextName) || rot[0];
     }
   }
 
-  // Nobody eligible - use most-rested (shouldn't happen with 4-man/4-day)
+  // Nobody eligible - use most-rested (shouldn't happen with 5-day cycle)
   console.error(`[rotation] ${teamKey}: NO eligible starters on day ${teamGameNumber} - using most rested`);
   let best = rot[0], bestRest = -Infinity;
   for (const p of rot) {
@@ -377,7 +417,6 @@ export function recordRelieverUsage(rotationState, teamKey, pitchingLine) {
   const rs = ensureTeamRotationState(rotationState, teamKey);
   rs.lastGameRelievers = {};
   for (const p of pitchingLine) {
-    if (p.gs) continue; // skip the starter
     if ((p.outs || 0) > 6) { // >2 innings = >6 outs
       rs.lastGameRelievers[p.name] = p.outs;
     }
