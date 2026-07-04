@@ -1145,7 +1145,7 @@ function resolveSwing(state, swingType, pitch) {
     // Cancel any pending steal on a fly ball / popup — runners cannot steal while ball is in the air
     if (isFlyBall) { state.pendingSteal = null; }
     if (isFlyBall && out.type !== 'popout') {
-      const q = checkBallparkQuirk(stadiumName, adjBatter.bats, hitDirection, state.weather);
+      const q = checkBallparkQuirk(stadiumName, adjBatter.bats, hitDirection, state.weather, batter.name);
       if (q && q.isHit) {
         batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
         if (q.isHR) { batter.gameStats.hr++; advanceRunners(state, 4, batter); }
@@ -2317,25 +2317,48 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   // — BLOWUP PULL — now works in ALL innings (was gated to inning < 6, which let
   // a shelled reliever stay in forever late in games). Pull anyone giving up a
   // crooked number. Relievers get a tighter leash than starters. —
-  const fatiguePull = ip >= maxInnings + 0.5;
+  // Session 13: Reason-based hook (replaces fixed-inning trigger)
+  // A CPU starter is removed ONLY for: fatigue (composure), performance (getting hit),
+  // or a late save-spot handoff. Cruising starters pitch on - complete games are normal.
+  const composure = cpuPitcher._composure?.composure ?? 100;
+
+  // Track runs allowed in the current inning (for blowup detection)
+  if (cpuPitcher._lastHookInning !== inning) {
+    cpuPitcher._lastHookInning = inning;
+    cpuPitcher._runsAtInningStart = cpuPitcher.gameStats.r || 0;
+  }
+  const runsThisInning = (cpuPitcher.gameStats.r || 0) - (cpuPitcher._runsAtInningStart || 0);
+
+  // Rule 1: Fatigue (composure-based, NOT inning-based)
+  const fatigueHook = composure < 35;    // sagging - hook
+  const forcedHook = composure < 20;     // gassed - must come out
+
+  // Rule 2: Performance (getting hit)
+  const inningBlowup = runsThisInning >= 3;  // 3+ runs in current inning
+  const totalBlowup = (isReliever && runs >= 4) || (!isReliever && runs >= 6);
+  const oppInScoring = !!newState.bases[2] && (!!newState.bases[0] || !!newState.bases[1]);
+  const jamHook = !hasLead && oppInScoring && composure < 45;  // lead lost, RISP, sagging
+
+  // Walks: lost command
   const walksPull = bbi >= 5;
-  const blowupPull =
-    (isReliever && runs >= 4) ||  // any reliever who's given up 4+ in his outing
-    (isReliever && runs >= 5 && inning < 6) || // early-game starter blowup (original rule)
-    (isReliever && runs >= 6); // starter giving up 6+ at any point
   
   // — LATE-CLOSE — only bring in a fresh high-leverage arm to PROTECT A LEAD (or in a
   // tie), never when trailing. A losing team has no save to protect. —
-  const lateClose = inning >= 7 && (hasLead || margin === 0) && margin <= 3 && ip >= 2;
-  
-  const severeFatigue = ip >= maxInnings + 2;
-  // Don't pull a pitcher who's cruising with a lead unless he's clearly done.
-  const notSeverelyFatigued = !severeFatigue && !fatiguePull;
-  // Fresh starter in early innings stays in - 1984 starters routinely went 7-9 innings
-  if (!isReliever && inning < 6 && !severeFatigue && !fatiguePull && runs < 5 && bbi < 5) return newState;
-  if (hasLead && notSeverelyFatigued && !walksPull && !blowupPull && !lateClose) return newState;
+  // Rule 4: Late-close handoff (Session 8 policy governs WHO enters)
+  // Only in a true save spot (8th+) AND starter is sagging or it's the 9th
+  const lateClose = inning >= 8 && (hasLead || margin === 0) && margin <= 3 && (composure < 50 || inning >= 9) && ip >= 2;
 
-  const shouldChange = (severeFatigue || fatiguePull || walksPull || blowupPull || lateClose) && cpuBullpen.length > 0;
+  // Reliever-specific: shorter IP leash
+  const relieverFatigue = isReliever && ip >= maxInnings + 0.5;
+  
+// Cruising starter with a lead stays in (complete games are a normal outcome)
+  const starterCruising = !isReliever && hasLead && composure >= 35 && !inningBlowup && !totalBlowup && !walksPull;
+  if (starterCruising && !forcedHook && !lateClose && !jamHook) return newState;
+
+  // Fresh starter in early innings stays in - 1984 starters routinely went 7-9 innings
+  if (!isReliever && inning < 6 && !forcedHook && !inningBlowup && !totalBlowup && !walksPull) return newState;
+
+  const shouldChange = (forcedHook || fatigueHook || relieverFatigue || inningBlowup || totalBlowup || jamHook || walksPull || lateClose) && cpuBullpen.length > 0;
   if (shouldChange) {
     making_pitching_change = true;  // Flag for double-switch evaluation
     // Session 8: role-based reliever selection (shared policy)
@@ -2368,7 +2391,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         fl[si] = en;
       }
     }
-    const reason = severeFatigue ? 'completely gassed' : fatiguePull ? `${ip} innings - arm is tiring` : walksPull ? 'lost command' : blowupPull ? 'rough outing' : 'high-leverage situation';
+    const reason = forcedHook ? 'completely gassed' : fatigueHook ? 'composure fading' : relieverFatigue ? 'arm is tiring' : inningBlowup ? 'rough inning' : totalBlowup ? 'rough outing' : jamHook ? 'inherited jam' : walksPull ? 'lost command' : 'high-leverage situation';
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
     
     // ── PHASE 3.1: Double switch evaluation (NL parks only) ──

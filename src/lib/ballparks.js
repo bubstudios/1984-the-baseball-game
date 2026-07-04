@@ -783,9 +783,10 @@ export function getBallparkEffect(stadiumName, batterBats, weather) {
 
 // Check for ballpark quirk outcomes on deep fly balls
 // Returns { type, text, bases } or null
-export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weather) {
+export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weather, batterName) {
   const ballpark = BALLPARKS[ballparkName];
   if (!ballpark) return null;
+  const bn = batterName || (() => { console.error('[checkBallparkQuirk] batterName missing - rendering nameless HR call'); return 'The batter'; })();
 
   const quirks = ballpark.quirks;
   const roll = Math.random();
@@ -810,7 +811,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.07) {
       return {
         type: 'peskyPole',
-        text: `Hooked around Pesky's Pole! Just 302 feet but it wraps around the right field foul pole - that's a Fenway home run!`,
+        text: `Hooked around Pesky's Pole! ${bn} wraps it around the right field foul pole at 302 feet - that's a Fenway home run!`,
         bases: 4,
         isHit: true,
         isHR: true,
@@ -862,7 +863,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.04) {
       return {
         type: 'basketHR',
-        text: `Into the basket! The ball drops into the Wrigley Field home run basket hanging over the wall - that counts!`,
+        text: `Into the basket! ${bn} drops one into the Wrigley Field home run basket hanging over the wall - that counts!`,
         bases: 4,
         isHit: true,
         isHR: true,
@@ -877,7 +878,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < porchChance) {
       return {
         type: 'shortPorch',
-        text: `Down the right field line - and it's gone into the short porch! ${batterBats === 'L' ? 'Classic lefty pull' : 'Opposite field shot'} - Yankee Stadium gives again!`,
+        text: `${bn} down the right field line - gone into the short porch! ${batterBats === 'L' ? 'Classic lefty pull' : 'Opposite field shot'} - Yankee Stadium gives again!`,
         bases: 4,
         isHit: true,
         isHR: true,
@@ -926,7 +927,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.06) {
       return {
         type: 'overhang',
-        text: `Caught the overhang in right field at Tiger Stadium! The second deck juts out over fair territory - that ball never had a chance to be caught!`,
+        text: `${bn} caught the overhang in right field at Tiger Stadium! The second deck juts out over fair territory - that ball never had a chance to be caught!`,
         bases: 4,
         isHit: true,
         isHR: true,
