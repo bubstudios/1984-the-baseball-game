@@ -404,6 +404,18 @@ function isWalkOff(state) {
   return state.halfInning === 'bottom' && state.inning >= 9 && state.score.home > state.score.away;
 }
 
+// ── Critical run: runner on 3rd, <2 outs, 9th+ - scoring would tie or take the lead ──
+function isCriticalRunSituation(state) {
+  if (!state.bases[2]) return false;
+  if (state.outs >= 2) return false;
+  if (state.inning < 9) return false;
+  const battingTeam = getBattingTeam(state);
+  const battingScore = state.score[battingTeam];
+  const fieldingScore = state.score[battingTeam === 'home' ? 'away' : 'home'];
+  // Critical if the run would tie the game or take the lead
+  return (battingScore + 1) >= fieldingScore;
+}
+
 function advanceRunners(state, bases, batter, isHit = false, hitDirection = null) {
   let runsScored = 0;
   const pitcher = getCurrentPitcher(state);
@@ -986,18 +998,20 @@ function resolveSwing(state, swingType, pitch) {
       // Normal HR - register for beanball engine
        batter.gameStats.hr++; const didFlip = registerHomeRun(state, batter, pitcher); const runnersOn = state.bases.filter(b => b !== null).length; const rbi = advanceRunners(state, 4, batter);
 
-       // Calculate HR distance
-       const hrDistance = calculateHomeRunDistance(batter, pitcher, state, runnersOn === 3);
+       // Calculate HR distance (wall distance in ball's direction + carry margin)
+       const hrDistance = calculateHomeRunDistance(batter, pitcher, state, hitDirection, isPower, runnersOn === 3);
        batter.gameStats.lastHRDistance = hrDistance;
        batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, hrDistance);
 
-       const bp = BALLPARKS[stadiumName], fd = bp?.wallDesc?.[hitDirection] || `to ${hitDirection}`;
+       const bp = BALLPARKS[stadiumName];
+       const dirLabel = { LF: 'left field', LCF: 'left-center', CF: 'center field', RCF: 'right-center', RF: 'right field' }[hitDirection] || hitDirection;
+       const distStr = hrDistance >= 430 ? `${hrDistance} feet - a tape-measure shot!` : `${hrDistance} feet`;
        let ht; const gs2 = runnersOn === 3;
-       if (bp?.quirks?.includes('greenMonster') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Up and over the Green Monster! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} clears the 37-foot wall!`;
-       else if (bp?.quirks?.includes('shortRF') && hitDirection === 'RF' && adjBatter.bats === 'L') ht = `Into the short porch! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} hooks one just over ${fd}!`;
-       else if (bp?.quirks?.includes('peskyPole') && hitDirection === 'RF') ht = `Around Pesky's Pole! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} wraps it inside the right field foul pole!`;
-       else if (bp?.quirks?.includes('ivy') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Onto Waveland Avenue! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} launches one over the ivy and out of Wrigley!`;
-       else { ht = `${batter.name} sends it deep ${fd} -` + (gs2 ? ` GRAND SLAM! ${batter.name} clears the bases!` : (rbi > 1 ? ` a ${rbi}-run HOME RUN!` : ` a solo HOME RUN!`)); }
+       if (bp?.quirks?.includes('greenMonster') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Up and over the Green Monster! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} clears the 37-foot wall at ${distStr}!`;
+       else if (bp?.quirks?.includes('shortRF') && hitDirection === 'RF' && adjBatter.bats === 'L') ht = `Into the short porch! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} hooks it over the fence at ${distStr}!`;
+       else if (bp?.quirks?.includes('peskyPole') && hitDirection === 'RF') ht = `Around Pesky's Pole! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} wraps it around the foul pole at ${distStr}!`;
+       else if (bp?.quirks?.includes('ivy') && (hitDirection === 'LF' || hitDirection === 'LCF')) ht = `Onto Waveland Avenue! ${gs2 ? 'GRAND SLAM! ' : ''}${batter.name} launches one out of Wrigley at ${distStr}!`;
+       else { ht = `${batter.name} sends it deep to ${dirLabel} at ${distStr} -` + (gs2 ? ` GRAND SLAM! ${batter.name} clears the bases!` : (rbi > 1 ? ` a ${rbi}-run HOME RUN!` : ` a solo HOME RUN!`)); }
        const battingTeamKey = state.halfInning === 'top' ? state.awayTeam : state.homeTeam;
        const hrCall = maybeGetAnnouncerHRCall(battingTeamKey, { isGrandSlam: gs2, rbi, batterName: batter.name });
        if (hrCall) state.log.push({ type: 'homerun', text: `🎙️ ${hrCall}` });
@@ -1160,6 +1174,68 @@ function resolveSwing(state, swingType, pitch) {
           state.lastPlay = { type: 'groundout', text: fc2Out };
           state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
           return;
+        }
+      }
+      // ── CRITICAL RUN LEVERAGE CHECK ──
+      // With a critical run on 3rd (9th+, would tie or take lead), the defense
+      // must play run-prevention: throw home rather than trade the run for two outs.
+      if (isCriticalRunSituation(state)) {
+        const r3cr = state.bases[2];
+        const forceAtHome = !!state.bases[0] && !!state.bases[1];
+        const fielderName = defenders[out.pos]?.name?.split(' ').pop() || posNames[out.pos] || out.pos;
+        const catcherName = defenders['C']?.name?.split(' ').pop() || 'the catcher';
+        const firstBaseName = defenders['1B']?.name?.split(' ').pop() || 'first';
+
+        if (forceAtHome) {
+          // Bases loaded: force at home is mandatory first out
+          const r2cr = state.bases[1], r1cr = state.bases[0];
+          state.bases[2] = r2cr; state.bases[1] = r1cr; state.bases[0] = null;
+          batter.gameStats.ab++;
+          // Attempt the home-to-first DP (batter may beat the relay 15% of the time)
+          if (Math.random() < 0.15) {
+            state.bases[0] = batter;
+            const fcText = `${batter.name} grounds to ${fielderName} - throws home to force ${r3cr.name}! Batter beats the relay to first - run held, no run scores!`;
+            state.log.push({ type: 'fc', text: fcText });
+            state.lastPlay = { type: 'fc', text: fcText };
+            state.balls = 0; state.strikes = 0; advanceBatter(state);
+            recordOut(state);
+            return;
+          } else {
+            const dpLine = pickLine(DOUBLE_PLAY_LINES);
+            const dpText = `${batter.name} grounds to ${fielderName} - throws home for the force, ${catcherName} relays to ${firstBaseName} - ${dpLine}! ${r3cr.name} held - no run scores!`;
+            state.log.push({ type: 'doubleplay', text: dpText });
+            state.lastPlay = { type: 'doubleplay', text: dpText };
+            state.balls = 0; state.strikes = 0; advanceBatter(state);
+            recordOut(state);
+            if (!state.gameOver && state.outs < 3) recordOut(state);
+            return;
+          }
+        } else {
+          // No force at home (3rd only, or 1st & 3rd): tag play or out at first
+          if (Math.random() < 0.55) {
+            // Throw home - tag play, runner out at the plate
+            state.bases[2] = null;
+            if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
+            state.bases[0] = batter;
+            batter.gameStats.ab++;
+            const fcText = `${batter.name} grounds to ${fielderName} - throws home! ${catcherName} tags out ${r3cr.name} at the plate! Run prevented!`;
+            state.log.push({ type: 'fc', text: fcText });
+            state.lastPlay = { type: 'fc', text: fcText };
+            state.balls = 0; state.strikes = 0; advanceBatter(state);
+            recordOut(state);
+            return;
+          } else {
+            // Take the out at first, hold the runner at 3rd
+            if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
+            state.bases[0] = batter;
+            batter.gameStats.ab++;
+            const goText = `${batter.name} grounds out to ${fielderName} - ${r3cr.name} holds at third, out at first.`;
+            state.log.push({ type: 'groundout', text: goText });
+            state.lastPlay = { type: 'groundout', text: goText };
+            state.balls = 0; state.strikes = 0; advanceBatter(state);
+            recordOut(state);
+            return;
+          }
         }
       }
       if (r1 && state.outs < 2) {
@@ -1497,7 +1573,7 @@ function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
   if (Math.random() < hc) {
   batter.gameStats.hits++; pitcher.gameStats.h++;
   const hrr = Math.random();
-  if (hrr < pr * 0.065 * hrMod) { batter.gameStats.hr++; const hrRbi = advanceRunners(state, 4, batter); const battingTeamKeyHR = state.halfInning === 'top' ? state.awayTeam : state.homeTeam; const hrCallHR = maybeGetAnnouncerHRCall(battingTeamKeyHR, { isGrandSlam: false, rbi: hrRbi, batterName: batter.name }); if (hrCallHR) state.log.push({ type: 'homerun', text: `🎙️ ${hrCallHR}` }); const hrText = `💥 ${batter.name} crushes one on the hit-and-run - HOME RUN!`; state.log.push({ type: 'homerun', text: hrText }); state.lastPlay = { type: 'homerun', text: hrText }; }
+  if (hrr < pr * 0.065 * hrMod) { batter.gameStats.hr++; const hrRbi = advanceRunners(state, 4, batter); const hrDirHR = getHitDirection(adjBatter.bats); const hrDistanceHR = calculateHomeRunDistance(batter, pitcher, state, hrDirHR, false, false); batter.gameStats.lastHRDistance = hrDistanceHR; batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, hrDistanceHR); const battingTeamKeyHR = state.halfInning === 'top' ? state.awayTeam : state.homeTeam; const hrCallHR = maybeGetAnnouncerHRCall(battingTeamKeyHR, { isGrandSlam: false, rbi: hrRbi, batterName: batter.name }); if (hrCallHR) state.log.push({ type: 'homerun', text: `🎙️ ${hrCallHR}` }); const hrText = `💥 ${batter.name} crushes one on the hit-and-run - HOME RUN at ${hrDistanceHR} feet!`; state.log.push({ type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }; }
   else if (hrr < pr * 0.32 * doubleMod) { advanceRunners(state, 2, batter, true); const e = advanceHitAndRunRunners(state, batter); const dblText = e ? `${batter.name} rips a double on the hit-and-run! ${e}` : `${batter.name} doubles on the hit-and-run!`; state.log.push({ type: 'double', text: dblText }); state.lastPlay = { type: 'double', text: dblText }; }
   else { advanceRunners(state, 1, batter, true); const e = advanceHitAndRunRunners(state, batter); const sglText = e ? `${batter.name} slaps a single - hit-and-run! ${e}` : `${batter.name} singles on the hit-and-run!`; state.log.push({ type: 'single', text: sglText }); state.lastPlay = { type: 'single', text: sglText }; }
   } else {

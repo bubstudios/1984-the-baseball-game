@@ -1,83 +1,72 @@
-// Home run distance calculation based on realistic factors
+// Home run distance calculation: wall distance in ball's direction + carry margin
 import { BALLPARKS } from './ballparks';
 import { applyWeatherEffects } from './weather';
 import { TEAMS } from './gameData';
 
-export function calculateHomeRunDistance(batter, pitcher, state, isGrandSlam = false) {
+export function calculateHomeRunDistance(batter, pitcher, state, hitDirection, isPowerSwing = false, isGrandSlam = false) {
   const stadiumName = TEAMS[state.homeTeam]?.stadium;
-  const baseDistance = getBaseDistance(stadiumName, isGrandSlam);
-  
-  // Batter power is the primary driver (1-10 scale)
-  const powerMod = (batter.power / 10) * 0.40; // power accounts for ~40% of variance
-  
-  // Weather effects on distance
+  const ballpark = BALLPARKS[stadiumName];
+
+  // Wall distance in the ball's direction (minimum distance for a HR)
+  const wallDistance = ballpark?.dimensions?.[hitDirection]?.distance || 400;
+
+  // ── Carry margin: how far the ball carries PAST the wall ──
+  // Driven by: hitter Power rating, swing type, randomness
+  // Envelope: +5 to +120 ft; wall-scrapers common, 450+ ft rare and PWR-9/10 territory
+  const power = batter.power || 5; // 1-10 scale
+
+  let powerCarry;
+  if (power <= 3) {
+    powerCarry = 5 + Math.random() * 12;    // 5-17 ft - wall-scrapers
+  } else if (power <= 6) {
+    powerCarry = 8 + Math.random() * 22;   // 8-30 ft - clears the wall
+  } else if (power <= 8) {
+    powerCarry = 12 + Math.random() * 38;  // 12-50 ft - into the seats
+  } else {
+    powerCarry = 18 + Math.random() * 65;  // 18-83 ft - tape-measure territory (PWR 9-10)
+  }
+
+  // Power swing adds carry (hitter selling out for distance)
+  if (isPowerSwing) {
+    powerCarry += 5 + Math.random() * 18;  // +5-23 ft
+  }
+
+  // Weather effects on carry (partial - weather mainly affects HR probability)
   const wx = applyWeatherEffects(state.weather, {});
-  const wxMod = (wx.hrMod || 1) - 1; // convert multiplier to modifier
-  
+  const wxMod = (wx.hrMod || 1) - 1;
+  powerCarry *= (1 + wxMod * 0.4);
+
   // Pitcher fatigue (tired pitchers give up longer HRs)
-  const pitcher_stats = pitcher.gameStats || {};
-  const ip = pitcher_stats.ip || 0;
+  const pitcherStats = pitcher.gameStats || {};
+  const ip = pitcherStats.ip || 0;
   const stamina = pitcher.stamina || 5;
-  const fatigueModifier = ip >= stamina * 0.7 ? 0.06 : 0;
-  
-  // Pitcher control (poor control → balls more hittable, slight distance bonus)
-  const controlMod = (pitcher.control < 5) ? 0.03 : 0;
-  
-  // Base distance with multiplicative modifiers
-  let distance = baseDistance * (1 + powerMod + wxMod + fatigueModifier + controlMod);
-  
-  // Add randomness (±15 feet)
-  const randomFactor = (Math.random() - 0.5) * 30;
-  distance += randomFactor;
-  
-  // Clamp to realistic range
-  distance = Math.max(320, Math.min(505, distance));
-  
-  // Round to realistic number (avoid .0, .5 endings)
+  if (ip >= stamina * 0.7) {
+    powerCarry += 3 + Math.random() * 7;  // +3-10 ft
+  }
+
+  // Small random variance
+  powerCarry += (Math.random() - 0.5) * 8;  // ±4 ft
+
+  // Ensure minimum carry (ball must clear the wall)
+  powerCarry = Math.max(5, powerCarry);
+
+  // Total distance = wall distance + carry
+  let distance = wallDistance + powerCarry;
+
+  // Grand slam: slight bump (leverage adrenaline)
+  if (isGrandSlam) distance += 2;
+
+  // Cap at 500 ft
+  distance = Math.min(500, distance);
+
+  // Round to integer
   distance = Math.round(distance);
-  // Avoid round numbers-add 1-3 feet randomly if it ends in 0 or 5
+  // Avoid round numbers - add 1-3 feet if it ends in 0 or 5
   if (distance % 10 === 0 || distance % 10 === 5) {
     distance += Math.floor(Math.random() * 3) + 1;
   }
-  
-  return distance;
-}
 
-function getBaseDistance(stadiumName, isGrandSlam = false) {
-  // Stadium base distances (average HR distance for that park)
-  // These are researched 1984 ballpark characteristics
-  const stadiumDistances = {
-    'Yankee Stadium': 408,
-    'Fenway Park': 395,
-    'Tiger Stadium': 400,
-    'Memorial Stadium': 398,
-    'Comiskey Park': 402,
-    'Municipal Stadium': 404,
-    'Exhibition Stadium': 406,
-    'Milwaukee County Stadium': 403,
-    'Metropolitan Stadium': 405,
-    'Royals Stadium': 408,
-    'Oakland Coliseum': 399,
-    'Angels Stadium': 394,
-    'Kingdome': 410,
-    'Tropicana Field': 408, // placeholder for 1984 era (similar ballpark)
-    'Candlestick Park': 396,
-    'Dodger Stadium': 391,
-    'Jack Murphy Stadium': 392,
-    'Shea Stadium': 397,
-    'Veterans Stadium': 400,
-    'Three Rivers Stadium': 402,
-    'Riverfront Stadium': 398,
-    'Wrigley Field': 394,
-    'County Stadium': 403,
-  };
-  
-  let base = stadiumDistances[stadiumName] || 399; // default 399 ft
-  
-  // Grand slams are often hit with more leverage, slight bump
-  if (isGrandSlam) base += 2;
-  
-  return base;
+  return distance;
 }
 
 // Achievement tier detection
