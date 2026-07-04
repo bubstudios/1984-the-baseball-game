@@ -122,6 +122,39 @@
         }
       },
       "description": "Line score by inning"
+    },
+    "boxScore": {
+      "type": "object",
+      "description": "Full archived box score: batting tables, pitching lines, innings, decisions, home runs",
+      "properties": {
+        "batting": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "pitching": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "innings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "decisions": {
+          "type": "object"
+        },
+        "homeRuns": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
     }
   },
   "required": [

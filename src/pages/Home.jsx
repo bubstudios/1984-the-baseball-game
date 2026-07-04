@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard } from '@/lib/seasonStore';
+import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard, commitPlayerStats } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -973,7 +973,9 @@ export default function Home() {
           if (summary.decisions.save) result.savePitcher = summary.decisions.save.split('|')[1];
           result.homeHRs = summary.homeRuns.filter(hr => hr.teamKey === state.homeTeam).map(hr => ({ playerName: hr.name, inning: hr.inning || 0 }));
           result.awayHRs = summary.homeRuns.filter(hr => hr.teamKey === state.awayTeam).map(hr => ({ playerName: hr.name, inning: hr.inning || 0 }));
+          result.boxScore = summary;
           await base44.entities.GameResult.create(result);
+          await commitPlayerStats(ctx.seasonId, summary.batting, summary.pitching);
           const rotState = seasonRotationStateRef.current;
           if (state.homeStartingPitcherName) advanceRotation(rotState, state.homeTeam, state.homeStartingPitcherName, ctx.gameDate);
           if (state.awayStartingPitcherName) advanceRotation(rotState, state.awayTeam, state.awayStartingPitcherName, ctx.gameDate);

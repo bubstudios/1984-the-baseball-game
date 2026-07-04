@@ -678,6 +678,199 @@ export async function maybeAdvanceDay(season) {
   }
 }
 
+// ── Stage 3: Stats pipeline + derivations (read-only presentation) ──
+
+// Commit player stats from game batting/pitching arrays to the PlayerStats entity (upsert).
+// Aggregates multiple games per player in one call. Called at every commit (sim + user).
+export async function commitPlayerStats(seasonId, batting, pitching) {
+  if (!seasonId || (!batting?.length && !pitching?.length)) return;
+  try {
+    const existing = await base44.entities.PlayerStats.filter({ seasonId }, null, 1500);
+    const statMap = {};
+    for (const s of existing) statMap[`${s.team}|${s.playerName}`] = s;
+
+    const deltas = {};
+    const getDelta = (key) => {
+      if (!deltas[key]) {
+        const [team, name] = key.split('|');
+        deltas[key] = { rec: statMap[key], team, name, bat: null, pitch: null };
+      }
+      return deltas[key];
+    };
+
+    for (const b of batting) {
+      if (!b?.name) continue;
+      const d = getDelta(`${b.teamKey}|${b.name}`);
+      if (!d.bat) d.bat = { g:0, ab:0, h:0, doubles:0, triples:0, hr:0, rbi:0, r:0, bb:0, so:0, sb:0 };
+      d.bat.g++; d.bat.ab += b.ab||0; d.bat.h += b.h||0;
+      d.bat.doubles += b.doubles||0; d.bat.triples += b.triples||0;
+      d.bat.hr += b.hr||0; d.bat.rbi += b.rbi||0; d.bat.r += b.r||0;
+      d.bat.bb += b.bb||0; d.bat.so += b.so||0; d.bat.sb += b.sb||0;
+    }
+    for (const p of pitching) {
+      if (!p?.name) continue;
+      const d = getDelta(`${p.teamKey}|${p.name}`);
+      if (!d.pitch) d.pitch = { g:0, gs:0, outs:0, h:0, r:0, er:0, bb:0, so:0, hr:0, w:0, l:0, sv:0 };
+      d.pitch.g++; if (p.gs) d.pitch.gs++;
+      d.pitch.outs += p.outs||0; d.pitch.h += p.h||0; d.pitch.r += p.r||0;
+      d.pitch.er += p.er||0; d.pitch.bb += p.bb||0; d.pitch.so += p.so||0;
+      d.pitch.hr += p.hr||0;
+      if (p.w) d.pitch.w++; if (p.l) d.pitch.l++; if (p.sv) d.pitch.sv++;
+    }
+
+    const toUpdate = [];
+    const toCreate = [];
+
+    for (const d of Object.values(deltas)) {
+      const rec = d.rec;
+      const merged = {};
+
+      if (d.bat) {
+        const ab = (rec?.atBats||0) + d.bat.ab;
+        const h = (rec?.hits||0) + d.bat.h;
+        const doubles = (rec?.doubles||0) + d.bat.doubles;
+        const triples = (rec?.triples||0) + d.bat.triples;
+        const hr = (rec?.homeRuns||0) + d.bat.hr;
+        const bb = (rec?.walks||0) + d.bat.bb;
+        const pa = ab + bb;
+        const singles = Math.max(0, h - doubles - triples - hr);
+        Object.assign(merged, {
+          gamesPlayed: (rec?.gamesPlayed||0) + d.bat.g,
+          atBats: ab, hits: h, doubles, triples, homeRuns: hr,
+          rbi: (rec?.rbi||0) + d.bat.rbi, runs: (rec?.runs||0) + d.bat.r,
+          walks: bb, strikeouts: (rec?.strikeouts||0) + d.bat.so,
+          stolenBases: (rec?.stolenBases||0) + d.bat.sb,
+          battingAverage: ab > 0 ? h / ab : 0,
+          onBasePercentage: pa > 0 ? (h + bb) / pa : 0,
+          sluggingPercentage: ab > 0 ? (singles + 2*doubles + 3*triples + 4*hr) / ab : 0,
+        });
+        merged.ops = (merged.onBasePercentage||0) + (merged.sluggingPercentage||0);
+      }
+
+      if (d.pitch) {
+        const ip = (rec?.inningsPitched||0) + (d.pitch.outs / 3);
+        const pHits = (rec?.pitchingHits||0) + d.pitch.h;
+        const pBB = (rec?.pitchingWalks||0) + d.pitch.bb;
+        const pER = (rec?.pitchingEarnedRuns||0) + d.pitch.er;
+        Object.assign(merged, {
+          pitchingGames: (rec?.pitchingGames||0) + d.pitch.g,
+          pitchingGamesStarted: (rec?.pitchingGamesStarted||0) + d.pitch.gs,
+          inningsPitched: ip,
+          pitchingHits: pHits,
+          pitchingRuns: (rec?.pitchingRuns||0) + d.pitch.r,
+          pitchingEarnedRuns: pER,
+          pitchingWalks: pBB,
+          pitchingStrikeouts: (rec?.pitchingStrikeouts||0) + d.pitch.so,
+          pitchingHomeRuns: (rec?.pitchingHomeRuns||0) + d.pitch.hr,
+          wins: (rec?.wins||0) + d.pitch.w,
+          losses: (rec?.losses||0) + d.pitch.l,
+          saves: (rec?.saves||0) + d.pitch.sv,
+          era: ip > 0 ? (pER * 9) / ip : 0,
+          whip: ip > 0 ? (pHits + pBB) / ip : 0,
+        });
+      }
+
+      if (rec) {
+        toUpdate.push({ id: rec.id, ...merged });
+      } else {
+        toCreate.push({
+          seasonId, playerName: d.name, team: d.team,
+          gamesPlayed:0, atBats:0, hits:0, doubles:0, triples:0, homeRuns:0,
+          rbi:0, runs:0, walks:0, strikeouts:0, stolenBases:0,
+          battingAverage:0, onBasePercentage:0, sluggingPercentage:0, ops:0,
+          pitchingGames:0, pitchingGamesStarted:0, inningsPitched:0,
+          pitchingHits:0, pitchingRuns:0, pitchingEarnedRuns:0,
+          pitchingWalks:0, pitchingStrikeouts:0, pitchingHomeRuns:0,
+          wins:0, losses:0, saves:0, era:0, whip:0,
+          ...merged,
+        });
+      }
+    }
+
+    if (toUpdate.length > 0) await base44.entities.PlayerStats.bulkUpdate(toUpdate);
+    if (toCreate.length > 0) await base44.entities.PlayerStats.bulkCreate(toCreate);
+  } catch (e) {
+    console.error('commitPlayerStats failed:', e);
+  }
+}
+
+// Derive standings from GameResult records (pure derivation, never stored as a mutable table).
+export function deriveStandings(gameResults) {
+  const teams = {};
+  for (const teamKey of Object.keys(TEAMS)) {
+    teams[teamKey] = { w:0, l:0, streakType:null, streakLen:0, last10:[] };
+  }
+
+  const sorted = [...gameResults].sort((a, b) => (a.gameDay||0) - (b.gameDay||0));
+  for (const r of sorted) {
+    const homeWon = (r.homeScore ?? 0) > (r.awayScore ?? 0);
+    const winner = homeWon ? r.homeTeam : r.awayTeam;
+    const loser = homeWon ? r.awayTeam : r.homeTeam;
+    if (teams[winner]) {
+      teams[winner].w++;
+      teams[winner].last10.push('W');
+      if (teams[winner].last10.length > 10) teams[winner].last10.shift();
+      teams[winner].streakType = teams[winner].streakType === 'W' ? 'W' : 'W';
+      teams[winner].streakLen = teams[winner].streakType === 'W' ? teams[winner].streakLen + 1 : 1;
+    }
+    if (teams[loser]) {
+      teams[loser].l++;
+      teams[loser].last10.push('L');
+      if (teams[loser].last10.length > 10) teams[loser].last10.shift();
+      teams[loser].streakType = teams[loser].streakType === 'L' ? 'L' : 'L';
+      teams[loser].streakLen = teams[loser].streakType === 'L' ? teams[loser].streakLen + 1 : 1;
+    }
+  }
+
+  const result = {};
+  for (const [divName, divTeams] of Object.entries(DIVISIONS)) {
+    const arr = divTeams.map(t => {
+      const s = teams[t] || { w:0, l:0, streakType:null, streakLen:0, last10:[] };
+      const pct = s.w + s.l > 0 ? s.w / (s.w + s.l) : 0;
+      return {
+        teamKey: t, w: s.w, l: s.l, pct,
+        streakType: s.streakType, streakLen: s.streakLen,
+        last10: s.last10, last10Wins: s.last10.filter(x => x === 'W').length,
+      };
+    }).sort((a, b) => b.pct - a.pct);
+    const leader = arr[0];
+    for (const team of arr) {
+      team.gb = leader ? ((leader.w - team.w) + (team.l - leader.l)) / 2 : 0;
+    }
+    result[divName] = arr;
+  }
+  return result;
+}
+
+// Build a per-team game log from GameResult records (chronological).
+export function buildTeamGameLog(gameResults, teamKey) {
+  const teamGames = gameResults
+    .filter(r => r.homeTeam === teamKey || r.awayTeam === teamKey)
+    .sort((a, b) => (a.gameDay||0) - (b.gameDay||0));
+
+  let w = 0, l = 0;
+  return teamGames.map(r => {
+    const isHome = r.homeTeam === teamKey;
+    const teamScore = isHome ? r.homeScore : r.awayScore;
+    const oppScore = isHome ? r.awayScore : r.homeScore;
+    const oppTeam = isHome ? r.awayTeam : r.homeTeam;
+    const won = teamScore > oppScore;
+    if (won) w++; else l++;
+    return {
+      gameDay: r.gameDay,
+      gameDate: r.gameDate,
+      opponent: oppTeam,
+      isHome,
+      result: won ? 'W' : 'L',
+      score: `${teamScore}-${oppScore}`,
+      recordAfter: `${w}-${l}`,
+      starter: isHome ? r.winningPitcher : r.losingPitcher, // best available
+      gameResultId: r.id,
+      boxScore: r.boxScore,
+    };
+  });
+}
+
 // Archive any existing active seasons before creating a new one (prevents duplicates)
 export async function archiveActiveSeasons() {
   try {

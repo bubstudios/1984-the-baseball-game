@@ -2,13 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Trophy, Calendar, TrendingUp, Users, Play } from 'lucide-react';
+import { RotateCcw, Trophy, Calendar, TrendingUp, Play, FileText } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import { generateSchedule as buildSchedule, verifySchedule, formatGameDate } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState } from '@/lib/seasonEngine';
-import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordPitcherWorkload, getUnavailableRelievers } from '@/lib/seasonStore';
+import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordPitcherWorkload, getUnavailableRelievers, commitPlayerStats } from '@/lib/seasonStore';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
 import FullSchedule from '@/components/season/FullSchedule';
+import Standings from '@/components/season/Standings';
+import TeamGameLog from '@/components/season/TeamGameLog';
+import ArchivedBoxScore from '@/components/season/ArchivedBoxScore';
 
 export default function SeasonDashboard() {
   const location = useLocation();
@@ -20,10 +23,10 @@ export default function SeasonDashboard() {
   const [userGameNumber, setUserGameNumber] = useState(1);
   const [loading, setLoading] = useState(false);
   const [simulating, setSimulating] = useState(false);
-  const [activeTab, setActiveTab] = useState('schedule'); // schedule, results, leaders, standings
+  const [activeTab, setActiveTab] = useState('schedule');
+  const [selectedArchive, setSelectedArchive] = useState(null);
   const pendingUserTeam = location.state?.userTeam || null;
 
-  // Load current season
   useEffect(() => {
     loadSeason();
   }, []);
@@ -31,30 +34,25 @@ export default function SeasonDashboard() {
   const loadSeason = async () => {
     try {
       setLoading(true);
-      // Get active season
       const seasons = await base44.entities.Season.filter({ status: 'active' });
       if (seasons.length === 0) {
-        // No active season and no team selected - send to team selection
         if (!pendingUserTeam) {
           window.location.href = '/season-setup';
           return;
         }
-        // No active season - create one with selected team
         await createNewSeason();
         return;
       }
-      
+
       const currentSeason = seasons[0];
       setSeason(currentSeason);
 
-      // Load schedule for current game day
       const daySchedule = await base44.entities.Schedule.filter({
         seasonId: currentSeason.id,
         gameDay: currentSeason.currentGameDay || 1
       });
       setSchedule(daySchedule);
 
-      // Load recent results
       const results = await base44.entities.GameResult.filter(
         { seasonId: currentSeason.id },
         '-gameDay',
@@ -62,11 +60,9 @@ export default function SeasonDashboard() {
       );
       setGameResults(results);
 
-      // Resolve the user's current (next unplayed) game via the single source of truth
       const userGame = await getCurrentUserGame(currentSeason);
       setCurrentUserGame(userGame);
 
-      // Compute probable starters for the user's next game (dashboard display)
       if (userGame) {
         const rotState = await loadRotationStateForActiveSeason();
         const oppTeam = userGame.homeTeam === currentSeason.userTeam ? userGame.awayTeam : userGame.homeTeam;
@@ -78,7 +74,6 @@ export default function SeasonDashboard() {
         setProbableStarters(null);
       }
 
-      // Compute user's game number (1-162) from completed user schedule rows
       try {
         const userSched = await base44.entities.Schedule.filter({
           seasonId: currentSeason.id, isUserGame: true,
@@ -97,7 +92,6 @@ export default function SeasonDashboard() {
   const createNewSeason = async () => {
     const userTeam = pendingUserTeam || 'tigers';
     try {
-      // Archive any existing active seasons to prevent duplicate-season pollution
       await archiveActiveSeasons();
       const newSeason = await base44.entities.Season.create({
         year: 1984,
@@ -110,10 +104,9 @@ export default function SeasonDashboard() {
         completedGames: 0,
         totalGames: 2106
       });
-      
-      // Generate full schedule with user's team
+
       await generateSchedule(newSeason.id, userTeam);
-      
+
       setSeason(newSeason);
       loadSeason();
     } catch (error) {
@@ -124,15 +117,10 @@ export default function SeasonDashboard() {
   const generateSchedule = async (seasonId, team) => {
     try {
       setLoading(true);
-      // Clear any existing schedule rows for this season FIRST.
-      // Without this, regeneration appends to the old (possibly broken) schedule.
       await base44.entities.Schedule.deleteMany({ seasonId });
-      console.log('Cleared existing schedule rows before regenerating.');
 
-      // Build the schedule locally with the verified generator.
-      const days = buildSchedule(team); // Array<{ day, date, games: [{home, away, isUser}] }>
+      const days = buildSchedule(team);
 
-      // Integrity check before persisting - do not write a broken schedule.
       const errors = verifySchedule(days);
       if (errors.length > 0) {
         console.error('Schedule failed verification:', errors);
@@ -142,7 +130,6 @@ export default function SeasonDashboard() {
         return;
       }
 
-      // Flatten Day objects into Schedule entity rows.
       const rows = [];
       for (const d of days) {
         for (const g of d.games) {
@@ -158,19 +145,15 @@ export default function SeasonDashboard() {
         }
       }
 
-      // Fix stale totalGames on the season entity (old backend may have set 2430).
       await base44.entities.Season.update(seasonId, { totalGames: 2106 });
 
-      // Bulk-create the schedule rows in max-size chunks with a delay to avoid rate limits.
       const CHUNK = 500;
       const delay = (ms) => new Promise(r => setTimeout(r, ms));
       for (let i = 0; i < rows.length; i += CHUNK) {
         await base44.entities.Schedule.bulkCreate(rows.slice(i, i + CHUNK));
         if (i + CHUNK < rows.length) await delay(800);
       }
-      console.log(`Schedule generated locally: ${rows.length} games across ${days.length} days.`);
 
-      // Reload the season + schedule so the UI reflects the fresh data.
       await loadSeason();
     } catch (error) {
       console.error('Failed to generate schedule:', error);
@@ -187,19 +170,18 @@ export default function SeasonDashboard() {
       setSimulating(true);
       const gameDay = season.currentGameDay || 1;
 
-      // Load the full day's schedule from the Schedule entity
       const daySchedule = await base44.entities.Schedule.filter({
         seasonId: season.id,
         gameDay,
       });
 
-      // Sim every game the USER is not playing (the user game is played via playUserGame)
       const toSim = daySchedule.filter(g => !g.isUserGame && g.status !== 'final');
 
-      // Load rotation state for starter selection and rest enforcement
       const rotState = await loadRotationStateForActiveSeason();
 
       const resultRows = [];
+      const allBatting = [];
+      const allPitching = [];
       for (const g of toSim) {
         const homeTeam = g.homeTeam;
         const awayTeam = g.awayTeam;
@@ -214,14 +196,14 @@ export default function SeasonDashboard() {
 
         const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
         const result = buildGameResultFromState(finalState, { headless: true });
+        allBatting.push(...result.batting);
+        allPitching.push(...result.pitching);
 
-        // Advance rotation + record reliever usage for both teams
         if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
         if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
         recordPitcherWorkload(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam), g.gameDate);
         recordPitcherWorkload(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam), g.gameDate);
 
-        // Extract pitcher names from decisions (playerId format: "teamKey|name")
         const winnerName = result.decisions.winner ? result.decisions.winner.split('|')[1] : null;
         const loserName = result.decisions.loser ? result.decisions.loser.split('|')[1] : null;
         const saveName = result.decisions.save ? result.decisions.save.split('|')[1] : null;
@@ -241,6 +223,8 @@ export default function SeasonDashboard() {
         resultRows.push({
           seasonId: season.id,
           gameDay,
+          gameDate: g.gameDate,
+          boxScore: result,
           homeTeam,
           awayTeam,
           homeScore: result.homeScore,
@@ -258,11 +242,9 @@ export default function SeasonDashboard() {
           innings: result.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
         });
 
-        // Yield to UI between games to avoid blocking
         await new Promise(r => setTimeout(r, 0));
       }
 
-      // Day-commit assertion: no team may have two results on the same day
       const teamResultCounts = {};
       for (const r of resultRows) {
         teamResultCounts[r.homeTeam] = (teamResultCounts[r.homeTeam] || 0) + 1;
@@ -270,14 +252,15 @@ export default function SeasonDashboard() {
       }
       for (const [team, count] of Object.entries(teamResultCounts)) {
         if (count > 1) {
-          console.error(`[day-commit] ASSERTION FAILED: ${team} has ${count} results on day ${gameDay} - duplicate schedule detected`);
+          console.error(`[day-commit] ASSERTION FAILED: ${team} has ${count} results on day ${gameDay}`);
         }
       }
 
-      // Persist rotation state (starters + reliever usage tracked during sim)
+      // Commit player stats to PlayerStats entity (Stage 3: stats pipeline)
+      await commitPlayerStats(season.id, allBatting, allPitching);
+
       await persistRotationState(season.id, rotState);
 
-      // Persist all simmed results
       if (resultRows.length > 0) {
         const CHUNK = 50;
         for (let i = 0; i < resultRows.length; i += CHUNK) {
@@ -285,17 +268,14 @@ export default function SeasonDashboard() {
         }
       }
 
-      // Mark those schedule rows final so they aren't re-simmed
       for (const g of toSim) {
         try { await base44.entities.Schedule.update(g.id, { status: 'final' }); } catch (e) { /* non-fatal */ }
       }
 
-      // Update season completed-games count
       await base44.entities.Season.update(season.id, {
         completedGames: (season.completedGames || 0) + resultRows.length,
       });
 
-      // Auto-advance the day if all games (CPU + user) for this day are now final
       await maybeAdvanceDay(season);
 
       await loadSeason();
@@ -312,7 +292,6 @@ export default function SeasonDashboard() {
 
   const playUserGame = () => {
     if (!todaysUserGame || !season) return;
-    // Pass the schedule row ID + gameDate so the rotation logic can enforce day-based rest
     window.location.href = `/?seasonGame=${todaysUserGame.homeTeam},${todaysUserGame.awayTeam},${season.userTeam},${season.id},${todaysUserGame.gameDay},${todaysUserGame.id},${todaysUserGame.gameDate}`;
   };
 
@@ -330,12 +309,12 @@ export default function SeasonDashboard() {
   return (
     <div className="h-[100dvh] bg-background text-foreground flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="shrink-0 border-b border-border bg-card/50 px-6 py-3">
+      <div className="shrink-0 border-b border-border bg-card/50 px-4 md:px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Trophy className="w-6 h-6 text-primary" />
             <div>
-              <h1 className="font-heading text-xl font-bold text-foreground">
+              <h1 className="font-heading text-lg md:text-xl font-bold text-foreground">
                 1984 Season
                 {season?.userTeam && (
                   <span className="text-primary"> · {TEAMS[season.userTeam]?.name || season.userTeam}</span>
@@ -371,7 +350,7 @@ export default function SeasonDashboard() {
       </div>
 
       {/* Action Bar */}
-      <div className="shrink-0 bg-card border-b border-border px-6 py-3">
+      <div className="shrink-0 bg-card border-b border-border px-4 md:px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Button
@@ -424,65 +403,43 @@ export default function SeasonDashboard() {
             ) : null}
           </div>
           <div className="text-sm text-muted-foreground font-heading">
-            {season?.completedGames || 0} / {season?.totalGames || 2106} games completed
+            {season?.completedGames || 0} / {season?.totalGames || 2106} games
           </div>
         </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="shrink-0 bg-card/50 border-b border-border px-6">
-        <div className="grid grid-cols-4 gap-1 py-2">
+      <div className="shrink-0 bg-card/50 border-b border-border px-4 md:px-6">
+        <div className="grid grid-cols-5 gap-1 py-2">
           <button
             onClick={() => setActiveTab('schedule')}
-            className={`font-heading text-sm rounded-md py-2 transition-all ${
-              activeTab === 'schedule'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Today's Games
-          </button>
+            className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'schedule' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >Schedule</button>
           <button
             onClick={() => setActiveTab('results')}
-            className={`font-heading text-sm rounded-md py-2 transition-all ${
-              activeTab === 'results'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Recent Results
-          </button>
-          <button
-            onClick={() => setActiveTab('leaders')}
-            className={`font-heading text-sm rounded-md py-2 transition-all ${
-              activeTab === 'leaders'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            League Leaders
-          </button>
+            className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'results' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >Results</button>
           <button
             onClick={() => setActiveTab('standings')}
-            className={`font-heading text-sm rounded-md py-2 transition-all ${
-              activeTab === 'standings'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Standings
-          </button>
+            className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'standings' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >Standings</button>
+          <button
+            onClick={() => setActiveTab('leaders')}
+            className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'leaders' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >Leaders</button>
+          <button
+            onClick={() => setActiveTab('gamelog')}
+            className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'gamelog' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >Game Log</button>
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-y-auto px-6 py-4">
+      <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4">
         {activeTab === 'schedule' && season && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-heading text-lg font-bold text-foreground">
-                Full Season Schedule
-              </h2>
+              <h2 className="font-heading text-lg font-bold text-foreground">Full Season Schedule</h2>
               <Button
                 onClick={() => generateSchedule(season.id, season.userTeam)}
                 variant="outline"
@@ -510,9 +467,7 @@ export default function SeasonDashboard() {
 
         {activeTab === 'results' && (
           <div className="space-y-3">
-            <h2 className="font-heading text-lg font-bold text-foreground mb-4">
-              Recent Results
-            </h2>
+            <h2 className="font-heading text-lg font-bold text-foreground mb-4">Recent Results</h2>
             {gameResults.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <Trophy className="w-12 h-12 mx-auto mb-3 opacity-50" />
@@ -523,15 +478,19 @@ export default function SeasonDashboard() {
                 {gameResults.map((result) => (
                   <div
                     key={result.id}
-                    className="bg-card border border-border rounded-lg p-4"
+                    onClick={() => result.boxScore && setSelectedArchive(result)}
+                    className={`bg-card border border-border rounded-lg p-4 ${result.boxScore ? 'cursor-pointer hover:border-primary/40 transition-colors' : ''}`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs text-muted-foreground font-heading">
                         Day {result.gameDay} · {result.stadium}
                       </span>
-                      <span className="text-xs text-muted-foreground font-heading">
-                        {result.homeHRs?.length || 0} HRs | {result.awayHRs?.length || 0} HRs
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {result.boxScore && <FileText className="w-3 h-3 text-primary" />}
+                        <span className="text-xs text-muted-foreground font-heading">
+                          {result.homeHRs?.length || 0} HRs | {result.awayHRs?.length || 0} HRs
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
@@ -539,17 +498,13 @@ export default function SeasonDashboard() {
                           <span className="font-heading text-sm font-bold text-foreground">
                             {TEAMS[result.awayTeam]?.abbr || result.awayTeam}
                           </span>
-                          <span className="font-heading text-lg font-bold text-primary">
-                            {result.awayScore}
-                          </span>
+                          <span className="font-heading text-lg font-bold text-primary">{result.awayScore}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="font-heading text-sm font-bold text-foreground">
                             {TEAMS[result.homeTeam]?.abbr || result.homeTeam}
                           </span>
-                          <span className="font-heading text-lg font-bold text-primary">
-                            {result.homeScore}
-                          </span>
+                          <span className="font-heading text-lg font-bold text-primary">{result.homeScore}</span>
                         </div>
                       </div>
                       <div className="text-right">
@@ -568,28 +523,34 @@ export default function SeasonDashboard() {
           </div>
         )}
 
-        {activeTab === 'leaders' && season && (
-          <div className="space-y-6">
-            <h2 className="font-heading text-lg font-bold text-foreground">
-              League Leaders
-            </h2>
-            <LeagueLeaders seasonId={season.id} />
+        {activeTab === 'standings' && season && (
+          <div className="space-y-4">
+            <h2 className="font-heading text-lg font-bold text-foreground mb-4">Standings</h2>
+            <Standings seasonId={season.id} userTeam={season.userTeam} />
           </div>
         )}
 
-        {activeTab === 'standings' && (
-          <div className="space-y-6">
-            <h2 className="font-heading text-lg font-bold text-foreground">
-              Standings
-            </h2>
-            <div className="text-center py-12 text-muted-foreground">
-              <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p className="font-heading">Coming Soon</p>
-              <p className="text-sm mt-2">AL and NL East/Central/West divisions</p>
-            </div>
+        {activeTab === 'leaders' && season && (
+          <div className="space-y-4">
+            <h2 className="font-heading text-lg font-bold text-foreground mb-4">League Leaders</h2>
+            <LeagueLeaders seasonId={season.id} userTeam={season.userTeam} />
+          </div>
+        )}
+
+        {activeTab === 'gamelog' && season && (
+          <div className="space-y-4">
+            <h2 className="font-heading text-lg font-bold text-foreground mb-4">Team Game Log</h2>
+            <TeamGameLog seasonId={season.id} userTeam={season.userTeam} />
           </div>
         )}
       </div>
+
+      {selectedArchive && (
+        <ArchivedBoxScore
+          gameResult={selectedArchive}
+          onClose={() => setSelectedArchive(null)}
+        />
+      )}
     </div>
   );
 }
