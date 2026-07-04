@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Calendar, TrendingUp, Users, Play } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
-import { generateSchedule as buildSchedule, verifySchedule } from '@/lib/seasonSchedule';
+import { generateSchedule as buildSchedule, verifySchedule, formatGameDate } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState } from '@/lib/seasonEngine';
 import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordRelieverUsage, getUnavailableRelievers } from '@/lib/seasonStore';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
@@ -17,6 +17,7 @@ export default function SeasonDashboard() {
   const [gameResults, setGameResults] = useState([]);
   const [currentUserGame, setCurrentUserGame] = useState(null);
   const [probableStarters, setProbableStarters] = useState(null);
+  const [userGameNumber, setUserGameNumber] = useState(1);
   const [loading, setLoading] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [activeTab, setActiveTab] = useState('schedule'); // schedule, results, leaders, standings
@@ -70,12 +71,21 @@ export default function SeasonDashboard() {
         const rotState = await loadRotationStateForActiveSeason();
         const oppTeam = userGame.homeTeam === currentSeason.userTeam ? userGame.awayTeam : userGame.homeTeam;
         setProbableStarters({
-          userSP: getProbableStarter(rotState, currentSeason.userTeam, userGame.gameDay),
-          oppSP: getProbableStarter(rotState, oppTeam, userGame.gameDay),
+          userSP: getProbableStarter(rotState, currentSeason.userTeam, userGame.gameDate),
+          oppSP: getProbableStarter(rotState, oppTeam, userGame.gameDate),
         });
       } else {
         setProbableStarters(null);
       }
+
+      // Compute user's game number (1-162) from completed user schedule rows
+      try {
+        const userSched = await base44.entities.Schedule.filter({
+          seasonId: currentSeason.id, isUserGame: true,
+        }, 'gameDay', 200);
+        const userGamesPlayed = userSched.filter(g => g.status === 'final').length;
+        setUserGameNumber(Math.min(162, userGamesPlayed + 1));
+      } catch (e) { /* non-fatal */ }
 
     } catch (error) {
       console.error('Failed to load season:', error);
@@ -193,8 +203,8 @@ export default function SeasonDashboard() {
         const awayTeam = g.awayTeam;
         const useDH = TEAMS[homeTeam]?.league === 'AL';
 
-        const homeSP = getProbableStarter(rotState, homeTeam, gameDay);
-        const awaySP = getProbableStarter(rotState, awayTeam, gameDay);
+        const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
+        const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
         const unavailableRelievers = {
           home: getUnavailableRelievers(rotState, homeTeam),
           away: getUnavailableRelievers(rotState, awayTeam),
@@ -204,8 +214,8 @@ export default function SeasonDashboard() {
         const result = buildGameResultFromState(finalState, { headless: true });
 
         // Advance rotation + record reliever usage for both teams
-        if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, gameDay);
-        if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, gameDay);
+        if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
+        if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
         recordRelieverUsage(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam));
         recordRelieverUsage(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam));
 
@@ -295,10 +305,13 @@ export default function SeasonDashboard() {
     }
   };
 
+  const todaysUserGame = schedule.find(g => g.isUserGame && g.status !== 'final');
+  const isUserOffDay = !todaysUserGame;
+
   const playUserGame = () => {
-    if (!currentUserGame || !season) return;
-    // Pass the schedule row ID so the atomic commit can mark exactly this game as played
-    window.location.href = `/?seasonGame=${currentUserGame.homeTeam},${currentUserGame.awayTeam},${season.userTeam},${season.id},${currentUserGame.gameDay},${currentUserGame.id}`;
+    if (!todaysUserGame || !season) return;
+    // Pass the schedule row ID + gameDate so the rotation logic can enforce day-based rest
+    window.location.href = `/?seasonGame=${todaysUserGame.homeTeam},${todaysUserGame.awayTeam},${season.userTeam},${season.id},${todaysUserGame.gameDay},${todaysUserGame.id},${todaysUserGame.gameDate}`;
   };
 
   if (loading) {
@@ -327,7 +340,7 @@ export default function SeasonDashboard() {
                 )}
               </h1>
               <p className="text-xs text-muted-foreground font-heading">
-                Day {season?.currentGameDay || 1} of 162 · {schedule[0]?.gameDate || season?.currentDate || 'April 3, 1984'}
+                Game {userGameNumber} of 162 · {formatGameDate(schedule[0]?.gameDate || season?.currentDate)}
               </p>
             </div>
           </div>
@@ -376,7 +389,7 @@ export default function SeasonDashboard() {
                 </>
               )}
             </Button>
-            {currentUserGame && (
+            {todaysUserGame ? (
               <div className="flex items-center gap-3">
                 <Button
                   onClick={playUserGame}
@@ -393,7 +406,20 @@ export default function SeasonDashboard() {
                   </div>
                 )}
               </div>
-            )}
+            ) : isUserOffDay && currentUserGame ? (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-md">
+                  <span className="text-xs font-heading text-amber-400 font-bold">OFF DAY</span>
+                </div>
+                {probableStarters && (
+                  <div className="text-[10px] text-muted-foreground font-heading leading-tight">
+                    <div className="text-amber-400/70">Next game:</div>
+                    <div><span className="text-primary">{probableStarters.userSP?.name || 'TBD'}</span> (you)</div>
+                    <div>vs <span className="text-foreground">{probableStarters.oppSP?.name || 'TBD'}</span></div>
+                  </div>
+                )}
+              </div>
+            ) : null}
           </div>
           <div className="text-sm text-muted-foreground font-heading">
             {season?.completedGames || 0} / {season?.totalGames || 2106} games completed

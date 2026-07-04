@@ -280,9 +280,17 @@ export function getLeagueLeaders(seasonState, stat, type, limit = 10) {
   });
 }
 
-// ── Rotation logic (4-man rotation + 4-day rest enforcement) ──
+// ── Rotation logic (day-based rest: 4 full calendar days between starts) ──
 // rotationState persists on the Season entity:
-// { [teamKey]: { rotation: [name1,name2,name3,name4], rotationIndex, lastStartByPitcher: {name: gameDay}, lastGameRelievers: {name: outs} } }
+// { [teamKey]: { rotation: [name1,name2,name3,name4], rotationIndex, lastStartDateByPitcher: {name: 'YYYY-MM-DD'}, lastGameRelievers: {name: outs} } }
+
+// Compute calendar days between two ISO date strings
+function daysBetween(dateStr1, dateStr2) {
+  if (!dateStr1 || !dateStr2) return Infinity;
+  const d1 = new Date(dateStr1 + 'T00:00:00Z');
+  const d2 = new Date(dateStr2 + 'T00:00:00Z');
+  return Math.round((d2 - d1) / 86400000);
+}
 
 function ensureTeamRotationState(rotationState, teamKey) {
   const team = TEAMS[teamKey];
@@ -291,43 +299,43 @@ function ensureTeamRotationState(rotationState, teamKey) {
     rotationState[teamKey] = {
       rotation: rot.map(p => p.name),
       rotationIndex: 0,
-      lastStartByPitcher: {},
+      lastStartDateByPitcher: {},
       lastGameRelievers: {},
     };
   }
   const rs = rotationState[teamKey];
-  // Migrate old format (lastStarted -> lastStartByPitcher)
-  if (rs.lastStarted && !rs.lastStartByPitcher) {
-    rs.lastStartByPitcher = rs.lastStarted;
-    delete rs.lastStarted;
+  // Migrate old format: lastStartByPitcher (game numbers) -> lastStartDateByPitcher (dates)
+  // Old game numbers are incompatible with date-based logic, so clear them
+  if (rs.lastStartByPitcher && !rs.lastStartDateByPitcher) {
+    rs.lastStartDateByPitcher = {};
+    delete rs.lastStartByPitcher;
   }
   if (!rs.rotation) rs.rotation = rot.map(p => p.name);
   if (rs.rotationIndex === undefined) rs.rotationIndex = 0;
-  if (!rs.lastStartByPitcher) rs.lastStartByPitcher = {};
+  if (!rs.lastStartDateByPitcher) rs.lastStartDateByPitcher = {};
   if (!rs.lastGameRelievers) rs.lastGameRelievers = {};
   return rs;
 }
 
-// Eligibility: a starter is eligible if at least 5 team games have passed since his last start
-export function isStarterEligible(rotationState, teamKey, pitcherName, teamGameNumber) {
+// Eligibility: eligible if 5+ calendar days since last start (4 full rest days). Never-started = eligible.
+export function isStarterEligible(rotationState, teamKey, pitcherName, gameDate) {
   const rs = rotationState?.[teamKey];
   if (!rs) return true;
-  const last = rs.lastStartByPitcher?.[pitcherName];
+  const last = rs.lastStartDateByPitcher?.[pitcherName];
   if (last === undefined) return true;
-  return (teamGameNumber - last) >= 5;
+  return daysBetween(last, gameDate) >= 5;
 }
 
-// Days of rest for a pitcher (Infinity = never started / no data)
-export function getRestDays(rotationState, teamKey, pitcherName, teamGameNumber) {
+// Full rest days elapsed since last start (Infinity = never started)
+export function getRestDays(rotationState, teamKey, pitcherName, gameDate) {
   const rs = rotationState?.[teamKey];
   if (!rs) return Infinity;
-  const last = rs.lastStartByPitcher?.[pitcherName];
+  const last = rs.lastStartDateByPitcher?.[pitcherName];
   if (last === undefined) return Infinity;
-  return teamGameNumber - last;
+  return Math.max(0, daysBetween(last, gameDate) - 1);
 }
 
 // Bullpen day opener: highest-STA reliever excluding closer, subject to unavailability rule.
-// Ties broken by higher tier sum (pitchSpeed + offSpeed + control).
 export function getBullpenDayOpener(rotationState, teamKey) {
   const team = TEAMS[teamKey];
   const bullpen = team.bullpen || [];
@@ -354,68 +362,46 @@ export function getBullpenDayOpener(rotationState, teamKey) {
   return candidates[0];
 }
 
-// Check if a team's game is a bullpen day (slot 4 of the 5-day cycle)
-export function isBullpenDay(teamGameNumber) {
-  return ((teamGameNumber - 1) % 5) === 4;
+// Check if the probable starter for a team on this date is a bullpen opener (fallback, not rotation SP)
+export function isBullpenDayForTeam(rotationState, teamKey, gameDate) {
+  const probable = getProbableStarter(rotationState, teamKey, gameDate);
+  if (!probable) return false;
+  const rotation = TEAMS[teamKey]?.rotation || [];
+  return !rotation.some(p => p.name === probable.name);
 }
 
 // THE single resolver: returns the probable starter object for a team's next game.
-// 5-day cycle: slots 0-3 = rotation[0-3], slot 4 = bullpen day.
-export function getProbableStarter(rotationState, teamKey, teamGameNumber) {
+// Day-based: next = rotation[rotationIndex]; if eligible (4 full rest days), start him (pointer advances on commit);
+// else bullpen day opener (pointer does NOT advance). Off days naturally let SPs rest.
+export function getProbableStarter(rotationState, teamKey, gameDate) {
   const team = TEAMS[teamKey];
   const rot = team.rotation || [];
   if (rot.length === 0) return getBullpenDayOpener(rotationState, teamKey);
 
   const rs = ensureTeamRotationState(rotationState, teamKey);
   const rotation = rs.rotation;
-  const slot = (teamGameNumber - 1) % 5;
-
-  // Bullpen day (slot 4)
-  if (slot >= rotation.length) {
-    return getBullpenDayOpener(rotationState, teamKey);
-  }
-
-  // Regular starter slot
-  const starterName = rotation[slot];
+  const starterName = rotation[rs.rotationIndex % rotation.length];
   const candidate = rot.find(p => p.name === starterName) || rot[0];
 
-  if (isStarterEligible(rotationState, teamKey, starterName, teamGameNumber)) {
+  if (isStarterEligible(rotationState, teamKey, starterName, gameDate)) {
     return candidate;
   }
 
-  // Data corruption: slot's pitcher is ineligible. Skip to next eligible SP.
-  console.error(`[rotation] ${teamKey}: rotation[${slot}] (${starterName}) ineligible on day ${teamGameNumber} - skipping to next eligible SP`);
-  for (let i = 1; i <= rotation.length; i++) {
-    const nextName = rotation[(slot + i) % rotation.length];
-    if (isStarterEligible(rotationState, teamKey, nextName, teamGameNumber)) {
-      return rot.find(p => p.name === nextName) || rot[0];
-    }
-  }
-
-  // Nobody eligible - use most-rested (shouldn't happen with 5-day cycle)
-  console.error(`[rotation] ${teamKey}: NO eligible starters on day ${teamGameNumber} - using most rested`);
-  let best = rot[0], bestRest = -Infinity;
-  for (const p of rot) {
-    const rest = teamGameNumber - (rs.lastStartByPitcher?.[p.name] ?? -99);
-    if (rest > bestRest) { bestRest = rest; best = p; }
-  }
-  return best;
+  // Next SP not yet rested - bullpen day fallback (pointer does NOT advance)
+  return getBullpenDayOpener(rotationState, teamKey);
 }
 
 // Guard: verify a pitcher about to start satisfies rest eligibility.
-// If the pitcher doesn't match the resolver AND is ineligible (short rest, not a pen-day opener),
-// console.error with both names and return the resolver's answer.
-// A short-rest starter must never silently take the mound.
-export function validateStarterGuard(rotationState, teamKey, teamGameNumber, pitcherToUse) {
-  if (!rotationState || !teamKey || !teamGameNumber || !pitcherToUse) return pitcherToUse;
-  const resolverAnswer = getProbableStarter(rotationState, teamKey, teamGameNumber);
+export function validateStarterGuard(rotationState, teamKey, gameDate, pitcherToUse) {
+  if (!rotationState || !teamKey || !gameDate || !pitcherToUse) return pitcherToUse;
+  const resolverAnswer = getProbableStarter(rotationState, teamKey, gameDate);
   if (pitcherToUse.name === resolverAnswer?.name) return pitcherToUse;
 
-  const eligible = isStarterEligible(rotationState, teamKey, pitcherToUse.name, teamGameNumber);
-  const penDay = isBullpenDay(teamGameNumber);
-  if (!eligible && !penDay) {
+  const eligible = isStarterEligible(rotationState, teamKey, pitcherToUse.name, gameDate);
+  const isPenDay = isBullpenDayForTeam(rotationState, teamKey, gameDate);
+  if (!eligible && !isPenDay) {
     console.error(
-      `[rotation-guard] ${teamKey} day ${teamGameNumber}: init path was about to use "${pitcherToUse.name}" ` +
+      `[rotation-guard] ${teamKey} ${gameDate}: init path was about to use "${pitcherToUse.name}" ` +
       `but resolver says "${resolverAnswer?.name}". Short-rest starter blocked - using resolver answer.`
     );
     return resolverAnswer;
@@ -423,14 +409,17 @@ export function validateStarterGuard(rotationState, teamKey, teamGameNumber, pit
   return pitcherToUse;
 }
 
-// Call AFTER a game commits to record the start and advance the rotation pointer.
-export function advanceRotation(rotationState, teamKey, starterName, teamGameNumber) {
+// Call AFTER a game commits to record the start date and advance the rotation pointer.
+export function advanceRotation(rotationState, teamKey, starterName, gameDate) {
   const team = TEAMS[teamKey];
   const rot = team.rotation || [];
   if (rot.length === 0) return;
   const rs = ensureTeamRotationState(rotationState, teamKey);
-  rs.lastStartByPitcher[starterName] = teamGameNumber;
-  rs.rotationIndex = ((rs.rotationIndex || 0) + 1) % rs.rotation.length;
+  // Only advance the pointer if this was a rotation SP start (not a bullpen day)
+  if (rs.rotation.includes(starterName)) {
+    rs.lastStartDateByPitcher[starterName] = gameDate;
+    rs.rotationIndex = ((rs.rotationIndex || 0) + 1) % rs.rotation.length;
+  }
 }
 
 // Record yesterday's reliever usage. Call after each game with that team's pitching line.
@@ -452,13 +441,13 @@ export function getUnavailableRelievers(rotationState, teamKey) {
 }
 
 // Backward-compatible wrapper
-export function pickStarter(teamKey, gameDay, rotationState) {
-  return getProbableStarter(rotationState, teamKey, gameDay);
+export function pickStarter(teamKey, gameDate, rotationState) {
+  return getProbableStarter(rotationState, teamKey, gameDate);
 }
 
 // Backward-compatible wrapper - delegates to advanceRotation
-export function recordStart(teamKey, pitcherName, gameDay, rotationState) {
-  advanceRotation(rotationState, teamKey, pitcherName, gameDay);
+export function recordStart(teamKey, pitcherName, gameDate, rotationState) {
+  advanceRotation(rotationState, teamKey, pitcherName, gameDate);
 }
 
 export async function loadRotationStateForActiveSeason() {

@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, recordRelieverUsage, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDay, validateStarterGuard } from '@/lib/seasonStore';
+import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, recordRelieverUsage, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -222,16 +222,17 @@ export default function Home() {
         const seasonId = parts[3] || null;
         const gameDayNum = parts[4] ? parseInt(parts[4], 10) : 1;
         const scheduleId = parts[5] || null;
+        const gameDateStr = parts[6] || null;
         if (!homeTeamKey || !awayTeamKey || !TEAMS[homeTeamKey] || !TEAMS[awayTeamKey]) return;
         setGameMode('season');
         setSeasonUserTeam(userTeamParam);
-        seasonContextRef.current = { seasonId, gameDay: gameDayNum, homeTeam: homeTeamKey, awayTeam: awayTeamKey, userTeam: userTeamParam, scheduleId };
-        // Load rotation state and pick starters (4-day cooldown enforced)
+        seasonContextRef.current = { seasonId, gameDay: gameDayNum, gameDate: gameDateStr, homeTeam: homeTeamKey, awayTeam: awayTeamKey, userTeam: userTeamParam, scheduleId };
+        // Load rotation state and pick starters (day-based rest enforced)
         const rotState = await loadRotationStateForActiveSeason();
         seasonRotationStateRef.current = rotState;
         const oppTeamKey = (userTeamParam === homeTeamKey) ? awayTeamKey : homeTeamKey;
-        const userStarter = getProbableStarter(rotState, userTeamParam, gameDayNum);
-        const cpuStarter = getProbableStarter(rotState, oppTeamKey, gameDayNum);
+        const userStarter = getProbableStarter(rotState, userTeamParam, gameDateStr);
+        const cpuStarter = getProbableStarter(rotState, oppTeamKey, gameDateStr);
         setForcedStarters({ user: userStarter, cpu: cpuStarter });
         // Season games use the home team's stadium (schedule-determined) - skip BallparkSelect
         const stadium = TEAMS[homeTeamKey].stadium;
@@ -249,7 +250,7 @@ export default function Home() {
         const awayIll = rollIllnessesForTeam(TEAMS[awayTeamKey], false);
         const illPlayers = { home: homeIll, away: awayIll };
         setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
-        setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum });
+        setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum, gameDate: gameDateStr });
         setLoadingScreen(false);
       })();
     }
@@ -419,8 +420,8 @@ export default function Home() {
       effectiveUserStarter = startingPitcher || forcedStarters.user;
     }
     // Guard: verify opponent starter satisfies rest eligibility (prevents short-rest starters)
-    if (gameMode === 'season' && seasonRotationStateRef.current && lineupPhase.gameDay) {
-      adjustedOpponentSP = validateStarterGuard(seasonRotationStateRef.current, cpuTeamKey, lineupPhase.gameDay, adjustedOpponentSP);
+    if (gameMode === 'season' && seasonRotationStateRef.current && lineupPhase.gameDate) {
+      adjustedOpponentSP = validateStarterGuard(seasonRotationStateRef.current, cpuTeamKey, lineupPhase.gameDate, adjustedOpponentSP);
     }
     startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, effectiveUserStarter, adjustedOpponentSP, seasonUser);
   }, [lineupPhase, startGame, gameMode, forcedStarters]);
@@ -966,8 +967,8 @@ export default function Home() {
           result.awayHRs = summary.homeRuns.filter(hr => hr.teamKey === state.awayTeam).map(hr => ({ playerName: hr.name, inning: hr.inning || 0 }));
           await base44.entities.GameResult.create(result);
           const rotState = seasonRotationStateRef.current;
-          if (state.homeStartingPitcherName) advanceRotation(rotState, state.homeTeam, state.homeStartingPitcherName, ctx.gameDay);
-          if (state.awayStartingPitcherName) advanceRotation(rotState, state.awayTeam, state.awayStartingPitcherName, ctx.gameDay);
+          if (state.homeStartingPitcherName) advanceRotation(rotState, state.homeTeam, state.homeStartingPitcherName, ctx.gameDate);
+          if (state.awayStartingPitcherName) advanceRotation(rotState, state.awayTeam, state.awayStartingPitcherName, ctx.gameDate);
           recordRelieverUsage(rotState, state.homeTeam, summary.pitching.filter(p => p.teamKey === state.homeTeam));
           recordRelieverUsage(rotState, state.awayTeam, summary.pitching.filter(p => p.teamKey === state.awayTeam));
           if (ctx.seasonId) await persistRotationState(ctx.seasonId, rotState);
@@ -1766,7 +1767,8 @@ export default function Home() {
         forcedUserSP={forcedStarters?.user || null}
         seasonGameDay={lineupPhase.gameDay}
         seasonRotationState={lineupPhase.rotationState}
-        isBullpenDay={lineupPhase.gameDay ? isBullpenDay(lineupPhase.gameDay) : false}
+        isBullpenDay={lineupPhase.gameDate && lineupPhase.rotationState ? isBullpenDayForTeam(lineupPhase.rotationState, lineupPhase.seasonUserTeam || lineupPhase.home, lineupPhase.gameDate) : false}
+        seasonGameDate={lineupPhase.gameDate}
       />
       {pregameIllnesses && (
         <PregameIllnessModal

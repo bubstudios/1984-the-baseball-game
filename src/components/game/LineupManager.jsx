@@ -178,7 +178,7 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
   );
 }
 
-export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, weather, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [], seasonMode = false, forcedOpponentSP = null, forcedUserSP = null, seasonGameDay = null, seasonRotationState = null, isBullpenDay = false }) {
+export default function LineupManager({ teamKey, teamData, opponentTeamData, useDH, parkTeam, weather, onConfirm, onBack, illPlayerNames = [], opponentIllPlayerNames = [], seasonMode = false, forcedOpponentSP = null, forcedUserSP = null, seasonGameDate = null, seasonRotationState = null, isBullpenDay = false }) {
   const illSet = useMemo(() => new Set(illPlayerNames), [illPlayerNames]);
   const oppIllSet = useMemo(() => new Set(opponentIllPlayerNames), [opponentIllPlayerNames]);
   const rotationPitchers = useMemo(() => (teamData.rotation || []).filter(p => !illSet.has(p.name)), [teamData, illSet]);
@@ -352,11 +352,11 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
 
   const handleConfirm = () => {
     // Season mode: validate no ineligible SP is selected
-    if (seasonMode && seasonRotationState && seasonGameDay) {
+    if (seasonMode && seasonRotationState && seasonGameDate) {
       const spToCheck = useDH ? selectedPitcherData : (lineup.find(s => s.assignedPos === 'SP') ? { name: lineup.find(s => s.assignedPos === 'SP').name } : null);
-      if (spToCheck && !isStarterEligible(seasonRotationState, teamKey, spToCheck.name, seasonGameDay)) {
-        const restDays = getRestDays(seasonRotationState, teamKey, spToCheck.name, seasonGameDay);
-        alert(`${spToCheck.name} is on ${restDays}d rest and cannot start today. Minimum 5 days rest required.`);
+      if (spToCheck && !isStarterEligible(seasonRotationState, teamKey, spToCheck.name, seasonGameDate)) {
+        const restDays = getRestDays(seasonRotationState, teamKey, spToCheck.name, seasonGameDate);
+        alert(`${spToCheck.name} has only ${restDays} of 4 rest days - cannot start. Pitchers need 4 full rest days between starts.`);
         return;
       }
     }
@@ -590,11 +590,11 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
                 </option>
               ))}
               {rotationPitchers.map(p => {
-                const eligible = !seasonMode || !seasonRotationState || isStarterEligible(seasonRotationState, teamKey, p.name, seasonGameDay);
-                const restDays = seasonMode && seasonRotationState ? getRestDays(seasonRotationState, teamKey, p.name, seasonGameDay) : Infinity;
+                const eligible = !seasonMode || !seasonRotationState || isStarterEligible(seasonRotationState, teamKey, p.name, seasonGameDate);
+                const restDays = seasonMode && seasonRotationState ? getRestDays(seasonRotationState, teamKey, p.name, seasonGameDate) : Infinity;
                 return (
                   <option key={p.name} value={p.name} disabled={isBullpenDay || !eligible}>
-                    {p.name} - SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}{isBullpenDay ? ' (rest)' : !eligible ? ` (${restDays}d rest)` : ''}
+                    {p.name} - SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}{isBullpenDay ? ' (rest)' : !eligible ? ` (${restDays} of 4 rest days)` : ''}
                   </option>
                 );
               })}
