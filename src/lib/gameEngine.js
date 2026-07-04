@@ -710,18 +710,71 @@ export function attemptDoubleSteal(state) {
   return newState;
 }
 
-// Helper: pick a CPU reliever, excluding closers before the 7th inning
-export function pickCpuReliever(bullpen, inning) {
+// Session 8: Shared CPU reliever selection policy.
+// Used by both cpuDecideSubstitutions (user games + headless sims) and
+// injury/ejection replacement paths. Role-based: closer only in save/tie
+// situations, setup arms in close games, mop-up arms in blowouts, longest-STA
+// in early-inning emergencies.
+export function selectCpuReliever(bullpen, context) {
   if (!bullpen || bullpen.length === 0) return null;
+
   const isCloser = (p) => p.pos === 'CL' || p.assignedPos === 'CL';
-  let candidates;
-  if (inning < 7) {
-    candidates = [...bullpen].filter(p => !isCloser(p)).sort((a, b) => b.control - a.control);
-    if (candidates.length === 0) candidates = [...bullpen].sort((a, b) => b.control - a.control);
-  } else {
-    candidates = [...bullpen].sort((a, b) => b.control - a.control);
+  const inning = context.inning || 1;
+  const cpuScore = context.cpuScore ?? 0;
+  const oppScore = context.oppScore ?? 0;
+  const margin = cpuScore - oppScore;
+  const absMargin = Math.abs(margin);
+  const tierSum = (p) => (p.pitchSpeed || 0) + (p.offSpeed || 0) + (p.control || 0);
+
+  const closers = bullpen.filter(isCloser);
+  const nonClosers = bullpen.filter(p => !isCloser(p));
+
+  // Emergency: closer is the only available pitcher
+  if (nonClosers.length === 0) return closers[0] || bullpen[0];
+
+  // 1. CLOSER enters ONLY when:
+  //    - Late (8th+) AND save situation (leading 1-3), OR
+  //    - 9th+ AND tie game
+  if (closers.length > 0) {
+    const isSaveSituation = margin >= 1 && margin <= 3;
+    const shouldUseCloser = (inning >= 8 && isSaveSituation) || (inning >= 9 && margin === 0);
+    if (shouldUseCloser) {
+      return [...closers].sort((a, b) => tierSum(b) - tierSum(a))[0];
+    }
   }
-  return candidates[0] || null;
+
+  // Rank non-closers by tier sum (best first)
+  const ranked = [...nonClosers].sort((a, b) => tierSum(b) - tierSum(a));
+  const midPoint = Math.ceil(ranked.length / 2);
+  const setupArms = ranked.slice(0, midPoint);
+  const mopUpArms = ranked.slice(midPoint);
+
+  // 2. Innings 1-5 emergency (opener gassed/injury) -> longest-STA non-closer
+  if (inning <= 5) {
+    return [...nonClosers].sort((a, b) => (b.stamina || 0) - (a.stamina || 0))[0];
+  }
+
+  // 3. Blowout (>= 4 either direction) -> mop-up arm
+  if (absMargin >= 4) {
+    return mopUpArms.length > 0 ? mopUpArms[0] : ranked[ranked.length - 1];
+  }
+
+  // 4. Close game (margin <= 3) -> best setup arm
+  //    Optional: handedness tie-break for late and close
+  if (context.dueUpBatterBats && inning >= 8 && setupArms.length > 0) {
+    const batterBats = context.dueUpBatterBats;
+    const matching = setupArms.filter(p => {
+      const pThrows = p.throws || 'R';
+      return (batterBats === 'L' && pThrows === 'R') || (batterBats === 'R' && pThrows === 'L');
+    });
+    if (matching.length > 0) return matching[0];
+  }
+  return setupArms[0] || ranked[0];
+}
+
+// Backward-compatible wrapper: delegates to selectCpuReliever with score context
+export function pickCpuReliever(bullpen, inning, context = {}) {
+  return selectCpuReliever(bullpen, { inning, ...context });
 }
 
 // --- HIT AND RUN ---
@@ -2219,9 +2272,9 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       }
       return newState;
     }
-    // Pitcher was subbed out - replace with bullpen arm (no closers before 7th)
+    // Pitcher was subbed out - replace with bullpen arm (Session 8 policy)
     if (cpuBullpen.length > 0) {
-      const newPitcher = pickCpuReliever(cpuBullpen, newState.inning);
+      const newPitcher = pickCpuReliever(cpuBullpen, inning, { cpuScore, oppScore: userScore });
       if (!newPitcher) return newState;
       const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
       if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
@@ -2279,29 +2332,18 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const shouldChange = (severeFatigue || fatiguePull || walksPull || blowupPull || lateClose) && cpuBullpen.length > 0;
   if (shouldChange) {
     making_pitching_change = true;  // Flag for double-switch evaluation
-    // Bullpen management - closers are for protecting late leads only.
-    const trailing = cpuScore < userScore;
-    const bigDeficit = margin >= 4;
-    // A real save situation: leading by 1-3, 8th inning or later.
-    const saveSituation = hasLead && margin <= 3 && inning >= 8;
-    const isCloser = (p) => p.pos === 'CL' || p.assignedPos === 'CL';
-    let candidates;
-    if (trailing && bigDeficit) {
-      // Getting blown out - mop-up duty, save the good arms. Never a closer.
-      candidates = [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => a.control - b.control);
-      if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => a.control - b.control);
-    } else if (saveSituation) {
-      // Protecting a late lead - bring in the closer if available, else best arm.
-      const closers = [...cpuBullpen].filter(isCloser).sort((a, b) => b.control - a.control);
-      candidates = closers.length > 0 ? closers : [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => b.control - a.control);
-      if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
-    } else {
-      // Everything else (trailing close, tied, middle innings) - best NON-closer arm.
-      // Save the closer for a save situation; don't burn him when behind or in a tie mid-game.
-      candidates = [...cpuBullpen].filter(p => !isCloser(p)).sort((a, b) => b.control - a.control);
-      if (candidates.length === 0) candidates = [...cpuBullpen].sort((a, b) => b.control - a.control);
-    }
-    const newPitcher = candidates[0];
+    // Session 8: role-based reliever selection (shared policy)
+    const battingSide = newState.halfInning === 'top' ? 'away' : 'home';
+    const battingLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
+    const batterIdx = battingSide === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
+    const dueUpBatter = battingLineup[batterIdx % battingLineup.length];
+    const newPitcher = selectCpuReliever(cpuBullpen, {
+      inning,
+      cpuScore,
+      oppScore: userScore,
+      dueUpBatterBats: dueUpBatter?.bats,
+    });
+    if (!newPitcher) return newState;
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
     const oldPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
     if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;

@@ -508,9 +508,12 @@ export default function Home() {
         const bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
         setEjectionResult({ ejectedSide, bullpen });
       } else {
-        // CPU team ejection - auto-select best reliever (no closers before 7th)
+        // CPU team ejection - auto-select reliever (Session 8 policy)
         const bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
-        const newReliever = pickCpuReliever(bullpen, gameState.inning);
+        const newReliever = pickCpuReliever(bullpen, gameState.inning, {
+          cpuScore: gameState.score[ejectedSide],
+          oppScore: gameState.score[ejectedSide === 'home' ? 'away' : 'home'],
+        });
         if (newReliever) {
           const newState = changePitcher(gameState, newReliever, ejectedSide);
           setGameState(newState);
@@ -1606,7 +1609,10 @@ export default function Home() {
         setPitcherInjury({ ...injury, bullpen });
       } else {
         const bullpen = injury.side === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
-        const newReliever = pickCpuReliever(bullpen, gameState.inning);
+        const newReliever = pickCpuReliever(bullpen, gameState.inning, {
+          cpuScore: gameState.score[injury.side],
+          oppScore: gameState.score[injury.side === 'home' ? 'away' : 'home'],
+        });
         if (newReliever) {
           const newState = changePitcher(gameState, newReliever, injury.side);
           delete newState._pendingPitcherInjury;
