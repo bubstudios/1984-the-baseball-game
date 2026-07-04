@@ -402,6 +402,27 @@ export function getProbableStarter(rotationState, teamKey, teamGameNumber) {
   return best;
 }
 
+// Guard: verify a pitcher about to start satisfies rest eligibility.
+// If the pitcher doesn't match the resolver AND is ineligible (short rest, not a pen-day opener),
+// console.error with both names and return the resolver's answer.
+// A short-rest starter must never silently take the mound.
+export function validateStarterGuard(rotationState, teamKey, teamGameNumber, pitcherToUse) {
+  if (!rotationState || !teamKey || !teamGameNumber || !pitcherToUse) return pitcherToUse;
+  const resolverAnswer = getProbableStarter(rotationState, teamKey, teamGameNumber);
+  if (pitcherToUse.name === resolverAnswer?.name) return pitcherToUse;
+
+  const eligible = isStarterEligible(rotationState, teamKey, pitcherToUse.name, teamGameNumber);
+  const penDay = isBullpenDay(teamGameNumber);
+  if (!eligible && !penDay) {
+    console.error(
+      `[rotation-guard] ${teamKey} day ${teamGameNumber}: init path was about to use "${pitcherToUse.name}" ` +
+      `but resolver says "${resolverAnswer?.name}". Short-rest starter blocked - using resolver answer.`
+    );
+    return resolverAnswer;
+  }
+  return pitcherToUse;
+}
+
 // Call AFTER a game commits to record the start and advance the rotation pointer.
 export function advanceRotation(rotationState, teamKey, starterName, teamGameNumber) {
   const team = TEAMS[teamKey];

@@ -460,7 +460,8 @@ export default function SeasonDashboard() {
                 variant="outline"
                 size="sm"
                 className="gap-2"
-                disabled={loading}
+                disabled={loading || (season.completedGames || 0) > 0}
+                title={(season.completedGames || 0) > 0 ? 'Schedule locked - games already committed' : 'Regenerate schedule'}
               >
                 {loading ? (
                   <>

@@ -199,9 +199,14 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
   // Opponent starting pitcher selection
   const opponentRotation = useMemo(() => (opponentTeamData?.rotation || []).filter(p => !oppIllSet.has(p.name)), [opponentTeamData, oppIllSet]);
   const [opponentSP, setOpponentSP] = useState(forcedOpponentSP?.name || opponentRotation[0]?.name || '');
+  // Season mode: use the resolver's answer directly (forcedOpponentSP).
+  // This is the ONE source of truth - never derive the opponent starter from rotation math here,
+  // because a bullpen-day opener is a reliever and won't be found in opponentRotation,
+  // causing a silent fallback to SP1 (the split-brain bug).
   const opponentSPData = useMemo(() => {
+    if (forcedOpponentSP) return forcedOpponentSP;
     return opponentRotation.find(p => p.name === opponentSP) || opponentRotation[0] || null;
-  }, [opponentRotation, opponentSP]);
+  }, [opponentRotation, opponentSP, forcedOpponentSP]);
 
   // Sync state when team data changes (new team selection)
   useEffect(() => {

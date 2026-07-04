@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, recordRelieverUsage, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDay } from '@/lib/seasonStore';
+import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, recordRelieverUsage, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDay, validateStarterGuard } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -417,6 +417,10 @@ export default function Home() {
       adjustedOpponentSP = forcedStarters.cpu;
       // Respect the user's SP selection (DH mode); fall back to probable starter (no-DH or no selection)
       effectiveUserStarter = startingPitcher || forcedStarters.user;
+    }
+    // Guard: verify opponent starter satisfies rest eligibility (prevents short-rest starters)
+    if (gameMode === 'season' && seasonRotationStateRef.current && lineupPhase.gameDay) {
+      adjustedOpponentSP = validateStarterGuard(seasonRotationStateRef.current, cpuTeamKey, lineupPhase.gameDay, adjustedOpponentSP);
     }
     startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, effectiveUserStarter, adjustedOpponentSP, seasonUser);
   }, [lineupPhase, startGame, gameMode, forcedStarters]);
@@ -969,6 +973,13 @@ export default function Home() {
           if (ctx.seasonId) await persistRotationState(ctx.seasonId, rotState);
           // Atomic commit: mark the schedule row as played so it can't be re-launched
           if (ctx.scheduleId) await markScheduleRowFinal(ctx.scheduleId);
+          // Increment completed-games counter (user games count too, not just simmed ones)
+          if (ctx.seasonId) {
+            try {
+              const s = await base44.entities.Season.get(ctx.seasonId);
+              await base44.entities.Season.update(ctx.seasonId, { completedGames: (s.completedGames || 0) + 1 });
+            } catch (e) { console.error('Failed to increment completedGames:', e); }
+          }
           // Auto-advance the league day if all games for this day are now complete
           if (ctx.seasonId) await maybeAdvanceDay({ id: ctx.seasonId, currentGameDay: ctx.gameDay });
         } catch (e) {
