@@ -57,7 +57,7 @@ import { deepCopyState } from './deepCopyState';
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher };
 
 import { getEffectivePitcher, getPitcherFatigue } from './pitcherFatigue';
-export { getEffectivePitcher, getPitcherFatigue };
+export { getEffectivePitcher };
 
 export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null, umpire = null, startingPitcher = null, opponentStartingPitcher = null) {
   const home = TEAMS[homeTeam];

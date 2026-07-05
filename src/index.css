@@ -90,9 +90,39 @@
 
   * {
     @apply border-border outline-ring/50;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+
+  html, body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
   }
 
   body.disable-overscroll {
     overscroll-behavior: none;
+  }
+
+  /* iOS Safari: prevent text size adjustment on orientation change */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* iOS Safari: prevent rubber-band scrolling on fixed elements */
+  .fixed {
+    -webkit-overflow-scrolling: auto;
+  }
+
+  /* iOS Safari: smooth scrolling for scrollable containers */
+  .overflow-y-auto, .overflow-x-auto, .overflow-auto {
+    -webkit-overflow-scrolling: touch;
   }
 }

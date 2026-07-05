@@ -1876,7 +1876,7 @@ export default function Home() {
 
   return (
     <ErrorBoundary>
-    <div className="h-[100dvh] bg-background text-foreground flex flex-col overflow-hidden">
+    <div className="h-[100dvh] bg-background text-foreground flex flex-col overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       {/* Compact Top Bar */}
       <div className="shrink-0 border-b border-border bg-card/50 px-3 md:px-6 py-1.5 flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0">
@@ -2106,7 +2106,7 @@ export default function Home() {
 
       {/* Action Panel - pinned to bottom on mobile only */}
       {!gameState.gameOver && (
-        <div className="shrink-0 border-t border-border bg-card/90 backdrop-blur px-3 py-2 w-full max-w-2xl mx-auto md:hidden">
+        <div className="shrink-0 border-t border-border bg-card/90 backdrop-blur px-3 py-2 w-full max-w-2xl mx-auto md:hidden" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}>
           <div className="flex items-center justify-center gap-2 mb-1">
             <span className="text-[10px] md:text-xs text-muted-foreground font-heading uppercase tracking-wider">YOU:</span>
             <span className="text-[11px] md:text-sm text-primary font-heading font-bold">
