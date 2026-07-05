@@ -965,7 +965,7 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     if (roll < 0.07) {
       return {
         type: 'altitudeCarry',
-        text: `The thin Atlanta air carries that ball! It looked like a routine fly, but it just kept going - off the warning track and over the wall! The altitude giveth!`,
+        text: `${bn} drives one to deep center - the thin Atlanta air carries it! It looked like a routine fly, but it just kept going - off the warning track and over the wall! The altitude giveth!`,
         bases: 4,
         isHit: true,
         isHR: true,

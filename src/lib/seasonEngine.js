@@ -61,7 +61,13 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
 
     // Process at-bat
     state = processAtBat(state, cpuSelectPitch(state), cpuSelectSwing(state));
-    state = cpuDecideSubstitutions(state, null);
+    // Session 14 fix: evaluate BOTH dugouts' managers. With userTeam=null the function
+    // resolved cpuSide='home' only, so road starters were never hooked (every road
+    // starter threw a complete game). Each call early-returns unless its cpuSide matches
+    // the current pitching side, so calling twice covers both half-innings without
+    // conflict — the home eval fires in the top, the away eval fires in the bottom.
+    state = cpuDecideSubstitutions(state, state.awayTeam);  // evaluates HOME pitcher
+    state = cpuDecideSubstitutions(state, state.homeTeam);  // evaluates AWAY pitcher
 
     // Track scoring
     const runsScored = state.score[battingSide] - prevBattingScore;
