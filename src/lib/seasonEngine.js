@@ -24,13 +24,18 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
   state.homeStartingPitcherName = homeSP?.name || null;
   state.awayStartingPitcherName = awaySP?.name || null;
 
-  // Filter out unavailable relievers (threw >2 IP yesterday) from both bullpens
+  // Filter out unavailable relievers from both bullpens
+  // Session 19 Part 1: Emergency valve - never let bullpen go to 0 (prevents sim stall)
   if (unavailableRelievers) {
     if (unavailableRelievers.home?.length) {
-      state.homeBullpen = state.homeBullpen.filter(p => !unavailableRelievers.home.includes(p.name));
+      const filtered = state.homeBullpen.filter(p => !unavailableRelievers.home.includes(p.name));
+      if (filtered.length > 0) state.homeBullpen = filtered;
+      // else: keep all arms (emergency - least-rested will be used)
     }
     if (unavailableRelievers.away?.length) {
-      state.awayBullpen = state.awayBullpen.filter(p => !unavailableRelievers.away.includes(p.name));
+      const filtered = state.awayBullpen.filter(p => !unavailableRelievers.away.includes(p.name));
+      if (filtered.length > 0) state.awayBullpen = filtered;
+      // else: keep all arms (emergency - least-rested will be used)
     }
   }
 
@@ -210,8 +215,8 @@ function collectBatting(state, side, teamKey, out, hitTracking) {
     // Skip pure pitcher entries (pitcher state pushed to history without a batting lineup entry).
     // These have ip/pitches but no ab — their bb/so are pitching stats, not batting.
     if (gs.ip !== undefined && gs.ab === undefined) continue;
-    // Gate on batting activity (bb is safe here — pitcher-only entries are already skipped)
-    if ((gs.ab || 0) > 0 || (gs.bb || 0) > 0 || (gs.hits || 0) > 0 || (gs.hr || 0) > 0 || (gs.rbi || 0) > 0) {
+    // Session 19 2C: Include runs > 0 so pinch-runners who score appear in the box score
+    if ((gs.ab || 0) > 0 || (gs.bb || 0) > 0 || (gs.hits || 0) > 0 || (gs.hr || 0) > 0 || (gs.rbi || 0) > 0 || (gs.runs || 0) > 0) {
       const pid = playerId(teamKey, player.name);
       const ht = hitTracking[pid] || {};
       out.push({
@@ -244,8 +249,8 @@ function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTrackin
     const bf = bfTracking[pid] || 0;
     const pitches = gs.pitches || 0;
     const outs = gs.outs || Math.round((gs.ip || 0) * 3);
-    // Skip phantom pitchers (never faced a batter, no pitching activity)
-    if (bf === 0 && pitches === 0 && outs === 0) continue;
+    // Session 19 2B: Never render a pitcher line if BF === 0 (phantom suppression)
+    if (bf === 0) continue;
     // Merged history entries store pitcherSo/pitcherBB (prefixed); pitcher-only entries use so/bb
     out.push({
       playerId: pid,
@@ -267,6 +272,8 @@ function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTrackin
 }
 
 // ── Get ordered pitcher list (starter first, current last) ──
+// Session 19 2B: Deduplicate by name, merging gameStats to prevent phantom rows
+// caused by split appearances (same pitcher pushed to history multiple times).
 function getPitcherList(state, side) {
   const current = side === 'home' ? state.homePitcher : state.awayPitcher;
   const history = side === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
@@ -274,10 +281,40 @@ function getPitcherList(state, side) {
     ['SP', 'RP', 'CL'].includes(p.pos) || ['SP', 'RP', 'CL'].includes(p.assignedPos)
   );
   const all = [...pastPitchers];
-  if (!all.find(p => p.name === current?.name)) {
+  if (current && !all.find(p => p.name === current.name)) {
     all.push(current);
   }
-  return all;
+  // Deduplicate by name, merging pitching gameStats
+  const seen = new Map();
+  const deduped = [];
+  for (const p of all) {
+    if (!p || !p.name) continue;
+    if (seen.has(p.name)) {
+      const existing = seen.get(p.name);
+      const eg = existing.gameStats || {};
+      const pg = p.gameStats || {};
+      existing.gameStats = {
+        ...eg,
+        outs: (eg.outs || 0) + (pg.outs || 0),
+        ip: (eg.ip || 0) + (pg.ip || 0),
+        pitches: (eg.pitches || 0) + (pg.pitches || 0),
+        h: (eg.h || 0) + (pg.h || 0),
+        r: (eg.r || 0) + (pg.r || 0),
+        er: (eg.er || 0) + (pg.er || 0),
+        bb: (eg.bb || 0) + (pg.bb || 0),
+        so: (eg.so || 0) + (pg.so || 0),
+        pitcherH: (eg.pitcherH ?? eg.h ?? 0) + (pg.pitcherH ?? pg.h ?? 0),
+        pitcherR: (eg.pitcherR ?? eg.r ?? 0) + (pg.pitcherR ?? pg.r ?? 0),
+        pitcherER: (eg.pitcherER ?? eg.er ?? 0) + (pg.pitcherER ?? pg.er ?? 0),
+        pitcherBB: (eg.pitcherBB ?? eg.bb ?? 0) + (pg.pitcherBB ?? pg.bb ?? 0),
+        pitcherSo: (eg.pitcherSo ?? eg.so ?? 0) + (pg.pitcherSo ?? pg.so ?? 0),
+      };
+    } else {
+      seen.set(p.name, p);
+      deduped.push(p);
+    }
+  }
+  return deduped;
 }
 
 // ── W/L/S from scoring events (headless sim path - accurate) ──

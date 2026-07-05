@@ -3,23 +3,42 @@ import { TEAMS } from '@/lib/gameData';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { determinePitcherDecisions } from '@/lib/pitcherDecisions';
 
+// Session 19 2D: Fix suffix-only names and duplicate last name disambiguation
+const SUFFIXES = ['Jr.', 'Sr.', 'III', 'II', 'IV'];
+
 function lastName(name) {
   if (!name) return '';
   const parts = name.split(' ');
   const last = parts[parts.length - 1];
-  if (['Jr.', 'Sr.', 'III', 'II', 'IV'].includes(last) && parts.length > 1) {
+  if (SUFFIXES.includes(last) && parts.length > 1) {
     return parts[parts.length - 2];
   }
+  // If the entire name is just a suffix (data error), return the full string
   return last;
+}
+
+// Disambiguate duplicate last names with first initial (e.g., "D. Martinez" / "T. Martinez")
+function displayName(name, allNames) {
+  if (!name) return '';
+  const parts = name.split(' ');
+  const ln = lastName(name);
+  const dupes = allNames.filter(n => lastName(n) === ln);
+  if (dupes.length > 1) {
+    const firstInitial = parts[0]?.[0] || '';
+    const suffix = SUFFIXES.includes(parts[parts.length - 1]) ? ' ' + parts[parts.length - 1] : '';
+    return `${firstInitial}. ${ln}${suffix}`;
+  }
+  return name;
 }
 
 function buildFootnotes(allBatters) {
   const parts = [];
+  const allNames = allBatters.map(p => p.name);
   const fmt = (players, key) => {
     const filtered = players.filter(p => (p.gameStats?.[key] || 0) > 0);
     if (filtered.length === 0) return null;
     return filtered.map(p => {
-      const n = lastName(p.name);
+      const n = displayName(p.name, allNames);
       const c = p.gameStats[key];
       return c > 1 ? `${n} ${c}` : n;
     }).join(', ');
@@ -37,11 +56,12 @@ function buildFootnotes(allBatters) {
   return parts.length > 0 ? parts.join('. ') + '.' : null;
 }
 
-function BatterRow({ p }) {
+function BatterRow({ p, allNames }) {
   const isPitcher = ['SP','RP','CL'].includes(p.assignedPos || p.pos);
+  const shown = allNames ? displayName(p.name, allNames) : p.name;
   return (
     <tr className="border-b border-border/30">
-      <td className="py-1 px-1.5 text-foreground font-medium truncate max-w-[120px]">{p.name}</td>
+      <td className="py-1 px-1.5 text-foreground font-medium truncate max-w-[120px]">{shown}</td>
       <td className="text-center py-1 px-1 text-muted-foreground">{p.assignedPos || p.pos}</td>
       <td className="text-center py-1 px-1">{p.gameStats.ab}</td>
       <td className="text-center py-1 px-1">{p.gameStats.hits}</td>
@@ -69,7 +89,7 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
 
   // Collect all pitchers: current pitcher + history + lineup pitchers who pitched
   const pitcherNames = new Set();
-  const allPitchers = [];
+  let allPitchers = [];
   if (pitcher) {
     pitcherNames.add(pitcher.name);
     allPitchers.push(pitcher);
@@ -87,6 +107,29 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
       pitcherNames.add(p.name);
       allPitchers.push(p);
     }
+  });
+
+  // Session 19 2B: Deduplicate by name (merge stats if same pitcher appears twice)
+  const seenP = new Map();
+  allPitchers = allPitchers.filter(p => {
+    if (seenP.has(p.name)) {
+      const existing = seenP.get(p.name);
+      const eg = existing.gameStats || {}, pg = p.gameStats || {};
+      existing.gameStats = {
+        ...eg,
+        outs: (eg.outs || 0) + (pg.outs || 0),
+        ip: (eg.ip || 0) + (pg.ip || 0),
+        pitches: (eg.pitches || 0) + (pg.pitches || 0),
+        h: (eg.h || 0) + (pg.h || 0),
+        r: (eg.r || 0) + (pg.r || 0),
+        er: (eg.er || 0) + (pg.er || 0),
+        bb: (eg.bb || 0) + (pg.bb || 0),
+        so: (eg.so || 0) + (pg.so || 0),
+      };
+      return false;
+    }
+    seenP.set(p.name, p);
+    return true;
   });
 
   return (
@@ -113,7 +156,7 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
           </thead>
           <tbody>
             {allBatters.map((p, i) => (
-              <BatterRow key={i} p={p} />
+              <BatterRow key={i} p={p} allNames={allBatters.map(b => b.name)} />
             ))}
           </tbody>
         </table>

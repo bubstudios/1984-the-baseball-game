@@ -449,12 +449,14 @@ function estimatePitches(outs) {
   return outs * 5;
 }
 
-// Required full rest days after a workload on day D (table from spec)
-function getRequiredRestDays(pitches) {
-  if (pitches >= 60) return 4;  // D+5 = 4 full rest days
-  if (pitches >= 36) return 2;  // D+3 = 2 full rest days
-  if (pitches >= 16) return 1;  // D+2 = 1 full rest day
-  return 0;                      // D+1 = available next day (0 rest days)
+// Session 19 Part 1: outs-based rest tiers (start conservative for 1984).
+// Replaces pitch-based tiers; outs is the authoritative workload measure.
+function getRequiredRestDays(pitches, outs) {
+  const o = outs || 0;
+  if (o <= 3) return 0;  // <= 1 inning: available next day (short relief)
+  if (o <= 6) return 1;  // ~2 innings: down 1 day
+  if (o <= 9) return 2;  // ~3 innings: down 2 days
+  return 3;               // 3+ innings (long relief): down 3 days
 }
 
 // Least-recently-used arm for emergency valve
@@ -512,14 +514,14 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
   let blockingEntry = null;
   let blockingPitches = 0;
   for (const entry of history) {
-    const pitches = entry.pitches || estimatePitches(entry.outs || 0);
-    const requiredRest = getRequiredRestDays(pitches);
-    if (requiredRest === 0) continue; // 1-15 pitches, available next day
+    const requiredRest = getRequiredRestDays(entry.pitches, entry.outs);
+    if (requiredRest === 0) continue; // ≤3 outs, available next day
     const daysSince = daysBetween(entry.date, gameDate);
     if (daysSince <= requiredRest) {
-      if (!blockingEntry || pitches > blockingPitches) {
+      const entryPitches = entry.pitches || estimatePitches(entry.outs || 0);
+      if (!blockingEntry || entryPitches > blockingPitches) {
         blockingEntry = entry;
-        blockingPitches = pitches;
+        blockingPitches = entryPitches;
       }
     }
   }
