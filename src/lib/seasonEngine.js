@@ -197,7 +197,11 @@ function collectBatting(state, side, teamKey, out, hitTracking) {
     if (seen.has(player.name)) continue;
     seen.add(player.name);
     const gs = player.gameStats || {};
-    if (gs.ab > 0 || gs.bb > 0 || gs.hits > 0 || gs.hr > 0 || gs.rbi > 0) {
+    // Skip pure pitcher entries (pitcher state pushed to history without a batting lineup entry).
+    // These have ip/pitches but no ab — their bb/so are pitching stats, not batting.
+    if (gs.ip !== undefined && gs.ab === undefined) continue;
+    // Gate on batting activity (bb is safe here — pitcher-only entries are already skipped)
+    if ((gs.ab || 0) > 0 || (gs.bb || 0) > 0 || (gs.hits || 0) > 0 || (gs.hr || 0) > 0 || (gs.rbi || 0) > 0) {
       const pid = playerId(teamKey, player.name);
       const ht = hitTracking[pid] || {};
       out.push({
@@ -222,27 +226,33 @@ function collectBatting(state, side, teamKey, out, hitTracking) {
 // ── Collect pitching stats from history + current pitcher ──
 function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTracking) {
   const pitchers = getPitcherList(state, side);
+  let realPitcherIdx = 0;
   for (let i = 0; i < pitchers.length; i++) {
     const pitcher = pitchers[i];
     const gs = pitcher.gameStats || {};
     const pid = playerId(teamKey, pitcher.name);
-    const ip = gs.ip || 0;
-    const outs = Math.round(ip * 3); // Convert fractional IP to integer outs
+    const bf = bfTracking[pid] || 0;
+    const pitches = gs.pitches || 0;
+    const outs = gs.outs || Math.round((gs.ip || 0) * 3);
+    // Skip phantom pitchers (never faced a batter, no pitching activity)
+    if (bf === 0 && pitches === 0 && outs === 0) continue;
+    // Merged history entries store pitcherSo/pitcherBB (prefixed); pitcher-only entries use so/bb
     out.push({
       playerId: pid,
       teamKey,
       name: pitcher.name,
-      gs: i === 0 ? 1 : 0,
+      gs: realPitcherIdx === 0 ? 1 : 0,
       outs,
-      h: gs.h || 0,
-      r: gs.r || 0,
-      er: gs.er || 0,
-      bb: gs.bb || 0,
-      so: gs.so || 0,
+      h: gs.pitcherH ?? gs.h ?? 0,
+      r: gs.pitcherR ?? gs.r ?? 0,
+      er: gs.pitcherER ?? gs.er ?? 0,
+      bb: gs.pitcherBB ?? gs.bb ?? 0,
+      so: gs.pitcherSo ?? gs.so ?? 0,
       hr: hrAllowedTracking[pid] || 0,
-      bf: bfTracking[pid] || 0,
-      pitches: gs.pitches || 0,
+      bf,
+      pitches,
     });
+    realPitcherIdx++;
   }
 }
 

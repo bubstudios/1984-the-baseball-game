@@ -127,7 +127,7 @@ export function changePitcher(state, newPitcher, side) {
   const archetype = newPitcher.temperament || 'PROFESSIONAL';
   const composureState = initializePitcherComposure(newPitcher, archetype);
   const pitcherRole = newPitcher.pos || 'SP';
-  const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: composureState, _reachBackUses: 0, _reachBackPitcher: newPitcher.name };
+  const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: composureState, _reachBackUses: 0, _reachBackPitcher: newPitcher.name };
 
   const oldPitcher = isHome ? newState.homePitcher : newState.awayPitcher;
   if (isHome) {
@@ -166,6 +166,7 @@ export function changePitcher(state, newPitcher, side) {
       ...existing.gameStats,
       pitches: oldPitcher.gameStats.pitches,
       ip: oldPitcher.gameStats.ip,
+      outs: oldPitcher.gameStats.outs || Math.round((oldPitcher.gameStats.ip || 0) * 3),
       pitcherSo: oldPitcher.gameStats.so,
       pitcherBB: oldPitcher.gameStats.bb,
       pitcherH: oldPitcher.gameStats.h,

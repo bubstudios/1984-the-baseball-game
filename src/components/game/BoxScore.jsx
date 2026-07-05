@@ -55,7 +55,11 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
   // Merge active lineup + player history (deduplicate by name)
   const activeNames = new Set(lineup.map(p => p.name));
   const historical = (playerHistory || []).filter(p => !activeNames.has(p.name));
-  const allBatters = [...lineup, ...historical];
+  const allBatters = [...lineup, ...historical].filter(p => {
+    const gs = p.gameStats || {};
+    // Skip pure pitcher entries (pitcher state with ip but no ab — their bb/so are pitching stats)
+    return !(gs.ip !== undefined && gs.ab === undefined);
+  });
   const footnotes = buildFootnotes(allBatters);
 
   // Collect all pitchers: current pitcher + history + lineup pitchers who pitched
