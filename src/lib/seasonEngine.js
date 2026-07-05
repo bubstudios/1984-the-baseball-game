@@ -8,6 +8,7 @@ import {
   cpuDecideSubstitutions, getCurrentBatter, getCurrentPitcher,
 } from './gameEngine';
 import { playerId } from './seasonStore';
+import { validateGameBoxScore } from './boxScoreValidators';
 
 /**
  * Simulate a complete game headlessly (CPU vs CPU).
@@ -104,6 +105,15 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
 
   // Attach tracking for buildGameResultFromState
   state._tracking = { scoringEvents, hitTracking, hrTracking, bfTracking, hrAllowedTracking };
+
+  // Loud-failing validation per Session 17/18 spec
+  try {
+    const boxResult = buildGameResultFromState(state);
+    validateGameBoxScore(state, boxResult);
+  } catch (e) {
+    console.error('[seasonEngine] Validator failed to run:', e);
+  }
+
   return state;
 }
 

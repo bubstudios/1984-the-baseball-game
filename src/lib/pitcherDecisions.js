@@ -147,6 +147,22 @@ export function determinePitcherDecisions(state) {
     }
   }
 
+  // No decisions for pitchers who never faced a batter (0 BF = 0 pitches and 0 IP)
+  const hasPitched = (name, side) => {
+    if (!name) return false;
+    const stats = findPitcherStats(state, name, side);
+    if (!stats) return false;
+    const gs = stats.gameStats || {};
+    return (gs.pitches || 0) > 0 || (gs.ip || 0) > 0 || (gs.outs || 0) > 0;
+  };
+  if (!hasPitched(winName, winningSide)) {
+    const relievers = getRelieversFromHistory(state, winningSide)
+      .filter(p => p.name !== lossName && ((p.gameStats?.pitches || 0) > 0 || (p.gameStats?.ip || 0) > 0))
+      .sort((a, b) => (b.gameStats?.ip || 0) - (a.gameStats?.ip || 0));
+    winName = relievers.length > 0 ? relievers[0].name : winName;
+  }
+  if (saveName && !hasPitched(saveName, winningSide)) saveName = null;
+
   return {
     win: { name: winName, side: winningSide },
     loss: { name: lossName, side: losingSide },

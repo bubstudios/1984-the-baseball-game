@@ -172,7 +172,7 @@ function createPitcherState(p) {
     ...p, 
     pitchCount: 0, 
     pitches: p.pitches || DEFAULT_PITCHES, 
-    gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 },
+    gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 },
     _composure: composureState,
   };
 }
@@ -258,7 +258,7 @@ function processComposureEvents(state, pitcher) {
           if (state.bases[i]) {
             if (i + 1 >= 3) {
               state.bases[i].gameStats.runs++;
-              scoreRun(state);
+              scoreRun(state); pitcher.gameStats.r++; pitcher.gameStats.er++;
               scored = state.bases[i];
               state.bases[i] = null;
             } else if (!state.bases[i + 1]) {
@@ -530,7 +530,7 @@ function advanceRunners(state, bases, batter, isHit = false, hitDirection = null
 }
 
 function recordOut(state) {
-  state.outs++; getCurrentPitcher(state).gameStats.ip += 1/3;
+  state.outs++; const _p = getCurrentPitcher(state); _p.gameStats.outs = (_p.gameStats.outs || 0) + 1; _p.gameStats.ip += 1/3;
   if (state.outs >= 3) {
     // Capture pitcher name BEFORE endHalfInning potentially changes the pitcher
     const pitcherName = getCurrentPitcher(state).name;
@@ -1665,7 +1665,7 @@ function processHoldingGame(state) {
       if (state.bases[i]) {
         if (i + 1 >= 3) {
           state.bases[i].gameStats.runs++;
-          scoreRun(state);
+          scoreRun(state); pitcher.gameStats.r++; pitcher.gameStats.er++;
           state.bases[i] = null;
         } else if (!state.bases[i + 1]) {
           state.bases[i + 1] = state.bases[i];
@@ -2268,7 +2268,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     if (cpuBullpen.length > 0) {
       const newPitcher = pickCpuReliever(cpuBullpen, inning, { cpuScore, oppScore: userScore });
       if (!newPitcher) return newState;
-      const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
+      const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
       if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
       const bpi2 = cpuBullpen.findIndex(p => p.name === newPitcher.name); if (bpi2 >= 0) cpuBullpen.splice(bpi2, 1);
       if (!newState[hk2].find(p => p.name === oldP.name)) newState[hk2].push({ ...oldP });
@@ -2358,7 +2358,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       dueUpBatterBats: dueUpBatter?.bats,
     });
     if (!newPitcher) return newState;
-    const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
+    const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
     const oldPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
     if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
     const bpi = cpuBullpen.findIndex(p => p.name === newPitcher.name); if (bpi >= 0) cpuBullpen.splice(bpi, 1);

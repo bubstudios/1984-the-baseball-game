@@ -5,7 +5,12 @@ import { determinePitcherDecisions } from '@/lib/pitcherDecisions';
 
 function lastName(name) {
   if (!name) return '';
-  return name.split(' ').pop();
+  const parts = name.split(' ');
+  const last = parts[parts.length - 1];
+  if (['Jr.', 'Sr.', 'III', 'II', 'IV'].includes(last) && parts.length > 1) {
+    return parts[parts.length - 2];
+  }
+  return last;
 }
 
 function buildFootnotes(allBatters) {
