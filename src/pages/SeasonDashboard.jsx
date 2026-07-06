@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Calendar, TrendingUp, Play, FileText } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
-import { generateSchedule as buildSchedule, verifySchedule, formatGameDate } from '@/lib/seasonSchedule';
+import { generateScheduleValidated, formatGameDate } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState } from '@/lib/seasonEngine';
 import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordPitcherWorkload, getUnavailableRelievers, commitPlayerStats } from '@/lib/seasonStore';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
@@ -119,14 +119,12 @@ export default function SeasonDashboard() {
       setLoading(true);
       await base44.entities.Schedule.deleteMany({ seasonId });
 
-      const days = buildSchedule(team);
-
-      const errors = verifySchedule(days);
+      const { days, errors, attempts } = generateScheduleValidated(team);
       if (errors.length > 0) {
-        console.error('Schedule failed verification:', errors);
+        console.error(`Schedule failed verification after ${attempts} attempts:`, errors);
         const shown = errors.slice(0, 8).join('\n');
         const more = errors.length > 8 ? `\n...and ${errors.length - 8} more` : '';
-        alert(`Schedule generation failed integrity check:\n\n${shown}${more}`);
+        alert(`Schedule generation failed integrity check after ${attempts} attempts:\n\n${shown}${more}`);
         return;
       }
 

@@ -100,9 +100,10 @@ function splitIntoSeries(total) {
       remaining = 0;
     }
   }
-  // Merge any 2-game remainder into previous series
+  // Merge any 2-game remainder into previous series (cap merged length at 4
+  // to avoid 5-game series that are hard to place consecutively)
   for (let i = series.length - 1; i >= 0; i--) {
-    if (series[i] <= 2 && i > 0) {
+    if (series[i] <= 2 && i > 0 && series[i - 1] < 4) {
       series[i - 1] += series[i];
       series.splice(i, 1);
     }
@@ -151,7 +152,7 @@ export function generateSchedule(userTeam) {
   const allStarBreak = new Set(['1984-07-09', '1984-07-10', '1984-07-11']);
   const calendarDates = [];
   const calDate = new Date(Date.UTC(1984, 3, 3));
-  const calEnd = new Date(Date.UTC(1984, 8, 30));
+  const calEnd = new Date(Date.UTC(1984, 9, 14)); // Oct 14 - extended for placement safety
   while (calDate <= calEnd) {
     const dateStr = calDate.toISOString().split('T')[0];
     if (!allStarBreak.has(dateStr)) calendarDates.push(dateStr);
@@ -186,8 +187,33 @@ export function generateSchedule(userTeam) {
     if (!placed) unplaced.push(series);
   }
 
-  // Safety net: place any unplaced series as individual games
+  // Pass 2: Place unplaced series on non-consecutive dates (scatter)
+  const stillUnplaced = [];
   for (const series of unplaced) {
+    const placedDates = [];
+    for (const dateStr of calendarDates) {
+      if (placedDates.length >= series.length) break;
+      if (!teamBusy[series.home].has(dateStr) && !teamBusy[series.away].has(dateStr)) {
+        placedDates.push(dateStr);
+      }
+    }
+    if (placedDates.length >= series.length) {
+      for (const dateStr of placedDates) {
+        teamBusy[series.home].add(dateStr);
+        teamBusy[series.away].add(dateStr);
+        if (!dateToGames[dateStr]) dateToGames[dateStr] = [];
+        dateToGames[dateStr].push({
+          home: series.home, away: series.away,
+          isUser: !!(userTeam && (series.home === userTeam || series.away === userTeam)),
+        });
+      }
+    } else {
+      stillUnplaced.push(series);
+    }
+  }
+
+  // Pass 3: Place any still-unplaced series as individual games on any free date
+  for (const series of stillUnplaced) {
     for (let g = 0; g < series.length; g++) {
       let gamePlaced = false;
       for (const dateStr of calendarDates) {
@@ -203,8 +229,9 @@ export function generateSchedule(userTeam) {
           break;
         }
       }
+      // HARD FAIL: never silently drop a game — let the retry loop catch this
       if (!gamePlaced) {
-        console.error(`[schedule] Failed to place game: ${series.away} at ${series.home}`);
+        throw new Error(`Failed to place game: ${series.away} at ${series.home}`);
       }
     }
   }
@@ -321,4 +348,35 @@ export function verifySchedule(schedule) {
   }
 
   return errors;
+}
+
+/**
+ * Generate a schedule with built-in validation retry.
+ * Tries up to maxAttempts times with different random shuffles.
+ * Each attempt generates, places, and verifies the schedule.
+ * Returns { days, errors, attempts } — errors is empty on success.
+ */
+export function generateScheduleValidated(userTeam, maxAttempts = 15) {
+  let lastDays = null;
+  let lastErrors = [];
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const days = generateSchedule(userTeam);
+      const errors = verifySchedule(days);
+      if (errors.length === 0) {
+        console.log(`[schedule] Valid schedule generated on attempt ${attempt}/${maxAttempts}`);
+        return { days, errors: [], attempts: attempt };
+      }
+      console.warn(`[schedule] Attempt ${attempt}/${maxAttempts} failed: ${errors.length} errors — first: ${errors[0]}`);
+      lastDays = days;
+      lastErrors = errors;
+    } catch (e) {
+      console.warn(`[schedule] Attempt ${attempt}/${maxAttempts} threw: ${e.message}`);
+      lastErrors = [e.message];
+    }
+  }
+
+  console.error(`[schedule] All ${maxAttempts} attempts failed`);
+  return { days: lastDays, errors: lastErrors, attempts: maxAttempts };
 }
