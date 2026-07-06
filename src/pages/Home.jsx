@@ -423,9 +423,14 @@ export default function Home() {
       // Respect the user's SP selection (DH mode); fall back to probable starter (no-DH or no selection)
       effectiveUserStarter = startingPitcher || forcedStarters.user;
     }
-    // Guard: verify opponent starter satisfies rest eligibility (prevents short-rest starters)
+    // Guard: verify BOTH starters satisfy rest eligibility (prevents short-rest starters)
+    // Session 23: apply to the USER's starter too — this is the Clemens-4-of-4 fix.
+    // The user can still pick a starter in the UI, but if that pitcher is on short rest,
+    // the guard overrides with the probable (rest-eligible) starter.
     if (gameMode === 'season' && seasonRotationStateRef.current && lineupPhase.gameDate) {
+      const userTeamKey = lineupPhase.seasonUserTeam || lineupPhase.home;
       adjustedOpponentSP = validateStarterGuard(seasonRotationStateRef.current, cpuTeamKey, lineupPhase.gameDate, adjustedOpponentSP);
+      effectiveUserStarter = validateStarterGuard(seasonRotationStateRef.current, userTeamKey, lineupPhase.gameDate, effectiveUserStarter);
     }
     startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, effectiveUserStarter, adjustedOpponentSP, seasonUser);
   }, [lineupPhase, startGame, gameMode, forcedStarters]);

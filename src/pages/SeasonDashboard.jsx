@@ -194,13 +194,23 @@ export default function SeasonDashboard() {
             away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
           };
 
-          const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
+          // Session 23: RETRY on validation failure instead of committing a degraded TBD shell.
+          // A TBD game on the board is a bug, not a state — retry with a fresh sim
+          // (different random seed) up to MAX_RETRIES times before falling back.
+          let finalState = null;
+          let retries = 0;
+          const MAX_RETRIES = 3;
+          while (retries < MAX_RETRIES) {
+            finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
+            if (!finalState._validationFailed) break;
+            console.warn(`[day-commit] ${awayTeam}@${homeTeam} validation failed (attempt ${retries + 1}/${MAX_RETRIES}): ${finalState._validationError}`);
+            retries++;
+          }
 
-          // Session 21 Part 1: BLOCKING GATE - do NOT commit stats if validation failed
-          // But STILL create the GameResult (score only, no boxScore) so standings stay correct
-          // and the schedule row can be marked final (day can advance).
           if (finalState._validationFailed) {
-            console.error(`[day-commit] VALIDATION FAILED ${awayTeam} @ ${homeTeam}: ${finalState._validationError} - committing score without boxScore/stats`);
+            // All retries exhausted — commit score-only result (for standings/day advancement)
+            // but do NOT commit player stats (they're invalid). This is a last resort.
+            console.error(`[day-commit] ${awayTeam}@${homeTeam} failed validation after ${MAX_RETRIES} attempts — committing score-only result`);
             validationFailures++;
             resultRows.push({
               seasonId: season.id,
@@ -223,7 +233,6 @@ export default function SeasonDashboard() {
               stadium: TEAMS[homeTeam]?.stadium || null,
               innings: finalState.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
             });
-            // Still advance rotation (the game did happen) but skip workload + stats
             if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
             if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
             await new Promise(r => setTimeout(r, 0));

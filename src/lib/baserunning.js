@@ -43,9 +43,12 @@ export function cpuDecideSteal(state) {
 }
 
 export function attemptSteal(state, baseIndex) {
-  const runner = state.bases[baseIndex];
-  if (!runner) return state;
+  if (!state.bases[baseIndex]) return state;
   const newState = deepCopyState(state);
+  // Use the CLONE from newState (shared with lineup via deepCopyState's reference Map),
+  // NOT the original from state — otherwise gameStats.sb lands on the wrong object
+  // and collectBatting (which reads from the lineup) never sees the SB.
+  const runner = newState.bases[baseIndex];
   delete newState._wasReachBack;
   const speedFactor = runner.speed / 10;
   const pitcher = getCurrentPitcher(newState);
@@ -55,9 +58,9 @@ export function attemptSteal(state, baseIndex) {
   const pSpeed = effP.effectivePitchSpeed || effP.pitchSpeed;
   const pCtrl = effP.effectiveControl || effP.control;
   let sc = 0.20 + speedFactor * 0.55 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - (pSpeed / 10) * 0.13;
-  if (newState.bases[baseIndex]?._heldClose) {
+  if (runner._heldClose) {
     sc -= HOLDING_GAME_RATES.stealSuccessPenalty;
-    delete newState.bases[baseIndex]._heldClose;
+    delete runner._heldClose;
   }
   sc = Math.max(0.08, Math.min(sc, 0.80));
   if (Math.random() < sc) {
@@ -92,9 +95,11 @@ export function attemptSteal(state, baseIndex) {
 }
 
 export function attemptDoubleSteal(state) {
-  const r1 = state.bases[0], r2 = state.bases[1];
-  if (!r1 || !r2) return state;
+  if (!state.bases[0] || !state.bases[1]) return state;
   const newState = deepCopyState(state);
+  // Use clones from newState (shared with lineup via deepCopyState's reference Map)
+  const r1 = newState.bases[0];
+  const r2 = newState.bases[1];
   delete newState._wasReachBack;
   const pitcher = getCurrentPitcher(newState);
   const effP = getEffectivePitcher(newState) || pitcher;
@@ -105,7 +110,7 @@ export function attemptDoubleSteal(state) {
 
   const sf2 = r2.speed / 10;
   let sc2 = 0.20 + sf2 * 0.55 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - (pSpeed / 10) * 0.13;
-  if (r2._heldClose) { sc2 -= HOLDING_GAME_RATES.stealSuccessPenalty; delete newState.bases[1]._heldClose; }
+  if (r2._heldClose) { sc2 -= HOLDING_GAME_RATES.stealSuccessPenalty; delete r2._heldClose; }
   sc2 = Math.max(0.08, Math.min(sc2, 0.80));
 
   const sf1 = r1.speed / 10;
