@@ -11,12 +11,19 @@ export function pinchHit(state, newPlayer) {
     console.warn(`[pinchHit] ${newPlayer.name} is already in the lineup - skipping duplicate sub`);
     return state;
   }
+  // Session 22 #3: Illegal re-entry guard - a removed player cannot return
+  if (state.removedPlayers && state.removedPlayers.includes(newPlayer.name)) {
+    throw new Error(`Illegal re-entry: ${newPlayer.name} was already removed from the game`);
+  }
   const newState = JSON.parse(JSON.stringify(state));
+  if (!newState.removedPlayers) newState.removedPlayers = [];
   const isAway = newState.halfInning === 'top';
   const lineup = isAway ? newState.awayLineup : newState.homeLineup;
   const batterIdx = isAway ? newState.awayBatterIndex : newState.homeBatterIndex;
   const idx = batterIdx % lineup.length;
   const oldBatter = lineup[idx];
+  // Track removed player so they can never re-enter (pinch-hit, pitch, or field)
+  newState.removedPlayers.push(oldBatter.name);
 
   const isPitcherSlot = ['SP', 'RP', 'CL'].includes(oldBatter.assignedPos) || ['SP', 'RP', 'CL'].includes(oldBatter.pos);
   const benchPlayer = {
@@ -121,7 +128,12 @@ export function defensiveSwitch(state, slotIndex, newPos, newPlayer) {
 }
 
 export function changePitcher(state, newPitcher, side) {
+  // Session 22 #3: Illegal re-entry guard - a pitcher removed from the game cannot return
+  if (state.removedPlayers && state.removedPlayers.includes(newPitcher.name)) {
+    throw new Error(`Illegal re-entry: ${newPitcher.name} was already removed from the game`);
+  }
   const newState = JSON.parse(JSON.stringify(state));
+  if (!newState.removedPlayers) newState.removedPlayers = [];
   // Use explicit side if provided, otherwise fall back to half-inning logic
   const isHome = side ? side === 'home' : newState.halfInning === 'top';
   const archetype = newPitcher.temperament || 'PROFESSIONAL';
@@ -130,6 +142,8 @@ export function changePitcher(state, newPitcher, side) {
   const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: composureState, _reachBackUses: 0, _reachBackPitcher: newPitcher.name };
 
   const oldPitcher = isHome ? newState.homePitcher : newState.awayPitcher;
+  // Track the outgoing pitcher as removed - they cannot re-enter the game
+  newState.removedPlayers.push(oldPitcher.name);
   if (isHome) {
     newState.homePitcher = newP;
   } else {

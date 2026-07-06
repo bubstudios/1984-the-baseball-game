@@ -195,7 +195,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       return newState;
     }
     if (cpuBullpen.length > 0) {
-      const newPitcher = pickCpuReliever(cpuBullpen, inning, { cpuScore, oppScore: userScore });
+      // Session 22 #3: filter out removed players
+      const removedPlayers = newState.removedPlayers || [];
+      const availableBullpen = cpuBullpen.filter(p => !removedPlayers.includes(p.name));
+      const effectiveBullpen = availableBullpen.length > 0 ? availableBullpen : cpuBullpen;
+      const newPitcher = pickCpuReliever(effectiveBullpen, inning, { cpuScore, oppScore: userScore });
       if (!newPitcher) return newState;
       const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
       if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
@@ -252,7 +256,10 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const starterCruising = !isReliever && hasLead && composure >= 35 && !inningBlowup && !totalBlowup && !walksPull;
   if (starterCruising && !forcedHook && !lateClose && !jamHook) return newState;
 
-  if (!isReliever && inning < 6 && !forcedHook && !inningBlowup && !totalBlowup && !walksPull) return newState;
+  // Session 22 #7: 1984 starter hook - don't pull a starter before inning 5
+  // unless the game is genuinely out of hand (6+ runs + composure collapse)
+  if (!isReliever && inning < 5 && !forcedHook && !(totalBlowup && composure < 30)) return newState;
+  if (!isReliever && inning < 6 && !forcedHook && !totalBlowup && !walksPull) return newState;
 
   const shouldChange = (forcedHook || fatigueHook || relieverFatigue || inningBlowup || totalBlowup || jamHook || walksPull || lateClose) && cpuBullpen.length > 0;
   if (shouldChange) {
@@ -260,7 +267,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     const battingLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
     const batterIdx = battingSide === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
     const dueUpBatter = battingLineup[batterIdx % battingLineup.length];
-    const newPitcher = selectCpuReliever(cpuBullpen, {
+    // Session 22 #3: filter out removed players (illegal re-entry guard)
+    const removedPlayers = newState.removedPlayers || [];
+    const availableBullpen = cpuBullpen.filter(p => !removedPlayers.includes(p.name));
+    const effectiveBullpen = availableBullpen.length > 0 ? availableBullpen : cpuBullpen;
+    const newPitcher = selectCpuReliever(effectiveBullpen, {
       inning,
       cpuScore,
       oppScore: userScore,
