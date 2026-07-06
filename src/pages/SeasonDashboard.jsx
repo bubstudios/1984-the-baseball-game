@@ -182,67 +182,85 @@ export default function SeasonDashboard() {
       const resultRows = [];
       const allBatting = [];
       const allPitching = [];
+      let validationFailures = 0;
       for (const g of toSim) {
-        const homeTeam = g.homeTeam;
-        const awayTeam = g.awayTeam;
-        const useDH = TEAMS[homeTeam]?.league === 'AL';
+        try {
+          const homeTeam = g.homeTeam;
+          const awayTeam = g.awayTeam;
+          const useDH = TEAMS[homeTeam]?.league === 'AL';
 
-        const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
-        const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
-        const unavailableRelievers = {
-          home: getUnavailableRelievers(rotState, homeTeam, g.gameDate),
-          away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
-        };
+          const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
+          const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
+          const unavailableRelievers = {
+            home: getUnavailableRelievers(rotState, homeTeam, g.gameDate),
+            away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
+          };
 
-        const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
-        const result = buildGameResultFromState(finalState, { headless: true });
-        allBatting.push(...result.batting);
-        allPitching.push(...result.pitching);
+          const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
 
-        if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
-        if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
-        recordPitcherWorkload(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam), g.gameDate);
-        recordPitcherWorkload(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam), g.gameDate);
+          // Session 21 Part 1: BLOCKING GATE - do NOT commit stats if validation failed
+          if (finalState._validationFailed) {
+            console.error(`[day-commit] SKIPPING ${awayTeam} @ ${homeTeam} - validation failed: ${finalState._validationError}`);
+            validationFailures++;
+            continue;
+          }
 
-        const winnerName = result.decisions.winner ? result.decisions.winner.split('|')[1] : null;
-        const loserName = result.decisions.loser ? result.decisions.loser.split('|')[1] : null;
-        const saveName = result.decisions.save ? result.decisions.save.split('|')[1] : null;
+          const result = buildGameResultFromState(finalState, { headless: true });
+          allBatting.push(...result.batting);
+          allPitching.push(...result.pitching);
 
-        const homeHRs = result.homeRuns.filter(hr => hr.teamKey === homeTeam).map(hr => ({
-          playerName: hr.name,
-          inning: hr.inning,
-        }));
-        const awayHRs = result.homeRuns.filter(hr => hr.teamKey === awayTeam).map(hr => ({
-          playerName: hr.name,
-          inning: hr.inning,
-        }));
+          if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
+          if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
+          recordPitcherWorkload(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam), g.gameDate);
+          recordPitcherWorkload(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam), g.gameDate);
 
-        const homeHits = result.batting.filter(b => b.teamKey === homeTeam).reduce((s, b) => s + b.h, 0);
-        const awayHits = result.batting.filter(b => b.teamKey === awayTeam).reduce((s, b) => s + b.h, 0);
+          const winnerName = result.decisions.winner ? result.decisions.winner.split('|')[1] : null;
+          const loserName = result.decisions.loser ? result.decisions.loser.split('|')[1] : null;
+          const saveName = result.decisions.save ? result.decisions.save.split('|')[1] : null;
 
-        resultRows.push({
-          seasonId: season.id,
-          gameDay,
-          gameDate: g.gameDate,
-          boxScore: result,
-          homeTeam,
-          awayTeam,
-          homeScore: result.homeScore,
-          awayScore: result.awayScore,
-          winner: result.winner,
-          isUserGame: false,
-          homeHits,
-          awayHits,
-          homeHRs,
-          awayHRs,
-          winningPitcher: winnerName,
-          losingPitcher: loserName,
-          savePitcher: saveName,
-          stadium: TEAMS[homeTeam]?.stadium || null,
-          innings: result.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
-        });
+          const homeHRs = result.homeRuns.filter(hr => hr.teamKey === homeTeam).map(hr => ({
+            playerName: hr.name,
+            inning: hr.inning,
+          }));
+          const awayHRs = result.homeRuns.filter(hr => hr.teamKey === awayTeam).map(hr => ({
+            playerName: hr.name,
+            inning: hr.inning,
+          }));
 
-        await new Promise(r => setTimeout(r, 0));
+          const homeHits = result.batting.filter(b => b.teamKey === homeTeam).reduce((s, b) => s + b.h, 0);
+          const awayHits = result.batting.filter(b => b.teamKey === awayTeam).reduce((s, b) => s + b.h, 0);
+
+          resultRows.push({
+            seasonId: season.id,
+            gameDay,
+            gameDate: g.gameDate,
+            boxScore: result,
+            homeTeam,
+            awayTeam,
+            homeScore: result.homeScore,
+            awayScore: result.awayScore,
+            winner: result.winner,
+            isUserGame: false,
+            homeHits,
+            awayHits,
+            homeHRs,
+            awayHRs,
+            winningPitcher: winnerName,
+            losingPitcher: loserName,
+            savePitcher: saveName,
+            stadium: TEAMS[homeTeam]?.stadium || null,
+            innings: result.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
+          });
+
+          await new Promise(r => setTimeout(r, 0));
+        } catch (gameError) {
+          console.error(`[day-commit] Game failed: ${g.awayTeam} @ ${g.homeTeam}:`, gameError);
+          validationFailures++;
+        }
+      }
+
+      if (validationFailures > 0) {
+        console.error(`[day-commit] ${validationFailures} game(s) failed validation and were skipped`);
       }
 
       const teamResultCounts = {};

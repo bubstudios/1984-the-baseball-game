@@ -8,7 +8,7 @@ import {
   cpuDecideSubstitutions, cpuDecideSteal, getCurrentBatter, getCurrentPitcher,
 } from './gameEngine';
 import { playerId } from './seasonStore';
-import { validateGameBoxScore } from './boxScoreValidators';
+import { validateGameBoxScore, validateGameBlocking } from './boxScoreValidators';
 
 /**
  * Simulate a complete game headlessly (CPU vs CPU).
@@ -116,12 +116,15 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
   // Attach tracking for buildGameResultFromState
   state._tracking = { scoringEvents, hitTracking, hrTracking, bfTracking, hrAllowedTracking };
 
-  // Loud-failing validation per Session 17/18 spec
+  // Session 21 Part 1: BLOCKING validation - sets _validationFailed flag
+  // The caller (simulateDay) must check this before committing season stats.
   try {
     const boxResult = buildGameResultFromState(state);
-    validateGameBoxScore(state, boxResult);
+    validateGameBlocking(state, boxResult);
   } catch (e) {
-    console.error('[seasonEngine] Validator failed to run:', e);
+    console.error('[seasonEngine] BLOCKING VALIDATION FAILED:', e.message);
+    state._validationFailed = true;
+    state._validationError = e.message;
   }
 
   return state;

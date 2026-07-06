@@ -504,10 +504,18 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
   // Consecutive-days cap: appeared on D-1 AND D-2 → unavailable on D
   const dayBefore = shiftDate(gameDate, -1);
   const twoDaysBefore = shiftDate(gameDate, -2);
+  const threeDaysBefore = shiftDate(gameDate, -3);
   const appearedYesterday = history.find(e => e.date === dayBefore);
   const appearedDayBefore = history.find(e => e.date === twoDaysBefore);
   if (appearedYesterday && appearedDayBefore) {
     return { available: false, reason: '3 straight days' };
+  }
+
+  // Session 21 Part 2: 3 appearances in last 3 days → unavailable (even if not consecutive)
+  const appeared3DaysAgo = history.find(e => e.date === threeDaysBefore);
+  const appearancesLast3Days = [appearedYesterday, appearedDayBefore, appeared3DaysAgo].filter(Boolean).length;
+  if (appearancesLast3Days >= 3) {
+    return { available: false, reason: '3 of last 3 days' };
   }
 
   // Check ALL appearances: if any appearance's rest requirement isn't met, unavailable
@@ -534,6 +542,28 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
   }
 
   return { available: true, reason: null };
+}
+
+// Session 21 Part 2: Returns a fatigue penalty (0-30) for tired-but-available relievers.
+// 0 = fresh, 10 = slightly tired, 20 = medium-heavy, 30 = heavy (shouldn't be available).
+// The CPU selection can use this to deprioritize tired arms.
+export function getRelieverFatiguePenalty(rotationState, teamKey, pitcherName, gameDate) {
+  const rs = rotationState?.[teamKey];
+  if (!rs || !rs.workload || !rs.workload[pitcherName]) return 0;
+  const history = rs.workload[pitcherName];
+  if (!history || history.length === 0) return 0;
+
+  const dayBefore = shiftDate(gameDate, -1);
+  const lastAppearance = history.find(e => e.date === dayBefore);
+  if (!lastAppearance) return 0;
+
+  const outs = lastAppearance.outs || 0;
+  const pitches = lastAppearance.pitches || estimatePitches(outs);
+
+  if (outs >= 9 || pitches >= 40) return 30;
+  if (outs >= 6 || pitches >= 30) return 20;
+  if (outs >= 3 || pitches >= 18) return 10;
+  return 0;
 }
 
 // Backward-compatible: returns array of unavailable reliever names

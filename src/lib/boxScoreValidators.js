@@ -177,3 +177,45 @@ export function validateGameBoxScore(state, boxResult) {
 
   return { valid: errors.length === 0, errors };
 }
+
+/**
+ * Session 21 Part 1: BLOCKING validator for pitching outs reconciliation.
+ * THROWS on failure - the caller must NOT commit season stats if this throws.
+ */
+export function validatePitchingOuts(state, boxResult) {
+  for (const side of ['home', 'away']) {
+    const teamKey = side === 'home' ? state.homeTeam : state.awayTeam;
+    const totalOuts = (boxResult.pitching || [])
+      .filter(p => p.teamKey === teamKey)
+      .reduce((sum, p) => sum + (p.outs || 0), 0);
+    // Expected outs = 3 * innings fielded
+    // Home pitches the top half; away pitches the bottom half
+    // If game ended in the top of inning N, home pitched N innings, away pitched N-1
+    // If game ended in the bottom of inning N, home pitched N, away pitched N
+    const endedInTop = state.gameOver && state.halfInning === 'top';
+    const expectedOuts = side === 'home'
+      ? (endedInTop ? state.inning - 1 : state.inning) * 3
+      : (endedInTop ? state.inning - 1 : state.inning) * 3;
+
+    if (totalOuts > 0 && Math.abs(totalOuts - expectedOuts) > 2) {
+      throw new Error(
+        `Pitching outs mismatch: ${teamKey} expected ${expectedOuts}, got ${totalOuts}`
+      );
+    }
+  }
+}
+
+/**
+ * Session 21 Part 6: Master blocking validator.
+ * Runs ALL checks. If ANY fails, throws - caller must NOT commit stats.
+ */
+export function validateGameBlocking(state, boxResult) {
+  // Part 1 - the key one: pitching outs must reconcile
+  validatePitchingOuts(state, boxResult);
+
+  // Run the full suite for additional checks
+  const result = validateGameBoxScore(state, boxResult);
+  if (!result.valid) {
+    throw new Error(`Game validation failed: ${result.errors.join('; ')}`);
+  }
+}

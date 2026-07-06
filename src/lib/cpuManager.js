@@ -14,6 +14,7 @@ import {
 } from './gameEngine';
 
 // Session 8: Shared CPU reliever selection policy.
+// Session 21 Part 2: respects reliever rest (fatiguePenalty) and avoids closers in blowouts.
 export function selectCpuReliever(bullpen, context) {
   if (!bullpen || bullpen.length === 0) return null;
 
@@ -24,6 +25,8 @@ export function selectCpuReliever(bullpen, context) {
   const margin = cpuScore - oppScore;
   const absMargin = Math.abs(margin);
   const tierSum = (p) => (p.pitchSpeed || 0) + (p.offSpeed || 0) + (p.control || 0);
+  // Session 21 Part 2: deprioritize tired arms by subtracting fatigue penalty
+  const effectiveTier = (p) => tierSum(p) - (p._fatiguePenalty || 0);
 
   const closers = bullpen.filter(isCloser);
   const nonClosers = bullpen.filter(p => !isCloser(p));
@@ -34,14 +37,19 @@ export function selectCpuReliever(bullpen, context) {
     const isSaveSituation = margin >= 1 && margin <= 3;
     const shouldUseCloser = (inning >= 8 && isSaveSituation) || (inning >= 9 && margin === 0);
     if (shouldUseCloser) {
-      return [...closers].sort((a, b) => tierSum(b) - tierSum(a))[0];
+      return [...closers].sort((a, b) => effectiveTier(b) - effectiveTier(a))[0];
     }
   }
 
-  const ranked = [...nonClosers].sort((a, b) => tierSum(b) - tierSum(a));
+  const ranked = [...nonClosers].sort((a, b) => effectiveTier(b) - effectiveTier(a));
   const midPoint = Math.ceil(ranked.length / 2);
   const setupArms = ranked.slice(0, midPoint);
   const mopUpArms = ranked.slice(midPoint);
+
+  // Session 21 Part 2: use long/mop-up arms in blowouts (absMargin >= 5)
+  if (absMargin >= 5) {
+    return mopUpArms.length > 0 ? mopUpArms[0] : ranked[ranked.length - 1];
+  }
 
   if (inning <= 5) {
     return [...nonClosers].sort((a, b) => (b.stamina || 0) - (a.stamina || 0))[0];
