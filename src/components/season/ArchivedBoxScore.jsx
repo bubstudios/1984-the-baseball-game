@@ -64,6 +64,7 @@ export default function ArchivedBoxScore({ gameResult, onClose }) {
             <th className="text-center py-1 px-1 font-medium">RBI</th>
             <th className="text-center py-1 px-1 font-medium">BB</th>
             <th className="text-center py-1 px-1 font-medium">SO</th>
+            <th className="text-center py-1 px-1 font-medium">SB</th>
           </tr>
         </thead>
         <tbody>
@@ -76,6 +77,7 @@ export default function ArchivedBoxScore({ gameResult, onClose }) {
               <td className="text-center py-1 px-1 text-foreground">{p.rbi}</td>
               <td className="text-center py-1 px-1 text-foreground">{p.bb}</td>
               <td className="text-center py-1 px-1 text-foreground">{p.so}</td>
+              <td className="text-center py-1 px-1 text-foreground">{p.sb || 0}</td>
             </tr>
           ))}
         </tbody>

@@ -199,9 +199,36 @@ export default function SeasonDashboard() {
           const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
 
           // Session 21 Part 1: BLOCKING GATE - do NOT commit stats if validation failed
+          // But STILL create the GameResult (score only, no boxScore) so standings stay correct
+          // and the schedule row can be marked final (day can advance).
           if (finalState._validationFailed) {
-            console.error(`[day-commit] SKIPPING ${awayTeam} @ ${homeTeam} - validation failed: ${finalState._validationError}`);
+            console.error(`[day-commit] VALIDATION FAILED ${awayTeam} @ ${homeTeam}: ${finalState._validationError} - committing score without boxScore/stats`);
             validationFailures++;
+            resultRows.push({
+              seasonId: season.id,
+              gameDay,
+              gameDate: g.gameDate,
+              boxScore: null,
+              homeTeam,
+              awayTeam,
+              homeScore: finalState.score.home,
+              awayScore: finalState.score.away,
+              winner: finalState.score.home > finalState.score.away ? homeTeam : awayTeam,
+              isUserGame: false,
+              homeHits: 0,
+              awayHits: 0,
+              homeHRs: [],
+              awayHRs: [],
+              winningPitcher: null,
+              losingPitcher: null,
+              savePitcher: null,
+              stadium: TEAMS[homeTeam]?.stadium || null,
+              innings: finalState.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
+            });
+            // Still advance rotation (the game did happen) but skip workload + stats
+            if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
+            if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
+            await new Promise(r => setTimeout(r, 0));
             continue;
           }
 
