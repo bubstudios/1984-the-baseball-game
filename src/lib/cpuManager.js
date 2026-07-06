@@ -4,7 +4,7 @@
 import { deepCopyState } from './deepCopyState';
 import { TEAMS, DEFAULT_PITCHES } from './gameData';
 import { initializePitcherComposure } from './pitcherComposure';
-import { getEffectivePitcher } from './pitcherFatigue';
+import { getEffectivePitcher, getPitcherFatigue } from './pitcherFatigue';
 import { pinchHit } from './substitutions';
 import { shouldPinchHit, choose_pinch_hitter } from './pinchHittingDecision';
 import { should_double_switch, find_double_switch_partner, execute_double_switch } from './doubleSwitch';
@@ -233,6 +233,12 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
   const composure = cpuPitcher._composure?.composure ?? 100;
 
+  // Physical fatigue (same state the UI "TIRING" badge displays).
+  // Separate from composure (emotional state) — a starter can be physically
+  // gassed while emotionally fine, and the hook must read this signal.
+  const physFatigue = getPitcherFatigue(ip, cpuPitcher);
+  const fatigueLevel = physFatigue.fatigueLevel; // 0=FRESH, 1-2=TIRING, 3-4=EXHAUSTED
+
   if (cpuPitcher._lastHookInning !== inning) {
     cpuPitcher._lastHookInning = inning;
     cpuPitcher._runsAtInningStart = cpuPitcher.gameStats.r || 0;
@@ -251,17 +257,24 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
   const lateClose = inning >= 8 && (hasLead || margin === 0) && margin <= 3 && (composure < 50 || inning >= 9) && ip >= 2;
 
+  // Fatigue-responsive hook: reads the same physical fatigue state the UI displays.
+  // EXHAUSTED (level 3+): pull regardless of inning/score — arm is gone.
+  // TIRING (level 1+) in 7th+ of a close game: pull (the Hurst case).
+  const closeGame = margin <= 3;
+  const fatigueExhausted = fatigueLevel >= 3;
+  const fatigueTiringLate = fatigueLevel >= 1 && inning >= 7 && closeGame;
+
   const relieverFatigue = isReliever && ip >= maxInnings + 0.5;
 
   const starterCruising = !isReliever && hasLead && composure >= 35 && !inningBlowup && !totalBlowup && !walksPull;
-  if (starterCruising && !forcedHook && !lateClose && !jamHook) return newState;
+  if (starterCruising && !forcedHook && !lateClose && !jamHook && !fatigueExhausted && !fatigueTiringLate) return newState;
 
   // Session 22 #7: 1984 starter hook - don't pull a starter before inning 5
-  // unless the game is genuinely out of hand (6+ runs + composure collapse)
-  if (!isReliever && inning < 5 && !forcedHook && !(totalBlowup && composure < 30)) return newState;
-  if (!isReliever && inning < 6 && !forcedHook && !totalBlowup && !walksPull) return newState;
+  // unless genuinely gassed (fatigueLevel 3+) or game is out of hand (6+ runs + composure collapse)
+  if (!isReliever && inning < 5 && !forcedHook && !fatigueExhausted && !(totalBlowup && composure < 30)) return newState;
+  if (!isReliever && inning < 6 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull) return newState;
 
-  const shouldChange = (forcedHook || fatigueHook || relieverFatigue || inningBlowup || totalBlowup || jamHook || walksPull || lateClose) && cpuBullpen.length > 0;
+  const shouldChange = (forcedHook || fatigueHook || relieverFatigue || inningBlowup || totalBlowup || jamHook || walksPull || lateClose || fatigueExhausted || fatigueTiringLate) && cpuBullpen.length > 0;
   if (shouldChange) {
     const battingSide = newState.halfInning === 'top' ? 'away' : 'home';
     const battingLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
@@ -296,7 +309,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         fl[si] = en;
       }
     }
-    const reason = forcedHook ? 'completely gassed' : fatigueHook ? 'composure fading' : relieverFatigue ? 'arm is tiring' : inningBlowup ? 'rough inning' : totalBlowup ? 'rough outing' : jamHook ? 'inherited jam' : walksPull ? 'lost command' : 'high-leverage situation';
+    const reason = forcedHook ? 'completely gassed' : fatigueExhausted ? 'arm is exhausted' : fatigueTiringLate ? 'tiring in a close one' : fatigueHook ? 'composure fading' : relieverFatigue ? 'arm is tiring' : inningBlowup ? 'rough inning' : totalBlowup ? 'rough outing' : jamHook ? 'inherited jam' : walksPull ? 'lost command' : 'high-leverage situation';
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
 
     const dsLineup = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
