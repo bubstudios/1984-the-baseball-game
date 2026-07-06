@@ -162,6 +162,13 @@ export function validateGameBoxScore(state, boxResult) {
     errors.push(`[VALIDATOR] Game ended without gameOver=true (possible sim stall)`);
   }
 
+  // 12. Session 20 Part 1: Impossible pitching line (K > 0 but outs === 0 = accrual failure)
+  for (const p of (boxResult.pitching || [])) {
+    if ((p.so || 0) > 0 && (p.outs || 0) === 0) {
+      errors.push(`[VALIDATOR] ${p.name} has ${p.so} K but 0 outs - accrual failure (NOT a phantom to suppress)`);
+    }
+  }
+
   if (errors.length > 0) {
     console.error('[BoxScoreValidator] VALIDATION FAILED:');
     errors.forEach(e => console.error(e));

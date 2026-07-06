@@ -75,6 +75,11 @@ export default function LeagueLeaders({ seasonId, userTeam }) {
             return pa >= tg * 3.1;
           }
         }
+        // Session 20 Part 2: counting stats require PA > 0 to exclude pitchers (DH leagues)
+        if (!isPitching) {
+          const pa = (s.atBats || 0) + (s.walks || 0);
+          return pa > 0;
+        }
         return true;
       });
 
@@ -84,6 +89,11 @@ export default function LeagueLeaders({ seasonId, userTeam }) {
         const bv = b[cat.field] || 0;
         return lowerIsBetter ? av - bv : bv - av;
       });
+
+      // Session 20 Part 2: exclude zeros for counting stats (not rate stats)
+      if (!cat.qualify && !cat.lowerIsBetter) {
+        qualified = qualified.filter(s => (s[cat.field] || 0) > 0);
+      }
 
       const top10 = qualified.slice(0, 10);
       setLeaders(top10);
@@ -225,7 +235,7 @@ export default function LeagueLeaders({ seasonId, userTeam }) {
                 {leaders.length === 0 && (
                   <tr>
                     <td colSpan={4} className="text-center py-8 text-muted-foreground">
-                      No stats available yet - play or simulate games
+                      No leaders yet.
                     </td>
                   </tr>
                 )}

@@ -5,7 +5,7 @@
 import { TEAMS } from './gameData';
 import {
   createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing,
-  cpuDecideSubstitutions, getCurrentBatter, getCurrentPitcher,
+  cpuDecideSubstitutions, cpuDecideSteal, getCurrentBatter, getCurrentPitcher,
 } from './gameEngine';
 import { playerId } from './seasonStore';
 import { validateGameBoxScore } from './boxScoreValidators';
@@ -65,6 +65,11 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     if (!bfTracking[pitcherPid]) bfTracking[pitcherPid] = 0;
     bfTracking[pitcherPid]++;
 
+    // Session 20 Layer 1b: CPU steal attempts (were never generated before)
+    if (state.pendingSteal === null || state.pendingSteal === undefined) {
+      const stealBase = cpuDecideSteal(state);
+      if (stealBase >= 0) state.pendingSteal = stealBase;
+    }
     // Process at-bat
     state = processAtBat(state, cpuSelectPitch(state), cpuSelectSwing(state));
     // Session 14 fix: evaluate BOTH dugouts' managers. With userTeam=null the function
@@ -151,10 +156,10 @@ export function buildGameResultFromState(state, options = {}) {
   collectPitching(state, 'home', state.homeTeam, pitching, bfTracking, hrAllowedTracking);
   collectPitching(state, 'away', state.awayTeam, pitching, bfTracking, hrAllowedTracking);
 
-  // Determine W/L/S decisions
+  // Determine W/L/S decisions (Session 20: pass bfTracking for 0-BF filtering)
   const decisions = scoringEvents
-    ? determineDecisionsFromEvents(state, scoringEvents)
-    : determineDecisionsSimplified(state);
+    ? determineDecisionsFromEvents(state, scoringEvents, bfTracking)
+    : determineDecisionsSimplified(state, bfTracking);
 
   // Mark W/L/S on pitching entries
   for (const p of pitching) {
@@ -317,8 +322,22 @@ function getPitcherList(state, side) {
   return deduped;
 }
 
+// Session 20 Part 3: filter to pitchers who actually faced batters (BF > 0)
+function filterActivePitchers(pitchers, teamKey, bfTracking) {
+  const filtered = pitchers.filter(p => {
+    if (bfTracking) {
+      const pid = playerId(teamKey, p.name);
+      return (bfTracking[pid] || 0) > 0;
+    }
+    // Fallback (UI path): any pitching activity = faced a batter
+    const gs = p.gameStats || {};
+    return (gs.outs || 0) > 0 || (gs.pitches || 0) > 0 || (gs.so || 0) > 0 || (gs.bb || 0) > 0 || (gs.h || 0) > 0;
+  });
+  return filtered.length > 0 ? filtered : pitchers;
+}
+
 // ── W/L/S from scoring events (headless sim path - accurate) ──
-function determineDecisionsFromEvents(state, scoringEvents) {
+function determineDecisionsFromEvents(state, scoringEvents, bfTracking) {
   const homeWon = state.score.home > state.score.away;
   const winningSide = homeWon ? 'home' : 'away';
   const losingSide = homeWon ? 'away' : 'home';
@@ -340,12 +359,26 @@ function determineDecisionsFromEvents(state, scoringEvents) {
     }
   }
 
-  // Winning pitcher: starter if 15+ outs (5 IP) and left with lead; else most effective reliever
-  const winningPitchers = getPitcherList(state, winningSide);
+  // Session 20 Part 3: filter to pitchers with BF > 0 (skip 0-BF phantoms)
+  const winningPitchers = filterActivePitchers(getPitcherList(state, winningSide), winningTeamKey, bfTracking);
+  const losingPitchers = filterActivePitchers(getPitcherList(state, losingSide), losingTeamKey, bfTracking);
+
+  // Session 20 Part 4: walk-off check - if the winning run scored while tied,
+  // the winning team's final pitcher gets the W (not a save)
+  const lastEvent = scoringEvents[scoringEvents.length - 1];
+  const isWalkOff = lastEvent &&
+    lastEvent.battingSide === 'home' &&
+    state.inning >= 9 &&
+    (lastEvent.scoreAfter.home - lastEvent.runs) === lastEvent.scoreAfter.away;
+
+  // Winning pitcher
   const winningStarter = winningPitchers[0];
   const starterOuts = Math.round((winningStarter?.gameStats?.ip || 0) * 3);
   let winnerPitcher;
-  if (starterOuts >= 15) {
+  if (isWalkOff) {
+    // Walk-off: final pitcher of the winning team gets the W
+    winnerPitcher = winningPitchers[winningPitchers.length - 1];
+  } else if (starterOuts >= 15) {
     winnerPitcher = winningStarter;
   } else {
     winnerPitcher = winningPitchers.slice(1).sort((a, b) =>
@@ -353,14 +386,13 @@ function determineDecisionsFromEvents(state, scoringEvents) {
     )[0] || winningPitchers[0];
   }
 
-  // Losing pitcher: the one who gave up the go-ahead run
-  const losingPitchers = getPitcherList(state, losingSide);
+  // Losing pitcher: the one who gave up the go-ahead run (must have BF > 0)
   const loserPitcher = losingPitchers.find(p => p.name === lastLeadChangePitcher) || losingPitchers[0];
 
-  // Save: reliever (not winner) who finished, if margin <= 3
+  // Save: only if NOT a walk-off (Part 4)
   const margin = Math.abs(state.score.home - state.score.away);
   let savePitcher = null;
-  if (margin <= 3 && winningPitchers.length > 1) {
+  if (!isWalkOff && margin <= 3 && winningPitchers.length > 1) {
     const finalPitcher = winningPitchers[winningPitchers.length - 1];
     if (finalPitcher.name !== winnerPitcher.name) {
       savePitcher = finalPitcher;
@@ -375,15 +407,16 @@ function determineDecisionsFromEvents(state, scoringEvents) {
 }
 
 // ── W/L/S simplified (UI path - no scoring events) ──
-function determineDecisionsSimplified(state) {
+function determineDecisionsSimplified(state, bfTracking) {
   const homeWon = state.score.home > state.score.away;
   const winningSide = homeWon ? 'home' : 'away';
   const losingSide = homeWon ? 'away' : 'home';
   const winningTeamKey = winningSide === 'home' ? state.homeTeam : state.awayTeam;
   const losingTeamKey = losingSide === 'home' ? state.homeTeam : state.awayTeam;
 
-  const winningPitchers = getPitcherList(state, winningSide);
-  const losingPitchers = getPitcherList(state, losingSide);
+  // Session 20 Part 3: filter to pitchers with BF > 0
+  const winningPitchers = filterActivePitchers(getPitcherList(state, winningSide), winningTeamKey, bfTracking);
+  const losingPitchers = filterActivePitchers(getPitcherList(state, losingSide), losingTeamKey, bfTracking);
 
   // Winner: starter if 5+ IP, else best reliever
   const starterOuts = Math.round((winningPitchers[0]?.gameStats?.ip || 0) * 3);
