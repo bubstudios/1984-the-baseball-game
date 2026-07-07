@@ -340,7 +340,11 @@ export default function SeasonDashboard() {
 
   const playUserGame = () => {
     if (!todaysUserGame || !season) return;
-    window.location.href = `/?seasonGame=${todaysUserGame.homeTeam},${todaysUserGame.awayTeam},${season.userTeam},${season.id},${todaysUserGame.gameDay},${todaysUserGame.id},${todaysUserGame.gameDate}`;
+    // Session 23: pass the resolved starter NAMES in the launch URL so Home.jsx
+    // uses the exact same pitcher the dashboard displayed — no re-resolution.
+    const userSPName = probableStarters?.userSP?.name ? encodeURIComponent(probableStarters.userSP.name) : '';
+    const oppSPName = probableStarters?.oppSP?.name ? encodeURIComponent(probableStarters.oppSP.name) : '';
+    window.location.href = `/?seasonGame=${todaysUserGame.homeTeam},${todaysUserGame.awayTeam},${season.userTeam},${season.id},${todaysUserGame.gameDay},${todaysUserGame.id},${todaysUserGame.gameDate},${userSPName},${oppSPName}`;
   };
 
   if (loading) {

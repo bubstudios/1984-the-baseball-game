@@ -244,8 +244,23 @@ export default function Home() {
           const rotState = await loadRotationStateForActiveSeason();
           seasonRotationStateRef.current = rotState;
           const oppTeamKey = (userTeamParam === homeTeamKey) ? awayTeamKey : homeTeamKey;
-          const userStarter = getProbableStarter(rotState, userTeamParam, gameDateStr);
-          const cpuStarter = getProbableStarter(rotState, oppTeamKey, gameDateStr);
+          // Session 23: Starter identity lock. The dashboard resolved the probable
+          // starters and passed their names in the URL. Use those EXACT names
+          // instead of re-resolving — prevents the displayed starter drifting from
+          // the actual game starter (Rijo-shown / Niekro-pitched bug).
+          const userStarterName = parts[7] ? decodeURIComponent(parts[7]) : null;
+          const oppStarterName = parts[8] ? decodeURIComponent(parts[8]) : null;
+          const findPitcherByName = (teamKey, name) => {
+            if (!name || !teamKey) return null;
+            const td = TEAMS[teamKey];
+            const pool = [...(td.rotation || []), ...(td.bullpen || [])];
+            return pool.find(p => p.name === name) || null;
+          };
+          const userStarter = userStarterName ? findPitcherByName(userTeamParam, userStarterName) : getProbableStarter(rotState, userTeamParam, gameDateStr);
+          const cpuStarter = oppStarterName ? findPitcherByName(oppTeamKey, oppStarterName) : getProbableStarter(rotState, oppTeamKey, gameDateStr);
+          if (userStarterName && (!userStarter || userStarter.name !== userStarterName)) {
+            console.error(`[season-launch] STARTER LOCK MISMATCH: dashboard said "${userStarterName}" but could not resolve that pitcher for ${userTeamParam}`);
+          }
           setForcedStarters({ user: userStarter, cpu: cpuStarter });
           // Season games use the home team's stadium (schedule-determined) - skip BallparkSelect
           const stadium = TEAMS[homeTeamKey].stadium;
@@ -328,6 +343,18 @@ export default function Home() {
     state.userTeam = effectiveUserTeam; // CRITICAL: gates in getControllingTeam() read state.userTeam to distinguish CPU from user
     state.homeStartingPitcherName = homeSP?.name || null;
     state.awayStartingPitcherName = awaySP?.name || null;
+    // Session 23: Starter identity lock check. The actual mound pitcher must
+    // match the locked starter from the launch path. Loud console.error so a
+    // mismatch is caught immediately instead of silently starting the wrong arm.
+    if (gameModeRef.current === 'season' && forcedStarters) {
+      const expectedUserSP = forcedStarters.user?.name;
+      if (expectedUserSP) {
+        const actualUserSP = effectiveUserTeam === home ? state.homePitcher?.name : state.awayPitcher?.name;
+        if (actualUserSP && actualUserSP !== expectedUserSP) {
+          console.error(`[starter-lock] MISMATCH: scheduled "${expectedUserSP}" but actual "${actualUserSP}" for ${effectiveUserTeam}`);
+        }
+      }
+    }
     // Season mode: filter CPU bullpen for unavailable relievers + track user's unavailable relievers.
     // Use gameModeRef (not gameMode) because this useCallback has empty deps — the closure
     // would otherwise capture the initial gameMode=null and skip season bullpen filtering.
@@ -449,21 +476,14 @@ export default function Home() {
         adjustedOpponentSP = healthyPitchers[0] || adjustedOpponentSP;
       }
     }
-    // Season mode: rotation dictates starters - ignore any UI selection of opponent SP
+    // Season mode: the locked starters from the launch path are the single source
+    // of truth. Use them directly — do NOT re-resolve or override via the guard.
+    // Rest eligibility was already enforced when the dashboard resolved probable
+    // starters; re-validating here caused the Rijo→Niekro override bug.
     let effectiveUserStarter = startingPitcher;
     if (gameMode === 'season' && forcedStarters) {
-      adjustedOpponentSP = forcedStarters.cpu;
-      // Respect the user's SP selection (DH mode); fall back to probable starter (no-DH or no selection)
-      effectiveUserStarter = startingPitcher || forcedStarters.user;
-    }
-    // Guard: verify BOTH starters satisfy rest eligibility (prevents short-rest starters)
-    // Session 23: apply to the USER's starter too — this is the Clemens-4-of-4 fix.
-    // The user can still pick a starter in the UI, but if that pitcher is on short rest,
-    // the guard overrides with the probable (rest-eligible) starter.
-    if (gameMode === 'season' && seasonRotationStateRef.current && lineupPhase.gameDate) {
-      const userTeamKey = lineupPhase.seasonUserTeam || lineupPhase.home;
-      adjustedOpponentSP = validateStarterGuard(seasonRotationStateRef.current, cpuTeamKey, lineupPhase.gameDate, adjustedOpponentSP);
-      effectiveUserStarter = validateStarterGuard(seasonRotationStateRef.current, userTeamKey, lineupPhase.gameDate, effectiveUserStarter);
+      adjustedOpponentSP = forcedStarters.cpu || opponentStartingPitcher;
+      effectiveUserStarter = forcedStarters.user || startingPitcher;
     }
     startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, effectiveUserStarter, adjustedOpponentSP, seasonUser);
   }, [lineupPhase, startGame, gameMode, forcedStarters]);
