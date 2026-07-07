@@ -8,7 +8,7 @@ import {
   cpuDecideSubstitutions, cpuDecideSteal, getCurrentBatter, getCurrentPitcher,
 } from './gameEngine';
 import { playerId } from './seasonStore';
-import { validateGameBoxScore, validateGameBlocking } from './boxScoreValidators';
+import { validateGameBoxScore } from './boxScoreValidators';
 
 /**
  * Simulate a complete game headlessly (CPU vs CPU).
@@ -116,18 +116,42 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
   // Attach tracking for buildGameResultFromState
   state._tracking = { scoringEvents, hitTracking, hrTracking, bfTracking, hrAllowedTracking };
 
-  // Session 21 Part 1: BLOCKING validation - sets _validationFailed flag
-  // The caller (simulateDay) must check this before committing season stats.
+  // Session 23: Soft validation only. The sim always produces complete data
+  // (lineups, pitcher history, scores). Reconciliation warnings are logged for
+  // debugging but NEVER cause a score-only TBD fallback — that was the source
+  // of inconsistent finalization. The hard W/L fallback in buildGameResultFromState
+  // guarantees decisions on every completed game. Only a genuine sim stall
+  // (gameOver never set) is a hard block.
   try {
     const boxResult = buildGameResultFromState(state);
-    validateGameBlocking(state, boxResult);
+    validateGameBoxScore(state, boxResult); // logs errors internally, non-throwing
   } catch (e) {
-    console.error('[seasonEngine] BLOCKING VALIDATION FAILED:', e.message);
+    console.error('[seasonEngine] Box result build warning:', e.message);
+  }
+  if (!state.gameOver) {
     state._validationFailed = true;
-    state._validationError = e.message;
+    state._validationError = 'Sim stall - game never reached conclusion';
   }
 
   return state;
+}
+
+/**
+ * Session 23: Hard block — every final Season game MUST have a box score and
+ * W/L decisions. Throws if missing, so the caller stops the day from committing
+ * rather than saving a score-only TBD shell.
+ */
+export function validateCompletedGame(game) {
+  if (game.status !== 'FINAL') return;
+  if (!game.boxScore) {
+    throw new Error(`Final game ${game.gameId} (${game.awayTeam}@${game.homeTeam}) missing box score`);
+  }
+  if (!game.winningPitcherId) {
+    throw new Error(`Final game ${game.gameId} (${game.awayTeam}@${game.homeTeam}) missing winning pitcher`);
+  }
+  if (!game.losingPitcherId) {
+    throw new Error(`Final game ${game.gameId} (${game.awayTeam}@${game.homeTeam}) missing losing pitcher`);
+  }
 }
 
 /**

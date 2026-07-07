@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Calendar, TrendingUp, Play, FileText } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import { generateScheduleValidated, formatGameDate } from '@/lib/seasonSchedule';
-import { simulateGameHeadless, buildGameResultFromState } from '@/lib/seasonEngine';
+import { simulateGameHeadless, buildGameResultFromState, validateCompletedGame } from '@/lib/seasonEngine';
 import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordPitcherWorkload, getUnavailableRelievers, commitPlayerStats } from '@/lib/seasonStore';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
 import FullSchedule from '@/components/season/FullSchedule';
@@ -180,121 +180,105 @@ export default function SeasonDashboard() {
       const resultRows = [];
       const allBatting = [];
       const allPitching = [];
-      let validationFailures = 0;
+      // Session 23: SINGLE finalization path. No score-only fallback exists.
+      // Every Season game builds a full record (box score + W/L). A hard failure
+      // in any game throws and stops the entire day from committing.
       for (const g of toSim) {
-        try {
-          const homeTeam = g.homeTeam;
-          const awayTeam = g.awayTeam;
-          const useDH = TEAMS[homeTeam]?.league === 'AL';
+        const homeTeam = g.homeTeam;
+        const awayTeam = g.awayTeam;
+        const useDH = TEAMS[homeTeam]?.league === 'AL';
 
-          const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
-          const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
-          const unavailableRelievers = {
-            home: getUnavailableRelievers(rotState, homeTeam, g.gameDate),
-            away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
-          };
+        const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
+        const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
+        const unavailableRelievers = {
+          home: getUnavailableRelievers(rotState, homeTeam, g.gameDate),
+          away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
+        };
 
-          // Session 23: RETRY on validation failure instead of committing a degraded TBD shell.
-          // A TBD game on the board is a bug, not a state — retry with a fresh sim
-          // (different random seed) up to MAX_RETRIES times before falling back.
-          let finalState = null;
-          let retries = 0;
-          const MAX_RETRIES = 3;
-          while (retries < MAX_RETRIES) {
-            finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
-            if (!finalState._validationFailed) break;
-            console.warn(`[day-commit] ${awayTeam}@${homeTeam} validation failed (attempt ${retries + 1}/${MAX_RETRIES}): ${finalState._validationError}`);
-            retries++;
-          }
+        const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
 
-          if (finalState._validationFailed) {
-            // All retries exhausted — commit score-only result (for standings/day advancement)
-            // but do NOT commit player stats (they're invalid). This is a last resort.
-            console.error(`[day-commit] ${awayTeam}@${homeTeam} failed validation after ${MAX_RETRIES} attempts — committing score-only result`);
-            validationFailures++;
-            resultRows.push({
-              seasonId: season.id,
-              gameDay,
-              gameDate: g.gameDate,
-              boxScore: null,
-              homeTeam,
-              awayTeam,
-              homeScore: finalState.score.home,
-              awayScore: finalState.score.away,
-              winner: finalState.score.home > finalState.score.away ? homeTeam : awayTeam,
-              isUserGame: false,
-              homeHits: 0,
-              awayHits: 0,
-              homeHRs: [],
-              awayHRs: [],
-              winningPitcher: null,
-              losingPitcher: null,
-              savePitcher: null,
-              stadium: TEAMS[homeTeam]?.stadium || null,
-              innings: finalState.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
-            });
-            if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
-            if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
-            await new Promise(r => setTimeout(r, 0));
-            continue;
-          }
-
-          const result = buildGameResultFromState(finalState, { headless: true });
-          allBatting.push(...result.batting);
-          allPitching.push(...result.pitching);
-
-          if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
-          if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
-          recordPitcherWorkload(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam), g.gameDate);
-          recordPitcherWorkload(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam), g.gameDate);
-
-          const winnerName = result.decisions.winner ? result.decisions.winner.split('|')[1] : null;
-          const loserName = result.decisions.loser ? result.decisions.loser.split('|')[1] : null;
-          const saveName = result.decisions.save ? result.decisions.save.split('|')[1] : null;
-
-          const homeHRs = result.homeRuns.filter(hr => hr.teamKey === homeTeam).map(hr => ({
-            playerName: hr.name,
-            inning: hr.inning,
-          }));
-          const awayHRs = result.homeRuns.filter(hr => hr.teamKey === awayTeam).map(hr => ({
-            playerName: hr.name,
-            inning: hr.inning,
-          }));
-
-          const homeHits = result.batting.filter(b => b.teamKey === homeTeam).reduce((s, b) => s + b.h, 0);
-          const awayHits = result.batting.filter(b => b.teamKey === awayTeam).reduce((s, b) => s + b.h, 0);
-
-          resultRows.push({
-            seasonId: season.id,
-            gameDay,
-            gameDate: g.gameDate,
-            boxScore: result,
-            homeTeam,
-            awayTeam,
-            homeScore: result.homeScore,
-            awayScore: result.awayScore,
-            winner: result.winner,
-            isUserGame: false,
-            homeHits,
-            awayHits,
-            homeHRs,
-            awayHRs,
-            winningPitcher: winnerName,
-            losingPitcher: loserName,
-            savePitcher: saveName,
-            stadium: TEAMS[homeTeam]?.stadium || null,
-            innings: result.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
-          });
-
-          await new Promise(r => setTimeout(r, 0));
-        } catch (gameError) {
-          console.error(`[day-commit] Game failed: ${g.awayTeam} @ ${g.homeTeam}:`, gameError);
-          validationFailures++;
+        // Hard block: a stalled sim (never reached gameOver) has incomplete data.
+        if (finalState._validationFailed) {
+          throw new Error(`Sim stall for ${awayTeam}@${homeTeam}: ${finalState._validationError}`);
         }
+
+        const result = buildGameResultFromState(finalState, { headless: true });
+
+        // Hard block: every final game MUST have a box score + W/L decisions.
+        // Throws → propagates to outer catch → day stops, nothing committed.
+        validateCompletedGame({
+          status: 'FINAL',
+          gameId: g.id,
+          awayTeam, homeTeam,
+          boxScore: result,
+          winningPitcherId: result.decisions?.winner || null,
+          losingPitcherId: result.decisions?.loser || null,
+        });
+
+        // Finalization diagnostics — same fields for every game, no more mystery paths.
+        console.log('GAME FINALIZATION CHECK', {
+          gameId: g.id, dayNumber: gameDay,
+          awayTeam, homeTeam,
+          finalScore: `${finalState.score.away}-${finalState.score.home}`,
+          hasBoxScore: !!result,
+          hasBattingBox: (result.batting || []).length > 0,
+          hasPitchingBox: (result.pitching || []).length > 0,
+          winningPitcherId: result.decisions?.winner || null,
+          losingPitcherId: result.decisions?.loser || null,
+          savePitcherId: result.decisions?.save || null,
+          finalizationPath: 'full',
+        });
+
+        allBatting.push(...result.batting);
+        allPitching.push(...result.pitching);
+
+        if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
+        if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
+        recordPitcherWorkload(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam), g.gameDate);
+        recordPitcherWorkload(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam), g.gameDate);
+
+        const winnerName = result.decisions.winner ? result.decisions.winner.split('|')[1] : null;
+        const loserName = result.decisions.loser ? result.decisions.loser.split('|')[1] : null;
+        const saveName = result.decisions.save ? result.decisions.save.split('|')[1] : null;
+
+        const homeHRs = result.homeRuns.filter(hr => hr.teamKey === homeTeam).map(hr => ({ playerName: hr.name, inning: hr.inning }));
+        const awayHRs = result.homeRuns.filter(hr => hr.teamKey === awayTeam).map(hr => ({ playerName: hr.name, inning: hr.inning }));
+
+        const homeHits = result.batting.filter(b => b.teamKey === homeTeam).reduce((s, b) => s + b.h, 0);
+        const awayHits = result.batting.filter(b => b.teamKey === awayTeam).reduce((s, b) => s + b.h, 0);
+
+        resultRows.push({
+          seasonId: season.id, gameDay, gameDate: g.gameDate, boxScore: result,
+          homeTeam, awayTeam,
+          homeScore: result.homeScore, awayScore: result.awayScore, winner: result.winner,
+          isUserGame: false, homeHits, awayHits, homeHRs, awayHRs,
+          winningPitcher: winnerName, losingPitcher: loserName, savePitcher: saveName,
+          stadium: TEAMS[homeTeam]?.stadium || null,
+          innings: result.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
+        });
+
+        await new Promise(r => setTimeout(r, 0));
       }
 
-      if (validationFailures > 0) {
-        console.error(`[day-commit] ${validationFailures} game(s) failed validation and were skipped`);
+      // Session 23: Final game audit — re-validate every built row before any DB commit.
+      // If any game is invalid, throw and stop the day (no partial commit).
+      for (const row of resultRows) {
+        validateCompletedGame({
+          status: 'FINAL',
+          gameId: row.id || `${row.awayTeam}${row.homeTeam}`,
+          awayTeam: row.awayTeam, homeTeam: row.homeTeam,
+          boxScore: row.boxScore,
+          winningPitcherId: row.winningPitcher,
+          losingPitcherId: row.losingPitcher,
+        });
+        console.log('AUDIT GAME', {
+          gameId: row.id || `${row.awayTeam}${row.homeTeam}`,
+          matchup: `${row.awayTeam} @ ${row.homeTeam}`,
+          score: `${row.awayScore}-${row.homeScore}`,
+          hasBoxScore: !!row.boxScore,
+          W: row.winningPitcher, L: row.losingPitcher,
+          clickable: !!row.boxScore,
+        });
       }
 
       const teamResultCounts = {};
