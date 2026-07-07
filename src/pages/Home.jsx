@@ -183,6 +183,7 @@ export default function Home() {
   const [injuryAlert, setInjuryAlert] = useState(null);
   const seasonContextRef = useRef(null); // { seasonId, gameDay, homeTeam, awayTeam, userTeam }
   const seasonRotationStateRef = useRef({}); // persisted to Season entity
+  const gameModeRef = useRef(null); // mirrors gameMode so startGame (empty-deps callback) always reads the latest value
   const prevLastPlay = useRef(null);
   const prevArgPlay = useRef(null);
   const prevGameOver = useRef(false);
@@ -208,6 +209,11 @@ export default function Home() {
   const seasonCommitPromiseRef = useRef(null);
   const prevCelebrationBubble = useRef(null);
 
+  // Keep gameModeRef in sync so startGame (empty-deps useCallback) always reads the latest mode.
+  // Without this, a season game launch would see gameMode=null in startGame's closure and skip
+  // the CPU bullpen filtering + unavailable-reliever tracking for the user's team.
+  useEffect(() => { gameModeRef.current = gameMode; }, [gameMode]);
+
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
     // Detect season game launch (?seasonGame=homeTeam,awayTeam,userTeam) and jump straight to ballpark phase
@@ -217,43 +223,58 @@ export default function Home() {
       // Clean the URL so a subsequent "New Game" doesn't re-trigger
       window.history.replaceState({}, '', '/');
       (async () => {
-        const parts = seasonGame.split(',');
-        const homeTeamKey = parts[0];
-        const awayTeamKey = parts[1];
-        const userTeamParam = parts[2] || homeTeamKey;
-        const seasonId = parts[3] || null;
-        const gameDayNum = parts[4] ? parseInt(parts[4], 10) : 1;
-        const scheduleId = parts[5] || null;
-        const gameDateStr = parts[6] || null;
-        if (!homeTeamKey || !awayTeamKey || !TEAMS[homeTeamKey] || !TEAMS[awayTeamKey]) return;
-        setGameMode('season');
-        setSeasonUserTeam(userTeamParam);
-        seasonContextRef.current = { seasonId, gameDay: gameDayNum, gameDate: gameDateStr, homeTeam: homeTeamKey, awayTeam: awayTeamKey, userTeam: userTeamParam, scheduleId };
-        // Load rotation state and pick starters (day-based rest enforced)
-        const rotState = await loadRotationStateForActiveSeason();
-        seasonRotationStateRef.current = rotState;
-        const oppTeamKey = (userTeamParam === homeTeamKey) ? awayTeamKey : homeTeamKey;
-        const userStarter = getProbableStarter(rotState, userTeamParam, gameDateStr);
-        const cpuStarter = getProbableStarter(rotState, oppTeamKey, gameDateStr);
-        setForcedStarters({ user: userStarter, cpu: cpuStarter });
-        // Season games use the home team's stadium (schedule-determined) - skip BallparkSelect
-        const stadium = TEAMS[homeTeamKey].stadium;
-        let weather;
-        if (DOMED_STADIUMS.has(stadium)) {
-          weather = generateIndoorWeather();
-        } else {
-          const weatherCity = STADIUM_WEATHER_CITIES[stadium] || TEAMS[homeTeamKey].city;
-          weather = generateWeather(weatherCity);
+        try {
+          const parts = seasonGame.split(',');
+          const homeTeamKey = parts[0];
+          const awayTeamKey = parts[1];
+          const userTeamParam = parts[2] || homeTeamKey;
+          const seasonId = parts[3] || null;
+          const gameDayNum = parts[4] ? parseInt(parts[4], 10) : 1;
+          const scheduleId = parts[5] || null;
+          const gameDateStr = parts[6] || null;
+          if (!homeTeamKey || !awayTeamKey || !TEAMS[homeTeamKey] || !TEAMS[awayTeamKey]) {
+            console.error('[season-launch] Invalid team keys in seasonGame param, redirecting to /season');
+            window.location.href = '/season';
+            return;
+          }
+          setGameMode('season');
+          setSeasonUserTeam(userTeamParam);
+          seasonContextRef.current = { seasonId, gameDay: gameDayNum, gameDate: gameDateStr, homeTeam: homeTeamKey, awayTeam: awayTeamKey, userTeam: userTeamParam, scheduleId };
+          // Load rotation state and pick starters (day-based rest enforced)
+          const rotState = await loadRotationStateForActiveSeason();
+          seasonRotationStateRef.current = rotState;
+          const oppTeamKey = (userTeamParam === homeTeamKey) ? awayTeamKey : homeTeamKey;
+          const userStarter = getProbableStarter(rotState, userTeamParam, gameDateStr);
+          const cpuStarter = getProbableStarter(rotState, oppTeamKey, gameDateStr);
+          setForcedStarters({ user: userStarter, cpu: cpuStarter });
+          // Season games use the home team's stadium (schedule-determined) - skip BallparkSelect
+          const stadium = TEAMS[homeTeamKey].stadium;
+          let weather;
+          if (DOMED_STADIUMS.has(stadium)) {
+            weather = generateIndoorWeather();
+          } else {
+            const weatherCity = STADIUM_WEATHER_CITIES[stadium] || TEAMS[homeTeamKey].city;
+            weather = generateWeather(weatherCity);
+          }
+          const umpire = pickUmpire();
+          setSelectedUmpire(umpire);
+          const useDHFlag = TEAMS[homeTeamKey].league === 'AL';
+          const homeIll = rollIllnessesForTeam(TEAMS[homeTeamKey], false);
+          const awayIll = rollIllnessesForTeam(TEAMS[awayTeamKey], false);
+          const illPlayers = { home: homeIll, away: awayIll };
+          setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
+          setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum, gameDate: gameDateStr });
+          setLoadingScreen(false);
+        } catch (launchError) {
+          // Season launch failed (e.g. rotation state load error) — don't leave the user
+          // stranded on the Exhibition TeamSelect screen with gameMode='season' but no lineup.
+          // Reset and redirect back to the season dashboard.
+          console.error('[season-launch] Failed to launch season game:', launchError);
+          setGameMode(null);
+          setSeasonUserTeam(null);
+          seasonContextRef.current = null;
+          window.location.href = '/season';
         }
-        const umpire = pickUmpire();
-        setSelectedUmpire(umpire);
-        const useDHFlag = TEAMS[homeTeamKey].league === 'AL';
-        const homeIll = rollIllnessesForTeam(TEAMS[homeTeamKey], false);
-        const awayIll = rollIllnessesForTeam(TEAMS[awayTeamKey], false);
-        const illPlayers = { home: homeIll, away: awayIll };
-        setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
-        setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum, gameDate: gameDateStr });
-        setLoadingScreen(false);
       })();
     }
     if (!hasSeenTutorial()) {
@@ -307,8 +328,10 @@ export default function Home() {
     state.userTeam = effectiveUserTeam; // CRITICAL: gates in getControllingTeam() read state.userTeam to distinguish CPU from user
     state.homeStartingPitcherName = homeSP?.name || null;
     state.awayStartingPitcherName = awaySP?.name || null;
-    // Season mode: filter CPU bullpen for unavailable relievers + track user's unavailable relievers
-    if (gameMode === 'season' && seasonRotationStateRef.current) {
+    // Season mode: filter CPU bullpen for unavailable relievers + track user's unavailable relievers.
+    // Use gameModeRef (not gameMode) because this useCallback has empty deps — the closure
+    // would otherwise capture the initial gameMode=null and skip season bullpen filtering.
+    if (gameModeRef.current === 'season' && seasonRotationStateRef.current) {
       const cpuSide = effectiveUserTeam === home ? 'away' : 'home';
       const cpuTeamKey = cpuSide === 'home' ? home : away;
       const gameDate = seasonContextRef.current?.gameDate || null;

@@ -164,6 +164,30 @@ export function buildGameResultFromState(state, options = {}) {
     ? determineDecisionsFromEvents(state, scoringEvents, bfTracking)
     : determineDecisionsSimplified(state, bfTracking);
 
+  // HARD FALLBACK: a completed non-tie game MUST have W/L decisions.
+  // If the decision logic returned null (edge case in pitcher filtering),
+  // fall back to the first active pitcher on each side rather than showing TBD.
+  const winningSide = homeWon ? 'home' : 'away';
+  const losingSide = homeWon ? 'away' : 'home';
+  if (!decisions.winner) {
+    const winningSidePitchers = filterActivePitchers(getPitcherList(state, winningSide), winner, bfTracking);
+    if (winningSidePitchers.length > 0) {
+      decisions.winner = playerId(winner, winningSidePitchers[0].name);
+    } else {
+      const fallback = getPitcherList(state, winningSide)[0];
+      if (fallback) decisions.winner = playerId(winner, fallback.name);
+    }
+  }
+  if (!decisions.loser) {
+    const losingSidePitchers = filterActivePitchers(getPitcherList(state, losingSide), loser, bfTracking);
+    if (losingSidePitchers.length > 0) {
+      decisions.loser = playerId(loser, losingSidePitchers[0].name);
+    } else {
+      const fallback = getPitcherList(state, losingSide)[0];
+      if (fallback) decisions.loser = playerId(loser, fallback.name);
+    }
+  }
+
   // Mark W/L/S on pitching entries
   for (const p of pitching) {
     if (decisions.winner && p.playerId === decisions.winner) p.w = 1;

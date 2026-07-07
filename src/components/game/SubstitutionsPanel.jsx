@@ -58,9 +58,13 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
 
   const isBenchUsed = (player) => usedNames.has(player.name);
 
-  // Use in-game bullpen (relievers are removed as they're used)
-  const bullpen = userIsHome ? (gameState.homeBullpen || []) : (gameState.awayBullpen || []);
+  // Use in-game bullpen (relievers are removed as they're used).
+  // HARD GUARD: the current pitcher must NEVER appear in his own bullpen options,
+  // and removed players (illegal re-entry) must never be listed.
   const currentPitcher = userIsHome ? gameState.homePitcher : gameState.awayPitcher;
+  const removedPlayers = gameState.removedPlayers || [];
+  const bullpen = (userIsHome ? (gameState.homeBullpen || []) : (gameState.awayBullpen || []))
+    .filter(p => p.name !== currentPitcher?.name && !removedPlayers.includes(p.name));
 
   const tabs = [
     { id: 'pinchhit', label: 'Pinch Hit' },
