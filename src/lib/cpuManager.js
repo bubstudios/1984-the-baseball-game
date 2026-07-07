@@ -25,8 +25,9 @@ export function selectCpuReliever(bullpen, context) {
   const margin = cpuScore - oppScore;
   const absMargin = Math.abs(margin);
   const tierSum = (p) => (p.pitchSpeed || 0) + (p.offSpeed || 0) + (p.control || 0);
-  // Session 21 Part 2: deprioritize tired arms by subtracting fatigue penalty
-  const effectiveTier = (p) => tierSum(p) - (p._fatiguePenalty || 0);
+  // Session 23: deprioritize tired arms — both in-game fatigue AND season workload fatigue.
+  // This spreads CPU usage instead of burning the same long man every game.
+  const effectiveTier = (p) => tierSum(p) - (p._fatiguePenalty || 0) - (p._seasonFatiguePenalty || 0);
 
   const closers = bullpen.filter(isCloser);
   const nonClosers = bullpen.filter(p => !isCloser(p));

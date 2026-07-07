@@ -10,7 +10,7 @@ function normalizePos(pos) {
   return pos;
 }
 
-export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher, initialTab = 'pinchhit', unavailableRelievers = {} }) {
+export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher, initialTab = 'pinchhit', unavailableRelievers = {}, tiredRelievers = {} }) {
   const [tab, setTab] = useState(initialTab);
 
   // Determine which side the user's team is on
@@ -341,6 +341,8 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                   {bullpen.map((p, i) => {
                     const unavailableReason = unavailableRelievers[p.name];
                     const unavailable = !!unavailableReason;
+                    const tiredReason = tiredRelievers[p.name];
+                    const tired = !unavailable && !!tiredReason;
                     return (
                     <button
                       key={i}
@@ -349,12 +351,14 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                       className={`w-full text-left p-3 rounded-lg border transition-all ${
                         unavailable
                           ? 'border-border/40 opacity-40 cursor-not-allowed'
-                          : 'border-border hover:border-primary hover:bg-primary/5'
+                          : tired
+                            ? 'border-yellow-500/30 hover:border-yellow-400/60 hover:bg-yellow-500/5'
+                            : 'border-border hover:border-primary hover:bg-primary/5'
                       }`}
                     >
                       <div className="flex justify-between items-center">
                         <span className={`font-heading font-bold text-sm ${unavailable ? 'text-muted-foreground' : 'text-foreground'}`}>{p.name}</span>
-                        <span className="text-[10px] text-muted-foreground">{unavailable ? 'UNAVAILABLE' : `${p.pos} (${p.throws}HP)`}</span>
+                        <span className="text-[10px] text-muted-foreground">{unavailable ? 'UNAVAILABLE' : tired ? 'TIRED' : `${p.pos} (${p.throws}HP)`}</span>
                       </div>
                       <div className="flex gap-3 mt-1 text-[10px]">
                         <span className="text-emerald-400">SPD {p.pitchSpeed}</span>
@@ -362,7 +366,8 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                         <span className="text-blue-400">CTL {p.control}</span>
                         <span className="text-muted-foreground">STA {p.stamina}</span>
                       </div>
-                      {unavailable && <div className="text-[9px] text-amber-400 mt-1">{unavailableReason}</div>}
+                      {unavailable && <div className="text-[9px] text-amber-400 mt-1">⚠ {unavailableReason}</div>}
+                      {tired && <div className="text-[9px] text-yellow-500/80 mt-1">Tired: {tiredReason}</div>}
                     </button>
                     );
                   })}

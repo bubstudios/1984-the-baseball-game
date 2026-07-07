@@ -195,7 +195,7 @@ export default function SeasonDashboard() {
           away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
         };
 
-        const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers });
+        const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers, rotationState: rotState, gameDate: g.gameDate });
 
         // Hard block: a stalled sim (never reached gameOver) has incomplete data.
         if (finalState._validationFailed) {
@@ -258,6 +258,18 @@ export default function SeasonDashboard() {
         });
 
         await new Promise(r => setTimeout(r, 0));
+      }
+
+      // Session 23: Log high-score outliers (no tuning yet — just track for analysis).
+      for (const row of resultRows) {
+        const totalRuns = row.homeScore + row.awayScore;
+        if (row.homeScore >= 15 || row.awayScore >= 15 || totalRuns >= 22) {
+          console.warn('HIGH SCORE OUTLIER', {
+            gameId: row.id || `${row.awayTeam}${row.homeTeam}`, dayNumber: gameDay,
+            score: `${row.awayScore}-${row.homeScore}`, totalRuns,
+            pitchingBox: row.boxScore?.pitching || [],
+          });
+        }
       }
 
       // Session 23: Final game audit — re-validate every built row before any DB commit.

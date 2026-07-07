@@ -7,7 +7,7 @@ import {
   createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing,
   cpuDecideSubstitutions, cpuDecideSteal, getCurrentBatter, getCurrentPitcher,
 } from './gameEngine';
-import { playerId } from './seasonStore';
+import { playerId, isPitcherAvailable } from './seasonStore';
 import { validateGameBoxScore } from './boxScoreValidators';
 
 /**
@@ -30,13 +30,24 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     if (unavailableRelievers.home?.length) {
       const filtered = state.homeBullpen.filter(p => !unavailableRelievers.home.includes(p.name));
       if (filtered.length > 0) state.homeBullpen = filtered;
-      // else: keep all arms (emergency - least-rested will be used)
     }
     if (unavailableRelievers.away?.length) {
       const filtered = state.awayBullpen.filter(p => !unavailableRelievers.away.includes(p.name));
       if (filtered.length > 0) state.awayBullpen = filtered;
-      // else: keep all arms (emergency - least-rested will be used)
     }
+  }
+
+  // Session 23: annotate season fatigue penalty on all bullpen arms so the CPU
+  // selection ranks tired arms lower (spreads usage instead of burning one long man).
+  if (options.rotationState && options.gameDate) {
+    const annotate = (bullpen, teamKey) => {
+      bullpen.forEach(p => {
+        const avail = isPitcherAvailable(options.rotationState, teamKey, p.name, options.gameDate);
+        p._seasonFatiguePenalty = avail.tired ? avail.fatiguePenalty : 0;
+      });
+    };
+    annotate(state.homeBullpen, homeTeam);
+    annotate(state.awayBullpen, awayTeam);
   }
 
   // Tracking data
@@ -219,6 +230,20 @@ export function buildGameResultFromState(state, options = {}) {
     if (decisions.save && p.playerId === decisions.save) p.sv = 1;
   }
 
+  // Session 23: Box-score integrity audit — every pitcher with game activity must
+  // appear in the pitching array. Warn (not throw) so the game still finalizes.
+  const boxPitcherNames = new Set(pitching.map(p => p.name));
+  for (const side of ['home', 'away']) {
+    for (const p of getPitcherList(state, side)) {
+      const gs = p.gameStats || {};
+      if ((gs.pitches || 0) > 0 || (gs.outs || 0) > 0 || (gs.so || 0) > 0) {
+        if (!boxPitcherNames.has(p.name)) {
+          console.warn(`[box-score-integrity] ${p.name} used but missing from box score`);
+        }
+      }
+    }
+  }
+
   // Build homeRuns list
   const homeRuns = hrTracking.map(hr => ({
     playerId: playerId(hr.teamKey, hr.name),
@@ -305,8 +330,14 @@ function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTrackin
     const bf = bfTracking[pid] || 0;
     const pitches = gs.pitches || 0;
     const outs = gs.outs || Math.round((gs.ip || 0) * 3);
-    // Session 19 2B: Never render a pitcher line if BF === 0 (phantom suppression)
-    if (bf === 0) continue;
+    // Session 23: suppress 0-BF phantoms only when bfTracking is populated (headless path).
+    // In the UI path (no bfTracking), include any pitcher with actual game activity
+    // so a used pitcher never disappears from the saved box score.
+    const hasTrackedBF = Object.keys(bfTracking).length > 0;
+    const hasActivity = pitches > 0 || outs > 0 || (gs.so || 0) > 0 || (gs.bb || 0) > 0 || (gs.h || 0) > 0;
+    if (hasTrackedBF && bf === 0) continue;
+    if (!hasTrackedBF && !hasActivity) continue;
+    const effectiveBF = hasTrackedBF ? bf : (outs + (gs.pitcherH ?? gs.h ?? 0) + (gs.pitcherBB ?? gs.bb ?? 0));
     // Merged history entries store pitcherSo/pitcherBB (prefixed); pitcher-only entries use so/bb
     out.push({
       playerId: pid,
@@ -320,7 +351,7 @@ function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTrackin
       bb: gs.pitcherBB ?? gs.bb ?? 0,
       so: gs.pitcherSo ?? gs.so ?? 0,
       hr: hrAllowedTracking[pid] || 0,
-      bf,
+      bf: effectiveBF,
       pitches,
     });
     realPitcherIdx++;

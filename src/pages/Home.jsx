@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard, commitPlayerStats } from '@/lib/seasonStore';
+import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, getTiredRelievers, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard, commitPlayerStats } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -342,6 +342,16 @@ export default function Home() {
       }
       state._unavailableRelievers = getUnavailableRelievers(seasonRotationStateRef.current, effectiveUserTeam, gameDate);
       state._unavailableRelieverReasons = getUnavailableRelieverReasons(seasonRotationStateRef.current, effectiveUserTeam, gameDate);
+      state._tiredRelievers = getTiredRelievers(seasonRotationStateRef.current, effectiveUserTeam, gameDate);
+      // Annotate season fatigue penalty on all bullpen arms for CPU ranking + UI badges
+      const annotateFatigue = (bullpen, teamKey) => {
+        bullpen.forEach(p => {
+          const avail = isPitcherAvailable(seasonRotationStateRef.current, teamKey, p.name, gameDate);
+          p._seasonFatiguePenalty = avail.tired ? avail.fatiguePenalty : 0;
+        });
+      };
+      annotateFatigue(state.homeBullpen, home);
+      annotateFatigue(state.awayBullpen, away);
     }
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;
@@ -2393,6 +2403,7 @@ export default function Home() {
           onChangePitcher={handlePitchingChange}
           initialTab={subsTab}
           unavailableRelievers={gameState._unavailableRelieverReasons || {}}
+          tiredRelievers={gameState._tiredRelievers || {}}
         />
       )}
     </div>

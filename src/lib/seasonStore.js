@@ -489,41 +489,54 @@ export function recordPitcherWorkload(rotationState, teamKey, pitchingLine, game
   }
 }
 
-// THE ONE availability function. Returns { available, reason }.
+// THE ONE shared availability function. Used by BOTH CPU and human bullpen paths.
+// Returns { available, reason, tired, fatiguePenalty }.
+// Session 23: tightened rest rules — 25+ pitches yesterday = unavailable,
+// 15+ pitches yesterday = tired (available but deprioritized).
 export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate) {
-  if (!gameDate) return { available: true, reason: null };
+  if (!gameDate) return { available: true, reason: null, tired: false, fatiguePenalty: 0 };
   const rs = rotationState?.[teamKey];
   if (!rs || !rs.workload || !rs.workload[pitcherName]) {
-    return { available: true, reason: null };
+    return { available: true, reason: null, tired: false, fatiguePenalty: 0 };
   }
   const history = rs.workload[pitcherName];
   if (!history || history.length === 0) {
-    return { available: true, reason: null };
+    return { available: true, reason: null, tired: false, fatiguePenalty: 0 };
   }
 
-  // Consecutive-days cap: appeared on D-1 AND D-2 → unavailable on D
   const dayBefore = shiftDate(gameDate, -1);
   const twoDaysBefore = shiftDate(gameDate, -2);
   const threeDaysBefore = shiftDate(gameDate, -3);
   const appearedYesterday = history.find(e => e.date === dayBefore);
   const appearedDayBefore = history.find(e => e.date === twoDaysBefore);
+
+  // Back-to-back: pitched on each of the last 2 days → unavailable today
   if (appearedYesterday && appearedDayBefore) {
-    return { available: false, reason: '3 straight days' };
+    return { available: false, reason: 'Used in back-to-back games', tired: false, fatiguePenalty: 0 };
   }
 
-  // Session 21 Part 2: 3 appearances in last 3 days → unavailable (even if not consecutive)
+  // 3 appearances in last 3 days → unavailable
   const appeared3DaysAgo = history.find(e => e.date === threeDaysBefore);
   const appearancesLast3Days = [appearedYesterday, appearedDayBefore, appeared3DaysAgo].filter(Boolean).length;
   if (appearancesLast3Days >= 3) {
-    return { available: false, reason: '3 of last 3 days' };
+    return { available: false, reason: 'Used 3 times in 3 days', tired: false, fatiguePenalty: 0 };
   }
 
-  // Check ALL appearances: if any appearance's rest requirement isn't met, unavailable
+  // Session 23: pitch-count-yesterday thresholds
+  // 25+ pitches yesterday → unavailable; 15+ → tired (checked after blocking returns)
+  if (appearedYesterday) {
+    const yesterdayPitches = appearedYesterday.pitches || estimatePitches(appearedYesterday.outs || 0);
+    if (yesterdayPitches >= 25) {
+      return { available: false, reason: `${yesterdayPitches} pitches yesterday`, tired: false, fatiguePenalty: 0 };
+    }
+  }
+
+  // Outs-based rest tiers: if any appearance's rest requirement isn't met, unavailable
   let blockingEntry = null;
   let blockingPitches = 0;
   for (const entry of history) {
     const requiredRest = getRequiredRestDays(entry.pitches, entry.outs);
-    if (requiredRest === 0) continue; // ≤3 outs, available next day
+    if (requiredRest === 0) continue;
     const daysSince = daysBetween(entry.date, gameDate);
     if (daysSince <= requiredRest) {
       const entryPitches = entry.pitches || estimatePitches(entry.outs || 0);
@@ -538,10 +551,21 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
     const daysSince = daysBetween(blockingEntry.date, gameDate);
     const when = daysSince === 1 ? 'yesterday' : `${daysSince} days ago`;
     const ip = blockingEntry.outs ? ` (${Math.floor(blockingEntry.outs / 3)}.${blockingEntry.outs % 3} IP)` : '';
-    return { available: false, reason: `${blockingPitches} pitches ${when}${ip}` };
+    return { available: false, reason: `${blockingPitches} pitches ${when}${ip}`, tired: false, fatiguePenalty: 0 };
   }
 
-  return { available: true, reason: null };
+  // Tired: 15+ pitches yesterday (but < 25), or 2 appearances in last 3 days
+  if (appearedYesterday) {
+    const yesterdayPitches = appearedYesterday.pitches || estimatePitches(appearedYesterday.outs || 0);
+    if (yesterdayPitches >= 15) {
+      return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, fatiguePenalty: 10 };
+    }
+  }
+  if (appearancesLast3Days === 2) {
+    return { available: true, reason: 'Used twice in last 3 days', tired: true, fatiguePenalty: 10 };
+  }
+
+  return { available: true, reason: null, tired: false, fatiguePenalty: 0 };
 }
 
 // Session 21 Part 2: Returns a fatigue penalty (0-30) for tired-but-available relievers.
@@ -594,6 +618,24 @@ export function getUnavailableRelieverReasons(rotationState, teamKey, gameDate) 
     if (!result.available) reasons[p.name] = result.reason;
   }
   return reasons;
+}
+
+// Session 23: Returns { [pitcherName]: reason } for tired-but-available relievers.
+// Used by the human substitution panel to show a "tired" badge.
+export function getTiredRelievers(rotationState, teamKey, gameDate) {
+  const rs = rotationState?.[teamKey];
+  if (!rs || !rs.workload) return {};
+  const team = TEAMS[teamKey];
+  if (!team) return {};
+  const allPitchers = [...(team.bullpen || []), ...(team.rotation || [])];
+  const tired = {};
+  for (const p of allPitchers) {
+    const result = isPitcherAvailable(rotationState, teamKey, p.name, gameDate);
+    if (result.available && result.tired) {
+      tired[p.name] = result.reason;
+    }
+  }
+  return tired;
 }
 
 // Backward-compatible wrapper
