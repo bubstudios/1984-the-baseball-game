@@ -567,7 +567,18 @@ export default function Home() {
       const isUserTeam = ejectedSide === 'home' && userTeam === gameState.homeTeam || ejectedSide === 'away' && userTeam === gameState.awayTeam;
       if (isUserTeam) {
         // User must pick a replacement pitcher
-        const bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
+        let bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
+        // Emergency fallback: if the bullpen is exhausted, offer any available
+        // roster pitcher (starter/reliever) not already in the game or removed.
+        if (!bullpen || bullpen.length === 0) {
+          const teamKey = ejectedSide === 'home' ? gameState.homeTeam : gameState.awayTeam;
+          const rosterPitchers = TEAMS[teamKey]?.bullpen || [];
+          const inGame = new Set();
+          (ejectedSide === 'home' ? gameState.homeLineup : gameState.awayLineup).forEach(p => inGame.add(p.name));
+          (ejectedSide === 'home' ? (gameState.homePlayerHistory || []) : (gameState.awayPlayerHistory || [])).forEach(p => inGame.add(p.name));
+          (gameState.removedPlayers || []).forEach(n => inGame.add(n));
+          bullpen = rosterPitchers.filter(p => !inGame.has(p.name));
+        }
         setEjectionResult({ ejectedSide, bullpen });
       } else {
         // CPU team ejection - auto-select reliever (Session 8 policy)
@@ -1327,6 +1338,12 @@ export default function Home() {
   const handleEjectionReplacement = (chosenPitcher) => {
     if (!gameState || !ejectionResult) return;
     const newState = changePitcher(gameState, chosenPitcher, ejectionResult.ejectedSide);
+    // Clear the ejection flags so the modal doesn't re-trigger after dismissal
+    delete newState._pendingEjectionReplacement;
+    if (newState._beanball) {
+      delete newState._beanball.autoEjectionPitcher;
+      delete newState._beanball.autoEjectionSide;
+    }
     setGameState(newState);
     setEjectionResult(null);
   };
@@ -2125,7 +2142,7 @@ export default function Home() {
                       onSteal={handleSteal}
                       onHitAndRun={handleHitAndRun}
                       onIntBB={handleIntBB}
-                      disabled={processing}
+                      disabled={processing || !!ejectionResult}
                       bases={gameState.bases}
                       hitAndRun={gameState.hitAndRun}
                       pitcherPitches={pitcher.pitches}
@@ -2178,7 +2195,7 @@ export default function Home() {
             onSteal={handleSteal}
             onHitAndRun={handleHitAndRun}
             onIntBB={handleIntBB}
-            disabled={processing}
+            disabled={processing || !!ejectionResult}
             bases={gameState.bases}
             hitAndRun={gameState.hitAndRun}
             pitcherPitches={pitcher.pitches}

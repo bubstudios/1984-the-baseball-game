@@ -154,11 +154,75 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
   if (newState._pendingEjectionReplacement) {
     const ejectedSide = newState._beanball?.autoEjectionSide;
+    // In headless mode (CPU vs CPU sim) or for CPU-side ejections in user games,
+    // auto-install a replacement here. For the USER's own pitcher in a user game,
+    // leave the flag intact so the UI ejection modal opens and the user picks the
+    // replacement - an ejected pitcher can never be allowed to continue pitching.
+    const ejectedIsUserTeam = !newState._headlessMode && (
+      (ejectedSide === 'home' && newState.homeTeam === userTeam) ||
+      (ejectedSide === 'away' && newState.awayTeam === userTeam)
+    );
+    if (ejectedIsUserTeam) {
+      return newState;
+    }
+
     const oldP = newState[ejectedSide === 'home' ? 'homePitcher' : 'awayPitcher'];
     const hk = ejectedSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
+    const bp = ejectedSide === 'home' ? newState.homeBullpen : newState.awayBullpen;
+
+    // 1. Ejected pitcher is OUT: track as removed (illegal re-entry guard) and
+    //    freeze his pitching line into history up to the ejection point.
+    if (!newState.removedPlayers) newState.removedPlayers = [];
+    if (!newState.removedPlayers.includes(oldP.name)) newState.removedPlayers.push(oldP.name);
     if (!newState[hk].find(p => p.name === oldP.name)) {
       newState[hk].push({ ...oldP, ejected: true });
     }
+
+    // 2. Select a replacement - rested bullpen arm first, emergency fallback otherwise
+    const availableBullpen = bp.filter(p => !newState.removedPlayers.includes(p.name));
+    let newPitcher = null;
+    if (availableBullpen.length > 0) {
+      newPitcher = pickCpuReliever(availableBullpen, newState.inning, {
+        cpuScore: newState.score[ejectedSide],
+        oppScore: newState.score[ejectedSide === 'home' ? 'away' : 'home'],
+      });
+    }
+    if (!newPitcher) {
+      // Emergency: any roster pitcher not already in the game or removed
+      const teamKey = ejectedSide === 'home' ? newState.homeTeam : newState.awayTeam;
+      const rosterPitchers = TEAMS[teamKey]?.bullpen || [];
+      const inGame = new Set();
+      (ejectedSide === 'home' ? newState.homeLineup : newState.awayLineup).forEach(p => inGame.add(p.name));
+      (newState[hk] || []).forEach(p => inGame.add(p.name));
+      newState.removedPlayers.forEach(n => inGame.add(n));
+      newPitcher = rosterPitchers.find(p => !inGame.has(p.name)) || null;
+    }
+
+    if (newPitcher) {
+      const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
+      if (ejectedSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
+      const bpi = bp.findIndex(p => p.name === newPitcher.name);
+      if (bpi >= 0) bp.splice(bpi, 1);
+      // DH-less: swap the ejected pitcher's batting slot to the new arm
+      const fl = ejectedSide === 'home' ? newState.homeLineup : newState.awayLineup;
+      if (!newState.useDH) {
+        let si = fl.findIndex(p => p.name === oldP.name);
+        if (si < 0 && oldP.order) si = fl.findIndex(p => p.order === oldP.order);
+        if (si < 0) si = fl.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
+        if (si < 0) si = fl.findIndex(p => p._replacedPitcher);
+        if (si >= 0) {
+          fl[si] = { ...newPitcher, order: fl[si].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
+        }
+      }
+      newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ejected ${oldP.name} on the mound` });
+    } else {
+      // Absolute last resort: no legal pitcher exists. End the game rather than
+      // let an ejected pitcher continue - the hard rule cannot be violated.
+      console.error(`[ejection] No replacement pitcher available for ejected ${oldP.name} - forcing game end`);
+      newState.gameOver = true;
+      newState.log.push({ type: 'info', text: `⚠️ ${oldP.name} ejected with no replacement available - game cannot continue` });
+    }
+
     delete newState._pendingEjectionReplacement;
     delete newState._beanball.autoEjectionPitcher;
     delete newState._beanball.autoEjectionSide;
