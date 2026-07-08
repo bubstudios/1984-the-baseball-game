@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, getTiredRelievers, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard, commitPlayerStats } from '@/lib/seasonStore';
+import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, getTiredRelievers, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard, commitPlayerStats, getStarterFatigueStatus } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -379,6 +379,18 @@ export default function Home() {
       };
       annotateFatigue(state.homeBullpen, home);
       annotateFatigue(state.awayBullpen, away);
+
+      // Annotate starting pitchers with season-rest fatigue (3 days rest = slightly
+      // tired, 2 = emergency short-rest). getEffectivePitcher applies the penalty.
+      if (gameDate) {
+        const annotateStarter = (pitcher, teamKey) => {
+          if (!pitcher) return;
+          const status = getStarterFatigueStatus(seasonRotationStateRef.current, teamKey, pitcher.name, gameDate);
+          pitcher._seasonFatiguePenalty = status.penalty;
+        };
+        annotateStarter(state.homePitcher, home);
+        annotateStarter(state.awayPitcher, away);
+      }
     }
     const homeName = TEAMS[home].name;
     const awayName = TEAMS[away].name;

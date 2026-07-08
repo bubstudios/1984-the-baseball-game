@@ -120,8 +120,8 @@ export default function FullSchedule({ seasonId, userTeam }) {
                         } ${game.status === 'completed' ? 'opacity-75' : ''}`}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] text-muted-foreground font-heading uppercase">
-                            {game.stadium?.split(' ')[0] || 'Stadium'}
+                          <span className="text-[10px] text-muted-foreground font-heading uppercase truncate max-w-[120px]">
+                            {TEAMS[game.homeTeam]?.stadium || game.stadium || ''}
                           </span>
                           {isUserTeam && (
                             <span className="text-[9px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded font-heading">

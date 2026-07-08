@@ -329,13 +329,27 @@ function ensureTeamRotationState(rotationState, teamKey) {
   return rs;
 }
 
-// Eligibility: eligible if 5+ calendar days since last start (4 full rest days). Never-started = eligible.
+// 1984 starter eligibility: a starter may start with 3+ rest days (4+ calendar days
+// since last start). At exactly 3 rest days he is "slightly tired" but still starts
+// (see getStarterFatigueStatus). 2 rest days = emergency only. Never-started = eligible.
 export function isStarterEligible(rotationState, teamKey, pitcherName, gameDate) {
   const rs = rotationState?.[teamKey];
   if (!rs) return true;
   const last = rs.lastStartDateByPitcher?.[pitcherName];
   if (last === undefined) return true;
-  return daysBetween(last, gameDate) >= 5;
+  return daysBetween(last, gameDate) >= 4;
+}
+
+// Starter fatigue from season rest: returns { tired, penalty, restDays, reason }.
+// 4+ rest days = fresh; 3 = slightly tired; 2 = emergency short-rest; <2 = severe.
+// The penalty flows into _seasonFatiguePenalty so getEffectivePitcher applies it.
+export function getStarterFatigueStatus(rotationState, teamKey, pitcherName, gameDate) {
+  if (!gameDate) return { tired: false, penalty: 0, restDays: Infinity, reason: null };
+  const restDays = getRestDays(rotationState, teamKey, pitcherName, gameDate);
+  if (restDays === Infinity || restDays >= 4) return { tired: false, penalty: 0, restDays, reason: null };
+  if (restDays === 3) return { tired: true, penalty: 8, restDays, reason: '3 days rest' };
+  if (restDays === 2) return { tired: true, penalty: 18, restDays, reason: 'short rest (2 days)' };
+  return { tired: true, penalty: 25, restDays, reason: `${restDays} day rest` };
 }
 
 // Full rest days elapsed since last start (Infinity = never started)
@@ -386,26 +400,43 @@ export function isBullpenDayForTeam(rotationState, teamKey, gameDate) {
 }
 
 // THE single resolver: returns the probable starter object for a team's next game.
-// Day-based: next = rotation[rotationIndex]; if eligible (4 full rest days), start him (pointer advances on commit);
-// else bullpen day opener (pointer does NOT advance). Off days naturally let SPs rest.
+// 1984 rules: prefer the rotation SP at the pointer if he has 3+ rest days (tired at
+// exactly 3). If he can't go, scan the rest of the rotation for any SP with 3+ rest
+// days. Only if NO SP has 3+ rest days do we accept a 2-rest-day emergency start
+// (severe penalty). A real starter on short rest is always preferred over a reliever.
+// Bullpen day (opener) is used ONLY when no rotation SP can legally start.
 export function getProbableStarter(rotationState, teamKey, gameDate) {
   const team = TEAMS[teamKey];
   const rot = team.rotation || [];
-  if (rot.length === 0) return getBullpenDayOpener(rotationState, teamKey);
+  if (rot.length === 0) return getBullpenDayOpener(rotationState, teamKey, gameDate);
 
   const rs = ensureTeamRotationState(rotationState, teamKey);
   const rotation = rs.rotation;
-  const starterName = rotation[rs.rotationIndex % rotation.length];
-  const candidate = rot.find(p => p.name === starterName) || rot[0];
+  const findSP = (name) => rot.find(p => p.name === name) || rot[0];
 
-  if (isStarterEligible(rotationState, teamKey, starterName, gameDate)) {
-    // Also check workload rest (starter may have relieved recently)
-    const avail = isPitcherAvailable(rotationState, teamKey, starterName, gameDate);
-    if (avail.available) return candidate;
-    console.error(`[rotation] ${teamKey}: ${starterName} start-eligible but workload-rest blocked: ${avail.reason}`);
+  // Tier 1: any rotation SP with 3+ rest days who is workload-available.
+  // Scans from the pointer so the normal rotation order is preserved.
+  for (let offset = 0; offset < rotation.length; offset++) {
+    const name = rotation[(rs.rotationIndex + offset) % rotation.length];
+    if (!isStarterEligible(rotationState, teamKey, name, gameDate)) continue;
+    const avail = isPitcherAvailable(rotationState, teamKey, name, gameDate);
+    if (avail.available) return findSP(name);
   }
 
-  // Next SP not yet rested - bullpen day fallback (pointer does NOT advance)
+  // Tier 2: emergency short-rest start (2 rest days) - a real SP is better than a reliever.
+  for (let offset = 0; offset < rotation.length; offset++) {
+    const name = rotation[(rs.rotationIndex + offset) % rotation.length];
+    const restDays = getRestDays(rotationState, teamKey, name, gameDate);
+    if (restDays < 2) continue;
+    const avail = isPitcherAvailable(rotationState, teamKey, name, gameDate);
+    if (avail.available) {
+      console.warn(`[rotation] ${teamKey}: emergency short-rest start for ${name} (${restDays} days rest)`);
+      return findSP(name);
+    }
+  }
+
+  // No rotation SP can legally start - true bullpen day (very rare).
+  console.warn(`[rotation] ${teamKey}: no rotation SP available on ${gameDate} - bullpen day`);
   return getBullpenDayOpener(rotationState, teamKey, gameDate);
 }
 
@@ -491,8 +522,13 @@ export function recordPitcherWorkload(rotationState, teamKey, pitchingLine, game
 
 // THE ONE shared availability function. Used by BOTH CPU and human bullpen paths.
 // Returns { available, reason, tired, fatiguePenalty }.
-// Session 23: tightened rest rules — 25+ pitches yesterday = unavailable,
-// 15+ pitches yesterday = tired (available but deprioritized).
+// 1984 reliever rest tiers (by yesterday's pitch count):
+//   40+ pitches yesterday → unavailable
+//   30-39 pitches yesterday → available but tired, avoid if possible (penalty 20)
+//   20-29 pitches yesterday → available but slightly reduced (penalty 10)
+//   0-19 pitches yesterday  → available (fresh)
+// Back-to-back with heavy workload → unavailable; light back-to-back → tired.
+// 3 appearances in 3 days → unavailable. Multi-day outs-based rest still applies.
 export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate) {
   if (!gameDate) return { available: true, reason: null, tired: false, fatiguePenalty: 0 };
   const rs = rotationState?.[teamKey];
@@ -509,32 +545,47 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
   const threeDaysBefore = shiftDate(gameDate, -3);
   const appearedYesterday = history.find(e => e.date === dayBefore);
   const appearedDayBefore = history.find(e => e.date === twoDaysBefore);
-
-  // Back-to-back: pitched on each of the last 2 days → unavailable today
-  if (appearedYesterday && appearedDayBefore) {
-    return { available: false, reason: 'Used in back-to-back games', tired: false, fatiguePenalty: 0 };
-  }
-
-  // 3 appearances in last 3 days → unavailable
   const appeared3DaysAgo = history.find(e => e.date === threeDaysBefore);
   const appearancesLast3Days = [appearedYesterday, appearedDayBefore, appeared3DaysAgo].filter(Boolean).length;
+
+  // 3 appearances in 3 days → unavailable (nobody pitches 3 straight days)
   if (appearancesLast3Days >= 3) {
     return { available: false, reason: 'Used 3 times in 3 days', tired: false, fatiguePenalty: 0 };
   }
 
-  // Session 23: pitch-count-yesterday thresholds
-  // 25+ pitches yesterday → unavailable; 15+ → tired (checked after blocking returns)
-  if (appearedYesterday) {
-    const yesterdayPitches = appearedYesterday.pitches || estimatePitches(appearedYesterday.outs || 0);
-    if (yesterdayPitches >= 25) {
-      return { available: false, reason: `${yesterdayPitches} pitches yesterday`, tired: false, fatiguePenalty: 0 };
+  const yesterdayPitches = appearedYesterday
+    ? (appearedYesterday.pitches || estimatePitches(appearedYesterday.outs || 0))
+    : 0;
+
+  // Back-to-back: pitched each of the last 2 days.
+  // Block only if the combined workload is heavy; a light back-to-back is allowed but tired.
+  if (appearedYesterday && appearedDayBefore) {
+    const dayBeforePitches = appearedDayBefore.pitches || estimatePitches(appearedDayBefore.outs || 0);
+    if (yesterdayPitches >= 25 || dayBeforePitches >= 30) {
+      return { available: false, reason: 'Back-to-back with heavy workload', tired: false, fatiguePenalty: 0 };
     }
+    return { available: true, reason: 'Back-to-back appearances', tired: true, fatiguePenalty: 15 };
   }
 
-  // Outs-based rest tiers: if any appearance's rest requirement isn't met, unavailable
+  // Yesterday pitch-count tiers (authoritative reliever rest spec)
+  if (appearedYesterday) {
+    if (yesterdayPitches >= 40) {
+      return { available: false, reason: `${yesterdayPitches} pitches yesterday`, tired: false, fatiguePenalty: 0 };
+    }
+    if (yesterdayPitches >= 30) {
+      return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, fatiguePenalty: 20 };
+    }
+    if (yesterdayPitches >= 20) {
+      return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, fatiguePenalty: 10 };
+    }
+    // < 20 pitches yesterday: available, fall through to older-appearance rest check
+  }
+
+  // Older appearances (>= 2 days ago): outs-based rest tiers still apply
   let blockingEntry = null;
   let blockingPitches = 0;
   for (const entry of history) {
+    if (entry.date === dayBefore) continue; // yesterday handled by pitch tiers above
     const requiredRest = getRequiredRestDays(entry.pitches, entry.outs);
     if (requiredRest === 0) continue;
     const daysSince = daysBetween(entry.date, gameDate);
@@ -546,21 +597,14 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
       }
     }
   }
-
   if (blockingEntry) {
     const daysSince = daysBetween(blockingEntry.date, gameDate);
-    const when = daysSince === 1 ? 'yesterday' : `${daysSince} days ago`;
+    const when = daysSince === 2 ? '2 days ago' : `${daysSince} days ago`;
     const ip = blockingEntry.outs ? ` (${Math.floor(blockingEntry.outs / 3)}.${blockingEntry.outs % 3} IP)` : '';
     return { available: false, reason: `${blockingPitches} pitches ${when}${ip}`, tired: false, fatiguePenalty: 0 };
   }
 
-  // Tired: 15+ pitches yesterday (but < 25), or 2 appearances in last 3 days
-  if (appearedYesterday) {
-    const yesterdayPitches = appearedYesterday.pitches || estimatePitches(appearedYesterday.outs || 0);
-    if (yesterdayPitches >= 15) {
-      return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, fatiguePenalty: 10 };
-    }
-  }
+  // 2 appearances in last 3 days (but not back-to-back) → slightly tired
   if (appearancesLast3Days === 2) {
     return { available: true, reason: 'Used twice in last 3 days', tired: true, fatiguePenalty: 10 };
   }
@@ -586,7 +630,7 @@ export function getRelieverFatiguePenalty(rotationState, teamKey, pitcherName, g
 
   if (outs >= 9 || pitches >= 40) return 30;
   if (outs >= 6 || pitches >= 30) return 20;
-  if (outs >= 3 || pitches >= 18) return 10;
+  if (outs >= 3 || pitches >= 20) return 10;
   return 0;
 }
 

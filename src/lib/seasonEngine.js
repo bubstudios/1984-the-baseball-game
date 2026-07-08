@@ -7,7 +7,7 @@ import {
   createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing,
   cpuDecideSubstitutions, cpuDecideSteal, getCurrentBatter, getCurrentPitcher,
 } from './gameEngine';
-import { playerId, isPitcherAvailable } from './seasonStore';
+import { playerId, isPitcherAvailable, getStarterFatigueStatus } from './seasonStore';
 import { validateGameBoxScore } from './boxScoreValidators';
 
 /**
@@ -48,6 +48,17 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     };
     annotate(state.homeBullpen, homeTeam);
     annotate(state.awayBullpen, awayTeam);
+
+    // Annotate starting pitchers with season-rest fatigue (3 days rest = slightly
+    // tired, 2 = emergency short-rest). Flows into _seasonFatiguePenalty so
+    // getEffectivePitcher applies a small control/speed/offSpeed penalty.
+    const annotateStarter = (pitcher, teamKey) => {
+      if (!pitcher) return;
+      const status = getStarterFatigueStatus(options.rotationState, teamKey, pitcher.name, options.gameDate);
+      pitcher._seasonFatiguePenalty = status.penalty;
+    };
+    annotateStarter(state.homePitcher, homeTeam);
+    annotateStarter(state.awayPitcher, awayTeam);
   }
 
   // Tracking data
