@@ -1,15 +1,19 @@
 /**
  * Phase 2.7 - Situational Bunting Decision Gate (TUNED)
  *
- * Bunting is a PRE-SWING decision. Two types:
+ * Bunting is a PRE-SWING decision. Three types:
  * - sacrifice (runners + <2 outs, weak hitters / pitchers, clear sac spots)
+ * - squeeze (runner on 3rd, late/close, playing for the run)
  * - bunt-for-hit (rare surprise from fast, low-power guys)
  *
  * Tuned to be RARE and SITUATIONAL. Most hitters in most spots should NOT bunt.
  */
 
+import { isSqueezeSituation, determineSqueezeType, resolveSqueeze } from './squeezePlay';
+
 const SAC_THRESHOLD = 75; // Raised from 50 - requires a genuine sac situation, not just 'close & late'
 const HIT_THRESHOLD = 70; // Raised from 45 - bunt-for-hit must be a strong fit
+const SQUEEZE_THRESHOLD = 55; // Runner on 3rd + late/close + weak hitter
 
 export function shouldBunt(batter, game) {
   if (!batter || !game) return null;
@@ -25,6 +29,12 @@ export function shouldBunt(batter, game) {
     if (Math.random() < sacChance) return 'sacrifice';
   }
 
+  // — SQUEEZE BUNT (runner on 3rd, late/close, playing for one run)
+  const squeezeScore = squeeze_bunt_score(batter, game, isPitcher);
+  if (squeezeScore >= SQUEEZE_THRESHOLD && Math.random() < 0.55) {
+    return 'sacrifice'; // resolveSacBunt detects the squeeze situation
+  }
+
   // — BUNT-FOR-HIT (rare surprise)
   const hitScore = hitBuntScore(batter, game);
   if (hitScore >= HIT_THRESHOLD && Math.random() < 0.12) { // was 0.40 - now a true rarity
@@ -32,6 +42,38 @@ export function shouldBunt(batter, game) {
   }
 
   return null;
+}
+
+/**
+ * Squeeze bunt score - evaluated when runner on 3rd and <2 outs.
+ * Fires in late/close situations where playing for one run makes sense.
+ */
+function squeeze_bunt_score(batter, game, isPitcher) {
+  if (!game.runner_on_3rd) return 0;
+  if (game.outs >= 2) return 0;
+
+  let s = 0;
+
+  // Only squeeze in late innings
+  if (game.inning >= 8) s += 30;
+  else if (game.inning >= 7) s += 22;
+  else if (game.inning >= 6) s += 10;
+  else return 0; // don't squeeze early
+
+  // Close game situations
+  if (Math.abs(game.score_margin) <= 1) s += 25;
+  if (game.score_margin === 0) s += 15; // tie game - playing for the go-ahead run
+  if (game.score_margin >= -3 && game.score_margin <= -1) s += 10; // trailing, need the run
+
+  // Don't squeeze when up big or down big
+  if (game.score_margin >= 3 || game.score_margin <= -4) return 0;
+
+  // Weak hitters / pitchers more likely to squeeze
+  if (isPitcher) s += 20;
+  if ((batter.power || 5) <= 3) s += 15;
+  if ((batter.contact || 5) <= 5) s += 8;
+
+  return s;
 }
 
 /**
@@ -144,6 +186,13 @@ export function resolveBunt(buntType, batter, game) {
 }
 
 function resolveSacBunt(batter, game) {
+  // Squeeze detection: runner on 3rd + <2 outs = squeeze play.
+  // game is the full state object (passed from gameEngine), so bases/outs are available.
+  if (isSqueezeSituation(game)) {
+    const squeezeType = determineSqueezeType(batter);
+    return resolveSqueeze(batter, game, squeezeType);
+  }
+
   const isPitcher = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP', 'RP', 'CL'].includes(batter.assignedPos));
   const conRating = (batter.contact || 3) / 10;
   const pitcherBonus = isPitcher ? 0.10 : 0;

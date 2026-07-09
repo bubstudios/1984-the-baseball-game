@@ -322,19 +322,25 @@ export function processAtBat(state, pitchType, swingType) {
     const buntResult = resolveBunt(buntDecision, bjb, newState);
     if (buntResult) {
       const buntPlayType = buntResult.type === 'sacrifice_success' ? 'groundout' :
+                           buntResult.type === 'squeeze_success' ? 'groundout' :
                            buntResult.type === 'bunt_single' ? 'single' :
+                           buntResult.type === 'squeeze_bunt_single' ? 'single' :
                            buntResult.type === 'bunt_pop' ? 'popout' :
+                           buntResult.type === 'squeeze_popup' ? 'popout' :
                            buntResult.type === 'bunt_force' ? 'fc' :
+                           buntResult.type === 'squeeze_failed_runner_out' ? 'fc' :
+                           buntResult.type === 'squeeze_missed' ? 'info' :
                            buntResult.type === 'bunt_for_hit_single' ? 'single' :
                            buntResult.type === 'bunt_for_hit_out' ? 'groundout' : 'groundout';
       newState.log.push({ type: buntPlayType, text: buntResult.text });
       newState._celebrationBubble = buntResult.text;
       newState.lastPlay = { type: buntPlayType, text: buntResult.text };
 
+      let atBatOver = true;
+
       if (buntResult.batterOut) {
         bjb.gameStats.ab++;
-        const pitcherForSac = getCurrentPitcher(newState);
-        if (buntResult.type === 'sacrifice_success') {
+        if (buntResult.type === 'sacrifice_success' || buntResult.type === 'squeeze_success') {
           for (let b = 2; b >= 0; b--) {
             if (newState.bases[b]) {
               if (b + 1 >= 3) {
@@ -358,13 +364,53 @@ export function processAtBat(state, pitchType, swingType) {
           newState.bases[0] = bjb;
         }
         recordOut(newState);
+      } else if (buntResult.type === 'squeeze_failed_runner_out') {
+        // Runner thrown out at home, batter reaches first (fielder's choice)
+        bjb.gameStats.ab++;
+        if (newState.bases[2]) { recordOut(newState); newState.bases[2] = null; }
+        if (newState.bases[1]) { newState.bases[2] = newState.bases[1]; newState.bases[1] = null; }
+        if (newState.bases[0]) { newState.bases[1] = newState.bases[0]; newState.bases[0] = null; }
+        tagRunnerResponsiblePitcher(newState, bjb);
+        newState.bases[0] = bjb;
+      } else if (buntResult.type === 'squeeze_missed') {
+        // Runner caught off 3rd, tagged out. Batter gets a strike for the missed bunt.
+        if (newState.bases[2]) { recordOut(newState); newState.bases[2] = null; }
+        newState.strikes++;
+        if (newState.strikes >= 3) {
+          bjb.gameStats.ab++;
+          bjb.gameStats.so++;
+          const pK = getCurrentPitcher(newState);
+          pK.gameStats.so = (pK.gameStats.so || 0) + 1;
+          recordOut(newState);
+        } else {
+          atBatOver = false;
+        }
       } else {
         bjb.gameStats.ab++;
         bjb.gameStats.hits++;
         const pitcher = getCurrentPitcher(newState);
         pitcher.gameStats.h++;
-        const rbi = advanceRunners(newState, 1, bjb, true);
-        bjb.gameStats.rbi += rbi;
+        if (buntResult.type === 'squeeze_bunt_single') {
+          let rbi = 0;
+          for (let b = 2; b >= 0; b--) {
+            if (newState.bases[b]) {
+              if (b + 1 >= 3) {
+                chargeRun(newState, newState.bases[b]);
+                rbi++;
+                newState.bases[b] = null;
+              } else if (!newState.bases[b + 1]) {
+                newState.bases[b + 1] = newState.bases[b];
+                newState.bases[b] = null;
+              }
+            }
+          }
+          tagRunnerResponsiblePitcher(newState, bjb);
+          newState.bases[0] = bjb;
+          bjb.gameStats.rbi += rbi;
+        } else {
+          const rbi = advanceRunners(newState, 1, bjb, true);
+          bjb.gameStats.rbi += rbi;
+        }
       }
 
       if (buntResult.composureDelta !== 0) {
@@ -376,9 +422,11 @@ export function processAtBat(state, pitchType, swingType) {
         }
       }
 
-      newState.balls = 0;
-      newState.strikes = 0;
-      advanceBatter(newState);
+      if (atBatOver) {
+        newState.balls = 0;
+        newState.strikes = 0;
+        advanceBatter(newState);
+      }
 
       if (newState.outs >= 3) {
         endHalfInning(newState);

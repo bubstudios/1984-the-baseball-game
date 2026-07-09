@@ -36,6 +36,7 @@ import { apply_alignment_modifiers } from './defensivePositioning';
 import { getEffectivePitcher } from './pitcherFatigue';
 import { getBehaviorZone, BEHAVIOR_ZONES } from './pitcherComposure';
 import { chargeRun, tagRunnerResponsiblePitcher } from './runScoring';
+import { isSqueezeSituation, determineSqueezeType, resolveSqueeze } from './squeezePlay';
 import {
   getCurrentBatter, getCurrentPitcher, getBattingTeam, advanceBatter, recordOut,
   endHalfInning, isWalkOff, isCriticalRunSituation,
@@ -256,6 +257,64 @@ export function resolveSwing(state, swingType, pitch) {
   }
   if (swingType.name === 'Bunt') {
     if (!pitch.isStrike && Math.random() < 0.55) { state.balls++; if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; } state.log.push({ type: 'ball', text: `Ball ${state.balls} - ${batter.name} pulls back the bunt` }); state.lastPlay = { type: 'ball', text: `Ball ${state.balls}` }; return; }
+    // ── SQUEEZE PLAY DETECTION (runner on 3rd, <2 outs) ──
+    if (isSqueezeSituation(state)) {
+      const sqType = determineSqueezeType(batter);
+      const sq = resolveSqueeze(batter, state, sqType);
+      state.log.push({ type: sq.logType, text: sq.text });
+      state._celebrationBubble = sq.text;
+      state.lastPlay = { type: sq.logType, text: sq.text };
+
+      if (sq.batterOut) {
+        batter.gameStats.ab++;
+        if (sq.runnerScores) {
+          for (let b = 2; b >= 0; b--) {
+            if (state.bases[b]) {
+              if (b + 1 >= 3) { chargeRun(state, state.bases[b]); batter.gameStats.rbi++; state.bases[b] = null; }
+              else if (!state.bases[b + 1]) { state.bases[b + 1] = state.bases[b]; state.bases[b] = null; }
+            }
+          }
+        }
+        recordOut(state);
+        state.balls = 0; state.strikes = 0; advanceBatter(state);
+        return;
+      } else if (sq.type === 'squeeze_failed_runner_out') {
+        batter.gameStats.ab++;
+        if (state.bases[2]) { recordOut(state); state.bases[2] = null; }
+        if (state.bases[1]) { state.bases[2] = state.bases[1]; state.bases[1] = null; }
+        if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
+        tagRunnerResponsiblePitcher(state, batter);
+        state.bases[0] = batter;
+        state.balls = 0; state.strikes = 0; advanceBatter(state);
+        return;
+      } else if (sq.type === 'squeeze_missed') {
+        if (state.bases[2]) { recordOut(state); state.bases[2] = null; }
+        state.strikes++;
+        if (state.strikes >= 3) {
+          batter.gameStats.ab++; batter.gameStats.so++;
+          pitcher.gameStats.so = (pitcher.gameStats.so || 0) + 1;
+          recordOut(state);
+          state.balls = 0; state.strikes = 0; advanceBatter(state);
+        }
+        return;
+      } else {
+        batter.gameStats.ab++; batter.gameStats.hits++;
+        pitcher.gameStats.h++;
+        let sqRbi = 0;
+        for (let b = 2; b >= 0; b--) {
+          if (state.bases[b]) {
+            if (b + 1 >= 3) { chargeRun(state, state.bases[b]); sqRbi++; state.bases[b] = null; }
+            else if (!state.bases[b + 1]) { state.bases[b + 1] = state.bases[b]; state.bases[b] = null; }
+          }
+        }
+        tagRunnerResponsiblePitcher(state, batter);
+        state.bases[0] = batter;
+        batter.gameStats.rbi += sqRbi;
+        state.balls = 0; state.strikes = 0; advanceBatter(state);
+        return;
+      }
+    }
+
     const isPH = batter.pos === 'SP' || batter.assignedPos === 'SP';
     const isRelieverPitcher = batter.pos === 'RP' || batter.pos === 'CL' || batter.assignedPos === 'RP' || batter.assignedPos === 'CL';
     const hasR1 = !!state.bases[0];
