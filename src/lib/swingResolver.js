@@ -505,10 +505,28 @@ export function resolveSwing(state, swingType, pitch) {
       const q = checkBallparkQuirk(stadiumName, adjBatter.bats, hitDirection, state.weather, batter.name);
       if (q && q.isHit) {
         batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
-        if (q.isHR) { batter.gameStats.hr++; advanceRunners(state, 4, batter); }
-        else advanceRunners(state, q.bases, batter, true);
-        state.log.push({ type: q.type, text: q.text });
-        state.lastPlay = { type: q.type, text: q.text };
+        if (q.isHR) {
+          // Route ballpark-quirk HRs through the same pipeline as normal HRs
+          // so they get: type:'homerun', hrDistance, batterName, announcer call,
+          // celebration bubble, and proper display treatment (orange text, not white).
+          batter.gameStats.hr++; registerHomeRun(state, batter, pitcher);
+          const qRbi = advanceRunners(state, 4, batter);
+          const qDist = calculateHomeRunDistance(batter, pitcher, state, hitDirection, false, false);
+          batter.gameStats.lastHRDistance = qDist;
+          batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, qDist);
+          const battingTeamKey = state.halfInning === 'top' ? state.awayTeam : state.homeTeam;
+          const qCall = maybeGetAnnouncerHRCall(battingTeamKey, { isGrandSlam: qRbi === 4, rbi: qRbi, batterName: batter.name });
+          if (qCall) state.log.push({ type: 'homerun', text: `🎙️ ${qCall}` });
+          const qHt = `${batter.name} - ${q.text} ${qDist} feet!`;
+          state.log.push({ type: 'homerun', text: `💥 ${qHt}`, hrDistance: qDist, batterName: batter.name });
+          state.lastPlay = { type: 'homerun', text: `💥 ${qHt}`, hrDistance: qDist, batterName: batter.name };
+          const qAdmire = rollHRAdmire(batter);
+          if (qAdmire) { state.log.push({ type: 'info', text: `✨ ${qAdmire}` }); state._celebrationBubble = `✨ ${qAdmire}`; }
+        } else {
+          advanceRunners(state, q.bases, batter, true);
+          state.log.push({ type: q.type, text: q.text });
+          state.lastPlay = { type: q.type, text: q.text };
+        }
         state.balls = 0; state.strikes = 0; advanceBatter(state); return;
       }
       if (q && !q.isHit) {

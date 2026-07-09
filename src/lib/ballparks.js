@@ -570,18 +570,18 @@ export const BALLPARKS = {
       RCF: { distance: 385, wallHeight: 10 },
       RF:  { distance: 330, wallHeight: 10 },
     },
-    quirks: ["altitude", "atlantaHeat"],
+    quirks: ["launchingPad", "atlantaHeat"],
     hrFactors: { LH: 1.08, RH: 1.08 },
     avgDistance: 366,
-    description: "The launching pad. At 1,050 feet above sea level, Atlanta's thin air carries fly balls further than anywhere in the NL. A hitter's paradise - especially in summer heat.",
+    description: "The Launching Pad. Atlanta-Fulton County Stadium was known for home runs - the warm Southern air and compact dimensions made it a hitter's paradise, especially on humid summer nights.",
     wallDesc: {
-      LF:  "the left field fence at 330 feet, the thin Atlanta air beyond",
+      LF:  "the left field fence at 330 feet, the warm Atlanta air beyond",
       LCF: "the left-center gap at 385 feet",
       CF:  "the center field wall at 402 feet",
       RCF: "the right-center alley at 385 feet",
       RF:  "the right field fence at 330 feet, balls carry here",
     },
-    specialRules: ["Altitude boost: HR probability increased due to elevated location"],
+    specialRules: ["Launching Pad: warm Southern air helps fly balls carry in summer heat"],
   },
 
   "Astrodome": {
@@ -767,8 +767,8 @@ export function getBallparkEffect(stadiumName, batterBats, weather) {
     }
   }
 
-  // Altitude bonus for Atlanta
-  if (ballpark.quirks.includes('altitude')) {
+  // Launching Pad carry for Atlanta (warm Southern air, not altitude)
+  if (ballpark.quirks.includes('launchingPad')) {
     windMod *= 1.05;
   }
 
@@ -960,12 +960,18 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     }
   }
 
-  // ── Atlanta altitude carry ──
-  if (quirks.includes('altitude') && (hitDirection === 'CF' || hitDirection === 'LCF' || hitDirection === 'RCF')) {
+  // ── Atlanta Launching Pad carry ──
+  if (quirks.includes('launchingPad') && (hitDirection === 'CF' || hitDirection === 'LCF' || hitDirection === 'RCF')) {
     if (roll < 0.07) {
+      const lines = [
+        `${bn} drives one to deep center - it carries in the warm Atlanta night! Off the warning track and over the wall at The Launching Pad!`,
+        `${bn} launches one into the Atlanta night - the ball just keeps carrying! Over the wall - that is why they call it The Launching Pad!`,
+        `${bn} gets all of it - deep to center and gone! The warm Southern air carries it over the fence at Fulton County!`,
+        `${bn} crushes one to the gap - it carries and carries - over the wall! The Launching Pad lives up to its name!`,
+      ];
       return {
-        type: 'altitudeCarry',
-        text: `${bn} drives one to deep center - the thin Atlanta air carries it! It looked like a routine fly, but it just kept going - off the warning track and over the wall! The altitude giveth!`,
+        type: 'launchingPadHR',
+        text: lines[Math.floor(Math.random() * lines.length)],
         bases: 4,
         isHit: true,
         isHR: true,

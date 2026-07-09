@@ -45,9 +45,9 @@ export const BRAVES_BANNERS = [
     subtitle: 'Atlanta-Fulton County Stadium: the Launching Pad',
     icon: '🚀',
     paragraphs: [
-      'The Braves\' home since they moved south from Milwaukee in 1966, Atlanta-Fulton County Stadium earned a memorable nickname: "the Launching Pad." Sitting over 1,000 feet above sea level, the highest of any major-league ballpark, the thin air helped fly balls carry - and home runs leave the yard at a generous clip. Pitchers dreaded it; sluggers loved it.',
+      'The Braves\' home since they moved south from Milwaukee in 1966, Atlanta-Fulton County Stadium earned a memorable nickname: "the Launching Pad." The warm Southern air, compact dimensions, and humid summer nights helped fly balls carry - and home runs left the yard at a generous clip. Pitchers dreaded it; sluggers loved it.',
       'It was a classic multipurpose stadium of its era - a big round concrete bowl shared with football, artificial issues and all - but it had a personality the numbers can\'t capture. This was the stage for the single most famous moment in franchise history, when a man wearing number 44 launched a ball into the left-center bullpen on an April night in 1974 and changed baseball forever.',
-      'By 1984 the Launching Pad is home to Dale Murphy and a Braves team beamed nationwide on TBS. The thin Georgia air still does its work, balls still fly, and somewhere beyond that left-field wall the ghost of the most important home run ever hit still hangs in the night.',
+      'By 1984 the Launching Pad is home to Dale Murphy and a Braves team beamed nationwide on TBS. The warm Georgia air still does its work, balls still fly, and somewhere beyond that left-field wall the ghost of the most important home run ever hit still hangs in the night.',
     ],
     achievementId: 'braves_launchingpad',
   },
