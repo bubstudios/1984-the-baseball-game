@@ -380,7 +380,14 @@ export function getBullpenDayOpener(rotationState, teamKey, gameDate) {
     return getLeastRecentlyUsedArm(rotationState, teamKey, bullpen, gameDate);
   }
 
-  candidates.sort((a, b) => {
+  // Prefer fresh relievers; only use tired-but-available ones if no fresh arm exists
+  const fresh = candidates.filter(p => {
+    const avail = isPitcherAvailable(rotationState, teamKey, p.name, gameDate);
+    return !avail.tired;
+  });
+  const pool = fresh.length > 0 ? fresh : candidates;
+
+  pool.sort((a, b) => {
     const staDiff = (b.stamina || 0) - (a.stamina || 0);
     if (staDiff !== 0) return staDiff;
     const aTier = (a.pitchSpeed || 0) + (a.offSpeed || 0) + (a.control || 0);
@@ -388,7 +395,7 @@ export function getBullpenDayOpener(rotationState, teamKey, gameDate) {
     return bTier - aTier;
   });
 
-  return candidates[0];
+  return pool[0];
 }
 
 // Check if the probable starter for a team on this date is a bullpen opener (fallback, not rotation SP)
@@ -397,6 +404,20 @@ export function isBullpenDayForTeam(rotationState, teamKey, gameDate) {
   if (!probable) return false;
   const rotation = TEAMS[teamKey]?.rotation || [];
   return !rotation.some(p => p.name === probable.name);
+}
+
+// True if at least one non-closer reliever is fully available (not tired, not unavailable).
+// Used to decide bullpen-day vs short-rest emergency start.
+export function hasFreshReliever(rotationState, teamKey, gameDate) {
+  const team = TEAMS[teamKey];
+  const bullpen = team?.bullpen || [];
+  for (const p of bullpen) {
+    const pos = p.pos || p.assignedPos || '';
+    if (pos === 'CL') continue;
+    const avail = isPitcherAvailable(rotationState, teamKey, p.name, gameDate);
+    if (avail.available && !avail.tired) return true;
+  }
+  return false;
 }
 
 // THE single resolver: returns the probable starter object for a team's next game.
@@ -423,15 +444,20 @@ export function getProbableStarter(rotationState, teamKey, gameDate) {
     if (avail.available) return findSP(name);
   }
 
-  // Tier 2: emergency short-rest start (2 rest days) - a real SP is better than a reliever.
-  for (let offset = 0; offset < rotation.length; offset++) {
-    const name = rotation[(rs.rotationIndex + offset) % rotation.length];
-    const restDays = getRestDays(rotationState, teamKey, name, gameDate);
-    if (restDays < 2) continue;
-    const avail = isPitcherAvailable(rotationState, teamKey, name, gameDate);
-    if (avail.available) {
-      console.warn(`[rotation] ${teamKey}: emergency short-rest start for ${name} (${restDays} days rest)`);
-      return findSP(name);
+  // Tier 2: emergency short-rest start (2 rest days) - ONLY when no fresh reliever
+  // is available. Per 1984 rest rules: if a rested reliever is available, a bullpen
+  // opener is preferred over a short-rest starter. A short-rest SP start is the
+  // last resort, used only when the bullpen is also exhausted.
+  if (!hasFreshReliever(rotationState, teamKey, gameDate)) {
+    for (let offset = 0; offset < rotation.length; offset++) {
+      const name = rotation[(rs.rotationIndex + offset) % rotation.length];
+      const restDays = getRestDays(rotationState, teamKey, name, gameDate);
+      if (restDays < 2) continue;
+      const avail = isPitcherAvailable(rotationState, teamKey, name, gameDate);
+      if (avail.available) {
+        console.warn(`[rotation] ${teamKey}: emergency short-rest start for ${name} (${restDays} days rest) - no fresh relievers available`);
+        return findSP(name);
+      }
     }
   }
 

@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, getTiredRelievers, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard, commitPlayerStats, getStarterFatigueStatus } from '@/lib/seasonStore';
+import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, getTiredRelievers, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard, commitPlayerStats, getStarterFatigueStatus, isStarterEligible, hasFreshReliever, getBullpenDayOpener } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -151,6 +151,7 @@ export default function Home() {
   const [userTeam, setUserTeam] = useState(null);
   const [seasonUserTeam, setSeasonUserTeam] = useState(null);
   const [forcedStarters, setForcedStarters] = useState(null); // { user, cpu } in season mode; null in exhibition
+  const [starterNotice, setStarterNotice] = useState(null); // shown when a short-rest SP is replaced by a bullpen opener
   const [processing, setProcessing] = useState(false);
   const [tab, setTab] = useState('game');
   const [ballparkPhase, setBallparkPhase] = useState(null); // { home, away }
@@ -261,7 +262,24 @@ export default function Home() {
           if (userStarterName && (!userStarter || userStarter.name !== userStarterName)) {
             console.error(`[season-launch] STARTER LOCK MISMATCH: dashboard said "${userStarterName}" but could not resolve that pitcher for ${userTeamParam}`);
           }
-          setForcedStarters({ user: userStarter, cpu: cpuStarter });
+          // Hard validation: enforce season rest rules. If the resolved starter is on
+          // short rest and fresh relievers exist, replace with a bullpen opener.
+          const validateSeasonStarter = (resolved, teamKey) => {
+            if (!resolved || !gameDateStr || !teamKey) return resolved;
+            if (isStarterEligible(rotState, teamKey, resolved.name, gameDateStr)) return resolved;
+            if (hasFreshReliever(rotState, teamKey, gameDateStr)) {
+              const opener = getBullpenDayOpener(rotState, teamKey, gameDateStr);
+              if (opener && opener.name !== resolved.name) {
+                console.warn(`[starter-validation] ${teamKey}: ${resolved.name} on short rest - replacing with opener ${opener.name}`);
+                setStarterNotice(`${resolved.name} is unavailable on short rest. ${TEAMS[teamKey]?.name || teamKey} will use a bullpen opener (${opener.name}).`);
+                return opener;
+              }
+            }
+            return resolved;
+          };
+          const validatedUserStarter = validateSeasonStarter(userStarter, userTeamParam);
+          const validatedCpuStarter = validateSeasonStarter(cpuStarter, oppTeamKey);
+          setForcedStarters({ user: validatedUserStarter, cpu: validatedCpuStarter });
           // Season games use the home team's stadium (schedule-determined) - skip BallparkSelect
           const stadium = TEAMS[homeTeamKey].stadium;
           let weather;
@@ -385,8 +403,15 @@ export default function Home() {
       if (gameDate) {
         const annotateStarter = (pitcher, teamKey) => {
           if (!pitcher) return;
-          const status = getStarterFatigueStatus(seasonRotationStateRef.current, teamKey, pitcher.name, gameDate);
-          pitcher._seasonFatiguePenalty = status.penalty;
+          const isRotationSP = (TEAMS[teamKey]?.rotation || []).some(p => p.name === pitcher.name);
+          if (isRotationSP) {
+            const status = getStarterFatigueStatus(seasonRotationStateRef.current, teamKey, pitcher.name, gameDate);
+            pitcher._seasonFatiguePenalty = status.penalty;
+          } else {
+            // Bullpen opener - apply reliever workload fatigue, not starter rest fatigue
+            const avail = isPitcherAvailable(seasonRotationStateRef.current, teamKey, pitcher.name, gameDate);
+            pitcher._seasonFatiguePenalty = avail.tired ? avail.fatiguePenalty : 0;
+          }
         };
         annotateStarter(state.homePitcher, home);
         annotateStarter(state.awayPitcher, away);
@@ -1812,6 +1837,7 @@ export default function Home() {
     setUserTeam(null);
     setSeasonUserTeam(null);
     setForcedStarters(null);
+    setStarterNotice(null);
     setTab('game');
     setNewAchievements([]);
     setShowAchievementPopup(false);
@@ -1863,6 +1889,15 @@ export default function Home() {
     const oppTeamKey = userIsHome ? lineupPhase.away : lineupPhase.home;
     return (
       <ErrorBoundary>
+      {starterNotice && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-md w-[calc(100%-2rem)]">
+          <div className="bg-amber-500/10 border border-amber-500/40 rounded-xl px-4 py-3 flex items-start gap-3 shadow-lg">
+            <span className="text-lg shrink-0">⚠️</span>
+            <p className="text-sm font-heading text-amber-300 leading-snug flex-1">{starterNotice}</p>
+            <button onClick={() => setStarterNotice(null)} className="text-amber-300/60 hover:text-amber-300 text-lg shrink-0" aria-label="Dismiss">×</button>
+          </div>
+        </div>
+      )}
       <LineupManager
         key={`${lineupPhase.home}-${lineupPhase.away}-${lineupPhase.useDH}`}
         teamKey={userTeamKey}

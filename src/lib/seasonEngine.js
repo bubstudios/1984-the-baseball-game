@@ -54,8 +54,15 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     // getEffectivePitcher applies a small control/speed/offSpeed penalty.
     const annotateStarter = (pitcher, teamKey) => {
       if (!pitcher) return;
-      const status = getStarterFatigueStatus(options.rotationState, teamKey, pitcher.name, options.gameDate);
-      pitcher._seasonFatiguePenalty = status.penalty;
+      const isRotationSP = (TEAMS[teamKey]?.rotation || []).some(p => p.name === pitcher.name);
+      if (isRotationSP) {
+        const status = getStarterFatigueStatus(options.rotationState, teamKey, pitcher.name, options.gameDate);
+        pitcher._seasonFatiguePenalty = status.penalty;
+      } else {
+        // Bullpen opener - apply reliever workload fatigue, not starter rest fatigue
+        const avail = isPitcherAvailable(options.rotationState, teamKey, pitcher.name, options.gameDate);
+        pitcher._seasonFatiguePenalty = avail.tired ? avail.fatiguePenalty : 0;
+      }
     };
     annotateStarter(state.homePitcher, homeTeam);
     annotateStarter(state.awayPitcher, awayTeam);
