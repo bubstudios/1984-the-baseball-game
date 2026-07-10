@@ -749,6 +749,30 @@ export function getRelieverFatiguePenalty(rotationState, teamKey, pitcherName, g
   return 0;
 }
 
+// ── Shared available-pitchers resolver ──
+// THE single function all pitcher-selection paths should use.
+// Returns { available: [...], emergency: [...] } - available is sorted by
+// freshness (fresh first, tired last). Emergency contains all-unavailable arms
+// for last-resort fallback (extra innings, no rested pitcher exists).
+export function getAvailablePitchers(rotationState, teamKey, gameDate) {
+  const team = TEAMS[teamKey];
+  if (!team) return { available: [], emergency: [] };
+  const bullpen = team.bullpen || [];
+  const available = [];
+  const emergency = [];
+  for (const p of bullpen) {
+    const result = isPitcherAvailable(rotationState, teamKey, p.name, gameDate);
+    if (result.available) {
+      available.push({ ...p, _tired: result.tired, _seasonFatiguePenalty: result.fatiguePenalty || 0 });
+    } else {
+      emergency.push({ ...p, _seasonAvailable: false, _seasonUnavailableReason: result.reason });
+    }
+  }
+  // Sort: fresh arms first, then tired (higher fatiguePenalty = more tired)
+  available.sort((a, b) => (a._seasonFatiguePenalty || 0) - (b._seasonFatiguePenalty || 0));
+  return { available, emergency };
+}
+
 // Backward-compatible: returns array of unavailable reliever names
 export function getUnavailableRelievers(rotationState, teamKey, gameDate) {
   const rs = rotationState?.[teamKey];

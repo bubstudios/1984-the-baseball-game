@@ -21,10 +21,11 @@ const CATEGORY_LABELS = {
 
 function StatRow({ label, value, status }) {
   const color = status === 'pass' ? 'text-emerald-400' : status === 'fail' ? 'text-red-400' : status === 'warn' ? 'text-amber-400' : 'text-foreground';
+  const displayValue = typeof value === 'number' ? Math.round(value * 100) / 100 : value;
   return (
     <div className="flex items-center justify-between py-1 px-2 rounded text-xs">
       <span className="text-muted-foreground font-body">{label}</span>
-      <span className={`font-heading font-bold ${color}`}>{value}</span>
+      <span className={`font-heading font-bold ${color}`}>{displayValue}</span>
     </div>
   );
 }

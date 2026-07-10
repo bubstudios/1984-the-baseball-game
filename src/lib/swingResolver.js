@@ -378,7 +378,7 @@ export function resolveSwing(state, swingType, pitch) {
   const adjBatter = getSituationalBatter(state);
   const contactRating = (adjBatter.baseContact || adjBatter.contact) / 10;
   const isPitcherBatting = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let contactChance = 0.40 + contactRating * 0.38;
+  let contactChance = 0.43 + contactRating * 0.38;
   if (isPitcherBatting) contactChance *= 0.55;
   if (isPower) contactChance -= 0.10; if (isContact) contactChance += 0.12; if (!pitch.isStrike) contactChance -= 0.20;
   if (state.hitAndRun) { contactChance -= 0.08; contactChance = Math.max(0.03, contactChance); }
@@ -418,7 +418,7 @@ export function resolveSwing(state, swingType, pitch) {
   const hitDirection = getHitDirection(adjBatter.bats);
   const powerRating = (adjBatter.basePower || adjBatter.power) / 10;
   const isPitcherBatting2 = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let hitChance = 0.22 + (contactRating + contactWx / 10) * 0.28;
+  let hitChance = 0.17 + (contactRating + contactWx / 10) * 0.22;
   if (isPitcherBatting2) hitChance *= 0.45;
   if (isPower) hitChance -= 0.04; if (isContact) hitChance += 0.06;
   const effP3 = getEffectivePitcher(state) || pitcher;
@@ -433,7 +433,7 @@ export function resolveSwing(state, swingType, pitch) {
     pitcher.gameStats.h++; batter.gameStats.hits++;
     let powerMod = isPower ? 1.50 : (isContact ? 0.5 : 1.0);
     const pwrMult = Math.max(0.85, Math.min(1.15, adjBatter.powerMult || 1)); const effPwr = powerRating * powerMod * pwrMult, sf2 = adjBatter.speed / 10, hr2 = Math.random();
-    if (hr2 < effPwr * 0.085 * hrMod * ballparkHRMod) {
+    if (hr2 < effPwr * 0.12 * hrMod * ballparkHRMod) {
       const isRobable = isWallRobable(stadiumName, hitDirection);
       const isRobbed = isRobable && rollHRRobbery();
       if (isRobbed) {
@@ -560,7 +560,7 @@ export function resolveSwing(state, swingType, pitch) {
       if (fielder) {
         const af = getAdjustedPlayer(fielder);
         const rp2 = af.pos !== (af.assignedPos || af.pos) ? 0.06 : 0;
-        let ihc = Math.max(0, (batter.speed / 10) * 0.30 - (af.arm / 10) * 0.15 - (af.defenseAdj / 10) * 0.05 + rp2);
+        let ihc = Math.max(0, (batter.speed / 10) * 0.22 - (af.arm / 10) * 0.15 - (af.defenseAdj / 10) * 0.05 + rp2);
         if (alignmentMod.through_infield_for_hit_prob) ihc += alignmentMod.through_infield_for_hit_prob;
         ihc = Math.max(0, Math.min(1, ihc));
         if (Math.random() < ihc) {
@@ -767,7 +767,7 @@ export function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
   if (Math.random() < hc) {
     batter.gameStats.hits++; pitcher.gameStats.h++;
     const hrr = Math.random();
-    if (hrr < pr * 0.065 * hrMod) { batter.gameStats.hr++; const hrRbi = advanceRunners(state, 4, batter); const hrDirHR = getHitDirection(adjBatter.bats); const hrDistanceHR = calculateHomeRunDistance(batter, pitcher, state, hrDirHR, false, false); batter.gameStats.lastHRDistance = hrDistanceHR; batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, hrDistanceHR); const battingTeamKeyHR = state.halfInning === 'top' ? state.awayTeam : state.homeTeam;           const hrCallHR = maybeGetAnnouncerHRCall(battingTeamKeyHR, { isGrandSlam: false, rbi: hrRbi, batterName: batter.name, state }); if (hrCallHR) state.log.push({ type: 'info', text: `🎙️ ${hrCallHR}` }); const hrText = `💥 ${batter.name} crushes one on the hit-and-run - HOME RUN at ${hrDistanceHR} feet!`; state.log.push({ type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }; }
+    if (hrr < pr * 0.09 * hrMod) { batter.gameStats.hr++; const hrRbi = advanceRunners(state, 4, batter); const hrDirHR = getHitDirection(adjBatter.bats); const hrDistanceHR = calculateHomeRunDistance(batter, pitcher, state, hrDirHR, false, false); batter.gameStats.lastHRDistance = hrDistanceHR; batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, hrDistanceHR); const battingTeamKeyHR = state.halfInning === 'top' ? state.awayTeam : state.homeTeam;           const hrCallHR = maybeGetAnnouncerHRCall(battingTeamKeyHR, { isGrandSlam: false, rbi: hrRbi, batterName: batter.name, state }); if (hrCallHR) state.log.push({ type: 'info', text: `🎙️ ${hrCallHR}` }); const hrText = `💥 ${batter.name} crushes one on the hit-and-run - HOME RUN at ${hrDistanceHR} feet!`; state.log.push({ type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }; }
     else if (hrr < pr * 0.32 * doubleMod) { advanceRunners(state, 2, batter, true); const e = advanceHitAndRunRunners(state, batter); const dblText = e ? `${batter.name} rips a double on the hit-and-run! ${e}` : `${batter.name} doubles on the hit-and-run!`; state.log.push({ type: 'double', text: dblText }); state.lastPlay = { type: 'double', text: dblText }; }
     else { advanceRunners(state, 1, batter, true); const e = advanceHitAndRunRunners(state, batter); const sglText = e ? `${batter.name} slaps a single - hit-and-run! ${e}` : `${batter.name} singles on the hit-and-run!`; state.log.push({ type: 'single', text: sglText }); state.lastPlay = { type: 'single', text: sglText }; }
   } else {

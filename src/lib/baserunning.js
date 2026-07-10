@@ -31,9 +31,9 @@ export function cpuDecideSteal(state) {
     const r = state.bases[i];
     if (!r || state.bases[i + 1]) continue;
     if (r.speed <= 2) continue;
-    if (r.speed <= 3 && Math.random() > 0.03) continue;
-    if (r.speed <= 4 && Math.random() > 0.06) continue;
-    let attemptChance = Math.max(0.02, 0.04 + (r.speed / 10) * 0.20 - armF - pitchF);
+    if (r.speed <= 3 && Math.random() > 0.04) continue;
+    if (r.speed <= 4 && Math.random() > 0.08) continue;
+    let attemptChance = Math.max(0.02, 0.04 + (r.speed / 10) * 0.30 - armF - pitchF);
     if (r._heldClose) {
       attemptChance *= (1 - HOLDING_GAME_RATES.stealAttemptPenaltyRel);
     }
@@ -57,7 +57,7 @@ export function attemptSteal(state, baseIndex) {
   const catcherArm = getCatcherArm(defenders);
   const pSpeed = effP.effectivePitchSpeed || effP.pitchSpeed;
   const pCtrl = effP.effectiveControl || effP.control;
-  let sc = 0.20 + speedFactor * 0.55 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - (pSpeed / 10) * 0.13;
+  let sc = 0.30 + speedFactor * 0.55 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - (pSpeed / 10) * 0.13;
   if (runner._heldClose) {
     sc -= HOLDING_GAME_RATES.stealSuccessPenalty;
     delete runner._heldClose;

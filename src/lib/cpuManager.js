@@ -18,6 +18,17 @@ import {
 export function selectCpuReliever(bullpen, context) {
   if (!bullpen || bullpen.length === 0) return null;
 
+  // Filter out season-unavailable relievers (3-straight-day rule, rest tiers).
+  // If ALL are unavailable, fall back to full bullpen (emergency) with a log.
+  // This is the hard enforcement point: no AI path can choose a 3-straight-day
+  // reliever unless every arm is unavailable (extra innings / no legal option).
+  const availableArms = bullpen.filter(p => p._seasonAvailable !== false);
+  if (availableArms.length > 0) {
+    bullpen = availableArms;
+  } else if (bullpen.some(p => p._seasonAvailable === false)) {
+    console.error('[cpuManager] Emergency: all bullpen arms season-unavailable - using full bullpen');
+  }
+
   const isCloser = (p) => p.pos === 'CL' || p.assignedPos === 'CL';
   const inning = context.inning || 1;
   const cpuScore = context.cpuScore ?? 0;

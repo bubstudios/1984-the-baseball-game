@@ -24,17 +24,21 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
   state.homeStartingPitcherName = homeSP?.name || null;
   state.awayStartingPitcherName = awaySP?.name || null;
 
-  // Filter out unavailable relievers from both bullpens
-  // Session 19 Part 1: Emergency valve - never let bullpen go to 0 (prevents sim stall)
+  // Mark unavailable relievers (3-straight-day rule, rest tiers, etc.) with
+  // _seasonAvailable=false. The CPU manager (selectCpuReliever) skips these
+  // unless ALL arms are unavailable (emergency). This replaces the old approach
+  // of removing them from the bullpen array, which had an emergency valve that
+  // let 3-straight-day relievers slip through when all arms were tired.
   if (unavailableRelievers) {
-    if (unavailableRelievers.home?.length) {
-      const filtered = state.homeBullpen.filter(p => !unavailableRelievers.home.includes(p.name));
-      if (filtered.length > 0) state.homeBullpen = filtered;
-    }
-    if (unavailableRelievers.away?.length) {
-      const filtered = state.awayBullpen.filter(p => !unavailableRelievers.away.includes(p.name));
-      if (filtered.length > 0) state.awayBullpen = filtered;
-    }
+    const markUnavailable = (bullpen, list) => {
+      if (!list?.length) return;
+      const set = new Set(list);
+      bullpen.forEach(p => {
+        if (set.has(p.name)) p._seasonAvailable = false;
+      });
+    };
+    markUnavailable(state.homeBullpen, unavailableRelievers.home);
+    markUnavailable(state.awayBullpen, unavailableRelievers.away);
   }
 
   // Session 23: annotate season fatigue penalty on all bullpen arms so the CPU
