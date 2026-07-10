@@ -601,24 +601,24 @@ export function recordPitcherWorkload(rotationState, teamKey, pitchingLine, game
 }
 
 // THE ONE shared availability function. Used by BOTH CPU and human bullpen paths.
-// Returns { available, reason, tired, fatiguePenalty, tier }.
-// 1984 reliever rest tiers (lenient for small bullpens):
-//   UNAVAILABLE (hard gate): back-to-back (would be 3rd straight day), 60+ pitches yesterday,
-//     3+ IP yesterday, 4+ IP in last 2 days
-//   VERY_TIRED (legal): 45-59 pitches yesterday, 2+ IP yesterday, long outing 2 days ago
-//   TIRED (legal): 30-44 pitches yesterday
-//   SLIGHTLY_TIRED (legal): 15-29 pitches yesterday
-//   AVAILABLE: < 15 pitches yesterday or no recent appearance
-// Only UNAVAILABLE is forbidden. Tired/very-tired arms are legal but weakened.
+// Returns { available, reason, tired, emergencyOnly, fatiguePenalty, tier }.
+// Pitcher status tiers per builder spec:
+//   AVAILABLE: 0-15 pitches yesterday or no recent appearance
+//   TIRED: 16-30 pitches yesterday (legal, reduced effectiveness)
+//   VERY_TIRED: 31-45 pitches yesterday (legal, avoid unless few better options)
+//   EMERGENCY_ONLY: 2 straight days, 46+ pitches yesterday, 60+ over 2 days, 3+ IP yesterday, 4+ IP in 2 days
+//   HARD_UNAVAILABLE: already pitched 3 straight days (cannot pitch under normal conditions)
+// Only HARD_UNAVAILABLE is forbidden (available: false). EMERGENCY_ONLY is legal but
+// should only be used when no AVAILABLE/TIRED/VERY_TIRED arms exist.
 export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate) {
-  if (!gameDate) return { available: true, reason: null, tired: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
+  if (!gameDate) return { available: true, reason: null, tired: false, emergencyOnly: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
   const rs = rotationState?.[teamKey];
   if (!rs || !rs.workload || !rs.workload[pitcherName]) {
-    return { available: true, reason: null, tired: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
+    return { available: true, reason: null, tired: false, emergencyOnly: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
   }
   const history = rs.workload[pitcherName];
   if (!history || history.length === 0) {
-    return { available: true, reason: null, tired: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
+    return { available: true, reason: null, tired: false, emergencyOnly: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
   }
 
   const dayBefore = shiftDate(gameDate, -1);
@@ -630,64 +630,83 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
 
   const yesterdayPitches = appearedYesterday ? (appearedYesterday.pitches || estimatePitches(appearedYesterday.outs || 0)) : 0;
   const yesterdayOuts = appearedYesterday ? (appearedYesterday.outs || 0) : 0;
+  const dayBeforePitches = appearedDayBefore ? (appearedDayBefore.pitches || estimatePitches(appearedDayBefore.outs || 0)) : 0;
   const dayBeforeOuts = appearedDayBefore ? (appearedDayBefore.outs || 0) : 0;
 
-  // ── UNAVAILABLE (hard gate - cannot pitch) ──
+  // ── HARD_UNAVAILABLE (cannot pitch under normal conditions) ──
+  // Already pitched 3 straight days (appeared on each of last 3 calendar days)
+  if (appearedYesterday && appearedDayBefore && appeared3DaysAgo) {
+    return { available: false, reason: 'Already pitched 3 straight days', tired: false, emergencyOnly: false, fatiguePenalty: 0, tier: 'HARD_UNAVAILABLE' };
+  }
 
-  // Back-to-back: pitched each of last 2 days → would be 3rd consecutive day
+  // ── EMERGENCY_ONLY (available: true, but should not pitch unless emergency) ──
+  // Pitched 2 straight days (would be 3rd consecutive day)
   if (appearedYesterday && appearedDayBefore) {
-    return { available: false, reason: 'Would be 3rd consecutive day', tired: false, fatiguePenalty: 0, tier: 'UNAVAILABLE' };
+    return { available: true, reason: 'Pitched 2 straight days', tired: true, emergencyOnly: true, fatiguePenalty: 15, tier: 'EMERGENCY_ONLY' };
   }
-
-  // 60+ pitches yesterday
-  if (yesterdayPitches >= 60) {
-    return { available: false, reason: `${yesterdayPitches} pitches yesterday`, tired: false, fatiguePenalty: 0, tier: 'UNAVAILABLE' };
+  // 46+ pitches yesterday
+  if (yesterdayPitches >= 46) {
+    return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, emergencyOnly: true, fatiguePenalty: 15, tier: 'EMERGENCY_ONLY' };
   }
-
-  // 3.0+ innings yesterday
+  // 3+ IP yesterday (9+ outs)
   if (yesterdayOuts >= 9) {
-    return { available: false, reason: `${Math.floor(yesterdayOuts / 3)}.${yesterdayOuts % 3} IP yesterday`, tired: false, fatiguePenalty: 0, tier: 'UNAVAILABLE' };
+    return { available: true, reason: `${Math.floor(yesterdayOuts / 3)}.${yesterdayOuts % 3} IP yesterday`, tired: true, emergencyOnly: true, fatiguePenalty: 15, tier: 'EMERGENCY_ONLY' };
   }
-
-  // 4.0+ innings within last 2 days
+  // 60+ pitches over last 2 days
+  if (yesterdayPitches + dayBeforePitches >= 60) {
+    return { available: true, reason: `${yesterdayPitches + dayBeforePitches} pitches in last 2 days`, tired: true, emergencyOnly: true, fatiguePenalty: 15, tier: 'EMERGENCY_ONLY' };
+  }
+  // 4+ IP in last 2 days (12+ outs)
   if (yesterdayOuts + dayBeforeOuts >= 12) {
-    return { available: false, reason: `${yesterdayOuts + dayBeforeOuts} outs in last 2 days`, tired: false, fatiguePenalty: 0, tier: 'UNAVAILABLE' };
+    return { available: true, reason: `${yesterdayOuts + dayBeforeOuts} outs in last 2 days`, tired: true, emergencyOnly: true, fatiguePenalty: 15, tier: 'EMERGENCY_ONLY' };
   }
 
-  // ── VERY TIRED (legal - reduced effectiveness, prefer in blowouts only) ──
-
-  if (yesterdayPitches >= 45) {
-    return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, fatiguePenalty: 20, tier: 'VERY_TIRED' };
+  // ── VERY_TIRED (legal - reduced effectiveness, avoid unless few better options) ──
+  if (yesterdayPitches >= 31) {
+    return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, emergencyOnly: false, fatiguePenalty: 20, tier: 'VERY_TIRED' };
   }
-
   if (yesterdayOuts >= 6) {
-    return { available: true, reason: `${Math.floor(yesterdayOuts / 3)}.${yesterdayOuts % 3} IP yesterday`, tired: true, fatiguePenalty: 20, tier: 'VERY_TIRED' };
+    return { available: true, reason: `${Math.floor(yesterdayOuts / 3)}.${yesterdayOuts % 3} IP yesterday`, tired: true, emergencyOnly: false, fatiguePenalty: 20, tier: 'VERY_TIRED' };
   }
-
-  // 3+ innings 2 days ago (long relief recovery)
+  // Long outing 2 days ago (3+ IP)
   if (dayBeforeOuts >= 9) {
-    return { available: true, reason: 'long outing 2 days ago', tired: true, fatiguePenalty: 20, tier: 'VERY_TIRED' };
+    return { available: true, reason: 'long outing 2 days ago', tired: true, emergencyOnly: false, fatiguePenalty: 20, tier: 'VERY_TIRED' };
   }
 
   // ── TIRED (legal - reduced effectiveness) ──
-
-  if (yesterdayPitches >= 30) {
-    return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, fatiguePenalty: 10, tier: 'TIRED' };
+  if (yesterdayPitches >= 16) {
+    return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, emergencyOnly: false, fatiguePenalty: 10, tier: 'TIRED' };
   }
 
-  // ── SLIGHTLY TIRED (legal - minor reduction) ──
-
-  if (yesterdayPitches >= 15) {
-    return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, fatiguePenalty: 5, tier: 'SLIGHTLY_TIRED' };
+  // ── AVAILABLE (minor or no fatigue) ──
+  if (yesterdayPitches >= 1) {
+    return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: false, emergencyOnly: false, fatiguePenalty: 3, tier: 'AVAILABLE' };
   }
 
-  // 2 appearances in last 3 days (not back-to-back)
-  const appearancesLast3Days = [appearedYesterday, appearedDayBefore, appeared3DaysAgo].filter(Boolean).length;
-  if (appearancesLast3Days === 2) {
-    return { available: true, reason: 'Used twice in last 3 days', tired: true, fatiguePenalty: 5, tier: 'SLIGHTLY_TIRED' };
-  }
+  return { available: true, reason: null, tired: false, emergencyOnly: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
+}
 
-  return { available: true, reason: null, tired: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
+// Pregame availability snapshot - captures ALL pitcher tiers before a game starts.
+// Used by the audit to judge pitcher usage against the pregame state, not a
+// post-game recalculation. Returns { hardUnavailable, emergencyOnly, legalArmCount }.
+export function getPregameAvailability(rotationState, teamKey, gameDate) {
+  const team = TEAMS[teamKey];
+  if (!team) return { hardUnavailable: [], emergencyOnly: [], legalArmCount: 0 };
+  const allPitchers = [...(team.bullpen || []), ...(team.rotation || [])];
+  const hardUnavailable = [];
+  const emergencyOnly = [];
+  let legalArmCount = 0;
+  for (const p of allPitchers) {
+    const result = isPitcherAvailable(rotationState, teamKey, p.name, gameDate);
+    if (!result.available) {
+      hardUnavailable.push(p.name);
+    } else if (result.emergencyOnly) {
+      emergencyOnly.push(p.name);
+    } else {
+      legalArmCount++;
+    }
+  }
+  return { hardUnavailable, emergencyOnly, legalArmCount };
 }
 
 // Delegates to isPitcherAvailable for consistent tier/penalty values.
@@ -710,7 +729,7 @@ export function getAvailablePitchers(rotationState, teamKey, gameDate) {
   for (const p of bullpen) {
     const result = isPitcherAvailable(rotationState, teamKey, p.name, gameDate);
     if (result.available) {
-      available.push({ ...p, _tired: result.tired, _seasonFatiguePenalty: result.fatiguePenalty || 0 });
+      available.push({ ...p, _tired: result.tired, _seasonFatiguePenalty: result.fatiguePenalty || 0, _seasonEmergencyOnly: result.emergencyOnly || false, _seasonTier: result.tier || 'AVAILABLE' });
     } else {
       emergency.push({ ...p, _seasonAvailable: false, _seasonUnavailableReason: result.reason });
     }

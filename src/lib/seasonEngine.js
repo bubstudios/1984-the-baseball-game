@@ -34,6 +34,7 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
       bullpen.forEach(p => {
         const avail = isPitcherAvailable(options.rotationState, teamKey, p.name, options.gameDate);
         p._seasonAvailable = avail.available;
+        p._seasonEmergencyOnly = avail.emergencyOnly || false;
         p._seasonFatiguePenalty = avail.tired ? avail.fatiguePenalty : 0;
         p._seasonTier = avail.tier || 'AVAILABLE';
       });
@@ -54,6 +55,9 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
         // Bullpen opener - apply reliever workload fatigue, not starter rest fatigue
         const avail = isPitcherAvailable(options.rotationState, teamKey, pitcher.name, options.gameDate);
         pitcher._seasonFatiguePenalty = avail.tired ? avail.fatiguePenalty : 0;
+        pitcher._seasonAvailable = avail.available;
+        pitcher._seasonEmergencyOnly = avail.emergencyOnly || false;
+        pitcher._seasonTier = avail.tier || 'AVAILABLE';
       }
     };
     annotateStarter(state.homePitcher, homeTeam);

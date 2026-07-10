@@ -19,28 +19,30 @@ export function canPitchToday(pitcher) {
   return pitcher._seasonAvailable !== false;
 }
 
-// Emergency fallback: when no available arms exist (extra innings, fully
-// exhausted bullpen). Picks the highest-tier unavailable arm (least-bad option).
+// Emergency fallback: when ALL arms are HARD_UNAVAILABLE (extra innings, fully
+// exhausted bullpen). Prefers EMERGENCY_ONLY over HARD_UNAVAILABLE arms.
 // Caller MUST log this as an emergency use.
 export function selectEmergencyReliever(bullpen) {
   if (!bullpen || bullpen.length === 0) return null;
   const tierSum = (p) => (p.pitchSpeed || 0) + (p.offSpeed || 0) + (p.control || 0);
-  return [...bullpen].sort((a, b) =>
+  const emergencyOnly = bullpen.filter(p => p._seasonEmergencyOnly);
+  const pool = emergencyOnly.length > 0 ? emergencyOnly : bullpen;
+  return [...pool].sort((a, b) =>
     (tierSum(b) - (b._seasonFatiguePenalty || 0)) - (tierSum(a) - (a._seasonFatiguePenalty || 0))
   )[0];
 }
 
-// Session 8: Shared CPU reliever selection policy.
-// Session 21 Part 2: respects reliever rest (fatiguePenalty) and avoids closers in blowouts.
-// HARD GATE: returns null when no legal (available) pitcher exists.
-// The caller handles emergency fallback via selectEmergencyReliever.
+// Shared CPU reliever selection policy with tiered availability.
+// Selection order: AVAILABLE → TIRED → VERY_TIRED → EMERGENCY_ONLY.
+// HARD GATE: returns null only when ALL arms are HARD_UNAVAILABLE.
+// The caller checks _seasonEmergencyOnly on the returned pitcher to decide
+// whether to log an emergency-use flag.
 export function selectCpuReliever(bullpen, context) {
   if (!bullpen || bullpen.length === 0) return null;
 
-  // HARD GATE: filter out ALL season-unavailable relievers.
-  const availableArms = bullpen.filter(p => canPitchToday(p));
-  if (availableArms.length === 0) return null;
-  bullpen = availableArms;
+  // HARD GATE: filter out HARD_UNAVAILABLE pitchers (canPitchToday checks _seasonAvailable)
+  const canPitch = bullpen.filter(p => canPitchToday(p));
+  if (canPitch.length === 0) return null;
 
   const isCloser = (p) => p.pos === 'CL' || p.assignedPos === 'CL';
   const inning = context.inning || 1;
@@ -49,42 +51,52 @@ export function selectCpuReliever(bullpen, context) {
   const margin = cpuScore - oppScore;
   const absMargin = Math.abs(margin);
   const tierSum = (p) => (p.pitchSpeed || 0) + (p.offSpeed || 0) + (p.control || 0);
-  // Session 23: deprioritize tired arms — both in-game fatigue AND season workload fatigue.
-  // This spreads CPU usage instead of burning the same long man every game.
-  const TIER_PRIORITY = { 'AVAILABLE': 0, 'SLIGHTLY_TIRED': 1, 'TIRED': 2, 'VERY_TIRED': 3 };
-  const effectiveTier = (p) => tierSum(p) - (p._fatiguePenalty || 0) - (p._seasonFatiguePenalty || 0) - (TIER_PRIORITY[p._seasonTier] || 0) * 100;
 
-  const closers = bullpen.filter(isCloser);
-  const nonClosers = bullpen.filter(p => !isCloser(p));
+  // TIER PRIORITY: find the freshest tier that has arms.
+  // Only descend to EMERGENCY_ONLY when no AVAILABLE/TIRED/VERY_TIRED arms exist.
+  const TIER_ORDER = ['AVAILABLE', 'TIRED', 'VERY_TIRED', 'EMERGENCY_ONLY'];
+  let pool = null;
+  for (const tier of TIER_ORDER) {
+    const arms = canPitch.filter(p => (p._seasonTier || 'AVAILABLE') === tier);
+    if (arms.length > 0) { pool = arms; break; }
+  }
+  if (!pool) pool = canPitch;
 
-  if (nonClosers.length === 0) return closers[0] || bullpen[0];
+  const closers = pool.filter(isCloser);
+  const nonClosers = pool.filter(p => !isCloser(p));
 
+  if (nonClosers.length === 0) return closers[0] || pool[0];
+
+  // Closer in save situation
   if (closers.length > 0) {
     const isSaveSituation = margin >= 1 && margin <= 3;
     const shouldUseCloser = (inning >= 8 && isSaveSituation) || (inning >= 9 && margin === 0);
     if (shouldUseCloser) {
-      return [...closers].sort((a, b) => effectiveTier(b) - effectiveTier(a))[0];
+      return [...closers].sort((a, b) =>
+        (tierSum(b) - (b._fatiguePenalty || 0) - (b._seasonFatiguePenalty || 0)) -
+        (tierSum(a) - (a._fatiguePenalty || 0) - (a._seasonFatiguePenalty || 0))
+      )[0];
     }
   }
 
-  const ranked = [...nonClosers].sort((a, b) => effectiveTier(b) - effectiveTier(a));
+  const ranked = [...nonClosers].sort((a, b) => {
+    const aEff = tierSum(a) - (a._fatiguePenalty || 0) - (a._seasonFatiguePenalty || 0);
+    const bEff = tierSum(b) - (b._fatiguePenalty || 0) - (b._seasonFatiguePenalty || 0);
+    return bEff - aEff;
+  });
   const midPoint = Math.ceil(ranked.length / 2);
   const setupArms = ranked.slice(0, midPoint);
   const mopUpArms = ranked.slice(midPoint);
 
-  // Session 21 Part 2: use long/mop-up arms in blowouts (absMargin >= 5)
   if (absMargin >= 5) {
     return mopUpArms.length > 0 ? mopUpArms[0] : ranked[ranked.length - 1];
   }
-
   if (inning <= 5) {
     return [...nonClosers].sort((a, b) => (b.stamina || 0) - (a.stamina || 0))[0];
   }
-
   if (absMargin >= 4) {
     return mopUpArms.length > 0 ? mopUpArms[0] : ranked[ranked.length - 1];
   }
-
   if (context.dueUpBatterBats && inning >= 8 && setupArms.length > 0) {
     const batterBats = context.dueUpBatterBats;
     const matching = setupArms.filter(p => {
@@ -212,6 +224,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         cpuScore: newState.score[ejectedSide],
         oppScore: newState.score[ejectedSide === 'home' ? 'away' : 'home'],
       });
+      if (newPitcher?._seasonEmergencyOnly) isEmergencyUse = true;
     }
     if (!newPitcher && availableBullpen.length > 0) {
       newPitcher = selectEmergencyReliever(availableBullpen);
@@ -298,7 +311,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       const availableBullpen = cpuBullpen.filter(p => !removedPlayers.includes(p.name));
       const effectiveBullpen = availableBullpen.length > 0 ? availableBullpen : cpuBullpen;
       let newPitcher = pickCpuReliever(effectiveBullpen, inning, { cpuScore, oppScore: userScore });
-      let isEmergencyUse = false;
+      let isEmergencyUse = !!newPitcher?._seasonEmergencyOnly;
       if (!newPitcher) {
         newPitcher = selectEmergencyReliever(effectiveBullpen);
         isEmergencyUse = !!newPitcher;
@@ -396,7 +409,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       oppScore: userScore,
       dueUpBatterBats: dueUpBatter?.bats,
     });
-    let isEmergencyUse = false;
+    let isEmergencyUse = !!newPitcher?._seasonEmergencyOnly;
     if (!newPitcher) {
       newPitcher = selectEmergencyReliever(effectiveBullpen);
       isEmergencyUse = !!newPitcher;

@@ -8,6 +8,7 @@ import { simulateGameHeadless, buildGameResultFromState } from './seasonEngine';
 import {
   getProbableStarter, advanceRotation, recordPitcherWorkload,
   getUnavailableRelievers, getRestDays, isPitcherAvailable, getStarterRestDays,
+  getPregameAvailability,
 } from './seasonStore';
 
 // ── Realism target ranges (early season, 7-30 day tests) ──
@@ -58,6 +59,10 @@ export async function runSeasonAudit(days, onProgress) {
       const unavailableRelievers = {
         home: getUnavailableRelievers(rotationState, homeTeam, gameDate),
         away: getUnavailableRelievers(rotationState, awayTeam, gameDate),
+      };
+      const pregameAvailability = {
+        home: getPregameAvailability(rotationState, homeTeam, gameDate),
+        away: getPregameAvailability(rotationState, awayTeam, gameDate),
       };
 
       let finalState, result;
@@ -127,6 +132,7 @@ export async function runSeasonAudit(days, onProgress) {
           },
         },
         unavailableRelievers,
+        pregameAvailability,
         result,
         log: finalState.log || [],
         score: { home: finalState.score.home, away: finalState.score.away },
@@ -302,36 +308,54 @@ function analyzeBullpen(games, rotationState, flags) {
     if (g.error || g.validationFailed) continue;
     const r = g.result;
     if (!r?.pitching) continue;
-    const unavailableSet = new Set([...(g.unavailableRelievers?.home || []), ...(g.unavailableRelievers?.away || [])]);
-
     // Check for emergency-use log entries in this game
     const emergencyPitchersInGame = new Set();
     for (const entry of (g.log || [])) {
       const t = (entry.text || '');
       if (t.includes('EMERGENCY') && t.includes('UNAVAILABLE')) {
-        // Extract pitcher name from log entry
         const match = t.match(/:\s*(.+?)\s+enters/);
         if (match) emergencyPitchersInGame.add(match[1].trim());
       }
     }
 
     for (const teamKey of [g.homeTeam, g.awayTeam]) {
+      const side = teamKey === g.homeTeam ? 'home' : 'away';
       const teamPitchers = r.pitching.filter(p => p.teamKey === teamKey);
       const rotationNames = new Set((TEAMS[teamKey]?.rotation || []).map(p => p.name));
+
+      // Per-team pregame snapshot (NOT combined across both teams)
+      const teamHardUnavailable = new Set(g.unavailableRelievers?.[side] || []);
+      const teamEmergencyOnly = new Set(g.pregameAvailability?.[side]?.emergencyOnly || []);
+      const teamLegalArms = g.pregameAvailability?.[side]?.legalArmCount ?? -1;
+      const isExtra = g.wasExtraInnings || false;
 
       for (const p of teamPitchers) {
         const key = `${teamKey}|${p.name}`;
         if (!appearancesByPitcher[key]) appearancesByPitcher[key] = [];
         appearancesByPitcher[key].push(g.gameDate);
 
-        // Reliever used while marked unavailable
-        if (p.gs !== 1 && unavailableSet.has(p.name)) {
-          if (emergencyPitchersInGame.has(p.name)) {
+        // HARD_UNAVAILABLE used (should never happen except absolute last resort)
+        if (p.gs !== 1 && teamHardUnavailable.has(p.name)) {
+          if (emergencyPitchersInGame.has(p.name) && isExtra) {
             legalEmergencyCount++;
-            addFlag(flags, 'info', 'Bullpen', `Legal emergency unavailable pitcher used: ${p.name}`, g);
+            addFlag(flags, 'info', 'Bullpen', `Legal emergency (extra innings): ${p.name} was HARD_UNAVAILABLE but no legal arms`, g);
+          } else if (emergencyPitchersInGame.has(p.name)) {
+            legalEmergencyCount++;
+            addFlag(flags, 'info', 'Bullpen', `Legal emergency: ${p.name} was HARD_UNAVAILABLE, no legal arms, not extra innings`, g);
           } else {
             unavailableUsedCount++;
-            addFlag(flags, 'critical', 'Bullpen', `${p.name} pitched while marked unavailable`, g);
+            addFlag(flags, 'critical', 'Bullpen', `${p.name} pitched while HARD_UNAVAILABLE (no emergency log)`, g);
+          }
+        }
+
+        // EMERGENCY_ONLY used - check if legal arms were available
+        if (p.gs !== 1 && teamEmergencyOnly.has(p.name)) {
+          if (teamLegalArms > 0 && !isExtra) {
+            unavailableUsedCount++;
+            addFlag(flags, 'critical', 'Bullpen', `${p.name} (EMERGENCY_ONLY) used when ${teamLegalArms} legal arms were available`, g);
+          } else {
+            legalEmergencyCount++;
+            addFlag(flags, 'info', 'Bullpen', `Legal emergency: ${p.name} used (EMERGENCY_ONLY), ${teamLegalArms} legal arms available, extra=${isExtra}`, g);
           }
         }
 
@@ -374,18 +398,20 @@ function analyzeBullpen(games, rotationState, flags) {
         const [teamKey, pitcherName] = key.split('|');
         const game3 = games.find(g => g.gameDate === sorted[i] && (g.homeTeam === teamKey || g.awayTeam === teamKey));
         const wasExtra = game3?.wasExtraInnings || false;
-        // Check if the game had an emergency log for this pitcher
+        const side3 = game3?.homeTeam === teamKey ? 'home' : 'away';
+        const legalArms = game3?.pregameAvailability?.[side3]?.legalArmCount ?? -1;
+        const emergencyOnlyArms = game3?.pregameAvailability?.[side3]?.emergencyOnly?.length ?? -1;
+        const wasEmergencyOnly = (game3?.pregameAvailability?.[side3]?.emergencyOnly || []).includes(pitcherName);
         const hasEmergencyLog = (game3?.log || []).some(e => {
           const t = (e.text || '');
           return t.includes('EMERGENCY') && t.includes('UNAVAILABLE') && t.includes(pitcherName);
         });
-        const otherAvailable = game3 ? (game3.unavailableRelievers?.[game3.homeTeam === teamKey ? 'home' : 'away']?.length || 0) : -1;
         if (wasExtra || hasEmergencyLog) {
           legalEmergencyCount++;
           flags.push({
             severity: 'info',
             category: 'Bullpen',
-            message: `Legal emergency 3-straight: ${pitcherName} (${teamKey}) pitched 3 straight days (${sorted[i-2]}, ${sorted[i-1]}, ${sorted[i]}) | Extra Innings: ${wasExtra ? 'YES' : 'NO'} | Emergency logged: ${hasEmergencyLog ? 'YES' : 'NO'}`,
+            message: `Legal emergency 3-straight: ${pitcherName} (${teamKey}) pitched 3 straight days (${sorted[i-2]}, ${sorted[i-1]}, ${sorted[i]}) | Extra Innings: ${wasExtra ? 'YES' : 'NO'} | Emergency logged: ${hasEmergencyLog ? 'YES' : 'NO'} | Legal arms at game time: ${legalArms} | Emergency-only arms: ${emergencyOnlyArms}`,
             gameRef: game3 ? gameRef(game3) : null,
           });
         } else {
@@ -393,7 +419,7 @@ function analyzeBullpen(games, rotationState, flags) {
           flags.push({
             severity: 'critical',
             category: 'Bullpen',
-            message: `${pitcherName} (${teamKey}) pitched 3 straight days (${sorted[i-2]}, ${sorted[i-1]}, ${sorted[i]}) | Extra Innings: ${wasExtra ? 'YES' : 'NO'} | Other unavailable relievers: ${otherAvailable}`,
+            message: `${pitcherName} (${teamKey}) pitched 3 straight days (${sorted[i-2]}, ${sorted[i-1]}, ${sorted[i]}) | Extra Innings: ${wasExtra ? 'YES' : 'NO'} | Legal arms at game time: ${legalArms} | Emergency-only arms: ${emergencyOnlyArms} | Was EMERGENCY_ONLY: ${wasEmergencyOnly ? 'YES' : 'NO'}`,
             gameRef: game3 ? gameRef(game3) : null,
           });
         }
