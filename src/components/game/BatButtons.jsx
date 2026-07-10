@@ -81,7 +81,7 @@ export default function BatButtons({ onSwing, disabled, situationalBatter, lastP
         </>
       )}
       <div className="text-[9px] font-heading uppercase tracking-widest text-foreground/60 text-center mb-1">Choose Swing</div>
-      <div className="flex items-end justify-center gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 items-end">
         {BAT_ACTIONS.map((action) => {
           const isActive = swinging === action.swingIndex;
           const countColor = getCountColor(action.statKey);
@@ -90,7 +90,7 @@ export default function BatButtons({ onSwing, disabled, situationalBatter, lastP
               key={action.swingIndex}
               disabled={disabled || swinging !== null}
               onClick={() => handleSwing(action.swingIndex)}
-              className={`flex flex-col items-center gap-1 rounded-xl px-3 py-2 transition-colors border ${
+              className={`flex flex-col items-center gap-1 rounded-xl px-2 sm:px-3 py-2 transition-colors border ${
                 countColor
                   ? `${countColor} border-2`
                   : action.isTake
@@ -99,13 +99,13 @@ export default function BatButtons({ onSwing, disabled, situationalBatter, lastP
               }`}
             >
               {action.isTake ? (
-                <div className={`relative w-24 h-8 flex items-center justify-center ${isActive ? 'animate-pulse' : 'hover:scale-110 transition-transform'} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                <div className={`relative w-20 sm:w-24 h-8 flex items-center justify-center ${isActive ? 'animate-pulse' : 'hover:scale-110 transition-transform'} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
                   <Eye className="w-7 h-7 text-sky-400" />
                 </div>
               ) : (
               <div
                 className={`
-                  relative w-24 h-8
+                  relative w-20 sm:w-24 h-8
                   ${isActive ? 'animate-bat-swing' : 'hover:scale-110 transition-transform'}
                   ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                 `}
