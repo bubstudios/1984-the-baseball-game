@@ -56,8 +56,8 @@ export function shouldAttemptSqueeze(state, batter) {
   // HARD BLOCK: never squeeze when ahead/behind by 4+ runs
   if (Math.abs(margin) >= 4) return false;
 
-  // Must be 6th inning or later
-  if (state.inning < 6) return false;
+  // Must be 7th inning or later (squeezes are late-game tactical plays)
+  if (state.inning < 7) return false;
 
   // Close game only: tied, down 1, or up 1
   if (Math.abs(margin) > 1) return false;

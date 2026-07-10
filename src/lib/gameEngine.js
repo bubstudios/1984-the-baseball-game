@@ -312,7 +312,7 @@ export function processAtBat(state, pitchType, swingType) {
   const isCpuBattingForBunt = getControllingTeam(newState, 'batting') === 'cpu';
   let buntDecision = null;
   if (isCpuBattingForBunt) {
-    if (shouldAttemptSqueeze(newState, bjb) && Math.random() < 0.20) {
+    if (shouldAttemptSqueeze(newState, bjb) && Math.random() < 0.05) {
       buntDecision = 'squeeze';
     } else {
       buntDecision = shouldBunt(bjb, {

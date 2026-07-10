@@ -628,27 +628,52 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
     : 0;
 
   // Back-to-back: pitched each of the last 2 days.
-  // Block only if the combined workload is heavy; a light back-to-back is allowed but tired.
+  // Strict 1984 rule: 15+ pitches in either game → unavailable.
+  // Light back-to-back (both under 15) → available but tired.
   if (appearedYesterday && appearedDayBefore) {
     const dayBeforePitches = appearedDayBefore.pitches || estimatePitches(appearedDayBefore.outs || 0);
-    if (yesterdayPitches >= 25 || dayBeforePitches >= 30) {
-      return { available: false, reason: 'Back-to-back with heavy workload', tired: false, fatiguePenalty: 0 };
+    if (yesterdayPitches >= 15 || dayBeforePitches >= 15) {
+      return { available: false, reason: 'Back-to-back with 15+ pitches', tired: false, fatiguePenalty: 0 };
     }
-    return { available: true, reason: 'Back-to-back appearances', tired: true, fatiguePenalty: 15 };
+    return { available: true, reason: 'Back-to-back (light workload)', tired: true, fatiguePenalty: 15 };
   }
 
-  // Yesterday pitch-count tiers (authoritative reliever rest spec)
+  // 50+ pitches in last 2 days → unavailable (catches non-consecutive heavy usage)
+  if (appearedYesterday || appearedDayBefore) {
+    const twoDayTotal = yesterdayPitches +
+      (appearedDayBefore ? (appearedDayBefore.pitches || estimatePitches(appearedDayBefore.outs || 0)) : 0);
+    if (twoDayTotal >= 50) {
+      return { available: false, reason: `${twoDayTotal} pitches in last 2 days`, tired: false, fatiguePenalty: 0 };
+    }
+  }
+
+  // 65+ pitches in last 3 days → unavailable
+  {
+    let threeDayTotal = yesterdayPitches;
+    if (appearedDayBefore) threeDayTotal += (appearedDayBefore.pitches || estimatePitches(appearedDayBefore.outs || 0));
+    if (appeared3DaysAgo) threeDayTotal += (appeared3DaysAgo.pitches || estimatePitches(appeared3DaysAgo.outs || 0));
+    if (threeDayTotal >= 65) {
+      return { available: false, reason: `${threeDayTotal} pitches in last 3 days`, tired: false, fatiguePenalty: 0 };
+    }
+  }
+
+  // Yesterday pitch-count + innings tiers (authoritative reliever rest spec)
   if (appearedYesterday) {
-    if (yesterdayPitches >= 40) {
+    const yesterdayOuts = appearedYesterday.outs || 0;
+    // 3.0+ innings yesterday → unavailable regardless of pitch count
+    if (yesterdayOuts >= 9) {
+      return { available: false, reason: `${Math.floor(yesterdayOuts / 3)}.${yesterdayOuts % 3} IP yesterday`, tired: false, fatiguePenalty: 0 };
+    }
+    if (yesterdayPitches >= 35) {
       return { available: false, reason: `${yesterdayPitches} pitches yesterday`, tired: false, fatiguePenalty: 0 };
     }
-    if (yesterdayPitches >= 30) {
+    if (yesterdayPitches >= 25) {
       return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, fatiguePenalty: 20 };
     }
-    if (yesterdayPitches >= 20) {
+    if (yesterdayPitches >= 15) {
       return { available: true, reason: `${yesterdayPitches} pitches yesterday`, tired: true, fatiguePenalty: 10 };
     }
-    // < 20 pitches yesterday: available, fall through to older-appearance rest check
+    // < 15 pitches yesterday: available, fall through to older-appearance rest check
   }
 
   // Older appearances (>= 2 days ago): outs-based rest tiers still apply
@@ -698,9 +723,9 @@ export function getRelieverFatiguePenalty(rotationState, teamKey, pitcherName, g
   const outs = lastAppearance.outs || 0;
   const pitches = lastAppearance.pitches || estimatePitches(outs);
 
-  if (outs >= 9 || pitches >= 40) return 30;
-  if (outs >= 6 || pitches >= 30) return 20;
-  if (outs >= 3 || pitches >= 20) return 10;
+  if (outs >= 9 || pitches >= 35) return 30;
+  if (outs >= 6 || pitches >= 25) return 20;
+  if (outs >= 3 || pitches >= 15) return 10;
   return 0;
 }
 

@@ -457,7 +457,7 @@ export function resolveSwing(state, swingType, pitch) {
       else { ht = `${batter.name} sends it deep to ${dirLabel} at ${distStr} -` + (gs2 ? ` GRAND SLAM! ${batter.name} clears the bases!` : (rbi > 1 ? ` a ${rbi}-run HOME RUN!` : ` a solo HOME RUN!`)); }
       const battingTeamKey = state.halfInning === 'top' ? state.awayTeam : state.homeTeam;
       const hrCall = maybeGetAnnouncerHRCall(battingTeamKey, { isGrandSlam: gs2, rbi, batterName: batter.name, state });
-      if (hrCall) state.log.push({ type: 'homerun', text: `🎙️ ${hrCall}` });
+      if (hrCall) state.log.push({ type: 'info', text: `🎙️ ${hrCall}` });
       state.log.push({ type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name };
       const hrAdmire = rollHRAdmire(batter); if (hrAdmire) { state.log.push({ type: 'info', text: `✨ ${hrAdmire}` }); state._celebrationBubble = `✨ ${hrAdmire}`; }
     } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.085 + sf2 * 0.02) * doubleMod) {
@@ -528,7 +528,7 @@ export function resolveSwing(state, swingType, pitch) {
           batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, qDist);
           const battingTeamKey = state.halfInning === 'top' ? state.awayTeam : state.homeTeam;
           const qCall = maybeGetAnnouncerHRCall(battingTeamKey, { isGrandSlam: qRbi === 4, rbi: qRbi, batterName: batter.name, state });
-          if (qCall) state.log.push({ type: 'homerun', text: `🎙️ ${qCall}` });
+          if (qCall) state.log.push({ type: 'info', text: `🎙️ ${qCall}` });
           const qHt = `${q.text} ${qDist} feet!`;
           state.log.push({ type: 'homerun', text: `💥 ${qHt}`, hrDistance: qDist, batterName: batter.name });
           state.lastPlay = { type: 'homerun', text: `💥 ${qHt}`, hrDistance: qDist, batterName: batter.name };
@@ -765,7 +765,7 @@ export function handleHitAndRunContact(state, batter, pitcher, adjBatter) {
   if (Math.random() < hc) {
     batter.gameStats.hits++; pitcher.gameStats.h++;
     const hrr = Math.random();
-    if (hrr < pr * 0.065 * hrMod) { batter.gameStats.hr++; const hrRbi = advanceRunners(state, 4, batter); const hrDirHR = getHitDirection(adjBatter.bats); const hrDistanceHR = calculateHomeRunDistance(batter, pitcher, state, hrDirHR, false, false); batter.gameStats.lastHRDistance = hrDistanceHR; batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, hrDistanceHR); const battingTeamKeyHR = state.halfInning === 'top' ? state.awayTeam : state.homeTeam;           const hrCallHR = maybeGetAnnouncerHRCall(battingTeamKeyHR, { isGrandSlam: false, rbi: hrRbi, batterName: batter.name, state }); if (hrCallHR) state.log.push({ type: 'homerun', text: `🎙️ ${hrCallHR}` }); const hrText = `💥 ${batter.name} crushes one on the hit-and-run - HOME RUN at ${hrDistanceHR} feet!`; state.log.push({ type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }; }
+    if (hrr < pr * 0.065 * hrMod) { batter.gameStats.hr++; const hrRbi = advanceRunners(state, 4, batter); const hrDirHR = getHitDirection(adjBatter.bats); const hrDistanceHR = calculateHomeRunDistance(batter, pitcher, state, hrDirHR, false, false); batter.gameStats.lastHRDistance = hrDistanceHR; batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, hrDistanceHR); const battingTeamKeyHR = state.halfInning === 'top' ? state.awayTeam : state.homeTeam;           const hrCallHR = maybeGetAnnouncerHRCall(battingTeamKeyHR, { isGrandSlam: false, rbi: hrRbi, batterName: batter.name, state }); if (hrCallHR) state.log.push({ type: 'info', text: `🎙️ ${hrCallHR}` }); const hrText = `💥 ${batter.name} crushes one on the hit-and-run - HOME RUN at ${hrDistanceHR} feet!`; state.log.push({ type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: hrText, hrDistance: hrDistanceHR, batterName: batter.name }; }
     else if (hrr < pr * 0.32 * doubleMod) { advanceRunners(state, 2, batter, true); const e = advanceHitAndRunRunners(state, batter); const dblText = e ? `${batter.name} rips a double on the hit-and-run! ${e}` : `${batter.name} doubles on the hit-and-run!`; state.log.push({ type: 'double', text: dblText }); state.lastPlay = { type: 'double', text: dblText }; }
     else { advanceRunners(state, 1, batter, true); const e = advanceHitAndRunRunners(state, batter); const sglText = e ? `${batter.name} slaps a single - hit-and-run! ${e}` : `${batter.name} singles on the hit-and-run!`; state.log.push({ type: 'single', text: sglText }); state.lastPlay = { type: 'single', text: sglText }; }
   } else {

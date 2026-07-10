@@ -50,6 +50,11 @@ export async function runSeasonAudit(days, onProgress) {
 
       const homeSP = getProbableStarter(rotationState, homeTeam, gameDate);
       const awaySP = getProbableStarter(rotationState, awayTeam, gameDate);
+      // Capture rest days BEFORE advanceRotation mutates the state.
+      // The audit runs after the full sim; looking up rest days then would
+      // compare against the LAST start date, not the state at game time.
+      const homeRestDays = homeSP ? getRestDays(rotationState, homeTeam, homeSP.name, gameDate) : Infinity;
+      const awayRestDays = awaySP ? getRestDays(rotationState, awayTeam, awaySP.name, gameDate) : Infinity;
       const unavailableRelievers = {
         home: getUnavailableRelievers(rotationState, homeTeam, gameDate),
         away: getUnavailableRelievers(rotationState, awayTeam, gameDate),
@@ -78,6 +83,7 @@ export async function runSeasonAudit(days, onProgress) {
         day: dayIdx + 1, gameDate, homeTeam, awayTeam, useDH,
         homeSPName: homeSP?.name || null,
         awaySPName: awaySP?.name || null,
+        restDaysAtStart: { home: homeRestDays, away: awayRestDays },
         unavailableRelievers,
         result,
         log: finalState.log || [],
@@ -194,14 +200,18 @@ function analyzeStarters(games, rotationState, flags) {
         addFlag(flags, 'warning', 'Starters', `Resolver said ${resolverName} but box score shows ${actualName}`, g);
       }
 
-      // Rest days check
+      // Rest days check - use captured value from sim time (before advanceRotation)
       if (actualName) {
-        const restDays = getRestDays(rotationState, teamKey, actualName, g.gameDate);
-        if (restDays < 3 && restDays !== Infinity) {
+        const restDays = teamKey === g.homeTeam
+          ? (g.restDaysAtStart?.home ?? Infinity)
+          : (g.restDaysAtStart?.away ?? Infinity);
+        // Infinity = never started before (first start of season) - never flag
+        if (restDays !== Infinity && restDays < 3) {
           const isBullpenDay = resolverName && !(TEAMS[teamKey]?.rotation || []).some(p => p.name === resolverName);
           if (!isBullpenDay) {
             shortRestCount++;
-            addFlag(flags, 'warning', 'Starters', `${actualName} started on ${restDays} day(s) rest`, g);
+            const severity = restDays <= 1 ? 'critical' : 'warning';
+            addFlag(flags, severity, 'Starters', `${actualName} started on ${restDays} day(s) rest`, g);
           }
         }
 
@@ -356,8 +366,14 @@ function analyzeBuntSqueeze(games, flags) {
     let bunts = 0, squeezes = 0;
     for (const entry of (g.log || [])) {
       const t = (entry.text || '').toLowerCase();
-      if (t.includes('bunt') || t.includes('sacrifice bunt')) bunts++;
-      if (t.includes('squeeze')) squeezes++;
+      // A squeeze IS a type of bunt, but count it as a squeeze only.
+      // Squeeze lines contain the word "bunt" - check squeeze FIRST to avoid
+      // double-counting (which caused squeezes > bunts, an impossibility).
+      if (t.includes('squeeze')) {
+        squeezes++;
+      } else if (t.includes('bunt') || t.includes('sacrifice bunt')) {
+        bunts++;
+      }
     }
     totalBunts += bunts;
     totalSqueezes += squeezes;
@@ -406,9 +422,10 @@ function analyzeEvents(games, flags) {
       }
     }
 
-    // HR treatment
+    // HR treatment - skip announcer call entries (🎙️) which are commentary,
+    // not the actual HR event. Only the main HR entry has distance + batterName.
     for (const entry of (g.log || [])) {
-      if (entry.type === 'homerun') {
+      if (entry.type === 'homerun' && !(entry.text || '').startsWith('🎙️')) {
         totalHRs++;
         if (!entry.hrDistance) {
           hrMissingDistance++;
