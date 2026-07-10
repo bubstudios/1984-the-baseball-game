@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Eye } from 'lucide-react';
 
 const BAT_ACTIONS = [
   { label: 'Swing', swingIndex: 0, desc: 'Standard swing', statKey: 'contact' },
   { label: 'Power', swingIndex: 2, desc: 'Swing for the fences', statKey: 'power' },
   { label: 'Bunt', swingIndex: 4, desc: 'Lay one down', statKey: null },
+  { label: 'Take', swingIndex: 3, desc: 'Let the pitch go', statKey: null, isTake: true },
 ];
 
 export default function BatButtons({ onSwing, disabled, situationalBatter, lastPlay }) {
@@ -91,10 +93,16 @@ export default function BatButtons({ onSwing, disabled, situationalBatter, lastP
               className={`flex flex-col items-center gap-1 rounded-xl px-3 py-2 transition-colors border ${
                 countColor
                   ? `${countColor} border-2`
-                  : 'bg-amber-950/30 hover:bg-amber-900/40 border-amber-800/20'
+                  : action.isTake
+                    ? 'bg-sky-950/30 hover:bg-sky-900/40 border-sky-800/20'
+                    : 'bg-amber-950/30 hover:bg-amber-900/40 border-amber-800/20'
               }`}
             >
-              {/* Bat - horizontal, arcs upward on swing */}
+              {action.isTake ? (
+                <div className={`relative w-24 h-8 flex items-center justify-center ${isActive ? 'animate-pulse' : 'hover:scale-110 transition-transform'} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                  <Eye className="w-7 h-7 text-sky-400" />
+                </div>
+              ) : (
               <div
                 className={`
                   relative w-24 h-8
@@ -169,6 +177,7 @@ export default function BatButtons({ onSwing, disabled, situationalBatter, lastP
                   <path d="M12,34 Q40,32 64,29" fill="none" stroke="#C89840" strokeWidth="0.5" opacity="0.25" />
                 </svg>
               </div>
+              )}
               <span className="font-heading font-bold text-[10px] text-foreground">{action.label}</span>
               <span className="text-[8px] text-foreground/50 -mt-0.5">{action.desc}</span>
             </button>

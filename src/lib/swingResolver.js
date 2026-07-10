@@ -230,6 +230,13 @@ export function resolveSwing(state, swingType, pitch) {
   const batter = getCurrentBatter(state);
   const pitcher = getCurrentPitcher(state);
   if (swingType.name === 'Take Pitch') {
+    // Hit-and-run + take: runner goes, batter doesn't swing (risky!)
+    if (state.hitAndRun && !state.gameOver) {
+      state.hitAndRun = false;
+      const halfBefore = state.halfInning;
+      handleHitAndRunMiss(state);
+      if (state.gameOver || state.halfInning !== halfBefore) return;
+    }
     if (pitch.isStrike) {
       state.strikes++;
       if (state.strikes >= 3) { batter.gameStats.ab++; batter.gameStats.so++; pitcher.gameStats.so++; state.log.push({ type: 'strikeout', text: `${batter.name} ${pickLine(STRIKEOUT_CALLED_LINES)}` }); state.lastPlay = { type: 'strikeout', text: `${batter.name} ${pickLine(STRIKEOUT_CALLED_LINES)}` }; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; }
