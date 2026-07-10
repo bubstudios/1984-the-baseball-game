@@ -66,9 +66,12 @@ function CategorySection({ label, stats, flags, defaultOpen = false }) {
         <div className="px-3 pb-3 space-y-2">
           {stats && Object.keys(stats).length > 0 && (
             <div className="bg-muted/20 rounded-lg p-2 space-y-0.5">
-              {Object.entries(stats).map(([key, val]) => (
-                <StatRow key={key} label={key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase())} value={typeof val === 'number' ? val : String(val)} />
-              ))}
+              {Object.entries(stats).map(([key, val]) => {
+                if (val !== null && typeof val === 'object') return null;
+                return (
+                  <StatRow key={key} label={key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase())} value={typeof val === 'number' ? val : String(val)} />
+                );
+              })}
             </div>
           )}
           {categoryFlags.length > 0 && (

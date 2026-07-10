@@ -268,9 +268,9 @@ export function resolveSwing(state, swingType, pitch) {
     if (shouldAttemptSqueeze(state, batter)) {
       const sqType = determineSqueezeType(batter);
       const sq = resolveSqueeze(batter, state, sqType);
-      state.log.push({ type: sq.logType, text: sq.text });
+      state.log.push({ type: sq.logType, text: sq.text, isBunt: true, isSqueeze: true });
       state._celebrationBubble = sq.text;
-      state.lastPlay = { type: sq.logType, text: sq.text };
+      state.lastPlay = { type: sq.logType, text: sq.text, isBunt: true, isSqueeze: true };
       recordSqueezeAttempt(state);
       recordBuntAttempt(state);
 
@@ -844,8 +844,11 @@ export function processPostHitBaserunning(state, hitType, batter, defenders) {
     state.bases[2] = null;
     batter.gameStats.hr++; batter.gameStats.rbi++;
     chargeRun(state, batter);
-    state.log.push({ type: 'homerun', text: stretch.text });
-    state.lastPlay = { type: 'homerun', text: stretch.text };
+    const iphrDistance = calculateHomeRunDistance(batter, getCurrentPitcher(state), state, 'CF', false, false);
+    batter.gameStats.lastHRDistance = iphrDistance;
+    batter.gameStats.longestHR = Math.max(batter.gameStats.longestHR || 0, iphrDistance);
+    state.log.push({ type: 'homerun', text: stretch.text, hrDistance: iphrDistance, batterName: batter.name });
+    state.lastPlay = { type: 'homerun', text: stretch.text, hrDistance: iphrDistance, batterName: batter.name };
   }
 }
 

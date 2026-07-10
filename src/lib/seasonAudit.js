@@ -79,11 +79,20 @@ export async function runSeasonAudit(days, onProgress) {
         continue;
       }
 
+      // Capture rest days for the ACTUAL starters (from box score), not the
+      // resolver's predicted pick. The actual starter may differ if the game
+      // engine swaps someone in. This lookup runs BEFORE advanceRotation
+      // mutates the rotationState, so rest days reflect game-time state.
+      const actualHomeSP = result?.pitching?.find(p => p.teamKey === homeTeam && p.gs === 1);
+      const actualAwaySP = result?.pitching?.find(p => p.teamKey === awayTeam && p.gs === 1);
+      const homeRestActual = actualHomeSP ? getRestDays(rotationState, homeTeam, actualHomeSP.name, gameDate) : Infinity;
+      const awayRestActual = actualAwaySP ? getRestDays(rotationState, awayTeam, actualAwaySP.name, gameDate) : Infinity;
+
       capturedGames.push({
         day: dayIdx + 1, gameDate, homeTeam, awayTeam, useDH,
         homeSPName: homeSP?.name || null,
         awaySPName: awaySP?.name || null,
-        restDaysAtStart: { home: homeRestDays, away: awayRestDays },
+        restDaysAtStart: { home: homeRestActual, away: awayRestActual },
         unavailableRelievers,
         result,
         log: finalState.log || [],
@@ -365,14 +374,22 @@ function analyzeBuntSqueeze(games, flags) {
     if (g.error || g.validationFailed) continue;
     let bunts = 0, squeezes = 0;
     for (const entry of (g.log || [])) {
-      const t = (entry.text || '').toLowerCase();
-      // A squeeze IS a type of bunt, but count it as a squeeze only.
-      // Squeeze lines contain the word "bunt" - check squeeze FIRST to avoid
-      // double-counting (which caused squeezes > bunts, an impossibility).
-      if (t.includes('squeeze')) {
+      // Count by metadata tags (primary method). A squeeze IS a bunt,
+      // so every squeeze also increments the bunt count.
+      if (entry.isSqueeze) {
         squeezes++;
-      } else if (t.includes('bunt') || t.includes('sacrifice bunt')) {
         bunts++;
+      } else if (entry.isBunt) {
+        bunts++;
+      } else {
+        // Fallback: text matching for entries without tags (backward compat)
+        const t = (entry.text || '').toLowerCase();
+        if (t.includes('squeeze')) {
+          squeezes++;
+          bunts++;
+        } else if (t.includes('bunt') || t.includes('sacrifice bunt')) {
+          bunts++;
+        }
       }
     }
     totalBunts += bunts;
@@ -390,6 +407,11 @@ function analyzeBuntSqueeze(games, flags) {
     if (squeezes > 0) {
       addFlag(flags, 'info', 'Bunt/Squeeze', `${squeezes} squeeze attempt(s) - review for timing/runner`, g);
     }
+  }
+
+  // Hard check: squeezes cannot exceed bunts (a squeeze IS a bunt subtype)
+  if (totalSqueezes > totalBunts) {
+    addFlag(flags, 'critical', 'Bunt/Squeeze', `Squeeze count (${totalSqueezes}) exceeds bunt count (${totalBunts}) - classification bug`, null);
   }
 
   return { highBuntGames, highSqueezeGames, totalBunts, totalSqueezes };
@@ -422,16 +444,16 @@ function analyzeEvents(games, flags) {
       }
     }
 
-    // HR treatment - skip announcer call entries (🎙️) which are commentary,
-    // not the actual HR event. Only the main HR entry has distance + batterName.
+    // HR treatment - all type:'homerun' entries must have distance + batterName.
+    // Announcer calls are now type:'info' so they won't be caught here.
     for (const entry of (g.log || [])) {
-      if (entry.type === 'homerun' && !(entry.text || '').startsWith('🎙️')) {
+      if (entry.type === 'homerun') {
         totalHRs++;
-        if (!entry.hrDistance) {
+        if (entry.hrDistance == null) {
           hrMissingDistance++;
           addFlag(flags, 'warning', 'Events', `HR log entry missing distance: "${(entry.text || '').substring(0, 50)}"`, g);
         }
-        if (!entry.batterName) {
+        if (entry.batterName == null) {
           hrMissingName++;
           addFlag(flags, 'warning', 'Events', `HR log entry missing batter name: "${(entry.text || '').substring(0, 50)}"`, g);
         }

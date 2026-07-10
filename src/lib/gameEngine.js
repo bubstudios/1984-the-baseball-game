@@ -347,9 +347,10 @@ export function processAtBat(state, pitchType, swingType) {
                            buntResult.type === 'squeeze_missed' ? 'info' :
                            buntResult.type === 'bunt_for_hit_single' ? 'single' :
                            buntResult.type === 'bunt_for_hit_out' ? 'groundout' : 'groundout';
-      newState.log.push({ type: buntPlayType, text: buntResult.text });
+      const isSqueezeBunt = buntDecision === 'squeeze' || (buntResult.type && buntResult.type.startsWith('squeeze'));
+      newState.log.push({ type: buntPlayType, text: buntResult.text, isBunt: true, isSqueeze: isSqueezeBunt });
       newState._celebrationBubble = buntResult.text;
-      newState.lastPlay = { type: buntPlayType, text: buntResult.text };
+      newState.lastPlay = { type: buntPlayType, text: buntResult.text, isBunt: true, isSqueeze: isSqueezeBunt };
 
       let atBatOver = true;
 
