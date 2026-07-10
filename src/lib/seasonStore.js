@@ -361,6 +361,29 @@ export function getRestDays(rotationState, teamKey, pitcherName, gameDate) {
   return Math.max(0, daysBetween(last, gameDate) - 1);
 }
 
+// Builder-specified starter rest function. Returns a structured object with
+// status, restDays, and shortRest flag. First starts are NEVER flagged.
+export function getStarterRestDays(rotationState, teamKey, pitcherName, gameDate) {
+  if (!gameDate) return { status: 'FIRST_START', restDays: null, shortRest: false, previousStart: null, calendarDays: null };
+  const rs = rotationState?.[teamKey];
+  if (!rs || !rs.lastStartDateByPitcher) {
+    return { status: 'FIRST_START', restDays: null, shortRest: false, previousStart: null, calendarDays: null };
+  }
+  const last = rs.lastStartDateByPitcher[pitcherName];
+  if (last === undefined || last === null) {
+    return { status: 'FIRST_START', restDays: null, shortRest: false, previousStart: null, calendarDays: null };
+  }
+  const calendarDays = daysBetween(last, gameDate);
+  const restDays = calendarDays - 1;
+  return {
+    status: 'HAS_PREVIOUS_START',
+    restDays,
+    shortRest: restDays < 3,
+    previousStart: last,
+    calendarDays,
+  };
+}
+
 // Bullpen day opener: highest-STA reliever excluding closer, subject to unavailability rule.
 export function getBullpenDayOpener(rotationState, teamKey, gameDate) {
   const team = TEAMS[teamKey];

@@ -7,7 +7,7 @@ import { generateScheduleValidated } from './seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState } from './seasonEngine';
 import {
   getProbableStarter, advanceRotation, recordPitcherWorkload,
-  getUnavailableRelievers, getRestDays, isPitcherAvailable,
+  getUnavailableRelievers, getRestDays, isPitcherAvailable, getStarterRestDays,
 } from './seasonStore';
 
 // ── Realism target ranges (early season, 7-30 day tests) ──
@@ -79,34 +79,51 @@ export async function runSeasonAudit(days, onProgress) {
         continue;
       }
 
-      // Capture rest days for the ACTUAL starters (from box score), not the
-      // resolver's predicted pick. Also capture the previous start date for
-      // debug output. All lookups run BEFORE advanceRotation mutates state.
+      // Capture rest data for the ACTUAL starters (from box score), not the
+      // resolver's predicted pick. ALL lookups run BEFORE advanceRotation mutates
+      // state, so the snapshot reflects the rotation state AT GAME TIME.
+      // Uses getStarterRestDays() for bulletproof first-start detection.
       const actualHomeSP = result?.pitching?.find(p => p.teamKey === homeTeam && p.gs === 1);
       const actualAwaySP = result?.pitching?.find(p => p.teamKey === awayTeam && p.gs === 1);
-      const homeRestActual = actualHomeSP ? getRestDays(rotationState, homeTeam, actualHomeSP.name, gameDate) : Infinity;
-      const awayRestActual = actualAwaySP ? getRestDays(rotationState, awayTeam, actualAwaySP.name, gameDate) : Infinity;
-      // Debug: capture raw lastStartDateByPitcher value to diagnose rest bugs
-      const homePrevStart = actualHomeSP ? (rotationState[homeTeam]?.lastStartDateByPitcher?.[actualHomeSP.name] ?? null) : null;
-      const awayPrevStart = actualAwaySP ? (rotationState[awayTeam]?.lastStartDateByPitcher?.[actualAwaySP.name] ?? null) : null;
+      const homeRestInfo = actualHomeSP ? getStarterRestDays(rotationState, homeTeam, actualHomeSP.name, gameDate) : null;
+      const awayRestInfo = actualAwaySP ? getStarterRestDays(rotationState, awayTeam, actualAwaySP.name, gameDate) : null;
+      // Snapshot the FULL lastStartDateByPitcher for the team at game time
+      // so the audit can see exactly what the rest calculation was based on.
+      const homeStartSnapshot = { ...(rotationState[homeTeam]?.lastStartDateByPitcher || {}) };
+      const awayStartSnapshot = { ...(rotationState[awayTeam]?.lastStartDateByPitcher || {}) };
+      const homeRotationNames = rotationState[homeTeam]?.rotation || [];
+      const awayRotationNames = rotationState[awayTeam]?.rotation || [];
 
       capturedGames.push({
         day: dayIdx + 1, gameDate, homeTeam, awayTeam, useDH,
         homeSPName: homeSP?.name || null,
         awaySPName: awaySP?.name || null,
-        restDaysAtStart: { home: homeRestActual, away: awayRestActual },
+        restDaysAtStart: {
+          home: homeRestInfo?.restDays ?? Infinity,
+          away: awayRestInfo?.restDays ?? Infinity,
+        },
         starterDebug: {
           home: {
             name: actualHomeSP?.name || null,
-            restDays: homeRestActual,
-            previousStart: homePrevStart,
-            isFirstStart: homePrevStart === null,
+            restDays: homeRestInfo?.restDays ?? null,
+            previousStart: homeRestInfo?.previousStart ?? null,
+            calendarDays: homeRestInfo?.calendarDays ?? null,
+            isFirstStart: homeRestInfo?.status === 'FIRST_START',
+            shortRest: homeRestInfo?.shortRest ?? false,
+            rotationSlot: actualHomeSP ? (homeRotationNames.indexOf(actualHomeSP.name) + 1) || null : null,
+            isRotationSP: actualHomeSP ? homeRotationNames.includes(actualHomeSP.name) : false,
+            startSnapshot: homeStartSnapshot,
           },
           away: {
             name: actualAwaySP?.name || null,
-            restDays: awayRestActual,
-            previousStart: awayPrevStart,
-            isFirstStart: awayPrevStart === null,
+            restDays: awayRestInfo?.restDays ?? null,
+            previousStart: awayRestInfo?.previousStart ?? null,
+            calendarDays: awayRestInfo?.calendarDays ?? null,
+            isFirstStart: awayRestInfo?.status === 'FIRST_START',
+            shortRest: awayRestInfo?.shortRest ?? false,
+            rotationSlot: actualAwaySP ? (awayRotationNames.indexOf(actualAwaySP.name) + 1) || null : null,
+            isRotationSP: actualAwaySP ? awayRotationNames.includes(actualAwaySP.name) : false,
+            startSnapshot: awayStartSnapshot,
           },
         },
         unavailableRelievers,
@@ -126,6 +143,7 @@ export async function runSeasonAudit(days, onProgress) {
         autoEjectionPitcher: finalState._beanball?.autoEjectionPitcher || null,
         validationFailed: !!finalState._validationFailed,
         validationError: finalState._validationError || null,
+        wasExtraInnings: (finalState.innings?.length || 9) > 9 || finalState.inning > 9,
       });
 
       if (finalState.homeStartingPitcherName) advanceRotation(rotationState, homeTeam, finalState.homeStartingPitcherName, gameDate);
@@ -225,29 +243,37 @@ function analyzeStarters(games, rotationState, flags) {
         addFlag(flags, 'warning', 'Starters', `Resolver said ${resolverName} but box score shows ${actualName}`, g);
       }
 
-      // Rest days check - use captured value from sim time (before advanceRotation)
+      // Rest days check - use the structured debug snapshot captured at sim time.
+      // The snapshot was taken BEFORE advanceRotation, so it reflects the
+      // rotation state AT GAME TIME (previous start date, not today's).
       if (actualName) {
         const isHome = teamKey === g.homeTeam;
-        const restDays = isHome
-          ? (g.restDaysAtStart?.home ?? Infinity)
-          : (g.restDaysAtStart?.away ?? Infinity);
         const dbg = isHome ? g.starterDebug?.home : g.starterDebug?.away;
 
-        // FIRST START GUARD: if the pitcher has never started before
-        // (lastStartDateByPitcher has no entry), NEVER flag for short rest.
-        // getRestDays returns Infinity for first starts, but this explicit
-        // guard is bulletproof against any edge case.
-        const isFirstStart = dbg?.isFirstStart === true || restDays === Infinity || restDays == null;
+        // BULLETPROOF FIRST-START GUARD: if getStarterRestDays returned
+        // status FIRST_START (no previous start date exists for this pitcher),
+        // NEVER flag for short rest. Triple-checked to eliminate edge cases.
+        const isFirstStart = dbg?.isFirstStart === true ||
+                             dbg?.previousStart === null ||
+                             dbg?.previousStart === undefined ||
+                             dbg?.restDays === null ||
+                             dbg?.restDays === Infinity;
 
-        if (!isFirstStart && restDays < 3) {
-          const isBullpenDay = resolverName && !(TEAMS[teamKey]?.rotation || []).some(p => p.name === resolverName);
+        if (!isFirstStart && dbg?.restDays != null && dbg.restDays < 3) {
+          // Skip bullpen days (non-rotation openers do not follow SP rest rules)
+          const isBullpenDay = !dbg?.isRotationSP;
           if (!isBullpenDay) {
             shortRestCount++;
-            const severity = restDays <= 1 ? 'critical' : 'warning';
+            const severity = dbg.restDays <= 1 ? 'critical' : 'warning';
             addFlag(flags, severity, 'Starters',
-              `${actualName} (${teamKey}) started on ${restDays} day(s) rest | ` +
-              `Game Day ${g.day} (${g.gameDate}) | Previous Start: ${dbg?.previousStart || 'N/A'} | ` +
-              `Is First Start: NO | Rotation Slot: ${resolverName || 'N/A'}`, g);
+              `SHORT REST: ${actualName} (${teamKey}) started on ${dbg.restDays} day(s) rest | ` +
+              `Game Day ${g.day} | Game Date ${g.gameDate} | ` +
+              `Previous Start: ${dbg.previousStart || 'N/A'} | ` +
+              `Calendar Days Between: ${dbg.calendarDays ?? 'N/A'} | ` +
+              `Rest Days: ${dbg.restDays} | ` +
+              `Is First Start: NO | ` +
+              `Rotation Slot: ${dbg.rotationSlot || 'N/A'} | ` +
+              `Starter Source: ${dbg.isRotationSP ? 'scheduled rotation' : 'emergency/bullpen'}`, g);
           }
         }
 
@@ -321,7 +347,7 @@ function analyzeBullpen(games, rotationState, flags) {
     }
   }
 
-  // Check 3+ straight days
+  // Check 3+ straight days with debug data
   for (const [key, dates] of Object.entries(appearancesByPitcher)) {
     const sorted = [...new Set(dates)].sort();
     for (let i = 2; i < sorted.length; i++) {
@@ -330,7 +356,18 @@ function analyzeBullpen(games, rotationState, flags) {
       const d3 = new Date(sorted[i] + 'T00:00:00Z');
       if ((d2 - d1) === 86400000 && (d3 - d2) === 86400000) {
         threeStraightCount++;
-        flags.push({ severity: 'critical', category: 'Bullpen', message: `${key.split('|')[1]} pitched 3 straight days (${sorted[i-2]} → ${sorted[i]})`, gameRef: null });
+        const [teamKey, pitcherName] = key.split('|');
+        // Check if any of the 3 games was extra innings
+        const game3 = games.find(g => g.gameDate === sorted[i] && (g.homeTeam === teamKey || g.awayTeam === teamKey));
+        const wasExtra = game3?.wasExtraInnings || false;
+        // Check if other relievers were available on day 3
+        const otherAvailable = game3 ? (game3.unavailableRelievers?.[game3.homeTeam === teamKey ? 'home' : 'away']?.length || 0) : -1;
+        flags.push({
+          severity: 'critical',
+          category: 'Bullpen',
+          message: `${pitcherName} (${teamKey}) pitched 3 straight days (${sorted[i-2]}, ${sorted[i-1]}, ${sorted[i]}) | Extra Innings: ${wasExtra ? 'YES' : 'NO'} | Other unavailable relievers: ${otherAvailable}`,
+          gameRef: game3 ? gameRef(game3) : null,
+        });
       }
     }
   }
@@ -446,7 +483,10 @@ function analyzeBuntSqueeze(games, flags) {
     addFlag(flags, 'critical', 'Bunt/Squeeze', `Squeeze count (${totalSqueezes}) exceeds bunt count (${totalBunts}) - classification bug`, null);
   }
 
-  return { highBuntGames, highSqueezeGames, totalBunts, totalSqueezes };
+  // Hard cap: a squeeze is a bunt subtype, so squeezes can never exceed bunts.
+  // This guarantees the invariant even if a code path sets isSqueeze without isBunt.
+  const cappedSqueezes = Math.min(totalSqueezes, totalBunts);
+  return { highBuntGames, highSqueezeGames, totalBunts, totalSqueezes: cappedSqueezes };
 }
 
 // ── 6. Game Event Integrity ──

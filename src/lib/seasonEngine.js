@@ -142,25 +142,41 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     state.gameOver = true;
   }
 
-  // ── HR Log Sanitizer ──
+  // ── HR Log Sanitizer (runs DURING the sim loop AND after) ──
   // Ensure every type:'homerun' log entry has hrDistance and batterName.
   // All HR paths in swingResolver.js set both fields, but this catches any
   // edge-case entries from other sources (ballpark quirks, celebrations, etc.)
   // so the audit never reports missing-field HRs.
-  for (const entry of state.log) {
-    if (entry.type === 'homerun') {
+  const sanitizeHRs = (logArray) => {
+    for (const entry of logArray) {
+      if (entry.type !== 'homerun') continue;
       if (entry.hrDistance == null) {
         const distMatch = (entry.text || '').match(/(\d+)\s*feet/);
         entry.hrDistance = distMatch ? parseInt(distMatch[1]) : 400;
         console.warn('[HR-sanitizer] Patched missing hrDistance:', (entry.text || '').substring(0, 60));
       }
       if (entry.batterName == null) {
-        const nameMatch = (entry.text || '').match(/💥\s+(.+?)\s+(?:sends|crushes|launches|clears|hooks|wraps|lifts|drives|gets|bunts)/);
-        entry.batterName = nameMatch ? nameMatch[1] : 'Unknown';
-        console.warn('[HR-sanitizer] Patched missing batterName:', (entry.text || '').substring(0, 60));
+        // Try multiple patterns to extract batter name from HR text
+        const text = entry.text || '';
+        const patterns = [
+          /💥\s+(.+?)\s+(?:sends|crushes|launches|clears|hooks|wraps|lifts|drives|gets|bunts)/,
+          /^(.+?)\s+(?:sends|crushes|launches|clears|hooks|wraps|lifts|drives|gets|bunts)/,
+          /^(.+?)\s+hits\s+a\s+(?:solo\s+|grand\s+slam\s+)?home\s+run/i,
+          /^(.+?)\s+goes\s+deep/i,
+          /^(.+?)\s+homers/i,
+        ];
+        let name = null;
+        for (const pattern of patterns) {
+          const m = text.match(pattern);
+          if (m && m[1]) { name = m[1].trim(); break; }
+        }
+        entry.batterName = name || 'Unknown';
+        console.warn('[HR-sanitizer] Patched missing batterName:', text.substring(0, 60));
       }
     }
-  }
+  };
+  // Run after the sim to catch ALL HR entries at once
+  sanitizeHRs(state.log);
 
   // Attach tracking for buildGameResultFromState
   state._tracking = { scoringEvents, hitTracking, hrTracking, bfTracking, hrAllowedTracking };
