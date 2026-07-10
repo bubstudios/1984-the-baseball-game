@@ -80,19 +80,35 @@ export async function runSeasonAudit(days, onProgress) {
       }
 
       // Capture rest days for the ACTUAL starters (from box score), not the
-      // resolver's predicted pick. The actual starter may differ if the game
-      // engine swaps someone in. This lookup runs BEFORE advanceRotation
-      // mutates the rotationState, so rest days reflect game-time state.
+      // resolver's predicted pick. Also capture the previous start date for
+      // debug output. All lookups run BEFORE advanceRotation mutates state.
       const actualHomeSP = result?.pitching?.find(p => p.teamKey === homeTeam && p.gs === 1);
       const actualAwaySP = result?.pitching?.find(p => p.teamKey === awayTeam && p.gs === 1);
       const homeRestActual = actualHomeSP ? getRestDays(rotationState, homeTeam, actualHomeSP.name, gameDate) : Infinity;
       const awayRestActual = actualAwaySP ? getRestDays(rotationState, awayTeam, actualAwaySP.name, gameDate) : Infinity;
+      // Debug: capture raw lastStartDateByPitcher value to diagnose rest bugs
+      const homePrevStart = actualHomeSP ? (rotationState[homeTeam]?.lastStartDateByPitcher?.[actualHomeSP.name] ?? null) : null;
+      const awayPrevStart = actualAwaySP ? (rotationState[awayTeam]?.lastStartDateByPitcher?.[actualAwaySP.name] ?? null) : null;
 
       capturedGames.push({
         day: dayIdx + 1, gameDate, homeTeam, awayTeam, useDH,
         homeSPName: homeSP?.name || null,
         awaySPName: awaySP?.name || null,
         restDaysAtStart: { home: homeRestActual, away: awayRestActual },
+        starterDebug: {
+          home: {
+            name: actualHomeSP?.name || null,
+            restDays: homeRestActual,
+            previousStart: homePrevStart,
+            isFirstStart: homePrevStart === null,
+          },
+          away: {
+            name: actualAwaySP?.name || null,
+            restDays: awayRestActual,
+            previousStart: awayPrevStart,
+            isFirstStart: awayPrevStart === null,
+          },
+        },
         unavailableRelievers,
         result,
         log: finalState.log || [],
@@ -211,16 +227,23 @@ function analyzeStarters(games, rotationState, flags) {
 
       // Rest days check - use captured value from sim time (before advanceRotation)
       if (actualName) {
-        const restDays = teamKey === g.homeTeam
+        const isHome = teamKey === g.homeTeam;
+        const restDays = isHome
           ? (g.restDaysAtStart?.home ?? Infinity)
           : (g.restDaysAtStart?.away ?? Infinity);
+        const dbg = isHome ? g.starterDebug?.home : g.starterDebug?.away;
         // Infinity = never started before (first start of season) - never flag
         if (restDays !== Infinity && restDays < 3) {
           const isBullpenDay = resolverName && !(TEAMS[teamKey]?.rotation || []).some(p => p.name === resolverName);
           if (!isBullpenDay) {
             shortRestCount++;
             const severity = restDays <= 1 ? 'critical' : 'warning';
-            addFlag(flags, severity, 'Starters', `${actualName} started on ${restDays} day(s) rest`, g);
+            const prevStart = dbg?.previousStart || 'N/A';
+            const firstStart = dbg?.isFirstStart ? 'YES' : 'NO';
+            addFlag(flags, severity, 'Starters',
+              `${actualName} (${teamKey}) started on ${restDays} day(s) rest | ` +
+              `Game Day ${g.day} (${g.gameDate}) | Previous Start: ${prevStart} | ` +
+              `Is First Start: ${firstStart}`, g);
           }
         }
 
@@ -363,7 +386,9 @@ function analyzeOffense(games, flags) {
     }
   }
 
-  return { stats, teamGames, totalGames };
+  // Spread stats into top level so CategorySection renders each field
+  // individually instead of showing [object Object] for the nested stats object
+  return { ...stats, teamGames, totalGames };
 }
 
 // ── 5. Bunt / Squeeze Abuse ──
@@ -374,20 +399,23 @@ function analyzeBuntSqueeze(games, flags) {
     if (g.error || g.validationFailed) continue;
     let bunts = 0, squeezes = 0;
     for (const entry of (g.log || [])) {
-      // Count by metadata tags (primary method). A squeeze IS a bunt,
-      // so every squeeze also increments the bunt count.
+      // Count by metadata tags ONLY for squeezes (text matching caused
+      // massive false positives - any commentary mentioning "squeeze" was
+      // counted as a squeeze attempt).
+      // Bunts use metadata tags + text fallback for untagged bunt entries.
       if (entry.isSqueeze) {
         squeezes++;
         bunts++;
       } else if (entry.isBunt) {
         bunts++;
       } else {
-        // Fallback: text matching for entries without tags (backward compat)
+        // Text fallback for bunts only - NEVER count "squeeze" from text
         const t = (entry.text || '').toLowerCase();
         if (t.includes('squeeze')) {
-          squeezes++;
-          bunts++;
-        } else if (t.includes('bunt') || t.includes('sacrifice bunt')) {
+          // Skip - squeeze text without isSqueeze tag is commentary, not an attempt
+          continue;
+        }
+        if (t.includes('bunt') || t.includes('sacrifice bunt')) {
           bunts++;
         }
       }

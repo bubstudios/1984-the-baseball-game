@@ -229,9 +229,10 @@ export default function SeasonAuditReport() {
               <div className="bg-card border border-border rounded-xl p-3">
                 <h3 className="font-heading text-sm font-bold text-foreground mb-2">Realism Targets</h3>
                 <div className="space-y-0.5">
-                  {Object.entries(report.categories.offense.stats).map(([key, value]) => {
+                  {Object.entries(report.categories.offense).map(([key, value]) => {
                     const target = REALISM_TARGETS[key];
                     if (!target) return null;
+                    if (typeof value !== 'number') return null;
                     const inRange = value >= target.min && value <= target.max;
                     return (
                       <div key={key} className="flex items-center justify-between py-1 px-2 rounded text-xs">
