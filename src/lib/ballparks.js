@@ -4,6 +4,8 @@
 // HR factors: multiplier on home run probability per batter handedness
 // weatherCity: key used by weather.js CLIMATE lookup
 
+import { canUseLaunchingPad, pickLaunchingPadLine } from './hrCallCooldown';
+
 export const BALLPARKS = {
 
   // ── AL EAST ──
@@ -783,7 +785,7 @@ export function getBallparkEffect(stadiumName, batterBats, weather) {
 
 // Check for ballpark quirk outcomes on deep fly balls
 // Returns { type, text, bases } or null
-export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weather, batterName) {
+export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weather, batterName, state) {
   const ballpark = BALLPARKS[ballparkName];
   if (!ballpark) return null;
   const bn = batterName || (() => { console.error('[checkBallparkQuirk] batterName missing - rendering nameless HR call'); return 'The batter'; })();
@@ -960,22 +962,30 @@ export function checkBallparkQuirk(ballparkName, batterBats, hitDirection, weath
     }
   }
 
-  // ── Atlanta Launching Pad carry ──
+  // ── Atlanta Launching Pad carry (RARE stadium-flavor HR) ──
+  // Max 1 Launching Pad call per game; never use the same sentence twice in a game.
+  // This is a rare stadium-flavor call, NOT a common/default HR call.
   if (quirks.includes('launchingPad') && (hitDirection === 'CF' || hitDirection === 'LCF' || hitDirection === 'RCF')) {
     if (roll < 0.07) {
-      const lines = [
-        `${bn} drives one to deep center - it carries in the warm Atlanta night! Off the warning track and over the wall at The Launching Pad!`,
-        `${bn} launches one into the Atlanta night - the ball just keeps carrying! Over the wall - that is why they call it The Launching Pad!`,
-        `${bn} gets all of it - deep to center and gone! The warm Southern air carries it over the fence at Fulton County!`,
-        `${bn} crushes one to the gap - it carries and carries - over the wall! The Launching Pad lives up to its name!`,
-      ];
-      return {
-        type: 'launchingPadHR',
-        text: lines[Math.floor(Math.random() * lines.length)],
-        bases: 4,
-        isHit: true,
-        isHR: true,
-      };
+      // Require state for cooldown caps; if no state, skip the quirk entirely
+      // (the standard HR pipeline handles it instead).
+      if (state) {
+        if (!canUseLaunchingPad(state, state.homeTeam)) return null;
+        const lines = [
+          { id: 'lp_carry', text: `${bn} lifts one deep to left-center - that ball keeps carrying at The Launching Pad! Gone!` },
+          { id: 'lp_deep_center', text: `${bn} gets into one! Deep center field, back toward the wall - and it clears it! Atlanta has the lead!` },
+          { id: 'lp_rides', text: `${bn} drives one - that ball rides the warm Atlanta air and disappears beyond the fence!` },
+          { id: 'lp_landreaux', text: `High drive to center. The outfielder is back, still back - gone! ${bn} carried that one all the way out!` },
+        ];
+        const pick = pickLaunchingPadLine(state, state.homeTeam, lines);
+        return {
+          type: 'launchingPadHR',
+          text: pick.text,
+          bases: 4,
+          isHit: true,
+          isHR: true,
+        };
+      }
     }
   }
 

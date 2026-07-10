@@ -1,6 +1,9 @@
 // 1984 MLB Announcer-Specific Home Run Calls
 // Documented signature calls for known broadcasters; original calls for other booths.
 // Fires ~40% of home runs; the remaining 60% use the existing descriptive calls.
+// Uses cooldown tracking to prevent repeating the same call template.
+
+import { isHRTemplateOnCooldown, pickHRCall, recordHRTemplateUsed } from './hrCallCooldown';
 
 const ANNOUNCER_CALLS = {
   // ── DOCUMENTED SIGNATURE CALLS ──
@@ -119,9 +122,10 @@ const ANNOUNCER_CALLS = {
 /**
  * Returns an announcer-specific home run call string ~40% of the time,
  * or null to fall back to the existing descriptive home run text.
+ * Uses cooldown tracking to avoid repeating the same call template.
  *
  * @param {string} teamKey - The batting team's key (e.g. 'cubs')
- * @param {object} context - { isGrandSlam, rbi, batterName }
+ * @param {object} context - { isGrandSlam, rbi, batterName, state }
  * @returns {string|null}
  */
 export function maybeGetAnnouncerHRCall(teamKey, context = {}) {
@@ -129,14 +133,30 @@ export function maybeGetAnnouncerHRCall(teamKey, context = {}) {
   if (!calls) return null;
   if (Math.random() > 0.40) return null;
 
-  const tracking = calls.tracking[Math.floor(Math.random() * calls.tracking.length)];
+  const state = context.state || null;
 
   // Grand slam special call (Niehaus, etc.)
   if (context.isGrandSlam && calls.grandSlam) {
-    const gs = calls.grandSlam[Math.floor(Math.random() * calls.grandSlam.length)];
-    return `${tracking} ${gs}`;
+    const gsPool = calls.grandSlam.map((text, i) => ({ id: `${teamKey}:gs:${i}`, text }));
+    let gs;
+    if (state) {
+      gs = pickHRCall(state, teamKey, gsPool);
+      recordHRTemplateUsed(state, gs.id, teamKey);
+    } else {
+      gs = gsPool[Math.floor(Math.random() * gsPool.length)];
+    }
+    const trackingIdx = Math.floor(Math.random() * calls.tracking.length);
+    return `${calls.tracking[trackingIdx]} ${gs.text}`;
   }
 
-  const payoff = calls.payoff[Math.floor(Math.random() * calls.payoff.length)];
-  return `${tracking} ${payoff}`;
+  const trackingIdx = Math.floor(Math.random() * calls.tracking.length);
+  const payoffPool = calls.payoff.map((text, i) => ({ id: `${teamKey}:ann:${trackingIdx}:${i}`, text }));
+  let payoff;
+  if (state) {
+    payoff = pickHRCall(state, teamKey, payoffPool);
+    recordHRTemplateUsed(state, payoff.id, teamKey);
+  } else {
+    payoff = payoffPool[Math.floor(Math.random() * payoffPool.length)];
+  }
+  return `${calls.tracking[trackingIdx]} ${payoff.text}`;
 }
