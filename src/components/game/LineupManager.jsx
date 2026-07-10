@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
 import { ArrowUp, ArrowDown, X, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
 import { calculateSituationalRatings, getRatingBadgeClass } from '@/lib/situationalRatings';
-import { isStarterEligible, getRestDays, getUnavailableRelievers } from '@/lib/seasonStore';
+import { getRestDays, getUnavailableRelievers } from '@/lib/seasonStore';
 
 const ALL_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
 
