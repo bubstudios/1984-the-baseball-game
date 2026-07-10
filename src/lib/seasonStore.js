@@ -691,13 +691,32 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
 // post-game recalculation. Returns { hardUnavailable, emergencyOnly, legalArmCount }.
 export function getPregameAvailability(rotationState, teamKey, gameDate) {
   const team = TEAMS[teamKey];
-  if (!team) return { hardUnavailable: [], emergencyOnly: [], legalArmCount: 0 };
+  if (!team) return { hardUnavailable: [], emergencyOnly: [], legalArmCount: 0, pitcherTiers: {}, tierCounts: { AVAILABLE: 0, TIRED: 0, VERY_TIRED: 0, EMERGENCY_ONLY: 0, HARD_UNAVAILABLE: 0 } };
   const allPitchers = [...(team.bullpen || []), ...(team.rotation || [])];
+  const rs = rotationState?.[teamKey];
   const hardUnavailable = [];
   const emergencyOnly = [];
+  const pitcherTiers = {};
+  const tierCounts = { AVAILABLE: 0, TIRED: 0, VERY_TIRED: 0, EMERGENCY_ONLY: 0, HARD_UNAVAILABLE: 0 };
   let legalArmCount = 0;
   for (const p of allPitchers) {
     const result = isPitcherAvailable(rotationState, teamKey, p.name, gameDate);
+    const tier = result.tier || 'AVAILABLE';
+    tierCounts[tier] = (tierCounts[tier] || 0) + 1;
+    const workload = rs?.workload?.[p.name] || [];
+    const dayBefore = shiftDate(gameDate, -1);
+    const twoDaysBefore = shiftDate(gameDate, -2);
+    const yEntry = workload.find(e => e.date === dayBefore);
+    const dbEntry = workload.find(e => e.date === twoDaysBefore);
+    const pitchesYesterday = yEntry ? (yEntry.pitches || estimatePitches(yEntry.outs || 0)) : 0;
+    const pitchesDayBefore = dbEntry ? (dbEntry.pitches || estimatePitches(dbEntry.outs || 0)) : 0;
+    let consecutiveDays = 0;
+    for (let d = 1; d <= 5; d++) {
+      const checkDate = shiftDate(gameDate, -d);
+      if (workload.find(e => e.date === checkDate)) consecutiveDays++;
+      else break;
+    }
+    pitcherTiers[p.name] = { tier, reason: result.reason, available: result.available, emergencyOnly: result.emergencyOnly, pitchesYesterday, pitchesLast2Days: pitchesYesterday + pitchesDayBefore, consecutiveDays };
     if (!result.available) {
       hardUnavailable.push(p.name);
     } else if (result.emergencyOnly) {
@@ -706,7 +725,7 @@ export function getPregameAvailability(rotationState, teamKey, gameDate) {
       legalArmCount++;
     }
   }
-  return { hardUnavailable, emergencyOnly, legalArmCount };
+  return { hardUnavailable, emergencyOnly, legalArmCount, pitcherTiers, tierCounts };
 }
 
 // Delegates to isPitcherAvailable for consistent tier/penalty values.

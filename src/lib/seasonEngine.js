@@ -42,6 +42,25 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     annotate(state.homeBullpen, homeTeam);
     annotate(state.awayBullpen, awayTeam);
 
+    // Annotate rotation starters (not today's SP) as emergency relief options.
+    // Used by selectStarterRelief when all bullpen arms are EMERGENCY_ONLY or
+    // HARD_UNAVAILABLE - a starter on full rest is a better emergency option
+    // than burning a 3-straight-day reliever.
+    const annotateEmergencyStarters = (teamKey, side) => {
+      const rotation = TEAMS[teamKey]?.rotation || [];
+      const currentSP = side === 'home' ? state.homePitcher : state.awayPitcher;
+      const starters = rotation
+        .filter(p => p.name !== currentSP?.name)
+        .map(p => {
+          const avail = isPitcherAvailable(options.rotationState, teamKey, p.name, options.gameDate);
+          return { ...p, _seasonAvailable: avail.available, _seasonEmergencyOnly: avail.emergencyOnly || false, _seasonFatiguePenalty: avail.tired ? avail.fatiguePenalty : 0, _seasonTier: avail.tier || 'AVAILABLE', _isEmergencyStarter: true };
+        });
+      if (side === 'home') state.homeEmergencyStarters = starters;
+      else state.awayEmergencyStarters = starters;
+    };
+    annotateEmergencyStarters(homeTeam, 'home');
+    annotateEmergencyStarters(awayTeam, 'away');
+
     // Annotate starting pitchers with season-rest fatigue (3+ days rest = fresh,
     // 2 = short rest). Flows into _seasonFatiguePenalty so getEffectivePitcher
     // applies a small control/speed/offSpeed penalty.

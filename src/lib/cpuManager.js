@@ -19,17 +19,57 @@ export function canPitchToday(pitcher) {
   return pitcher._seasonAvailable !== false;
 }
 
-// Emergency fallback: when ALL arms are HARD_UNAVAILABLE (extra innings, fully
-// exhausted bullpen). Prefers EMERGENCY_ONLY over HARD_UNAVAILABLE arms.
-// Caller MUST log this as an emergency use.
-export function selectEmergencyReliever(bullpen) {
+// Emergency fallback: ONLY returns EMERGENCY_ONLY arms. NEVER returns HARD_UNAVAILABLE
+// pitchers - those are forbidden outside true emergency mode (inning >= 12 with zero
+// legal arms of any tier). Caller MUST log this as an emergency use.
+// EMERGENCY_ONLY arms are gated by inning >= 10 per builder spec.
+export function selectEmergencyReliever(bullpen, inning = 1) {
   if (!bullpen || bullpen.length === 0) return null;
   const tierSum = (p) => (p.pitchSpeed || 0) + (p.offSpeed || 0) + (p.control || 0);
-  const emergencyOnly = bullpen.filter(p => p._seasonEmergencyOnly);
-  const pool = emergencyOnly.length > 0 ? emergencyOnly : bullpen;
-  return [...pool].sort((a, b) =>
+  const emergencyOnly = bullpen.filter(p => p._seasonEmergencyOnly && canPitchToday(p));
+  if (emergencyOnly.length === 0) return null;
+  if (inning < 10) return null;
+  return [...emergencyOnly].sort((a, b) =>
     (tierSum(b) - (b._seasonFatiguePenalty || 0)) - (tierSum(a) - (a._seasonFatiguePenalty || 0))
   )[0];
+}
+
+// Last-resort fallback: use a rotation starter as emergency relief.
+// Only called when all bullpen arms (AVAILABLE through EMERGENCY_ONLY) are exhausted.
+// Prefers starters on full rest (lowest fatigue penalty). Never returns the current
+// pitcher, today's starter, or already-used pitchers.
+export function selectStarterRelief(state, cpuPitchingSide) {
+  const emergencyStarters = state[cpuPitchingSide === 'home' ? 'homeEmergencyStarters' : 'awayEmergencyStarters'] || [];
+  const currentPitcher = cpuPitchingSide === 'home' ? state.homePitcher : state.awayPitcher;
+  const history = cpuPitchingSide === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
+  const used = new Set();
+  if (currentPitcher) used.add(currentPitcher.name);
+  history.forEach(p => used.add(p.name));
+  if (state.removedPlayers) state.removedPlayers.forEach(n => used.add(n));
+  const todaySP = cpuPitchingSide === 'home' ? state.homeStartingPitcherName : state.awayStartingPitcherName;
+  if (todaySP) used.add(todaySP);
+  const available = emergencyStarters.filter(p => !used.has(p.name) && p._seasonAvailable !== false);
+  if (available.length === 0) return null;
+  return [...available].sort((a, b) => (a._seasonFatiguePenalty || 0) - (b._seasonFatiguePenalty || 0))[0];
+}
+
+// Full selection chain: bullpen tiers (AVAILABLE -> TIRED -> VERY_TIRED -> EMERGENCY_ONLY)
+// -> starter relief -> emergency fallback. Enforces availability-first ordering.
+// Used by all CPU pitcher substitution paths for consistent enforcement.
+export function selectRelieverChain(state, bullpen, cpuPitchingSide, context) {
+  const inning = context.inning || 1;
+  let pitcher = selectCpuReliever(bullpen, context);
+  let isEmergency = !!pitcher?._seasonEmergencyOnly;
+  let reason = pitcher ? (isEmergency ? 'emergency_only tier' : 'fresh tier selection') : null;
+  if (!pitcher) {
+    pitcher = selectStarterRelief(state, cpuPitchingSide);
+    if (pitcher) { reason = 'starter relief (long man)'; isEmergency = false; }
+  }
+  if (!pitcher) {
+    pitcher = selectEmergencyReliever(bullpen, inning);
+    if (pitcher) { reason = 'emergency fallback'; isEmergency = true; }
+  }
+  return { pitcher, isEmergency, reason };
 }
 
 // Shared CPU reliever selection policy with tiered availability.
@@ -53,14 +93,19 @@ export function selectCpuReliever(bullpen, context) {
   const tierSum = (p) => (p.pitchSpeed || 0) + (p.offSpeed || 0) + (p.control || 0);
 
   // TIER PRIORITY: find the freshest tier that has arms.
-  // Only descend to EMERGENCY_ONLY when no AVAILABLE/TIRED/VERY_TIRED arms exist.
-  const TIER_ORDER = ['AVAILABLE', 'TIRED', 'VERY_TIRED', 'EMERGENCY_ONLY'];
+  // EMERGENCY_ONLY arms are gated by inning >= 10 - before extra innings,
+  // the CPU must return null so the caller can try long man / starter relief.
+  const TIER_ORDER = inning >= 10
+    ? ['AVAILABLE', 'TIRED', 'VERY_TIRED', 'EMERGENCY_ONLY']
+    : ['AVAILABLE', 'TIRED', 'VERY_TIRED'];
   let pool = null;
   for (const tier of TIER_ORDER) {
     const arms = canPitch.filter(p => (p._seasonTier || 'AVAILABLE') === tier);
     if (arms.length > 0) { pool = arms; break; }
   }
-  if (!pool) pool = canPitch;
+  // No legal arms (all EMERGENCY_ONLY in inning < 10, or all HARD_UNAVAILABLE).
+  // Return null so caller can try starter relief before falling to emergency.
+  if (!pool) return null;
 
   const closers = pool.filter(isCloser);
   const nonClosers = pool.filter(p => !isCloser(p));
@@ -217,19 +262,14 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
     // 2. Select a replacement - rested bullpen arm first, emergency fallback otherwise
     const availableBullpen = bp.filter(p => !newState.removedPlayers.includes(p.name));
-    let newPitcher = null;
-    let isEmergencyUse = false;
-    if (availableBullpen.length > 0) {
-      newPitcher = pickCpuReliever(availableBullpen, newState.inning, {
-        cpuScore: newState.score[ejectedSide],
-        oppScore: newState.score[ejectedSide === 'home' ? 'away' : 'home'],
-      });
-      if (newPitcher?._seasonEmergencyOnly) isEmergencyUse = true;
-    }
-    if (!newPitcher && availableBullpen.length > 0) {
-      newPitcher = selectEmergencyReliever(availableBullpen);
-      isEmergencyUse = !!newPitcher;
-    }
+    const ejSelection = selectRelieverChain(newState, availableBullpen, ejectedSide, {
+      inning: newState.inning,
+      cpuScore: newState.score[ejectedSide],
+      oppScore: newState.score[ejectedSide === 'home' ? 'away' : 'home'],
+    });
+    let newPitcher = ejSelection.pitcher;
+    let isEmergencyUse = ejSelection.isEmergency;
+    let selectionReason = ejSelection.reason;
     if (!newPitcher) {
       // Emergency: any roster pitcher not already in the game or removed
       const teamKey = ejectedSide === 'home' ? newState.homeTeam : newState.awayTeam;
@@ -258,9 +298,9 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         }
       }
       if (isEmergencyUse) {
-        newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable` });
+        newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable`, _relieverEntry: { name: newPitcher.name, inning: newState.inning, score: { ...newState.score }, hookReason: 'ejection', selectionReason, isEmergency: true } });
       }
-      newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ejected ${oldP.name} on the mound` });
+      newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ejected ${oldP.name} on the mound`, _relieverEntry: { name: newPitcher.name, inning: newState.inning, score: { ...newState.score }, hookReason: 'ejection', selectionReason, isEmergency: isEmergencyUse } });
     } else {
       // Absolute last resort: no legal pitcher exists. End the game rather than
       // let an ejected pitcher continue - the hard rule cannot be violated.
@@ -310,12 +350,10 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       const removedPlayers = newState.removedPlayers || [];
       const availableBullpen = cpuBullpen.filter(p => !removedPlayers.includes(p.name));
       const effectiveBullpen = availableBullpen.length > 0 ? availableBullpen : cpuBullpen;
-      let newPitcher = pickCpuReliever(effectiveBullpen, inning, { cpuScore, oppScore: userScore });
-      let isEmergencyUse = !!newPitcher?._seasonEmergencyOnly;
-      if (!newPitcher) {
-        newPitcher = selectEmergencyReliever(effectiveBullpen);
-        isEmergencyUse = !!newPitcher;
-      }
+      const phSelection = selectRelieverChain(newState, effectiveBullpen, cpuPitchingSide, { inning, cpuScore, oppScore: userScore });
+      let newPitcher = phSelection.pitcher;
+      let isEmergencyUse = phSelection.isEmergency;
+      let selectionReason = phSelection.reason;
       if (!newPitcher) return newState;
       const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
       if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
@@ -335,9 +373,9 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         }
       }
       if (isEmergencyUse) {
-        newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable` });
+        newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable`, _relieverEntry: { name: newPitcher.name, inning, score: { ...newState.score }, hookReason: 'pinch-hit', selectionReason, isEmergency: true } });
       }
-      newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
+      newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)`, _relieverEntry: { name: newPitcher.name, inning, score: { ...newState.score }, hookReason: 'pinch-hit', selectionReason, isEmergency: isEmergencyUse } });
     }
     return newState;
   }
@@ -346,7 +384,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const ip = cpuPitcher.gameStats.ip || 0, bbi = cpuPitcher.gameStats.bb || 0, runs = cpuPitcher.gameStats.r || 0;
   const stamina = cpuPitcher.stamina || 5;
   const isReliever = ['RP','CL'].includes(cpuPitcher.pos) || ['RP','CL'].includes(cpuPitcher.assignedPos);
-  const maxInnings = isReliever ? stamina * 0.4 : Math.max(4.2, stamina * 0.7);
+  const maxInnings = isReliever ? stamina * 0.4 : Math.max(6.0, stamina * 0.85);
   const hasLead = cpuScore > userScore;
   const margin = Math.abs(cpuScore - userScore);
 
@@ -381,17 +419,18 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   // TIRING (level 1+) in 7th+ of a close game: pull (the Hurst case).
   const closeGame = margin <= 3;
   const fatigueExhausted = fatigueLevel >= 3;
-  const fatigueTiringLate = fatigueLevel >= 1 && inning >= 7 && closeGame;
+  const fatigueTiringLate = fatigueLevel >= 2 && inning >= 8 && closeGame;
 
   const relieverFatigue = isReliever && ip >= maxInnings + 0.5;
 
-  const starterCruising = !isReliever && hasLead && composure >= 35 && !inningBlowup && !totalBlowup && !walksPull;
+  const starterCruising = !isReliever && cpuScore >= userScore && composure >= 35 && !inningBlowup && !totalBlowup && !walksPull;
   if (starterCruising && !forcedHook && !lateClose && !jamHook && !fatigueExhausted && !fatigueTiringLate) return newState;
 
   // Session 22 #7: 1984 starter hook - don't pull a starter before inning 5
   // unless genuinely gassed (fatigueLevel 3+) or game is out of hand (6+ runs + composure collapse)
   if (!isReliever && inning < 5 && !forcedHook && !fatigueExhausted && !(totalBlowup && composure < 30)) return newState;
   if (!isReliever && inning < 6 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull) return newState;
+  if (!isReliever && inning < 7 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull && !jamHook) return newState;
 
   const shouldChange = (forcedHook || fatigueHook || relieverFatigue || inningBlowup || totalBlowup || jamHook || walksPull || lateClose || fatigueExhausted || fatigueTiringLate) && cpuBullpen.length > 0;
   if (shouldChange) {
@@ -403,17 +442,15 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     const removedPlayers = newState.removedPlayers || [];
     const availableBullpen = cpuBullpen.filter(p => !removedPlayers.includes(p.name));
     const effectiveBullpen = availableBullpen.length > 0 ? availableBullpen : cpuBullpen;
-    let newPitcher = selectCpuReliever(effectiveBullpen, {
+    const selection = selectRelieverChain(newState, effectiveBullpen, cpuPitchingSide, {
       inning,
       cpuScore,
       oppScore: userScore,
       dueUpBatterBats: dueUpBatter?.bats,
     });
-    let isEmergencyUse = !!newPitcher?._seasonEmergencyOnly;
-    if (!newPitcher) {
-      newPitcher = selectEmergencyReliever(effectiveBullpen);
-      isEmergencyUse = !!newPitcher;
-    }
+    const newPitcher = selection.pitcher;
+    const isEmergencyUse = selection.isEmergency;
+    const selectionReason = selection.reason;
     if (!newPitcher) return newState;
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
     const oldPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
@@ -435,9 +472,9 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     }
     const reason = forcedHook ? 'completely gassed' : fatigueExhausted ? 'arm is exhausted' : fatigueTiringLate ? 'tiring in a close one' : fatigueHook ? 'composure fading' : relieverFatigue ? 'arm is tiring' : inningBlowup ? 'rough inning' : totalBlowup ? 'rough outing' : jamHook ? 'inherited jam' : walksPull ? 'lost command' : 'high-leverage situation';
     if (isEmergencyUse) {
-      newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable` });
+      newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable`, _relieverEntry: { name: newPitcher.name, inning, score: { ...newState.score }, hookReason: reason, selectionReason, isEmergency: true } });
     }
-    newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
+    newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})`, _relieverEntry: { name: newPitcher.name, inning, score: { ...newState.score }, hookReason: reason, selectionReason, isEmergency: isEmergencyUse } });
 
     const dsLineup = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
     const dsFullBench = TEAMS[cpuPitchingSide === 'home' ? newState.homeTeam : newState.awayTeam]?.bench || [];
