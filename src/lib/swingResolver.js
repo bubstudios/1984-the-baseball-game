@@ -36,7 +36,7 @@ import { apply_alignment_modifiers } from './defensivePositioning';
 import { getEffectivePitcher } from './pitcherFatigue';
 import { getBehaviorZone, BEHAVIOR_ZONES } from './pitcherComposure';
 import { chargeRun, tagRunnerResponsiblePitcher } from './runScoring';
-import { isSqueezeSituation, determineSqueezeType, resolveSqueeze } from './squeezePlay';
+import { determineSqueezeType, resolveSqueeze, shouldAttemptSqueeze, recordSqueezeAttempt, recordBuntAttempt } from './squeezePlay';
 import {
   getCurrentBatter, getCurrentPitcher, getBattingTeam, advanceBatter, recordOut,
   endHalfInning, isWalkOff, isCriticalRunSituation,
@@ -257,13 +257,15 @@ export function resolveSwing(state, swingType, pitch) {
   }
   if (swingType.name === 'Bunt') {
     if (!pitch.isStrike && Math.random() < 0.55) { state.balls++; if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; } state.log.push({ type: 'ball', text: `Ball ${state.balls} - ${batter.name} pulls back the bunt` }); state.lastPlay = { type: 'ball', text: `Ball ${state.balls}` }; return; }
-    // ── SQUEEZE PLAY DETECTION (runner on 3rd, <2 outs) ──
-    if (isSqueezeSituation(state)) {
+    // ── SQUEEZE PLAY DETECTION (full tactical eligibility required) ──
+    if (shouldAttemptSqueeze(state, batter)) {
       const sqType = determineSqueezeType(batter);
       const sq = resolveSqueeze(batter, state, sqType);
       state.log.push({ type: sq.logType, text: sq.text });
       state._celebrationBubble = sq.text;
       state.lastPlay = { type: sq.logType, text: sq.text };
+      recordSqueezeAttempt(state);
+      recordBuntAttempt(state);
 
       if (sq.batterOut) {
         batter.gameStats.ab++;
@@ -314,6 +316,9 @@ export function resolveSwing(state, swingType, pitch) {
         return;
       }
     }
+
+    // Normal bunt path - record bunt attempt for cooldown tracking
+    recordBuntAttempt(state);
 
     const isPH = batter.pos === 'SP' || batter.assignedPos === 'SP';
     const isRelieverPitcher = batter.pos === 'RP' || batter.pos === 'CL' || batter.assignedPos === 'RP' || batter.assignedPos === 'CL';

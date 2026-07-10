@@ -48,7 +48,13 @@ export function pinchHit(state, newPlayer) {
     newState[historyKey].push({ ...oldBatter });
   }
 
-  newState.log.push({ type: 'info', text: `🔄 ${newPlayer.name} pinch-hits for ${oldBatter.name}` });
+  // Dedup: only log the substitution once (pinchHit may be called via multiple
+  // code paths that each add their own log line - suppress identical duplicates)
+  const subText = `🔄 ${newPlayer.name} pinch-hits for ${oldBatter.name}`;
+  const alreadyLogged = newState.log.some(entry => entry.type === 'info' && entry.text === subText);
+  if (!alreadyLogged) {
+    newState.log.push({ type: 'info', text: subText });
+  }
   return newState;
 }
 

@@ -7,6 +7,7 @@ import { chargeRun, tagRunnerResponsiblePitcher } from './runScoring';
 import { getEffectivePitcher, getPitcherFatigue } from './pitcherFatigue';
 import { applyLeadChangePenalty, calculateLeverage } from './pitcherComposure';
 import { shouldBunt, resolveBunt } from './buntingDecision';
+import { shouldAttemptSqueeze, recordSqueezeAttempt, recordBuntAttempt } from './squeezePlay';
 import { shouldPinchHit, choose_pinch_hitter } from './pinchHittingDecision';
 import { shouldIntentionalWalk, issue_ibb } from './intentionalWalkDecision';
 import { choose_alignment, expect_bunt } from './defensivePositioning';
@@ -289,7 +290,7 @@ export function processAtBat(state, pitchType, swingType) {
 
         newState.log = afterPH.log;
         newState._pitcher_due_for_replacement = true;
-        newState.log.push({ type: 'info', text: `🔄 ${phitter.name} pinch-hits for ${bjb.name}` });
+        // Log is already pushed by pinchHit() - no duplicate needed here.
 
         const newPitcher = getCurrentPitcher(newState);
         resolveSwing(newState, swingType, newState.pitchResult);
@@ -306,21 +307,35 @@ export function processAtBat(state, pitchType, swingType) {
   }
 
   // ── BUNTING DECISION GATE (CPU-CONTROLLED TEAMS ONLY) ──
+  // Squeeze is a separate, rare tactical decision with full eligibility,
+  // cooldown, and per-game caps. Sac bunt and bunt-for-hit are separate.
   const isCpuBattingForBunt = getControllingTeam(newState, 'batting') === 'cpu';
-  const buntDecision = isCpuBattingForBunt ? shouldBunt(bjb, {
-    runner_on_1st: !!newState.bases[0],
-    runner_on_2nd: !!newState.bases[1],
-    runner_on_3rd: !!newState.bases[2],
-    outs: newState.outs,
-    inning: newState.inning,
-    score_margin: newState.score[getBattingTeam(newState)] - newState.score[getBattingTeam(newState) === 'home' ? 'away' : 'home'],
-    bases_empty: !newState.bases.some(b => b !== null),
-    third_baseman_playing_back: newState._third_baseman_playing_back || false,
-  }) : null;
+  let buntDecision = null;
+  if (isCpuBattingForBunt) {
+    if (shouldAttemptSqueeze(newState, bjb) && Math.random() < 0.20) {
+      buntDecision = 'squeeze';
+    } else {
+      buntDecision = shouldBunt(bjb, {
+        runner_on_1st: !!newState.bases[0],
+        runner_on_2nd: !!newState.bases[1],
+        runner_on_3rd: !!newState.bases[2],
+        outs: newState.outs,
+        inning: newState.inning,
+        score_margin: newState.score[getBattingTeam(newState)] - newState.score[getBattingTeam(newState) === 'home' ? 'away' : 'home'],
+        bases_empty: !newState.bases.some(b => b !== null),
+        third_baseman_playing_back: newState._third_baseman_playing_back || false,
+      });
+    }
+  }
 
   if (buntDecision) {
     const buntResult = resolveBunt(buntDecision, bjb, newState);
     if (buntResult) {
+      // Record bunt/squeeze attempt for cooldown and cap tracking
+      recordBuntAttempt(newState);
+      if (buntDecision === 'squeeze' || (buntResult.type && buntResult.type.startsWith('squeeze'))) {
+        recordSqueezeAttempt(newState);
+      }
       const buntPlayType = buntResult.type === 'sacrifice_success' ? 'groundout' :
                            buntResult.type === 'squeeze_success' ? 'groundout' :
                            buntResult.type === 'bunt_single' ? 'single' :

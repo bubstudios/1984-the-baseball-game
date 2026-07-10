@@ -9,7 +9,7 @@
  * Tuned to be RARE and SITUATIONAL. Most hitters in most spots should NOT bunt.
  */
 
-import { isSqueezeSituation, determineSqueezeType, resolveSqueeze } from './squeezePlay';
+import { determineSqueezeType, resolveSqueeze } from './squeezePlay';
 
 const SAC_THRESHOLD = 75; // Raised from 50 - requires a genuine sac situation, not just 'close & late'
 const HIT_THRESHOLD = 70; // Raised from 45 - bunt-for-hit must be a strong fit
@@ -29,11 +29,8 @@ export function shouldBunt(batter, game) {
     if (Math.random() < sacChance) return 'sacrifice';
   }
 
-  // — SQUEEZE BUNT (runner on 3rd, late/close, playing for one run)
-  const squeezeScore = squeeze_bunt_score(batter, game, isPitcher);
-  if (squeezeScore >= SQUEEZE_THRESHOLD && Math.random() < 0.55) {
-    return 'sacrifice'; // resolveSacBunt detects the squeeze situation
-  }
+  // NOTE: Squeeze is now a separate decision handled by shouldAttemptSqueeze()
+  // in gameEngine.js, not by shouldBunt(). This prevents over-triggering.
 
   // — BUNT-FOR-HIT (rare surprise)
   const hitScore = hitBuntScore(batter, game);
@@ -180,19 +177,18 @@ function hitBuntScore(batter, game) {
  * Resolve a bunt attempt.
  */
 export function resolveBunt(buntType, batter, game) {
+  if (buntType === 'squeeze') {
+    const squeezeType = determineSqueezeType(batter);
+    return resolveSqueeze(batter, game, squeezeType);
+  }
   if (buntType === 'sacrifice') return resolveSacBunt(batter, game);
   if (buntType === 'bunt_for_hit') return resolveBuntForHit(batter, game);
   return null;
 }
 
 function resolveSacBunt(batter, game) {
-  // Squeeze detection: runner on 3rd + <2 outs = squeeze play.
-  // game is the full state object (passed from gameEngine), so bases/outs are available.
-  if (isSqueezeSituation(game)) {
-    const squeezeType = determineSqueezeType(batter);
-    return resolveSqueeze(batter, game, squeezeType);
-  }
-
+  // Squeeze is now a separate decision type ('squeeze'), not auto-converted here.
+  // This function only handles standard sacrifice bunts.
   const isPitcher = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP', 'RP', 'CL'].includes(batter.assignedPos));
   const conRating = (batter.contact || 3) / 10;
   const pitcherBonus = isPitcher ? 0.10 : 0;

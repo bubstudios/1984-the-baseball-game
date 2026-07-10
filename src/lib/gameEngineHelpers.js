@@ -261,6 +261,7 @@ export function getBattingTeam(state) {
 }
 
 export function advanceBatter(state) {
+  state._paCount = (state._paCount || 0) + 1;
   if (state.halfInning === 'top') state.awayBatterIndex = (state.awayBatterIndex + 1) % state.awayLineup.length;
   else state.homeBatterIndex = (state.homeBatterIndex + 1) % state.homeLineup.length;
 }

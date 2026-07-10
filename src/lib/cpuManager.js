@@ -482,7 +482,7 @@ export function cpuCheckPinchHit(state) {
 
   newState.log = afterPH.log;
   newState._pitcher_due_for_replacement = true;
-  newState.log.push({ type: 'info', text: `🔄 ${phitter.name} pinch-hits for ${bjb.name}` });
+  // Log is already pushed by pinchHit() - no duplicate needed here.
 
   return newState;
 }
