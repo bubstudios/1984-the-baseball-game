@@ -13,21 +13,34 @@ import {
   getCurrentBatter, getCurrentPitcher, getBattingTeam, getControllingTeam,
 } from './gameEngine';
 
+// HARD GATE: a pitcher marked _seasonAvailable === false CANNOT be selected.
+export function canPitchToday(pitcher) {
+  if (!pitcher) return false;
+  return pitcher._seasonAvailable !== false;
+}
+
+// Emergency fallback: when no available arms exist (extra innings, fully
+// exhausted bullpen). Picks the highest-tier unavailable arm (least-bad option).
+// Caller MUST log this as an emergency use.
+export function selectEmergencyReliever(bullpen) {
+  if (!bullpen || bullpen.length === 0) return null;
+  const tierSum = (p) => (p.pitchSpeed || 0) + (p.offSpeed || 0) + (p.control || 0);
+  return [...bullpen].sort((a, b) =>
+    (tierSum(b) - (b._seasonFatiguePenalty || 0)) - (tierSum(a) - (a._seasonFatiguePenalty || 0))
+  )[0];
+}
+
 // Session 8: Shared CPU reliever selection policy.
 // Session 21 Part 2: respects reliever rest (fatiguePenalty) and avoids closers in blowouts.
+// HARD GATE: returns null when no legal (available) pitcher exists.
+// The caller handles emergency fallback via selectEmergencyReliever.
 export function selectCpuReliever(bullpen, context) {
   if (!bullpen || bullpen.length === 0) return null;
 
-  // Filter out season-unavailable relievers (3-straight-day rule, rest tiers).
-  // If ALL are unavailable, fall back to full bullpen (emergency) with a log.
-  // This is the hard enforcement point: no AI path can choose a 3-straight-day
-  // reliever unless every arm is unavailable (extra innings / no legal option).
-  const availableArms = bullpen.filter(p => p._seasonAvailable !== false);
-  if (availableArms.length > 0) {
-    bullpen = availableArms;
-  } else if (bullpen.some(p => p._seasonAvailable === false)) {
-    console.error('[cpuManager] Emergency: all bullpen arms season-unavailable - using full bullpen');
-  }
+  // HARD GATE: filter out ALL season-unavailable relievers.
+  const availableArms = bullpen.filter(p => canPitchToday(p));
+  if (availableArms.length === 0) return null;
+  bullpen = availableArms;
 
   const isCloser = (p) => p.pos === 'CL' || p.assignedPos === 'CL';
   const inning = context.inning || 1;
@@ -38,7 +51,8 @@ export function selectCpuReliever(bullpen, context) {
   const tierSum = (p) => (p.pitchSpeed || 0) + (p.offSpeed || 0) + (p.control || 0);
   // Session 23: deprioritize tired arms — both in-game fatigue AND season workload fatigue.
   // This spreads CPU usage instead of burning the same long man every game.
-  const effectiveTier = (p) => tierSum(p) - (p._fatiguePenalty || 0) - (p._seasonFatiguePenalty || 0);
+  const TIER_PRIORITY = { 'AVAILABLE': 0, 'SLIGHTLY_TIRED': 1, 'TIRED': 2, 'VERY_TIRED': 3 };
+  const effectiveTier = (p) => tierSum(p) - (p._fatiguePenalty || 0) - (p._seasonFatiguePenalty || 0) - (TIER_PRIORITY[p._seasonTier] || 0) * 100;
 
   const closers = bullpen.filter(isCloser);
   const nonClosers = bullpen.filter(p => !isCloser(p));
@@ -192,11 +206,16 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     // 2. Select a replacement - rested bullpen arm first, emergency fallback otherwise
     const availableBullpen = bp.filter(p => !newState.removedPlayers.includes(p.name));
     let newPitcher = null;
+    let isEmergencyUse = false;
     if (availableBullpen.length > 0) {
       newPitcher = pickCpuReliever(availableBullpen, newState.inning, {
         cpuScore: newState.score[ejectedSide],
         oppScore: newState.score[ejectedSide === 'home' ? 'away' : 'home'],
       });
+    }
+    if (!newPitcher && availableBullpen.length > 0) {
+      newPitcher = selectEmergencyReliever(availableBullpen);
+      isEmergencyUse = !!newPitcher;
     }
     if (!newPitcher) {
       // Emergency: any roster pitcher not already in the game or removed
@@ -224,6 +243,9 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         if (si >= 0) {
           fl[si] = { ...newPitcher, order: fl[si].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
         }
+      }
+      if (isEmergencyUse) {
+        newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_RELIEVER_USED: ${newPitcher.name} enters despite being unavailable` });
       }
       newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ejected ${oldP.name} on the mound` });
     } else {
@@ -275,7 +297,12 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       const removedPlayers = newState.removedPlayers || [];
       const availableBullpen = cpuBullpen.filter(p => !removedPlayers.includes(p.name));
       const effectiveBullpen = availableBullpen.length > 0 ? availableBullpen : cpuBullpen;
-      const newPitcher = pickCpuReliever(effectiveBullpen, inning, { cpuScore, oppScore: userScore });
+      let newPitcher = pickCpuReliever(effectiveBullpen, inning, { cpuScore, oppScore: userScore });
+      let isEmergencyUse = false;
+      if (!newPitcher) {
+        newPitcher = selectEmergencyReliever(effectiveBullpen);
+        isEmergencyUse = !!newPitcher;
+      }
       if (!newPitcher) return newState;
       const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
       if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
@@ -293,6 +320,9 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         if (lastIdx >= 0) {
           cpuLineupField[lastIdx] = { ...newPitcher, order: cpuLineupField[lastIdx].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
         }
+      }
+      if (isEmergencyUse) {
+        newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_RELIEVER_USED: ${newPitcher.name} enters despite being unavailable` });
       }
       newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
     }
@@ -360,12 +390,17 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     const removedPlayers = newState.removedPlayers || [];
     const availableBullpen = cpuBullpen.filter(p => !removedPlayers.includes(p.name));
     const effectiveBullpen = availableBullpen.length > 0 ? availableBullpen : cpuBullpen;
-    const newPitcher = selectCpuReliever(effectiveBullpen, {
+    let newPitcher = selectCpuReliever(effectiveBullpen, {
       inning,
       cpuScore,
       oppScore: userScore,
       dueUpBatterBats: dueUpBatter?.bats,
     });
+    let isEmergencyUse = false;
+    if (!newPitcher) {
+      newPitcher = selectEmergencyReliever(effectiveBullpen);
+      isEmergencyUse = !!newPitcher;
+    }
     if (!newPitcher) return newState;
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
     const oldPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
@@ -386,6 +421,9 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       }
     }
     const reason = forcedHook ? 'completely gassed' : fatigueExhausted ? 'arm is exhausted' : fatigueTiringLate ? 'tiring in a close one' : fatigueHook ? 'composure fading' : relieverFatigue ? 'arm is tiring' : inningBlowup ? 'rough inning' : totalBlowup ? 'rough outing' : jamHook ? 'inherited jam' : walksPull ? 'lost command' : 'high-leverage situation';
+    if (isEmergencyUse) {
+      newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_RELIEVER_USED: ${newPitcher.name} enters despite being unavailable` });
+    }
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
 
     const dsLineup = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;

@@ -24,30 +24,18 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
   state.homeStartingPitcherName = homeSP?.name || null;
   state.awayStartingPitcherName = awaySP?.name || null;
 
-  // Mark unavailable relievers (3-straight-day rule, rest tiers, etc.) with
-  // _seasonAvailable=false. The CPU manager (selectCpuReliever) skips these
-  // unless ALL arms are unavailable (emergency). This replaces the old approach
-  // of removing them from the bullpen array, which had an emergency valve that
-  // let 3-straight-day relievers slip through when all arms were tired.
-  if (unavailableRelievers) {
-    const markUnavailable = (bullpen, list) => {
-      if (!list?.length) return;
-      const set = new Set(list);
-      bullpen.forEach(p => {
-        if (set.has(p.name)) p._seasonAvailable = false;
-      });
-    };
-    markUnavailable(state.homeBullpen, unavailableRelievers.home);
-    markUnavailable(state.awayBullpen, unavailableRelievers.away);
-  }
-
-  // Session 23: annotate season fatigue penalty on all bullpen arms so the CPU
-  // selection ranks tired arms lower (spreads usage instead of burning one long man).
+  // Annotate ALL bullpen arms with season availability + tier + fatigue penalty.
+  // This is the ONE place that sets _seasonAvailable: true for legal arms and
+  // false for unavailable arms. The hard gate in selectCpuReliever filters on
+  // this flag. Tiers (AVAILABLE/SLIGHTLY_TIRED/TIRED/VERY_TIRED) are legal but
+  // ranked by freshness so the CPU prefers rested arms.
   if (options.rotationState && options.gameDate) {
     const annotate = (bullpen, teamKey) => {
       bullpen.forEach(p => {
         const avail = isPitcherAvailable(options.rotationState, teamKey, p.name, options.gameDate);
+        p._seasonAvailable = avail.available;
         p._seasonFatiguePenalty = avail.tired ? avail.fatiguePenalty : 0;
+        p._seasonTier = avail.tier || 'AVAILABLE';
       });
     };
     annotate(state.homeBullpen, homeTeam);

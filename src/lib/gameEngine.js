@@ -29,7 +29,7 @@ import { attemptSteal, attemptDoubleSteal } from './baserunning';
 export { getEffectivePitcher, getPitcherFatigue } from './pitcherFatigue';
 export { createGameState, createPitcherState, getCurrentBatter, getCurrentPitcher, getBattingTeam, getSituationalBatter, intentionalWalk, getControllingTeam, handleWalk, processHoldingGame, processComposureEvents, applyComposure, applyComposureFromLastPlay, recordOut, endHalfInning, advanceBatter, scoreRun, isWalkOff, isCriticalRunSituation, getDefensivePlayers, getOutfieldArm, getCatcherArm, getMiddleInfieldRating, getErrorChance, getAdjustedPlayer, normalizePosGroup, POSITION_GROUPS, TEAM_IDS } from './gameEngineHelpers';
 export { attemptSteal, attemptDoubleSteal, cpuDecideSteal, setHitAndRun, hasRunnersOnBase } from './baserunning';
-export { cpuDecideSubstitutions, cpuCheckPinchHit, selectCpuReliever, pickCpuReliever, cpuSelectPitch, cpuSelectSwing } from './cpuManager';
+export { cpuDecideSubstitutions, cpuCheckPinchHit, selectCpuReliever, pickCpuReliever, canPitchToday, selectEmergencyReliever, cpuSelectPitch, cpuSelectSwing } from './cpuManager';
 export { resolvePitch, resolveSwing, advanceRunners, handleHitAndRunCaught, handleHitAndRunMiss, processPostHitBaserunning, processFlyoutTagUps } from './swingResolver';
 export { chargeRun, tagRunnerResponsiblePitcher } from './runScoring';
 export { pinchHit, pinchRun, defensiveSwitch, changePitcher } from './substitutions';

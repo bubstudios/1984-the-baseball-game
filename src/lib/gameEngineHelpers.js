@@ -91,7 +91,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     innings: Array(9).fill(null).map(() => ({ home: null, away: null })),
     homeLineup, awayLineup,
     homeRotation: [...home.rotation], awayRotation: [...away.rotation],
-    homeBullpen: [...home.bullpen], awayBullpen: [...away.bullpen],
+    homeBullpen: home.bullpen.map(p => ({ ...p })), awayBullpen: away.bullpen.map(p => ({ ...p })),
     homeBenchUsed: [], awayBenchUsed: [],
     homePitcher: createPitcherState(homeSP), awayPitcher: createPitcherState(awaySP),
     homeBatterIndex: 0, awayBatterIndex: 0, log: [],
