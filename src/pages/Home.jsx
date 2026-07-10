@@ -139,7 +139,7 @@ import { rollRunnerInjury } from '@/lib/runnerInjuries';
 import { rollSlidingInjury, getSlideChance } from '@/lib/slidingInjuries';
 import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
-import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, getTiredRelievers, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard, commitPlayerStats, getStarterFatigueStatus, isStarterEligible, hasFreshReliever, getBullpenDayOpener } from '@/lib/seasonStore';
+import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, getTiredRelievers, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard, commitPlayerStats, getStarterFatigueStatus, isStarterEligible, hasFreshReliever, getBullpenDayOpener, getRestDays } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 
 
@@ -262,17 +262,21 @@ export default function Home() {
           if (userStarterName && (!userStarter || userStarter.name !== userStarterName)) {
             console.error(`[season-launch] STARTER LOCK MISMATCH: dashboard said "${userStarterName}" but could not resolve that pitcher for ${userTeamParam}`);
           }
-          // Hard validation: enforce season rest rules. If the resolved starter is on
-          // short rest and fresh relievers exist, replace with a bullpen opener.
+          // getProbableStarter is the single source of truth. It already enforces rest
+          // rules and only returns a bullpen opener when the ENTIRE rotation is
+          // exhausted. We do NOT override a rotation SP with a bullpen opener just
+          // because a fresh reliever exists — that caused premature bullpen days.
+          // A short-rest SP start is always preferred over a reliever.
           const validateSeasonStarter = (resolved, teamKey) => {
             if (!resolved || !gameDateStr || !teamKey) return resolved;
-            if (isStarterEligible(rotState, teamKey, resolved.name, gameDateStr)) return resolved;
-            if (hasFreshReliever(rotState, teamKey, gameDateStr)) {
-              const opener = getBullpenDayOpener(rotState, teamKey, gameDateStr);
-              if (opener && opener.name !== resolved.name) {
-                console.warn(`[starter-validation] ${teamKey}: ${resolved.name} on short rest - replacing with opener ${opener.name}`);
-                setStarterNotice(`${resolved.name} is unavailable on short rest. ${TEAMS[teamKey]?.name || teamKey} will use a bullpen opener (${opener.name}).`);
-                return opener;
+            // Only warn if the resolved starter is on short rest (the resolver may
+            // have chosen a Tier 2 emergency short-rest start). Do NOT replace him.
+            if (!isStarterEligible(rotState, teamKey, resolved.name, gameDateStr)) {
+              const restDays = getRestDays(rotState, teamKey, resolved.name, gameDateStr);
+              const rotationNames = (TEAMS[teamKey]?.rotation || []).map(p => p.name);
+              const isRotationSP = rotationNames.includes(resolved.name);
+              if (isRotationSP) {
+                console.warn(`[starter-validation] ${teamKey}: ${resolved.name} starting on short rest (${restDays} days) - rotation SP, not replaced`);
               }
             }
             return resolved;

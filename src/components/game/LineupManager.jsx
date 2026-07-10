@@ -351,13 +351,16 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
   };
 
   const handleConfirm = () => {
-    // Season mode: validate no ineligible SP is selected
+    // Season mode: validate SP rest. 2+ rest days = allowed (short-rest, marked tired).
+    // <2 rest days = blocked (truly unavailable).
     if (seasonMode && seasonRotationState && seasonGameDate) {
       const spToCheck = useDH ? selectedPitcherData : (lineup.find(s => s.assignedPos === 'SP') ? { name: lineup.find(s => s.assignedPos === 'SP').name } : null);
-      if (spToCheck && !isStarterEligible(seasonRotationState, teamKey, spToCheck.name, seasonGameDate)) {
+      if (spToCheck) {
         const restDays = getRestDays(seasonRotationState, teamKey, spToCheck.name, seasonGameDate);
-        alert(`${spToCheck.name} has only ${restDays} of 4 rest days - cannot start. Pitchers need 4 full rest days between starts.`);
-        return;
+        if (restDays < 2) {
+          alert(`${spToCheck.name} has only ${restDays} rest day(s) - cannot start. Pitchers need at least 2 rest days.`);
+          return;
+        }
       }
     }
     // Build full player objects with assignedPos
@@ -590,11 +593,15 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
                 </option>
               ))}
               {rotationPitchers.map(p => {
-                const eligible = !seasonMode || !seasonRotationState || isStarterEligible(seasonRotationState, teamKey, p.name, seasonGameDate);
                 const restDays = seasonMode && seasonRotationState ? getRestDays(seasonRotationState, teamKey, p.name, seasonGameDate) : Infinity;
+                const fullyRested = !seasonMode || !seasonRotationState || restDays >= 3;
+                const shortRest = seasonMode && seasonRotationState && restDays < 3 && restDays >= 2;
+                const unavailable = seasonMode && seasonRotationState && restDays < 2;
+                const isScheduled = forcedUserSP && p.name === forcedUserSP.name;
+                const badge = isBullpenDay ? ' (rest)' : isScheduled ? ' ◀ SCHEDULED' : fullyRested ? '' : shortRest ? ` (TIRED - ${restDays}d rest)` : unavailable ? ` (UNAVAILABLE - ${restDays}d)` : '';
                 return (
-                  <option key={p.name} value={p.name} disabled={isBullpenDay || !eligible}>
-                    {p.name} - SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}{isBullpenDay ? ' (rest)' : !eligible ? ` (${restDays} of 4 rest days)` : ''}
+                  <option key={p.name} value={p.name} disabled={isBullpenDay || unavailable}>
+                    {p.name} - SPD {p.pitchSpeed} | OFF {p.offSpeed} | CTL {p.control} | STA {p.stamina}{badge}
                   </option>
                 );
               })}

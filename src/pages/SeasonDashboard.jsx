@@ -6,11 +6,12 @@ import { RotateCcw, Trophy, Calendar, TrendingUp, Play, FileText } from 'lucide-
 import { TEAMS } from '@/lib/gameData';
 import { generateScheduleValidated, formatGameDate } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState, validateCompletedGame } from '@/lib/seasonEngine';
-import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordPitcherWorkload, getUnavailableRelievers, commitPlayerStats } from '@/lib/seasonStore';
+import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordPitcherWorkload, getUnavailableRelievers, commitPlayerStats, getRotationDebugInfo } from '@/lib/seasonStore';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
 import FullSchedule from '@/components/season/FullSchedule';
 import Standings from '@/components/season/Standings';
 import TeamGameLog from '@/components/season/TeamGameLog';
+import RotationDebugPanel from '@/components/season/RotationDebugPanel';
 import ArchivedBoxScore from '@/components/season/ArchivedBoxScore';
 
 export default function SeasonDashboard() {
@@ -20,6 +21,7 @@ export default function SeasonDashboard() {
   const [gameResults, setGameResults] = useState([]);
   const [currentUserGame, setCurrentUserGame] = useState(null);
   const [probableStarters, setProbableStarters] = useState(null);
+  const [rotationDebug, setRotationDebug] = useState(null);
   const [userGameNumber, setUserGameNumber] = useState(1);
   const [loading, setLoading] = useState(false);
   const [simulating, setSimulating] = useState(false);
@@ -70,8 +72,10 @@ export default function SeasonDashboard() {
           userSP: getProbableStarter(rotState, currentSeason.userTeam, userGame.gameDate),
           oppSP: getProbableStarter(rotState, oppTeam, userGame.gameDate),
         });
+        setRotationDebug(getRotationDebugInfo(rotState, currentSeason.userTeam, userGame.gameDate));
       } else {
         setProbableStarters(null);
+        setRotationDebug(null);
       }
 
       try {
@@ -488,6 +492,7 @@ export default function SeasonDashboard() {
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4">
+        {rotationDebug && <RotationDebugPanel debugInfo={rotationDebug} />}
         {activeTab === 'schedule' && season && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">

@@ -421,11 +421,18 @@ export function hasFreshReliever(rotationState, teamKey, gameDate) {
 }
 
 // THE single resolver: returns the probable starter object for a team's next game.
-// 1984 rules: prefer the rotation SP at the pointer if he has 3+ rest days (tired at
-// exactly 3). If he can't go, scan the rest of the rotation for any SP with 3+ rest
-// days. Only if NO SP has 3+ rest days do we accept a 2-rest-day emergency start
-// (severe penalty). A real starter on short rest is always preferred over a reliever.
-// Bullpen day (opener) is used ONLY when no rotation SP can legally start.
+// Rotation-cycling rules (per spec):
+//   1. Scheduled starter = rotation[rotationIndex] (the pointer).
+//   2. If he has 3+ rest days and is workload-available, start him.
+//   3. If the scheduled starter can't go, scan FORWARD through the rotation for
+//      the next SP with 3+ rest days. This preserves rotation order.
+//   4. If NO rotation SP has 3+ rest days, accept a 2-rest-day emergency short-rest
+//      start (severe penalty). A real starter on short rest is ALWAYS preferred
+//      over a bullpen opener.
+//   5. Bullpen day (opener) is used ONLY when every rotation SP is genuinely
+//      exhausted (none can legally start).
+// The pointer advances by 1 after every game (see advanceRotation), cycling
+// SP1 → SP2 → SP3 → SP4 → SP5 → SP1. It is NEVER reset by league day or rating.
 export function getProbableStarter(rotationState, teamKey, gameDate) {
   const team = TEAMS[teamKey];
   const rot = team.rotation || [];
@@ -435,8 +442,9 @@ export function getProbableStarter(rotationState, teamKey, gameDate) {
   const rotation = rs.rotation;
   const findSP = (name) => rot.find(p => p.name === name) || rot[0];
 
-  // Tier 1: any rotation SP with 3+ rest days who is workload-available.
-  // Scans from the pointer so the normal rotation order is preserved.
+  // Tier 1: scan forward from the pointer for the first rotation SP with 3+ rest
+  // days who is workload-available. rotation[pointer] is checked FIRST, so the
+  // scheduled starter gets priority when rested.
   for (let offset = 0; offset < rotation.length; offset++) {
     const name = rotation[(rs.rotationIndex + offset) % rotation.length];
     if (!isStarterEligible(rotationState, teamKey, name, gameDate)) continue;
@@ -444,26 +452,62 @@ export function getProbableStarter(rotationState, teamKey, gameDate) {
     if (avail.available) return findSP(name);
   }
 
-  // Tier 2: emergency short-rest start (2 rest days) - ONLY when no fresh reliever
-  // is available. Per 1984 rest rules: if a rested reliever is available, a bullpen
-  // opener is preferred over a short-rest starter. A short-rest SP start is the
-  // last resort, used only when the bullpen is also exhausted.
-  if (!hasFreshReliever(rotationState, teamKey, gameDate)) {
-    for (let offset = 0; offset < rotation.length; offset++) {
-      const name = rotation[(rs.rotationIndex + offset) % rotation.length];
-      const restDays = getRestDays(rotationState, teamKey, name, gameDate);
-      if (restDays < 2) continue;
-      const avail = isPitcherAvailable(rotationState, teamKey, name, gameDate);
-      if (avail.available) {
-        console.warn(`[rotation] ${teamKey}: emergency short-rest start for ${name} (${restDays} days rest) - no fresh relievers available`);
-        return findSP(name);
-      }
+  // Tier 2: emergency short-rest start (2 rest days). A real starter on short rest
+  // is ALWAYS preferred over a bullpen opener. We do NOT gate this behind
+  // hasFreshReliever — that caused premature bullpen days when SP1/SP2 were tired
+  // but SP3/SP4/SP5 (on short rest) could still go. Bullpen day is the LAST resort.
+  for (let offset = 0; offset < rotation.length; offset++) {
+    const name = rotation[(rs.rotationIndex + offset) % rotation.length];
+    const restDays = getRestDays(rotationState, teamKey, name, gameDate);
+    if (restDays < 2) continue;
+    const avail = isPitcherAvailable(rotationState, teamKey, name, gameDate);
+    if (avail.available) {
+      console.warn(`[rotation] ${teamKey}: emergency short-rest start for ${name} (${restDays} days rest)`);
+      return findSP(name);
     }
   }
 
-  // No rotation SP can legally start - true bullpen day (very rare).
+  // Every rotation SP is genuinely exhausted - true bullpen day (very rare).
   console.warn(`[rotation] ${teamKey}: no rotation SP available on ${gameDate} - bullpen day`);
   return getBullpenDayOpener(rotationState, teamKey, gameDate);
+}
+
+// Temp debug helper: returns a plain object describing the current rotation state
+// for a team, for display on the Season game setup screen.
+export function getRotationDebugInfo(rotationState, teamKey, gameDate) {
+  const team = TEAMS[teamKey];
+  const rot = team?.rotation || [];
+  if (rot.length === 0) return null;
+  const rs = ensureTeamRotationState(rotationState, teamKey);
+  const rotation = rs.rotation;
+  const pointer = rs.rotationIndex || 0;
+  const scheduledName = rotation[pointer];
+  const probable = getProbableStarter(rotationState, teamKey, gameDate);
+  const isBullpenDay = probable && !rotation.includes(probable.name);
+
+  const lastStarts = rotation.map((name, i) => {
+    const last = rs.lastStartDateByPitcher?.[name];
+    const restDays = last !== undefined ? Math.max(0, daysBetween(last, gameDate) - 1) : Infinity;
+    return {
+      name,
+      slot: i + 1,
+      lastStartDate: last || null,
+      restDays: restDays === Infinity ? 'never started' : `${restDays} days`,
+      isScheduled: i === pointer,
+    };
+  });
+
+  return {
+    teamKey,
+    teamName: team?.name || teamKey,
+    rotationNames: rotation,
+    rotationIndex: pointer,
+    scheduledStarter: scheduledName,
+    probableStarter: probable?.name || 'N/A',
+    isBullpenDay,
+    workloadEntryCount: Object.keys(rs.workload || {}).length,
+    lastStarts,
+  };
 }
 
 // Guard: verify a pitcher about to start satisfies rest eligibility.
