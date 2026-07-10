@@ -31,9 +31,9 @@ export function cpuDecideSteal(state) {
     const r = state.bases[i];
     if (!r || state.bases[i + 1]) continue;
     if (r.speed <= 2) continue;
-    if (r.speed <= 3 && Math.random() > 0.04) continue;
-    if (r.speed <= 4 && Math.random() > 0.08) continue;
-    let attemptChance = Math.max(0.02, 0.04 + (r.speed / 10) * 0.30 - armF - pitchF);
+    if (r.speed <= 3 && Math.random() > 0.06) continue;
+    if (r.speed <= 4 && Math.random() > 0.10) continue;
+    let attemptChance = Math.max(0.03, 0.06 + (r.speed / 10) * 0.35 - armF - pitchF);
     if (r._heldClose) {
       attemptChance *= (1 - HOLDING_GAME_RATES.stealAttemptPenaltyRel);
     }

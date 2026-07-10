@@ -295,6 +295,7 @@ function analyzeStarters(games, rotationState, flags) {
 // ── 3. Bullpen / Reliever Logic ──
 function analyzeBullpen(games, rotationState, flags) {
   let threeStraightCount = 0, unavailableUsedCount = 0, relieverAsStarterCount = 0, reentryCount = 0;
+  let legalEmergencyCount = 0;
   const appearancesByPitcher = {}; // { teamKey|name: [dates] }
 
   for (const g of games) {
@@ -302,6 +303,17 @@ function analyzeBullpen(games, rotationState, flags) {
     const r = g.result;
     if (!r?.pitching) continue;
     const unavailableSet = new Set([...(g.unavailableRelievers?.home || []), ...(g.unavailableRelievers?.away || [])]);
+
+    // Check for emergency-use log entries in this game
+    const emergencyPitchersInGame = new Set();
+    for (const entry of (g.log || [])) {
+      const t = (entry.text || '');
+      if (t.includes('EMERGENCY') && t.includes('UNAVAILABLE')) {
+        // Extract pitcher name from log entry
+        const match = t.match(/:\s*(.+?)\s+enters/);
+        if (match) emergencyPitchersInGame.add(match[1].trim());
+      }
+    }
 
     for (const teamKey of [g.homeTeam, g.awayTeam]) {
       const teamPitchers = r.pitching.filter(p => p.teamKey === teamKey);
@@ -314,13 +326,17 @@ function analyzeBullpen(games, rotationState, flags) {
 
         // Reliever used while marked unavailable
         if (p.gs !== 1 && unavailableSet.has(p.name)) {
-          unavailableUsedCount++;
-          addFlag(flags, 'critical', 'Bullpen', `${p.name} pitched while marked unavailable`, g);
+          if (emergencyPitchersInGame.has(p.name)) {
+            legalEmergencyCount++;
+            addFlag(flags, 'info', 'Bullpen', `Legal emergency unavailable pitcher used: ${p.name}`, g);
+          } else {
+            unavailableUsedCount++;
+            addFlag(flags, 'critical', 'Bullpen', `${p.name} pitched while marked unavailable`, g);
+          }
         }
 
         // Reliever used as starter (not in rotation, but got gs=1)
         if (p.gs === 1 && !rotationNames.has(p.name)) {
-          // This could be a bullpen-day opener - only flag if resolver didn't pick them
           const resolverName = teamKey === g.homeTeam ? g.homeSPName : g.awaySPName;
           if (resolverName !== p.name) {
             relieverAsStarterCount++;
@@ -355,24 +371,37 @@ function analyzeBullpen(games, rotationState, flags) {
       const d2 = new Date(sorted[i - 1] + 'T00:00:00Z');
       const d3 = new Date(sorted[i] + 'T00:00:00Z');
       if ((d2 - d1) === 86400000 && (d3 - d2) === 86400000) {
-        threeStraightCount++;
         const [teamKey, pitcherName] = key.split('|');
-        // Check if any of the 3 games was extra innings
         const game3 = games.find(g => g.gameDate === sorted[i] && (g.homeTeam === teamKey || g.awayTeam === teamKey));
         const wasExtra = game3?.wasExtraInnings || false;
-        // Check if other relievers were available on day 3
-        const otherAvailable = game3 ? (game3.unavailableRelievers?.[game3.homeTeam === teamKey ? 'home' : 'away']?.length || 0) : -1;
-        flags.push({
-          severity: 'critical',
-          category: 'Bullpen',
-          message: `${pitcherName} (${teamKey}) pitched 3 straight days (${sorted[i-2]}, ${sorted[i-1]}, ${sorted[i]}) | Extra Innings: ${wasExtra ? 'YES' : 'NO'} | Other unavailable relievers: ${otherAvailable}`,
-          gameRef: game3 ? gameRef(game3) : null,
+        // Check if the game had an emergency log for this pitcher
+        const hasEmergencyLog = (game3?.log || []).some(e => {
+          const t = (e.text || '');
+          return t.includes('EMERGENCY') && t.includes('UNAVAILABLE') && t.includes(pitcherName);
         });
+        const otherAvailable = game3 ? (game3.unavailableRelievers?.[game3.homeTeam === teamKey ? 'home' : 'away']?.length || 0) : -1;
+        if (wasExtra || hasEmergencyLog) {
+          legalEmergencyCount++;
+          flags.push({
+            severity: 'info',
+            category: 'Bullpen',
+            message: `Legal emergency 3-straight: ${pitcherName} (${teamKey}) pitched 3 straight days (${sorted[i-2]}, ${sorted[i-1]}, ${sorted[i]}) | Extra Innings: ${wasExtra ? 'YES' : 'NO'} | Emergency logged: ${hasEmergencyLog ? 'YES' : 'NO'}`,
+            gameRef: game3 ? gameRef(game3) : null,
+          });
+        } else {
+          threeStraightCount++;
+          flags.push({
+            severity: 'critical',
+            category: 'Bullpen',
+            message: `${pitcherName} (${teamKey}) pitched 3 straight days (${sorted[i-2]}, ${sorted[i-1]}, ${sorted[i]}) | Extra Innings: ${wasExtra ? 'YES' : 'NO'} | Other unavailable relievers: ${otherAvailable}`,
+            gameRef: game3 ? gameRef(game3) : null,
+          });
+        }
       }
     }
   }
 
-  return { threeStraightCount, unavailableUsedCount, relieverAsStarterCount, reentryCount };
+  return { threeStraightCount, unavailableUsedCount, relieverAsStarterCount, reentryCount, legalEmergencyCount };
 }
 
 // ── 4. Offensive Realism ──

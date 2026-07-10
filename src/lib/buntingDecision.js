@@ -11,7 +11,7 @@
 
 import { determineSqueezeType, resolveSqueeze } from './squeezePlay';
 
-const SAC_THRESHOLD = 60; // Lowered from 75 to increase sac bunt frequency toward 0.25-0.55/team/game target
+const SAC_THRESHOLD = 55; // Lowered to increase sac bunt frequency toward 0.20-0.30/team/game target
 const HIT_THRESHOLD = 70; // Raised from 45 - bunt-for-hit must be a strong fit
 const SQUEEZE_THRESHOLD = 55; // Runner on 3rd + late/close + weak hitter
 
@@ -25,7 +25,7 @@ export function shouldBunt(batter, game) {
   if (sacScore >= SAC_THRESHOLD) {
     // Even when it qualifies, don't ALWAYS bunt - add a probability gate so it's not robotic.
     // Pitchers bunt nearly always in a sac spot; position players much less often.
-    const sacChance = isPitcher ? 0.92 : 0.45;
+    const sacChance = isPitcher ? 0.92 : 0.55;
     if (Math.random() < sacChance) return 'sacrifice';
   }
 

@@ -475,22 +475,9 @@ export function getProbableStarter(rotationState, teamKey, gameDate) {
     if (avail.available) return findSP(name);
   }
 
-  // Tier 2: emergency short-rest start (2 rest days). A real starter on short rest
-  // is ALWAYS preferred over a bullpen opener. We do NOT gate this behind
-  // hasFreshReliever — that caused premature bullpen days when SP1/SP2 were tired
-  // but SP3/SP4/SP5 (on short rest) could still go. Bullpen day is the LAST resort.
-  for (let offset = 0; offset < rotation.length; offset++) {
-    const name = rotation[(rs.rotationIndex + offset) % rotation.length];
-    const restDays = getRestDays(rotationState, teamKey, name, gameDate);
-    if (restDays < 2) continue;
-    const avail = isPitcherAvailable(rotationState, teamKey, name, gameDate);
-    if (avail.available) {
-      console.warn(`[rotation] ${teamKey}: emergency short-rest start for ${name} (${restDays} days rest)`);
-      return findSP(name);
-    }
-  }
-
-  // Every rotation SP is genuinely exhausted - true bullpen day (very rare).
+  // No rotation SP has 3+ rest days - true bullpen day (very rare).
+  // Short-rest (2-day) starts are NOT allowed. A starter needs at least 3 full
+  // rest days before starting again.
   console.warn(`[rotation] ${teamKey}: no rotation SP available on ${gameDate} - bullpen day`);
   return getBullpenDayOpener(rotationState, teamKey, gameDate);
 }

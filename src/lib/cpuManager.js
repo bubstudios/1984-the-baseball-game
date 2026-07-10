@@ -245,7 +245,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         }
       }
       if (isEmergencyUse) {
-        newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_RELIEVER_USED: ${newPitcher.name} enters despite being unavailable` });
+        newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable` });
       }
       newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ejected ${oldP.name} on the mound` });
     } else {
@@ -322,7 +322,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         }
       }
       if (isEmergencyUse) {
-        newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_RELIEVER_USED: ${newPitcher.name} enters despite being unavailable` });
+        newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable` });
       }
       newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldP.name} on the mound (pinch-hit for earlier)` });
     }
@@ -422,7 +422,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     }
     const reason = forcedHook ? 'completely gassed' : fatigueExhausted ? 'arm is exhausted' : fatigueTiringLate ? 'tiring in a close one' : fatigueHook ? 'composure fading' : relieverFatigue ? 'arm is tiring' : inningBlowup ? 'rough inning' : totalBlowup ? 'rough outing' : jamHook ? 'inherited jam' : walksPull ? 'lost command' : 'high-leverage situation';
     if (isEmergencyUse) {
-      newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_RELIEVER_USED: ${newPitcher.name} enters despite being unavailable` });
+      newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable` });
     }
     newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})` });
 
