@@ -330,8 +330,8 @@ function ensureTeamRotationState(rotationState, teamKey) {
 }
 
 // 1984 starter eligibility: a starter may start with 3+ rest days (4+ calendar days
-// since last start). At exactly 3 rest days he is "slightly tired" but still starts
-// (see getStarterFatigueStatus). 2 rest days = emergency only. Never-started = eligible.
+// since last start). 3+ rest days = fresh (no penalty). 2 rest days = short rest
+// (penalty applied). Never-started = eligible.
 export function isStarterEligible(rotationState, teamKey, pitcherName, gameDate) {
   const rs = rotationState?.[teamKey];
   if (!rs) return true;
@@ -341,15 +341,15 @@ export function isStarterEligible(rotationState, teamKey, pitcherName, gameDate)
 }
 
 // Starter fatigue from season rest: returns { tired, penalty, restDays, reason }.
-// 4+ rest days = fresh; 3 = slightly tired; 2 = emergency short-rest; <2 = severe.
-// The penalty flows into _seasonFatiguePenalty so getEffectivePitcher applies it.
+// 3+ rest days = fresh; 2 = short rest; <2 = emergency. In 1984, 3 days rest was
+// standard for a 4-man rotation, so no penalty applies. The penalty flows into
+// _seasonFatiguePenalty so getEffectivePitcher applies it.
 export function getStarterFatigueStatus(rotationState, teamKey, pitcherName, gameDate) {
   if (!gameDate) return { tired: false, penalty: 0, restDays: Infinity, reason: null };
   const restDays = getRestDays(rotationState, teamKey, pitcherName, gameDate);
-  if (restDays === Infinity || restDays >= 4) return { tired: false, penalty: 0, restDays, reason: null };
-  if (restDays === 3) return { tired: true, penalty: 8, restDays, reason: '3 days rest' };
-  if (restDays === 2) return { tired: true, penalty: 18, restDays, reason: 'short rest (2 days)' };
-  return { tired: true, penalty: 25, restDays, reason: `${restDays} day rest` };
+  if (restDays === Infinity || restDays >= 3) return { tired: false, penalty: 0, restDays, reason: null };
+  if (restDays === 2) return { tired: true, penalty: 10, restDays, reason: 'short rest (2 days)' };
+  return { tired: true, penalty: 20, restDays, reason: `${restDays} day rest` };
 }
 
 // Full rest days elapsed since last start (Infinity = never started)

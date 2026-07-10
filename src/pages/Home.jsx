@@ -402,8 +402,8 @@ export default function Home() {
       annotateFatigue(state.homeBullpen, home);
       annotateFatigue(state.awayBullpen, away);
 
-      // Annotate starting pitchers with season-rest fatigue (3 days rest = slightly
-      // tired, 2 = emergency short-rest). getEffectivePitcher applies the penalty.
+      // Annotate starting pitchers with season-rest fatigue (3+ days rest = fresh,
+      // 2 = short rest). getEffectivePitcher applies the penalty.
       if (gameDate) {
         const annotateStarter = (pitcher, teamKey) => {
           if (!pitcher) return;

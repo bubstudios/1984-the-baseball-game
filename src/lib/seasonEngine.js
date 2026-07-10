@@ -49,9 +49,9 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     annotate(state.homeBullpen, homeTeam);
     annotate(state.awayBullpen, awayTeam);
 
-    // Annotate starting pitchers with season-rest fatigue (3 days rest = slightly
-    // tired, 2 = emergency short-rest). Flows into _seasonFatiguePenalty so
-    // getEffectivePitcher applies a small control/speed/offSpeed penalty.
+    // Annotate starting pitchers with season-rest fatigue (3+ days rest = fresh,
+    // 2 = short rest). Flows into _seasonFatiguePenalty so getEffectivePitcher
+    // applies a small control/speed/offSpeed penalty.
     const annotateStarter = (pitcher, teamKey) => {
       if (!pitcher) return;
       const isRotationSP = (TEAMS[teamKey]?.rotation || []).some(p => p.name === pitcher.name);
