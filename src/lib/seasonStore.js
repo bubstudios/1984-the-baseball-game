@@ -597,7 +597,7 @@ export function recordPitcherWorkload(rotationState, teamKey, pitchingLine, game
 //   30-39 pitches yesterday → available but tired, avoid if possible (penalty 20)
 //   20-29 pitches yesterday → available but slightly reduced (penalty 10)
 //   0-19 pitches yesterday  → available (fresh)
-// Back-to-back with heavy workload → unavailable; light back-to-back → tired.
+// Back-to-back (pitched each of last 2 days) → unavailable (no 3rd consecutive day).
 // 3 appearances in 3 days → unavailable. Multi-day outs-based rest still applies.
 export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate) {
   if (!gameDate) return { available: true, reason: null, tired: false, fatiguePenalty: 0 };
@@ -628,14 +628,11 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
     : 0;
 
   // Back-to-back: pitched each of the last 2 days.
-  // Strict 1984 rule: 15+ pitches in either game → unavailable.
-  // Light back-to-back (both under 15) → available but tired.
+  // HARD RULE: never allow a 3rd consecutive day, regardless of pitch count.
+  // (Previously allowed light back-to-back < 15 pitches, which caused
+  // 3-straight-day violations flagged by the audit.)
   if (appearedYesterday && appearedDayBefore) {
-    const dayBeforePitches = appearedDayBefore.pitches || estimatePitches(appearedDayBefore.outs || 0);
-    if (yesterdayPitches >= 15 || dayBeforePitches >= 15) {
-      return { available: false, reason: 'Back-to-back with 15+ pitches', tired: false, fatiguePenalty: 0 };
-    }
-    return { available: true, reason: 'Back-to-back (light workload)', tired: true, fatiguePenalty: 15 };
+    return { available: false, reason: 'Would be 3rd consecutive day', tired: false, fatiguePenalty: 0 };
   }
 
   // 50+ pitches in last 2 days → unavailable (catches non-consecutive heavy usage)

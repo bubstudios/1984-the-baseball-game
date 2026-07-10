@@ -232,18 +232,22 @@ function analyzeStarters(games, rotationState, flags) {
           ? (g.restDaysAtStart?.home ?? Infinity)
           : (g.restDaysAtStart?.away ?? Infinity);
         const dbg = isHome ? g.starterDebug?.home : g.starterDebug?.away;
-        // Infinity = never started before (first start of season) - never flag
-        if (restDays !== Infinity && restDays < 3) {
+
+        // FIRST START GUARD: if the pitcher has never started before
+        // (lastStartDateByPitcher has no entry), NEVER flag for short rest.
+        // getRestDays returns Infinity for first starts, but this explicit
+        // guard is bulletproof against any edge case.
+        const isFirstStart = dbg?.isFirstStart === true || restDays === Infinity || restDays == null;
+
+        if (!isFirstStart && restDays < 3) {
           const isBullpenDay = resolverName && !(TEAMS[teamKey]?.rotation || []).some(p => p.name === resolverName);
           if (!isBullpenDay) {
             shortRestCount++;
             const severity = restDays <= 1 ? 'critical' : 'warning';
-            const prevStart = dbg?.previousStart || 'N/A';
-            const firstStart = dbg?.isFirstStart ? 'YES' : 'NO';
             addFlag(flags, severity, 'Starters',
               `${actualName} (${teamKey}) started on ${restDays} day(s) rest | ` +
-              `Game Day ${g.day} (${g.gameDate}) | Previous Start: ${prevStart} | ` +
-              `Is First Start: ${firstStart}`, g);
+              `Game Day ${g.day} (${g.gameDate}) | Previous Start: ${dbg?.previousStart || 'N/A'} | ` +
+              `Is First Start: NO | Rotation Slot: ${resolverName || 'N/A'}`, g);
           }
         }
 

@@ -265,7 +265,9 @@ export function resolveSwing(state, swingType, pitch) {
   if (swingType.name === 'Bunt') {
     if (!pitch.isStrike && Math.random() < 0.55) { state.balls++; if (state.balls >= 4) { batter.gameStats.bb++; pitcher.gameStats.bb++; state.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); state.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(state, batter); state.balls = 0; state.strikes = 0; advanceBatter(state); return; } state.log.push({ type: 'ball', text: `Ball ${state.balls} - ${batter.name} pulls back the bunt` }); state.lastPlay = { type: 'ball', text: `Ball ${state.balls}` }; return; }
     // ── SQUEEZE PLAY DETECTION (full tactical eligibility required) ──
-    if (shouldAttemptSqueeze(state, batter)) {
+    // In headless mode, squeezes are handled by the gameEngine.js CPU bunt gate
+    // (with 5% random gate). Skip here to prevent double-firing at 100% rate.
+    if (!state._headlessMode && shouldAttemptSqueeze(state, batter)) {
       const sqType = determineSqueezeType(batter);
       const sq = resolveSqueeze(batter, state, sqType);
       state.log.push({ type: sq.logType, text: sq.text, isBunt: true, isSqueeze: true });
