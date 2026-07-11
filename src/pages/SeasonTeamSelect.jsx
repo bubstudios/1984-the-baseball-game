@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TEAMS } from '@/lib/gameData';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Trophy } from 'lucide-react';
+import { ChevronLeft, Trophy, Newspaper } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const DIVISIONS = [
@@ -17,8 +17,6 @@ export default function SeasonTeamSelect() {
   const [selected, setSelected] = useState(null);
   const [checking, setChecking] = useState(true);
 
-  // Root Cause A fix: if an active season already exists, skip team selection
-  // and go straight to the dashboard. Prevents re-entry from forcing team selection.
   useEffect(() => {
     (async () => {
       try {
@@ -44,44 +42,45 @@ export default function SeasonTeamSelect() {
 
   const handleConfirm = async () => {
     if (!selected) return;
-    // Store selected team and navigate to season dashboard
-    // The dashboard will create the season with this team
     navigate('/season', { state: { userTeam: selected } });
   };
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col">
-      {/* Header */}
-      <div className="shrink-0 border-b border-border bg-card/50 px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate('/')}
-            className="text-xs font-heading text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </button>
-        </div>
+      {/* Compact Header */}
+      <div className="shrink-0 border-b border-border bg-card/50 px-4 py-2 flex items-center justify-between">
+        <button
+          onClick={() => navigate('/')}
+          className="text-xs font-heading text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Back
+        </button>
         <div className="flex items-center gap-2">
           <Trophy className="w-5 h-5 text-primary" />
-          <h1 className="font-heading text-lg font-bold text-foreground">Season Mode</h1>
+          <h1 className="font-heading text-base font-bold text-foreground">1984 Season Mode</h1>
         </div>
-        <div className="w-16" />
+        <div className="w-12" />
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <div className="text-center space-y-2">
-            <h2 className="font-heading text-2xl font-bold text-foreground">Choose Your Team</h2>
-            <p className="text-sm text-muted-foreground">
-              Select the team you'll manage through the 1984 season
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="max-w-2xl mx-auto space-y-4">
+          {/* Newspaper-style intro */}
+          <div className="bg-stone-100 dark:bg-card border border-stone-300 dark:border-border rounded-xl p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Newspaper className="w-4 h-4 text-stone-600 dark:text-primary" />
+              <span className="text-[9px] font-heading font-bold text-stone-600 dark:text-muted-foreground uppercase tracking-widest">Season Preview</span>
+            </div>
+            <h2 className="font-serif text-xl font-bold text-stone-800 dark:text-foreground mb-1">Choose Your Franchise</h2>
+            <p className="text-xs text-stone-600 dark:text-muted-foreground font-body">
+              162 games. 26 teams. One shot at October glory.
             </p>
           </div>
 
           {DIVISIONS.map((div) => (
             <div key={div.label} className="space-y-2">
-              <h3 className="font-heading text-sm font-bold text-primary uppercase tracking-wide px-1">
+              <h3 className="font-heading text-xs font-bold text-primary uppercase tracking-wide px-1">
                 {div.label}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -93,7 +92,7 @@ export default function SeasonTeamSelect() {
                     <button
                       key={key}
                       onClick={() => setSelected(key)}
-                      className={`bg-card border-2 rounded-lg p-3 text-left transition-all ${
+                      className={`bg-card border-2 rounded-lg p-2.5 text-left transition-all ${
                         isSelected
                           ? 'border-primary bg-primary/10'
                           : 'border-border hover:border-primary/40'
@@ -119,19 +118,24 @@ export default function SeasonTeamSelect() {
             </div>
           ))}
 
-          <div className="sticky bottom-0 bg-background/95 backdrop-blur border-t border-border py-3 -mx-4 px-4">
-            <Button
-              onClick={handleConfirm}
-              disabled={!selected}
-              className="w-full gap-2"
-              size="lg"
-            >
-              <Trophy className="w-5 h-5" />
-              {selected
-                ? `Start Season with ${TEAMS[selected].name}`
-                : 'Select a team to continue'}
-            </Button>
-          </div>
+          <div className="h-16" />
+        </div>
+      </div>
+
+      {/* Sticky Confirm */}
+      <div className="shrink-0 bg-background/95 backdrop-blur border-t border-border px-4 py-3">
+        <div className="max-w-2xl mx-auto">
+          <Button
+            onClick={handleConfirm}
+            disabled={!selected}
+            className="w-full gap-2"
+            size="lg"
+          >
+            <Trophy className="w-5 h-5" />
+            {selected
+              ? `Start Season with ${TEAMS[selected].name}`
+              : 'Select a team to continue'}
+          </Button>
         </div>
       </div>
     </div>
