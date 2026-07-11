@@ -1168,7 +1168,9 @@ export default function SeasonDashboard() {
             </div>
           </div>
         ) : (
-          <div className="font-heading text-sm text-muted-foreground">Season Complete</div>
+          <div className="font-heading text-sm text-muted-foreground">
+            {userGameNumber >= 162 ? 'Season Complete' : 'Loading next game...'}
+          </div>
         )}
       </div>
 

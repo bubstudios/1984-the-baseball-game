@@ -932,7 +932,7 @@ export async function getCurrentUserGame(season) {
     const games = await base44.entities.Schedule.filter({
       seasonId: season.id,
       isUserGame: true,
-    }, 'gameDay', 50);
+    }, 'gameDay', 200);
     const next = games.find(g => g.status !== 'final');
     // Consistency guard: if the next unplayed user game is before the day pointer, desync exists
     if (next && next.gameDay < (season.currentGameDay || 1)) {
