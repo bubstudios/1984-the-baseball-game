@@ -150,6 +150,23 @@
           "type": "string"
         }
       }
+    },
+    "tradeDeadlinePhase": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        null
+      ],
+      "default": null,
+      "description": "Trade deadline state: 'active' = trades generated, show screen; 'completed' = user has seen trades and continued; null = not triggered yet"
+    },
+    "tradeDeadlineTrades": {
+      "type": "array",
+      "description": "Generated trade deadline trades for display",
+      "items": {
+        "type": "object"
+      }
     }
   },
   "required": [
