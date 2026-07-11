@@ -412,6 +412,15 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
   const walksPull = bbi >= 5;
 
+  // Soft blowout hook: a starter getting shelled (8+ R) should be pulled if the
+  // bullpen has legal arms. 6+ ER + high fatigue also triggers. This prevents
+  // starters from staying in during blowups and inflating earned-run outliers
+  // without creating bullpen abuse (only fires when rested arms exist).
+  const earnedRuns = cpuPitcher.gameStats.er || 0;
+  const blowoutShell = !isReliever && (
+    (earnedRuns >= 8) || (earnedRuns >= 6 && fatigueLevel >= 2)
+  );
+
   // Late/close hook: bring in a fresh arm in save situations. But don't yank a
   // CRUISING reliever purely on inning count — the old "inning >= 9" bypass
   // pulled every reliever at 2.0 IP in extras, burning 8-9 pitchers in a marathon.
@@ -430,16 +439,16 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
   const relieverFatigue = isReliever && ip >= maxInnings + 0.5;
 
-  const starterCruising = !isReliever && cpuScore >= userScore && composure >= 35 && !inningBlowup && !totalBlowup && !walksPull;
+  const starterCruising = !isReliever && cpuScore >= userScore && composure >= 35 && !inningBlowup && !totalBlowup && !walksPull && !blowoutShell;
   if (starterCruising && !forcedHook && !lateClose && !jamHook && !fatigueExhausted && !fatigueTiringLate) return newState;
 
   // Session 22 #7: 1984 starter hook - don't pull a starter before inning 5
   // unless genuinely gassed (fatigueLevel 3+) or game is out of hand (6+ runs + composure collapse)
   if (!isReliever && inning < 5 && !forcedHook && !fatigueExhausted && !(totalBlowup && composure < 30)) return newState;
-  if (!isReliever && inning < 6 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull) return newState;
-  if (!isReliever && inning < 7 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull && !jamHook) return newState;
+  if (!isReliever && inning < 6 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull && !blowoutShell) return newState;
+  if (!isReliever && inning < 7 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull && !jamHook && !blowoutShell) return newState;
 
-  const shouldChange = (forcedHook || fatigueHook || relieverFatigue || inningBlowup || totalBlowup || jamHook || walksPull || lateClose || fatigueExhausted || fatigueTiringLate) && cpuBullpen.length > 0;
+  const shouldChange = (forcedHook || fatigueHook || relieverFatigue || inningBlowup || totalBlowup || jamHook || walksPull || lateClose || fatigueExhausted || fatigueTiringLate || blowoutShell) && cpuBullpen.length > 0;
   if (shouldChange) {
     const battingSide = newState.halfInning === 'top' ? 'away' : 'home';
     const battingLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
@@ -477,7 +486,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         fl[si] = en;
       }
     }
-    const reason = forcedHook ? 'completely gassed' : fatigueExhausted ? 'arm is exhausted' : fatigueTiringLate ? 'tiring in a close one' : fatigueHook ? 'composure fading' : relieverFatigue ? 'arm is tiring' : inningBlowup ? 'rough inning' : totalBlowup ? 'rough outing' : jamHook ? 'inherited jam' : walksPull ? 'lost command' : 'high-leverage situation';
+    const reason = forcedHook ? 'completely gassed' : fatigueExhausted ? 'arm is exhausted' : fatigueTiringLate ? 'tiring in a close one' : fatigueHook ? 'composure fading' : relieverFatigue ? 'arm is tiring' : inningBlowup ? 'rough inning' : totalBlowup ? 'rough outing' : jamHook ? 'inherited jam' : walksPull ? 'lost command' : blowoutShell ? 'getting shelled' : 'high-leverage situation';
     if (isEmergencyUse) {
       newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable`, _relieverEntry: { name: newPitcher.name, inning, score: { ...newState.score }, hookReason: reason, selectionReason, isEmergency: true } });
     }

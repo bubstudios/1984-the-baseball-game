@@ -27,11 +27,31 @@ export function cpuDecideSteal(state) {
   const effP = getEffectivePitcher(state) || pitcher;
   const armF = (catcherArm / 10) * 0.30;
   const pitchF = ((effP.effectivePitchSpeed || effP.pitchSpeed) / 10) * 0.12;
-  // Only steal in close games — don't run in blowouts
   const battingTeam = getBattingTeam(state);
   const battingScore = state.score[battingTeam];
   const fieldingScore = state.score[battingTeam === 'home' ? 'away' : 'home'];
-  if (Math.abs(battingScore - fieldingScore) > 3) return -1;
+  const margin = battingScore - fieldingScore;
+  // Don't steal when trailing by 3+ or leading by 4+
+  if (margin <= -3 || margin >= 4) return -1;
+
+  // Cap repeat steal attempts per team per game (max 2 attempts, rare 3rd for elite)
+  const stealCountKey = `${battingTeam}_stealAttempts`;
+  const attemptsThisGame = state[stealCountKey] || 0;
+  if (attemptsThisGame >= 2) return -1;
+
+  // Avoid steal with a strong hitter at bat unless runner is elite (speed 9+)
+  const battingLineup = battingTeam === 'home' ? state.homeLineup : state.awayLineup;
+  const batterIdx = battingTeam === 'home' ? state.homeBatterIndex : state.awayBatterIndex;
+  const dueUpBatter = battingLineup[batterIdx % battingLineup.length];
+  if (dueUpBatter && (dueUpBatter.power || 0) >= 8) {
+    // Strong power hitter at bat - only elite runners go
+    for (let i = 0; i < 2; i++) {
+      const r = state.bases[i];
+      if (r && r.speed >= 9 && !state.bases[i + 1] && catcherArm < 9) return i;
+    }
+    return -1;
+  }
+
   for (let i = 0; i < 2; i++) {
     const r = state.bases[i];
     if (!r || state.bases[i + 1]) continue;
@@ -39,12 +59,17 @@ export function cpuDecideSteal(state) {
     if (r.speed < 7) continue;
     // Avoid elite catchers (arm 8+) unless elite runner (speed 9+)
     if (catcherArm >= 8 && r.speed < 9) continue;
-    // Targeted: qualifying runners attempt more often
-    let attemptChance = Math.max(0.08, 0.15 + (r.speed / 10) * 0.45 - armF - pitchF);
+    // Reduced base attempt chance — target 0.60-0.85 attempts/team/game
+    let attemptChance = Math.max(0.05, 0.08 + (r.speed / 10) * 0.32 - armF - pitchF);
+    // Third attempt of the game only for elite runners
+    if (attemptsThisGame >= 2 && r.speed < 9) continue;
     if (r._heldClose) {
       attemptChance *= (1 - HOLDING_GAME_RATES.stealAttemptPenaltyRel);
     }
-    if (Math.random() < attemptChance) return i;
+    if (Math.random() < attemptChance) {
+      state[stealCountKey] = attemptsThisGame + 1;
+      return i;
+    }
   }
   return -1;
 }
