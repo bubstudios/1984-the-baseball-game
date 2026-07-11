@@ -1810,35 +1810,34 @@ export default function SeasonDashboard() {
                 {TEAMS[currentUserGame.homeTeam]?.stadium}
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-col gap-2">
               {todaysUserGame ? (
-                <Button onClick={playUserGame} className="gap-1 flex-1 min-w-[120px]" size="sm">
+                <Button onClick={playUserGame} className="gap-1 w-full" size="sm">
                   <Play className="w-4 h-4" /> Play My Game
                 </Button>
               ) : (
-                <>
-                  <div className="text-[10px] font-heading text-amber-400 font-bold px-2">OFF DAY</div>
-                  <Button onClick={simToNextUserGame} disabled={simulating} variant="secondary" size="sm" className="gap-1">
-                    <FastForward className="w-3 h-3" /> Sim to My Next Game
-                  </Button>
-                </>
+                <Button onClick={simToNextUserGame} disabled={simulating} variant="secondary" size="sm" className="gap-1 w-full">
+                  <FastForward className="w-3 h-3" /> Sim to My Next Game
+                </Button>
               )}
-              <Button onClick={simulateDay} disabled={simulating} variant={todaysUserGame ? "outline" : "secondary"} size="sm" className="gap-1">
+              <Button onClick={simulateDay} disabled={simulating} variant={todaysUserGame ? "outline" : "secondary"} size="sm" className="gap-1 w-full">
                 {simulating ? <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" /> : <TrendingUp className="w-4 h-4" />}
                 Simulate Day
               </Button>
-              <Button onClick={() => simToMonthFinale(4)} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-amber-400">
-                <FastForward className="w-3 h-3" /> Sim to April Finale
-              </Button>
-              <Button onClick={simToJuly8} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-cyan-400">
-                <FastForward className="w-3 h-3" /> Sim to July 8
-              </Button>
-              <Button onClick={simToAugust30} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-amber-400">
-                <FastForward className="w-3 h-3" /> Sim to Aug 30
-              </Button>
-              <Button onClick={simToUserFinalGame} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-emerald-400">
-                <FastForward className="w-3 h-3" /> Sim to Final Game
-              </Button>
+              <div className="grid grid-cols-2 gap-1.5">
+                <Button onClick={() => simToMonthFinale(4)} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-amber-400">
+                  <FastForward className="w-3 h-3" /> April Finale
+                </Button>
+                <Button onClick={simToJuly8} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-cyan-400">
+                  <FastForward className="w-3 h-3" /> July 8 (ASG)
+                </Button>
+                <Button onClick={simToAugust30} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-amber-400">
+                  <FastForward className="w-3 h-3" /> Aug 30 (Trade)
+                </Button>
+                <Button onClick={simToUserFinalGame} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-emerald-400">
+                  <FastForward className="w-3 h-3" /> Final Game
+                </Button>
+              </div>
             </div>
           </div>
         ) : (
