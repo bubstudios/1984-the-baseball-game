@@ -1188,6 +1188,13 @@ export default function Home() {
     }
   }, [gameOverPopup, cardAward, cardPending, newAchievements]);
 
+  const isUserBatting = gameState && (
+    (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
+    (gameState.halfInning === 'bottom' && userTeam === gameState.homeTeam)
+  );
+
+  const isUserPitching = gameState && !isUserBatting;
+
   // ASG: force pitcher change when usage limit reached (3 IP starter, 2 IP others)
   useEffect(() => {
     if (!gameState || gameState.gameOver || gameMode !== 'allstar' || !isUserPitching || showSubs) return;
@@ -1196,13 +1203,6 @@ export default function Home() {
     const us = userTeam === gameState.homeTeam ? 'home' : 'away';
     if (hasReachedAllStarPitchLimit(p, p.name === (us === 'home' ? gameState.homeStartingPitcherName : gameState.awayStartingPitcherName))) { setSubsTab('pitching'); setShowSubs(true); }
   }, [gameState, gameMode, isUserPitching, showSubs, userTeam]);
-
-  const isUserBatting = gameState && (
-    (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
-    (gameState.halfInning === 'bottom' && userTeam === gameState.homeTeam)
-  );
-
-  const isUserPitching = gameState && !isUserBatting;
 
   const handlePitch = useCallback((pitchName) => {
     if (!gameState || gameState.gameOver) return;
@@ -1456,7 +1456,7 @@ export default function Home() {
 
   const isExhibition = gameMode === 'exhibition';
 
-  const checkBatterInjury = (prevState, newState) => checkBatterInjuryExternal(prevState, newState, isExhibition);
+  const checkBatterInjury = (prevState, newState) => checkBatterInjuryExternal(prevState, newState, gameMode === 'exhibition');
 
   const handleBatterInjuryReplacement = (chosenPlayer) => {
     if (!gameState || !batterInjury) return;
