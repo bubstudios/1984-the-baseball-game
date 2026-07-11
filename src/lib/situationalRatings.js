@@ -39,8 +39,8 @@ function getPlatoonMod(batter, pitcherHand) {
 function getTierMod(pitcher) {
   if (!pitcher) return 0;
   const tier = getPitcherTier(pitcher);
-  if (tier === 'Elite') return -0.8;
-  if (tier === 'Subpar') return 0.8;
+  if (tier === 'Elite') return -0.7;
+  if (tier === 'Subpar') return 0.7;
   return 0;
 }
 
