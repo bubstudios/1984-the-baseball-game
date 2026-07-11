@@ -1,0 +1,84 @@
+{
+  "name": "PlayerDiscipline",
+  "type": "object",
+  "properties": {
+    "seasonId": {
+      "type": "string",
+      "description": "Reference to Season entity"
+    },
+    "teamKey": {
+      "type": "string",
+      "description": "Team key"
+    },
+    "playerName": {
+      "type": "string",
+      "description": "Player full name"
+    },
+    "playerPos": {
+      "type": "string",
+      "description": "Player position (C, 1B, 2B, SS, 3B, OF, SP, RP, CL, DH)"
+    },
+    "ejectionReason": {
+      "type": "string",
+      "enum": [
+        "hbp_after_warning",
+        "obvious_retaliation",
+        "arguing_strikes",
+        "arguing_call",
+        "charging_mound",
+        "fight_participant",
+        "bench_clearing_major"
+      ],
+      "description": "Reason for the ejection that triggered the suspension"
+    },
+    "ejectionInning": {
+      "type": "integer",
+      "description": "Inning the ejection occurred"
+    },
+    "suspensionGames": {
+      "type": "integer",
+      "default": 0,
+      "description": "Total games suspended"
+    },
+    "gamesRemaining": {
+      "type": "integer",
+      "default": 0,
+      "description": "Games remaining in suspension"
+    },
+    "suspensionReason": {
+      "type": "string",
+      "description": "Human-readable suspension reason"
+    },
+    "startedOnDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date suspension started"
+    },
+    "startedOnGameDay": {
+      "type": "integer",
+      "description": "Game day suspension started"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether suspension is currently active"
+    },
+    "resolvedOnDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date suspension was resolved"
+    },
+    "gameDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Simulated game date when ejection occurred"
+    }
+  },
+  "required": [
+    "seasonId",
+    "teamKey",
+    "playerName",
+    "ejectionReason",
+    "active"
+  ]
+}

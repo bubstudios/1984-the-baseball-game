@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Trophy, TrendingUp, Play, Newspaper, FastForward, HeartPulse } from 'lucide-react';
+import { RotateCcw, Trophy, TrendingUp, Play, Newspaper, FastForward, HeartPulse, Zap } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import { generateScheduleValidated, formatGameDate, getLeague, getGameDayForDate } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState, validateCompletedGame } from '@/lib/seasonEngine';
@@ -43,7 +43,10 @@ import { loadActiveInjuries, buildInjuredRoster, runDailyRecovery, resolveStarte
 import { getSeverityLabel } from '@/lib/injuryConfig';
 import InjuryReportScreen from '@/components/season/InjuryReportScreen';
 import InjuryDebugPanel from '@/components/season/InjuryDebugPanel';
+import DisciplineDebugPanel from '@/components/season/DisciplineDebugPanel';
 import { loadActiveSuspensions, decrementTeamSuspensions, getManagerStatusForTeam } from '@/lib/managerSuspension';
+import { loadActivePlayerSuspensions, buildSuspendedPlayerSet, decrementPlayerSuspensions, recordPlayerSuspension } from '@/lib/playerDiscipline';
+import { forcePitcherHBPEjection, forceBatterArguesStrikes, forceChargingMound, forceBenchClearingBrawl, applyPlayerEjection, applyMultipleEjections, getGameEjections } from '@/lib/playerEjectionEngine';
 
 const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
@@ -83,7 +86,9 @@ export default function SeasonDashboard() {
   const [postseasonAwardsData, setPostseasonAwardsData] = useState(null);
   const [activeInjuries, setActiveInjuries] = useState([]);
   const [activeSuspensions, setActiveSuspensions] = useState([]);
+  const [activePlayerSuspensions, setActivePlayerSuspensions] = useState([]);
   const [showInjuryReport, setShowInjuryReport] = useState(false);
+  const [showDebugDiscipline, setShowDebugDiscipline] = useState(false);
   const simulatingRef = useRef(false);
   const lastAdvanceDayRef = useRef(null);
   const pendingUserTeam = location.state?.userTeam || null;
@@ -161,6 +166,12 @@ export default function SeasonDashboard() {
       try {
         const suspensions = await loadActiveSuspensions(currentSeason.id);
         setActiveSuspensions(suspensions);
+      } catch (e) { /* non-fatal */ }
+
+      // Load active player suspensions for the season
+      try {
+        const playerSusp = await loadActivePlayerSuspensions(currentSeason.id);
+        setActivePlayerSuspensions(playerSusp);
       } catch (e) { /* non-fatal */ }
 
       // Restore All-Star break state if the season is in a break phase
@@ -706,6 +717,10 @@ export default function SeasonDashboard() {
       // Load active injuries for injury-aware lineup/bullpen filtering
       const dayInjuries = await loadActiveInjuries(season.id);
       setActiveInjuries(dayInjuries);
+      // Load active player suspensions for filtering
+      const dayPlayerSusp = await loadActivePlayerSuspensions(season.id);
+      setActivePlayerSuspensions(dayPlayerSusp);
+      const suspendedNames = buildSuspendedPlayerSet(dayPlayerSusp, new Set(toSim.flatMap(g => [g.homeTeam, g.awayTeam])));
       const simInjuries = [];
 
       const resultRows = [];
@@ -739,7 +754,7 @@ export default function SeasonDashboard() {
         // injured bench/relievers removed, all injured names added to scratchedPlayers
         const homeRoster = buildInjuredRoster(homeTeam, dayInjuries);
         const awayRoster = buildInjuredRoster(awayTeam, dayInjuries);
-        const allScratched = [...new Set([...homeRoster.scratchedPlayers, ...awayRoster.scratchedPlayers])];
+        const allScratched = [...new Set([...homeRoster.scratchedPlayers, ...awayRoster.scratchedPlayers, ...suspendedNames])];
         const unavailableRelievers = {
           home: [...getUnavailableRelievers(rotState, homeTeam, g.gameDate), ...getInjuredPitcherNames(dayInjuries, homeTeam)],
           away: [...getUnavailableRelievers(rotState, awayTeam, g.gameDate), ...getInjuredPitcherNames(dayInjuries, awayTeam)],
@@ -915,6 +930,10 @@ export default function SeasonDashboard() {
         await decrementTeamSuspensions(season.id, teamsPlayed, todayDate);
         const updatedSuspensions = await loadActiveSuspensions(season.id);
         setActiveSuspensions(updatedSuspensions);
+        // Decrement player suspensions too
+        await decrementPlayerSuspensions(season.id, teamsPlayed, todayDate);
+        const updatedPlayerSusp = await loadActivePlayerSuspensions(season.id);
+        setActivePlayerSuspensions(updatedPlayerSusp);
       }
 
       if (resultRows.length > 0) {
@@ -1526,7 +1545,12 @@ export default function SeasonDashboard() {
     // uses the exact same pitcher the dashboard displayed — no re-resolution.
     const userSPName = probableStarters?.userSP?.name ? encodeURIComponent(probableStarters.userSP.name) : '';
     const oppSPName = probableStarters?.oppSP?.name ? encodeURIComponent(probableStarters.oppSP.name) : '';
-    window.location.href = `/?seasonGame=${todaysUserGame.homeTeam},${todaysUserGame.awayTeam},${season.userTeam},${season.id},${todaysUserGame.gameDay},${todaysUserGame.id},${todaysUserGame.gameDate},${userSPName},${oppSPName}`;
+    // Pass suspended player names so Home.jsx scratches them for the game
+    const suspendedNames = activePlayerSuspensions
+      .filter(s => s.teamKey === todaysUserGame.homeTeam || s.teamKey === todaysUserGame.awayTeam)
+      .map(s => s.playerName);
+    const suspendedParam = suspendedNames.length > 0 ? ',' + encodeURIComponent(suspendedNames.join('|')) : '';
+    window.location.href = `/?seasonGame=${todaysUserGame.homeTeam},${todaysUserGame.awayTeam},${season.userTeam},${season.id},${todaysUserGame.gameDay},${todaysUserGame.id},${todaysUserGame.gameDate},${userSPName},${oppSPName}${suspendedParam}`;
   };
 
   if (loading) {
@@ -1563,6 +1587,11 @@ export default function SeasonDashboard() {
             <Button onClick={() => setShowInjuryReport(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating || activeInjuries.length === 0}>
               <HeartPulse className="w-3 h-3" /> DL
             </Button>
+            {isDebug && (
+              <Button onClick={() => setShowDebugDiscipline(true)} variant="outline" size="sm" className="gap-1 text-[10px] text-amber-400" disabled={simulating}>
+                <Zap className="w-3 h-3" /> Discipline
+              </Button>
+            )}
             <Button onClick={handleReadNewspaper} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating || !gameResults?.length}>
               <Newspaper className="w-3 h-3" /> Paper
             </Button>
@@ -1638,6 +1667,18 @@ export default function SeasonDashboard() {
                 return (
                   <div className="text-[10px] text-amber-400/80 font-heading">
                     Manager: {lines.join(' - ')}
+                  </div>
+                );
+              })()}
+              {activePlayerSuspensions.length > 0 && currentUserGame && (() => {
+                const ut = season.userTeam;
+                const ot = currentUserGame.homeTeam === ut ? currentUserGame.awayTeam : currentUserGame.homeTeam;
+                const suspended = activePlayerSuspensions.filter(s => s.teamKey === ut || s.teamKey === ot);
+                if (suspended.length === 0) return null;
+                const fmt = (s) => `${s.playerName.split(' ').pop()} (${s.gamesRemaining}G)`;
+                return (
+                  <div className="text-[10px] text-red-400/80 font-heading">
+                    Suspended: {suspended.map(fmt).join('; ')}
                   </div>
                 );
               })()}
@@ -1863,6 +1904,14 @@ export default function SeasonDashboard() {
           season={season}
           injuries={activeInjuries}
           onClose={() => setShowInjuryReport(false)}
+        />
+      )}
+
+      {showDebugDiscipline && (
+        <DisciplineDebugPanel
+          season={season}
+          activePlayerSuspensions={activePlayerSuspensions}
+          onClose={() => setShowDebugDiscipline(false)}
         />
       )}
     </div>

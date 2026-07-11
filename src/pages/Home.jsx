@@ -70,6 +70,8 @@ import { checkBatterInjury as checkBatterInjuryExternal } from '@/lib/batterInju
 import { loadActiveInjuries, recordInjury, resolveStarterSkippingInjuries } from '@/lib/injuryPersistence';
 import { loadActiveSuspensions, recordSuspension } from '@/lib/managerSuspension';
 import { checkArgumentLogic } from '@/lib/argumentLogic';
+import { checkHBPEjection, checkChargingMound, checkBatterArguesStrikes, applyPlayerEjection, applyMultipleEjections, checkBenchClearingBrawl, getGameEjections } from '@/lib/playerEjectionEngine';
+import { recordPlayerSuspension, loadActivePlayerSuspensions, buildSuspendedPlayerSet } from '@/lib/playerDiscipline';
 
 
 export default function Home() {
@@ -140,6 +142,7 @@ export default function Home() {
   const prevCelebrationBubble = useRef(null);
   const seasonInjuriesRef = useRef([]);
   const seasonSuspendedTeamsRef = useRef(new Set());
+  const seasonSuspendedPlayerNamesRef = useRef(new Set());
 
   // Keep gameModeRef in sync so startGame (empty-deps useCallback) always reads the latest mode.
   // Without this, a season game launch would see gameMode=null in startGame's closure and skip
@@ -182,6 +185,7 @@ export default function Home() {
           // the actual game starter (Rijo-shown / Niekro-pitched bug).
           const userStarterName = parts[7] ? decodeURIComponent(parts[7]) : null;
           const oppStarterName = parts[8] ? decodeURIComponent(parts[8]) : null;
+          const suspendedPlayerNamesParam = parts[9] ? decodeURIComponent(parts[9]).split('|').filter(n => n) : [];
           const findPitcherByName = (teamKey, name) => {
             if (!name || !teamKey) return null;
             const td = TEAMS[teamKey];
@@ -247,8 +251,18 @@ export default function Home() {
               suspendedTeamKeys = new Set(suspensions.filter(s => s.teamKey === homeTeamKey || s.teamKey === awayTeamKey).map(s => s.teamKey));
               seasonSuspendedTeamsRef.current = suspendedTeamKeys;
             } catch (e) { console.error('[suspensions] Load failed:', e); }
+          // Load active player suspensions - suspended players can't play
+          if (seasonId) {
+            try {
+              const playerSuspensions = await loadActivePlayerSuspensions(seasonId);
+              const suspendedNames = buildSuspendedPlayerSet(playerSuspensions, new Set([homeTeamKey, awayTeamKey]));
+              // Merge with URL-passed names (from dashboard)
+              for (const n of suspendedPlayerNamesParam) suspendedNames.add(n);
+              seasonSuspendedPlayerNamesRef.current = suspendedNames;
+            } catch (e) { console.error('[playerDiscipline] Load failed:', e); }
           }
-          setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum, gameDate: gameDateStr, injuredPlayerNames, suspendedTeamKeys: [...suspendedTeamKeys] });
+          }
+          setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum, gameDate: gameDateStr, injuredPlayerNames, suspendedTeamKeys: [...suspendedTeamKeys], suspendedPlayerNames: [...seasonSuspendedPlayerNamesRef.current] });
           setLoadingScreen(false);
         } catch (launchError) {
           // Season launch failed (e.g. rotation state load error) — don't leave the user
@@ -573,6 +587,10 @@ export default function Home() {
     }
     if (lineupPhase.injuredPlayerNames) {
       illNames.push(...lineupPhase.injuredPlayerNames);
+    }
+    // Suspended players are scratched for this game
+    if (lineupPhase.suspendedPlayerNames) {
+      illNames.push(...lineupPhase.suspendedPlayerNames);
     }
     startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, effectiveUserStarter, adjustedOpponentSP, seasonUser, illNames);
   }, [lineupPhase, startGame, gameMode, forcedStarters]);
@@ -1005,6 +1023,12 @@ export default function Home() {
             const mgr = MANAGERS[ej.teamKey];
             await recordSuspension(ctx.seasonId, ej.teamKey, mgr?.name, ej.escaLevel, ej.reason, ctx.gameDate, ctx.gameDay);
           }
+          // Roll for player suspensions after ejections (Season Mode only)
+          const playerEjections = getGameEjections(state);
+          for (const ej of playerEjections) {
+            const playerPos = ej.playerPos || '?';
+            await recordPlayerSuspension(ctx.seasonId, ej.teamKey, ej.playerName, playerPos, ej.reason, ctx.gameDate, ctx.gameDay, ej.inning);
+          }
           if (ctx.seasonId) await maybeAdvanceDay({ id: ctx.seasonId, currentGameDay: ctx.gameDay });
         } catch (e) {
           console.error('Season result save failed:', e);
@@ -1149,8 +1173,44 @@ export default function Home() {
        // Fielder injury - 3%/10%/14% on diving stops/catches/collisions
        checkFielderInjury(updatedState, afterSubs);
 
-    } catch (e) {
-      console.error('handlePitch error:', e);
+       // ── Player ejection checks (Season Mode only) ──
+       if (gameModeRef.current === 'season') {
+         const pitcher = getEffectivePitcher(afterSubs) || getCurrentPitcher(afterSubs);
+         const batter = getSituationalBatter(afterSubs);
+         // HBP ejection check
+         if (afterSubs.lastPlay?.type === 'walk' && (afterSubs.lastPlay?.text?.includes('hit by the pitch') || afterSubs.lastPlay?.text?.includes('HBP'))) {
+           if (pitcher && batter) {
+             const hbpEjection = checkHBPEjection(afterSubs, pitcher, batter);
+             if (hbpEjection) {
+               applyPlayerEjection(afterSubs, hbpEjection);
+               setArgumentResult({ ejected: true, managerName: hbpEjection.commentary, homeTeamKey: hbpEjection.teamKey });
+             }
+             // Charging the mound check
+             const chargeResult = checkChargingMound(afterSubs, pitcher, batter);
+             if (chargeResult) {
+               applyMultipleEjections(afterSubs, chargeResult.ejections);
+               setArgumentResult({ ejected: true, managerName: chargeResult.commentary, homeTeamKey: batter.teamKey || afterSubs.homeTeam });
+             }
+           }
+         }
+         // Called strikeout argument check
+         if (afterSubs.lastPlay?.type === 'strikeout' && batter) {
+           const strikeArg = checkBatterArguesStrikes(afterSubs, batter);
+           if (strikeArg) {
+             applyPlayerEjection(afterSubs, strikeArg);
+             setArgumentResult({ ejected: true, managerName: strikeArg.commentary, homeTeamKey: strikeArg.teamKey });
+           }
+         }
+         // Bench-clearing brawl check (high tension)
+         const brawlResult = checkBenchClearingBrawl(afterSubs);
+         if (brawlResult) {
+           applyMultipleEjections(afterSubs, brawlResult.ejections);
+           setArgumentResult({ ejected: true, managerName: brawlResult.commentary, homeTeamKey: afterSubs.homeTeam });
+         }
+       }
+
+       } catch (e) {
+       console.error('handlePitch error:', e);
       console.error('Stack:', e.stack);
       setGameState(prePitchSnapshot);
       alert(`Pitch error: ${e.message}`);
@@ -1207,7 +1267,38 @@ export default function Home() {
       // Fielder injury - 3%/10%/14% on diving stops/catches/collisions
       checkFielderInjury(gameState, afterSubs);
 
-    } catch (e) {
+      // ── Player ejection checks (Season Mode only) ──
+      if (gameModeRef.current === 'season') {
+        const pitcher = getEffectivePitcher(afterSubs) || getCurrentPitcher(afterSubs);
+        const batter = getSituationalBatter(afterSubs);
+        if (afterSubs.lastPlay?.type === 'walk' && (afterSubs.lastPlay?.text?.includes('hit by the pitch') || afterSubs.lastPlay?.text?.includes('HBP'))) {
+          if (pitcher && batter) {
+            const hbpEjection = checkHBPEjection(afterSubs, pitcher, batter);
+            if (hbpEjection) {
+              applyPlayerEjection(afterSubs, hbpEjection);
+              setArgumentResult({ ejected: true, managerName: hbpEjection.commentary, homeTeamKey: hbpEjection.teamKey });
+            }
+            const chargeResult = checkChargingMound(afterSubs, pitcher, batter);
+            if (chargeResult) {
+              applyMultipleEjections(afterSubs, chargeResult.ejections);
+              setArgumentResult({ ejected: true, managerName: chargeResult.commentary, homeTeamKey: batter.teamKey || afterSubs.homeTeam });
+            }
+          }
+        }
+        if (afterSubs.lastPlay?.type === 'strikeout' && batter) {
+          const strikeArg = checkBatterArguesStrikes(afterSubs, batter);
+          if (strikeArg) {
+            applyPlayerEjection(afterSubs, strikeArg);
+            setArgumentResult({ ejected: true, managerName: strikeArg.commentary, homeTeamKey: strikeArg.teamKey });
+          }
+        }
+        const brawlResult = checkBenchClearingBrawl(afterSubs);
+        if (brawlResult) {
+          applyMultipleEjections(afterSubs, brawlResult.ejections);
+          setArgumentResult({ ejected: true, managerName: brawlResult.commentary, homeTeamKey: afterSubs.homeTeam });
+        }
+      }
+      } catch (e) {
       console.error('handleSwing error:', e);
       console.error('Stack:', e.stack);
       setGameState(prePitchSnapshot);
@@ -1741,6 +1832,7 @@ export default function Home() {
     seasonContextRef.current = null;
     seasonRotationStateRef.current = {};
     seasonSuspendedTeamsRef.current = new Set();
+    seasonSuspendedPlayerNamesRef.current = new Set();
     prevArgPlay.current = null;
     prevLogLength.current = 0;
     prevInning.current = null;

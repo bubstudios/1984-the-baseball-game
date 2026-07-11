@@ -11,6 +11,7 @@ import {
 } from './seasonStore';
 import { loadActiveInjuries, buildInjuredRoster, runDailyRecovery, resolveStarterSkippingInjuries, getInjuredPitcherNames, recordInjury } from './injuryPersistence';
 import { decrementTeamSuspensions } from './managerSuspension';
+import { loadActivePlayerSuspensions, buildSuspendedPlayerSet, decrementPlayerSuspensions } from './playerDiscipline';
 
 /**
  * Simulate all non-final games from the current day up to (but not including) targetGameDay.
@@ -24,6 +25,7 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
 
   const rotState = await loadRotationStateForActiveSeason();
   let dayInjuries = await loadActiveInjuries(seasonObj.id);
+  let dayPlayerSuspensions = await loadActivePlayerSuspensions(seasonObj.id);
   const simInjuries = [];
 
   while (currentDay < targetGameDay) {
@@ -62,7 +64,9 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
       const awaySP = resolveStarterSkippingInjuries(getProbableStarter(rotState, awayTeam, g.gameDate), awayTeam, dayInjuries);
       const homeRoster = buildInjuredRoster(homeTeam, dayInjuries);
       const awayRoster = buildInjuredRoster(awayTeam, dayInjuries);
-      const allScratched = [...new Set([...homeRoster.scratchedPlayers, ...awayRoster.scratchedPlayers])];
+      // Add suspended players to the scratched list so they can't play
+      const suspendedNames = buildSuspendedPlayerSet(dayPlayerSuspensions, new Set([homeTeam, awayTeam]));
+      const allScratched = [...new Set([...homeRoster.scratchedPlayers, ...awayRoster.scratchedPlayers, ...suspendedNames])];
       const unavailableRelievers = {
         home: [...getUnavailableRelievers(rotState, homeTeam, g.gameDate), ...getInjuredPitcherNames(dayInjuries, homeTeam)],
         away: [...getUnavailableRelievers(rotState, awayTeam, g.gameDate), ...getInjuredPitcherNames(dayInjuries, awayTeam)],
@@ -146,6 +150,23 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
 
     for (const g of toSim) {
       try { await base44.entities.Schedule.update(g.id, { status: 'final' }); } catch (e) { /* non-fatal */ }
+    }
+
+    // Decrement player suspensions for teams that played today
+    const playerTeamsPlayed = new Set();
+    for (const g of toSim) {
+      playerTeamsPlayed.add(g.homeTeam);
+      playerTeamsPlayed.add(g.awayTeam);
+    }
+    for (const g of daySchedule) {
+      if (g.status === 'final') {
+        playerTeamsPlayed.add(g.homeTeam);
+        playerTeamsPlayed.add(g.awayTeam);
+      }
+    }
+    if (playerTeamsPlayed.size > 0) {
+      await decrementPlayerSuspensions(seasonObj.id, playerTeamsPlayed, todayDate);
+      dayPlayerSuspensions = await loadActivePlayerSuspensions(seasonObj.id);
     }
 
     await base44.entities.Season.update(seasonObj.id, {
