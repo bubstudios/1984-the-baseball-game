@@ -908,6 +908,23 @@ export function buildSeasonGameResultFromState(state, ctx) {
   };
 }
 
+// ── All-Star Break fatigue reset ──
+// Clears all pitcher workload, appearance dates, and rest tracking so every
+// player is fully available when the regular season resumes on July 12.
+// Rotation pointer (rotationIndex) is preserved so the rotation order continues.
+export function resetAllFatigue(rotationState) {
+  if (!rotationState) return rotationState;
+  for (const teamKey of Object.keys(rotationState)) {
+    const rs = rotationState[teamKey];
+    if (!rs) continue;
+    rs.workload = {};
+    rs.appearanceDates = {};
+    rs.lastStartDateByPitcher = {};
+    // Keep rotation and rotationIndex — rotation order continues after the break
+  }
+  return rotationState;
+}
+
 // ── Current user game resolver — the ONE source of truth for "what game is next" ──
 export async function getCurrentUserGame(season) {
   if (!season?.id) return null;

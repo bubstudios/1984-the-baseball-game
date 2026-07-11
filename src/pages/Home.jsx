@@ -141,6 +141,8 @@ import { rollFielderInjury } from '@/lib/fielderInjuries';
 import { rollIllnessesForTeam } from '@/lib/illnessSystem';
 import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, persistRotationState, getUnavailableRelievers, getUnavailableRelieverReasons, getTiredRelievers, recordPitcherWorkload, isPitcherAvailable, buildSeasonGameResultFromState, markScheduleRowFinal, maybeAdvanceDay, isBullpenDayForTeam, validateStarterGuard, commitPlayerStats, getStarterFatigueStatus, isStarterEligible, hasFreshReliever, getBullpenDayOpener, getRestDays } from '@/lib/seasonStore';
 import { buildGameResultFromState } from '@/lib/seasonEngine';
+import { injectAllStarTeams, removeAllStarTeams } from '@/lib/allStarTeams';
+import { calculateAllStarMvp } from '@/lib/allStarMvp';
 
 
 export default function Home() {
@@ -310,6 +312,82 @@ export default function Home() {
           setGameMode(null);
           setSeasonUserTeam(null);
           seasonContextRef.current = null;
+          window.location.href = '/season';
+        }
+      })();
+    }
+    // Detect All-Star Game launch (?allStarGame=homeTeamKey,awayTeamKey,userAllStarKey,seasonId,stadium,homeLeague)
+    const allStarParam = urlParams.get('allStarGame');
+    if (allStarParam) {
+      window.history.replaceState({}, '', '/');
+      (async () => {
+        try {
+          const parts = allStarParam.split(',');
+          const homeTeamKey = parts[0];
+          const awayTeamKey = parts[1];
+          const userAllStarKey = parts[2];
+          const seasonId = parts[3] || null;
+          const stadiumName = parts[4] ? decodeURIComponent(parts[4]) : 'All-Star Stadium';
+          const homeLeague = parts[5] || 'NL';
+
+          // Load the season to get allStarRosters
+          const s = await base44.entities.Season.get(seasonId);
+          if (!s || !s.allStarRosters) {
+            console.error('[allstar-launch] No All-Star rosters found on season');
+            window.location.href = '/season';
+            return;
+          }
+
+          // Inject synthetic All-Star teams into TEAMS
+          injectAllStarTeams(s.allStarRosters);
+
+          setGameMode('allstar');
+          setSeasonUserTeam(userAllStarKey);
+          seasonContextRef.current = {
+            seasonId, gameDay: 0, gameDate: '1984-07-10',
+            homeTeam: homeTeamKey, awayTeam: awayTeamKey,
+            userTeam: userAllStarKey, scheduleId: null,
+            isAllStar: true, allStarRosters: s.allStarRosters, stadium: stadiumName,
+          };
+
+          // Find starting pitchers from the rosters
+          const findAllStarSP = (league) => {
+            const roster = s.allStarRosters[league];
+            if (!roster) return null;
+            const spName = roster.pitchers?.startingPitcherName;
+            if (!spName) return null;
+            const spEntry = (roster.pitchers?.starters || []).find(p => p.name === spName);
+            if (!spEntry) return null;
+            // Look up full player object from TEAMS
+            const td = TEAMS[spEntry.teamKey];
+            if (!td) return null;
+            const pool = [...(td.rotation || []), ...(td.bullpen || [])];
+            return pool.find(p => p.name === spName) || null;
+          };
+
+          const homeLeagueKey = homeLeague;
+          const awayLeagueKey = homeLeague === 'AL' ? 'NL' : 'AL';
+          const homeSP = findAllStarSP(homeLeagueKey);
+          const awaySP = findAllStarSP(awayLeagueKey);
+
+          // Generate weather for the stadium
+          const stadiumTeam = TEAMS[s.allStarRosters.stadiumTeamKey];
+          let weather;
+          if (stadiumTeam && DOMED_STADIUMS.has(stadiumTeam.stadium)) {
+            weather = generateIndoorWeather();
+          } else {
+            const weatherCity = stadiumTeam ? (STADIUM_WEATHER_CITIES[stadiumTeam.stadium] || stadiumTeam.city) : 'New York';
+            weather = generateWeather(weatherCity);
+          }
+          const umpire = pickUmpire();
+          setSelectedUmpire(umpire);
+
+          // Start the All-Star Game (no DH, no illnesses, no scratches)
+          startGame(homeTeamKey, awayTeamKey, null, null, false, weather, homeSP, awaySP, userAllStarKey, []);
+          setLoadingScreen(false);
+        } catch (launchError) {
+          console.error('[allstar-launch] Failed to launch All-Star game:', launchError);
+          removeAllStarTeams();
           window.location.href = '/season';
         }
       })();
@@ -1123,6 +1201,41 @@ export default function Home() {
       })();
     }
 
+    // All-Star Game: calculate MVP, store result, navigate to /season
+    if (gameMode === 'allstar' && seasonContextRef.current?.isAllStar) {
+      const ctx = seasonContextRef.current;
+      setSeasonCommitting(true);
+      seasonCommitPromiseRef.current = (async () => {
+        try {
+          const rosters = ctx.allStarRosters;
+          const mvp = calculateAllStarMvp(state, rosters);
+          const homeWon = state.score.home > state.score.away;
+          const homeLeague = rosters.homeLeague;
+          const winningLeague = homeWon ? homeLeague : (homeLeague === 'AL' ? 'NL' : 'AL');
+          const result = {
+            homeScore: state.score.home,
+            awayScore: state.score.away,
+            winner: homeWon ? state.homeTeam : state.awayTeam,
+            winningLeague,
+            homeTeam: state.homeTeam,
+            awayTeam: state.awayTeam,
+            stadium: ctx.stadium,
+          };
+          await base44.entities.Season.update(ctx.seasonId, {
+            allStarBreakPhase: 'game_played',
+            allStarGameResult: result,
+            allStarMvp: mvp,
+            worldSeriesHomeFieldLeague: winningLeague,
+          });
+        } catch (e) {
+          console.error('All-Star result save failed:', e);
+        } finally {
+          setSeasonCommitting(false);
+          seasonCommitPromiseRef.current = null;
+        }
+      })();
+    }
+
     // Analytics: game completed
     try {
       const durationMin = gameStartTimeRef.current ? Math.max(1, Math.round((Date.now() - gameStartTimeRef.current) / 60000)) : 0;
@@ -1835,7 +1948,8 @@ export default function Home() {
   }, [injuryAlert, gameState, userTeam]);
 
   const handleNewGame = () => {
-    if (gameMode === 'season') {
+    if (gameMode === 'season' || gameMode === 'allstar') {
+      removeAllStarTeams();
       window.location.href = '/season';
       return;
     }

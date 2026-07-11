@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, TrendingUp, Play, Newspaper, FastForward } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
-import { generateScheduleValidated, formatGameDate } from '@/lib/seasonSchedule';
+import { generateScheduleValidated, formatGameDate, getLeague } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState, validateCompletedGame } from '@/lib/seasonEngine';
 import { getCurrentUserGame, maybeAdvanceDay, archiveActiveSeasons, loadRotationStateForActiveSeason, persistRotationState, getProbableStarter, advanceRotation, recordPitcherWorkload, getUnavailableRelievers, commitPlayerStats, getRotationDebugInfo } from '@/lib/seasonStore';
 import LeagueLeaders from '@/components/season/LeagueLeaders';
@@ -22,6 +22,11 @@ import { deriveStandings } from '@/lib/seasonStore';
 import { getDivision } from '@/lib/seasonSchedule';
 import MonthlyHonorsScreen from '@/components/season/MonthlyHonorsScreen';
 import { calculateMonthlyAwards } from '@/lib/monthlyAwards';
+import AllStarBreakScreen from '@/components/season/AllStarBreakScreen';
+import { generateAllStarRosters } from '@/lib/allStarRosters';
+import { calculateAllStarMvp } from '@/lib/allStarMvp';
+import { injectAllStarTeams, removeAllStarTeams, getAllStarTeamKey } from '@/lib/allStarTeams';
+import { resetAllFatigue } from '@/lib/seasonStore';
 
 const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
@@ -46,6 +51,8 @@ export default function SeasonDashboard() {
   const [standingsData, setStandingsData] = useState(null);
   const [showMonthlyHonors, setShowMonthlyHonors] = useState(false);
   const [monthlyHonorsData, setMonthlyHonorsData] = useState(null);
+  const [allStarRosters, setAllStarRosters] = useState(null);
+  const [allStarBreakVisible, setAllStarBreakVisible] = useState(false);
   const [simToFinaleProgress, setSimToFinaleProgress] = useState(null);
   const simulatingRef = useRef(false);
   const pendingUserTeam = location.state?.userTeam || null;
@@ -112,6 +119,15 @@ export default function SeasonDashboard() {
         setStandingsData(deriveStandings(allResults));
       } catch (e) { /* non-fatal */ }
 
+      // Restore All-Star break state if the season is in a break phase
+      if (currentSeason.allStarBreakPhase && currentSeason.allStarRosters) {
+        setAllStarRosters(currentSeason.allStarRosters);
+        setAllStarBreakVisible(true);
+      } else {
+        setAllStarRosters(null);
+        setAllStarBreakVisible(false);
+      }
+
     } catch (error) {
       console.error('Failed to load season:', error);
     } finally {
@@ -171,6 +187,315 @@ export default function SeasonDashboard() {
       setSeason(prev => prev ? { ...prev, monthlyHonorsShown: shown } : prev);
     }
     setMonthlyHonorsData(null);
+  };
+
+  // ── All-Star Break logic ──
+  // After July 8 is fully complete, generate All-Star rosters (once) and show the break screen.
+  const checkAndShowAllStarBreak = async (seasonObj) => {
+    const s = seasonObj || season;
+    if (!s) return;
+    try {
+      // If the game has already been played, show the MVP screen
+      if (s.allStarBreakPhase === 'game_played') {
+        const rosters = s.allStarRosters;
+        if (rosters) {
+          setAllStarRosters(rosters);
+          setAllStarBreakVisible(true);
+        }
+        return;
+      }
+
+      // If rosters are already generated and phase is 'break', show the break screen
+      if (s.allStarBreakPhase === 'break' && s.allStarRosters) {
+        setAllStarRosters(s.allStarRosters);
+        setAllStarBreakVisible(true);
+        return;
+      }
+
+      // Check if July 8 is fully complete
+      const july8Sched = await base44.entities.Schedule.filter({
+        seasonId: s.id, gameDate: '1984-07-08',
+      });
+      if (july8Sched.length === 0) return;
+      if (!july8Sched.every(g => g.status === 'final')) return;
+
+      // July 8 is complete — generate rosters (only once per season)
+      if (s.allStarRosters) return; // already generated
+
+      const rosters = await generateAllStarRosters(s.id);
+      if (!rosters) {
+        console.error('[allstar] Failed to generate rosters');
+        return;
+      }
+
+      await base44.entities.Season.update(s.id, {
+        allStarRosters: rosters,
+        allStarBreakPhase: 'break',
+      });
+
+      setAllStarRosters(rosters);
+      setAllStarBreakVisible(true);
+      setSeason(prev => prev ? { ...prev, allStarRosters: rosters, allStarBreakPhase: 'break' } : prev);
+    } catch (e) {
+      console.error('All-Star break check failed:', e);
+    }
+  };
+
+  const playAllStarGame = () => {
+    if (!season || !allStarRosters) return;
+    const userLeague = getLeague(season.userTeam);
+    const userAllStarKey = getAllStarTeamKey(userLeague);
+    const homeLeague = allStarRosters.homeLeague;
+    const homeTeamKey = getAllStarTeamKey(homeLeague);
+    const awayTeamKey = getAllStarTeamKey(homeLeague === 'AL' ? 'NL' : 'AL');
+    // Launch the All-Star Game: homeTeam, awayTeam, userTeam (All-Star key), seasonId, stadium
+    const params = [
+      homeTeamKey,
+      awayTeamKey,
+      userAllStarKey,
+      season.id,
+      allStarRosters.stadium || 'All-Star Stadium',
+      homeLeague,
+    ];
+    window.location.href = `/?allStarGame=${encodeURIComponent(params.join(','))}`;
+  };
+
+  const simAllStarGame = async () => {
+    if (!season || !allStarRosters) return;
+    try {
+      setSimulating(true);
+      const homeLeague = allStarRosters.homeLeague;
+      const awayLeague = homeLeague === 'AL' ? 'NL' : 'AL';
+      const homeTeamKey = getAllStarTeamKey(homeLeague);
+      const awayTeamKey = getAllStarTeamKey(awayLeague);
+      const stadium = allStarRosters.stadium || 'All-Star Stadium';
+
+      // Inject synthetic teams for headless sim
+      injectAllStarTeams(allStarRosters);
+      const useDH = false; // No DH for All-Star Game
+
+      const finalState = simulateGameHeadless(homeTeamKey, awayTeamKey, {
+        useDH, rotationState: {}, gameDate: '1984-07-10',
+      });
+
+      const homeWon = finalState.score.home > finalState.score.away;
+      const winningLeague = homeWon ? homeLeague : awayLeague;
+      const mvp = calculateAllStarMvp(finalState, allStarRosters);
+
+      const result = {
+        homeScore: finalState.score.home,
+        awayScore: finalState.score.away,
+        winner: homeWon ? homeTeamKey : awayTeamKey,
+        winningLeague,
+        homeTeam: homeTeamKey,
+        awayTeam: awayTeamKey,
+        stadium,
+      };
+
+      await base44.entities.Season.update(season.id, {
+        allStarBreakPhase: 'game_played',
+        allStarGameResult: result,
+        allStarMvp: mvp,
+        worldSeriesHomeFieldLeague: winningLeague,
+      });
+
+      setSeason(prev => prev ? {
+        ...prev,
+        allStarBreakPhase: 'game_played',
+        allStarGameResult: result,
+        allStarMvp: mvp,
+        worldSeriesHomeFieldLeague: winningLeague,
+      } : prev);
+      setAllStarBreakVisible(true);
+    } catch (e) {
+      console.error('All-Star game sim failed:', e);
+      alert('All-Star game simulation failed: ' + e.message);
+    } finally {
+      removeAllStarTeams();
+      setSimulating(false);
+    }
+  };
+
+  const continueAfterAllStar = async () => {
+    if (!season) return;
+    try {
+      setAllStarBreakVisible(false);
+      // Reset all pitcher/player fatigue
+      const rotState = await loadRotationStateForActiveSeason();
+      resetAllFatigue(rotState);
+      await persistRotationState(season.id, rotState);
+
+      // Advance to July 12 (first regular season game after the break)
+      const july12Sched = await base44.entities.Schedule.filter({
+        seasonId: season.id, gameDate: '1984-07-12',
+      }, 'gameDay', 1);
+      if (july12Sched.length > 0) {
+        await base44.entities.Season.update(season.id, {
+          allStarBreakPhase: null,
+          currentGameDay: july12Sched[0].gameDay,
+          currentDate: '1984-07-12',
+        });
+      } else {
+        await base44.entities.Season.update(season.id, { allStarBreakPhase: null });
+      }
+      await loadSeason();
+    } catch (e) {
+      console.error('Continue after All-Star failed:', e);
+    }
+  };
+
+  const simToJuly8 = async () => {
+    if (!season) return;
+    try {
+      simulatingRef.current = true;
+      setSimulating(true);
+      setSimToFinaleProgress('Finding July 8 game...');
+
+      const userSched = await base44.entities.Schedule.filter({
+        seasonId: season.id, isUserGame: true,
+      }, 'gameDay', 200);
+
+      const july8Game = userSched.find(g => g.gameDate === '1984-07-08');
+      if (!july8Game) {
+        alert('No user game found on July 8');
+        return;
+      }
+
+      let currentDay = season.currentGameDay || 1;
+      if (currentDay >= july8Game.gameDay) {
+        setSimToFinaleProgress(null);
+        await loadSeason();
+        return;
+      }
+
+      const rotState = await loadRotationStateForActiveSeason();
+
+      while (currentDay < july8Game.gameDay) {
+        setSimToFinaleProgress(`Simulating day ${currentDay} of ${july8Game.gameDay - 1}...`);
+
+        const daySchedule = await base44.entities.Schedule.filter({
+          seasonId: season.id, gameDay: currentDay,
+        });
+
+        const toSim = daySchedule.filter(g => g.status !== 'final');
+        if (toSim.length === 0) { currentDay++; continue; }
+
+        const existingStats = await base44.entities.PlayerStats.filter({ seasonId: season.id }, null, 1500);
+        const statsAccum = {};
+        for (const s of existingStats) {
+          statsAccum[`${s.team}|${s.playerName}`] = {
+            hr: s.homeRuns || 0, doubles: s.doubles || 0,
+            triples: s.triples || 0, rbi: s.rbi || 0, sb: s.stolenBases || 0,
+          };
+        }
+
+        const resultRows = [];
+        const allBatting = [];
+        const allPitching = [];
+
+        for (const g of toSim) {
+          const homeTeam = g.homeTeam;
+          const awayTeam = g.awayTeam;
+          const useDH = TEAMS[homeTeam]?.league === 'AL';
+          const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
+          const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
+          const unavailableRelievers = {
+            home: getUnavailableRelievers(rotState, homeTeam, g.gameDate),
+            away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
+          };
+
+          const finalState = simulateGameHeadless(homeTeam, awayTeam, {
+            useDH, homeSP, awaySP, unavailableRelievers,
+            rotationState: rotState, gameDate: g.gameDate,
+          });
+          if (finalState._validationFailed) {
+            throw new Error(`Sim stall for ${awayTeam}@${homeTeam}: ${finalState._validationError}`);
+          }
+
+          const result = buildGameResultFromState(finalState, { headless: true });
+          validateCompletedGame({
+            status: 'FINAL', gameId: g.id, awayTeam, homeTeam,
+            boxScore: result,
+            winningPitcherId: result.decisions?.winner || null,
+            losingPitcherId: result.decisions?.loser || null,
+          });
+
+          allBatting.push(...result.batting);
+          allPitching.push(...result.pitching);
+
+          if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
+          if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
+          recordPitcherWorkload(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam), g.gameDate);
+          recordPitcherWorkload(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam), g.gameDate);
+
+          const winnerName = result.decisions.winner ? result.decisions.winner.split('|')[1] : null;
+          const loserName = result.decisions.loser ? result.decisions.loser.split('|')[1] : null;
+          const saveName = result.decisions.save ? result.decisions.save.split('|')[1] : null;
+          const homeHRs = result.homeRuns.filter(hr => hr.teamKey === homeTeam).map(hr => ({ playerName: hr.name, inning: hr.inning }));
+          const awayHRs = result.homeRuns.filter(hr => hr.teamKey === awayTeam).map(hr => ({ playerName: hr.name, inning: hr.inning }));
+          const homeHits = result.batting.filter(b => b.teamKey === homeTeam).reduce((s, b) => s + b.h, 0);
+          const awayHits = result.batting.filter(b => b.teamKey === awayTeam).reduce((s, b) => s + b.h, 0);
+
+          const gameSeasonTotals = {};
+          for (const b of result.batting) {
+            const key = `${b.teamKey}|${b.name}`;
+            if (!statsAccum[key]) statsAccum[key] = { hr: 0, doubles: 0, triples: 0, rbi: 0, sb: 0 };
+            statsAccum[key].hr += b.hr || 0;
+            statsAccum[key].doubles += b.doubles || 0;
+            statsAccum[key].triples += b.triples || 0;
+            statsAccum[key].rbi += b.rbi || 0;
+            statsAccum[key].sb += b.sb || 0;
+            if ((b.hr || 0) > 0 || (b.doubles || 0) > 0 || (b.triples || 0) > 0 || (b.rbi || 0) > 0 || (b.sb || 0) > 0) {
+              gameSeasonTotals[b.playerId] = { ...statsAccum[key] };
+            }
+          }
+          result.seasonTotals = gameSeasonTotals;
+
+          resultRows.push({
+            seasonId: season.id, gameDay: currentDay, gameDate: g.gameDate, boxScore: result,
+            homeTeam, awayTeam,
+            homeScore: result.homeScore, awayScore: result.awayScore, winner: result.winner,
+            isUserGame: g.isUserGame, homeHits, awayHits, homeHRs, awayHRs,
+            homeErrors: result.homeErrors || 0, awayErrors: result.awayErrors || 0,
+            winningPitcher: winnerName, losingPitcher: loserName, savePitcher: saveName,
+            stadium: TEAMS[homeTeam]?.stadium || null,
+            innings: result.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
+          });
+          await new Promise(r => setTimeout(r, 0));
+        }
+
+        await commitPlayerStats(season.id, allBatting, allPitching);
+        await persistRotationState(season.id, rotState);
+
+        if (resultRows.length > 0) {
+          const CHUNK = 50;
+          for (let i = 0; i < resultRows.length; i += CHUNK) {
+            await Promise.all(resultRows.slice(i, i + CHUNK).map(r => base44.entities.GameResult.create(r)));
+          }
+        }
+
+        for (const g of toSim) {
+          try { await base44.entities.Schedule.update(g.id, { status: 'final' }); } catch (e) { /* non-fatal */ }
+        }
+
+        await base44.entities.Season.update(season.id, {
+          completedGames: (season.completedGames || 0) + resultRows.length,
+        });
+        await maybeAdvanceDay({ ...season, currentGameDay: currentDay, id: season.id });
+        currentDay++;
+      }
+
+      await base44.entities.Season.update(season.id, { currentGameDay: july8Game.gameDay });
+      setSimToFinaleProgress(null);
+      await loadSeason();
+    } catch (error) {
+      console.error('Sim to July 8 failed:', error);
+      alert('Sim to July 8 failed: ' + error.message);
+    } finally {
+      simulatingRef.current = false;
+      setSimulating(false);
+      setSimToFinaleProgress(null);
+    }
   };
 
   const createNewSeason = async () => {
@@ -711,7 +1036,7 @@ export default function SeasonDashboard() {
   // Auto-sim remaining CPU games + check monthly honors after load/sim
   useEffect(() => {
     if (simulating || !season || !schedule.length) return;
-    if (showNewspaper || showWeeklyAwards || showMonthlyHonors) return;
+    if (showNewspaper || showWeeklyAwards || showMonthlyHonors || allStarBreakVisible) return;
     const userGame = schedule.find(g => g.isUserGame);
     if (userGame && userGame.status === 'final') {
       const cpuRemaining = schedule.filter(g => !g.isUserGame && g.status !== 'final');
@@ -720,8 +1045,9 @@ export default function SeasonDashboard() {
         return;
       }
     }
+    checkAndShowAllStarBreak();
     checkAndShowMonthlyHonors();
-  }, [simulating, season, schedule, showNewspaper, showWeeklyAwards, showMonthlyHonors]);
+  }, [simulating, season, schedule, showNewspaper, showWeeklyAwards, showMonthlyHonors, allStarBreakVisible]);
 
   const todaysUserGame = schedule.find(g => g.isUserGame && g.status !== 'final');
   const isUserOffDay = !todaysUserGame;
@@ -836,6 +1162,9 @@ export default function SeasonDashboard() {
               <Button onClick={() => simToMonthFinale(4)} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-amber-400">
                 <FastForward className="w-3 h-3" /> Sim to April Finale
               </Button>
+              <Button onClick={simToJuly8} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-cyan-400">
+                <FastForward className="w-3 h-3" /> Sim to July 8
+              </Button>
             </div>
           </div>
         ) : (
@@ -914,6 +1243,18 @@ export default function SeasonDashboard() {
         <MonthlyHonorsScreen
           honorsData={monthlyHonorsData}
           onClose={handleCloseMonthlyHonors}
+        />
+      )}
+
+      {allStarBreakVisible && allStarRosters && (
+        <AllStarBreakScreen
+          season={season}
+          rosters={allStarRosters}
+          allStarMvp={season?.allStarMvp}
+          allStarGameResult={season?.allStarGameResult}
+          onPlayAllStarGame={playAllStarGame}
+          onSimAllStarGame={simAllStarGame}
+          onContinue={continueAfterAllStar}
         />
       )}
 

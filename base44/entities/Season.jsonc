@@ -61,6 +61,95 @@
       "type": "object",
       "description": "Map of 'YYYY-MM' to true for months whose honors have been displayed",
       "default": {}
+    },
+    "allStarRosters": {
+      "type": "object",
+      "description": "Generated All-Star rosters: { AL: { battingOrder, bench, pitchers }, NL: {...}, stadium, stadiumTeamKey, homeLeague }",
+      "properties": {
+        "AL": {
+          "type": "object"
+        },
+        "NL": {
+          "type": "object"
+        },
+        "stadium": {
+          "type": "string"
+        },
+        "stadiumTeamKey": {
+          "type": "string"
+        },
+        "homeLeague": {
+          "type": "string"
+        }
+      }
+    },
+    "allStarBreakPhase": {
+      "type": "string",
+      "enum": [
+        "break",
+        "game_played",
+        null
+      ],
+      "default": null,
+      "description": "All-Star break state: 'break' = rosters generated, game playable; 'game_played' = game complete, show MVP; null = not in break"
+    },
+    "worldSeriesHomeFieldLeague": {
+      "type": "string",
+      "enum": [
+        "AL",
+        "NL",
+        null
+      ],
+      "default": null,
+      "description": "League that won the All-Star Game and gets World Series home-field advantage"
+    },
+    "allStarMvp": {
+      "type": "object",
+      "description": "All-Star Game MVP: { name, team, league, statLine, score }",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "team": {
+          "type": "string"
+        },
+        "league": {
+          "type": "string"
+        },
+        "statLine": {
+          "type": "string"
+        },
+        "score": {
+          "type": "number"
+        }
+      }
+    },
+    "allStarGameResult": {
+      "type": "object",
+      "description": "All-Star Game final result: { homeScore, awayScore, winner, winningLeague, homeTeam, awayTeam, stadium }",
+      "properties": {
+        "homeScore": {
+          "type": "integer"
+        },
+        "awayScore": {
+          "type": "integer"
+        },
+        "winner": {
+          "type": "string"
+        },
+        "winningLeague": {
+          "type": "string"
+        },
+        "homeTeam": {
+          "type": "string"
+        },
+        "awayTeam": {
+          "type": "string"
+        },
+        "stadium": {
+          "type": "string"
+        }
+      }
     }
   },
   "required": [
