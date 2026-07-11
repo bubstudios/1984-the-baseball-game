@@ -1685,40 +1685,40 @@ export default function SeasonDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-1">
-            <Button onClick={loadSeason} variant="ghost" size="sm" className="px-2" disabled={simulating}>
+            <Button onClick={loadSeason} variant="ghost" size="sm" className="h-7 w-7 p-0" disabled={simulating} title="Refresh">
               <RotateCcw className="w-3 h-3" />
             </Button>
-            <Button onClick={() => setShowInjuryReport(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating || activeInjuries.length === 0}>
-              <HeartPulse className="w-3 h-3" /> DL
+            <Button onClick={() => setShowInjuryReport(true)} variant="outline" size="sm" className="h-7 w-7 p-0" disabled={simulating || activeInjuries.length === 0} title="Injury Report">
+              <HeartPulse className="w-3 h-3" />
             </Button>
-            <Button onClick={() => setShowAchievements(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating}>
-              <Trophy className="w-3 h-3" /> Awards
+            <Button onClick={() => setShowAchievements(true)} variant="outline" size="sm" className="h-7 w-7 p-0" disabled={simulating} title="Achievements">
+              <Trophy className="w-3 h-3" />
             </Button>
-            <Button onClick={() => setShowTransactionLog(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating}>
-              <ScrollText className="w-3 h-3" /> Wire
+            <Button onClick={() => setShowTransactionLog(true)} variant="outline" size="sm" className="h-7 w-7 p-0" disabled={simulating} title="Transaction Wire">
+              <ScrollText className="w-3 h-3" />
             </Button>
             {season?.seasonPhase === 'SEASON_COMPLETE' && (
-              <Button onClick={() => setShowSeasonHistory(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating}>
-                <BookOpen className="w-3 h-3" /> History
+              <Button onClick={() => setShowSeasonHistory(true)} variant="outline" size="sm" className="h-7 w-7 p-0" disabled={simulating} title="Season History">
+                <BookOpen className="w-3 h-3" />
               </Button>
             )}
             {isDebug && (
-              <Button onClick={() => setShowDebugDiscipline(true)} variant="outline" size="sm" className="gap-1 text-[10px] text-amber-400" disabled={simulating}>
-                <Zap className="w-3 h-3" /> Discipline
+              <Button onClick={() => setShowDebugDiscipline(true)} variant="outline" size="sm" className="h-7 w-7 p-0 text-amber-400" disabled={simulating} title="Discipline Debug">
+                <Zap className="w-3 h-3" />
               </Button>
             )}
-            <Button onClick={handleReadNewspaper} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating || !gameResults?.length}>
-              <Newspaper className="w-3 h-3" /> Paper
+            <Button onClick={handleReadNewspaper} variant="outline" size="sm" className="h-7 w-7 p-0" disabled={simulating || !gameResults?.length} title="Newspaper">
+              <Newspaper className="w-3 h-3" />
             </Button>
-            <Button onClick={() => window.location.href = '/'} variant="outline" size="sm" className="gap-1 text-[10px]">
-              <Play className="w-3 h-3" /> Expo
+            <Button onClick={() => window.location.href = '/'} variant="outline" size="sm" className="h-7 w-7 p-0" title="Exhibition Mode">
+              <Play className="w-3 h-3" />
             </Button>
           </div>
         </div>
       </div>
 
       {/* Next Game Hero Card */}
-      <div className="shrink-0 bg-card border-b border-border px-4 py-3">
+      <div className="shrink-0 bg-card border-b border-border px-4 py-2">
         {standingsData && season && (() => {
           const userDiv = getDivision(season.userTeam);
           const divStandings = standingsData[userDiv] || [];
@@ -1737,7 +1737,7 @@ export default function SeasonDashboard() {
             lastGameLine = `${userWon ? 'W' : 'L'} ${userRuns}-${oppRuns} vs ${TEAMS[opp]?.abbr || opp}`;
           }
           return (
-            <div className="flex items-center gap-3 mb-2 text-[10px] font-heading text-muted-foreground">
+            <div className="flex items-center gap-2 mb-1 text-[10px] font-heading text-muted-foreground">
               <span className="text-foreground font-bold">{userSt.w}-{userSt.l}</span>
               {userSt.streakType && <span className={userSt.streakType === 'W' ? 'text-emerald-400' : 'text-red-400'}>Streak: {userSt.streakType}{userSt.streakLen}</span>}
               <span>{place}{suffix} {DIV_LABELS[userDiv]}</span>
@@ -1757,7 +1757,7 @@ export default function SeasonDashboard() {
         })()}
 
         {currentUserGame ? (
-          <div className="space-y-2">
+          <div className="space-y-1">
             <div>
               <div className="font-heading text-sm font-bold text-foreground">
                 {TEAMS[currentUserGame.awayTeam]?.name} @ {TEAMS[currentUserGame.homeTeam]?.name}
