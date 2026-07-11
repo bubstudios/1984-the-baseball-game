@@ -1,0 +1,70 @@
+{
+  "name": "ManagerSuspension",
+  "type": "object",
+  "properties": {
+    "seasonId": {
+      "type": "string",
+      "description": "Reference to Season entity"
+    },
+    "teamKey": {
+      "type": "string",
+      "description": "Team key"
+    },
+    "managerName": {
+      "type": "string",
+      "description": "Manager full name"
+    },
+    "ejectionSeverity": {
+      "type": "integer",
+      "description": "Ejection severity level (1=normal, 2=heated, 3=contact, 4=fight)"
+    },
+    "suspensionGames": {
+      "type": "integer",
+      "default": 0,
+      "description": "Total games suspended"
+    },
+    "gamesRemaining": {
+      "type": "integer",
+      "default": 0,
+      "description": "Games remaining in suspension"
+    },
+    "suspensionReason": {
+      "type": "string",
+      "description": "Reason for suspension (e.g. 'heated argument', 'bumping umpire')"
+    },
+    "ejectionReason": {
+      "type": "string",
+      "description": "Original ejection call type that triggered the suspension"
+    },
+    "startedOnDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date suspension started"
+    },
+    "startedOnGameDay": {
+      "type": "integer",
+      "description": "Game day suspension started"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether suspension is currently active"
+    },
+    "resolvedOnDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date suspension was resolved"
+    },
+    "gameDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Simulated game date when ejection occurred"
+    }
+  },
+  "required": [
+    "seasonId",
+    "teamKey",
+    "managerName",
+    "active"
+  ]
+}
