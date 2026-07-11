@@ -772,3 +772,15 @@ export function buildStatsMap(playerStatsRecords) {
   }
   return map;
 }
+
+// Reapply completed trades from a persisted ledger to the in-memory TEAMS object.
+// Called on season load — TEAMS re-imports fresh from gameData.js on every page
+// reload, so trade mutations are lost. This replays them from the stored ledger.
+// applyTrades is naturally idempotent: movePlayerBetweenTeams returns early if
+// the player is already on the destination team (not found in source arrays).
+export function reapplyTradesFromLedger(trades) {
+  if (!trades || trades.length === 0) return;
+  const appliedTrades = trades.filter(t => t.applied);
+  if (appliedTrades.length === 0) return;
+  applyTrades(appliedTrades);
+}

@@ -28,7 +28,7 @@ import { calculateAllStarMvp } from '@/lib/allStarMvp';
 import { injectAllStarTeams, removeAllStarTeams, getAllStarTeamKey } from '@/lib/allStarTeams';
 import { resetAllFatigue } from '@/lib/seasonStore';
 import TradeDeadlineScreen from '@/components/season/TradeDeadlineScreen';
-import { generateTradeDeadline, applyTrades, buildStatsMap } from '@/lib/tradeDeadline';
+import { generateTradeDeadline, applyTrades, buildStatsMap, reapplyTradesFromLedger } from '@/lib/tradeDeadline';
 import EndOfRegularSeasonScreen from '@/components/season/EndOfRegularSeasonScreen';
 import PostseasonBracket from '@/components/season/PostseasonBracket';
 import { calculateSeasonAwards } from '@/lib/seasonAwards';
@@ -149,6 +149,12 @@ export default function SeasonDashboard() {
       } else {
         setTradeDeadlineTrades(null);
         setTradeDeadlineVisible(false);
+      }
+
+      // Reapply completed trade deadline transactions to TEAMS (in-memory
+      // mutations are lost on page reload — replay from the persisted ledger)
+      if (currentSeason.tradeDeadlinePhase === 'completed' && currentSeason.tradeDeadlineTrades) {
+        reapplyTradesFromLedger(currentSeason.tradeDeadlineTrades);
       }
 
       // Restore end-of-regular-season state
@@ -445,11 +451,26 @@ export default function SeasonDashboard() {
         applyTrades(approvedTrades);
       }
 
+      // Mark which trades were applied in the persisted ledger so they can be
+      // replayed on page reload (TEAMS re-imports fresh, losing in-memory mutations)
+      const appliedPlayerNames = new Set();
+      for (const t of (approvedTrades || [])) {
+        t.teamAGets?.forEach(p => appliedPlayerNames.add(p.name));
+        t.teamBGets?.forEach(p => appliedPlayerNames.add(p.name));
+      }
+      const updatedTrades = (tradeDeadlineTrades || []).map(t => ({
+        ...t,
+        applied: !t.isUserTrade || appliedPlayerNames.has(t.teamAGets?.[0]?.name),
+      }));
+
       // Advance to September 1 (first game after the deadline)
       const sep1Sched = await base44.entities.Schedule.filter({
         seasonId: season.id, gameDate: '1984-09-01',
       }, 'gameDay', 1);
-      const update = { tradeDeadlinePhase: 'completed' };
+      const update = {
+        tradeDeadlinePhase: 'completed',
+        tradeDeadlineTrades: updatedTrades,
+      };
       if (sep1Sched.length > 0) {
         update.currentGameDay = sep1Sched[0].gameDay;
         update.currentDate = '1984-09-01';
@@ -855,6 +876,13 @@ export default function SeasonDashboard() {
       });
 
       const toSim = daySchedule.filter(g => !g.isUserGame && g.status !== 'final');
+
+      // No CPU games to sim on this day — advance to the next day with games
+      if (toSim.length === 0) {
+        await maybeAdvanceDay(season);
+        await loadSeason();
+        return;
+      }
 
       const rotState = await loadRotationStateForActiveSeason();
 
@@ -1275,6 +1303,26 @@ export default function SeasonDashboard() {
     }
   };
 
+  // ── Sim to the user's next scheduled game (skips off days) ──
+  const simToNextUserGame = async () => {
+    if (!season || !currentUserGame) return;
+    try {
+      simulatingRef.current = true;
+      setSimulating(true);
+      setSimToFinaleProgress('Finding your next game...');
+      await simGamesToDay(currentUserGame.gameDay, season, setSimToFinaleProgress);
+      setSimToFinaleProgress(null);
+      await loadSeason();
+    } catch (error) {
+      console.error('Sim to next game failed:', error);
+      alert('Sim to next game failed: ' + error.message);
+    } finally {
+      simulatingRef.current = false;
+      setSimulating(false);
+      setSimToFinaleProgress(null);
+    }
+  };
+
   // ── End of Regular Season: sim to user's final game ──
   const simToUserFinalGame = async () => {
     if (!season) return;
@@ -1373,11 +1421,29 @@ export default function SeasonDashboard() {
 
       if (remaining.length > 0) return; // Games still remaining
 
+      // Fetch all results for validation and standings
+      const allResults = await base44.entities.GameResult.filter({ seasonId: s.id }, 'gameDay', 2200);
+      const standings = deriveStandings(allResults);
+
+      // Validate: every team must have exactly 162 games (wins + losses)
+      let allAt162 = true;
+      for (const div of Object.keys(standings)) {
+        for (const t of standings[div]) {
+          if (t.w + t.l !== 162) {
+            console.error(`[season] ${t.teamKey} has ${t.w + t.l} games (expected 162)`);
+            allAt162 = false;
+          }
+        }
+      }
+      if (!allAt162) {
+        console.error('[season] Season cannot end: not all teams at 162 games');
+        return; // Block postseason until all teams have 162 games
+      }
+
       // All games complete - generate awards (idempotent)
       let awards = s.seasonAwards;
       if (!awards || awards.length === 0) {
         const allStats = await base44.entities.PlayerStats.filter({ seasonId: s.id }, null, 1500);
-        const allResults = await base44.entities.GameResult.filter({ seasonId: s.id }, 'gameDay', 2200);
         const { awards: calcAwards } = calculateSeasonAwards(allStats, allResults);
         awards = calcAwards;
 
@@ -1402,8 +1468,7 @@ export default function SeasonDashboard() {
         }
       }
 
-      const allResults = await base44.entities.GameResult.filter({ seasonId: s.id }, 'gameDay', 2200);
-      setEndOfSeasonStandings(deriveStandings(allResults));
+      setEndOfSeasonStandings(standings);
       setEndOfSeasonAwards(awards);
       setEndOfRegularSeasonVisible(true);
       setSeason(prev => prev ? { ...prev, seasonPhase: 'REGULAR_SEASON_COMPLETE', seasonAwards: awards } : prev);
@@ -1483,12 +1548,16 @@ export default function SeasonDashboard() {
     if (showNewspaper || showWeeklyAwards || showMonthlyHonors || allStarBreakVisible || tradeDeadlineVisible || endOfRegularSeasonVisible || postseasonVisible) return;
     if (schedule.length > 0) {
       const userGame = schedule.find(g => g.isUserGame);
-      if (userGame && userGame.status === 'final') {
-        const cpuRemaining = schedule.filter(g => !g.isUserGame && g.status !== 'final');
-        if (cpuRemaining.length > 0) {
-          simulateDay();
-          return;
-        }
+      const cpuRemaining = schedule.filter(g => !g.isUserGame && g.status !== 'final');
+      // User's game is done, CPU games remain — auto-sim them
+      if (userGame && userGame.status === 'final' && cpuRemaining.length > 0) {
+        simulateDay();
+        return;
+      }
+      // No user game today, CPU games remain — auto-sim them (CPU-only day)
+      if (!userGame && cpuRemaining.length > 0) {
+        simulateDay();
+        return;
       }
     }
     checkAndShowAllStarBreak();
@@ -1601,7 +1670,12 @@ export default function SeasonDashboard() {
                   <Play className="w-4 h-4" /> Play My Game
                 </Button>
               ) : (
-                <div className="text-[10px] font-heading text-amber-400 font-bold px-2">OFF DAY</div>
+                <>
+                  <div className="text-[10px] font-heading text-amber-400 font-bold px-2">OFF DAY</div>
+                  <Button onClick={simToNextUserGame} disabled={simulating} variant="secondary" size="sm" className="gap-1">
+                    <FastForward className="w-3 h-3" /> Sim to My Next Game
+                  </Button>
+                </>
               )}
               <Button onClick={simulateDay} disabled={simulating} variant={todaysUserGame ? "outline" : "secondary"} size="sm" className="gap-1">
                 {simulating ? <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" /> : <TrendingUp className="w-4 h-4" />}

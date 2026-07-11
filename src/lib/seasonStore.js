@@ -955,21 +955,33 @@ export async function markScheduleRowFinal(scheduleId) {
   }
 }
 
-// Auto-advance the league day if ALL games for the current day are final
+// Auto-advance the league day if the current day is complete (all games final
+// or no games at all). Jumps directly to the next day that has scheduled games,
+// skipping league-wide off days. Returns the updated season (or original if no
+// advance happened — e.g. current day still has unplayed games, or season is over).
 export async function maybeAdvanceDay(season) {
   if (!season?.id) return season;
   const day = season.currentGameDay || 1;
   try {
+    // If current day has games and not all are final, don't advance
     const dayGames = await base44.entities.Schedule.filter({
       seasonId: season.id, gameDay: day,
     });
-    if (dayGames.length === 0) return season;
-    if (!dayGames.every(g => g.status === 'final')) return season;
-    const nextDay = day + 1;
+    if (dayGames.length > 0 && !dayGames.every(g => g.status === 'final')) {
+      return season;
+    }
+
+    // Current day is complete (or empty) — find the next day with scheduled games
+    const remaining = await base44.entities.Schedule.filter({
+      seasonId: season.id, status: 'scheduled',
+    }, 'gameDay', 1);
+    if (remaining.length === 0) return season; // No more games — season is done
+
+    const nextDay = remaining[0].gameDay;
+    if (nextDay <= day) return season; // Safety: never go backwards
+
     const update = { currentGameDay: nextDay };
-    // Derive the next date from the schedule if available
-    const nextSched = await base44.entities.Schedule.filter({ seasonId: season.id, gameDay: nextDay });
-    if (nextSched.length > 0 && nextSched[0].gameDate) update.currentDate = nextSched[0].gameDate;
+    if (remaining[0].gameDate) update.currentDate = remaining[0].gameDate;
     await base44.entities.Season.update(season.id, update);
     return { ...season, ...update };
   } catch (e) {
