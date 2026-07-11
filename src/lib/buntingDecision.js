@@ -11,7 +11,7 @@
 
 import { determineSqueezeType, resolveSqueeze } from './squeezePlay';
 
-const SAC_THRESHOLD = 45; // Lowered further - non-pitcher sac spots need more triggers
+const SAC_THRESHOLD = 40; // Lowered further - non-pitcher sac spots need more triggers
 const HIT_THRESHOLD = 70; // Raised from 45 - bunt-for-hit must be a strong fit
 const SQUEEZE_THRESHOLD = 55; // Runner on 3rd + late/close + weak hitter
 
@@ -28,7 +28,7 @@ export function shouldBunt(batter, game) {
     // Offensive tuning: position players sac bunt slightly more often in
     // correct 1984 spots (runner on 1st, 0 outs, close game, late innings).
     // Pitcher sac rate unchanged. Squeeze NOT touched.
-    const sacChance = isPitcher ? 0.92 : 0.70;
+    const sacChance = isPitcher ? 0.92 : 0.75;
     if (Math.random() < sacChance) return 'sacrifice';
   }
 
