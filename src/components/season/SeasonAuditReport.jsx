@@ -10,6 +10,7 @@ const SEVERITY_CONFIG = {
 };
 
 const CATEGORY_LABELS = {
+  workload: { label: '0. Workload Recording Integrity', key: 'workload' },
   boxScore: { label: '1. Box Score Integrity', key: 'boxScore' },
   starters: { label: '2. Starting Pitcher Logic', key: 'starters' },
   bullpen: { label: '3. Bullpen / Reliever Logic', key: 'bullpen' },
@@ -117,6 +118,7 @@ export default function SeasonAuditReport() {
     const catName = catLabel.split('.')[1]?.trim().split(' ')[0]?.toLowerCase() || cat;
     return report.flags.filter(f => {
       const flagCat = f.category.toLowerCase();
+      if (cat === 'workload') return flagCat.includes('workload');
       if (cat === 'boxScore') return flagCat.includes('box');
       if (cat === 'starters') return flagCat.includes('starter');
       if (cat === 'bullpen') return flagCat.includes('bullpen');

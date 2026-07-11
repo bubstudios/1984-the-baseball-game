@@ -165,6 +165,23 @@ export async function runSeasonAudit(days, onProgress) {
       recordPitcherWorkload(rotationState, homeTeam, homePitchingLine, gameDate);
       recordPitcherWorkload(rotationState, awayTeam, awayPitchingLine, gameDate);
 
+      // DIRECT VERIFICATION: check each pitcher was actually recorded
+      const recordingFailures = [];
+      for (const p of homePitchingLine) {
+        const entries = rotationState[homeTeam]?.workload?.[p.name];
+        const hasEntry = entries && entries.some(e => e.date === gameDate);
+        if (!hasEntry) {
+          recordingFailures.push({ name: p.name, team: homeTeam, side: 'home', bf: p.bf, outs: p.outs, pitches: p.pitches, reason: 'not in ledger after recordPitcherWorkload' });
+        }
+      }
+      for (const p of awayPitchingLine) {
+        const entries = rotationState[awayTeam]?.workload?.[p.name];
+        const hasEntry = entries && entries.some(e => e.date === gameDate);
+        if (!hasEntry) {
+          recordingFailures.push({ name: p.name, team: awayTeam, side: 'away', bf: p.bf, outs: p.outs, pitches: p.pitches, reason: 'not in ledger after recordPitcherWorkload' });
+        }
+      }
+
       // Deep-copy the workload ledger AFTER recording to see what was stored
       const postGameWorkload = {
         home: JSON.parse(JSON.stringify(rotationState[homeTeam]?.workload || {})),
@@ -174,6 +191,7 @@ export async function runSeasonAudit(days, onProgress) {
       if (capturedGames.length > 0) {
         capturedGames[capturedGames.length - 1].pitchingLineDebug = { home: homePitchingNames, away: awayPitchingNames };
         capturedGames[capturedGames.length - 1].postGameWorkload = postGameWorkload;
+        capturedGames[capturedGames.length - 1].recordingFailures = recordingFailures;
       }
 
       gameCount++;
@@ -189,6 +207,7 @@ export async function runSeasonAudit(days, onProgress) {
 function analyzeAuditResults(games, rotationState) {
   const allFlags = [];
 
+  const workload = analyzeWorkloadRecording(games, allFlags);
   const boxScore = analyzeBoxScores(games, allFlags);
   const starters = analyzeStarters(games, rotationState, allFlags);
   const bullpen = analyzeBullpen(games, rotationState, allFlags);
@@ -201,7 +220,7 @@ function analyzeAuditResults(games, rotationState) {
     daysSimulated: games.length > 0 ? games[games.length - 1].day : 0,
     totalGames: games.length,
     gamesWithErrors: games.filter(g => g.error || g.validationFailed).length,
-    categories: { boxScore, starters, bullpen, offense, buntSqueeze, events, outliers },
+    categories: { workload, boxScore, starters, bullpen, offense, buntSqueeze, events, outliers },
     flags: allFlags,
     flagCounts: {
       critical: allFlags.filter(f => f.severity === 'critical').length,
@@ -217,6 +236,72 @@ function gameRef(g) {
 
 function addFlag(flags, severity, category, message, g) {
   flags.push({ severity, category, message, gameRef: g ? gameRef(g) : null });
+}
+
+// ── 0. Workload Recording Integrity ──
+// Checks if recordPitcherWorkload actually stored entries for every pitcher
+// who appeared in the box score. This is the diagnostic that pinpoints WHERE
+// entries are lost: if a pitcher is in pitchingLineDebug but NOT in
+// postGameWorkload, the recording failed for that pitcher on that date.
+function analyzeWorkloadRecording(games, flags) {
+  let totalPitchers = 0, totalRecorded = 0, totalFailed = 0;
+  const failuresByPitcher = {}; // { teamKey|name: [dates] }
+
+  for (const g of games) {
+    if (g.error || g.validationFailed) continue;
+    const fails = g.recordingFailures || [];
+    for (const f of fails) {
+      totalFailed++;
+      const key = `${f.team}|${f.name}`;
+      if (!failuresByPitcher[key]) failuresByPitcher[key] = [];
+      failuresByPitcher[key].push(g.gameDate);
+    }
+    // Count total pitchers that should have been recorded
+    const homeLine = g.pitchingLineDebug?.home || [];
+    const awayLine = g.pitchingLineDebug?.away || [];
+    totalPitchers += homeLine.length + awayLine.length;
+    totalRecorded += (homeLine.length + awayLine.length) - fails.length;
+  }
+
+  // Flag each pitcher with recording failures
+  for (const [key, dates] of Object.entries(failuresByPitcher)) {
+    const [teamKey, name] = key.split('|');
+    addFlag(flags, 'critical', 'Workload',
+      `RECORDING FAILURE: ${name} (${teamKey}) appeared in box score on ${dates.length} date(s) [${dates.join(', ')}] but was NOT recorded in workload ledger | This is the ROOT CAUSE of false 3-straight flags`,
+      null);
+  }
+
+  // Also check: pitchers in box score on consecutive dates but with 0 consecutive
+  // days in the pregame snapshot (entry exists in box score but ledger is empty)
+  const appearancesByPitcher = {};
+  for (const g of games) {
+    if (g.error || g.validationFailed) continue;
+    const r = g.result;
+    if (!r?.pitching) continue;
+    for (const p of r.pitching) {
+      const key = `${p.teamKey}|${p.name}`;
+      if (!appearancesByPitcher[key]) appearancesByPitcher[key] = [];
+      appearancesByPitcher[key].push({ date: g.gameDate, game: g });
+    }
+  }
+
+  // For each pitcher, check if ledger entries match appearances
+  for (const [key, appearances] of Object.entries(appearancesByPitcher)) {
+    const [teamKey, name] = key.split('|');
+    for (const app of appearances) {
+      const side = app.game.homeTeam === teamKey ? 'home' : 'away';
+      const ledger = app.game.postGameWorkload?.[side]?.[name];
+      if (!ledger) {
+        // Pitcher appeared in box score but has NO ledger entry after the game
+        const inLine = (side === 'home' ? app.game.pitchingLineDebug?.home : app.game.pitchingLineDebug?.away)?.find(p => p.name === name);
+        if (inLine) {
+          // Already flagged above via recordingFailures
+        }
+      }
+    }
+  }
+
+  return { totalPitchers, totalRecorded, totalFailed, uniqueFailedPitchers: Object.keys(failuresByPitcher).length };
 }
 
 // ── 1. Box Score Integrity ──
@@ -454,7 +539,7 @@ function analyzeBullpen(games, rotationState, flags) {
         const game2PostWorkload = game2?.postGameWorkload?.[side2]?.[pitcherName] || 'NOT FOUND';
         const game2PitchingLine = (side2 === 'home' ? game2?.pitchingLineDebug?.home : game2?.pitchingLineDebug?.away) || [];
         const pitcherInLine2 = game2PitchingLine.find(p => p.name === pitcherName);
-        const tierDetail = `Pregame: ${pt3.tier || '?'} (${pt3.reason || '?'}) | Pitches yesterday: ${pt3.pitchesYesterday ?? '?'} | Last 2 days: ${pt3.pitchesLast2Days ?? '?'} | Consecutive: ${pt3.consecutiveDays ?? '?'} | Tiers: AVAIL=${tc3.AVAILABLE||0} TIRED=${tc3.TIRED||0} VERY_TIRED=${tc3.VERY_TIRED||0} EMERG=${tc3.EMERGENCY_ONLY||0} | Day2 pitchingLine: ${pitcherInLine2 ? `bf=${pitcherInLine2.bf} outs=${pitcherInLine2.outs} pitches=${pitcherInLine2.pitches}` : 'NOT IN LINE'} | Day2 postGameWorkload: ${JSON.stringify(game2PostWorkload)}`;
+        const tierDetail = `Pregame tier: ${pt3.tier || '?'} | Consecutive (from ledger): ${pt3.consecutiveDays ?? '?'} | Pitches yesterday: ${pt3.pitchesYesterday ?? '?'} | Day2 in pitchingLine: ${pitcherInLine2 ? `bf=${pitcherInLine2.bf} outs=${pitcherInLine2.outs} pitches=${pitcherInLine2.pitches}` : 'NOT IN LINE'} | Day2 in ledger: ${Array.isArray(game2PostWorkload) ? `YES (${game2PostWorkload.length} entries)` : 'NO'}`;
         if (wasExtra || hasEmergencyLog) {
           legalEmergencyCount++;
           flags.push({
