@@ -9,6 +9,7 @@ import {
 } from './gameEngine';
 import { playerId, isPitcherAvailable, getStarterFatigueStatus } from './seasonStore';
 import { validateGameBoxScore } from './boxScoreValidators';
+import { rollBatterInjury, rollHBPIfBatter } from './batterInjuries';
 
 /**
  * Simulate a complete game headlessly (CPU vs CPU).
@@ -17,12 +18,22 @@ import { validateGameBoxScore } from './boxScoreValidators';
  * @returns {object} Final game state (with _tracking data attached)
  */
 export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
-  const { useDH = false, weather = null, umpire = null, homeLineup = null, awayLineup = null, homeSP = null, awaySP = null, unavailableRelievers = null } = options;
+  const { useDH = false, weather = null, umpire = null, homeLineup = null, awayLineup = null, homeSP = null, awaySP = null, unavailableRelievers = null, scratchedPlayers = null } = options;
 
   let state = createGameState(homeTeam, awayTeam, homeLineup, awayLineup, useDH, weather, umpire, homeSP, awaySP);
   state._headlessMode = true;
   state.homeStartingPitcherName = homeSP?.name || null;
   state.awayStartingPitcherName = awaySP?.name || null;
+
+  // Season injury persistence: scratched (injured) players are unavailable for
+  // the entire game. Filter them from both bullpens so no substitution system
+  // can select them, and set state.scratchedPlayers so bench access points
+  // (cpuCheckPinchHit, cpuDecideSubstitutions, batterInjuryCheck) exclude them.
+  if (scratchedPlayers && scratchedPlayers.length > 0) {
+    state.scratchedPlayers = [...scratchedPlayers];
+    state.homeBullpen = state.homeBullpen.filter(p => !scratchedPlayers.includes(p.name));
+    state.awayBullpen = state.awayBullpen.filter(p => !scratchedPlayers.includes(p.name));
+  }
 
   // Annotate ALL bullpen arms with season availability + tier + fatigue penalty.
   // This is the ONE place that sets _seasonAvailable: true for legal arms and
@@ -89,6 +100,7 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
   const hrTracking = [];    // { name, teamKey, inning }
   const bfTracking = {};    // pitcherPlayerId → batters faced count
   const hrAllowedTracking = {}; // pitcherPlayerId → HR count
+  const injuriesOccurred = []; // { playerName, teamKey, playerPos, source, injuryName }
 
   const maxIterations = 500;
   let iterations = 0;
@@ -116,6 +128,37 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     }
     // Process at-bat
     state = processAtBat(state, cpuSelectPitch(state), cpuSelectSwing(state));
+
+    // ── Injury roll (headless sim only) ──
+    // Roll for batter injuries after each at-bat. Injuries that persist (non-minor)
+    // are tracked here and persisted to the Injury entity by the caller after the
+    // game. This ensures CPU sim games generate injuries just like played games.
+    if (state.lastPlay && batter) {
+      const lp = state.lastPlay;
+      const isHBP = lp.isHBP === true;
+      const NON_SWING_TYPES = ['ball', 'strike'];
+      const isWalk = lp.type === 'walk';
+      const isSwing = !isHBP && !isWalk && !NON_SWING_TYPES.includes(lp.type);
+      if (isHBP || isSwing) {
+        let injury = null;
+        if (isHBP) {
+          if (!state._hbpCounts) state._hbpCounts = {};
+          state._hbpCounts[batter.name] = (state._hbpCounts[batter.name] || 0) + 1;
+          injury = rollHBPIfBatter(state._hbpCounts[batter.name], false);
+        } else {
+          injury = rollBatterInjury(false);
+        }
+        if (injury) {
+          injuriesOccurred.push({
+            playerName: batter.name,
+            teamKey: battingTeamKey,
+            playerPos: batter.pos || batter.assignedPos || '?',
+            source: isHBP ? 'hbp' : 'swing',
+            injuryName: injury.name,
+          });
+        }
+      }
+    }
     // Session 14 fix: evaluate BOTH dugouts' managers. With userTeam=null the function
     // resolved cpuSide='home' only, so road starters were never hooked (every road
     // starter threw a complete game). Each call early-returns unless its cpuSide matches
@@ -194,7 +237,7 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
   sanitizeHRs(state.log);
 
   // Attach tracking for buildGameResultFromState
-  state._tracking = { scoringEvents, hitTracking, hrTracking, bfTracking, hrAllowedTracking };
+  state._tracking = { scoringEvents, hitTracking, hrTracking, bfTracking, hrAllowedTracking, injuriesOccurred };
 
   // Session 23: Soft validation only. The sim always produces complete data
   // (lineups, pitcher history, scores). Reconciliation warnings are logged for

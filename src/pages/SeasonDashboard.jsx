@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Trophy, TrendingUp, Play, Newspaper, FastForward } from 'lucide-react';
+import { RotateCcw, Trophy, TrendingUp, Play, Newspaper, FastForward, HeartPulse } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import { generateScheduleValidated, formatGameDate, getLeague, getGameDayForDate } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState, validateCompletedGame } from '@/lib/seasonEngine';
@@ -39,6 +39,10 @@ import { simPostseasonStep } from '@/lib/postseasonSim';
 import { calculatePostseasonAwards } from '@/lib/postseasonAwards';
 import ChampionScreen from '@/components/season/ChampionScreen';
 import SeasonCompleteScreen from '@/components/season/SeasonCompleteScreen';
+import { loadActiveInjuries, buildInjuredRoster, runDailyRecovery, resolveStarterSkippingInjuries, clearInjuryCache, getInjuredPitcherNames, recordInjury } from '@/lib/injuryPersistence';
+import { getSeverityLabel } from '@/lib/injuryConfig';
+import InjuryReportScreen from '@/components/season/InjuryReportScreen';
+import InjuryDebugPanel from '@/components/season/InjuryDebugPanel';
 
 const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
@@ -76,6 +80,8 @@ export default function SeasonDashboard() {
   const [championTeam, setChampionTeam] = useState(null);
   const [seasonCompleteVisible, setSeasonCompleteVisible] = useState(false);
   const [postseasonAwardsData, setPostseasonAwardsData] = useState(null);
+  const [activeInjuries, setActiveInjuries] = useState([]);
+  const [showInjuryReport, setShowInjuryReport] = useState(false);
   const simulatingRef = useRef(false);
   const lastAdvanceDayRef = useRef(null);
   const pendingUserTeam = location.state?.userTeam || null;
@@ -140,6 +146,13 @@ export default function SeasonDashboard() {
       try {
         const allResults = await base44.entities.GameResult.filter({ seasonId: currentSeason.id }, 'gameDay', 2106);
         setStandingsData(deriveStandings(allResults));
+      } catch (e) { /* non-fatal */ }
+
+      // Load active injuries for the season (persistent injury layer)
+      try {
+        clearInjuryCache();
+        const injuries = await loadActiveInjuries(currentSeason.id);
+        setActiveInjuries(injuries);
       } catch (e) { /* non-fatal */ }
 
       // Restore All-Star break state if the season is in a break phase
@@ -669,14 +682,23 @@ export default function SeasonDashboard() {
 
       const toSim = daySchedule.filter(g => !g.isUserGame && g.status !== 'final');
 
-      // No CPU games to sim on this day — advance to the next day with games
+      // No CPU games to sim on this day — run daily recovery, then advance
       if (toSim.length === 0) {
+        const todayDate = daySchedule[0]?.gameDate || season.currentDate;
+        await runDailyRecovery(season.id, todayDate);
+        const updatedInj = await loadActiveInjuries(season.id);
+        setActiveInjuries(updatedInj);
         await maybeAdvanceDay(season);
         await loadSeason();
         return;
       }
 
       const rotState = await loadRotationStateForActiveSeason();
+
+      // Load active injuries for injury-aware lineup/bullpen filtering
+      const dayInjuries = await loadActiveInjuries(season.id);
+      setActiveInjuries(dayInjuries);
+      const simInjuries = [];
 
       const resultRows = [];
       const allBatting = [];
@@ -700,14 +722,33 @@ export default function SeasonDashboard() {
         const awayTeam = g.awayTeam;
         const useDH = TEAMS[homeTeam]?.league === 'AL';
 
-        const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
-        const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
+        const homeSPBase = getProbableStarter(rotState, homeTeam, g.gameDate);
+        const awaySPBase = getProbableStarter(rotState, awayTeam, g.gameDate);
+        // Skip injured starters - fall through to next available rotation member
+        const homeSP = resolveStarterSkippingInjuries(homeSPBase, homeTeam, dayInjuries);
+        const awaySP = resolveStarterSkippingInjuries(awaySPBase, awayTeam, dayInjuries);
+        // Build injury-filtered rosters: injured starters replaced by bench,
+        // injured bench/relievers removed, all injured names added to scratchedPlayers
+        const homeRoster = buildInjuredRoster(homeTeam, dayInjuries);
+        const awayRoster = buildInjuredRoster(awayTeam, dayInjuries);
+        const allScratched = [...new Set([...homeRoster.scratchedPlayers, ...awayRoster.scratchedPlayers])];
         const unavailableRelievers = {
-          home: getUnavailableRelievers(rotState, homeTeam, g.gameDate),
-          away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
+          home: [...getUnavailableRelievers(rotState, homeTeam, g.gameDate), ...getInjuredPitcherNames(dayInjuries, homeTeam)],
+          away: [...getUnavailableRelievers(rotState, awayTeam, g.gameDate), ...getInjuredPitcherNames(dayInjuries, awayTeam)],
         };
 
-        const finalState = simulateGameHeadless(homeTeam, awayTeam, { useDH, homeSP, awaySP, unavailableRelievers, rotationState: rotState, gameDate: g.gameDate });
+        const finalState = simulateGameHeadless(homeTeam, awayTeam, {
+          useDH, homeSP, awaySP, unavailableRelievers, rotationState: rotState, gameDate: g.gameDate,
+          homeLineup: homeRoster.lineup, awayLineup: awayRoster.lineup,
+          scratchedPlayers: allScratched,
+        });
+
+        // Collect injuries that occurred during the headless sim for persistence
+        if (finalState._tracking?.injuriesOccurred) {
+          for (const inj of finalState._tracking.injuriesOccurred) {
+            simInjuries.push({ ...inj, gameDate: g.gameDate });
+          }
+        }
 
         // Hard block: a stalled sim (never reached gameOver) has incomplete data.
         if (finalState._validationFailed) {
@@ -839,6 +880,17 @@ export default function SeasonDashboard() {
       await commitPlayerStats(season.id, allBatting, allPitching);
 
       await persistRotationState(season.id, rotState);
+
+      // Persist injuries that occurred during headless sim games
+      for (const inj of simInjuries) {
+        await recordInjury(season.id, inj.teamKey, inj.playerName, inj.playerPos, inj.source, inj.gameDate, gameDay);
+      }
+
+      // Daily injury recovery: decrement daysRemaining, clear eligible returns
+      const todayDate = daySchedule[0]?.gameDate || season.currentDate;
+      await runDailyRecovery(season.id, todayDate);
+      const updatedInjuries = await loadActiveInjuries(season.id);
+      setActiveInjuries(updatedInjuries);
 
       if (resultRows.length > 0) {
         const CHUNK = 50;
@@ -1483,6 +1535,9 @@ export default function SeasonDashboard() {
             <Button onClick={loadSeason} variant="ghost" size="sm" className="px-2" disabled={simulating}>
               <RotateCcw className="w-3 h-3" />
             </Button>
+            <Button onClick={() => setShowInjuryReport(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating || activeInjuries.length === 0}>
+              <HeartPulse className="w-3 h-3" /> DL
+            </Button>
             <Button onClick={handleReadNewspaper} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating || !gameResults?.length}>
               <Newspaper className="w-3 h-3" /> Paper
             </Button>
@@ -1534,6 +1589,18 @@ export default function SeasonDashboard() {
                   {probableStarters.userSP?.name || 'TBD'} vs {probableStarters.oppSP?.name || 'TBD'}
                 </div>
               )}
+              {activeInjuries.length > 0 && currentUserGame && (() => {
+                const ut = season.userTeam;
+                const ot = currentUserGame.homeTeam === ut ? currentUserGame.awayTeam : currentUserGame.homeTeam;
+                const inj = activeInjuries.filter(i => i.teamKey === ut || i.teamKey === ot);
+                if (inj.length === 0) return null;
+                const fmt = (i) => `${i.playerName.split(' ').pop()} (${getSeverityLabel(i.severity)})`;
+                return (
+                  <div className="text-[10px] text-red-400/80 font-heading">
+                    Unavailable: {inj.map(fmt).join('; ')}
+                  </div>
+                );
+              })()}
               <div className="text-[10px] text-muted-foreground">
                 {TEAMS[currentUserGame.homeTeam]?.stadium}
               </div>
@@ -1598,6 +1665,8 @@ export default function SeasonDashboard() {
         {isDebug && rotationDebug && <RotationDebugPanel debugInfo={rotationDebug} />}
 
         {isDebug && tradeDeadlineTrades && <TradeAuditPanel trades={tradeDeadlineTrades} />}
+
+        {isDebug && <InjuryDebugPanel injuries={activeInjuries} season={season} />}
 
         {activeTab === 'home' && season && (
           <SeasonHomeTab
@@ -1747,6 +1816,14 @@ export default function SeasonDashboard() {
             <p className="font-heading text-sm text-foreground">{simToFinaleProgress}</p>
           </div>
         </div>
+      )}
+
+      {showInjuryReport && (
+        <InjuryReportScreen
+          season={season}
+          injuries={activeInjuries}
+          onClose={() => setShowInjuryReport(false)}
+        />
       )}
     </div>
   );

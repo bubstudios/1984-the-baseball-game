@@ -546,12 +546,13 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
     const dsLineup = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
     const dsFullBench = TEAMS[cpuPitchingSide === 'home' ? newState.homeTeam : newState.awayTeam]?.bench || [];
+    const dsScratched = newState.scratchedPlayers || [];
     const dsUsedNames = new Set();
     [...(cpuPitchingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || [])),
      ...(cpuPitchingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || [])),
      ...dsLineup
     ].forEach(p => dsUsedNames.add(p.name));
-    const dsBench = dsFullBench.filter(p => !dsUsedNames.has(p.name));
+    const dsBench = dsFullBench.filter(p => !dsUsedNames.has(p.name) && !dsScratched.includes(p.name));
     if (!hasDH && should_double_switch({
       park_has_dh: hasDH,
       making_pitcher_change: true,
@@ -591,12 +592,13 @@ export function cpuCheckPinchHit(state) {
   const battingTeamSide = getBattingTeam(state) === 'home' ? 'home' : 'away';
   const benchTeam = battingTeamSide === 'home' ? state.homeTeam : state.awayTeam;
   const fullBench = TEAMS[benchTeam]?.bench || [];
+  const scratchedPlayers = state.scratchedPlayers || [];
   const benchUsedList = battingTeamSide === 'home' ? (state.homeBenchUsed || []) : (state.awayBenchUsed || []);
   const benchHistoryList = battingTeamSide === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
   const battingLineup = battingTeamSide === 'home' ? state.homeLineup : state.awayLineup;
   const usedBenchNames = new Set();
   [...benchUsedList, ...benchHistoryList, ...battingLineup].forEach(p => usedBenchNames.add(p.name));
-  const benchList = fullBench.filter(p => !usedBenchNames.has(p.name));
+  const benchList = fullBench.filter(p => !usedBenchNames.has(p.name) && !scratchedPlayers.includes(p.name));
   const bullpen = battingTeamSide === 'home' ? state.homeBullpen : state.awayBullpen;
   const cpuPitcherObj = battingTeamSide === 'home' ? state.homePitcher : state.awayPitcher;
 

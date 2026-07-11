@@ -67,6 +67,7 @@ import { injectAllStarTeams, removeAllStarTeams } from '@/lib/allStarTeams';
 import { calculateAllStarMvp } from '@/lib/allStarMvp';
 import { hasReachedAllStarPitchLimit } from '@/lib/allStarRules';
 import { checkBatterInjury as checkBatterInjuryExternal } from '@/lib/batterInjuryCheck';
+import { loadActiveInjuries, recordInjury, resolveStarterSkippingInjuries } from '@/lib/injuryPersistence';
 
 
 export default function Home() {
@@ -135,6 +136,7 @@ export default function Home() {
   const [seasonCommitting, setSeasonCommitting] = useState(false);
   const seasonCommitPromiseRef = useRef(null);
   const prevCelebrationBubble = useRef(null);
+  const seasonInjuriesRef = useRef([]);
 
   // Keep gameModeRef in sync so startGame (empty-deps useCallback) always reads the latest mode.
   // Without this, a season game launch would see gameMode=null in startGame's closure and skip
@@ -226,7 +228,15 @@ export default function Home() {
           const awayIll = rollIllnessesForTeam(TEAMS[awayTeamKey], false);
           const illPlayers = { home: homeIll, away: awayIll };
           setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
-          setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum, gameDate: gameDateStr });
+          // Load active season injuries - injured players are scratched for this game
+          let injuredPlayerNames = [];
+          if (seasonId) {
+            try {
+              const seasonInjuries = await loadActiveInjuries(seasonId);
+              injuredPlayerNames = seasonInjuries.filter(i => i.teamKey === homeTeamKey || i.teamKey === awayTeamKey).map(i => i.playerName);
+            } catch (e) { console.error('[injuries] Load failed:', e); }
+          }
+          setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum, gameDate: gameDateStr, injuredPlayerNames });
           setLoadingScreen(false);
         } catch (launchError) {
           // Season launch failed (e.g. rotation state load error) — don't leave the user
@@ -498,10 +508,14 @@ export default function Home() {
     let customAwayLineup = userIsHome ? null : customLineup;
     let adjustedOpponentSP = opponentStartingPitcher;
 
-    // Build CPU lineup with ill players replaced by bench
-    if (cpuIll.length > 0) {
+    // Build CPU lineup with ill/injured players replaced by bench
+    const cpuInjuredNames = (lineupPhase.injuredPlayerNames || []).filter(n => {
+      const cd = TEAMS[cpuTeamKey];
+      return cd && [...cd.lineup, ...(cd.bench || []), ...(cd.rotation || []), ...(cd.bullpen || [])].some(p => p.name === n);
+    });
+    if (cpuIll.length > 0 || cpuInjuredNames.length > 0) {
       const cpuData = TEAMS[cpuTeamKey];
-      const illNames = new Set(cpuIll.map(p => p.name));
+      const illNames = new Set([...cpuIll.map(p => p.name), ...cpuInjuredNames]);
       const usedNames = new Set(illNames);
       const healthyBench = (cpuData.bench || []).filter(p => !illNames.has(p.name));
       const cpuLineup = cpuData.lineup.map(p => {
@@ -538,6 +552,9 @@ export default function Home() {
     const illNames = [];
     if (lineupPhase.illPlayers) {
       [...(lineupPhase.illPlayers.home || []), ...(lineupPhase.illPlayers.away || [])].forEach(p => illNames.push(p.name));
+    }
+    if (lineupPhase.injuredPlayerNames) {
+      illNames.push(...lineupPhase.injuredPlayerNames);
     }
     startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, effectiveUserStarter, adjustedOpponentSP, seasonUser, illNames);
   }, [lineupPhase, startGame, gameMode, forcedStarters]);
@@ -754,56 +771,6 @@ export default function Home() {
 
     prevLogLength.current = gameState.log.length;
 
-    // ── Trigger banner once per completed inning (end of innings 1-8 only) ──
-    // DISABLED: Banner system temporarily inactive
-    /*
-    const currentInning = gameState.inning;
-    if (prevInning.current !== null && prevInning.current !== currentInning && !gameState.gameOver) {
-      const completedInning = prevInning.current;
-      if (completedInning >= 1 && completedInning <= 8) {
-        // Flat pool: every banner (team-specific + national) has equal probability
-        const teamBanners = getBannersForTeam(homeTeam);
-        const allBanners = [
-          ...(teamBanners || []),
-          ...MOVIES_1984_BANNERS,
-          ELECTRONICS_COMPUTERS_BANNER,
-          GENERAL_PRODUCTS_BANNER,
-          WRESTLING_BANNER,
-          OLYMPICS_1984_BANNER,
-          SPACE_AVIATION_BANNER,
-          NEWSPAPERS_BANNER,
-          PHONE_WARS_BANNER,
-          CAMERAS_FILM_BANNER,
-          SCREAM_1984_BANNER,
-          MALL_CULTURE_BANNER,
-          FORMAT_WARS_BANNER,
-          COUNTY_FAIR_BANNER,
-          MUSIC_MTV_BANNER,
-          CARS_ROAD_BANNER,
-          SATURDAY_CARTOONS_BANNER,
-          CEREAL_BANNER,
-          PROMO_NIGHTS_BANNER,
-          ...NATIONAL_TV_BANNERS,
-          ARCADE_BANNER,
-        ].filter(Boolean);
-
-        if (allBanners.length > 0) {
-          const picked = allBanners[Math.floor(Math.random() * allBanners.length)];
-          // Pre-select popup so reopening the same banner always shows the same text
-          const randomBanner = { ...picked };
-          const popupPool = picked.popups || picked.windows || picked.entries || picked.items;
-          if (popupPool && Array.isArray(popupPool) && popupPool.length > 0) {
-            randomBanner._selectedPopup = popupPool[Math.floor(Math.random() * popupPool.length)];
-          }
-          setActiveBanner(null);  // Clear first to force remount (resets auto-hide timer)
-          setBannerSeq(s => s + 1);
-          setActiveBanner(randomBanner);
-        }
-      }
-    }
-    prevInning.current = currentInning;
-    */
-
     // Game-over: handler path processes achievements via finally block.
     // No need to double-process here - trackGameCompleted is not idempotent.
   }, [gameState]);
@@ -836,6 +803,19 @@ export default function Home() {
       setGameState(newState);
     }
   }, [gameState, processing]);
+
+  // Track in-game injuries for Season Mode persistence at game end
+  useEffect(() => {
+    if (!injuryAlert || gameMode !== 'season') return;
+    const injury = injuryAlert.injury;
+    if (!injury) return;
+    const playerName = injury.batterName || injury.pitcherName || injury.runnerName || injury.fielderName || injury.playerName;
+    const teamKey = injuryAlert.teamKey;
+    if (playerName && teamKey) {
+      const sourceMap = { pitcher: 'pitching_fatigue', batter: 'in_game', runner: 'running', sliding: 'sliding', fielder: 'fielding' };
+      seasonInjuriesRef.current.push({ playerName, teamKey, source: sourceMap[injuryAlert.type] || 'in_game' });
+    }
+  }, [injuryAlert, gameMode]);
 
   // Argument check via effect after a play resolves
   // Uses its own ref (prevArgPlay) so the main effect's prevLastPlay doesn't block it
@@ -1115,6 +1095,13 @@ export default function Home() {
             } catch (e) { console.error('Failed to increment completedGames:', e); }
           }
           // Auto-advance the league day if all games for this day are now complete
+          // Persist in-game injuries to the Injury entity (Season Mode only)
+          if (seasonInjuriesRef.current.length > 0 && ctx.seasonId) {
+            for (const inj of seasonInjuriesRef.current) {
+              await recordInjury(ctx.seasonId, inj.teamKey, inj.playerName, '?', inj.source, ctx.gameDate, ctx.gameDay);
+            }
+            seasonInjuriesRef.current = [];
+          }
           if (ctx.seasonId) await maybeAdvanceDay({ id: ctx.seasonId, currentGameDay: ctx.gameDay });
         } catch (e) {
           console.error('Season result save failed:', e);

@@ -1,0 +1,94 @@
+{
+  "name": "Injury",
+  "type": "object",
+  "properties": {
+    "seasonId": {
+      "type": "string",
+      "description": "Reference to Season entity"
+    },
+    "teamKey": {
+      "type": "string",
+      "description": "Team key"
+    },
+    "playerName": {
+      "type": "string",
+      "description": "Player full name"
+    },
+    "playerPos": {
+      "type": "string",
+      "description": "Player position (C, 1B, 2B, SS, 3B, OF, SP, RP, CL, DH)"
+    },
+    "injuryType": {
+      "type": "string",
+      "description": "Descriptive injury name (e.g. 'hamstring strain')"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "minor",
+        "day_to_day",
+        "15_day",
+        "60_day",
+        "season_ending",
+        "pregame_scratch"
+      ],
+      "description": "Injury severity level"
+    },
+    "source": {
+      "type": "string",
+      "description": "How the injury was triggered (in_game, pregame_scratch, pitching_fatigue, collision, sliding, etc.)"
+    },
+    "startedOnDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date injury occurred"
+    },
+    "startedOnGameDay": {
+      "type": "integer",
+      "description": "Game day injury occurred"
+    },
+    "eligibleReturnDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date player is eligible to return"
+    },
+    "gamesRemaining": {
+      "type": "integer",
+      "default": 0,
+      "description": "Approximate games remaining until return"
+    },
+    "daysRemaining": {
+      "type": "integer",
+      "default": 0,
+      "description": "Calendar days remaining until return"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether injury is currently active"
+    },
+    "canPlayThrough": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether player can play through the injury at reduced effectiveness"
+    },
+    "recoveredOnDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date player recovered from injury"
+    },
+    "gameDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Simulated game date when injury occurred"
+    }
+  },
+  "required": [
+    "seasonId",
+    "teamKey",
+    "playerName",
+    "injuryType",
+    "severity",
+    "active"
+  ]
+}

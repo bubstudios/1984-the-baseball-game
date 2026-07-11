@@ -9,6 +9,7 @@ import {
   getProbableStarter, advanceRotation, recordPitcherWorkload,
   getUnavailableRelievers, commitPlayerStats, maybeAdvanceDay,
 } from './seasonStore';
+import { loadActiveInjuries, buildInjuredRoster, runDailyRecovery, resolveStarterSkippingInjuries, getInjuredPitcherNames, recordInjury } from './injuryPersistence';
 
 /**
  * Simulate all non-final games from the current day up to (but not including) targetGameDay.
@@ -21,6 +22,8 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
   if (currentDay >= targetGameDay) return;
 
   const rotState = await loadRotationStateForActiveSeason();
+  let dayInjuries = await loadActiveInjuries(seasonObj.id);
+  const simInjuries = [];
 
   while (currentDay < targetGameDay) {
     onProgress?.(`Simulating day ${currentDay} of ${targetGameDay - 1}...`);
@@ -30,7 +33,12 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
     });
 
     const toSim = daySchedule.filter(g => g.status !== 'final');
-    if (toSim.length === 0) { currentDay++; continue; }
+    if (toSim.length === 0) {
+      const offDate = daySchedule[0]?.gameDate || seasonObj.currentDate;
+      await runDailyRecovery(seasonObj.id, offDate);
+      dayInjuries = await loadActiveInjuries(seasonObj.id);
+      currentDay++; continue;
+    }
 
     const existingStats = await base44.entities.PlayerStats.filter({ seasonId: seasonObj.id }, null, 1500);
     const statsAccum = {};
@@ -49,17 +57,26 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
       const homeTeam = g.homeTeam;
       const awayTeam = g.awayTeam;
       const useDH = TEAMS[homeTeam]?.league === 'AL';
-      const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
-      const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
+      const homeSP = resolveStarterSkippingInjuries(getProbableStarter(rotState, homeTeam, g.gameDate), homeTeam, dayInjuries);
+      const awaySP = resolveStarterSkippingInjuries(getProbableStarter(rotState, awayTeam, g.gameDate), awayTeam, dayInjuries);
+      const homeRoster = buildInjuredRoster(homeTeam, dayInjuries);
+      const awayRoster = buildInjuredRoster(awayTeam, dayInjuries);
+      const allScratched = [...new Set([...homeRoster.scratchedPlayers, ...awayRoster.scratchedPlayers])];
       const unavailableRelievers = {
-        home: getUnavailableRelievers(rotState, homeTeam, g.gameDate),
-        away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
+        home: [...getUnavailableRelievers(rotState, homeTeam, g.gameDate), ...getInjuredPitcherNames(dayInjuries, homeTeam)],
+        away: [...getUnavailableRelievers(rotState, awayTeam, g.gameDate), ...getInjuredPitcherNames(dayInjuries, awayTeam)],
       };
 
       const finalState = simulateGameHeadless(homeTeam, awayTeam, {
-        useDH, homeSP, awaySP, unavailableRelievers,
-        rotationState: rotState, gameDate: g.gameDate,
+        useDH, homeSP, awaySP, unavailableRelievers, rotationState: rotState, gameDate: g.gameDate,
+        homeLineup: homeRoster.lineup, awayLineup: awayRoster.lineup, scratchedPlayers: allScratched,
       });
+
+      if (finalState._tracking?.injuriesOccurred) {
+        for (const inj of finalState._tracking.injuriesOccurred) {
+          simInjuries.push({ ...inj, gameDate: g.gameDate });
+        }
+      }
       if (finalState._validationFailed) {
         throw new Error(`Sim stall for ${awayTeam}@${homeTeam}: ${finalState._validationError}`);
       }
@@ -134,6 +151,16 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
       completedGames: (seasonObj.completedGames || 0) + resultRows.length,
     });
     await maybeAdvanceDay({ ...seasonObj, currentGameDay: currentDay, id: seasonObj.id });
+
+    // Persist injuries that occurred during headless sim + run daily recovery
+    for (const inj of simInjuries) {
+      await recordInjury(seasonObj.id, inj.teamKey, inj.playerName, inj.playerPos, inj.source, inj.gameDate, currentDay);
+    }
+    simInjuries.length = 0;
+    const todayDate = daySchedule[0]?.gameDate || seasonObj.currentDate;
+    await runDailyRecovery(seasonObj.id, todayDate);
+    dayInjuries = await loadActiveInjuries(seasonObj.id);
+
     currentDay++;
   }
 
