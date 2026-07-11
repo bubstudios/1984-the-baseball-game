@@ -17,6 +17,7 @@ import SeasonDashboard from '@/pages/SeasonDashboard';
 import SeasonTeamSelect from '@/pages/SeasonTeamSelect';
 import SeasonAuditReport from '@/components/season/SeasonAuditReport';
 import FullSeasonSim from '@/pages/FullSeasonSim';
+import PitcherAudit from '@/pages/PitcherAudit';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -62,6 +63,7 @@ const AuthenticatedApp = () => {
       <Route path="/season" element={<SeasonDashboard />} />
       <Route path="/audit" element={<SeasonAuditReport />} />
       <Route path="/full-season-sim" element={<FullSeasonSim />} />
+      <Route path="/pitcher-audit" element={<PitcherAudit />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
