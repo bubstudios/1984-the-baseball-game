@@ -134,7 +134,7 @@ export default function PostseasonBracket({
           <Trophy className="w-5 h-5 text-primary" />
           <div>
             <h1 className="font-heading text-base font-bold text-foreground">
-              1984 Postseason
+              {wsComplete ? '1984 Final Bracket' : '1984 Postseason'}
             </h1>
             <p className="text-[10px] text-muted-foreground font-heading">
               {wsComplete ? 'World Series Complete' : 'League Championship Series'}

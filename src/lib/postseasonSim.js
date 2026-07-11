@@ -2,7 +2,7 @@
 // Separate from regular-season simulateDay(). Each call sims ONE game.
 
 import { TEAMS } from './gameData';
-import { simulateGameHeadless } from './seasonEngine';
+import { simulateGameHeadless, buildGameResultFromState } from './seasonEngine';
 import { resolveWorldSeriesHomeField } from './postseason';
 
 function clone(postseason) {
@@ -99,13 +99,18 @@ export function simPostseasonStep(postseason, asgWinnerLeague) {
     gameDate: game.date,
   });
 
-  const homeWon = finalState.score.home > finalState.score.away;
+  const result = buildGameResultFromState(finalState, { headless: true });
+
+  const homeWon = result.homeScore > result.awayScore;
   const winner = homeWon ? game.homeTeam : game.awayTeam;
 
   game.status = 'complete';
-  game.homeScore = finalState.score.home;
-  game.awayScore = finalState.score.away;
+  game.homeScore = result.homeScore;
+  game.awayScore = result.awayScore;
   game.winner = winner;
+  game.batting = result.batting;
+  game.pitching = result.pitching;
+  game.decisions = result.decisions;
 
   // Check if this series is now complete
   if (isSeriesComplete(series)) {

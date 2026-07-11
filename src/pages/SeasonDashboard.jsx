@@ -35,7 +35,9 @@ import { calculateSeasonAwards } from '@/lib/seasonAwards';
 import { generatePostseason } from '@/lib/postseason';
 import { simGamesToDay } from '@/lib/seasonSimLoop';
 import { simPostseasonStep } from '@/lib/postseasonSim';
+import { calculatePostseasonAwards } from '@/lib/postseasonAwards';
 import ChampionScreen from '@/components/season/ChampionScreen';
+import SeasonCompleteScreen from '@/components/season/SeasonCompleteScreen';
 
 const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
@@ -71,6 +73,8 @@ export default function SeasonDashboard() {
   const [postseasonVisible, setPostseasonVisible] = useState(false);
   const [postseasonData, setPostseasonData] = useState(null);
   const [championTeam, setChampionTeam] = useState(null);
+  const [seasonCompleteVisible, setSeasonCompleteVisible] = useState(false);
+  const [postseasonAwardsData, setPostseasonAwardsData] = useState(null);
   const simulatingRef = useRef(false);
   const lastAdvanceDayRef = useRef(null);
   const pendingUserTeam = location.state?.userTeam || null;
@@ -173,7 +177,13 @@ export default function SeasonDashboard() {
       }
 
       // Restore postseason state
-      if (currentSeason.postseason && currentSeason.seasonPhase !== 'REGULAR_SEASON' && currentSeason.seasonPhase !== 'REGULAR_SEASON_COMPLETE') {
+      if (currentSeason.seasonPhase === 'SEASON_COMPLETE' && currentSeason.postseasonAwards) {
+        setPostseasonData(currentSeason.postseason);
+        setPostseasonAwardsData(currentSeason.postseasonAwards);
+        setSeasonCompleteVisible(true);
+        setPostseasonVisible(false);
+        setChampionTeam(null);
+      } else if (currentSeason.postseason && currentSeason.seasonPhase !== 'REGULAR_SEASON' && currentSeason.seasonPhase !== 'REGULAR_SEASON_COMPLETE') {
         setPostseasonData(currentSeason.postseason);
         setPostseasonVisible(true);
         if (currentSeason.seasonPhase === 'SEASON_COMPLETE' && currentSeason.champion) {
@@ -183,6 +193,8 @@ export default function SeasonDashboard() {
         setPostseasonVisible(false);
         setPostseasonData(null);
         setChampionTeam(null);
+        setSeasonCompleteVisible(false);
+        setPostseasonAwardsData(null);
       }
 
     } catch (error) {
@@ -1144,6 +1156,16 @@ export default function SeasonDashboard() {
     const s = seasonObj || season;
     if (!s) return;
 
+    // Season complete (postseason done) - show awards/wrap screen
+    if (s.seasonPhase === 'SEASON_COMPLETE') {
+      if (s.postseasonAwards && !seasonCompleteVisible && !postseasonVisible && !championTeam) {
+        setPostseasonData(s.postseason);
+        setPostseasonAwardsData(s.postseasonAwards);
+        setSeasonCompleteVisible(true);
+      }
+      return;
+    }
+
     // Already past this phase - show screen if needed
     if (s.seasonPhase === 'REGULAR_SEASON_COMPLETE' || s.seasonPhase === 'AWARDS_REVEALED') {
       if (s.seasonAwards && !endOfRegularSeasonVisible) {
@@ -1281,6 +1303,8 @@ export default function SeasonDashboard() {
       } else if (event.type === 'champion') {
         update.seasonPhase = 'SEASON_COMPLETE';
         update.champion = event.champion;
+        const awards = calculatePostseasonAwards(updated);
+        update.postseasonAwards = awards;
       } else if (season.seasonPhase === 'POSTSEASON_READY' &&
                  (updated.alcs?.status === 'complete' || updated.nlcs?.status === 'complete')) {
         update.seasonPhase = 'ALCS_NLCS';
@@ -1291,6 +1315,7 @@ export default function SeasonDashboard() {
       setPostseasonData(updated);
 
       if (event.type === 'champion') {
+        setPostseasonAwardsData(update.postseasonAwards);
         setChampionTeam(event.champion);
       }
     } catch (e) {
@@ -1333,7 +1358,7 @@ export default function SeasonDashboard() {
   // Auto-sim remaining CPU games + check monthly honors + end of season after load/sim
   useEffect(() => {
     if (simulating || !season) return;
-    if (showNewspaper || showWeeklyAwards || showMonthlyHonors || allStarBreakVisible || tradeDeadlineVisible || endOfRegularSeasonVisible || postseasonVisible) return;
+    if (showNewspaper || showWeeklyAwards || showMonthlyHonors || allStarBreakVisible || tradeDeadlineVisible || endOfRegularSeasonVisible || postseasonVisible || seasonCompleteVisible) return;
     if (schedule.length > 0) {
       const userGame = schedule.find(g => g.isUserGame);
       const cpuRemaining = schedule.filter(g => !g.isUserGame && g.status !== 'final');
@@ -1386,7 +1411,7 @@ export default function SeasonDashboard() {
     checkAndShowMonthlyHonors();
     checkAndShowTradeDeadline();
     checkAndShowEndOfRegularSeason();
-  }, [simulating, season, schedule, showNewspaper, showWeeklyAwards, showMonthlyHonors, allStarBreakVisible, tradeDeadlineVisible, endOfRegularSeasonVisible, postseasonVisible]);
+  }, [simulating, season, schedule, showNewspaper, showWeeklyAwards, showMonthlyHonors, allStarBreakVisible, tradeDeadlineVisible, endOfRegularSeasonVisible, postseasonVisible, seasonCompleteVisible]);
 
   const todaysUserGame = schedule.find(g => g.isUserGame && g.status !== 'final');
   const isUserOffDay = !todaysUserGame;
@@ -1641,12 +1666,48 @@ export default function SeasonDashboard() {
           simulating={simulating}
           onPlayGame={() => { /* Postseason game play - deferred */ }}
           onSimPostseason={handleSimPostseason}
-          onContinue={() => setPostseasonVisible(false)}
+          onContinue={() => {
+            if (season?.seasonPhase === 'SEASON_COMPLETE') {
+              setPostseasonVisible(false);
+              setSeasonCompleteVisible(true);
+            } else {
+              setPostseasonVisible(false);
+            }
+          }}
         />
       )}
 
       {championTeam && (
-        <ChampionScreen champion={championTeam} onClose={() => setChampionTeam(null)} />
+        <ChampionScreen champion={championTeam} onClose={() => {
+          setChampionTeam(null);
+          setSeasonCompleteVisible(true);
+        }} />
+      )}
+
+      {seasonCompleteVisible && postseasonAwardsData && (
+        <SeasonCompleteScreen
+          season={season}
+          awards={postseasonAwardsData}
+          champion={season?.champion}
+          onViewBracket={() => {
+            setSeasonCompleteVisible(false);
+            setPostseasonVisible(true);
+          }}
+          onViewStandings={() => {
+            setSeasonCompleteVisible(false);
+            setActiveTab('standings');
+          }}
+          onViewLeaders={() => {
+            setSeasonCompleteVisible(false);
+            setActiveTab('leaders');
+          }}
+          onStartNewSeason={() => {
+            window.location.href = '/season-setup';
+          }}
+          onMainMenu={() => {
+            window.location.href = '/';
+          }}
+        />
       )}
 
       {simToFinaleProgress && (
