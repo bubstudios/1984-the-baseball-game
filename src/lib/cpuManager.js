@@ -412,7 +412,14 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
 
   const walksPull = bbi >= 5;
 
-  const lateClose = inning >= 8 && (hasLead || margin === 0) && margin <= 3 && (composure < 50 || inning >= 9) && ip >= 2;
+  // Late/close hook: bring in a fresh arm in save situations. But don't yank a
+  // CRUISING reliever purely on inning count — the old "inning >= 9" bypass
+  // pulled every reliever at 2.0 IP in extras, burning 8-9 pitchers in a marathon.
+  // Now: composure-driven pull at 2+ IP, inning-driven pull only at 3+ IP so a
+  // reliever who is dealing can throw a 3rd inning in extras.
+  const lateClose = inning >= 8 && (hasLead || margin === 0) && margin <= 3 && (
+    (composure < 50 && ip >= 2) || (inning >= 9 && ip >= 3)
+  );
 
   // Fatigue-responsive hook: reads the same physical fatigue state the UI displays.
   // EXHAUSTED (level 3+): pull regardless of inning/score — arm is gone.
