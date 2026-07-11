@@ -582,17 +582,30 @@ function getLeastRecentlyUsedArm(rotationState, teamKey, bullpen, gameDate) {
 }
 
 // Record pitcher workload after a game commits. Writes to the same ledger as starts.
+// ROOT CAUSE FIX: The old skip condition (pitches === 0 && !p.outs) missed pitchers
+// who faced batters (bf > 0) but had 0 tracked pitches/outs — e.g., entered, batter
+// reached on error, inning ended on pickoff. Those appearances never entered the
+// ledger, so isPitcherAvailable always returned AVAILABLE, causing 3-straight-day use.
+// Now: any pitcher who faced a batter (bf > 0) is ALWAYS recorded, with a pitch
+// estimate from bf if gs.pitches wasn't tracked.
 export function recordPitcherWorkload(rotationState, teamKey, pitchingLine, gameDate) {
   if (!gameDate) return;
   const rs = ensureTeamRotationState(rotationState, teamKey);
   for (const p of pitchingLine) {
     if (!p.name) continue;
-    const pitches = p.pitches || estimatePitches(p.outs || 0);
-    if (pitches === 0 && !p.outs) continue;
+    const bf = p.bf || 0;
+    const outs = p.outs || 0;
+    let pitches = p.pitches || 0;
+    if (pitches === 0) {
+      // Estimate: ~5 pitches per out, ~4 per BF (whichever is greater)
+      pitches = Math.max(outs * 5, bf * 4);
+    }
+    // Skip only if the pitcher truly did nothing — no batters faced, no pitches, no outs
+    if (bf === 0 && pitches === 0 && outs === 0) continue;
     if (!rs.workload[p.name]) rs.workload[p.name] = [];
     // Idempotent: remove existing entry for this date
     rs.workload[p.name] = rs.workload[p.name].filter(e => e.date !== gameDate);
-    rs.workload[p.name].push({ date: gameDate, pitches, outs: p.outs || 0 });
+    rs.workload[p.name].push({ date: gameDate, pitches, outs });
     // Keep last 10 entries
     if (rs.workload[p.name].length > 10) {
       rs.workload[p.name] = rs.workload[p.name].slice(-10);
