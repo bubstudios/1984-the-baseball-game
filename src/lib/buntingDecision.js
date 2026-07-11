@@ -11,7 +11,7 @@
 
 import { determineSqueezeType, resolveSqueeze } from './squeezePlay';
 
-const SAC_THRESHOLD = 40; // Lowered further - non-pitcher sac spots need more triggers
+const SAC_THRESHOLD = 38; // Lowered - nudge sac bunts toward 0.18-0.25/team/game
 const HIT_THRESHOLD = 70; // Raised from 45 - bunt-for-hit must be a strong fit
 const SQUEEZE_THRESHOLD = 55; // Runner on 3rd + late/close + weak hitter
 

@@ -223,8 +223,8 @@ export function processAtBat(state, pitchType, swingType) {
   }
 
   // Offensive tuning: wildness check generates direct walks before pitch count.
-  // Bumped from 0.005 to 0.007 to add ~0.3 walks/team/game.
-  const wc = Math.max(0.01, (10 - (effP.effectiveControl || effP.control)) * 0.007);
+  // Bumped to 0.0095 to push walks toward 2.5-2.7/team/game without raising hits.
+  const wc = Math.max(0.01, (10 - (effP.effectiveControl || effP.control)) * 0.0095);
   if (Math.random() < wc) { batter.gameStats.bb++; pitcher.gameStats.bb++; pitcher.gameStats.pitches += 4; newState.log.push({ type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }); newState.lastPlay = { type: 'walk', text: `${batter.name} ${pickLine(WALK_LINES)}` }; handleWalk(newState, batter); newState.balls = 0; newState.strikes = 0; advanceBatter(newState); if (newState.halfInning === 'bottom' && newState.inning >= 9 && newState.score.home > newState.score.away && !newState.gameOver) { newState.gameOver = true; newState.waitingForInput = false; newState.log.push({ type: 'info', text: `🎉 Walk-off walk! ${home.name} win ${newState.score.home}-${newState.score.away}!` }); } applyComposure(pitcher, newState, 'walk'); return newState; }
   newState.pitchResult = resolvePitch(newState, pitchType);
   if (!newState.userPitchTypes) newState.userPitchTypes = [];

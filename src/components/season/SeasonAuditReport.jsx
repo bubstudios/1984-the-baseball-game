@@ -18,6 +18,7 @@ const CATEGORY_LABELS = {
   buntSqueeze: { label: '5. Bunt / Squeeze Abuse', key: 'buntSqueeze' },
   events: { label: '6. Game Event Integrity', key: 'events' },
   outliers: { label: '7. Score Outliers', key: 'outliers' },
+  scoring: { label: '8. Scoring Distribution', key: 'scoring' },
 };
 
 function StatRow({ label, value, status }) {

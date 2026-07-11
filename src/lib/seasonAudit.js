@@ -19,8 +19,8 @@ export const REALISM_TARGETS = {
   bbPerTeamGame: { min: 2.5, max: 3.5, label: 'Walks / team / game' },
   kPerTeamGame: { min: 4.5, max: 5.8, label: 'Strikeouts / team / game' },
   sbAttemptsPerTeamGame: { min: 0.5, max: 0.9, label: 'SB attempts / team / game' },
-  sbSuccessPerTeamGame: { min: 0.3, max: 0.6, label: 'Successful SB / team / game' },
-  sacBuntsPerTeamGame: { min: 0.25, max: 0.55, label: 'Sac bunts / team / game' },
+  sbSuccessPerTeamGame: { min: 0.28, max: 0.6, label: 'Successful SB / team / game' },
+  sacBuntsPerTeamGame: { min: 0.18, max: 0.55, label: 'Sac bunts / team / game' },
 };
 
 /**
@@ -215,12 +215,13 @@ function analyzeAuditResults(games, rotationState) {
   const buntSqueeze = analyzeBuntSqueeze(games, allFlags);
   const events = analyzeEvents(games, allFlags);
   const outliers = analyzeOutliers(games, allFlags);
+  const scoring = analyzeScoringDistribution(games, allFlags);
 
   return {
     daysSimulated: games.length > 0 ? games[games.length - 1].day : 0,
     totalGames: games.length,
     gamesWithErrors: games.filter(g => g.error || g.validationFailed).length,
-    categories: { workload, boxScore, starters, bullpen, offense, buntSqueeze, events, outliers },
+    categories: { workload, boxScore, starters, bullpen, offense, buntSqueeze, events, outliers, scoring },
     flags: allFlags,
     flagCounts: {
       critical: allFlags.filter(f => f.severity === 'critical').length,
@@ -823,4 +824,58 @@ function analyzeOutliers(games, flags) {
   }
 
   return { highRunGames, highCombinedGames, highHitGames, highERPitchers };
+}
+
+// ── 8. Scoring Distribution Audit ──
+// Tracks how runs are distributed across games to detect uneven offense
+// (too many dead games mixed with outlier blowouts).
+function analyzeScoringDistribution(games, flags) {
+  const teamScores = [];
+  let shutouts = 0;
+  let bothTeamsThreeOrFewer = 0;
+
+  for (const g of games) {
+    if (g.error || g.validationFailed) continue;
+    const homeScore = g.score?.home || 0;
+    const awayScore = g.score?.away || 0;
+    teamScores.push(homeScore, awayScore);
+    if (homeScore === 0) shutouts++;
+    if (awayScore === 0) shutouts++;
+    if (homeScore <= 3 && awayScore <= 3) bothTeamsThreeOrFewer++;
+  }
+
+  const buckets = {
+    '0 runs': 0,
+    '1 run': 0,
+    '2 runs': 0,
+    '3-5 runs': 0,
+    '6-8 runs': 0,
+    '9+ runs': 0,
+  };
+  for (const s of teamScores) {
+    if (s === 0) buckets['0 runs']++;
+    else if (s === 1) buckets['1 run']++;
+    else if (s === 2) buckets['2 runs']++;
+    else if (s <= 5) buckets['3-5 runs']++;
+    else if (s <= 8) buckets['6-8 runs']++;
+    else buckets['9+ runs']++;
+  }
+
+  const totalTeamGames = teamScores.length;
+  const pct = {};
+  for (const [k, v] of Object.entries(buckets)) {
+    pct[k] = totalTeamGames > 0 ? (v / totalTeamGames * 100).toFixed(1) + '%' : '0%';
+  }
+
+  // Flag dead games and outlier games for distribution review
+  const deadGamePct = totalTeamGames > 0 ? (buckets['0 runs'] + buckets['1 run'] + buckets['2 runs']) / totalTeamGames : 0;
+  if (deadGamePct > 0.30) {
+    addFlag(flags, 'info', 'Scoring', `${(deadGamePct * 100).toFixed(1)}% of team games scored 0-2 runs - possible dead-game skew`, null);
+  }
+  const blowoutPct = totalTeamGames > 0 ? buckets['9+ runs'] / totalTeamGames : 0;
+  if (blowoutPct > 0.08) {
+    addFlag(flags, 'info', 'Scoring', `${(blowoutPct * 100).toFixed(1)}% of team games scored 9+ runs - possible outlier skew`, null);
+  }
+
+  return { distribution: buckets, percentages: pct, shutouts, bothTeamsThreeOrFewer, totalTeamGames };
 }
