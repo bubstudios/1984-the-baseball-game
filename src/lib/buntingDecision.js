@@ -25,7 +25,10 @@ export function shouldBunt(batter, game) {
   if (sacScore >= SAC_THRESHOLD) {
     // Even when it qualifies, don't ALWAYS bunt - add a probability gate so it's not robotic.
     // Pitchers bunt nearly always in a sac spot; position players much less often.
-    const sacChance = isPitcher ? 0.92 : 0.55;
+    // Offensive tuning: position players sac bunt slightly more often in
+    // correct 1984 spots (runner on 1st, 0 outs, close game, late innings).
+    // Pitcher sac rate unchanged. Squeeze NOT touched.
+    const sacChance = isPitcher ? 0.92 : 0.64;
     if (Math.random() < sacChance) return 'sacrifice';
   }
 
