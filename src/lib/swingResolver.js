@@ -226,7 +226,7 @@ export function resolvePitch(state, pitchType) {
   else if (Math.random() < baseHbpChance) return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true };
   // Walk tuning: strike rate lowered further to raise walks toward target.
   // Wild pitchers (low control) still punished more via the control multiplier.
-  let strikeChance = 0.235 + controlFactor * 0.255 + (pitchType.controlBonus || 0) * 0.04;
+  let strikeChance = 0.285 + controlFactor * 0.270 + (pitchType.controlBonus || 0) * 0.04;
   if (state.umpire) strikeChance += getUmpireZoneEffect(state.umpire) / 100;
   const isStrike = Math.random() < Math.min(Math.max(strikeChance, 0.08), 0.92);
   return { pitchType: pitchType.name, isStrike, location: isStrike ? ['inside corner','outside corner','down the middle','high strike','low strike'][Math.floor(Math.random() * 5)] : ['high','low','inside','outside','way outside','in the dirt'][Math.floor(Math.random() * 6)] };
@@ -385,7 +385,7 @@ export function resolveSwing(state, swingType, pitch) {
   const adjBatter = getSituationalBatter(state);
   const contactRating = (adjBatter.baseContact || adjBatter.contact) / 10;
   const isPitcherBatting = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let contactChance = 0.43 + contactRating * 0.38;
+  let contactChance = 0.37 + contactRating * 0.34;
   if (isPitcherBatting) contactChance *= 0.55;
   if (isPower) contactChance -= 0.10; if (isContact) contactChance += 0.12; if (!pitch.isStrike) contactChance -= 0.20;
   if (state.hitAndRun) { contactChance -= 0.08; contactChance = Math.max(0.03, contactChance); }
@@ -425,7 +425,7 @@ export function resolveSwing(state, swingType, pitch) {
   const hitDirection = getHitDirection(adjBatter.bats);
   const powerRating = (adjBatter.basePower || adjBatter.power) / 10;
   const isPitcherBatting2 = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let hitChance = 0.14 + (contactRating + contactWx / 10) * 0.20;
+  let hitChance = 0.17 + (contactRating + contactWx / 10) * 0.23;
   if (isPitcherBatting2) hitChance *= 0.45;
   if (isPower) hitChance -= 0.04; if (isContact) hitChance += 0.06;
   const effP3 = getEffectivePitcher(state) || pitcher;
@@ -440,7 +440,7 @@ export function resolveSwing(state, swingType, pitch) {
     pitcher.gameStats.h++; batter.gameStats.hits++;
     let powerMod = isPower ? 1.50 : (isContact ? 0.5 : 1.0);
     const pwrMult = Math.max(0.85, Math.min(1.15, adjBatter.powerMult || 1)); const effPwr = powerRating * powerMod * pwrMult, sf2 = adjBatter.speed / 10, hr2 = Math.random();
-    if (hr2 < effPwr * 0.30 * hrMod * ballparkHRMod) {
+    if (hr2 < effPwr * 0.18 * hrMod * ballparkHRMod) {
       const isRobable = isWallRobable(stadiumName, hitDirection);
       const isRobbed = isRobable && rollHRRobbery();
       if (isRobbed) {
@@ -469,7 +469,7 @@ export function resolveSwing(state, swingType, pitch) {
       if (hrCall) state.log.push({ type: 'info', text: `🎙️ ${hrCall}` });
       state.log.push({ type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name }); state.lastPlay = { type: 'homerun', text: `💥 ${ht}`, hrDistance, batterName: batter.name };
       const hrAdmire = rollHRAdmire(batter); if (hrAdmire) { state.log.push({ type: 'info', text: `✨ ${hrAdmire}` }); state._celebrationBubble = `✨ ${hrAdmire}`; }
-    } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.30 + sf2 * 0.04) * doubleMod) {
+    } else if (adjBatter.speed >= 4 && hr2 < (effPwr * 0.18 + sf2 * 0.04) * doubleMod) {
       const rbi = advanceRunners(state, 3, batter, true, hitDirection);
       batter.gameStats.triples = (batter.gameStats.triples || 0) + 1;
       const tripText = `${pickHitLine(TRIPLE_LINES, batter.name)}${rbi ? ` ${rbi} RBI!` : ''}`;
@@ -478,7 +478,7 @@ export function resolveSwing(state, swingType, pitch) {
       const tripleCeleb = rollHitCelebration(batter, true); if (tripleCeleb) { state.log.push({ type: 'info', text: `🔥 ${tripleCeleb}` }); state._celebrationBubble = `🔥 ${tripleCeleb}`; }
     // Offensive tuning: slight bump to extra-base (doubles) conversion so more
     // balls find the gap. Raises SLG/runs without inflating hit count or HR rate.
-    } else if (hr2 < effPwr * 0.56 * doubleMod) {
+    } else if (hr2 < effPwr * 0.48 * doubleMod) {
       const rbi = advanceRunners(state, 2, batter, true, hitDirection);
       batter.gameStats.doubles = (batter.gameStats.doubles || 0) + 1;
       const dblText = `${pickHitLine(DOUBLE_LINES, batter.name)}${rbi ? ` ${rbi} RBI!` : ''}`;
