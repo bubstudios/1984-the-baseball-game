@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Trophy, Calendar, TrendingUp, Play, FileText } from 'lucide-react';
+import { RotateCcw, Trophy, TrendingUp, Play, Newspaper } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import { generateScheduleValidated, formatGameDate } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState, validateCompletedGame } from '@/lib/seasonEngine';
@@ -15,8 +15,13 @@ import RotationDebugPanel from '@/components/season/RotationDebugPanel';
 import ArchivedBoxScore from '@/components/season/ArchivedBoxScore';
 import NewspaperScreen from '@/components/season/NewspaperScreen';
 import WeeklyAwardsScreen from '@/components/season/WeeklyAwardsScreen';
+import SeasonHomeTab from '@/components/season/SeasonHomeTab';
 import { generateNewspaper, saveNewspaperArchive } from '@/lib/headlineGenerator';
 import { calculateWeeklyAwards } from '@/lib/weeklyAwards';
+import { deriveStandings } from '@/lib/seasonStore';
+import { getDivision } from '@/lib/seasonSchedule';
+
+const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
 export default function SeasonDashboard() {
   const location = useLocation();
@@ -29,13 +34,14 @@ export default function SeasonDashboard() {
   const [userGameNumber, setUserGameNumber] = useState(1);
   const [loading, setLoading] = useState(false);
   const [simulating, setSimulating] = useState(false);
-  const [activeTab, setActiveTab] = useState('schedule');
+  const [activeTab, setActiveTab] = useState('home');
   const [selectedArchive, setSelectedArchive] = useState(null);
   const [showNewspaper, setShowNewspaper] = useState(false);
   const [newspaperData, setNewspaperData] = useState(null);
   const [dayGameResults, setDayGameResults] = useState([]);
   const [showWeeklyAwards, setShowWeeklyAwards] = useState(false);
   const [weeklyAwardsData, setWeeklyAwardsData] = useState(null);
+  const [standingsData, setStandingsData] = useState(null);
   const pendingUserTeam = location.state?.userTeam || null;
 
   useEffect(() => {
@@ -93,6 +99,11 @@ export default function SeasonDashboard() {
         }, 'gameDay', 200);
         const userGamesPlayed = userSched.filter(g => g.status === 'final').length;
         setUserGameNumber(Math.min(162, userGamesPlayed + 1));
+      } catch (e) { /* non-fatal */ }
+
+      try {
+        const allResults = await base44.entities.GameResult.filter({ seasonId: currentSeason.id }, 'gameDay', 2106);
+        setStandingsData(deriveStandings(allResults));
       } catch (e) { /* non-fatal */ }
 
     } catch (error) {
@@ -201,6 +212,7 @@ export default function SeasonDashboard() {
         statsAccum[`${s.team}|${s.playerName}`] = {
           hr: s.homeRuns || 0, doubles: s.doubles || 0,
           triples: s.triples || 0, rbi: s.rbi || 0,
+          sb: s.stolenBases || 0,
         };
       }
       // Session 23: SINGLE finalization path. No score-only fallback exists.
@@ -281,7 +293,8 @@ export default function SeasonDashboard() {
           statsAccum[key].doubles += b.doubles || 0;
           statsAccum[key].triples += b.triples || 0;
           statsAccum[key].rbi += b.rbi || 0;
-          if ((b.hr || 0) > 0 || (b.doubles || 0) > 0 || (b.triples || 0) > 0 || (b.rbi || 0) > 0) {
+          statsAccum[key].sb += b.sb || 0;
+          if ((b.hr || 0) > 0 || (b.doubles || 0) > 0 || (b.triples || 0) > 0 || (b.rbi || 0) > 0 || (b.sb || 0) > 0) {
             gameSeasonTotals[b.playerId] = { ...statsAccum[key] };
           }
         }
@@ -434,6 +447,35 @@ export default function SeasonDashboard() {
     }
   };
 
+  const isDebug = new URLSearchParams(window.location.search).has('debug');
+
+  const handleReadNewspaper = async () => {
+    if (!season || !gameResults?.length) return;
+    try {
+      const recentDay = gameResults[0]?.gameDay;
+      if (!recentDay) return;
+      const dayResults = await base44.entities.GameResult.filter({
+        seasonId: season.id, gameDay: recentDay,
+      }, null, 50);
+      if (dayResults.length === 0) return;
+      const daySchedule = await base44.entities.Schedule.filter({
+        seasonId: season.id, gameDay: recentDay,
+      });
+      const newspaper = generateNewspaper(
+        dayResults, recentDay,
+        daySchedule[0]?.gameDate || season.currentDate,
+        season.userTeam, season.id
+      );
+      if (newspaper) {
+        setDayGameResults(dayResults);
+        setNewspaperData(newspaper);
+        setShowNewspaper(true);
+      }
+    } catch (e) {
+      console.error('Failed to load newspaper:', e);
+    }
+  };
+
   const todaysUserGame = schedule.find(g => g.isUserGame && g.status !== 'final');
   const isUserOffDay = !todaysUserGame;
 
@@ -459,249 +501,132 @@ export default function SeasonDashboard() {
 
   return (
     <div className="h-[100dvh] bg-background text-foreground flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="shrink-0 border-b border-border bg-card/50 px-4 md:px-6 py-3">
+      {/* Compact Header */}
+      <div className="shrink-0 border-b border-border bg-card/50 px-4 py-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Trophy className="w-6 h-6 text-primary" />
+          <div className="flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-primary" />
             <div>
-              <h1 className="font-heading text-lg md:text-xl font-bold text-foreground">
-                1984 Season
-                {season?.userTeam && (
-                  <span className="text-primary"> · {TEAMS[season.userTeam]?.name || season.userTeam}</span>
-                )}
+              <h1 className="font-heading text-base md:text-lg font-bold text-foreground">
+                1984{season?.userTeam ? ` ${TEAMS[season.userTeam]?.name}` : ' Season'}
               </h1>
-              <p className="text-xs text-muted-foreground font-heading">
+              <p className="text-[10px] text-muted-foreground font-heading">
                 Game {userGameNumber} of 162 · {formatGameDate(schedule[0]?.gameDate || season?.currentDate)}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={loadSeason}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              disabled={simulating}
-            >
-              <RotateCcw className="w-4 h-4" />
-              Refresh
+          <div className="flex items-center gap-1">
+            <Button onClick={loadSeason} variant="ghost" size="sm" className="px-2" disabled={simulating}>
+              <RotateCcw className="w-3 h-3" />
             </Button>
-            <Button
-              onClick={() => window.location.href = '/'}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              <Play className="w-4 h-4" />
-              Exhibition
+            <Button onClick={handleReadNewspaper} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating || !gameResults?.length}>
+              <Newspaper className="w-3 h-3" /> Paper
+            </Button>
+            <Button onClick={() => window.location.href = '/'} variant="outline" size="sm" className="gap-1 text-[10px]">
+              <Play className="w-3 h-3" /> Expo
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Action Bar */}
-      <div className="shrink-0 bg-card border-b border-border px-4 md:px-6 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={simulateDay}
-              disabled={simulating || !season}
-              className="gap-2"
-            >
-              {simulating ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
-                  Simulating...
-                </>
-              ) : (
-                <>
-                  <TrendingUp className="w-4 h-4" />
-                  Simulate Day {season?.currentGameDay || 1}
-                </>
-              )}
-            </Button>
-            {todaysUserGame ? (
-              <div className="flex items-center gap-3">
-                <Button
-                  onClick={playUserGame}
-                  variant="secondary"
-                  className="gap-2"
-                >
-                  <Play className="w-4 h-4" />
-                  Play My Game
-                </Button>
-                {probableStarters && (
-                  <div className="text-[10px] text-muted-foreground font-heading leading-tight">
-                    <div><span className="text-primary">{probableStarters.userSP?.name || 'TBD'}</span> (you)</div>
-                    <div>vs <span className="text-foreground">{probableStarters.oppSP?.name || 'TBD'}</span></div>
-                  </div>
-                )}
+      {/* Next Game Hero Card */}
+      <div className="shrink-0 bg-card border-b border-border px-4 py-3">
+        {standingsData && season && (() => {
+          const userDiv = getDivision(season.userTeam);
+          const divStandings = standingsData[userDiv] || [];
+          const userSt = divStandings.find(t => t.teamKey === season.userTeam);
+          if (!userSt) return null;
+          const place = divStandings.indexOf(userSt) + 1;
+          const suffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
+          return (
+            <div className="flex items-center gap-3 mb-2 text-[10px] font-heading text-muted-foreground">
+              <span className="text-foreground font-bold">{userSt.w}-{userSt.l}</span>
+              {userSt.streakType && <span className={userSt.streakType === 'W' ? 'text-emerald-400' : 'text-red-400'}>{userSt.streakType}{userSt.streakLen}</span>}
+              <span>{place}{suffix} {DIV_LABELS[userDiv]}</span>
+              <span>{userSt.gb === 0 ? '-' : userSt.gb.toFixed(1) + ' GB'}</span>
+            </div>
+          );
+        })()}
+
+        {currentUserGame ? (
+          <div className="space-y-2">
+            <div>
+              <div className="font-heading text-sm font-bold text-foreground">
+                {TEAMS[currentUserGame.awayTeam]?.name} @ {TEAMS[currentUserGame.homeTeam]?.name}
               </div>
-            ) : isUserOffDay && currentUserGame ? (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-md">
-                  <span className="text-xs font-heading text-amber-400 font-bold">OFF DAY</span>
+              {probableStarters && (
+                <div className="text-[10px] text-muted-foreground font-heading">
+                  {probableStarters.userSP?.name || 'TBD'} vs {probableStarters.oppSP?.name || 'TBD'}
                 </div>
-                {probableStarters && (
-                  <div className="text-[10px] text-muted-foreground font-heading leading-tight">
-                    <div className="text-amber-400/70">Next game:</div>
-                    <div><span className="text-primary">{probableStarters.userSP?.name || 'TBD'}</span> (you)</div>
-                    <div>vs <span className="text-foreground">{probableStarters.oppSP?.name || 'TBD'}</span></div>
-                  </div>
-                )}
+              )}
+              <div className="text-[10px] text-muted-foreground">
+                {TEAMS[currentUserGame.homeTeam]?.stadium}
               </div>
-            ) : null}
+            </div>
+            <div className="flex items-center gap-2">
+              {todaysUserGame ? (
+                <Button onClick={playUserGame} className="gap-1 flex-1" size="sm">
+                  <Play className="w-4 h-4" /> Play My Game
+                </Button>
+              ) : (
+                <div className="text-[10px] font-heading text-amber-400 font-bold px-2">OFF DAY</div>
+              )}
+              <Button onClick={simulateDay} disabled={simulating} variant={todaysUserGame ? "outline" : "secondary"} size="sm" className="gap-1">
+                {simulating ? <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" /> : <TrendingUp className="w-4 h-4" />}
+                Simulate Day
+              </Button>
+            </div>
           </div>
-          <div className="text-sm text-muted-foreground font-heading">
-            {season?.completedGames || 0} / {season?.totalGames || 2106} games
-          </div>
-        </div>
+        ) : (
+          <div className="font-heading text-sm text-muted-foreground">Season Complete</div>
+        )}
       </div>
 
       {/* Tab Navigation */}
-      <div className="shrink-0 bg-card/50 border-b border-border px-4 md:px-6">
+      <div className="shrink-0 bg-card/50 border-b border-border px-4">
         <div className="grid grid-cols-5 gap-1 py-2">
-          <button
-            onClick={() => setActiveTab('schedule')}
-            className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'schedule' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-          >Schedule</button>
-          <button
-            onClick={() => setActiveTab('results')}
-            className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'results' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-          >Results</button>
-          <button
-            onClick={() => setActiveTab('standings')}
-            className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'standings' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-          >Standings</button>
-          <button
-            onClick={() => setActiveTab('leaders')}
-            className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'leaders' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-          >Leaders</button>
-          <button
-            onClick={() => setActiveTab('gamelog')}
-            className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'gamelog' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-          >Game Log</button>
+          <button onClick={() => setActiveTab('home')} className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'home' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Home</button>
+          <button onClick={() => setActiveTab('schedule')} className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'schedule' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Schedule</button>
+          <button onClick={() => setActiveTab('standings')} className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'standings' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Standings</button>
+          <button onClick={() => setActiveTab('leaders')} className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'leaders' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Leaders</button>
+          <button onClick={() => setActiveTab('gamelog')} className={`font-heading text-xs rounded-md py-2 transition-all ${activeTab === 'gamelog' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Game Log</button>
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4">
-        {rotationDebug && <RotationDebugPanel debugInfo={rotationDebug} />}
-        {activeTab === 'schedule' && season && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-heading text-lg font-bold text-foreground">Full Season Schedule</h2>
-              <Button
-                onClick={() => generateSchedule(season.id, season.userTeam)}
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                disabled={loading || (season.completedGames || 0) > 0}
-                title={(season.completedGames || 0) > 0 ? 'Schedule locked - games already committed' : 'Regenerate schedule'}
-              >
-                {loading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Calendar className="w-4 h-4" />
-                    Regenerate
-                  </>
-                )}
-              </Button>
-            </div>
-            <FullSchedule seasonId={season.id} userTeam={season.userTeam} />
-          </div>
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        {isDebug && rotationDebug && <RotationDebugPanel debugInfo={rotationDebug} />}
+
+        {activeTab === 'home' && season && (
+          <SeasonHomeTab
+            season={season}
+            standingsData={standingsData}
+            gameResults={gameResults}
+            onReadNewspaper={handleReadNewspaper}
+            onViewSchedule={() => setActiveTab('schedule')}
+            onViewStandings={() => setActiveTab('standings')}
+          />
         )}
 
-        {activeTab === 'results' && (
-          <div className="space-y-3">
-            <h2 className="font-heading text-lg font-bold text-foreground mb-4">Recent Results</h2>
-            {gameResults.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <Trophy className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p className="font-heading">No games completed yet</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {gameResults.map((result) => (
-                  <div
-                    key={result.id}
-                    onClick={() => result.boxScore && setSelectedArchive(result)}
-                    className={`bg-card border border-border rounded-lg p-4 ${result.boxScore ? 'cursor-pointer hover:border-primary/40 transition-colors' : ''}`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs text-muted-foreground font-heading">
-                        Day {result.gameDay} · {result.stadium}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        {result.boxScore && <FileText className="w-3 h-3 text-primary" />}
-                        <span className="text-xs text-muted-foreground font-heading">
-                          {result.homeHRs?.length || 0} HRs | {result.awayHRs?.length || 0} HRs
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-heading text-sm font-bold text-foreground">
-                            {TEAMS[result.awayTeam]?.abbr || result.awayTeam}
-                          </span>
-                          <span className="font-heading text-lg font-bold text-primary">{result.awayScore}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-heading text-sm font-bold text-foreground">
-                            {TEAMS[result.homeTeam]?.abbr || result.homeTeam}
-                          </span>
-                          <span className="font-heading text-lg font-bold text-primary">{result.homeScore}</span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xs text-muted-foreground font-heading mb-1">
-                          W: {result.winningPitcher || 'TBD'}
-                        </div>
-                        <div className="text-xs text-muted-foreground font-heading">
-                          L: {result.losingPitcher || 'TBD'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        {activeTab === 'schedule' && season && (
+          <FullSchedule seasonId={season.id} userTeam={season.userTeam} />
         )}
 
         {activeTab === 'standings' && season && (
-          <div className="space-y-4">
-            <h2 className="font-heading text-lg font-bold text-foreground mb-4">Standings</h2>
-            <Standings seasonId={season.id} userTeam={season.userTeam} />
-          </div>
+          <Standings seasonId={season.id} userTeam={season.userTeam} />
         )}
 
         {activeTab === 'leaders' && season && (
-          <div className="space-y-4">
-            <h2 className="font-heading text-lg font-bold text-foreground mb-4">League Leaders</h2>
-            <LeagueLeaders seasonId={season.id} userTeam={season.userTeam} />
-          </div>
+          <LeagueLeaders seasonId={season.id} userTeam={season.userTeam} />
         )}
 
         {activeTab === 'gamelog' && season && (
-          <div className="space-y-4">
-            <h2 className="font-heading text-lg font-bold text-foreground mb-4">Team Game Log</h2>
-            <TeamGameLog seasonId={season.id} userTeam={season.userTeam} />
-          </div>
+          <TeamGameLog seasonId={season.id} userTeam={season.userTeam} />
         )}
       </div>
 
       {selectedArchive && (
-        <ArchivedBoxScore
-          gameResult={selectedArchive}
-          onClose={() => setSelectedArchive(null)}
-        />
+        <ArchivedBoxScore gameResult={selectedArchive} onClose={() => setSelectedArchive(null)} />
       )}
 
       {showNewspaper && newspaperData && (
@@ -711,9 +636,7 @@ export default function SeasonDashboard() {
           userTeam={season?.userTeam}
           onClose={() => {
             setShowNewspaper(false);
-            if (weeklyAwardsData) {
-              setShowWeeklyAwards(true);
-            }
+            if (weeklyAwardsData) setShowWeeklyAwards(true);
           }}
         />
       )}
@@ -721,10 +644,7 @@ export default function SeasonDashboard() {
       {showWeeklyAwards && weeklyAwardsData && (
         <WeeklyAwardsScreen
           awardsData={weeklyAwardsData}
-          onClose={() => {
-            setShowWeeklyAwards(false);
-            setWeeklyAwardsData(null);
-          }}
+          onClose={() => { setShowWeeklyAwards(false); setWeeklyAwardsData(null); }}
         />
       )}
     </div>

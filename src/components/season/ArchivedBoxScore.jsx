@@ -63,6 +63,8 @@ function buildGameSummary(batting, seasonTotals) {
   if (tpl) lines.push(`3B - ${tpl}`);
   const rbi = fmt(batting, 'rbi', 'rbi');
   if (rbi) lines.push(`RBI - ${rbi}`);
+  const sb = fmt(batting, 'sb', 'sb');
+  if (sb) lines.push(`SB - ${sb}`);
 
   return lines;
 }
@@ -97,6 +99,7 @@ export default function ArchivedBoxScore({ gameResult, onClose }) {
               doubles: s.doubles || 0,
               triples: s.triples || 0,
               rbi: s.rbi || 0,
+              sb: s.stolenBases || 0,
             };
           }
         }
