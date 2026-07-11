@@ -472,7 +472,9 @@ export function resolveSwing(state, swingType, pitch) {
       state.log.push({ type: 'triple', text: tripText });
       state.lastPlay = { type: 'triple', text: tripText };
       const tripleCeleb = rollHitCelebration(batter, true); if (tripleCeleb) { state.log.push({ type: 'info', text: `🔥 ${tripleCeleb}` }); state._celebrationBubble = `🔥 ${tripleCeleb}`; }
-    } else if (hr2 < effPwr * 0.42 * doubleMod) {
+    // Offensive tuning: slight bump to extra-base (doubles) conversion so more
+    // balls find the gap. Raises SLG/runs without inflating hit count or HR rate.
+    } else if (hr2 < effPwr * 0.46 * doubleMod) {
       const rbi = advanceRunners(state, 2, batter, true, hitDirection);
       batter.gameStats.doubles = (batter.gameStats.doubles || 0) + 1;
       const dblText = `${pickHitLine(DOUBLE_LINES, batter.name)}${rbi ? ` ${rbi} RBI!` : ''}`;

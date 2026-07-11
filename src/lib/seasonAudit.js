@@ -581,13 +581,36 @@ function analyzeBullpen(games, rotationState, flags) {
         starterInningCount++;
       }
       totalRelieversUsed += relievers.length;
-      // Context-aware: 5+ pitchers in a 9-inning game is unusual, but in an
-      // 18-inning marathon it's expected. Scale the threshold by innings.
+      // Context-aware: 5+ pitchers is only flagged as abuse when a real problem
+      // condition accompanies the high count. Extra-inning games with a normal
+      // starter outing and no unavailable/tired abuse are EXPECTED, not broken.
       const inningsPlayed = g.wasExtraInnings ? (g.result?.innings?.length || 9) : 9;
       const pitcherThreshold = Math.max(5, Math.ceil(inningsPlayed / 2));
       if (teamPitchers.length >= pitcherThreshold) {
-        gamesWith5PlusPitchers++;
-        addFlag(flags, 'warning', 'Bullpen', `${teamPitchers.length} pitchers used by ${teamKey} in ${inningsPlayed}-inning game (threshold: ${pitcherThreshold})`, g);
+        const side = teamKey === g.homeTeam ? 'home' : 'away';
+        const hardUnavailable = new Set(g.unavailableRelievers?.[side] || []);
+        const tiers = g.pregameAvailability?.[side]?.pitcherTiers || {};
+        const usedUnavailable = teamPitchers.some(p => hardUnavailable.has(p.name));
+        const tiredCount = teamPitchers.filter(p => {
+          const t = tiers[p.name]?.tier;
+          return t === 'TIRED' || t === 'VERY_TIRED';
+        }).length;
+        const threeStraightUsed = teamPitchers.some(p => (tiers[p.name]?.consecutiveDays || 0) >= 3);
+        const starterShortOuting = starter && (starter.outs || 0) < 12; // < 4 IP
+        const ejected = side === 'home' ? g.ejectionFlags?.homePitcher : g.ejectionFlags?.awayPitcher;
+        const margin = Math.abs((g.score?.home || 0) - (g.score?.away || 0));
+        const blowout = margin >= 6;
+        // Abuse = at least one real problem. A short outing only counts if there
+        // was no injury/ejection/blowout to justify the early hook.
+        const isAbuse = !g.wasExtraInnings
+          || (starterShortOuting && !ejected && !blowout)
+          || usedUnavailable
+          || tiredCount >= 3
+          || threeStraightUsed;
+        if (isAbuse) {
+          gamesWith5PlusPitchers++;
+          addFlag(flags, 'warning', 'Bullpen', `${teamPitchers.length} pitchers used by ${teamKey} in ${inningsPlayed}-inning game (unavail=${usedUnavailable}, tired=${tiredCount}, 3-straight=${threeStraightUsed}, shortStart=${starterShortOuting && !ejected && !blowout})`, g);
+        }
       }
     }
   }
