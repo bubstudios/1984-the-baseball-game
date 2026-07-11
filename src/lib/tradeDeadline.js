@@ -506,6 +506,10 @@ function findTradeMatch(buyerKey, sellerKey, need, statsMap, isUserTeam, players
     const acquiredPos = sellerCandidate.player.assignedPos || sellerCandidate.player.pos;
 
     const trade = {
+      id: `trade_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
+      status: 'generated',
+      appliedAt: null,
+      validationErrors: [],
       teamA: buyerKey,
       teamB: sellerKey,
       isUserTrade: isUserTeam,
@@ -773,14 +777,157 @@ export function buildStatsMap(playerStatsRecords) {
   return map;
 }
 
+// ── Trade Validation System ──
+// Each trade goes through 3 steps: generated -> applied (or failed) -> verified.
+// A trade is not complete unless all 3 are true: trade generated, trade applied
+// to TEAMS roster, and trade reflected in lineups/rotation/bullpen.
+
+// Snapshot a team's roster arrays for rollback if validation fails.
+function snapshotRoster(teamKey) {
+  const team = TEAMS[teamKey];
+  if (!team) return null;
+  return {
+    lineup: team.lineup ? team.lineup.map(p => ({ ...p })) : [],
+    bench: team.bench ? team.bench.map(p => ({ ...p })) : [],
+    rotation: team.rotation ? team.rotation.map(p => ({ ...p })) : [],
+    bullpen: team.bullpen ? team.bullpen.map(p => ({ ...p })) : [],
+  };
+}
+
+// Restore a team's roster from a snapshot (rollback a failed trade).
+function restoreRoster(teamKey, snapshot) {
+  const team = TEAMS[teamKey];
+  if (!team || !snapshot) return;
+  team.lineup = snapshot.lineup.map(p => ({ ...p }));
+  team.bench = snapshot.bench.map(p => ({ ...p }));
+  team.rotation = snapshot.rotation.map(p => ({ ...p }));
+  team.bullpen = snapshot.bullpen.map(p => ({ ...p }));
+}
+
+// Check if a player (by name) exists anywhere on a team's roster.
+function isPlayerOnTeam(teamKey, playerName) {
+  const team = TEAMS[teamKey];
+  if (!team) return false;
+  for (const arrName of ['lineup', 'bench', 'rotation', 'bullpen']) {
+    if (team[arrName] && team[arrName].find(p => p.name === playerName)) return true;
+  }
+  return false;
+}
+
+// Validate that a trade was correctly applied to the TEAMS object.
+// Checks: no traded player remains on old team, acquired player on new team,
+// both teams have legal rosters, no duplicates.
+export function validateTradeApplied(trade) {
+  const errors = [];
+  const { teamA, teamB, teamAGets, teamBGets } = trade;
+
+  // Players teamA acquired (should have moved from teamB -> teamA)
+  for (const p of teamAGets) {
+    if (isPlayerOnTeam(teamB, p.name)) {
+      errors.push(`${p.name} still on ${TEAMS[teamB]?.abbr || teamB} roster (should be on ${TEAMS[teamA]?.abbr || teamA})`);
+    }
+    if (!isPlayerOnTeam(teamA, p.name)) {
+      errors.push(`${p.name} not found on ${TEAMS[teamA]?.abbr || teamA} roster`);
+    }
+  }
+
+  // Players teamB acquired (should have moved from teamA -> teamB)
+  for (const p of teamBGets) {
+    if (isPlayerOnTeam(teamA, p.name)) {
+      errors.push(`${p.name} still on ${TEAMS[teamA]?.abbr || teamA} roster (should be on ${TEAMS[teamB]?.abbr || teamB})`);
+    }
+    if (!isPlayerOnTeam(teamB, p.name)) {
+      errors.push(`${p.name} not found on ${TEAMS[teamB]?.abbr || teamB} roster`);
+    }
+  }
+
+  // Roster legality checks for both teams
+  const teamAErrors = validateRoster(teamA);
+  const teamBErrors = validateRoster(teamB);
+  for (const e of teamAErrors) errors.push(`${TEAMS[teamA]?.abbr || teamA}: ${e}`);
+  for (const e of teamBErrors) errors.push(`${TEAMS[teamB]?.abbr || teamB}: ${e}`);
+
+  // Cross-team duplicate check: no player should exist on two teams
+  const allTeams = Object.keys(TEAMS).filter(k => !k.includes('ALLSTAR'));
+  const globalPlayerMap = {};
+  for (const tk of allTeams) {
+    const t = TEAMS[tk];
+    for (const arrName of ['lineup', 'bench', 'rotation', 'bullpen']) {
+      if (!t[arrName]) continue;
+      for (const p of t[arrName]) {
+        if (globalPlayerMap[p.name] && globalPlayerMap[p.name] !== tk) {
+          errors.push(`${p.name} exists on both ${globalPlayerMap[p.name]} and ${tk}`);
+        }
+        globalPlayerMap[p.name] = tk;
+      }
+    }
+  }
+
+  return errors;
+}
+
+// Apply trades with full validation. For each trade:
+// 1. Snapshot both teams' rosters
+// 2. Apply the trade (mutates TEAMS in-place)
+// 3. Validate the trade was correctly applied
+// 4. If validation fails, rollback and mark as 'failed'
+// 5. If validation passes, mark as 'applied'
+// Returns the same trades with updated status/validationErrors/appliedAt.
+export function applyTradesWithValidation(trades) {
+  if (!trades || trades.length === 0) return [];
+
+  const results = [];
+
+  for (const trade of trades) {
+    // Snapshot both teams before applying
+    const snapA = snapshotRoster(trade.teamA);
+    const snapB = snapshotRoster(trade.teamB);
+
+    // Apply the trade (mutates TEAMS in-place)
+    applyTrades([trade]);
+
+    // Validate
+    const errors = validateTradeApplied(trade);
+
+    if (errors.length > 0) {
+      // Rollback - restore both teams to their pre-trade state
+      restoreRoster(trade.teamA, snapA);
+      restoreRoster(trade.teamB, snapB);
+
+      results.push({
+        ...trade,
+        status: 'failed',
+        appliedAt: null,
+        validationErrors: errors,
+      });
+    } else {
+      results.push({
+        ...trade,
+        status: 'applied',
+        appliedAt: new Date().toISOString(),
+        validationErrors: [],
+      });
+    }
+  }
+
+  return results;
+}
+
+// Hard stop check: returns true only if every trade has status 'applied' or 'failed'.
+// If any trade is still 'generated', the season must not advance.
+export function allTradesResolved(trades) {
+  if (!trades || trades.length === 0) return true;
+  return trades.every(t => t.status === 'applied' || t.status === 'failed');
+}
+
 // Reapply completed trades from a persisted ledger to the in-memory TEAMS object.
 // Called on season load — TEAMS re-imports fresh from gameData.js on every page
 // reload, so trade mutations are lost. This replays them from the stored ledger.
-// applyTrades is naturally idempotent: movePlayerBetweenTeams returns early if
-// the player is already on the destination team (not found in source arrays).
+// Only trades with status 'applied' (or legacy 'applied: true') are replayed.
+// Failed trades are not re-attempted.
 export function reapplyTradesFromLedger(trades) {
   if (!trades || trades.length === 0) return;
-  const appliedTrades = trades.filter(t => t.applied);
+  const appliedTrades = trades.filter(t => t.status === 'applied' || t.applied === true);
   if (appliedTrades.length === 0) return;
   applyTrades(appliedTrades);
 }

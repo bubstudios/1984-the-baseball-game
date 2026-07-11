@@ -28,7 +28,8 @@ import { calculateAllStarMvp } from '@/lib/allStarMvp';
 import { injectAllStarTeams, removeAllStarTeams, getAllStarTeamKey } from '@/lib/allStarTeams';
 import { resetAllFatigue } from '@/lib/seasonStore';
 import TradeDeadlineScreen from '@/components/season/TradeDeadlineScreen';
-import { generateTradeDeadline, applyTrades, buildStatsMap, reapplyTradesFromLedger } from '@/lib/tradeDeadline';
+import TradeAuditPanel from '@/components/season/TradeAuditPanel';
+import { generateTradeDeadline, applyTradesWithValidation, allTradesResolved, buildStatsMap, reapplyTradesFromLedger } from '@/lib/tradeDeadline';
 import EndOfRegularSeasonScreen from '@/components/season/EndOfRegularSeasonScreen';
 import PostseasonBracket from '@/components/season/PostseasonBracket';
 import { calculateSeasonAwards } from '@/lib/seasonAwards';
@@ -150,10 +151,14 @@ export default function SeasonDashboard() {
         setAllStarBreakVisible(false);
       }
 
-      // Restore trade deadline state if the season has trades to show
+      // Restore trade deadline state
       if (currentSeason.tradeDeadlinePhase === 'active' && currentSeason.tradeDeadlineTrades) {
         setTradeDeadlineTrades(currentSeason.tradeDeadlineTrades);
         setTradeDeadlineVisible(true);
+      } else if (currentSeason.tradeDeadlinePhase === 'completed' && currentSeason.tradeDeadlineTrades) {
+        // Keep trades in state for audit panel even after deadline is completed
+        setTradeDeadlineTrades(currentSeason.tradeDeadlineTrades);
+        setTradeDeadlineVisible(false);
       } else {
         setTradeDeadlineTrades(null);
         setTradeDeadlineVisible(false);
@@ -460,27 +465,49 @@ export default function SeasonDashboard() {
     }
   };
 
+  const handlePreviewRoster = (approvedTrades) => {
+    if (approvedTrades && approvedTrades.length > 0) {
+      applyTradesWithValidation(approvedTrades);
+    }
+  };
+
   const continueAfterTradeDeadline = async (approvedTrades) => {
     if (!season) return;
     try {
+      // Apply trades with validation: snapshot -> apply -> validate -> rollback on failure
+      let validatedTrades = [];
+      if (approvedTrades && approvedTrades.length > 0) {
+        validatedTrades = applyTradesWithValidation(approvedTrades);
+      }
+
+      // Hard stop: don't advance until all trades are resolved (applied or failed)
+      if (!allTradesResolved(validatedTrades)) {
+        console.error('[trade] Trades still at "generated" status - hard stop');
+        alert('Trade deadline processing incomplete. Check Trade Audit.');
+        return;
+      }
+
       setTradeDeadlineVisible(false);
 
-      // Apply only approved trades (CPU trades always applied, user trades only if approved)
-      if (approvedTrades && approvedTrades.length > 0) {
-        applyTrades(approvedTrades);
+      // Merge validated trades back into the full trade ledger
+      const validatedByName = {};
+      for (const t of validatedTrades) {
+        const name = t.teamAGets?.[0]?.name;
+        if (name) validatedByName[name] = t;
       }
+      const updatedTrades = (tradeDeadlineTrades || []).map(t => {
+        const name = t.teamAGets?.[0]?.name;
+        if (name && validatedByName[name]) {
+          return { ...t, ...validatedByName[name], applied: validatedByName[name].status === 'applied' };
+        }
+        // User trade not approved - mark as failed
+        if (t.isUserTrade) {
+          return { ...t, status: 'failed', applied: false, validationErrors: ['Trade not approved by user'] };
+        }
+        return { ...t, status: 'failed', applied: false, validationErrors: ['Trade was not processed'] };
+      });
 
-      // Mark which trades were applied in the persisted ledger so they can be
-      // replayed on page reload (TEAMS re-imports fresh, losing in-memory mutations)
-      const appliedPlayerNames = new Set();
-      for (const t of (approvedTrades || [])) {
-        t.teamAGets?.forEach(p => appliedPlayerNames.add(p.name));
-        t.teamBGets?.forEach(p => appliedPlayerNames.add(p.name));
-      }
-      const updatedTrades = (tradeDeadlineTrades || []).map(t => ({
-        ...t,
-        applied: !t.isUserTrade || appliedPlayerNames.has(t.teamAGets?.[0]?.name),
-      }));
+      setTradeDeadlineTrades(updatedTrades);
 
       // Advance to September 1 (first game after the deadline)
       const sep1Sched = await base44.entities.Schedule.filter({
@@ -1570,6 +1597,8 @@ export default function SeasonDashboard() {
       <div className="flex-1 overflow-y-auto px-4 py-4">
         {isDebug && rotationDebug && <RotationDebugPanel debugInfo={rotationDebug} />}
 
+        {isDebug && tradeDeadlineTrades && <TradeAuditPanel trades={tradeDeadlineTrades} />}
+
         {activeTab === 'home' && season && (
           <SeasonHomeTab
             season={season}
@@ -1646,6 +1675,7 @@ export default function SeasonDashboard() {
           season={season}
           trades={tradeDeadlineTrades}
           onContinue={continueAfterTradeDeadline}
+          onPreviewRoster={handlePreviewRoster}
         />
       )}
 

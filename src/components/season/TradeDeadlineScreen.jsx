@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { X, ArrowRight, Newspaper, Check, ShieldCheck } from 'lucide-react';
+import { X, ArrowRight, Newspaper, Check, ShieldCheck, Users } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
+import TeamRosterView from '@/components/season/TeamRosterView';
 
 function lastName(fullName) {
   if (!fullName) return '?';
@@ -157,8 +158,9 @@ function TradeCard({ trade, index, isApproved, onToggleApproval, showApproval })
   );
 }
 
-export default function TradeDeadlineScreen({ season, trades, onContinue }) {
+export default function TradeDeadlineScreen({ season, trades, onContinue, onPreviewRoster }) {
   const [approvedSet, setApprovedSet] = useState(new Set());
+  const [rosterTeam, setRosterTeam] = useState(null);
 
   const toggleApproval = (index) => {
     setApprovedSet(prev => {
@@ -196,9 +198,23 @@ export default function TradeDeadlineScreen({ season, trades, onContinue }) {
             </p>
           </div>
         </div>
-        <Button onClick={handleContinue} size="sm" className="gap-1">
-          Continue to September <ArrowRight className="w-3 h-3" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            onClick={() => {
+              const approved = trades.filter((t, i) => !t.isUserTrade || approvedSet.has(i));
+              if (onPreviewRoster) onPreviewRoster(approved);
+              setRosterTeam(season?.userTeam || trades[0]?.teamA || 'tigers');
+            }}
+            variant="outline"
+            size="sm"
+            className="gap-1 text-[10px]"
+          >
+            <Users className="w-3 h-3" /> View Updated Roster
+          </Button>
+          <Button onClick={handleContinue} size="sm" className="gap-1">
+            Continue <ArrowRight className="w-3 h-3" />
+          </Button>
+        </div>
       </div>
 
       {/* Content */}
@@ -272,6 +288,17 @@ export default function TradeDeadlineScreen({ season, trades, onContinue }) {
           </>
         )}
       </div>
+
+      {rosterTeam && (
+        <TeamRosterView
+          teamKey={rosterTeam}
+          highlightNames={[
+            ...trades.flatMap(t => (t.teamA === rosterTeam ? t.teamAGets : t.teamB === rosterTeam ? t.teamBGets : [])),
+            ...trades.flatMap(t => (t.teamA === rosterTeam ? t.teamBGets : t.teamB === rosterTeam ? t.teamAGets : [])),
+          ].map(p => p.name)}
+          onClose={() => setRosterTeam(null)}
+        />
+      )}
     </div>
   );
 }
