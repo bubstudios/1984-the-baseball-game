@@ -35,7 +35,8 @@ export function cpuDecideSteal(state) {
     if (r.speed <= 4 && Math.random() > 0.10) continue;
     // Offensive tuning: fast runners (SPD 7-9) attempt steals a bit more often.
     // Slow runners unchanged - only elite speed gets the boost.
-    let attemptChance = Math.max(0.03, 0.06 + (r.speed / 10) * 0.42 - armF - pitchF);
+    // Offensive tuning: fast runners (SPD 7-9) attempt steals more often.
+    let attemptChance = Math.max(0.03, 0.06 + (r.speed / 10) * 0.50 - armF - pitchF);
     if (r._heldClose) {
       attemptChance *= (1 - HOLDING_GAME_RATES.stealAttemptPenaltyRel);
     }
@@ -61,12 +62,13 @@ export function attemptSteal(state, baseIndex) {
   const pCtrl = effP.effectiveControl || effP.control;
   // Offensive tuning: elite runners get a slightly higher success ceiling.
   // Speed 9 can now reach 0.83; speed 7 stays similar. Slow runners unchanged.
-  let sc = 0.30 + speedFactor * 0.58 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - (pSpeed / 10) * 0.13;
+  // Offensive tuning: elite runners get higher success rate.
+  let sc = 0.30 + speedFactor * 0.60 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - (pSpeed / 10) * 0.13;
   if (runner._heldClose) {
     sc -= HOLDING_GAME_RATES.stealSuccessPenalty;
     delete runner._heldClose;
   }
-  sc = Math.max(0.08, Math.min(sc, 0.83));
+  sc = Math.max(0.08, Math.min(sc, 0.86));
   if (Math.random() < sc) {
     runner.gameStats.sb = (runner.gameStats.sb || 0) + 1;
     if (baseIndex + 1 >= 3) {

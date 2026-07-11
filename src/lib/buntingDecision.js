@@ -11,7 +11,7 @@
 
 import { determineSqueezeType, resolveSqueeze } from './squeezePlay';
 
-const SAC_THRESHOLD = 55; // Lowered to increase sac bunt frequency toward 0.20-0.30/team/game target
+const SAC_THRESHOLD = 45; // Lowered further - non-pitcher sac spots need more triggers
 const HIT_THRESHOLD = 70; // Raised from 45 - bunt-for-hit must be a strong fit
 const SQUEEZE_THRESHOLD = 55; // Runner on 3rd + late/close + weak hitter
 
@@ -28,7 +28,7 @@ export function shouldBunt(batter, game) {
     // Offensive tuning: position players sac bunt slightly more often in
     // correct 1984 spots (runner on 1st, 0 outs, close game, late innings).
     // Pitcher sac rate unchanged. Squeeze NOT touched.
-    const sacChance = isPitcher ? 0.92 : 0.64;
+    const sacChance = isPitcher ? 0.92 : 0.70;
     if (Math.random() < sacChance) return 'sacrifice';
   }
 
@@ -104,7 +104,7 @@ function sac_bunt_score(batter, game, isPitcher) {
 
   // Runner advancement value
   if (game.runner_on_1st && !game.runner_on_2nd && !game.runner_on_3rd) {
-    s += 12; // 1st only, modest value
+    s += 16; // 1st only, modest value (bumped for frequency)
   }
   if (game.runner_on_2nd && !game.runner_on_3rd) {
     s += 20; // 2nd to 3rd with <2 outs = big
@@ -120,7 +120,7 @@ function sac_bunt_score(batter, game, isPitcher) {
     s += 12; // late
   }
   if (Math.abs(game.score_margin) <= 1) {
-    s += 15; // close game
+    s += 18; // close game (bumped for frequency)
   }
   if (game.score_margin === 0 && game.inning >= 8) {
     s += 12; // tie, very late
