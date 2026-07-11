@@ -15,6 +15,9 @@ export function pinchHit(state, newPlayer) {
   if (state.removedPlayers && state.removedPlayers.includes(newPlayer.name)) {
     throw new Error(`Illegal re-entry: ${newPlayer.name} was already removed from the game`);
   }
+  if (state.scratchedPlayers && state.scratchedPlayers.includes(newPlayer.name)) {
+    console.error(`SCRATCHED PLAYER USED: ${newPlayer.name} was scratched pre-game but pinch-hit`);
+  }
   const newState = JSON.parse(JSON.stringify(state));
   if (!newState.removedPlayers) newState.removedPlayers = [];
   const isAway = newState.halfInning === 'top';
@@ -59,6 +62,9 @@ export function pinchHit(state, newPlayer) {
 }
 
 export function pinchRun(state, baseIndex, newPlayer) {
+  if (state.scratchedPlayers && state.scratchedPlayers.includes(newPlayer.name)) {
+    console.error(`SCRATCHED PLAYER USED: ${newPlayer.name} was scratched pre-game but pinch-ran`);
+  }
   const newState = JSON.parse(JSON.stringify(state));
   const runner = newState.bases[baseIndex];
   if (!runner) return state;
@@ -103,6 +109,9 @@ export function defensiveSwitch(state, slotIndex, newPos, newPlayer) {
   const oldPlayer = lineup[slotIndex];
 
   if (newPlayer) {
+    if (state.scratchedPlayers && state.scratchedPlayers.includes(newPlayer.name)) {
+      console.error(`SCRATCHED PLAYER USED: ${newPlayer.name} was scratched pre-game but entered defensively`);
+    }
     const benchPlayer = {
       ...newPlayer,
       order: oldPlayer.order,
@@ -137,6 +146,9 @@ export function changePitcher(state, newPitcher, side) {
   // Session 22 #3: Illegal re-entry guard - a pitcher removed from the game cannot return
   if (state.removedPlayers && state.removedPlayers.includes(newPitcher.name)) {
     throw new Error(`Illegal re-entry: ${newPitcher.name} was already removed from the game`);
+  }
+  if (state.scratchedPlayers && state.scratchedPlayers.includes(newPitcher.name)) {
+    console.error(`SCRATCHED PLAYER USED: ${newPitcher.name} was scratched pre-game but entered as pitcher`);
   }
   const newState = JSON.parse(JSON.stringify(state));
   if (!newState.removedPlayers) newState.removedPlayers = [];

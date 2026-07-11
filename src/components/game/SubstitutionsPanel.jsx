@@ -53,7 +53,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
     // starters (pre-game lineup swaps) are available and starting players are not
     // listed.  Pre-game swaps never set a "used" flag.
     const fullRoster = [...(myTeam.lineup || []), ...(myTeam.bench || [])];
-    return fullRoster.filter(p => !usedNames.has(p.name));
+    return fullRoster.filter(p => !usedNames.has(p.name) && !(gameState.scratchedPlayers || []).includes(p.name));
   }, [myTeam, usedNames]);
 
   const isBenchUsed = (player) => usedNames.has(player.name);
@@ -64,7 +64,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
   const currentPitcher = userIsHome ? gameState.homePitcher : gameState.awayPitcher;
   const removedPlayers = gameState.removedPlayers || [];
   const bullpen = (userIsHome ? (gameState.homeBullpen || []) : (gameState.awayBullpen || []))
-    .filter(p => p.name !== currentPitcher?.name && !removedPlayers.includes(p.name));
+    .filter(p => p.name !== currentPitcher?.name && !removedPlayers.includes(p.name) && !(gameState.scratchedPlayers || []).includes(p.name));
 
   const tabs = [
     { id: 'pinchhit', label: 'Pinch Hit' },

@@ -330,7 +330,7 @@ export default function Home() {
   useRobotAnnouncer(gameState, robotVoice, announcerName);
   useRetroAudio(gameState, retroAudio);
 
-  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, startingPitcher, opponentStartingPitcher, seasonUserTeam) => {
+  const startGame = useCallback((home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, startingPitcher, opponentStartingPitcher, seasonUserTeam, scratchedPlayers) => {
     setHomeTeam(home);
     setAwayTeam(away);
     const effectiveUserTeam = seasonUserTeam || home;
@@ -365,6 +365,13 @@ export default function Home() {
     state.userTeam = effectiveUserTeam; // CRITICAL: gates in getControllingTeam() read state.userTeam to distinguish CPU from user
     state.homeStartingPitcherName = homeSP?.name || null;
     state.awayStartingPitcherName = awaySP?.name || null;
+    // Scratched players (illness/ailment) are unavailable for the entire game.
+    // Filter them from both bullpens so no substitution system can select them.
+    if (scratchedPlayers && scratchedPlayers.length > 0) {
+      state.scratchedPlayers = [...scratchedPlayers];
+      state.homeBullpen = state.homeBullpen.filter(p => !scratchedPlayers.includes(p.name));
+      state.awayBullpen = state.awayBullpen.filter(p => !scratchedPlayers.includes(p.name));
+    }
     // Session 23: Starter identity lock check. The actual mound pitcher must
     // match the locked starter from the launch path. Loud console.error so a
     // mismatch is caught immediately instead of silently starting the wrong arm.
@@ -526,7 +533,11 @@ export default function Home() {
       adjustedOpponentSP = forcedStarters.cpu || opponentStartingPitcher;
       effectiveUserStarter = forcedStarters.user || startingPitcher;
     }
-    startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, effectiveUserStarter, adjustedOpponentSP, seasonUser);
+    const illNames = [];
+    if (lineupPhase.illPlayers) {
+      [...(lineupPhase.illPlayers.home || []), ...(lineupPhase.illPlayers.away || [])].forEach(p => illNames.push(p.name));
+    }
+    startGame(lineupPhase.home, lineupPhase.away, customHomeLineup, customAwayLineup, lineupPhase.useDH, lineupPhase.weather, effectiveUserStarter, adjustedOpponentSP, seasonUser, illNames);
   }, [lineupPhase, startGame, gameMode, forcedStarters]);
 
   // Fireworks: detect home team HRs and wins
@@ -618,7 +629,7 @@ export default function Home() {
           (ejectedSide === 'home' ? gameState.homeLineup : gameState.awayLineup).forEach(p => inGame.add(p.name));
           (ejectedSide === 'home' ? (gameState.homePlayerHistory || []) : (gameState.awayPlayerHistory || [])).forEach(p => inGame.add(p.name));
           (gameState.removedPlayers || []).forEach(n => inGame.add(n));
-          bullpen = rosterPitchers.filter(p => !inGame.has(p.name));
+          bullpen = rosterPitchers.filter(p => !inGame.has(p.name) && !(gameState.scratchedPlayers || []).includes(p.name));
         }
         setEjectionResult({ ejectedSide, bullpen });
       } else {
@@ -1444,7 +1455,7 @@ export default function Home() {
     const currentLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
     const usedNames = new Set();
     [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
-    const availableBench = fullBench.filter(p => !usedNames.has(p.name));
+    const availableBench = fullBench.filter(p => !usedNames.has(p.name) && !(newState.scratchedPlayers || []).includes(p.name));
 
     newState._pendingBatterInjury = {
       ...injury,
@@ -1523,7 +1534,7 @@ export default function Home() {
         const currentLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
         const usedNames = new Set();
         [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
-        const availableBench = fullBench.filter(p => !usedNames.has(p.name));
+        const availableBench = fullBench.filter(p => !usedNames.has(p.name) && !(newState.scratchedPlayers || []).includes(p.name));
 
         newState._pendingRunnerInjury = {
           ...injury,
@@ -1615,7 +1626,7 @@ export default function Home() {
         const currentLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
         const usedNames = new Set();
         [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
-        const availableBench = fullBench.filter(p => !usedNames.has(p.name));
+        const availableBench = fullBench.filter(p => !usedNames.has(p.name) && !(newState.scratchedPlayers || []).includes(p.name));
 
         newState._pendingSlidingInjury = {
           ...injury,
@@ -1705,7 +1716,7 @@ export default function Home() {
     const currentLineup = fieldingSide === 'home' ? newState.homeLineup : newState.awayLineup;
     const usedNames = new Set();
     [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
-    const availableBench = fullBench.filter(p => !usedNames.has(p.name));
+    const availableBench = fullBench.filter(p => !usedNames.has(p.name) && !(newState.scratchedPlayers || []).includes(p.name));
 
     newState._pendingFielderInjury = {
       ...injury,
