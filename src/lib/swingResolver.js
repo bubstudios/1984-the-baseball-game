@@ -440,7 +440,7 @@ export function resolveSwing(state, swingType, pitch) {
     pitcher.gameStats.h++; batter.gameStats.hits++;
     let powerMod = isPower ? 1.50 : (isContact ? 0.5 : 1.0);
     const pwrMult = Math.max(0.85, Math.min(1.15, adjBatter.powerMult || 1)); const effPwr = powerRating * powerMod * pwrMult, sf2 = adjBatter.speed / 10, hr2 = Math.random();
-    if (hr2 < effPwr * 0.15 * hrMod * ballparkHRMod) {
+    if (hr2 < effPwr * 0.17 * hrMod * ballparkHRMod) {
       const isRobable = isWallRobable(stadiumName, hitDirection);
       const isRobbed = isRobable && rollHRRobbery();
       if (isRobbed) {
