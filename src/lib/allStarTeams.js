@@ -77,8 +77,15 @@ export function buildAllStarTeamObject(roster, league, stadium) {
       return { ...player, pos: 'SP', _allStarTeamKey: entry.teamKey };
     }).filter(Boolean);
 
-  // Build the bullpen (relievers)
-  const bullpen = (roster.pitchers?.relievers || []).map(entry => {
+  // Build the bullpen: ALL non-starting pitchers (starters + relievers) so they
+  // all appear in the Change Pitcher screen. In the All-Star Game, every
+  // selected pitcher must be available as a relief option - starting pitchers
+  // can come out of the bullpen just like relievers.
+  const allNonStartingPitchers = [
+    ...(roster.pitchers?.starters || []).filter(p => p.name !== spName),
+    ...(roster.pitchers?.relievers || []),
+  ];
+  const bullpen = allNonStartingPitchers.map(entry => {
     const player = lookupPlayer(entry.teamKey, entry.name);
     if (!player) return null;
     return { ...player, pos: entry.pos || 'RP', _allStarTeamKey: entry.teamKey };

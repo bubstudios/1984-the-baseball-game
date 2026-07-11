@@ -6,6 +6,7 @@ import { TEAMS, DEFAULT_PITCHES } from './gameData';
 import { initializePitcherComposure } from './pitcherComposure';
 import { getEffectivePitcher, getPitcherFatigue } from './pitcherFatigue';
 import { pinchHit } from './substitutions';
+import { isAllStarGame, hasReachedAllStarPitchLimit, cpuAllStarPositionRotation } from './allStarRules';
 import { shouldPinchHit, choose_pinch_hitter } from './pinchHittingDecision';
 import { should_double_switch, find_double_switch_partner, execute_double_switch } from './doubleSwitch';
 import { calculateSituationalRatings } from './situationalRatings';
@@ -346,7 +347,13 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const cpuSide = newState.homeTeam === userTeam ? 'away' : 'home';
   const cpuBattingSide = newState.halfInning === 'top' ? 'away' : 'home';
   const cpuPitchingSide = newState.halfInning === 'top' ? 'home' : 'away';
-  if (cpuPitchingSide !== cpuSide) return newState;
+  if (cpuPitchingSide !== cpuSide) {
+    // All-Star Game: rotate position players when CPU is batting
+    if (isAllStarGame(newState) && cpuBattingSide === cpuSide) {
+      return cpuAllStarPositionRotation(newState);
+    }
+    return newState;
+  }
 
   const inning = newState.inning;
   const cpuScore = newState.score[cpuPitchingSide];
@@ -409,6 +416,19 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   }
 
   const cpuPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
+  // All-Star Game: enforce ASG pitcher usage limits (3 IP starter, 2 IP others)
+  // and proactively rotate pitchers every 1+ inning to showcase the roster.
+  const asgGame = isAllStarGame(newState);
+  let asgLimitReached = false;
+  let asgProactiveChange = false;
+  if (asgGame) {
+    const asgSPName = cpuPitchingSide === 'home' ? newState.homeStartingPitcherName : newState.awayStartingPitcherName;
+    const isASGStarter = cpuPitcher.name === asgSPName;
+    asgLimitReached = hasReachedAllStarPitchLimit(cpuPitcher, isASGStarter);
+    const asgOuts = cpuPitcher.gameStats?.outs || Math.round((cpuPitcher.gameStats?.ip || 0) * 3);
+    const asgBullpenArms = cpuBullpen.filter(p => !(newState.removedPlayers || []).includes(p.name)).length;
+    asgProactiveChange = asgOuts >= 3 && asgBullpenArms > 0;
+  }
   const ip = cpuPitcher.gameStats.ip || 0, bbi = cpuPitcher.gameStats.bb || 0, runs = cpuPitcher.gameStats.r || 0;
   const stamina = cpuPitcher.stamina || 5;
   const isReliever = ['RP','CL'].includes(cpuPitcher.pos) || ['RP','CL'].includes(cpuPitcher.assignedPos);
@@ -468,15 +488,16 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const relieverFatigue = isReliever && ip >= maxInnings + 0.5;
 
   const starterCruising = !isReliever && cpuScore >= userScore && composure >= 35 && !inningBlowup && !totalBlowup && !walksPull && !blowoutShell;
-  if (starterCruising && !forcedHook && !lateClose && !jamHook && !fatigueExhausted && !fatigueTiringLate) return newState;
+  if (starterCruising && !forcedHook && !lateClose && !jamHook && !fatigueExhausted && !fatigueTiringLate && !asgLimitReached && !asgProactiveChange) return newState;
 
   // Session 22 #7: 1984 starter hook - don't pull a starter before inning 5
   // unless genuinely gassed (fatigueLevel 3+) or game is out of hand (6+ runs + composure collapse)
-  if (!isReliever && inning < 5 && !forcedHook && !fatigueExhausted && !(totalBlowup && composure < 30)) return newState;
-  if (!isReliever && inning < 6 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull && !blowoutShell) return newState;
-  if (!isReliever && inning < 7 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull && !jamHook && !blowoutShell) return newState;
+  // ASG games bypass starter protection to enforce usage limits and showcase rotation.
+  if (!isReliever && inning < 5 && !forcedHook && !fatigueExhausted && !(totalBlowup && composure < 30) && !asgLimitReached && !asgProactiveChange) return newState;
+  if (!isReliever && inning < 6 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull && !blowoutShell && !asgLimitReached && !asgProactiveChange) return newState;
+  if (!isReliever && inning < 7 && !forcedHook && !fatigueExhausted && !totalBlowup && !walksPull && !jamHook && !blowoutShell && !asgLimitReached && !asgProactiveChange) return newState;
 
-  const shouldChange = (forcedHook || fatigueHook || relieverFatigue || inningBlowup || totalBlowup || jamHook || walksPull || lateClose || fatigueExhausted || fatigueTiringLate || blowoutShell) && cpuBullpen.length > 0;
+  const shouldChange = (forcedHook || fatigueHook || relieverFatigue || inningBlowup || totalBlowup || jamHook || walksPull || lateClose || fatigueExhausted || fatigueTiringLate || blowoutShell || asgLimitReached || asgProactiveChange) && cpuBullpen.length > 0;
   if (shouldChange) {
     const battingSide = newState.halfInning === 'top' ? 'away' : 'home';
     const battingLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;

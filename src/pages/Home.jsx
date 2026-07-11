@@ -47,85 +47,7 @@ import LeaderProgressPopup from '@/components/game/LeaderProgressPopup';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 import InlineSponsorBanner from '@/components/game/InlineSponsorBanner';
 import BannerPopup from '@/components/game/BannerPopup';
-import { PADRES_BANNERS } from '@/lib/bannerData/padresBanners';
-import { DODGERS_BANNERS } from '@/lib/bannerData/dodgersBanners';
-import { REDS_BANNERS } from '@/lib/bannerData/redsBanners';
-import { BRAVES_BANNERS } from '@/lib/bannerData/bravesBanners';
-import { ASTROS_BANNERS } from '@/lib/bannerData/astrosBanners';
-import { GIANTS_BANNERS } from '@/lib/bannerData/giantsBanners';
-import { CUBS_BANNERS } from '@/lib/bannerData/cubsBanners';
-import { METS_BANNERS } from '@/lib/bannerData/metsBanners';
-import { CARDINALS_BANNERS } from '@/lib/bannerData/cardinalsBanners';
-import { PIRATES_BANNERS } from '@/lib/bannerData/piratesBanners';
-import { PHILLIES_BANNERS } from '@/lib/bannerData/philliesBanners';
-import { EXPOS_BANNERS } from '@/lib/bannerData/exposBanners';
-import { REDSOX_BANNERS } from '@/lib/bannerData/redsoxBanners';
-import { YANKEES_BANNERS } from '@/lib/bannerData/yankeesBanners';
-import { BREWERS_BANNERS } from '@/lib/bannerData/brewersBanners';
-import { TIGERS_BANNERS } from '@/lib/bannerData/tigersBanners';
-import { INDIANS_BANNERS } from '@/lib/bannerData/indiansBanners';
-import { ORIOLES_BANNERS } from '@/lib/bannerData/oriolesBanners';
-import { BLUEJAYS_BANNERS } from '@/lib/bannerData/bluejaysBanners';
-import { ROYALS_BANNERS } from '@/lib/bannerData/royalsBanners';
-import { ANGELS_BANNERS } from '@/lib/bannerData/angelsBanners';
-import { WHITESOX_BANNERS } from '@/lib/bannerData/whitesoxBanners';
-import { ATHLETICS_BANNERS } from '@/lib/bannerData/athleticsBanners';
-import { TWINS_BANNERS } from '@/lib/bannerData/twinsBanners';
-import { MARINERS_BANNERS } from '@/lib/bannerData/marinersBanners';
-import { RANGERS_BANNERS } from '@/lib/bannerData/rangersBanners';
-import { MOVIES_1984_BANNERS } from '@/lib/bannerData/movies1984Banners';
-import { ELECTRONICS_COMPUTERS_BANNER } from '@/lib/bannerData/electronicsComputersBanners';
-import { GENERAL_PRODUCTS_BANNER } from '@/lib/bannerData/generalProductsBanners';
-import { WRESTLING_BANNER } from '@/lib/bannerData/proWrestlingBanners';
-import { OLYMPICS_1984_BANNER } from '@/lib/bannerData/olympics1984Banners';
-import { SPACE_AVIATION_BANNER } from '@/lib/bannerData/spaceAviationBanners';
-import { NEWSPAPERS_BANNER } from '@/lib/bannerData/newspapersClassifiedsBanners';
-import { PHONE_WARS_BANNER } from '@/lib/bannerData/longDistancePhoneWarsBanners';
-import { CAMERAS_FILM_BANNER } from '@/lib/bannerData/filmDevelopmentCamerasBanners';
-import { SCREAM_1984_BANNER } from '@/lib/bannerData/thingsThatScream1984Banners';
-import { MALL_CULTURE_BANNER } from '@/lib/bannerData/mallCultureBanners';
-import { FORMAT_WARS_BANNER } from '@/lib/bannerData/formatWarsBanners';
-import { COUNTY_FAIR_BANNER } from '@/lib/bannerData/countyFairBanners';
-import { MUSIC_MTV_BANNER } from '@/lib/bannerData/musicMtvBanners';
-import { CARS_ROAD_BANNER } from '@/lib/bannerData/carsRoadBanners';
-import { SATURDAY_CARTOONS_BANNER } from '@/lib/bannerData/saturdayCartoonsBanners';
-import { CEREAL_BANNER } from '@/lib/bannerData/cerealMascotsBanners';
-import { PROMO_NIGHTS_BANNER } from '@/lib/bannerData/promoNightsBanners';
-import { NATIONAL_TV_BANNERS } from '@/lib/bannerData/nationalTVBanners';
-import { ARCADE_BANNER } from '@/lib/bannerData/arcadeVideoGamesBanners';
-
-const TEAM_BANNERS = {
-  padres: PADRES_BANNERS,
-  dodgers: DODGERS_BANNERS,
-  reds: REDS_BANNERS,
-  braves: BRAVES_BANNERS,
-  astros: ASTROS_BANNERS,
-  giants: GIANTS_BANNERS,
-  cubs: CUBS_BANNERS,
-  mets: METS_BANNERS,
-  cardinals: CARDINALS_BANNERS,
-  pirates: PIRATES_BANNERS,
-  phillies: PHILLIES_BANNERS,
-  expos: EXPOS_BANNERS,
-  redsox: REDSOX_BANNERS,
-  yankees: YANKEES_BANNERS,
-  brewers: BREWERS_BANNERS,
-  tigers: TIGERS_BANNERS,
-  indians: INDIANS_BANNERS,
-  orioles: ORIOLES_BANNERS,
-  bluejays: BLUEJAYS_BANNERS,
-  royals: ROYALS_BANNERS,
-  angels: ANGELS_BANNERS,
-  whitesox: WHITESOX_BANNERS,
-  athletics: ATHLETICS_BANNERS,
-  twins: TWINS_BANNERS,
-  mariners: MARINERS_BANNERS,
-  rangers: RANGERS_BANNERS,
-};
-
-function getBannersForTeam(teamKey) {
-  return TEAM_BANNERS[teamKey] || null;
-}
+import { TEAM_BANNERS, getBannersForTeam } from '@/lib/teamBannerData';
 
 import WinCelebration from '@/components/game/WinCelebration';
 import { getVictoryCall } from '@/lib/victoryCalls';
@@ -143,6 +65,8 @@ import { getProbableStarter, advanceRotation, loadRotationStateForActiveSeason, 
 import { buildGameResultFromState } from '@/lib/seasonEngine';
 import { injectAllStarTeams, removeAllStarTeams } from '@/lib/allStarTeams';
 import { calculateAllStarMvp } from '@/lib/allStarMvp';
+import { hasReachedAllStarPitchLimit } from '@/lib/allStarRules';
+import { checkBatterInjury as checkBatterInjuryExternal } from '@/lib/batterInjuryCheck';
 
 
 export default function Home() {
@@ -1264,6 +1188,15 @@ export default function Home() {
     }
   }, [gameOverPopup, cardAward, cardPending, newAchievements]);
 
+  // ASG: force pitcher change when usage limit reached (3 IP starter, 2 IP others)
+  useEffect(() => {
+    if (!gameState || gameState.gameOver || gameMode !== 'allstar' || !isUserPitching || showSubs) return;
+    const p = getEffectivePitcher(gameState) || getCurrentPitcher(gameState);
+    if (!p) return;
+    const us = userTeam === gameState.homeTeam ? 'home' : 'away';
+    if (hasReachedAllStarPitchLimit(p, p.name === (us === 'home' ? gameState.homeStartingPitcherName : gameState.awayStartingPitcherName))) { setSubsTab('pitching'); setShowSubs(true); }
+  }, [gameState, gameMode, isUserPitching, showSubs, userTeam]);
+
   const isUserBatting = gameState && (
     (gameState.halfInning === 'top' && userTeam === gameState.awayTeam) ||
     (gameState.halfInning === 'bottom' && userTeam === gameState.homeTeam)
@@ -1523,65 +1456,7 @@ export default function Home() {
 
   const isExhibition = gameMode === 'exhibition';
 
-  const checkBatterInjury = (prevState, newState) => {
-    const lastPlay = newState.lastPlay;
-    if (!lastPlay) return newState;
-
-    // Determine injury type: HBP vs. swing vs. called pitch (no check)
-    const isHBP = lastPlay.isHBP === true;
-    const NON_SWING_TYPES = ['ball', 'strike'];
-    const isWalk = lastPlay.type === 'walk';
-    const isSwing = !isHBP && !isWalk && !NON_SWING_TYPES.includes(lastPlay.type);
-
-    // No injury check on called balls/strikes or non-HBP walks
-    if (!isHBP && !isSwing) return newState;
-
-    // Use PRE-play state to find the batter (index may have advanced after the play)
-    const battingSide = prevState.halfInning === 'top' ? 'away' : 'home';
-    const prevLineup = battingSide === 'home' ? prevState.homeLineup : prevState.awayLineup;
-    const prevBatterIdx = battingSide === 'home' ? prevState.homeBatterIndex : prevState.awayBatterIndex;
-    const batter = prevLineup[prevBatterIdx % prevLineup.length];
-    if (!batter) return newState;
-
-    // Roll the appropriate injury
-    let injury;
-    if (isHBP) {
-      // Track HBP count for this batter - chance doubles on 2nd+ HBP
-      if (!newState._hbpCounts) newState._hbpCounts = {};
-      newState._hbpCounts[batter.name] = (newState._hbpCounts[batter.name] || 0) + 1;
-      injury = rollHBPIfBatter(newState._hbpCounts[batter.name], isExhibition);
-    } else {
-      injury = rollBatterInjury(isExhibition);
-    }
-
-    if (!injury) return newState;
-
-    // Check if batter is still at the plate (at-bat not complete - foul/miss)
-    const newBatterIdx = battingSide === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
-    const stillAtPlate = prevState.halfInning === newState.halfInning && prevBatterIdx === newBatterIdx;
-
-    // Find available bench players
-    const teamKey = battingSide === 'home' ? newState.homeTeam : newState.awayTeam;
-    const fullBench = TEAMS[teamKey]?.bench || [];
-    const benchUsed = battingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || []);
-    const playerHistory = battingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || []);
-    const currentLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
-    const usedNames = new Set();
-    [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
-    const availableBench = fullBench.filter(p => !usedNames.has(p.name) && !(newState.scratchedPlayers || []).includes(p.name));
-
-    newState._pendingBatterInjury = {
-      ...injury,
-      side: battingSide,
-      batterName: batter.name,
-      bench: availableBench,
-      stillAtPlate,
-    };
-
-    newState.log.push({ type: 'injury', text: `🚑 ${batter.name} is done - ${injury.name}!` });
-
-    return newState;
-  };
+  const checkBatterInjury = (prevState, newState) => checkBatterInjuryExternal(prevState, newState, isExhibition);
 
   const handleBatterInjuryReplacement = (chosenPlayer) => {
     if (!gameState || !batterInjury) return;
