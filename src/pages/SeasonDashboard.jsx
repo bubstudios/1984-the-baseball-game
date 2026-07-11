@@ -538,12 +538,23 @@ export default function SeasonDashboard() {
           if (!userSt) return null;
           const place = divStandings.indexOf(userSt) + 1;
           const suffix = place === 1 ? 'st' : place === 2 ? 'nd' : place === 3 ? 'rd' : 'th';
+          const lastUserResult = gameResults?.find(r => r.homeTeam === season.userTeam || r.awayTeam === season.userTeam);
+          let lastGameLine = null;
+          if (lastUserResult) {
+            const isHome = lastUserResult.homeTeam === season.userTeam;
+            const opp = isHome ? lastUserResult.awayTeam : lastUserResult.homeTeam;
+            const userWon = lastUserResult.winner === season.userTeam;
+            const userRuns = isHome ? lastUserResult.homeScore : lastUserResult.awayScore;
+            const oppRuns = isHome ? lastUserResult.awayScore : lastUserResult.homeScore;
+            lastGameLine = `${userWon ? 'W' : 'L'} ${userRuns}-${oppRuns} vs ${TEAMS[opp]?.abbr || opp}`;
+          }
           return (
             <div className="flex items-center gap-3 mb-2 text-[10px] font-heading text-muted-foreground">
               <span className="text-foreground font-bold">{userSt.w}-{userSt.l}</span>
-              {userSt.streakType && <span className={userSt.streakType === 'W' ? 'text-emerald-400' : 'text-red-400'}>{userSt.streakType}{userSt.streakLen}</span>}
+              {userSt.streakType && <span className={userSt.streakType === 'W' ? 'text-emerald-400' : 'text-red-400'}>Streak: {userSt.streakType}{userSt.streakLen}</span>}
               <span>{place}{suffix} {DIV_LABELS[userDiv]}</span>
               <span>{userSt.gb === 0 ? '-' : userSt.gb.toFixed(1) + ' GB'}</span>
+              {lastGameLine && <span className="text-muted-foreground/70">Last: {lastGameLine}</span>}
             </div>
           );
         })()}

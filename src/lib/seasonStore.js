@@ -1093,15 +1093,15 @@ export function deriveStandings(gameResults) {
       teams[winner].w++;
       teams[winner].last10.push('W');
       if (teams[winner].last10.length > 10) teams[winner].last10.shift();
-      teams[winner].streakType = teams[winner].streakType === 'W' ? 'W' : 'W';
-      teams[winner].streakLen = teams[winner].streakType === 'W' ? teams[winner].streakLen + 1 : 1;
+      if (teams[winner].streakType === 'W') teams[winner].streakLen++;
+      else { teams[winner].streakType = 'W'; teams[winner].streakLen = 1; }
     }
     if (teams[loser]) {
       teams[loser].l++;
       teams[loser].last10.push('L');
       if (teams[loser].last10.length > 10) teams[loser].last10.shift();
-      teams[loser].streakType = teams[loser].streakType === 'L' ? 'L' : 'L';
-      teams[loser].streakLen = teams[loser].streakType === 'L' ? teams[loser].streakLen + 1 : 1;
+      if (teams[loser].streakType === 'L') teams[loser].streakLen++;
+      else { teams[loser].streakType = 'L'; teams[loser].streakLen = 1; }
     }
   }
 
