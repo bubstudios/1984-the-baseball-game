@@ -47,7 +47,7 @@ export function cpuDecideSteal(state) {
     // Strong power hitter at bat - only elite runners go
     for (let i = 0; i < 2; i++) {
       const r = state.bases[i];
-      if (r && r.speed >= 9 && !state.bases[i + 1] && catcherArm < 9) return i;
+      if (r && r.speed >= 8 && !state.bases[i + 1] && catcherArm < 9) return i;
     }
     return -1;
   }
@@ -59,8 +59,10 @@ export function cpuDecideSteal(state) {
     if (r.speed < 7) continue;
     // Avoid elite catchers (arm 8+) unless elite runner (speed 9+)
     if (catcherArm >= 8 && r.speed < 9) continue;
-    // Reduced base attempt chance — target 0.60-0.85 attempts/team/game
-    let attemptChance = Math.max(0.05, 0.08 + (r.speed / 10) * 0.32 - armF - pitchF);
+    // Moderate attempt chance — target 0.50-0.75 attempts/team/game.
+    // Structural gates (per-game cap, power-hitter block, blowout margin)
+    // prevent a return to the high-steal version.
+    let attemptChance = Math.max(0.06, 0.14 + (r.speed / 10) * 0.40 - armF - pitchF);
     // Third attempt of the game only for elite runners
     if (attemptsThisGame >= 2 && r.speed < 9) continue;
     if (r._heldClose) {

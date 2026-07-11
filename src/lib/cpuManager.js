@@ -48,7 +48,12 @@ export function selectStarterRelief(state, cpuPitchingSide) {
   if (state.removedPlayers) state.removedPlayers.forEach(n => used.add(n));
   const todaySP = cpuPitchingSide === 'home' ? state.homeStartingPitcherName : state.awayStartingPitcherName;
   if (todaySP) used.add(todaySP);
-  const available = emergencyStarters.filter(p => !used.has(p.name) && p._seasonAvailable !== false);
+  // HARD GATE: exclude HARD_UNAVAILABLE AND EMERGENCY_ONLY tier starters.
+  // The long-man path must NEVER return an emergency-only arm — that role
+  // override was the root cause of illegal EMERGENCY_ONLY selections (Denny,
+  // Gross). Emergency use is reserved for the true-emergency fallback
+  // (selectEmergencyReliever), which sets isEmergency=true and logs it.
+  const available = emergencyStarters.filter(p => !used.has(p.name) && p._seasonAvailable !== false && p._seasonTier !== 'EMERGENCY_ONLY');
   if (available.length === 0) return null;
   return [...available].sort((a, b) => (a._seasonFatiguePenalty || 0) - (b._seasonFatiguePenalty || 0))[0];
 }

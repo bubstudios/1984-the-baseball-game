@@ -224,14 +224,9 @@ export function resolvePitch(state, pitchType) {
   const hbpChance = hbpReason ? Math.min(0.15, baseHbpChance + (hbpReason.baseChance || 0.02) * (1 + (state._beanball?.tension || 0) / 100)) : baseHbpChance;
   if (Math.random() < hbpChance) return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true, hbpReason };
   else if (Math.random() < baseHbpChance) return { pitchType: pitchType.name, isStrike: false, location: 'hit batter', isHBP: true };
-  // Offensive tuning: slightly lower base strike rate so more balls are thrown,
-  // nudging walk rate toward 2.5-3.5/team/game without touching hit rates.
-  // Wild pitchers (low control) are now punished more - wider control gap.
-  // Offensive tuning: lower base strike rate so more balls are thrown, pushing
-  // walk rate toward 2.5-2.8/team/game. Wild pitchers (low control) punished more.
-  // Offensive tuning: lower base strike rate so more balls are thrown, pushing
-  // walk rate toward 2.5-2.8/team/game. Wild pitchers (low control) punished more.
-  let strikeChance = 0.25 + controlFactor * 0.27 + (pitchType.controlBonus || 0) * 0.04;
+  // Walk tuning: strike rate raised ~10% to reduce walks toward 2.7-3.4/team/game.
+  // Wild pitchers (low control) still punished more via the control multiplier.
+  let strikeChance = 0.28 + controlFactor * 0.29 + (pitchType.controlBonus || 0) * 0.04;
   if (state.umpire) strikeChance += getUmpireZoneEffect(state.umpire) / 100;
   const isStrike = Math.random() < Math.min(Math.max(strikeChance, 0.08), 0.92);
   return { pitchType: pitchType.name, isStrike, location: isStrike ? ['inside corner','outside corner','down the middle','high strike','low strike'][Math.floor(Math.random() * 5)] : ['high','low','inside','outside','way outside','in the dirt'][Math.floor(Math.random() * 6)] };
