@@ -390,10 +390,8 @@ export default function SeasonDashboard() {
 
       const trades = generateTradeDeadline(standings, statsMap, s.userTeam);
 
-      // Apply trades to the TEAMS object (in-place mutation)
-      applyTrades(trades);
-
-      // Store on the season entity
+      // Store on the season entity. Trades are NOT applied yet - user-team
+      // trades require approval first. Applied on continue via applyTrades().
       await base44.entities.Season.update(s.id, {
         tradeDeadlinePhase: 'active',
         tradeDeadlineTrades: trades,
@@ -407,10 +405,15 @@ export default function SeasonDashboard() {
     }
   };
 
-  const continueAfterTradeDeadline = async () => {
+  const continueAfterTradeDeadline = async (approvedTrades) => {
     if (!season) return;
     try {
       setTradeDeadlineVisible(false);
+
+      // Apply only approved trades (CPU trades always applied, user trades only if approved)
+      if (approvedTrades && approvedTrades.length > 0) {
+        applyTrades(approvedTrades);
+      }
 
       // Advance to September 1 (first game after the deadline)
       const sep1Sched = await base44.entities.Schedule.filter({

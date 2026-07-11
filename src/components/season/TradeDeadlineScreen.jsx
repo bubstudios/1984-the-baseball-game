@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { X, ArrowRight, Newspaper } from 'lucide-react';
+import { X, ArrowRight, Newspaper, Check, ShieldCheck } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 
 function lastName(fullName) {
@@ -48,19 +48,31 @@ function BatterStats({ stats }) {
   );
 }
 
-function TradeCard({ trade, index }) {
+// Headline text derived from the NEED, not the acquired player's raw pos.
+// This guarantees the headline matches the stated need.
+function getHeadline(trade) {
+  const city = TEAMS[trade.teamA]?.city?.toUpperCase() || trade.teamA.toUpperCase();
+  if (trade.needPosition) {
+    return `${city} ADDS ${trade.needPosition}`;
+  }
+  if (trade.needType === 'LH_RELIEVER') return `${city} ADDS LH RELIEVER`;
+  if (trade.needType === 'SP_UPGRADE') return `${city} ADDS PITCHING`;
+  if (trade.needType === 'BACKUP_CATCHER') return `${city} ADDS CATCHING`;
+  if (trade.needType === 'LH_BENCH_BAT') return `${city} ADDS LH BAT`;
+  if (trade.needType === 'BENCH_BAT') return `${city} ADDS BENCH BAT`;
+  return `${city} ADDS ${trade.teamAGets[0]?.pos || 'BAT'}`;
+}
+
+function TradeCard({ trade, index, isApproved, onToggleApproval, showApproval }) {
   const teamA = TEAMS[trade.teamA];
-  const teamB = TEAMS[trade.teamB];
   const isPitcherTrade = trade.teamAGets[0]?.pos === 'SP' || trade.teamAGets[0]?.pos === 'RP' || trade.teamAGets[0]?.pos === 'CL';
 
   return (
-    <div className="bg-card border border-border rounded-lg p-4 mb-3">
+    <div className={`bg-card border rounded-lg p-4 mb-3 ${showApproval ? (isApproved ? 'border-primary/50' : 'border-border') : 'border-border'}`}>
       {/* Headline */}
       <div className="border-b border-border pb-2 mb-3">
         <h3 className="font-heading text-sm font-bold text-primary uppercase tracking-wide">
-          {trade.teamAGets[0].pos === 'SP' || trade.teamAGets[0].pos === 'RP' || trade.teamAGets[0].pos === 'CL'
-            ? `${teamA?.city?.toUpperCase()} ADDS ${trade.teamAGets[0].pos === 'SP' ? 'PITCHING' : 'RELIEF HELP'}`
-            : `${teamA?.city?.toUpperCase()} ADDS ${trade.teamAGets[0].pos || 'BAT'}`}
+          {getHeadline(trade)}
         </h3>
       </div>
 
@@ -116,14 +128,58 @@ function TradeCard({ trade, index }) {
           {trade.explanation}
         </p>
       </div>
+
+      {/* Approval controls for user-team trades */}
+      {showApproval && (
+        <div className="mt-3 pt-2 border-t border-border/50">
+          {isApproved ? (
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1 text-[10px] font-heading font-bold text-primary">
+                <Check className="w-3 h-3" /> APPROVED
+              </span>
+              <Button onClick={() => onToggleApproval(index)} variant="outline" size="sm" className="h-7 text-[10px]">
+                Revoke
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1 text-[10px] font-heading text-amber-400">
+                <ShieldCheck className="w-3 h-3" /> PENDING APPROVAL
+              </span>
+              <Button onClick={() => onToggleApproval(index)} variant="default" size="sm" className="h-7 text-[10px] gap-1">
+                <Check className="w-3 h-3" /> Approve Trade
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 export default function TradeDeadlineScreen({ season, trades, onContinue }) {
+  const [approvedSet, setApprovedSet] = useState(new Set());
+
+  const toggleApproval = (index) => {
+    setApprovedSet(prev => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  };
+
+  const handleContinue = () => {
+    // CPU trades always applied; user trades only if approved
+    const tradesToApply = trades.filter((t, i) => !t.isUserTrade || approvedSet.has(i));
+    onContinue(tradesToApply);
+  };
+
   const userTeam = season?.userTeam;
-  const userTrades = trades?.filter(t => t.teamA === userTeam || t.teamB === userTeam) || [];
-  const otherTrades = trades?.filter(t => t.teamA !== userTeam && t.teamB !== userTeam) || [];
+  // Map each trade to its index in the full array
+  const userTradeEntries = trades.map((t, i) => ({ trade: t, index: i })).filter(e => e.trade.isUserTrade);
+  const otherTradeEntries = trades.map((t, i) => ({ trade: t, index: i })).filter(e => !e.trade.isUserTrade);
+  const approvedCount = trades.filter((t, i) => t.isUserTrade && approvedSet.has(i)).length;
 
   return (
     <div className="fixed inset-0 z-50 bg-background flex flex-col">
@@ -140,7 +196,7 @@ export default function TradeDeadlineScreen({ season, trades, onContinue }) {
             </p>
           </div>
         </div>
-        <Button onClick={onContinue} size="sm" className="gap-1">
+        <Button onClick={handleContinue} size="sm" className="gap-1">
           Continue to September <ArrowRight className="w-3 h-3" />
         </Button>
       </div>
@@ -159,28 +215,48 @@ export default function TradeDeadlineScreen({ season, trades, onContinue }) {
           </div>
         ) : (
           <>
-            {/* User team trades first */}
-            {userTrades.length > 0 && (
+            {/* User team trades - require approval */}
+            {userTradeEntries.length > 0 && (
               <div className="mb-4">
                 <div className="bg-primary/10 border border-primary/30 rounded-md px-3 py-2 mb-3">
                   <p className="text-[10px] font-heading font-bold text-primary">
-                    YOUR TEAM MADE A MOVE
+                    YOUR TEAM HAS PENDING TRADES
+                  </p>
+                  <p className="text-[9px] text-muted-foreground mt-0.5">
+                    Approve trades involving {teamFullName(userTeam)} or continue without them.
                   </p>
                 </div>
-                {userTrades.map((trade, i) => (
-                  <TradeCard key={i} trade={trade} index={i} />
+                {userTradeEntries.map(({ trade, index }) => (
+                  <TradeCard
+                    key={index}
+                    trade={trade}
+                    index={index}
+                    isApproved={approvedSet.has(index)}
+                    onToggleApproval={toggleApproval}
+                    showApproval={true}
+                  />
                 ))}
+                {approvedCount === 0 && (
+                  <p className="text-[9px] text-muted-foreground/60 text-center mt-2">
+                    No trades approved - your roster stays as-is.
+                  </p>
+                )}
               </div>
             )}
 
-            {/* Other trades */}
-            {otherTrades.length > 0 && (
+            {/* CPU trades */}
+            {otherTradeEntries.length > 0 && (
               <div>
                 <div className="text-[10px] font-heading font-bold text-muted-foreground mb-2 uppercase">
                   Around the League
                 </div>
-                {otherTrades.map((trade, i) => (
-                  <TradeCard key={i} trade={trade} index={i} />
+                {otherTradeEntries.map(({ trade, index }) => (
+                  <TradeCard
+                    key={index}
+                    trade={trade}
+                    index={index}
+                    showApproval={false}
+                  />
                 ))}
               </div>
             )}
@@ -188,7 +264,8 @@ export default function TradeDeadlineScreen({ season, trades, onContinue }) {
             {/* Summary */}
             <div className="mt-4 pt-3 border-t border-border text-center">
               <p className="text-[10px] text-muted-foreground">
-                {trades.length} trade{trades.length !== 1 ? 's' : ''} completed.
+                {trades.length} trade{trades.length !== 1 ? 's' : ''} completed
+                {approvedCount > 0 ? ` (${approvedCount} approved by you)` : ''}.
                 Rosters updated for September.
               </p>
             </div>

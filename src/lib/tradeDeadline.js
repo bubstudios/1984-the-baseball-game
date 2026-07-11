@@ -1,16 +1,33 @@
 // tradeDeadline.js - August 30 Trade Deadline system for Season Mode.
-// AI-generated trades only (user never manually creates trades).
-// Trades happen between Aug 30 games and Sept 1 games.
+// 5-STEP LOCKED LOGIC: Classify -> Identify Needs -> Position Compatibility -> Value/Fairness -> Display Validation
+//
+// Key rules:
+// - A player may only fill a need if his primary/secondary position matches the need slot.
+// - 1B does NOT solve 2B. RF does NOT solve CF. DH does NOT exist for NL teams.
+// - User-team trades require explicit approval (core players protected).
+// - Target 4-10 total trades (not every contender reshuffles).
 
 import { TEAMS } from './gameData';
-import { DIVISIONS, getDivision, getLeague } from './seasonSchedule';
+import { getDivision, getLeague } from './seasonSchedule';
 
-// ── Position / Role classification ──
+// ── Position utilities ──
 const INFIELD = new Set(['1B', '2B', '3B', 'SS']);
 const OUTFIELD = new Set(['LF', 'CF', 'RF']);
 
-// Returns a role category for role-matching in trades.
-// SP, RP (includes CL), C, IF, OF, DH
+// Get all positions a player can play (from their pos string, e.g. "C/3B" -> ["C","3B"])
+export function getEligiblePositions(player) {
+  const posStr = player.pos || player.assignedPos || '';
+  if (!posStr) return [];
+  return posStr.split('/').map(p => p.trim()).filter(Boolean);
+}
+
+// Check if player is DH-only (NL teams cannot acquire these)
+function isDHOnly(player) {
+  const eligible = getEligiblePositions(player);
+  return eligible.length === 1 && eligible[0] === 'DH';
+}
+
+// Role category for broad role-matching in offers
 export function getRoleCategory(player) {
   const pos = player.assignedPos || player.pos || '';
   if (pos === 'SP') return 'SP';
@@ -19,7 +36,6 @@ export function getRoleCategory(player) {
   if (INFIELD.has(pos)) return 'IF';
   if (OUTFIELD.has(pos)) return 'OF';
   if (pos === 'DH') return 'DH';
-  // Multi-position bench (e.g. "C/3B", "1B/3B", "OF/1B")
   if (pos.includes('/')) {
     const parts = pos.split('/');
     if (parts.includes('C')) return 'C';
@@ -29,41 +45,32 @@ export function getRoleCategory(player) {
   return 'IF';
 }
 
-// Roles are compatible if they're the same category.
-// DH can swap with IF (both are corner/bat-first roles).
-function rolesCompatible(roleA, roleB) {
-  if (roleA === roleB) return true;
-  if ((roleA === 'DH' && roleB === 'IF') || (roleA === 'IF' && roleB === 'DH')) return true;
-  return false;
-}
-
-// ── Team status classification ──
-// CONTENDER: 1st place, within 6 GB, or .520+
-// BUBBLE: 6.5-10 GB or .475-.519
-// SELLER: >10 GB or <.475
+// ── STEP 1: Classify every team ──
+// CONTENDER: 1st place OR within 5 GB OR .530+
+// FRINGE: 5.5-9 GB
+// SELLER: 10+ GB or < .480
+// NEUTRAL: doesn't fit (rarely trades)
 export function classifyTeamStatus(teamKey, standingsData) {
   const div = getDivision(teamKey);
-  if (!div || !standingsData || !standingsData[div]) return 'BUBBLE';
+  if (!div || !standingsData || !standingsData[div]) return 'NEUTRAL';
   const divStandings = standingsData[div];
   const teamRow = divStandings.find(t => t.teamKey === teamKey);
-  if (!teamRow) return 'BUBBLE';
+  if (!teamRow) return 'NEUTRAL';
 
   const gb = teamRow.gb ?? 99;
   const pct = teamRow.pct ?? 0;
   const isFirst = divStandings.indexOf(teamRow) === 0;
 
-  if (isFirst || gb <= 6.0 || pct >= 0.520) return 'CONTENDER';
-  if (gb > 10.0 || pct < 0.475) return 'SELLER';
-  return 'BUBBLE';
+  if (isFirst || gb <= 5.0 || pct >= 0.530) return 'CONTENDER';
+  if (gb >= 10.0 || pct < 0.480) return 'SELLER';
+  if (gb >= 5.5) return 'FRINGE';
+  return 'NEUTRAL';
 }
 
-// ── Player trade value calculation ──
-// Combines base ratings + season performance + position/role scarcity.
-// Returns a numeric score (roughly 20-120 range).
+// ── Value calculation ──
 const POSITION_SCARCITY = {
   'C': 15, 'SS': 12, '2B': 10, 'CF': 10, '3B': 8, '1B': 5, 'LF': 5, 'RF': 5, 'DH': 0, 'OF': 7,
 };
-
 const ROLE_BONUS = { 'CL': 15, 'SP': 10, 'RP': 5 };
 
 export function calculatePlayerValue(player, stats) {
@@ -84,26 +91,30 @@ export function calculatePlayerValue(player, stats) {
     return Math.max(10, base + seasonBonus + roleBonus);
   }
 
-  // Position player
   const base = (player.contact || 5) * 4 + (player.power || 5) * 3 +
     (player.speed || 5) * 1.5 + (player.defense || 5) * 2 + (player.arm || 5) * 1;
   const avg = stats?.battingAverage || 0.250;
   const hr = stats?.homeRuns || 0;
   const rbi = stats?.rbi || 0;
   const sb = stats?.stolenBases || 0;
-  const seasonBonus = avg * 200 + hr * 1.5 + rbi * 0.3 + sb * 0.5;
+  const obp = stats?.onBasePercentage || 0;
+  const slg = stats?.sluggingPercentage || 0;
+  const ops = obp + slg;
+  // Weight OPS heavily so a .510 OPS player can't match a .794 OPS player
+  const seasonBonus = avg * 200 + hr * 1.5 + rbi * 0.3 + sb * 0.5 + ops * 40;
   const scarcity = POSITION_SCARCITY[pos] || POSITION_SCARCITY[player.pos] || 5;
   return Math.max(10, base + seasonBonus + scarcity);
 }
 
-// ── Team needs evaluation ──
-// Returns array of need objects: { type, role, position, priority, reason }
+// ── STEP 2: Identify exact need slots ──
+// Each need has an exact position or an approved broader bucket label.
 export function evaluateTeamNeeds(teamKey, statsMap) {
   const team = TEAMS[teamKey];
   if (!team) return [];
+  const isNL = getLeague(teamKey) === 'NL';
   const needs = [];
 
-  // Bullpen L/R balance
+  // LH reliever need
   const bullpen = team.bullpen || [];
   const leftyRPs = bullpen.filter(p => p.throws === 'L' && (p.pos === 'RP' || p.pos === 'CL'));
   if (leftyRPs.length < 2) {
@@ -111,32 +122,35 @@ export function evaluateTeamNeeds(teamKey, statsMap) {
       type: 'LH_RELIEVER', role: 'RP', position: null,
       priority: leftyRPs.length === 0 ? 'HIGH' : 'MEDIUM',
       reason: `Only ${leftyRPs.length} left-handed reliever${leftyRPs.length === 1 ? '' : 's'}`,
+      label: 'left-handed reliever',
     });
   }
 
-  // Weakest starting position player (by OPS)
+  // Position upgrades - EXACT slots from lineup
   const lineup = team.lineup || [];
   for (const player of lineup) {
-    const pos = player.assignedPos || player.pos;
-    if (['SP', 'RP', 'CL'].includes(pos)) continue;
+    const assignedPos = player.assignedPos || player.pos;
+    if (!assignedPos || ['SP', 'RP', 'CL', 'DH'].includes(assignedPos)) continue;
+    if (assignedPos === 'DH' && isNL) continue;
+
     const stats = statsMap[`${teamKey}|${player.name}`];
     const obp = stats?.onBasePercentage || 0;
     const slg = stats?.sluggingPercentage || 0;
     const ops = obp + slg;
     const ab = stats?.atBats || 0;
-    // Only flag if they have enough ABs to be a real weakness
-    if (ab >= 100 && ops < 0.650) {
-      const role = getRoleCategory(player);
+    if (ab >= 80 && ops < 0.650) {
       needs.push({
-        type: 'POSITION_UPGRADE', role, position: pos,
+        type: 'POSITION_UPGRADE', role: getRoleCategory(player), position: assignedPos,
         priority: ops < 0.600 ? 'HIGH' : 'MEDIUM',
-        reason: `${pos} OPS ${ops.toFixed(3)} needs upgrade`,
+        reason: `${assignedPos} OPS ${ops.toFixed(3)} needs upgrade`,
+        label: `starting ${assignedPos}`,
         minValue: calculatePlayerValue(player, stats) - 5,
+        currentOps: ops,
       });
     }
   }
 
-  // Rotation weakness (worst ERA starter with enough IP)
+  // Rotation weakness
   const rotation = team.rotation || [];
   let worstSP = null;
   let worstERA = 0;
@@ -154,88 +168,178 @@ export function evaluateTeamNeeds(teamKey, statsMap) {
       type: 'SP_UPGRADE', role: 'SP', position: null,
       priority: worstERA > 5.00 ? 'HIGH' : 'MEDIUM',
       reason: `5th starter ERA ${worstERA.toFixed(2)}`,
+      label: 'starting pitching',
       minValue: calculatePlayerValue(worstSP.player, worstSP.stats) - 5,
     });
   }
 
-  // Bench bat weakness (bench player with poor contact)
+  // Bench bat need (broader bucket)
   const bench = team.bench || [];
-  const weakBench = bench.filter(p => (p.contact || 5) <= 3 && !['SP', 'RP', 'CL'].includes(p.pos));
+  const positionBench = bench.filter(p => !['SP', 'RP', 'CL'].includes(p.pos));
+  const weakBench = positionBench.filter(p => (p.contact || 5) <= 4);
   if (weakBench.length > 0) {
+    const leftyBench = positionBench.filter(p => p.bats === 'L' || p.bats === 'S');
+    if (leftyBench.length === 0) {
+      needs.push({
+        type: 'LH_BENCH_BAT', role: 'IF', position: null,
+        priority: 'LOW',
+        reason: 'No left-handed bat on the bench',
+        label: 'left-handed bench bat',
+      });
+    } else {
+      needs.push({
+        type: 'BENCH_BAT', role: 'IF', position: null,
+        priority: 'LOW',
+        reason: 'Bench hitting could improve',
+        label: 'bench bat',
+      });
+    }
+  }
+
+  // Backup catcher need
+  const catchers = [...lineup, ...bench].filter(p =>
+    (p.assignedPos || p.pos) === 'C' || (p.pos || '').includes('C')
+  );
+  if (catchers.length < 2) {
     needs.push({
-      type: 'BENCH_BAT', role: getRoleCategory(weakBench[0]), position: null,
-      priority: 'LOW',
-      reason: 'Bench hitting could improve',
+      type: 'BACKUP_CATCHER', role: 'C', position: 'C',
+      priority: 'MEDIUM',
+      reason: 'Need a backup catcher',
+      label: 'backup catcher',
     });
   }
 
   return needs;
 }
 
-// ── Find a player on the buyer's team to offer in return ──
-// Must be: same role category, not the best player at that role,
-// fair value (within tolerance of target), and the team can spare them.
-function findOfferForTrade(buyerTeamKey, sellerPlayer, sellerStats, buyerNeed, statsMap, userTeam, isUserTeam) {
-  const team = TEAMS[buyerTeamKey];
-  const sellerRole = getRoleCategory(sellerPlayer);
-  const sellerValue = calculatePlayerValue(sellerPlayer, sellerStats);
+// ── STEP 3: Position compatibility rules (HARD RULES) ──
+// A player may only fill a need if his eligible positions match the need.
+// 1B does NOT solve 2B. RF does NOT solve CF. DH does NOT exist for NL teams.
+function playerFillsNeed(player, need, buyerTeamKey) {
+  const eligible = getEligiblePositions(player);
+  const isNL = getLeague(buyerTeamKey) === 'NL';
 
-  // Gather all players in the same role category from the buyer
+  // NL teams cannot acquire DH-only players
+  if (isNL && isDHOnly(player)) return false;
+
+  // Starting pitcher need
+  if (need.role === 'SP') {
+    return eligible.includes('SP') || player.pos === 'SP';
+  }
+
+  // Relief pitcher need
+  if (need.role === 'RP') {
+    const isRP = eligible.includes('RP') || eligible.includes('CL') || player.pos === 'RP' || player.pos === 'CL';
+    if (!isRP) return false;
+    if (need.type === 'LH_RELIEVER') return player.throws === 'L';
+    return true;
+  }
+
+  // Backup catcher
+  if (need.type === 'BACKUP_CATCHER') {
+    return eligible.includes('C');
+  }
+
+  // Exact position upgrade - HARD RULE: player must be able to play that position
+  if (need.type === 'POSITION_UPGRADE' && need.position) {
+    return eligible.includes(need.position);
+  }
+
+  // Broader bucket needs
+  if (need.type === 'LH_BENCH_BAT') {
+    const isPitcher = eligible.some(p => ['SP', 'RP', 'CL'].includes(p));
+    if (isPitcher) return false;
+    return player.bats === 'L' || player.bats === 'S';
+  }
+  if (need.type === 'BENCH_BAT') {
+    const isPitcher = eligible.some(p => ['SP', 'RP', 'CL'].includes(p));
+    if (isPitcher) return false;
+    return true;
+  }
+
+  return false;
+}
+
+// ── User team protection ──
+// Returns set of protected player names for the user's team.
+// Protected = current starters, top 3 SP, closer, top 5 hitters.
+export function getProtectedPlayers(teamKey, statsMap) {
+  const team = TEAMS[teamKey];
+  if (!team) return new Set();
+  const protectedNames = new Set();
+
+  // All current lineup starters
+  for (const p of (team.lineup || [])) {
+    protectedNames.add(p.name);
+  }
+
+  // Top 3 starters by value
+  const starters = (team.rotation || []).map(p => ({
+    name: p.name,
+    value: calculatePlayerValue(p, statsMap[`${teamKey}|${p.name}`]),
+  })).sort((a, b) => b.value - a.value);
+  starters.slice(0, 3).forEach(s => protectedNames.add(s.name));
+
+  // Closer
+  const closer = (team.bullpen || []).find(p => p.pos === 'CL' || p.assignedPos === 'CL');
+  if (closer) protectedNames.add(closer.name);
+
+  // Top 5 hitters by value
+  const hitters = (team.lineup || []).filter(p => !['SP', 'RP', 'CL'].includes(p.assignedPos || p.pos))
+    .map(p => ({
+      name: p.name,
+      value: calculatePlayerValue(p, statsMap[`${teamKey}|${p.name}`]),
+    })).sort((a, b) => b.value - a.value);
+  hitters.slice(0, 5).forEach(h => protectedNames.add(h.name));
+
+  return protectedNames;
+}
+
+// ── Find a player on the buyer's team to offer in return ──
+// Must be: same role category, not protected (for user team), fair value,
+// and the buyer must not get much worse (incoming >= 80% of outgoing).
+function findOfferForTrade(buyerTeamKey, sellerPlayer, sellerStats, need, statsMap, isUserTeam, playersTraded) {
+  const team = TEAMS[buyerTeamKey];
+  const sellerValue = calculatePlayerValue(sellerPlayer, sellerStats);
+  const sellerRole = getRoleCategory(sellerPlayer);
+
+  const protectedNames = isUserTeam ? getProtectedPlayers(buyerTeamKey, statsMap) : new Set();
+
   const candidates = [];
-  const checkPool = (pool, isLineup) => {
+  const checkPool = (pool) => {
     for (const p of pool) {
-      const pos = p.assignedPos || p.pos;
-      if (['SP', 'RP', 'CL'].includes(pos) && sellerRole !== 'SP' && sellerRole !== 'RP') continue;
+      if (playersTraded.has(p.name)) continue;
+      if (protectedNames.has(p.name)) continue;
       const role = getRoleCategory(p);
-      if (!rolesCompatible(role, sellerRole)) continue;
+      if (role !== sellerRole) continue;
       const stats = statsMap[`${buyerTeamKey}|${p.name}`];
       const value = calculatePlayerValue(p, stats);
-      candidates.push({ player: p, value, stats, role, isLineup });
+      candidates.push({ player: p, value, stats, role });
     }
   };
-  checkPool(team.lineup || [], true);
-  checkPool(team.bench || [], false);
-  if (sellerRole === 'SP') checkPool(team.rotation || [], false);
-  if (sellerRole === 'RP') checkPool(team.bullpen || [], false);
+  checkPool(team.lineup || []);
+  checkPool(team.bench || []);
+  if (sellerRole === 'SP') checkPool(team.rotation || []);
+  if (sellerRole === 'RP') checkPool(team.bullpen || []);
 
   if (candidates.length === 0) return null;
 
-  // Sort by value closest to seller's value (fair match)
-  candidates.sort((a, b) => {
-    const aDiff = Math.abs(a.value - sellerValue);
-    const bDiff = Math.abs(b.value - sellerValue);
-    return aDiff - bDiff;
-  });
+  // Sort by closest value (fair match)
+  candidates.sort((a, b) => Math.abs(a.value - sellerValue) - Math.abs(b.value - sellerValue));
 
-  // Fairness tolerance: 25% for 1-for-1, tighter (15%) for user's team
   const tolerance = isUserTeam ? 0.15 : 0.25;
 
   for (const candidate of candidates) {
-    // Skip the best player at this role (don't gut the team)
-    const sameRolePlayers = candidates.filter(c => c.role === candidate.role);
-    if (sameRolePlayers.length > 1) {
-      const maxValue = Math.max(...sameRolePlayers.map(c => c.value));
-      // Don't trade away your best player at a role unless you have 3+ at that role
-      if (candidate.value === maxValue && sameRolePlayers.length < 4) continue;
-    }
-
     // Fairness check
     const diff = Math.abs(candidate.value - sellerValue);
     const maxVal = Math.max(candidate.value, sellerValue);
     if (maxVal > 0 && diff / maxVal > tolerance) continue;
 
-    // Roster depth check: can the buyer spare this player?
-    if (!canSparePlayer(buyerTeamKey, candidate.player, sellerRole)) continue;
+    // Buyer must not get much worse: incoming >= 80% of outgoing
+    if (sellerValue < candidate.value * 0.80) continue;
 
-    // For user's team: never trade the overall best player
-    if (isUserTeam) {
-      const allPlayers = [...(team.lineup || []), ...(team.bench || [])];
-      const bestPlayer = allPlayers.reduce((best, p) => {
-        const v = calculatePlayerValue(p, statsMap[`${buyerTeamKey}|${p.name}`]);
-        return v > best.v ? { p, v } : best;
-      }, { p: null, v: 0 });
-      if (candidate.player.name === bestPlayer.p?.name) continue;
-    }
+    // Roster depth check (relaxed for the need position - incoming fills it)
+    if (!canSparePlayer(buyerTeamKey, candidate.player, sellerRole, need.position)) continue;
 
     return candidate;
   }
@@ -244,28 +348,53 @@ function findOfferForTrade(buyerTeamKey, sellerPlayer, sellerStats, buyerNeed, s
 }
 
 // Check if a team can spare a player at a given role
-function canSparePlayer(teamKey, player, role) {
+function canSparePlayer(teamKey, player, role, needPosition) {
   const team = TEAMS[teamKey];
   if (role === 'C') {
-    // Must have at least 2 catchers (1 starter + 1 backup)
     const catchers = [...(team.lineup || []), ...(team.bench || [])].filter(p =>
       (p.assignedPos || p.pos) === 'C' || (p.pos || '').includes('C')
     );
     if (catchers.length <= 2) return false;
   }
   if (role === 'SP') {
-    // Must have at least 4 starters
     if ((team.rotation || []).length <= 4) return false;
   }
   if (role === 'RP') {
-    // Must have at least 5 bullpen arms
     if ((team.bullpen || []).length <= 5) return false;
+  }
+  // Don't trade away the only player at a position, UNLESS the need is at that position
+  // (the incoming player fills the same slot)
+  const assignedPos = player.assignedPos || player.pos;
+  if (assignedPos && !['SP', 'RP', 'CL', 'DH'].includes(assignedPos) && assignedPos !== needPosition) {
+    const samePos = [...(team.lineup || []), ...(team.bench || [])].filter(p =>
+      getEligiblePositions(p).includes(assignedPos)
+    );
+    if (samePos.length <= 1) return false;
   }
   return true;
 }
 
+// ── STEP 5: Display validation ──
+// Verify headline, need, acquired position, and explanation all agree.
+function validateTradeDisplay(trade, need) {
+  const acquired = trade.teamAGets[0];
+  const eligible = getEligiblePositions({ pos: acquired.pos });
+
+  // For position upgrades, acquired player must be able to play the need position
+  if (need.type === 'POSITION_UPGRADE' && need.position) {
+    if (!eligible.includes(need.position)) return false;
+  }
+  // For LH reliever, acquired must be a lefty
+  if (need.type === 'LH_RELIEVER' && acquired.throws !== 'L') return false;
+  // For NL buyers, acquired must not be DH-only
+  if (getLeague(trade.teamA) === 'NL' && isDHOnly({ pos: acquired.pos })) return false;
+  // For backup catcher, acquired must be able to catch
+  if (need.type === 'BACKUP_CATCHER' && !eligible.includes('C')) return false;
+
+  return true;
+}
+
 // ── Trade generation ──
-// Orchestrates the full trade deadline. Returns array of trade objects.
 export function generateTradeDeadline(standingsData, statsMap, userTeam) {
   const teamKeys = Object.keys(TEAMS).filter(k => !k.includes('ALLSTAR'));
   const statuses = {};
@@ -274,49 +403,54 @@ export function generateTradeDeadline(standingsData, statsMap, userTeam) {
   }
 
   const contenders = teamKeys.filter(tk => statuses[tk] === 'CONTENDER');
-  const sellers = teamKeys.filter(tk => statuses[tk] === 'SELLER');
-  const bubbles = teamKeys.filter(tk => statuses[tk] === 'BUBBLE');
+  const sellers = teamKeys.filter(tk => statuses[tk] === 'SELLER' && tk !== userTeam);
+  const fringes = teamKeys.filter(tk => statuses[tk] === 'FRINGE');
 
-  // Evaluate needs for contenders and bubble teams
+  // Evaluate needs for contenders and fringe teams
   const teamNeeds = {};
-  for (const tk of [...contenders, ...bubbles]) {
+  for (const tk of [...contenders, ...fringes]) {
     teamNeeds[tk] = evaluateTeamNeeds(tk, statsMap);
   }
 
   const trades = [];
   const teamsThatTraded = new Set();
-  const playersTraded = new Set(); // global no-duplicate guard
+  const playersTraded = new Set();
+
+  // Target 4-10 total trades for realism
+  const MAX_TRADES = 4 + Math.floor(Math.random() * 7);
 
   // Sort contenders by number of needs (most needy first)
   contenders.sort((a, b) => (teamNeeds[b]?.length || 0) - (teamNeeds[a]?.length || 0));
 
-  // Bubble teams rarely trade, but check them after contenders
-  const buyers = [...contenders, ...bubbles.filter(tk => Math.random() < 0.3)];
+  // Fringe teams rarely trade (30% chance to participate as buyers)
+  const fringeBuyers = fringes.filter(() => Math.random() < 0.3);
+  const buyers = [...contenders, ...fringeBuyers];
 
   for (const buyerKey of buyers) {
     if (teamsThatTraded.has(buyerKey)) continue;
-    if (trades.length >= 14) break;
+    if (trades.length >= MAX_TRADES) break;
 
     const needs = teamNeeds[buyerKey] || [];
     if (needs.length === 0) continue;
 
     const isUserTeam = buyerKey === userTeam;
 
-    // Sort needs by priority
     const priorityOrder = { HIGH: 0, MEDIUM: 1, LOW: 2 };
     needs.sort((a, b) => (priorityOrder[a.priority] || 3) - (priorityOrder[b.priority] || 3));
 
     for (const need of needs) {
-      if (trades.length >= 14) break;
+      if (trades.length >= MAX_TRADES) break;
       if (teamsThatTraded.has(buyerKey)) break;
 
-      // Find sellers with players matching this need
       for (const sellerKey of sellers) {
         if (teamsThatTraded.has(sellerKey)) continue;
-        if (trades.length >= 14) break;
+        if (trades.length >= MAX_TRADES) break;
 
-        const match = findTradeMatch(buyerKey, sellerKey, need, statsMap, userTeam, isUserTeam, playersTraded);
+        const match = findTradeMatch(buyerKey, sellerKey, need, statsMap, isUserTeam, playersTraded);
         if (match) {
+          // STEP 5: Display validation - reject if positions don't agree
+          if (!validateTradeDisplay(match, need)) continue;
+
           trades.push(match);
           teamsThatTraded.add(buyerKey);
           teamsThatTraded.add(sellerKey);
@@ -328,62 +462,60 @@ export function generateTradeDeadline(standingsData, statsMap, userTeam) {
     }
   }
 
-  // Enforce minimum: if fewer than 3 trades, that's OK (no forced bad trades)
   return trades;
 }
 
 // Find a specific trade match between a buyer and seller for a need
-function findTradeMatch(buyerKey, sellerKey, need, statsMap, userTeam, isUserTeam, playersTraded) {
+function findTradeMatch(buyerKey, sellerKey, need, statsMap, isUserTeam, playersTraded) {
   const sellerTeam = TEAMS[sellerKey];
   if (!sellerTeam) return null;
 
-  // Find players on the seller matching the need's role
+  // STEP 3: Scan seller roster for players who FILL the exact need
   const sellerCandidates = [];
-  const scanPool = (pool, isLineup) => {
+  const scanPool = (pool) => {
     for (const p of pool) {
       if (playersTraded.has(p.name)) continue;
-      const role = getRoleCategory(p);
-      if (!rolesCompatible(role, need.role)) continue;
-
-      // For LH_RELIEVER need, only match lefty throwers
-      if (need.type === 'LH_RELIEVER' && p.throws !== 'L') continue;
-
+      if (!playerFillsNeed(p, need, buyerKey)) continue;
       const stats = statsMap[`${sellerKey}|${p.name}`];
       const value = calculatePlayerValue(p, stats);
-      sellerCandidates.push({ player: p, value, stats, role, isLineup });
+      sellerCandidates.push({ player: p, value, stats, role: getRoleCategory(p) });
     }
   };
-  scanPool(sellerTeam.lineup || [], true);
-  scanPool(sellerTeam.bench || [], false);
-  if (need.role === 'SP') scanPool(sellerTeam.rotation || [], false);
-  if (need.role === 'RP') scanPool(sellerTeam.bullpen || [], false);
+  scanPool(sellerTeam.lineup || []);
+  scanPool(sellerTeam.bench || []);
+  if (need.role === 'SP') scanPool(sellerTeam.rotation || []);
+  if (need.role === 'RP') scanPool(sellerTeam.bullpen || []);
 
   if (sellerCandidates.length === 0) return null;
 
-  // Sort seller candidates by value (best match for the need first)
+  // Sort by value (best match first)
   sellerCandidates.sort((a, b) => b.value - a.value);
 
   for (const sellerCandidate of sellerCandidates) {
-    // Check seller can spare this player
-    if (!canSparePlayer(sellerKey, sellerCandidate.player, sellerCandidate.role)) continue;
+    if (!canSparePlayer(sellerKey, sellerCandidate.player, sellerCandidate.role, null)) continue;
 
-    // Find a buyer player to offer in return
-    const offer = findOfferForTrade(buyerKey, sellerCandidate.player, sellerCandidate.stats, need, statsMap, userTeam, isUserTeam);
+    const offer = findOfferForTrade(buyerKey, sellerCandidate.player, sellerCandidate.stats, need, statsMap, isUserTeam, playersTraded);
     if (!offer) continue;
 
-    // Final fairness check (both directions)
+    // Final fairness check
     const tolerance = isUserTeam ? 0.15 : 0.25;
     const diff = Math.abs(offer.value - sellerCandidate.value);
     const maxVal = Math.max(offer.value, sellerCandidate.value);
     if (maxVal > 0 && diff / maxVal > tolerance) continue;
 
-    // Generate the trade object
+    const acquiredPos = sellerCandidate.player.assignedPos || sellerCandidate.player.pos;
+
     const trade = {
       teamA: buyerKey,
       teamB: sellerKey,
+      isUserTrade: isUserTeam,
+      requiresApproval: isUserTeam,
+      needType: need.type,
+      needLabel: need.label,
+      needPosition: need.position || null,
       teamAGets: [{
         name: sellerCandidate.player.name,
-        pos: sellerCandidate.player.assignedPos || sellerCandidate.player.pos,
+        pos: acquiredPos,
         throws: sellerCandidate.player.throws,
         bats: sellerCandidate.player.bats,
         role: sellerCandidate.role,
@@ -434,58 +566,59 @@ function formatStatsForDisplay(player, stats) {
   };
 }
 
-// Generate a short AI explanation for the trade
+// Generate explanation - uses exact need label for display consistency
 function generateTradeExplanation(buyerKey, sellerKey, sellerCandidate, offer, need) {
   const buyerName = TEAMS[buyerKey]?.name || buyerKey;
-  const sellerName = TEAMS[sellerKey]?.name || sellerKey;
   const buyerCity = TEAMS[buyerKey]?.city || '';
+  const sellerName = TEAMS[sellerKey]?.name || sellerKey;
   const sellerCity = TEAMS[sellerKey]?.city || '';
+  const acquiredLastName = sellerCandidate.player.name.split(' ').pop();
+  const offerLastName = offer.player.name.split(' ').pop();
 
   let buyerContext = '';
   if (need.type === 'LH_RELIEVER') {
-    buyerContext = `${buyerCity} ${buyerName}, bolstering their bullpen for the stretch run, added a left-handed relief option.`;
+    buyerContext = `${buyerCity} ${buyerName}, bolstering their bullpen for the stretch run, added left-handed relief help in ${acquiredLastName}.`;
   } else if (need.type === 'SP_UPGRADE') {
-    buyerContext = `${buyerCity} ${buyerName}, looking to solidify their rotation down the stretch, acquired starting pitching depth.`;
+    buyerContext = `${buyerCity} ${buyerName}, looking to solidify their rotation down the stretch, acquired ${acquiredLastName}.`;
   } else if (need.type === 'POSITION_UPGRADE') {
-    buyerContext = `${buyerCity} ${buyerName}, addressing a weak spot at ${need.position}, brought in an upgrade.`;
+    buyerContext = `${buyerCity} ${buyerName}, addressing a weak spot at ${need.position}, brought in ${acquiredLastName}.`;
+  } else if (need.type === 'BACKUP_CATCHER') {
+    buyerContext = `${buyerCity} ${buyerName}, adding catching depth, acquired ${acquiredLastName}.`;
+  } else if (need.type === 'LH_BENCH_BAT') {
+    buyerContext = `${buyerCity} ${buyerName}, adding a left-handed bat to the bench, acquired ${acquiredLastName}.`;
   } else if (need.type === 'BENCH_BAT') {
-    buyerContext = `${buyerCity} ${buyerName}, looking to strengthen their bench for the playoff push, added a bat.`;
+    buyerContext = `${buyerCity} ${buyerName}, looking to strengthen their bench for the playoff push, added ${acquiredLastName}.`;
   } else {
-    buyerContext = `${buyerCity} ${buyerName} made a move to improve their roster.`;
+    buyerContext = `${buyerCity} ${buyerName} made a move to improve their roster, acquiring ${acquiredLastName}.`;
   }
 
-  const sellerContext = `${sellerCity} ${sellerName}, out of contention, received a fair return in ${offer.player.name.split(' ').pop()}.`;
+  const sellerContext = `${sellerCity} ${sellerName}, out of contention, received ${offerLastName} in return.`;
 
   return `${buyerContext} ${sellerContext}`;
 }
 
 // ── Apply trades to the TEAMS object (in-place mutation) ──
-// Swaps players between teams' roster arrays.
 export function applyTrades(trades) {
   if (!trades || trades.length === 0) return;
 
   for (const trade of trades) {
-    // teamA gets trade.teamAGets (from teamB), teamB gets trade.teamBGets (from teamA)
     for (const playerInfo of trade.teamAGets) {
       movePlayerBetweenTeams(trade.teamB, trade.teamA, playerInfo.name);
     }
     for (const playerInfo of trade.teamBGets) {
       movePlayerBetweenTeams(trade.teamA, trade.teamB, playerInfo.name);
     }
-
-    // Repair both teams' rosters after the swap
     repairRoster(trade.teamA);
     repairRoster(trade.teamB);
   }
 }
 
-// Move a player from sourceTeam to destTeam, placing them in the right roster slot
+// Move a player from sourceTeam to destTeam
 function movePlayerBetweenTeams(sourceKey, destKey, playerName) {
   const sourceTeam = TEAMS[sourceKey];
   const destTeam = TEAMS[destKey];
   if (!sourceTeam || !destTeam) return;
 
-  // Find the player in the source team's roster
   let found = null;
   let foundIn = null;
 
@@ -503,23 +636,19 @@ function movePlayerBetweenTeams(sourceKey, destKey, playerName) {
 
   if (!found) return;
 
-  // Place in the destination team's corresponding roster slot
   const pos = found.assignedPos || found.pos;
 
   if (foundIn === 'lineup' && destTeam.lineup) {
-    // Try to find a slot with the same position
     const slotIdx = destTeam.lineup.findIndex(p =>
       (p.assignedPos || p.pos) === pos && !['SP', 'RP', 'CL'].includes(p.assignedPos || p.pos)
     );
     if (slotIdx >= 0) {
-      // Replace the player in that slot (the displaced player goes to bench)
       const displaced = destTeam.lineup[slotIdx];
       destTeam.lineup[slotIdx] = { ...found, assignedPos: pos, pos };
       if (destTeam.bench && !destTeam.bench.find(p => p.name === displaced.name)) {
         destTeam.bench.push(displaced);
       }
     } else {
-      // No matching slot, add to bench
       if (destTeam.bench) destTeam.bench.push(found);
       else destTeam.lineup.push(found);
     }
@@ -528,21 +657,17 @@ function movePlayerBetweenTeams(sourceKey, destKey, playerName) {
   } else if (foundIn === 'bullpen' || pos === 'RP' || pos === 'CL') {
     if (destTeam.bullpen) destTeam.bullpen.push(found);
   } else {
-    // Bench player or fallback
     if (destTeam.bench) destTeam.bench.push(found);
     else if (destTeam.lineup) destTeam.lineup.push(found);
   }
 }
 
 // ── Roster validation and repair ──
-// Validates that a team has legal rosters after trades. Fixes issues.
 export function repairRoster(teamKey) {
   const team = TEAMS[teamKey];
   if (!team) return;
 
-  // Ensure lineup has 9 players
   if (!team.lineup || team.lineup.length < 9) {
-    // Pull from bench to fill
     while ((!team.lineup || team.lineup.length < 9) && team.bench && team.bench.length > 0) {
       const bp = team.bench.shift();
       team.lineup = team.lineup || [];
@@ -550,7 +675,6 @@ export function repairRoster(teamKey) {
     }
   }
 
-  // Trim lineup to 9 if somehow too many
   if (team.lineup && team.lineup.length > 9) {
     const extras = team.lineup.slice(9);
     team.lineup = team.lineup.slice(0, 9);
@@ -560,13 +684,11 @@ export function repairRoster(teamKey) {
     });
   }
 
-  // Ensure at least one catcher in lineup+bench
   const allPosition = [...(team.lineup || []), ...(team.bench || [])];
   const hasCatcher = allPosition.some(p =>
     (p.assignedPos || p.pos) === 'C' || (p.pos || '').includes('C')
   );
   if (!hasCatcher && team.bench && team.bench.length > 0) {
-    // Find a multi-position player who can catch and assign them as C
     const canCatch = team.bench.find(p =>
       (p.pos || '').includes('C') || p.pos === 'C'
     );
@@ -575,9 +697,7 @@ export function repairRoster(teamKey) {
     }
   }
 
-  // Ensure rotation has at least 4 starters
   if (!team.rotation || team.rotation.length < 4) {
-    // Pull from bullpen (SP-eligible arms)
     const bullpenSPs = (team.bullpen || []).filter(p => p.pos === 'SP' || p.stamina >= 6);
     while ((!team.rotation || team.rotation.length < 4) && bullpenSPs.length > 0) {
       const sp = bullpenSPs.shift();
@@ -588,9 +708,7 @@ export function repairRoster(teamKey) {
     }
   }
 
-  // Ensure bullpen has at least 5 arms
   if (!team.bullpen || team.bullpen.length < 5) {
-    // Pull excess from rotation (if 5+ starters)
     while ((!team.bullpen || team.bullpen.length < 5) && team.rotation && team.rotation.length > 4) {
       const sp = team.rotation.pop();
       team.bullpen = team.bullpen || [];
@@ -598,7 +716,6 @@ export function repairRoster(teamKey) {
     }
   }
 
-  // Remove any duplicate player names (keep first occurrence)
   const seenNames = new Set();
   for (const arrName of ['lineup', 'bench', 'rotation', 'bullpen']) {
     if (!team[arrName]) continue;
@@ -610,36 +727,30 @@ export function repairRoster(teamKey) {
   }
 }
 
-// Validate roster - returns array of error strings (empty = valid)
 export function validateRoster(teamKey) {
   const team = TEAMS[teamKey];
   if (!team) return ['Team not found'];
 
   const errors = [];
 
-  // Check lineup
   if (!team.lineup || team.lineup.length !== 9) {
     errors.push(`Lineup has ${team.lineup?.length || 0} players (expected 9)`);
   }
 
-  // Check catcher
   const allPosition = [...(team.lineup || []), ...(team.bench || [])];
   const hasCatcher = allPosition.some(p =>
     (p.assignedPos || p.pos) === 'C' || (p.pos || '').includes('C')
   );
   if (!hasCatcher) errors.push('No catcher on roster');
 
-  // Check rotation
   if (!team.rotation || team.rotation.length < 4) {
     errors.push(`Rotation has ${team.rotation?.length || 0} starters (expected 4+)`);
   }
 
-  // Check bullpen
   if (!team.bullpen || team.bullpen.length < 5) {
     errors.push(`Bullpen has ${team.bullpen?.length || 0} arms (expected 5+)`);
   }
 
-  // Check for duplicates across all arrays
   const allPlayers = [
     ...(team.lineup || []), ...(team.bench || []),
     ...(team.rotation || []), ...(team.bullpen || []),
@@ -654,7 +765,6 @@ export function validateRoster(teamKey) {
 }
 
 // ── Build stats map from PlayerStats records ──
-// Returns { "teamKey|playerName": { ...stats } }
 export function buildStatsMap(playerStatsRecords) {
   const map = {};
   for (const s of playerStatsRecords || []) {
