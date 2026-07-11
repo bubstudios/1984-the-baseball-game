@@ -326,6 +326,7 @@ function ensureTeamRotationState(rotationState, teamKey) {
     delete rs.lastGameRelievers;
   }
   if (!rs.workload) rs.workload = {};
+  if (!rs.appearanceDates) rs.appearanceDates = {};
   return rs;
 }
 
@@ -610,6 +611,18 @@ export function recordPitcherWorkload(rotationState, teamKey, pitchingLine, game
     if (rs.workload[p.name].length > 10) {
       rs.workload[p.name] = rs.workload[p.name].slice(-10);
     }
+    // Backup appearance tracker: records the date unconditionally so
+    // isPitcherAvailable can cross-check even if the workload entry is
+    // somehow lost. This catches 3-straight-day usage that the workload
+    // ledger misses.
+    if (!rs.appearanceDates) rs.appearanceDates = {};
+    if (!rs.appearanceDates[p.name]) rs.appearanceDates[p.name] = [];
+    if (!rs.appearanceDates[p.name].includes(gameDate)) {
+      rs.appearanceDates[p.name].push(gameDate);
+      if (rs.appearanceDates[p.name].length > 15) {
+        rs.appearanceDates[p.name] = rs.appearanceDates[p.name].slice(-15);
+      }
+    }
   }
 }
 
@@ -630,21 +643,32 @@ export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate
     return { available: true, reason: null, tired: false, emergencyOnly: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
   }
   const history = rs.workload[pitcherName];
-  if (!history || history.length === 0) {
+  // Cross-check backup appearance dates — if the workload ledger is missing
+  // entries (root cause under investigation), the appearanceDates tracker
+  // catches them so 3-straight-day detection still works.
+  const appearanceDates = rs.appearanceDates?.[pitcherName] || [];
+  const allDates = new Set([
+    ...(history || []).map(e => e.date),
+    ...appearanceDates,
+  ]);
+  if (allDates.size === 0) {
     return { available: true, reason: null, tired: false, emergencyOnly: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
   }
 
   const dayBefore = shiftDate(gameDate, -1);
   const twoDaysBefore = shiftDate(gameDate, -2);
   const threeDaysBefore = shiftDate(gameDate, -3);
-  const appearedYesterday = history.find(e => e.date === dayBefore);
-  const appearedDayBefore = history.find(e => e.date === twoDaysBefore);
-  const appeared3DaysAgo = history.find(e => e.date === threeDaysBefore);
+  const appearedYesterday = allDates.has(dayBefore);
+  const appearedDayBefore = allDates.has(twoDaysBefore);
+  const appeared3DaysAgo = allDates.has(threeDaysBefore);
+  // Workload entries (for pitch/out counts) — may be missing on some days
+  const yesterdayEntry = (history || []).find(e => e.date === dayBefore);
+  const dayBeforeEntry = (history || []).find(e => e.date === twoDaysBefore);
 
-  const yesterdayPitches = appearedYesterday ? (appearedYesterday.pitches || estimatePitches(appearedYesterday.outs || 0)) : 0;
-  const yesterdayOuts = appearedYesterday ? (appearedYesterday.outs || 0) : 0;
-  const dayBeforePitches = appearedDayBefore ? (appearedDayBefore.pitches || estimatePitches(appearedDayBefore.outs || 0)) : 0;
-  const dayBeforeOuts = appearedDayBefore ? (appearedDayBefore.outs || 0) : 0;
+  const yesterdayPitches = yesterdayEntry ? (yesterdayEntry.pitches || estimatePitches(yesterdayEntry.outs || 0)) : 0;
+  const yesterdayOuts = yesterdayEntry ? (yesterdayEntry.outs || 0) : 0;
+  const dayBeforePitches = dayBeforeEntry ? (dayBeforeEntry.pitches || estimatePitches(dayBeforeEntry.outs || 0)) : 0;
+  const dayBeforeOuts = dayBeforeEntry ? (dayBeforeEntry.outs || 0) : 0;
 
   // ── HARD_UNAVAILABLE (cannot pitch under normal conditions) ──
   // Already pitched 3 straight days (appeared on each of last 3 calendar days)
@@ -717,6 +741,11 @@ export function getPregameAvailability(rotationState, teamKey, gameDate) {
     const tier = result.tier || 'AVAILABLE';
     tierCounts[tier] = (tierCounts[tier] || 0) + 1;
     const workload = rs?.workload?.[p.name] || [];
+    const appearanceDatesList = rs?.appearanceDates?.[p.name] || [];
+    const allDatesSet = new Set([
+      ...workload.map(e => e.date),
+      ...appearanceDatesList,
+    ]);
     const dayBefore = shiftDate(gameDate, -1);
     const twoDaysBefore = shiftDate(gameDate, -2);
     const yEntry = workload.find(e => e.date === dayBefore);
@@ -726,7 +755,7 @@ export function getPregameAvailability(rotationState, teamKey, gameDate) {
     let consecutiveDays = 0;
     for (let d = 1; d <= 5; d++) {
       const checkDate = shiftDate(gameDate, -d);
-      if (workload.find(e => e.date === checkDate)) consecutiveDays++;
+      if (allDatesSet.has(checkDate)) consecutiveDays++;
       else break;
     }
     pitcherTiers[p.name] = { tier, reason: result.reason, available: result.available, emergencyOnly: result.emergencyOnly, pitchesYesterday, pitchesLast2Days: pitchesYesterday + pitchesDayBefore, consecutiveDays };
