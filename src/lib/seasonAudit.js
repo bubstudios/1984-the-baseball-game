@@ -903,22 +903,33 @@ function analyzeScoringDistribution(games, flags) {
 // With the hard rule in swingResolver.js, this should never fire - it's a
 // safety net to detect regressions.
 function analyzeForceDecisions(games, flags) {
-  let badForceCount = 0;
+  let badForceCount = 0, homeForceCount = 0, holdRunnerCount = 0;
 
   for (const g of games) {
     if (g.error || g.validationFailed) continue;
     for (const entry of (g.log || [])) {
-      if (entry.type !== 'fc') continue;
-      const t = (entry.text || '').toLowerCase();
-      // Bad force: "force out at 3rd" + "scores" = runner from 3rd scored
-      // while defense chose to retire runner from 2nd going to 3rd.
-      if (t.includes('force out at 3rd') && t.includes('scores')) {
-        badForceCount++;
-        addFlag(flags, 'critical', 'Force Decision',
-          `Bad bases-loaded force at 3rd: "${(entry.text || '').substring(0, 80)}" - runner from 3rd scored while defense retired runner from 2nd`, g);
+      // Existing: detect bad force at 3rd (runner from 3rd scored)
+      if (entry.type === 'fc') {
+        const t = (entry.text || '').toLowerCase();
+        if (t.includes('force out at 3rd') && t.includes('scores')) {
+          badForceCount++;
+          addFlag(flags, 'critical', 'Force Decision',
+            `Bad bases-loaded force at 3rd: "${(entry.text || '').substring(0, 80)}" - runner from 3rd scored while defense retired runner from 2nd`, g);
+        }
+      }
+      // New: log structured force decisions from _forceDecision metadata
+      if (entry._forceDecision) {
+        const fd = entry._forceDecision;
+        if (fd.chosenBase === 'home') {
+          homeForceCount++;
+          addFlag(flags, 'info', 'Force Decision',
+            `GROUND_FORCE_DECISION: Inning ${fd.inning} | Score ${fd.score?.away}-${fd.score?.home} | Outs ${fd.outs} | Bases [${fd.bases?.join(',')}] | Fielder ${fd.fielder} | R3 speed ${fd.runnerFromThirdSpeed} | Chose: ${fd.chosenBase} | ${fd.reason}`, g);
+        } else {
+          holdRunnerCount++;
+        }
       }
     }
   }
 
-  return { badForceCount };
+  return { badForceCount, homeForceCount, holdRunnerCount };
 }

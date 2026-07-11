@@ -640,6 +640,7 @@ export function resolveSwing(state, swingType, pitch) {
         const fielderName = defenders[out.pos]?.name?.split(' ').pop() || posNames[out.pos] || out.pos;
         const catcherName = defenders['C']?.name?.split(' ').pop() || 'the catcher';
         const firstBaseName = defenders['1B']?.name?.split(' ').pop() || 'first';
+        const _fdMeta = { inning: state.inning, score: { home: state.score.home, away: state.score.away }, outs: state.outs, bases: [!!state.bases[0], !!state.bases[1], !!state.bases[2]], fielder: out.pos, runnerFromThirdSpeed: r3cr?.speed || null };
         if (forceAtHome) {
           const r2cr = state.bases[1], r1cr = state.bases[0];
           state.bases[2] = r2cr; state.bases[1] = r1cr; state.bases[0] = null;
@@ -648,12 +649,12 @@ export function resolveSwing(state, swingType, pitch) {
             tagRunnerResponsiblePitcher(state, batter);
             state.bases[0] = batter;
             const fcText = `${batter.name} grounds to ${fielderName} - throws home to force ${r3cr.name}! Batter beats the relay to first - run held, no run scores!`;
-            state.log.push({ type: 'fc', text: fcText }); state.lastPlay = { type: 'fc', text: fcText };
+            state.log.push({ type: 'fc', text: fcText, _forceDecision: { ..._fdMeta, chosenBase: 'home', reason: 'Force at home - batter beat relay, run held' } }); state.lastPlay = { type: 'fc', text: fcText };
             state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return;
           } else {
             const dpLine = pickLine(DOUBLE_PLAY_LINES);
             const dpText = `${batter.name} grounds to ${fielderName} - throws home for the force, ${catcherName} relays to ${firstBaseName} - ${dpLine}! ${r3cr.name} held - no run scores!`;
-            state.log.push({ type: 'doubleplay', text: dpText }); state.lastPlay = { type: 'doubleplay', text: dpText };
+            state.log.push({ type: 'doubleplay', text: dpText, _forceDecision: { ..._fdMeta, chosenBase: 'home', reason: 'Force at home + relay to 1st (bases-loaded DP)' } }); state.lastPlay = { type: 'doubleplay', text: dpText };
             state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
             if (!state.gameOver && state.outs < 3) recordOut(state); return;
           }
@@ -665,7 +666,7 @@ export function resolveSwing(state, swingType, pitch) {
             state.bases[0] = batter;
             batter.gameStats.ab++;
             const fcText = `${batter.name} grounds to ${fielderName} - throws home! ${catcherName} tags out ${r3cr.name} at the plate! Run prevented!`;
-            state.log.push({ type: 'fc', text: fcText }); state.lastPlay = { type: 'fc', text: fcText };
+            state.log.push({ type: 'fc', text: fcText, _forceDecision: { ..._fdMeta, chosenBase: 'home', reason: 'Tag out at plate - run prevented' } }); state.lastPlay = { type: 'fc', text: fcText };
             state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return;
           } else {
             if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
@@ -673,7 +674,7 @@ export function resolveSwing(state, swingType, pitch) {
             state.bases[0] = batter;
             batter.gameStats.ab++;
             const goText = `${batter.name} grounds out to ${fielderName} - ${r3cr.name} holds at third, out at first.`;
-            state.log.push({ type: 'groundout', text: goText }); state.lastPlay = { type: 'groundout', text: goText };
+            state.log.push({ type: 'groundout', text: goText, _forceDecision: { ..._fdMeta, chosenBase: 'first', reason: 'Runner held at 3rd, out at 1st' } }); state.lastPlay = { type: 'groundout', text: goText };
             state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return;
           }
         }
