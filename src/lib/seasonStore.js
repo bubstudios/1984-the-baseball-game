@@ -639,16 +639,15 @@ export function recordPitcherWorkload(rotationState, teamKey, pitchingLine, game
 export function isPitcherAvailable(rotationState, teamKey, pitcherName, gameDate) {
   if (!gameDate) return { available: true, reason: null, tired: false, emergencyOnly: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
   const rs = rotationState?.[teamKey];
-  if (!rs || !rs.workload || !rs.workload[pitcherName]) {
-    return { available: true, reason: null, tired: false, emergencyOnly: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
-  }
-  const history = rs.workload[pitcherName];
-  // Cross-check backup appearance dates — if the workload ledger is missing
-  // entries (root cause under investigation), the appearanceDates tracker
-  // catches them so 3-straight-day detection still works.
+  if (!rs) return { available: true, reason: null, tired: false, emergencyOnly: false, fatiguePenalty: 0, tier: 'AVAILABLE' };
+  // Check BOTH workload ledger AND backup appearance dates before returning AVAILABLE.
+  // The old early return (!rs.workload[pitcherName]) skipped the appearanceDates
+  // cross-check, causing 3-straight-day pitchers to be marked AVAILABLE when their
+  // workload entry was missing but their appearanceDates entry existed.
+  const history = rs.workload?.[pitcherName] || [];
   const appearanceDates = rs.appearanceDates?.[pitcherName] || [];
   const allDates = new Set([
-    ...(history || []).map(e => e.date),
+    ...history.map(e => e.date),
     ...appearanceDates,
   ]);
   if (allDates.size === 0) {
@@ -803,7 +802,7 @@ export function getAvailablePitchers(rotationState, teamKey, gameDate) {
 // Backward-compatible: returns array of unavailable reliever names
 export function getUnavailableRelievers(rotationState, teamKey, gameDate) {
   const rs = rotationState?.[teamKey];
-  if (!rs || !rs.workload) return [];
+  if (!rs || (!rs.workload && !rs.appearanceDates)) return [];
   const team = TEAMS[teamKey];
   if (!team) return [];
   const allPitchers = [...(team.bullpen || []), ...(team.rotation || [])];
@@ -818,7 +817,7 @@ export function getUnavailableRelievers(rotationState, teamKey, gameDate) {
 // Returns { [pitcherName]: reason } for UI display
 export function getUnavailableRelieverReasons(rotationState, teamKey, gameDate) {
   const rs = rotationState?.[teamKey];
-  if (!rs || !rs.workload) return {};
+  if (!rs || (!rs.workload && !rs.appearanceDates)) return {};
   const team = TEAMS[teamKey];
   if (!team) return {};
   const allPitchers = [...(team.bullpen || []), ...(team.rotation || [])];
@@ -834,7 +833,7 @@ export function getUnavailableRelieverReasons(rotationState, teamKey, gameDate) 
 // Used by the human substitution panel to show a "tired" badge.
 export function getTiredRelievers(rotationState, teamKey, gameDate) {
   const rs = rotationState?.[teamKey];
-  if (!rs || !rs.workload) return {};
+  if (!rs || (!rs.workload && !rs.appearanceDates)) return {};
   const team = TEAMS[teamKey];
   if (!team) return {};
   const allPitchers = [...(team.bullpen || []), ...(team.rotation || [])];
