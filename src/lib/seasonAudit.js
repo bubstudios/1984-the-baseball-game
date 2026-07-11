@@ -152,10 +152,29 @@ export async function runSeasonAudit(days, onProgress) {
         wasExtraInnings: (finalState.innings?.length || 9) > 9 || finalState.inning > 9,
       });
 
+      // DEBUG INSTRUMENTATION: capture what's passed to recordPitcherWorkload
+      // and the resulting ledger state. This helps identify why workload entries
+      // are not accumulating across consecutive game days.
+      const homePitchingLine = result.pitching.filter(p => p.teamKey === homeTeam);
+      const awayPitchingLine = result.pitching.filter(p => p.teamKey === awayTeam);
+      const homePitchingNames = homePitchingLine.map(p => ({ name: p.name, bf: p.bf, outs: p.outs, pitches: p.pitches }));
+      const awayPitchingNames = awayPitchingLine.map(p => ({ name: p.name, bf: p.bf, outs: p.outs, pitches: p.pitches }));
+
       if (finalState.homeStartingPitcherName) advanceRotation(rotationState, homeTeam, finalState.homeStartingPitcherName, gameDate);
       if (finalState.awayStartingPitcherName) advanceRotation(rotationState, awayTeam, finalState.awayStartingPitcherName, gameDate);
-      recordPitcherWorkload(rotationState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam), gameDate);
-      recordPitcherWorkload(rotationState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam), gameDate);
+      recordPitcherWorkload(rotationState, homeTeam, homePitchingLine, gameDate);
+      recordPitcherWorkload(rotationState, awayTeam, awayPitchingLine, gameDate);
+
+      // Deep-copy the workload ledger AFTER recording to see what was stored
+      const postGameWorkload = {
+        home: JSON.parse(JSON.stringify(rotationState[homeTeam]?.workload || {})),
+        away: JSON.parse(JSON.stringify(rotationState[awayTeam]?.workload || {})),
+      };
+      // Attach to the last captured game
+      if (capturedGames.length > 0) {
+        capturedGames[capturedGames.length - 1].pitchingLineDebug = { home: homePitchingNames, away: awayPitchingNames };
+        capturedGames[capturedGames.length - 1].postGameWorkload = postGameWorkload;
+      }
 
       gameCount++;
       if (onProgress) onProgress(dayIdx + 1, gamesToSim, gameCount);
@@ -426,7 +445,16 @@ function analyzeBullpen(games, rotationState, flags) {
         });
         const pt3 = game3?.pregameAvailability?.[side3]?.pitcherTiers?.[pitcherName] || {};
         const tc3 = game3?.pregameAvailability?.[side3]?.tierCounts || {};
-        const tierDetail = `Pregame: ${pt3.tier || '?'} (${pt3.reason || '?'}) | Pitches yesterday: ${pt3.pitchesYesterday ?? '?'} | Last 2 days: ${pt3.pitchesLast2Days ?? '?'} | Consecutive: ${pt3.consecutiveDays ?? '?'} | Tiers: AVAIL=${tc3.AVAILABLE||0} TIRED=${tc3.TIRED||0} VERY_TIRED=${tc3.VERY_TIRED||0} EMERG=${tc3.EMERGENCY_ONLY||0}`;
+        // Raw workload entries from the pregame snapshot's team workload
+        const teamKey3 = side3 === 'home' ? game3?.homeTeam : game3?.awayTeam;
+        // Find the game on the 2nd consecutive day to see what was recorded
+        const game2Date = sorted[i - 1];
+        const game2 = games.find(g => g.gameDate === game2Date && (g.homeTeam === teamKey3 || g.awayTeam === teamKey3));
+        const side2 = game2?.homeTeam === teamKey3 ? 'home' : 'away';
+        const game2PostWorkload = game2?.postGameWorkload?.[side2]?.[pitcherName] || 'NOT FOUND';
+        const game2PitchingLine = (side2 === 'home' ? game2?.pitchingLineDebug?.home : game2?.pitchingLineDebug?.away) || [];
+        const pitcherInLine2 = game2PitchingLine.find(p => p.name === pitcherName);
+        const tierDetail = `Pregame: ${pt3.tier || '?'} (${pt3.reason || '?'}) | Pitches yesterday: ${pt3.pitchesYesterday ?? '?'} | Last 2 days: ${pt3.pitchesLast2Days ?? '?'} | Consecutive: ${pt3.consecutiveDays ?? '?'} | Tiers: AVAIL=${tc3.AVAILABLE||0} TIRED=${tc3.TIRED||0} VERY_TIRED=${tc3.VERY_TIRED||0} EMERG=${tc3.EMERGENCY_ONLY||0} | Day2 pitchingLine: ${pitcherInLine2 ? `bf=${pitcherInLine2.bf} outs=${pitcherInLine2.outs} pitches=${pitcherInLine2.pitches}` : 'NOT IN LINE'} | Day2 postGameWorkload: ${JSON.stringify(game2PostWorkload)}`;
         if (wasExtra || hasEmergencyLog) {
           legalEmergencyCount++;
           flags.push({
