@@ -581,9 +581,13 @@ function analyzeBullpen(games, rotationState, flags) {
         starterInningCount++;
       }
       totalRelieversUsed += relievers.length;
-      if (teamPitchers.length >= 5) {
+      // Context-aware: 5+ pitchers in a 9-inning game is unusual, but in an
+      // 18-inning marathon it's expected. Scale the threshold by innings.
+      const inningsPlayed = g.wasExtraInnings ? (g.result?.innings?.length || 9) : 9;
+      const pitcherThreshold = Math.max(5, Math.ceil(inningsPlayed / 2));
+      if (teamPitchers.length >= pitcherThreshold) {
         gamesWith5PlusPitchers++;
-        addFlag(flags, 'warning', 'Bullpen', `${teamPitchers.length} pitchers used by ${teamKey} in one game`, g);
+        addFlag(flags, 'warning', 'Bullpen', `${teamPitchers.length} pitchers used by ${teamKey} in ${inningsPlayed}-inning game (threshold: ${pitcherThreshold})`, g);
       }
     }
   }
