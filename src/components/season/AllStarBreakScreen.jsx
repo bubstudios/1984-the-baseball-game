@@ -81,7 +81,7 @@ export default function AllStarBreakScreen({
             )}
 
             <p className="text-xs text-muted-foreground mb-4">
-              The {winningLeague === 'AL' ? 'American League' : 'National League'} earns home-field advantage in the World Series.
+              The result is recorded in the history books. In 1984, the National League holds World Series home-field advantage regardless of this outcome.
             </p>
 
             <Button onClick={onContinue} className="w-full gap-2">

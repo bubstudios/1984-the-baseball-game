@@ -101,7 +101,7 @@
         null
       ],
       "default": null,
-      "description": "League that won the All-Star Game and gets World Series home-field advantage"
+      "description": "Informational only. In 1984, World Series home field is fixed (NL hosts Games 1,2,6,7) and is NOT decided by the All-Star Game. Resolved at postseason time by postseasonHomeField.js (includes the Cubs/Wrigley-lights exception)."
     },
     "allStarMvp": {
       "type": "object",
@@ -126,7 +126,7 @@
     },
     "allStarGameResult": {
       "type": "object",
-      "description": "All-Star Game final result: { homeScore, awayScore, winner, winningLeague, homeTeam, awayTeam, stadium }",
+      "description": "All-Star Game final result (historical note only; does NOT decide World Series home field): { homeScore, awayScore, winner, winningLeague, homeTeam, awayTeam, stadium }",
       "properties": {
         "homeScore": {
           "type": "integer"

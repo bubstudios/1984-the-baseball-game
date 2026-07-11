@@ -305,11 +305,14 @@ export default function SeasonDashboard() {
         stadium,
       };
 
+      // 1984 rule: the All-Star Game result does NOT decide World Series home
+      // field. The ASG is saved as a historical note only. WS home field is fixed
+      // by the 1984 postseason rotation (NL hosts Games 1,2,6,7) - see
+      // postseasonHomeField.js. We no longer write worldSeriesHomeFieldLeague here.
       await base44.entities.Season.update(season.id, {
         allStarBreakPhase: 'game_played',
         allStarGameResult: result,
         allStarMvp: mvp,
-        worldSeriesHomeFieldLeague: winningLeague,
       });
 
       setSeason(prev => prev ? {
@@ -317,7 +320,6 @@ export default function SeasonDashboard() {
         allStarBreakPhase: 'game_played',
         allStarGameResult: result,
         allStarMvp: mvp,
-        worldSeriesHomeFieldLeague: winningLeague,
       } : prev);
       setAllStarBreakVisible(true);
     } catch (e) {
