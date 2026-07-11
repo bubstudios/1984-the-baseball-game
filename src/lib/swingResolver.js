@@ -589,6 +589,36 @@ export function resolveSwing(state, swingType, pitch) {
         }
       }
     }
+    // ── DIVING STOP CHECK (must fire BEFORE groundout runner advancement) ──
+    // If the diving stop creates a single (knockdown/save), it does its own
+    // 1-base advancement. If it fires AFTER runner advancement, runners get
+    // shifted by the groundout logic AND then advanced again by the single,
+    // causing illegal 2-base advancement on infield-contained hits.
+    if (isGrounder && rollDivingStop()) {
+      const dsFielder = defenders[out.pos] || { name: 'the infielder' };
+      const dsResult = getDivingStopResult(state.homeTeam, dsFielder.name, out.pos);
+      if (dsResult.type === 'out') {
+        out.text = dsResult.text; out.divingStopOut = true; out.divingStopPos = dsResult.pos; out.divingStopFielder = dsFielder.name;
+      } else if (dsResult.type === 'knockdown') {
+        batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
+        if (state.bases[2]) { chargeRun(state, state.bases[2]); batter.gameStats.rbi++; state.bases[2] = null; }
+        if (state.bases[1]) { if (!state.bases[2]) { state.bases[2] = state.bases[1]; } else { chargeRun(state, state.bases[1]); batter.gameStats.rbi++; } state.bases[1] = null; }
+        if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
+        tagRunnerResponsiblePitcher(state, batter); state.bases[0] = batter;
+        state.log.push({ type: 'single', text: dsResult.text, divingStopPos: dsResult.pos });
+        state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, infield: true, divingStop: true, divingStopFielder: dsFielder.name };
+        state.balls = 0; state.strikes = 0; advanceBatter(state); return;
+      } else {
+        batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
+        if (state.bases[2]) { chargeRun(state, state.bases[2]); batter.gameStats.rbi++; state.bases[2] = null; }
+        if (state.bases[1]) { if (!state.bases[2]) { state.bases[2] = state.bases[1]; } else { chargeRun(state, state.bases[1]); batter.gameStats.rbi++; } state.bases[1] = null; }
+        if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
+        tagRunnerResponsiblePitcher(state, batter); state.bases[0] = batter;
+        state.log.push({ type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true });
+        state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true, infield: true, divingStop: true, divingStopFielder: dsFielder.name };
+        state.balls = 0; state.strikes = 0; advanceBatter(state); return;
+      }
+    }
     if (isGrounder) {
       const r1 = state.bases[0], r2 = state.bases[1];
       if (r1 && state.outs < 2) {
@@ -730,32 +760,6 @@ export function resolveSwing(state, swingType, pitch) {
         const fielder = defenders[out.pos] || { name: 'the outfielder' };
         const dcCall = getDivingCatchCall(state.homeTeam, fielder.name, out.pos);
         out.text = dcCall; out.isDivingCatch = true; out.divingCatchFielder = fielder.name;
-      }
-    } else if (out.type === 'groundout') {
-      if (rollDivingStop()) {
-        const fielder = defenders[out.pos] || { name: 'the infielder' };
-        const dsResult = getDivingStopResult(state.homeTeam, fielder.name, out.pos);
-        if (dsResult.type === 'out') {
-          out.text = dsResult.text; out.divingStopOut = true; out.divingStopPos = dsResult.pos; out.divingStopFielder = fielder.name;
-        } else if (dsResult.type === 'knockdown') {
-          batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
-          if (state.bases[2]) { chargeRun(state, state.bases[2]); batter.gameStats.rbi++; state.bases[2] = null; }
-          if (state.bases[1]) { if (!state.bases[2]) { state.bases[2] = state.bases[1]; } else { chargeRun(state, state.bases[1]); batter.gameStats.rbi++; } state.bases[1] = null; }
-          if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
-          tagRunnerResponsiblePitcher(state, batter); state.bases[0] = batter;
-          state.log.push({ type: 'single', text: dsResult.text, divingStopPos: dsResult.pos });
-          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, infield: true, divingStop: true, divingStopFielder: fielder.name };
-          state.balls = 0; state.strikes = 0; advanceBatter(state); return;
-        } else {
-          batter.gameStats.ab++; batter.gameStats.hits++; pitcher.gameStats.h++;
-          if (state.bases[2]) { chargeRun(state, state.bases[2]); batter.gameStats.rbi++; state.bases[2] = null; }
-          if (state.bases[1]) { if (!state.bases[2]) { state.bases[2] = state.bases[1]; } else { chargeRun(state, state.bases[1]); batter.gameStats.rbi++; } state.bases[1] = null; }
-          if (state.bases[0]) { state.bases[1] = state.bases[0]; state.bases[0] = null; }
-          tagRunnerResponsiblePitcher(state, batter); state.bases[0] = batter;
-          state.log.push({ type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true });
-          state.lastPlay = { type: 'single', text: dsResult.text, divingStopPos: dsResult.pos, divingStopSave: true, infield: true, divingStop: true, divingStopFielder: fielder.name };
-          state.balls = 0; state.strikes = 0; advanceBatter(state); return;
-        }
       }
     }
     const outExtra = {};
