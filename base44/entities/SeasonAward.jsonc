@@ -12,6 +12,7 @@
         "ROY",
         "MVP",
         "CyYoung",
+        "FiremanOfTheYear",
         "ManagerOfTheYear",
         "PlayerOfTheWeek",
         "PlayerOfTheMonth",
@@ -21,6 +22,14 @@
         "RookieOfTheMonth"
       ],
       "description": "Award type"
+    },
+    "league": {
+      "type": "string",
+      "enum": [
+        "AL",
+        "NL"
+      ],
+      "description": "League for league-specific awards (MVP, CyYoung, FiremanOfTheYear, ManagerOfTheYear)"
     },
     "winner": {
       "type": "string",

@@ -35,6 +35,21 @@
       ],
       "default": "active"
     },
+    "seasonPhase": {
+      "type": "string",
+      "enum": [
+        "REGULAR_SEASON",
+        "REGULAR_SEASON_COMPLETE",
+        "AWARDS_REVEALED",
+        "POSTSEASON_READY",
+        "ALCS_NLCS",
+        "WORLD_SERIES",
+        "SEASON_COMPLETE",
+        null
+      ],
+      "default": "REGULAR_SEASON",
+      "description": "Current season phase for end-of-season flow tracking"
+    },
     "userTeam": {
       "type": "string",
       "description": "Team key the user is managing"
@@ -164,6 +179,31 @@
     "tradeDeadlineTrades": {
       "type": "array",
       "description": "Generated trade deadline trades for display",
+      "items": {
+        "type": "object"
+      }
+    },
+    "postseason": {
+      "type": "object",
+      "description": "Generated postseason bracket: { divisionWinners, alcs, nlcs, worldSeries }. Generated once and saved (idempotent).",
+      "properties": {
+        "divisionWinners": {
+          "type": "object"
+        },
+        "alcs": {
+          "type": "object"
+        },
+        "nlcs": {
+          "type": "object"
+        },
+        "worldSeries": {
+          "type": "object"
+        }
+      }
+    },
+    "seasonAwards": {
+      "type": "array",
+      "description": "End-of-season award winners (cached for idempotency). Each: { awardType, league, winner, team, statLine }",
       "items": {
         "type": "object"
       }

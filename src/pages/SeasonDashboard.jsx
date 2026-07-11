@@ -29,6 +29,11 @@ import { injectAllStarTeams, removeAllStarTeams, getAllStarTeamKey } from '@/lib
 import { resetAllFatigue } from '@/lib/seasonStore';
 import TradeDeadlineScreen from '@/components/season/TradeDeadlineScreen';
 import { generateTradeDeadline, applyTrades, buildStatsMap } from '@/lib/tradeDeadline';
+import EndOfRegularSeasonScreen from '@/components/season/EndOfRegularSeasonScreen';
+import PostseasonBracket from '@/components/season/PostseasonBracket';
+import { calculateSeasonAwards } from '@/lib/seasonAwards';
+import { generatePostseason } from '@/lib/postseason';
+import { simGamesToDay } from '@/lib/seasonSimLoop';
 
 const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
@@ -58,6 +63,11 @@ export default function SeasonDashboard() {
   const [tradeDeadlineVisible, setTradeDeadlineVisible] = useState(false);
   const [tradeDeadlineTrades, setTradeDeadlineTrades] = useState(null);
   const [simToFinaleProgress, setSimToFinaleProgress] = useState(null);
+  const [endOfRegularSeasonVisible, setEndOfRegularSeasonVisible] = useState(false);
+  const [endOfSeasonAwards, setEndOfSeasonAwards] = useState(null);
+  const [endOfSeasonStandings, setEndOfSeasonStandings] = useState(null);
+  const [postseasonVisible, setPostseasonVisible] = useState(false);
+  const [postseasonData, setPostseasonData] = useState(null);
   const simulatingRef = useRef(false);
   const pendingUserTeam = location.state?.userTeam || null;
 
@@ -139,6 +149,26 @@ export default function SeasonDashboard() {
       } else {
         setTradeDeadlineTrades(null);
         setTradeDeadlineVisible(false);
+      }
+
+      // Restore end-of-regular-season state
+      if (currentSeason.seasonPhase === 'REGULAR_SEASON_COMPLETE' || currentSeason.seasonPhase === 'AWARDS_REVEALED') {
+        if (currentSeason.seasonAwards) {
+          setEndOfSeasonAwards(currentSeason.seasonAwards);
+          setEndOfRegularSeasonVisible(true);
+        }
+      } else {
+        setEndOfRegularSeasonVisible(false);
+        setEndOfSeasonAwards(null);
+      }
+
+      // Restore postseason state
+      if (currentSeason.postseason && currentSeason.seasonPhase !== 'REGULAR_SEASON' && currentSeason.seasonPhase !== 'REGULAR_SEASON_COMPLETE') {
+        setPostseasonData(currentSeason.postseason);
+        setPostseasonVisible(true);
+      } else {
+        setPostseasonVisible(false);
+        setPostseasonData(null);
       }
 
     } catch (error) {
@@ -1245,6 +1275,179 @@ export default function SeasonDashboard() {
     }
   };
 
+  // ── End of Regular Season: sim to user's final game ──
+  const simToUserFinalGame = async () => {
+    if (!season) return;
+    try {
+      simulatingRef.current = true;
+      setSimulating(true);
+      setSimToFinaleProgress('Finding your final game...');
+
+      const userSched = await base44.entities.Schedule.filter({
+        seasonId: season.id, isUserGame: true,
+      }, 'gameDay', 200);
+
+      if (userSched.length === 0) {
+        alert('No user games found');
+        return;
+      }
+      userSched.sort((a, b) => b.gameDay - a.gameDay);
+      const finalGame = userSched[0];
+
+      await simGamesToDay(finalGame.gameDay, season, setSimToFinaleProgress);
+
+      setSimToFinaleProgress(null);
+      await loadSeason();
+    } catch (error) {
+      console.error('Sim to final game failed:', error);
+      alert('Sim to final game failed: ' + error.message);
+    } finally {
+      simulatingRef.current = false;
+      setSimulating(false);
+      setSimToFinaleProgress(null);
+    }
+  };
+
+  // ── Simulate all remaining MLB games after user's season is done ──
+  const simRemainingMLBGames = async () => {
+    if (!season) return;
+    try {
+      simulatingRef.current = true;
+      setSimulating(true);
+      setSimToFinaleProgress('Simulating remaining MLB games...');
+
+      const allSched = await base44.entities.Schedule.filter({
+        seasonId: season.id,
+      }, 'gameDay', 2200);
+
+      if (allSched.length === 0) return;
+      const lastDay = allSched[allSched.length - 1].gameDay;
+
+      // +1 so the last day is included (simGamesToDay is exclusive of target)
+      await simGamesToDay(lastDay + 1, season, setSimToFinaleProgress);
+
+      setSimToFinaleProgress(null);
+      await loadSeason();
+    } catch (error) {
+      console.error('Sim remaining MLB games failed:', error);
+      alert('Sim remaining MLB games failed: ' + error.message);
+    } finally {
+      simulatingRef.current = false;
+      setSimulating(false);
+      setSimToFinaleProgress(null);
+    }
+  };
+
+  // ── Check if ALL regular-season games are complete, then show End of Season screen ──
+  const checkAndShowEndOfRegularSeason = async (seasonObj) => {
+    const s = seasonObj || season;
+    if (!s) return;
+
+    // Already past this phase - show screen if needed
+    if (s.seasonPhase === 'REGULAR_SEASON_COMPLETE' || s.seasonPhase === 'AWARDS_REVEALED') {
+      if (s.seasonAwards && !endOfRegularSeasonVisible) {
+        try {
+          const allResults = await base44.entities.GameResult.filter({ seasonId: s.id }, 'gameDay', 2200);
+          setEndOfSeasonStandings(deriveStandings(allResults));
+        } catch (e) { /* non-fatal */ }
+        setEndOfSeasonAwards(s.seasonAwards);
+        setEndOfRegularSeasonVisible(true);
+      }
+      return;
+    }
+
+    // Already in postseason phase
+    if (s.seasonPhase && s.seasonPhase !== 'REGULAR_SEASON') {
+      if (s.postseason && !postseasonVisible) {
+        setPostseasonData(s.postseason);
+        setPostseasonVisible(true);
+      }
+      return;
+    }
+
+    try {
+      // Check if ALL scheduled games are final
+      const remaining = await base44.entities.Schedule.filter({
+        seasonId: s.id, status: 'scheduled',
+      }, null, 1);
+
+      if (remaining.length > 0) return; // Games still remaining
+
+      // All games complete - generate awards (idempotent)
+      let awards = s.seasonAwards;
+      if (!awards || awards.length === 0) {
+        const allStats = await base44.entities.PlayerStats.filter({ seasonId: s.id }, null, 1500);
+        const allResults = await base44.entities.GameResult.filter({ seasonId: s.id }, 'gameDay', 2200);
+        const { awards: calcAwards } = calculateSeasonAwards(allStats, allResults);
+        awards = calcAwards;
+
+        await base44.entities.Season.update(s.id, {
+          seasonPhase: 'REGULAR_SEASON_COMPLETE',
+          seasonAwards: awards,
+        });
+
+        // Persist to SeasonAward entity
+        for (const a of awards) {
+          try {
+            await base44.entities.SeasonAward.create({
+              seasonId: s.id,
+              awardType: a.awardType,
+              league: a.league,
+              winner: a.winner,
+              team: a.team,
+              stats: { statLine: a.statLine },
+              awardDate: '1984-10-01',
+            });
+          } catch (e) { /* non-fatal */ }
+        }
+      }
+
+      const allResults = await base44.entities.GameResult.filter({ seasonId: s.id }, 'gameDay', 2200);
+      setEndOfSeasonStandings(deriveStandings(allResults));
+      setEndOfSeasonAwards(awards);
+      setEndOfRegularSeasonVisible(true);
+      setSeason(prev => prev ? { ...prev, seasonPhase: 'REGULAR_SEASON_COMPLETE', seasonAwards: awards } : prev);
+    } catch (e) {
+      console.error('End of regular season check failed:', e);
+    }
+  };
+
+  // ── Create postseason bracket ──
+  const createPostseason = async () => {
+    if (!season) return;
+    try {
+      // Idempotent: use cached bracket if already generated
+      if (season.postseason) {
+        setPostseasonData(season.postseason);
+        setPostseasonVisible(true);
+        setEndOfRegularSeasonVisible(false);
+        return;
+      }
+
+      const allResults = await base44.entities.GameResult.filter({ seasonId: season.id }, 'gameDay', 2200);
+      const standings = deriveStandings(allResults);
+
+      const bracket = generatePostseason(standings);
+      if (!bracket) {
+        alert('Could not generate postseason bracket - division winners not determined');
+        return;
+      }
+
+      await base44.entities.Season.update(season.id, {
+        postseason: bracket,
+        seasonPhase: 'POSTSEASON_READY',
+      });
+
+      setPostseasonData(bracket);
+      setPostseasonVisible(true);
+      setEndOfRegularSeasonVisible(false);
+      setSeason(prev => prev ? { ...prev, postseason: bracket, seasonPhase: 'POSTSEASON_READY' } : prev);
+    } catch (e) {
+      console.error('Create postseason failed:', e);
+      alert('Failed to create postseason: ' + e.message);
+    }
+  };
+
   const isDebug = new URLSearchParams(window.location.search).has('debug');
 
   const handleReadNewspaper = async () => {
@@ -1274,22 +1477,25 @@ export default function SeasonDashboard() {
     }
   };
 
-  // Auto-sim remaining CPU games + check monthly honors after load/sim
+  // Auto-sim remaining CPU games + check monthly honors + end of season after load/sim
   useEffect(() => {
-    if (simulating || !season || !schedule.length) return;
-    if (showNewspaper || showWeeklyAwards || showMonthlyHonors || allStarBreakVisible || tradeDeadlineVisible) return;
-    const userGame = schedule.find(g => g.isUserGame);
-    if (userGame && userGame.status === 'final') {
-      const cpuRemaining = schedule.filter(g => !g.isUserGame && g.status !== 'final');
-      if (cpuRemaining.length > 0) {
-        simulateDay();
-        return;
+    if (simulating || !season) return;
+    if (showNewspaper || showWeeklyAwards || showMonthlyHonors || allStarBreakVisible || tradeDeadlineVisible || endOfRegularSeasonVisible || postseasonVisible) return;
+    if (schedule.length > 0) {
+      const userGame = schedule.find(g => g.isUserGame);
+      if (userGame && userGame.status === 'final') {
+        const cpuRemaining = schedule.filter(g => !g.isUserGame && g.status !== 'final');
+        if (cpuRemaining.length > 0) {
+          simulateDay();
+          return;
+        }
       }
     }
     checkAndShowAllStarBreak();
     checkAndShowMonthlyHonors();
     checkAndShowTradeDeadline();
-  }, [simulating, season, schedule, showNewspaper, showWeeklyAwards, showMonthlyHonors, allStarBreakVisible, tradeDeadlineVisible]);
+    checkAndShowEndOfRegularSeason();
+  }, [simulating, season, schedule, showNewspaper, showWeeklyAwards, showMonthlyHonors, allStarBreakVisible, tradeDeadlineVisible, endOfRegularSeasonVisible, postseasonVisible]);
 
   const todaysUserGame = schedule.find(g => g.isUserGame && g.status !== 'final');
   const isUserOffDay = !todaysUserGame;
@@ -1410,11 +1616,20 @@ export default function SeasonDashboard() {
               <Button onClick={simToAugust30} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-amber-400">
                 <FastForward className="w-3 h-3" /> Sim to Aug 30
               </Button>
+              <Button onClick={simToUserFinalGame} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-emerald-400">
+                <FastForward className="w-3 h-3" /> Sim to Final Game
+              </Button>
             </div>
           </div>
         ) : (
-          <div className="font-heading text-sm text-muted-foreground">
-            {userGameNumber >= 162 ? 'Season Complete' : 'Loading next game...'}
+          <div className="space-y-2">
+            <div className="font-heading text-sm text-muted-foreground">
+              Your regular season is complete.
+            </div>
+            <Button onClick={simRemainingMLBGames} disabled={simulating} variant="secondary" size="sm" className="gap-1">
+              {simulating ? <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" /> : <FastForward className="w-4 h-4" />}
+              Simulate Final MLB Games
+            </Button>
           </div>
         )}
       </div>
@@ -1510,6 +1725,26 @@ export default function SeasonDashboard() {
           season={season}
           trades={tradeDeadlineTrades}
           onContinue={continueAfterTradeDeadline}
+        />
+      )}
+
+      {endOfRegularSeasonVisible && (
+        <EndOfRegularSeasonScreen
+          season={season}
+          standingsData={endOfSeasonStandings || standingsData}
+          awards={endOfSeasonAwards}
+          onCreatePostseason={createPostseason}
+          onContinue={() => setEndOfRegularSeasonVisible(false)}
+        />
+      )}
+
+      {postseasonVisible && postseasonData && (
+        <PostseasonBracket
+          season={season}
+          postseason={postseasonData}
+          onPlayGame={() => { /* Postseason game play - deferred */ }}
+          onSimPostseason={() => { /* Postseason sim - deferred */ }}
+          onContinue={() => setPostseasonVisible(false)}
         />
       )}
 
