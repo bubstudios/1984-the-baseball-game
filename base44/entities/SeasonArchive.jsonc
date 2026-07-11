@@ -1,0 +1,132 @@
+{
+  "name": "SeasonArchive",
+  "type": "object",
+  "properties": {
+    "seasonId": {
+      "type": "string",
+      "description": "Reference to Season entity"
+    },
+    "year": {
+      "type": "integer",
+      "description": "Season year"
+    },
+    "userTeam": {
+      "type": "string",
+      "description": "Team key the user managed"
+    },
+    "champion": {
+      "type": "string",
+      "description": "World Series winner team key"
+    },
+    "finalStandings": {
+      "type": "object",
+      "description": "Final division standings snapshot"
+    },
+    "postseasonBracket": {
+      "type": "object",
+      "description": "Postseason bracket snapshot"
+    },
+    "seasonAwards": {
+      "type": "array",
+      "description": "End-of-season award winners",
+      "items": {
+        "type": "object"
+      }
+    },
+    "leagueLeaders": {
+      "type": "object",
+      "description": "Top league statistical leaders"
+    },
+    "userRecord": {
+      "type": "object",
+      "description": "User team final record: { wins, losses, pct, place, division }",
+      "properties": {
+        "wins": {
+          "type": "integer"
+        },
+        "losses": {
+          "type": "integer"
+        },
+        "pct": {
+          "type": "number"
+        },
+        "place": {
+          "type": "integer"
+        },
+        "division": {
+          "type": "string"
+        }
+      }
+    },
+    "teamMVP": {
+      "type": "object",
+      "description": "User team's most productive player: { name, stats }",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "stats": {
+          "type": "object"
+        }
+      }
+    },
+    "bestGame": {
+      "type": "object",
+      "description": "Most memorable user win: { date, opponent, score, summary }",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "opponent": {
+          "type": "string"
+        },
+        "score": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "worstLoss": {
+      "type": "object",
+      "description": "Most painful user loss: { date, opponent, score, summary }",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "opponent": {
+          "type": "string"
+        },
+        "score": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "longestWinStreak": {
+      "type": "integer",
+      "description": "Longest winning streak"
+    },
+    "longestLossStreak": {
+      "type": "integer",
+      "description": "Longest losing streak"
+    },
+    "achievementsUnlocked": {
+      "type": "integer",
+      "description": "Number of achievements unlocked this season"
+    },
+    "archivedDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the archive was created"
+    }
+  },
+  "required": [
+    "seasonId",
+    "year",
+    "userTeam"
+  ]
+}

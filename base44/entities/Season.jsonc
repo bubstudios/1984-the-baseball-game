@@ -225,6 +225,11 @@
       "items": {
         "type": "object"
       }
+    },
+    "clinchStatus": {
+      "type": "object",
+      "description": "Map of teamKey to 'clinched' or 'eliminated' for tracking division races. Computed by clinching.js.",
+      "default": {}
     }
   },
   "required": [

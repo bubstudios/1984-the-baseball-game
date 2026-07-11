@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Trophy, TrendingUp, Play, Newspaper, FastForward, HeartPulse, Zap } from 'lucide-react';
+import { RotateCcw, Trophy, TrendingUp, Play, Newspaper, FastForward, HeartPulse, Zap, ScrollText, BookOpen } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import { generateScheduleValidated, formatGameDate, getLeague, getGameDayForDate } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState, validateCompletedGame } from '@/lib/seasonEngine';
@@ -50,6 +50,12 @@ import { forcePitcherHBPEjection, forceBatterArguesStrikes, forceChargingMound, 
 import SeasonAchievementPopup from '@/components/season/SeasonAchievementPopup';
 import AchievementsGallery from '@/components/season/AchievementsGallery';
 import { evaluateGameComplete, evaluateSeasonEvent, initAchievementCache } from '@/lib/seasonAchievements/achievementEngine';
+import UnavailablePlayersScreen from '@/components/season/UnavailablePlayersScreen';
+import TransactionLogScreen from '@/components/season/TransactionLogScreen';
+import SeasonHistoryPage from '@/components/season/SeasonHistoryPage';
+import { recordInjuryTxn, recordReturnFromInjuryTxn, recordSuspensionTxn, recordTradeTxn, recordAllStarSelectionTxn, recordAwardTxn, recordClinchTxn, recordEjectionTxn } from '@/lib/transactionLog';
+import { checkClinchesAndEliminations, getTeamClinchStatus } from '@/lib/clinching';
+import { ensureSafeSeason } from '@/lib/seasonMigration';
 
 const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
@@ -93,6 +99,9 @@ export default function SeasonDashboard() {
   const [showInjuryReport, setShowInjuryReport] = useState(false);
   const [showDebugDiscipline, setShowDebugDiscipline] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [showTransactionLog, setShowTransactionLog] = useState(false);
+  const [showSeasonHistory, setShowSeasonHistory] = useState(false);
+  const [clinchStatus, setClinchStatus] = useState({});
   const simulatingRef = useRef(false);
   const lastAdvanceDayRef = useRef(null);
   const pendingUserTeam = location.state?.userTeam || null;
@@ -114,7 +123,7 @@ export default function SeasonDashboard() {
         return;
       }
 
-      const currentSeason = seasons[0];
+      const currentSeason = ensureSafeSeason(seasons[0]);
       setSeason(currentSeason);
 
       const daySchedule = await base44.entities.Schedule.filter({
@@ -170,6 +179,19 @@ export default function SeasonDashboard() {
         const allResults = await base44.entities.GameResult.filter({ seasonId: currentSeason.id }, 'gameDay', 2106);
         seasonStandings = deriveStandings(allResults);
         setStandingsData(seasonStandings);
+        // Check for clinches/eliminations (September onward or when close)
+        if (seasonStandings) {
+          const todayDate = currentSeason.currentDate || '1984-04-02';
+          const { newStatus } = await checkClinchesAndEliminations(
+            seasonStandings, currentSeason.clinchStatus || {}, currentSeason.id, todayDate
+          );
+          setClinchStatus(newStatus);
+          if (newStatus !== (currentSeason.clinchStatus || {})) {
+            try {
+              await base44.entities.Season.update(currentSeason.id, { clinchStatus: newStatus });
+            } catch (e) { /* non-fatal */ }
+          }
+        }
       } catch (e) { /* non-fatal */ }
 
       // Evaluate season milestone achievements (progress, team record, allstar, trade, awards, postseason, season_complete)
@@ -192,6 +214,12 @@ export default function SeasonDashboard() {
         }
         await evaluateSeasonEvent(currentSeason.id, currentSeason.userTeam, currentSeason, 'milestone', { standings: seasonStandings, userLeague });
       } catch (e) { /* non-fatal */ }
+
+      // Save migration: ensure all fields have safe defaults
+      const migrated = ensureSafeSeason(currentSeason);
+      if (migrated !== currentSeason) {
+        setSeason(migrated);
+      }
 
       // Load active injuries for the season (persistent injury layer)
       try {
@@ -444,6 +472,25 @@ export default function SeasonDashboard() {
         worldSeriesHomeFieldLeague: winningLeague,
       });
 
+      // Record All-Star selections as transactions for user team players
+      try {
+        const userLeague = getLeague(season.userTeam);
+        const roster = allStarRosters[userLeague];
+        if (roster) {
+          const allPlayers = [
+            ...(roster.battingOrder || []),
+            ...(roster.bench || []),
+            ...(roster.pitchers?.starters || []),
+            ...(roster.pitchers?.relievers || []),
+          ];
+          for (const p of allPlayers) {
+            if (p.teamKey === season.userTeam) {
+              await recordAllStarSelectionTxn(season.id, p.teamKey, p.name, userLeague, '1984-07-10');
+            }
+          }
+        }
+      } catch (e) { /* non-fatal */ }
+
       setSeason(prev => prev ? {
         ...prev,
         allStarBreakPhase: 'game_played',
@@ -578,6 +625,13 @@ export default function SeasonDashboard() {
       });
 
       setTradeDeadlineTrades(updatedTrades);
+
+      // Record trade transactions for user team
+      for (const t of updatedTrades) {
+        if (t.status === 'applied' && (t.teamA === season.userTeam || t.teamB === season.userTeam)) {
+          await recordTradeTxn(season.id, t, '1984-08-30');
+        }
+      }
 
       // Advance to September 1 (first game after the deadline)
       const sep1Sched = await base44.entities.Schedule.filter({
@@ -945,6 +999,14 @@ export default function SeasonDashboard() {
       // Persist injuries that occurred during headless sim games
       for (const inj of simInjuries) {
         await recordInjury(season.id, inj.teamKey, inj.playerName, inj.playerPos, inj.source, inj.gameDate, gameDay);
+        // Record transaction for user team injuries
+        if (inj.teamKey === season.userTeam) {
+          await recordInjuryTxn(season.id, {
+            teamKey: inj.teamKey, playerName: inj.playerName,
+            injuryType: inj.injuryType || 'Injury', severity: inj.severity || 'day_to_day',
+            gamesRemaining: inj.gamesRemaining || 0, gameDate: inj.gameDate, startedOnGameDay: gameDay,
+          });
+        }
       }
 
       // Daily injury recovery: decrement daysRemaining, clear eligible returns
@@ -1388,7 +1450,7 @@ export default function SeasonDashboard() {
           seasonAwards: awards,
         });
 
-        // Persist to SeasonAward entity
+        // Persist to SeasonAward entity + record transactions
         for (const a of awards) {
           try {
             await base44.entities.SeasonAward.create({
@@ -1400,6 +1462,10 @@ export default function SeasonDashboard() {
               stats: { statLine: a.statLine },
               awardDate: '1984-10-01',
             });
+            // Record transaction for user team award winners
+            if (a.team === s.userTeam) {
+              await recordAwardTxn(s.id, { ...a, awardDate: '1984-10-01' });
+            }
           } catch (e) { /* non-fatal */ }
         }
       }
@@ -1628,6 +1694,14 @@ export default function SeasonDashboard() {
             <Button onClick={() => setShowAchievements(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating}>
               <Trophy className="w-3 h-3" /> Awards
             </Button>
+            <Button onClick={() => setShowTransactionLog(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating}>
+              <ScrollText className="w-3 h-3" /> Wire
+            </Button>
+            {season?.seasonPhase === 'SEASON_COMPLETE' && (
+              <Button onClick={() => setShowSeasonHistory(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating}>
+                <BookOpen className="w-3 h-3" /> History
+              </Button>
+            )}
             {isDebug && (
               <Button onClick={() => setShowDebugDiscipline(true)} variant="outline" size="sm" className="gap-1 text-[10px] text-amber-400" disabled={simulating}>
                 <Zap className="w-3 h-3" /> Discipline
@@ -1668,6 +1742,15 @@ export default function SeasonDashboard() {
               {userSt.streakType && <span className={userSt.streakType === 'W' ? 'text-emerald-400' : 'text-red-400'}>Streak: {userSt.streakType}{userSt.streakLen}</span>}
               <span>{place}{suffix} {DIV_LABELS[userDiv]}</span>
               <span>{userSt.gb === 0 ? '-' : userSt.gb.toFixed(1) + ' GB'}</span>
+              {(() => {
+                const clinch = getTeamClinchStatus(standingsData, season.userTeam);
+                if (!clinch) return null;
+                if (clinch.type === 'clinched') return <span className="text-emerald-400 font-bold">CLINCHED</span>;
+                if (clinch.type === 'eliminated') return <span className="text-red-400 font-bold">ELIMINATED</span>;
+                if (clinch.type === 'magic_number') return <span className="text-amber-400 font-bold">{clinch.label}</span>;
+                if (clinch.type === 'elimination_number') return <span className="text-orange-400">{clinch.label}</span>;
+                return null;
+              })()}
               {lastGameLine && <span className="text-muted-foreground/70">Last: {lastGameLine}</span>}
             </div>
           );
@@ -1941,9 +2024,11 @@ export default function SeasonDashboard() {
       )}
 
       {showInjuryReport && (
-        <InjuryReportScreen
+        <UnavailablePlayersScreen
           season={season}
           injuries={activeInjuries}
+          playerSuspensions={activePlayerSuspensions}
+          managerSuspensions={activeSuspensions}
           onClose={() => setShowInjuryReport(false)}
         />
       )}
@@ -1960,6 +2045,14 @@ export default function SeasonDashboard() {
 
       {showAchievements && (
         <AchievementsGallery onClose={() => setShowAchievements(false)} />
+      )}
+
+      {showTransactionLog && (
+        <TransactionLogScreen season={season} onClose={() => setShowTransactionLog(false)} />
+      )}
+
+      {showSeasonHistory && (
+        <SeasonHistoryPage season={season} onClose={() => setShowSeasonHistory(false)} />
       )}
     </div>
   );

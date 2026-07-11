@@ -1,0 +1,65 @@
+{
+  "name": "SeasonTransaction",
+  "type": "object",
+  "properties": {
+    "seasonId": {
+      "type": "string",
+      "description": "Reference to Season entity"
+    },
+    "gameDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Simulated date the transaction occurred"
+    },
+    "gameDay": {
+      "type": "integer",
+      "description": "Game day number (1-162)"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "injury",
+        "return_from_injury",
+        "suspension",
+        "return_from_suspension",
+        "manager_suspension",
+        "return_from_manager_suspension",
+        "trade",
+        "allstar_selection",
+        "award_winner",
+        "postseason_clinch",
+        "elimination",
+        "manager_ejection",
+        "player_ejection",
+        "milestone",
+        "roster_move"
+      ],
+      "description": "Transaction type"
+    },
+    "teamKey": {
+      "type": "string",
+      "description": "Team key involved"
+    },
+    "headline": {
+      "type": "string",
+      "description": "Short headline text for display"
+    },
+    "details": {
+      "type": "string",
+      "description": "Longer description text"
+    },
+    "playerName": {
+      "type": "string",
+      "description": "Player name if applicable"
+    },
+    "awardType": {
+      "type": "string",
+      "description": "Award type if applicable"
+    }
+  },
+  "required": [
+    "seasonId",
+    "type",
+    "headline"
+  ]
+}
