@@ -95,7 +95,7 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
     allPitchers.push(pitcher);
   }
   (playerHistory || []).forEach(p => {
-    if ((p.gameStats?.pitches > 0 || p.gameStats?.ip > 0) && !pitcherNames.has(p.name)) {
+    if ((p.gameStats?.pitches > 0 || p.gameStats?.ip > 0 || p.gameStats?.outs > 0) && !pitcherNames.has(p.name)) {
       pitcherNames.add(p.name);
       allPitchers.push(p);
     }
@@ -103,7 +103,7 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
   // Also check the lineup for pitchers who have accumulated stats but aren't the active pitcher
   lineup.forEach(p => {
     const isPitcherSlot = ['SP','RP','CL'].includes(p.assignedPos || p.pos);
-    if (isPitcherSlot && (p.gameStats?.pitches > 0 || p.gameStats?.ip > 0) && !pitcherNames.has(p.name)) {
+    if (isPitcherSlot && (p.gameStats?.pitches > 0 || p.gameStats?.ip > 0 || p.gameStats?.outs > 0) && !pitcherNames.has(p.name)) {
       pitcherNames.add(p.name);
       allPitchers.push(p);
     }

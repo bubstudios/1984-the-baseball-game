@@ -407,7 +407,7 @@ function analyzeStarters(games, rotationState, flags) {
 // ── 3. Bullpen / Reliever Logic ──
 function analyzeBullpen(games, rotationState, flags) {
   let threeStraightCount = 0, unavailableUsedCount = 0, relieverAsStarterCount = 0, reentryCount = 0;
-  let legalEmergencyCount = 0;
+  let legalEmergencyCount = 0, questionableFatiguedUse = 0;
   const appearancesByPitcher = {}; // { teamKey|name: [dates] }
 
   for (const g of games) {
@@ -489,6 +489,22 @@ function analyzeBullpen(games, rotationState, flags) {
           if (resolverName !== p.name) {
             relieverAsStarterCount++;
             addFlag(flags, 'warning', 'Bullpen', `${p.name} (reliever) started but resolver didn't pick him`, g);
+          }
+        }
+
+        // QUESTIONABLE_FATIGUED_RELIEVER_USE: a TIRED/VERY_TIRED reliever used
+        // while fresh AVAILABLE arms remained (non-extra-inning game).
+        if (p.gs !== 1) {
+          const pt = pitcherTiers[p.name];
+          if (pt && (pt.tier === 'TIRED' || pt.tier === 'VERY_TIRED')) {
+            const freshArms = tierCounts.AVAILABLE || 0;
+            if (freshArms > 0 && !isExtra) {
+              questionableFatiguedUse++;
+              const re = relieverEntries[p.name];
+              const inningStr = re ? re.inning : '?';
+              const scoreStr = re ? `${re.score.away}-${re.score.home}` : '?';
+              addFlag(flags, 'warning', 'Bullpen', `QUESTIONABLE_FATIGUED_RELIEVER_USE: ${p.name} (${pt.tier}) used while ${freshArms} AVAILABLE arms remained | Inning: ${inningStr} | Score: ${scoreStr} | ${fmtTier(p.name)}`, g);
+            }
           }
         }
       }
@@ -619,7 +635,7 @@ function analyzeBullpen(games, rotationState, flags) {
   const avgStarterInnings = starterInningCount > 0 ? totalStarterInnings / starterInningCount : 0;
   const teamGames = games.filter(g => !g.error && !g.validationFailed).length * 2;
   const avgRelieversPerGame = teamGames > 0 ? totalRelieversUsed / teamGames : 0;
-  return { threeStraightCount, unavailableUsedCount, relieverAsStarterCount, reentryCount, legalEmergencyCount, avgStarterInnings, avgRelieversPerGame, gamesWith5PlusPitchers };
+  return { threeStraightCount, unavailableUsedCount, relieverAsStarterCount, reentryCount, legalEmergencyCount, questionableFatiguedUse, avgStarterInnings, avgRelieversPerGame, gamesWith5PlusPitchers };
 }
 
 // ── 4. Offensive Realism ──

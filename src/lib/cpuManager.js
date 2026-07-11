@@ -13,6 +13,29 @@ import {
   getCurrentBatter, getCurrentPitcher, getBattingTeam, getControllingTeam,
 } from './gameEngine';
 
+// Save old pitcher to history, merging pitching stats if the entry already exists
+// (from pinchHit pushing the batting lineup entry first). Without this merge,
+// the pitcher's pitching stats (outs, ip, pitches, etc.) are lost and the
+// box score only shows the last reliever.
+function savePitcherToHistory(history, oldPitcher) {
+  const existing = history.find(p => p.name === oldPitcher.name);
+  if (existing) {
+    existing.gameStats = {
+      ...existing.gameStats,
+      pitches: oldPitcher.gameStats.pitches,
+      ip: oldPitcher.gameStats.ip,
+      outs: oldPitcher.gameStats.outs || Math.round((oldPitcher.gameStats.ip || 0) * 3),
+      pitcherSo: oldPitcher.gameStats.so,
+      pitcherBB: oldPitcher.gameStats.bb,
+      pitcherH: oldPitcher.gameStats.h,
+      pitcherR: oldPitcher.gameStats.r,
+      pitcherER: oldPitcher.gameStats.er,
+    };
+  } else {
+    history.push({ ...oldPitcher });
+  }
+}
+
 // HARD GATE: a pitcher marked _seasonAvailable === false CANNOT be selected.
 export function canPitchToday(pitcher) {
   if (!pitcher) return false;
@@ -363,7 +386,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
       if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
       const bpi2 = cpuBullpen.findIndex(p => p.name === newPitcher.name); if (bpi2 >= 0) cpuBullpen.splice(bpi2, 1);
-      if (!newState[hk2].find(p => p.name === oldP.name)) newState[hk2].push({ ...oldP });
+      savePitcherToHistory(newState[hk2], oldP);
       let si2 = cpuLineupField.findIndex(p => p.order === oldP.order);
       if (si2 < 0) si2 = cpuLineupField.findIndex(p => p.name === oldP.name);
       if (si2 < 0) si2 = cpuLineupField.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
@@ -478,7 +501,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
     const bpi = cpuBullpen.findIndex(p => p.name === newPitcher.name); if (bpi >= 0) cpuBullpen.splice(bpi, 1);
     const hk = cpuPitchingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
-    if (!newState[hk].find(p => p.name === oldPitcher.name)) newState[hk].push({ ...oldPitcher });
+    savePitcherToHistory(newState[hk], oldPitcher);
     const fl = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
     const cpuDH = !!newState.useDH;
     if (!cpuDH) {
@@ -495,7 +518,7 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     if (isEmergencyUse) {
       newState.log.push({ type: 'info', text: `⚠️ EMERGENCY_UNAVAILABLE_PITCHER_USED: ${newPitcher.name} enters despite being unavailable`, _relieverEntry: { name: newPitcher.name, inning, score: { ...newState.score }, hookReason: reason, selectionReason, isEmergency: true } });
     }
-    newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})`, _relieverEntry: { name: newPitcher.name, inning, score: { ...newState.score }, hookReason: reason, selectionReason, isEmergency: isEmergencyUse } });
+    newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound (${reason})`, _relieverEntry: { name: newPitcher.name, inning, score: { ...newState.score }, hookReason: reason, selectionReason, isEmergency: isEmergencyUse, tier: newPitcher._seasonTier || 'AVAILABLE', fatiguePenalty: newPitcher._seasonFatiguePenalty || 0, availableAlternatives: effectiveBullpen.length } });
 
     const dsLineup = cpuPitchingSide === 'home' ? newState.homeLineup : newState.awayLineup;
     const dsFullBench = TEAMS[cpuPitchingSide === 'home' ? newState.homeTeam : newState.awayTeam]?.bench || [];

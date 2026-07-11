@@ -231,7 +231,7 @@ export default function ArchivedBoxScore({ gameResult, onClose }) {
                 <tr className="border-b border-border/30">
                   <td className="py-1 px-1 font-heading font-bold text-foreground">{away?.abbr}</td>
                   {innings.map((inn, i) => (
-                    <td key={i} className="text-center py-1 px-1 text-foreground">{inn.away ?? 0}</td>
+                    <td key={i} className="text-center py-1 px-1 text-foreground">{inn.away ?? '-'}</td>
                   ))}
                   <td className="text-center py-1 px-1 font-heading font-bold text-primary border-l border-border">{gameResult.awayScore}</td>
                   <td className="text-center py-1 px-1 text-foreground">{awayHits}</td>
@@ -240,7 +240,7 @@ export default function ArchivedBoxScore({ gameResult, onClose }) {
                 <tr>
                   <td className="py-1 px-1 font-heading font-bold text-foreground">{home?.abbr}</td>
                   {innings.map((inn, i) => (
-                    <td key={i} className="text-center py-1 px-1 text-foreground">{inn.home ?? 0}</td>
+                    <td key={i} className="text-center py-1 px-1 text-foreground">{inn.home !== null && inn.home !== undefined ? inn.home : 'X'}</td>
                   ))}
                   <td className="text-center py-1 px-1 font-heading font-bold text-primary border-l border-border">{gameResult.homeScore}</td>
                   <td className="text-center py-1 px-1 text-foreground">{homeHits}</td>

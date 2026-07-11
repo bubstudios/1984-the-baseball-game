@@ -445,9 +445,10 @@ export function resolveSwing(state, swingType, pitch) {
       const isRobbed = isRobable && rollHRRobbery();
       if (isRobbed) {
         const fielder = defenders[['LF', 'CF', 'RF', 'RCF', 'LCF'][Math.floor(Math.random() * 5)]] || defenders['CF'] || { name: 'the outfielder' };
-        const robberyCall = getRobberyCall(state.homeTeam, fielder.name);
-        state.log.push({ type: 'flyout', text: robberyCall });
-        state.lastPlay = { type: 'flyout', text: robberyCall };
+        const robberyText = `🧤 ${batter.name} sends it deep - ${fielder.name} climbs the wall and brings it back! HOME RUN ROBBED!`;
+        state.log.push({ type: 'hr_robbed', text: robberyText, fielderName: fielder.name, batterName: batter.name });
+        state.lastPlay = { type: 'hr_robbed', text: robberyText, fielderName: fielder.name, batterName: batter.name };
+        state._celebrationBubble = robberyText;
         state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state);
         return;
       }
