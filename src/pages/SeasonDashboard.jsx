@@ -13,6 +13,10 @@ import Standings from '@/components/season/Standings';
 import TeamGameLog from '@/components/season/TeamGameLog';
 import RotationDebugPanel from '@/components/season/RotationDebugPanel';
 import ArchivedBoxScore from '@/components/season/ArchivedBoxScore';
+import NewspaperScreen from '@/components/season/NewspaperScreen';
+import WeeklyAwardsScreen from '@/components/season/WeeklyAwardsScreen';
+import { generateNewspaper, saveNewspaperArchive } from '@/lib/headlineGenerator';
+import { calculateWeeklyAwards } from '@/lib/weeklyAwards';
 
 export default function SeasonDashboard() {
   const location = useLocation();
@@ -27,6 +31,11 @@ export default function SeasonDashboard() {
   const [simulating, setSimulating] = useState(false);
   const [activeTab, setActiveTab] = useState('schedule');
   const [selectedArchive, setSelectedArchive] = useState(null);
+  const [showNewspaper, setShowNewspaper] = useState(false);
+  const [newspaperData, setNewspaperData] = useState(null);
+  const [dayGameResults, setDayGameResults] = useState([]);
+  const [showWeeklyAwards, setShowWeeklyAwards] = useState(false);
+  const [weeklyAwardsData, setWeeklyAwardsData] = useState(null);
   const pendingUserTeam = location.state?.userTeam || null;
 
   useEffect(() => {
@@ -358,6 +367,64 @@ export default function SeasonDashboard() {
 
       await maybeAdvanceDay(season);
 
+      // ── Newspaper + Weekly Awards generation ──
+      // After the day's games are committed, fetch all results for the day
+      // (including user game if played) and generate the newspaper sports page.
+      try {
+        const dayResults = await base44.entities.GameResult.filter({
+          seasonId: season.id,
+          gameDay,
+        }, null, 50);
+
+        if (dayResults.length > 0) {
+          const newspaper = generateNewspaper(
+            dayResults, gameDay,
+            daySchedule[0]?.gameDate || season.currentDate,
+            season.userTeam, season.id
+          );
+          if (newspaper) {
+            saveNewspaperArchive(newspaper);
+            setDayGameResults(dayResults);
+            setNewspaperData(newspaper);
+
+            // Weekly awards every 7 calendar days
+            if (gameDay % 7 === 0) {
+              const weeklyResults = await base44.entities.GameResult.filter({
+                seasonId: season.id,
+                gameDay: { $gte: gameDay - 6, $lte: gameDay },
+              }, '-gameDay', 200);
+
+              const awards = calculateWeeklyAwards(
+                weeklyResults,
+                Math.floor(gameDay / 7),
+                { start: gameDay - 6, end: gameDay }
+              );
+
+              // Persist awards to SeasonAward entity
+              for (const award of awards.awards) {
+                try {
+                  await base44.entities.SeasonAward.create({
+                    seasonId: season.id,
+                    awardType: award.type,
+                    winner: award.playerName,
+                    team: award.teamKey,
+                    weekNumber: award.weekNumber,
+                    stats: { statLine: award.statLine, blurb: award.blurb, score: award.score },
+                    awardDate: daySchedule[0]?.gameDate || season.currentDate,
+                  });
+                } catch (e) { /* non-fatal */ }
+              }
+
+              setWeeklyAwardsData(awards);
+            }
+
+            setShowNewspaper(true);
+          }
+        }
+      } catch (e) {
+        console.error('Newspaper generation failed:', e);
+      }
+
       await loadSeason();
     } catch (error) {
       console.error('Simulation failed:', error);
@@ -634,6 +701,30 @@ export default function SeasonDashboard() {
         <ArchivedBoxScore
           gameResult={selectedArchive}
           onClose={() => setSelectedArchive(null)}
+        />
+      )}
+
+      {showNewspaper && newspaperData && (
+        <NewspaperScreen
+          newspaper={newspaperData}
+          gameResults={dayGameResults}
+          userTeam={season?.userTeam}
+          onClose={() => {
+            setShowNewspaper(false);
+            if (weeklyAwardsData) {
+              setShowWeeklyAwards(true);
+            }
+          }}
+        />
+      )}
+
+      {showWeeklyAwards && weeklyAwardsData && (
+        <WeeklyAwardsScreen
+          awardsData={weeklyAwardsData}
+          onClose={() => {
+            setShowWeeklyAwards(false);
+            setWeeklyAwardsData(null);
+          }}
         />
       )}
     </div>
