@@ -56,6 +56,11 @@
     "rotationState": {
       "type": "object",
       "description": "Per-team rotation cooldown tracking: { teamKey: { lastStarted: { pitcherName: gameDay } } }"
+    },
+    "monthlyHonorsShown": {
+      "type": "object",
+      "description": "Map of 'YYYY-MM' to true for months whose honors have been displayed",
+      "default": {}
     }
   },
   "required": [

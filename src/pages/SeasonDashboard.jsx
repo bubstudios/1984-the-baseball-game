@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Trophy, TrendingUp, Play, Newspaper } from 'lucide-react';
+import { RotateCcw, Trophy, TrendingUp, Play, Newspaper, FastForward } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import { generateScheduleValidated, formatGameDate } from '@/lib/seasonSchedule';
 import { simulateGameHeadless, buildGameResultFromState, validateCompletedGame } from '@/lib/seasonEngine';
@@ -20,6 +20,8 @@ import { generateNewspaper, saveNewspaperArchive } from '@/lib/headlineGenerator
 import { calculateWeeklyAwards } from '@/lib/weeklyAwards';
 import { deriveStandings } from '@/lib/seasonStore';
 import { getDivision } from '@/lib/seasonSchedule';
+import MonthlyHonorsScreen from '@/components/season/MonthlyHonorsScreen';
+import { calculateMonthlyAwards } from '@/lib/monthlyAwards';
 
 const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
@@ -42,6 +44,10 @@ export default function SeasonDashboard() {
   const [showWeeklyAwards, setShowWeeklyAwards] = useState(false);
   const [weeklyAwardsData, setWeeklyAwardsData] = useState(null);
   const [standingsData, setStandingsData] = useState(null);
+  const [showMonthlyHonors, setShowMonthlyHonors] = useState(false);
+  const [monthlyHonorsData, setMonthlyHonorsData] = useState(null);
+  const [simToFinaleProgress, setSimToFinaleProgress] = useState(null);
+  const simulatingRef = useRef(false);
   const pendingUserTeam = location.state?.userTeam || null;
 
   useEffect(() => {
@@ -111,6 +117,60 @@ export default function SeasonDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const checkAndShowMonthlyHonors = async (seasonObj) => {
+    const s = seasonObj || season;
+    if (!s) return;
+    try {
+      const recentResults = await base44.entities.GameResult.filter(
+        { seasonId: s.id }, '-gameDay', 1
+      );
+      if (recentResults.length === 0) return;
+
+      const lastResult = recentResults[0];
+      if (!lastResult.gameDate) return;
+
+      const monthStr = lastResult.gameDate.substring(0, 7);
+      const [year, month] = monthStr.split('-').map(Number);
+
+      const shown = s.monthlyHonorsShown || {};
+      if (shown[monthStr]) return;
+
+      const allSched = await base44.entities.Schedule.filter(
+        { seasonId: s.id }, 'gameDay', 2200
+      );
+      const monthGames = allSched.filter(g => g.gameDate && g.gameDate.startsWith(monthStr));
+      if (monthGames.length === 0) return;
+      if (!monthGames.every(g => g.status === 'final')) return;
+
+      const allResults = await base44.entities.GameResult.filter(
+        { seasonId: s.id }, 'gameDay', 2200
+      );
+      const monthGameResults = allResults.filter(r => r.gameDate && r.gameDate.startsWith(monthStr));
+      if (monthGameResults.length === 0) return;
+
+      const awards = calculateMonthlyAwards(monthGameResults, year, month);
+      if (!awards || awards.awards.length === 0) return;
+
+      setMonthlyHonorsData(awards);
+      setShowMonthlyHonors(true);
+    } catch (e) {
+      console.error('Monthly honors check failed:', e);
+    }
+  };
+
+  const handleCloseMonthlyHonors = async () => {
+    setShowMonthlyHonors(false);
+    if (monthlyHonorsData && season) {
+      const key = `${monthlyHonorsData.year}-${String(monthlyHonorsData.month).padStart(2, '0')}`;
+      const shown = { ...(season.monthlyHonorsShown || {}), [key]: true };
+      try {
+        await base44.entities.Season.update(season.id, { monthlyHonorsShown: shown });
+      } catch (e) { /* non-fatal */ }
+      setSeason(prev => prev ? { ...prev, monthlyHonorsShown: shown } : prev);
+    }
+    setMonthlyHonorsData(null);
   };
 
   const createNewSeason = async () => {
@@ -189,6 +249,7 @@ export default function SeasonDashboard() {
     if (!season) return;
 
     try {
+      simulatingRef.current = true;
       setSimulating(true);
       const gameDay = season.currentGameDay || 1;
 
@@ -443,7 +504,178 @@ export default function SeasonDashboard() {
       console.error('Simulation failed:', error);
       alert('Simulation failed: ' + error.message);
     } finally {
+      simulatingRef.current = false;
       setSimulating(false);
+    }
+  };
+
+  const simToMonthFinale = async (targetMonth) => {
+    if (!season) return;
+    try {
+      simulatingRef.current = true;
+      setSimulating(true);
+      setSimToFinaleProgress('Finding target game...');
+
+      const userSched = await base44.entities.Schedule.filter({
+        seasonId: season.id, isUserGame: true,
+      }, 'gameDay', 200);
+
+      const monthPrefix = `${season.year}-${String(targetMonth).padStart(2, '0')}`;
+      const monthUserGames = userSched.filter(g => g.gameDate && g.gameDate.startsWith(monthPrefix));
+      if (monthUserGames.length === 0) {
+        alert(`No ${TEAMS[season.userTeam]?.name} games found in that month`);
+        return;
+      }
+
+      monthUserGames.sort((a, b) => b.gameDay - a.gameDay);
+      const targetGame = monthUserGames[0];
+
+      let currentDay = season.currentGameDay || 1;
+
+      if (currentDay >= targetGame.gameDay) {
+        setSimToFinaleProgress(null);
+        await loadSeason();
+        return;
+      }
+
+      const rotState = await loadRotationStateForActiveSeason();
+
+      while (currentDay < targetGame.gameDay) {
+        setSimToFinaleProgress(`Simulating day ${currentDay} of ${targetGame.gameDay - 1}...`);
+
+        const daySchedule = await base44.entities.Schedule.filter({
+          seasonId: season.id, gameDay: currentDay,
+        });
+
+        const toSim = daySchedule.filter(g => g.status !== 'final');
+        if (toSim.length === 0) {
+          currentDay++;
+          continue;
+        }
+
+        const existingStats = await base44.entities.PlayerStats.filter({ seasonId: season.id }, null, 1500);
+        const statsAccum = {};
+        for (const s of existingStats) {
+          statsAccum[`${s.team}|${s.playerName}`] = {
+            hr: s.homeRuns || 0, doubles: s.doubles || 0,
+            triples: s.triples || 0, rbi: s.rbi || 0, sb: s.stolenBases || 0,
+          };
+        }
+
+        const resultRows = [];
+        const allBatting = [];
+        const allPitching = [];
+
+        for (const g of toSim) {
+          const homeTeam = g.homeTeam;
+          const awayTeam = g.awayTeam;
+          const useDH = TEAMS[homeTeam]?.league === 'AL';
+
+          const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
+          const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
+          const unavailableRelievers = {
+            home: getUnavailableRelievers(rotState, homeTeam, g.gameDate),
+            away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
+          };
+
+          const finalState = simulateGameHeadless(homeTeam, awayTeam, {
+            useDH, homeSP, awaySP, unavailableRelievers,
+            rotationState: rotState, gameDate: g.gameDate,
+          });
+
+          if (finalState._validationFailed) {
+            throw new Error(`Sim stall for ${awayTeam}@${homeTeam}: ${finalState._validationError}`);
+          }
+
+          const result = buildGameResultFromState(finalState, { headless: true });
+
+          validateCompletedGame({
+            status: 'FINAL', gameId: g.id, awayTeam, homeTeam,
+            boxScore: result,
+            winningPitcherId: result.decisions?.winner || null,
+            losingPitcherId: result.decisions?.loser || null,
+          });
+
+          allBatting.push(...result.batting);
+          allPitching.push(...result.pitching);
+
+          if (finalState.homeStartingPitcherName) advanceRotation(rotState, homeTeam, finalState.homeStartingPitcherName, g.gameDate);
+          if (finalState.awayStartingPitcherName) advanceRotation(rotState, awayTeam, finalState.awayStartingPitcherName, g.gameDate);
+          recordPitcherWorkload(rotState, homeTeam, result.pitching.filter(p => p.teamKey === homeTeam), g.gameDate);
+          recordPitcherWorkload(rotState, awayTeam, result.pitching.filter(p => p.teamKey === awayTeam), g.gameDate);
+
+          const winnerName = result.decisions.winner ? result.decisions.winner.split('|')[1] : null;
+          const loserName = result.decisions.loser ? result.decisions.loser.split('|')[1] : null;
+          const saveName = result.decisions.save ? result.decisions.save.split('|')[1] : null;
+
+          const homeHRs = result.homeRuns.filter(hr => hr.teamKey === homeTeam).map(hr => ({ playerName: hr.name, inning: hr.inning }));
+          const awayHRs = result.homeRuns.filter(hr => hr.teamKey === awayTeam).map(hr => ({ playerName: hr.name, inning: hr.inning }));
+          const homeHits = result.batting.filter(b => b.teamKey === homeTeam).reduce((s, b) => s + b.h, 0);
+          const awayHits = result.batting.filter(b => b.teamKey === awayTeam).reduce((s, b) => s + b.h, 0);
+
+          const gameSeasonTotals = {};
+          for (const b of result.batting) {
+            const key = `${b.teamKey}|${b.name}`;
+            if (!statsAccum[key]) statsAccum[key] = { hr: 0, doubles: 0, triples: 0, rbi: 0, sb: 0 };
+            statsAccum[key].hr += b.hr || 0;
+            statsAccum[key].doubles += b.doubles || 0;
+            statsAccum[key].triples += b.triples || 0;
+            statsAccum[key].rbi += b.rbi || 0;
+            statsAccum[key].sb += b.sb || 0;
+            if ((b.hr || 0) > 0 || (b.doubles || 0) > 0 || (b.triples || 0) > 0 || (b.rbi || 0) > 0 || (b.sb || 0) > 0) {
+              gameSeasonTotals[b.playerId] = { ...statsAccum[key] };
+            }
+          }
+          result.seasonTotals = gameSeasonTotals;
+
+          resultRows.push({
+            seasonId: season.id, gameDay: currentDay, gameDate: g.gameDate, boxScore: result,
+            homeTeam, awayTeam,
+            homeScore: result.homeScore, awayScore: result.awayScore, winner: result.winner,
+            isUserGame: g.isUserGame, homeHits, awayHits, homeHRs, awayHRs,
+            homeErrors: result.homeErrors || 0, awayErrors: result.awayErrors || 0,
+            winningPitcher: winnerName, losingPitcher: loserName, savePitcher: saveName,
+            stadium: TEAMS[homeTeam]?.stadium || null,
+            innings: result.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
+          });
+
+          await new Promise(r => setTimeout(r, 0));
+        }
+
+        await commitPlayerStats(season.id, allBatting, allPitching);
+        await persistRotationState(season.id, rotState);
+
+        if (resultRows.length > 0) {
+          const CHUNK = 50;
+          for (let i = 0; i < resultRows.length; i += CHUNK) {
+            await Promise.all(resultRows.slice(i, i + CHUNK).map(r => base44.entities.GameResult.create(r)));
+          }
+        }
+
+        for (const g of toSim) {
+          try { await base44.entities.Schedule.update(g.id, { status: 'final' }); } catch (e) { /* non-fatal */ }
+        }
+
+        await base44.entities.Season.update(season.id, {
+          completedGames: (season.completedGames || 0) + resultRows.length,
+        });
+
+        await maybeAdvanceDay({ ...season, currentGameDay: currentDay, id: season.id });
+
+        currentDay++;
+      }
+
+      await base44.entities.Season.update(season.id, { currentGameDay: targetGame.gameDay });
+
+      setSimToFinaleProgress(null);
+      await loadSeason();
+    } catch (error) {
+      console.error('Sim to finale failed:', error);
+      alert('Sim to finale failed: ' + error.message);
+    } finally {
+      simulatingRef.current = false;
+      setSimulating(false);
+      setSimToFinaleProgress(null);
     }
   };
 
@@ -475,6 +707,21 @@ export default function SeasonDashboard() {
       console.error('Failed to load newspaper:', e);
     }
   };
+
+  // Auto-sim remaining CPU games + check monthly honors after load/sim
+  useEffect(() => {
+    if (simulating || !season || !schedule.length) return;
+    if (showNewspaper || showWeeklyAwards || showMonthlyHonors) return;
+    const userGame = schedule.find(g => g.isUserGame);
+    if (userGame && userGame.status === 'final') {
+      const cpuRemaining = schedule.filter(g => !g.isUserGame && g.status !== 'final');
+      if (cpuRemaining.length > 0) {
+        simulateDay();
+        return;
+      }
+    }
+    checkAndShowMonthlyHonors();
+  }, [simulating, season, schedule, showNewspaper, showWeeklyAwards, showMonthlyHonors]);
 
   const todaysUserGame = schedule.find(g => g.isUserGame && g.status !== 'final');
   const isUserOffDay = !todaysUserGame;
@@ -586,6 +833,9 @@ export default function SeasonDashboard() {
                 {simulating ? <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" /> : <TrendingUp className="w-4 h-4" />}
                 Simulate Day
               </Button>
+              <Button onClick={() => simToMonthFinale(4)} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-amber-400">
+                <FastForward className="w-3 h-3" /> Sim to April Finale
+              </Button>
             </div>
           </div>
         ) : (
@@ -648,6 +898,7 @@ export default function SeasonDashboard() {
           onClose={() => {
             setShowNewspaper(false);
             if (weeklyAwardsData) setShowWeeklyAwards(true);
+            else checkAndShowMonthlyHonors();
           }}
         />
       )}
@@ -655,8 +906,24 @@ export default function SeasonDashboard() {
       {showWeeklyAwards && weeklyAwardsData && (
         <WeeklyAwardsScreen
           awardsData={weeklyAwardsData}
-          onClose={() => { setShowWeeklyAwards(false); setWeeklyAwardsData(null); }}
+          onClose={() => { setShowWeeklyAwards(false); setWeeklyAwardsData(null); checkAndShowMonthlyHonors(); }}
         />
+      )}
+
+      {showMonthlyHonors && monthlyHonorsData && (
+        <MonthlyHonorsScreen
+          honorsData={monthlyHonorsData}
+          onClose={handleCloseMonthlyHonors}
+        />
+      )}
+
+      {simToFinaleProgress && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-card border border-border rounded-xl px-6 py-4 text-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+            <p className="font-heading text-sm text-foreground">{simToFinaleProgress}</p>
+          </div>
+        </div>
       )}
     </div>
   );
