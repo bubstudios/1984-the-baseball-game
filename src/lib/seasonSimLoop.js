@@ -10,6 +10,7 @@ import {
   getUnavailableRelievers, commitPlayerStats, maybeAdvanceDay,
 } from './seasonStore';
 import { loadActiveInjuries, buildInjuredRoster, runDailyRecovery, resolveStarterSkippingInjuries, getInjuredPitcherNames, recordInjury } from './injuryPersistence';
+import { decrementTeamSuspensions } from './managerSuspension';
 
 /**
  * Simulate all non-final games from the current day up to (but not including) targetGameDay.
@@ -160,6 +161,22 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
     const todayDate = daySchedule[0]?.gameDate || seasonObj.currentDate;
     await runDailyRecovery(seasonObj.id, todayDate);
     dayInjuries = await loadActiveInjuries(seasonObj.id);
+
+    // Decrement manager suspensions for teams that played today
+    const teamsPlayed = new Set();
+    for (const g of toSim) {
+      teamsPlayed.add(g.homeTeam);
+      teamsPlayed.add(g.awayTeam);
+    }
+    for (const g of daySchedule) {
+      if (g.status === 'final') {
+        teamsPlayed.add(g.homeTeam);
+        teamsPlayed.add(g.awayTeam);
+      }
+    }
+    if (teamsPlayed.size > 0) {
+      await decrementTeamSuspensions(seasonObj.id, teamsPlayed, todayDate);
+    }
 
     currentDay++;
   }

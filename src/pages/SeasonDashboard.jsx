@@ -43,6 +43,7 @@ import { loadActiveInjuries, buildInjuredRoster, runDailyRecovery, resolveStarte
 import { getSeverityLabel } from '@/lib/injuryConfig';
 import InjuryReportScreen from '@/components/season/InjuryReportScreen';
 import InjuryDebugPanel from '@/components/season/InjuryDebugPanel';
+import { loadActiveSuspensions, decrementTeamSuspensions, getManagerStatusForTeam } from '@/lib/managerSuspension';
 
 const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
@@ -81,6 +82,7 @@ export default function SeasonDashboard() {
   const [seasonCompleteVisible, setSeasonCompleteVisible] = useState(false);
   const [postseasonAwardsData, setPostseasonAwardsData] = useState(null);
   const [activeInjuries, setActiveInjuries] = useState([]);
+  const [activeSuspensions, setActiveSuspensions] = useState([]);
   const [showInjuryReport, setShowInjuryReport] = useState(false);
   const simulatingRef = useRef(false);
   const lastAdvanceDayRef = useRef(null);
@@ -153,6 +155,12 @@ export default function SeasonDashboard() {
         clearInjuryCache();
         const injuries = await loadActiveInjuries(currentSeason.id);
         setActiveInjuries(injuries);
+      } catch (e) { /* non-fatal */ }
+
+      // Load active manager suspensions for the season
+      try {
+        const suspensions = await loadActiveSuspensions(currentSeason.id);
+        setActiveSuspensions(suspensions);
       } catch (e) { /* non-fatal */ }
 
       // Restore All-Star break state if the season is in a break phase
@@ -892,6 +900,23 @@ export default function SeasonDashboard() {
       const updatedInjuries = await loadActiveInjuries(season.id);
       setActiveInjuries(updatedInjuries);
 
+      // Decrement manager suspensions for teams that played today
+      const teamsPlayed = new Set();
+      for (const g of toSim) {
+        teamsPlayed.add(g.homeTeam);
+        teamsPlayed.add(g.awayTeam);
+      }
+      const userGame = daySchedule.find(g => g.isUserGame);
+      if (userGame && userGame.status === 'final') {
+        teamsPlayed.add(userGame.homeTeam);
+        teamsPlayed.add(userGame.awayTeam);
+      }
+      if (teamsPlayed.size > 0) {
+        await decrementTeamSuspensions(season.id, teamsPlayed, todayDate);
+        const updatedSuspensions = await loadActiveSuspensions(season.id);
+        setActiveSuspensions(updatedSuspensions);
+      }
+
       if (resultRows.length > 0) {
         const CHUNK = 50;
         for (let i = 0; i < resultRows.length; i += CHUNK) {
@@ -1598,6 +1623,21 @@ export default function SeasonDashboard() {
                 return (
                   <div className="text-[10px] text-red-400/80 font-heading">
                     Unavailable: {inj.map(fmt).join('; ')}
+                  </div>
+                );
+              })()}
+              {activeSuspensions.length > 0 && currentUserGame && (() => {
+                const ut = season.userTeam;
+                const ot = currentUserGame.homeTeam === ut ? currentUserGame.awayTeam : currentUserGame.homeTeam;
+                const userStatus = getManagerStatusForTeam(activeSuspensions, ut);
+                const oppStatus = getManagerStatusForTeam(activeSuspensions, ot);
+                if (!userStatus && !oppStatus) return null;
+                const lines = [];
+                if (userStatus) lines.push(`${userStatus.managerName} suspended (${userStatus.gamesRemaining}G)`);
+                if (oppStatus) lines.push(`${oppStatus.managerName} suspended (${oppStatus.gamesRemaining}G)`);
+                return (
+                  <div className="text-[10px] text-amber-400/80 font-heading">
+                    Manager: {lines.join(' - ')}
                   </div>
                 );
               })()}

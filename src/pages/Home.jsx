@@ -68,6 +68,8 @@ import { calculateAllStarMvp } from '@/lib/allStarMvp';
 import { hasReachedAllStarPitchLimit } from '@/lib/allStarRules';
 import { checkBatterInjury as checkBatterInjuryExternal } from '@/lib/batterInjuryCheck';
 import { loadActiveInjuries, recordInjury, resolveStarterSkippingInjuries } from '@/lib/injuryPersistence';
+import { loadActiveSuspensions, recordSuspension } from '@/lib/managerSuspension';
+import { checkArgumentLogic } from '@/lib/argumentLogic';
 
 
 export default function Home() {
@@ -137,6 +139,7 @@ export default function Home() {
   const seasonCommitPromiseRef = useRef(null);
   const prevCelebrationBubble = useRef(null);
   const seasonInjuriesRef = useRef([]);
+  const seasonSuspendedTeamsRef = useRef(new Set());
 
   // Keep gameModeRef in sync so startGame (empty-deps useCallback) always reads the latest mode.
   // Without this, a season game launch would see gameMode=null in startGame's closure and skip
@@ -236,7 +239,16 @@ export default function Home() {
               injuredPlayerNames = seasonInjuries.filter(i => i.teamKey === homeTeamKey || i.teamKey === awayTeamKey).map(i => i.playerName);
             } catch (e) { console.error('[injuries] Load failed:', e); }
           }
-          setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum, gameDate: gameDateStr, injuredPlayerNames });
+          // Load active manager suspensions - suspended managers can't argue or be ejected
+          let suspendedTeamKeys = new Set();
+          if (seasonId) {
+            try {
+              const suspensions = await loadActiveSuspensions(seasonId);
+              suspendedTeamKeys = new Set(suspensions.filter(s => s.teamKey === homeTeamKey || s.teamKey === awayTeamKey).map(s => s.teamKey));
+              seasonSuspendedTeamsRef.current = suspendedTeamKeys;
+            } catch (e) { console.error('[suspensions] Load failed:', e); }
+          }
+          setLineupPhase({ home: homeTeamKey, away: awayTeamKey, useDH: useDHFlag, parkTeam: homeTeamKey, weather, illPlayers, seasonUserTeam: userTeamParam, rotationState: rotState, gameDay: gameDayNum, gameDate: gameDateStr, injuredPlayerNames, suspendedTeamKeys: [...suspendedTeamKeys] });
           setLoadingScreen(false);
         } catch (launchError) {
           // Season launch failed (e.g. rotation state load error) — don't leave the user
@@ -383,6 +395,12 @@ export default function Home() {
       state.scratchedPlayers = [...scratchedPlayers];
       state.homeBullpen = state.homeBullpen.filter(p => !scratchedPlayers.includes(p.name));
       state.awayBullpen = state.awayBullpen.filter(p => !scratchedPlayers.includes(p.name));
+    }
+    // Season mode: set suspended manager flags so argument/ejection system skips them
+    if (gameModeRef.current === 'season') {
+      const suspended = seasonSuspendedTeamsRef.current;
+      if (suspended.has(home)) state._homeManagerSuspended = true;
+      if (suspended.has(away)) state._awayManagerSuspended = true;
     }
     // Session 23: Starter identity lock check. The actual mound pitcher must
     // match the locked starter from the launch path. Loud console.error so a
@@ -850,131 +868,10 @@ export default function Home() {
   }, [gameState]);
 
   const checkForArgumentLogic = useCallback((state) => {
-    if (!state || state.gameOver) return state;
-
-    // First: check for a real play-based argument
-    const severity = state.lastPlay ? getArgumentSeverity(state.lastPlay, state, state._argTopicCounts) : null;
-
-    if (!severity) {
-      // No play argument - maybe just a random dugout chirp
-      const chirp = maybeDugoutChirp(state);
-      if (chirp) {
-        // Chirps can come from either dugout
-        const battingSide = getBattingTeam(state);
-        const chirpSide = Math.random() < 0.5 ? battingSide : (battingSide === 'home' ? 'away' : 'home');
-        const chirpTeamKey = chirpSide === 'home' ? homeTeam : awayTeam;
-        const manager = MANAGERS[chirpTeamKey];
-        // Skip if this team's manager was ejected
-        const isEjected = chirpSide === 'home' ? state._homeManagerEjected : state._awayManagerEjected;
-        if (isEjected) return state;
-        const umpireObj = state.umpire || 'standard';
-        const chirpScore = state.score[chirpSide];
-        const oppScore = state.score[chirpSide === 'home' ? 'away' : 'home'];
-        const scoreDiff = oppScore - chirpScore;
-        const chirpResult = resolveArgument(chirp, manager?.personality || 5, umpireObj, state.inning, scoreDiff, chirpSide === 'home');
-        if (chirpResult) {
-          chirpResult.managerName = manager?.name || 'The Manager';
-          setArgumentResult({ ...chirpResult, homeTeamKey: chirpTeamKey });
-        }
-      }
-      return;
-    }
-
-    // Determine which team argues based on the play outcome
-    // Batting team argues when their guy got HBP (want retaliation/warnings)
-    // Fielding team argues when the call went against them (hits, walks)
-    const playType = state.lastPlay?.type;
-    const playText = state.lastPlay?.text || '';
-    const isHBP = playType === 'walk' && (playText.includes('hit by the pitch') || playText.includes('HBP'));
-    // HBP: batting team argues (their player got hit)
-    // FIELDING_ARGUES: fielding team argues (hit/walk/error went against them)
-    // OUT_ARGUES: batting team argues (their guy was called out on a disputed play)
-    // Fielding team argues when a hit/walk/error went against them
-    // Batting team argues when a strike/out call went against them
-    const FIELDING_ARGUES = isHBP ? [] : ['single', 'double', 'triple', 'homerun', 'walk', 'error', 'ball'];
-    const OUT_ARGUES = ['flyout', 'groundout', 'lineout', 'strikeout', 'popout', 'doubleplay', 'sacfly', 'strike', 'foul', 'caughtstealing'];
-    const battingSide = getBattingTeam(state);
-    const fieldingSide = battingSide === 'home' ? 'away' : 'home';
-    let arguingSide;
-    if (isHBP) arguingSide = battingSide;
-    else if (FIELDING_ARGUES.includes(playType)) arguingSide = fieldingSide;
-    else if (OUT_ARGUES.includes(playType)) arguingSide = battingSide;
-    else arguingSide = fieldingSide;
-    const arguingTeamKey = arguingSide === 'home' ? homeTeam : awayTeam;
-    const manager = MANAGERS[arguingTeamKey];
-
-    // Check if this team's manager was already ejected
-    const isManagerEjected = arguingSide === 'home' ? state._homeManagerEjected : state._awayManagerEjected;
-    if (isManagerEjected && severity.severity === 'chirp') return state;
-
-    const umpireObj = state.umpire || 'standard';
-    const arguingScore = state.score[arguingSide];
-    const opposingScore = state.score[arguingSide === 'home' ? 'away' : 'home'];
-    const scoreDiff = opposingScore - arguingScore;
-
-    const result = resolveArgument(
-      severity,
-      manager?.personality || 5,
-      umpireObj,
-      state.inning,
-      scoreDiff,
-      arguingSide === 'home',
-      arguingSide === fieldingSide  // isFieldingTeamArguing
-    );
-
-    if (!result) return state;
-
-    // Use coach name if manager was ejected
-    if (isManagerEjected) {
-      result.managerName = manager?.coach || 'The Acting Manager';
-      result.isActingManager = true;
-      if (result.escaLevel > 2) result.escaLevel = 2;
-      result.ejected = false;
-    } else {
-      result.managerName = manager?.name || 'The Manager';
-      result.isActingManager = false;
-    }
-
-    // Track topic usage
-    if (severity.topicKey) {
-      const counts = { ...(state._argTopicCounts || {}) };
-      counts[severity.topicKey] = (counts[severity.topicKey] || 0) + 1;
-      state = { ...state, _argTopicCounts: counts };
-    }
-
-    // Track argument for first_argument achievement
-    unlockAchievement('first_argument');
-
-    // If ejected, log it and check achievements
-    if (result.ejected && result.whoArgues === 'manager') {
-      const cmt = getEjectionCommentary(arguingTeamKey, result);
-      const ejectedKey = arguingSide === 'home' ? '_homeManagerEjected' : '_awayManagerEjected';
-      state = {
-        ...state,
-        log: [...state.log, { type: 'ejection', text: `🟥 ${cmt}` }],
-        _managerEjected: true,
-        _ejectedTeam: arguingSide,
-        [ejectedKey]: true,
-      };
-      setEjectionCount(c => {
-        const newCount = c + 1;
-        unlockAchievement('youre_gone');
-        if (newCount >= 10) unlockAchievement('frequent_flyer');
-        if (newCount >= 25) unlockAchievement('billy_martin');
-        if (result.dirtKick) unlockAchievement('dirt_kicker');
-        if (result.basePickup) unlockAchievement('base_thief');
-        if (result.benchEjection) unlockAchievement('bench_tossed');
-        return newCount;
-      });
-    } else {
-      // Non-ejection argument - log it
-      const cmt = getEjectionCommentary(arguingTeamKey, result);
-      state = { ...state, log: [...state.log, { type: 'info', text: `🗣️ ${cmt}` }] };
-    }
-
-    // Show the animation - use the arguing team's key for correct commentary
-    setArgumentResult({ ...result, homeTeamKey: arguingTeamKey });
+    return checkArgumentLogic(state, { homeTeam, awayTeam, setArgumentResult, setEjectionCount });
   }, [homeTeam, awayTeam]);
+
+
 
   // ── Game-over achievement processing (called from effect AND play handlers) ──
   const processGameOver = useCallback((state) => {
@@ -1101,6 +998,12 @@ export default function Home() {
               await recordInjury(ctx.seasonId, inj.teamKey, inj.playerName, '?', inj.source, ctx.gameDate, ctx.gameDay);
             }
             seasonInjuriesRef.current = [];
+          }
+          // Roll for manager suspension after an ejection (Season Mode only)
+          if (state._seasonEjection && ctx.seasonId) {
+            const ej = state._seasonEjection;
+            const mgr = MANAGERS[ej.teamKey];
+            await recordSuspension(ctx.seasonId, ej.teamKey, mgr?.name, ej.escaLevel, ej.reason, ctx.gameDate, ctx.gameDay);
           }
           if (ctx.seasonId) await maybeAdvanceDay({ id: ctx.seasonId, currentGameDay: ctx.gameDay });
         } catch (e) {
@@ -1837,6 +1740,7 @@ export default function Home() {
     prevGameOver.current = false;
     seasonContextRef.current = null;
     seasonRotationStateRef.current = {};
+    seasonSuspendedTeamsRef.current = new Set();
     prevArgPlay.current = null;
     prevLogLength.current = 0;
     prevInning.current = null;
