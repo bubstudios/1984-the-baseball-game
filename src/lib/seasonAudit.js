@@ -216,12 +216,13 @@ function analyzeAuditResults(games, rotationState) {
   const events = analyzeEvents(games, allFlags);
   const outliers = analyzeOutliers(games, allFlags);
   const scoring = analyzeScoringDistribution(games, allFlags);
+  const forceDecisions = analyzeForceDecisions(games, allFlags);
 
   return {
     daysSimulated: games.length > 0 ? games[games.length - 1].day : 0,
     totalGames: games.length,
     gamesWithErrors: games.filter(g => g.error || g.validationFailed).length,
-    categories: { workload, boxScore, starters, bullpen, offense, buntSqueeze, events, outliers, scoring },
+    categories: { workload, boxScore, starters, bullpen, offense, buntSqueeze, events, outliers, scoring, forceDecisions },
     flags: allFlags,
     flagCounts: {
       critical: allFlags.filter(f => f.severity === 'critical').length,
@@ -878,4 +879,30 @@ function analyzeScoringDistribution(games, flags) {
   }
 
   return { distribution: buckets, percentages: pct, shutouts, bothTeamsThreeOrFewer, totalTeamGames };
+}
+
+// ── 9. Bases-Loaded Force Decision Audit ──
+// Flags bad defensive force-play decisions: force at 3rd with bases loaded
+// (retiring runner from 2nd while allowing runner from 3rd to score).
+// With the hard rule in swingResolver.js, this should never fire - it's a
+// safety net to detect regressions.
+function analyzeForceDecisions(games, flags) {
+  let badForceCount = 0;
+
+  for (const g of games) {
+    if (g.error || g.validationFailed) continue;
+    for (const entry of (g.log || [])) {
+      if (entry.type !== 'fc') continue;
+      const t = (entry.text || '').toLowerCase();
+      // Bad force: "force out at 3rd" + "scores" = runner from 3rd scored
+      // while defense chose to retire runner from 2nd going to 3rd.
+      if (t.includes('force out at 3rd') && t.includes('scores')) {
+        badForceCount++;
+        addFlag(flags, 'critical', 'Force Decision',
+          `Bad bases-loaded force at 3rd: "${(entry.text || '').substring(0, 80)}" - runner from 3rd scored while defense retired runner from 2nd`, g);
+      }
+    }
+  }
+
+  return { badForceCount };
 }

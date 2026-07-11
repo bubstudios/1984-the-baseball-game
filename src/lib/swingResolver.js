@@ -706,7 +706,11 @@ export function resolveSwing(state, swingType, pitch) {
           const r1runner = r1, r2runner = r2;
           if (r1runner && r2runner && state.outs < 2) {
             const r3 = state.bases[2];
-            const forceAtThird = fielderPos === '3B' || (fielderPos === 'SP' && Math.random() < 0.4);
+            // Hard rule: never force at 3rd on bases-loaded grounders. Retiring the
+            // runner from 2nd while allowing the runner from 3rd to score is the worst
+            // available force out. Close-game situations are already handled by
+            // isCriticalRunSituation (force at home / home-to-first DP) above.
+            const forceAtThird = !r3 && (fielderPos === '3B' || (fielderPos === 'SP' && Math.random() < 0.4));
             if (forceAtThird) {
               if (r3) { chargeRun(state, r3); batter.gameStats.rbi++; }
               state.bases[2] = null; state.bases[1] = r1runner;

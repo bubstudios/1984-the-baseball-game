@@ -19,6 +19,7 @@ const CATEGORY_LABELS = {
   events: { label: '6. Game Event Integrity', key: 'events' },
   outliers: { label: '7. Score Outliers', key: 'outliers' },
   scoring: { label: '8. Scoring Distribution', key: 'scoring' },
+  forceDecisions: { label: '9. Force-Play Decisions', key: 'forceDecisions' },
 };
 
 function StatRow({ label, value, status }) {
@@ -127,6 +128,7 @@ export default function SeasonAuditReport() {
       if (cat === 'buntSqueeze') return flagCat.includes('bunt') || flagCat.includes('squeeze');
       if (cat === 'events') return flagCat.includes('event');
       if (cat === 'outliers') return flagCat.includes('outlier');
+      if (cat === 'forceDecisions') return flagCat.includes('force');
       return false;
     });
   };

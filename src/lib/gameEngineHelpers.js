@@ -329,11 +329,15 @@ export function isWalkOff(state) {
 export function isCriticalRunSituation(state) {
   if (!state.bases[2]) return false;
   if (state.outs >= 2) return false;
-  if (state.inning < 9) return false;
   const battingTeam = getBattingTeam(state);
   const battingScore = state.score[battingTeam];
   const fieldingScore = state.score[battingTeam === 'home' ? 'away' : 'home'];
-  return (battingScore + 1) >= fieldingScore;
+  // Tying or go-ahead run on 3rd (any inning)
+  if ((battingScore + 1) >= fieldingScore) return true;
+  // Close game: 7th inning or later, score margin <= 3
+  const margin = Math.abs(battingScore - fieldingScore);
+  if (state.inning >= 7 && margin <= 3) return true;
+  return false;
 }
 
 export function getControllingTeam(state, context) {
