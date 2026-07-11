@@ -16,6 +16,7 @@ import ThankYou from '@/pages/ThankYou';
 import SeasonDashboard from '@/pages/SeasonDashboard';
 import SeasonTeamSelect from '@/pages/SeasonTeamSelect';
 import SeasonAuditReport from '@/components/season/SeasonAuditReport';
+import FullSeasonSim from '@/pages/FullSeasonSim';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -46,7 +47,7 @@ const AuthenticatedApp = () => {
 
   // Game gate — single shared login (season routes + season game launch bypass for preview)
   const isSeasonRoute = window.location.pathname.startsWith('/season');
-  const isAuditRoute = window.location.pathname === '/audit';
+  const isAuditRoute = window.location.pathname === '/audit' || window.location.pathname === '/full-season-sim';
   const hasSeasonGameParam = new URLSearchParams(window.location.search).has('seasonGame');
   if (!gateAuthed && !isSeasonRoute && !isAuditRoute && !hasSeasonGameParam) {
     return <GateLogin />;
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
       <Route path="/season-setup" element={<SeasonTeamSelect />} />
       <Route path="/season" element={<SeasonDashboard />} />
       <Route path="/audit" element={<SeasonAuditReport />} />
+      <Route path="/full-season-sim" element={<FullSeasonSim />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
