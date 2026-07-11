@@ -348,8 +348,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
   const cpuBattingSide = newState.halfInning === 'top' ? 'away' : 'home';
   const cpuPitchingSide = newState.halfInning === 'top' ? 'home' : 'away';
   if (cpuPitchingSide !== cpuSide) {
-    // All-Star Game: rotate position players when CPU is batting
-    if (isAllStarGame(newState) && cpuBattingSide === cpuSide) {
+    // All-Star Game: rotate position players when CPU is batting.
+    // In headless mode (simmed ASG), both sides are CPU-controlled, so
+    // always run position rotation for the batting side. In user-played
+    // ASG, only the CPU's side gets auto-subs (user controls their own team).
+    if (isAllStarGame(newState) && (newState._headlessMode || cpuBattingSide === cpuSide)) {
       return cpuAllStarPositionRotation(newState);
     }
     return newState;

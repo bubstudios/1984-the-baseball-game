@@ -43,10 +43,63 @@ export function getAllStarPitcherStatus(pitcher, isStartingPitcher) {
   };
 }
 
-// CPU All-Star position player rotation.
-// From inning 4+, pinch-hit for starting position players to get bench
-// players into the game (showcase the full roster). Staggered: 1 sub per
-// inning early, 2 per inning from inning 6+. Catcher subbed by inning 6.
+// ── Position compatibility ──
+// Determines whether a player with playerPos can legally play targetPos.
+// Catcher is exclusive. Corner IF swap, middle IF swap, OF swap.
+const CORNER_INFIELD = new Set(['1B', '3B']);
+const MIDDLE_INFIELD = new Set(['2B', 'SS']);
+const OUTFIELD = new Set(['LF', 'CF', 'RF']);
+
+function canPlayPosition(playerPos, targetPos) {
+  if (!playerPos || !targetPos) return false;
+  if (playerPos === targetPos) return true;
+  if (targetPos === 'C' || playerPos === 'C') return false;
+  if (CORNER_INFIELD.has(playerPos) && CORNER_INFIELD.has(targetPos)) return true;
+  if (MIDDLE_INFIELD.has(playerPos) && MIDDLE_INFIELD.has(targetPos)) return true;
+  if (OUTFIELD.has(playerPos) && OUTFIELD.has(targetPos)) return true;
+  return false;
+}
+
+// Find the best available bench player for a target position.
+// Prioritizes exact position match, then falls back to compatible positions.
+// When protectCatchers is true, C-positioned bench players are reserved for
+// catching duty only (not used at other positions in early waves).
+function findBenchForPosition(bench, targetPos, usedReplacements, protectCatchers) {
+  const candidates = bench.filter(p =>
+    !usedReplacements.has(p.name) && canPlayPosition(p.pos, targetPos)
+  );
+  if (candidates.length === 0) return null;
+
+  let pool = candidates;
+  if (protectCatchers) {
+    const nonCatchers = candidates.filter(p => p.pos !== 'C');
+    if (nonCatchers.length > 0) pool = nonCatchers;
+  }
+
+  pool.sort((a, b) => {
+    const aMatch = a.pos === targetPos ? 1 : 0;
+    const bMatch = b.pos === targetPos ? 1 : 0;
+    if (aMatch !== bMatch) return bMatch - aMatch;
+    return (b.contact + b.power) - (a.contact + a.power);
+  });
+  return pool[0];
+}
+
+// CPU All-Star Game showcase position player rotation.
+//
+// Wave-based timing per builder spec:
+//   Wave 1 (inning 4 - end of 3rd): replace 3 starting position players
+//   Wave 2 (inning 6 - end of 5th): replace all remaining starters (where
+//          a legal bench replacement exists)
+//   Wave 3 (inning 8 - end of 7th): optional cleanup of any remaining starters
+//
+// Rules enforced:
+//   - Starters should not remain after inning 6 unless no legal replacement
+//   - Catcher protection: delay C substitution to wave 2 (don't burn backup C early)
+//   - Keep at least 1 emergency bench reserve in wave 1
+//   - No re-entry (enforced by usedNames tracking)
+//   - Not every bench player has to appear
+//   - Position legality: replacements must be able to play the target position
 export function cpuAllStarPositionRotation(state) {
   const newState = deepCopyState(state);
   if (newState.gameOver) return newState;
@@ -58,62 +111,112 @@ export function cpuAllStarPositionRotation(state) {
   const battingSide = newState.halfInning === 'top' ? 'away' : 'home';
   const battingTeamKey = battingSide === 'home' ? newState.homeTeam : newState.awayTeam;
   const teamData = TEAMS[battingTeamKey];
-  if (!teamData) return newState;
+  if (!teamData || !teamData._isAllStarTeam) return newState;
+
+  // Track which sub waves have been applied for this side (persisted on state)
+  const waveKey = battingSide === 'home' ? '_asgSubWaveHome' : '_asgSubWaveAway';
+  if (!newState[waveKey]) newState[waveKey] = {};
+  const waves = newState[waveKey];
+
+  // Determine which wave to apply based on inning
+  let waveName = null;
+  let targetCount = 0;
+  let reserveCount = 0;
+  if (newState.inning >= 4 && !waves.wave1) {
+    waveName = 'wave1';
+    targetCount = 3;
+    reserveCount = 1; // keep one emergency reserve
+  } else if (newState.inning >= 6 && !waves.wave2) {
+    waveName = 'wave2';
+    targetCount = 99; // all remaining starters
+    reserveCount = 0;
+  } else if (newState.inning >= 8 && !waves.wave3) {
+    waveName = 'wave3';
+    targetCount = 99; // optional cleanup
+    reserveCount = 0;
+  } else {
+    return newState; // no sub wave due
+  }
+
+  // Mark wave as applied immediately (even if no subs are possible, don't retry)
+  waves[waveName] = true;
 
   const battingLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
-  const batterIdx = battingSide === 'home' ? newState.homeBatterIndex : newState.awayBatterIndex;
-  const batter = battingLineup[batterIdx % battingLineup.length];
-  if (!batter) return newState;
+  const benchUsedKey = battingSide === 'home' ? 'homeBenchUsed' : 'awayBenchUsed';
+  const histKey = battingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
 
-  // Skip pitchers (handled by pitcher rotation logic)
-  if (['SP', 'RP', 'CL'].includes(batter.assignedPos || batter.pos)) return newState;
-
-  // Check if this batter is a starter (not already subbed via bench)
-  const benchUsed = battingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || []);
-  const isAlreadySubbed = benchUsed.some(p => p.name === batter.name);
-  if (isAlreadySubbed) return newState;
-
-  // Get available bench
-  const fullBench = teamData.bench || [];
+  // Track all used names for no-re-entry enforcement
   const usedNames = new Set();
-  [...newState.homeLineup, ...newState.awayLineup].forEach(p => usedNames.add(p.name));
-  benchUsed.forEach(p => usedNames.add(p.name));
-  (battingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || [])).forEach(p => usedNames.add(p.name));
-  const availableBench = fullBench.filter(p => !usedNames.has(p.name));
+  battingLineup.forEach(p => usedNames.add(p.name));
+  (newState[benchUsedKey] || []).forEach(p => usedNames.add(p.name));
+  (newState[histKey] || []).forEach(p => usedNames.add(p.name));
+
+  const fullBench = teamData.bench || [];
+  const benchNames = new Set(fullBench.map(p => p.name));
+  const availableBench = fullBench.filter(p =>
+    !usedNames.has(p.name) && !['SP', 'RP', 'CL'].includes(p.pos)
+  );
 
   if (availableBench.length === 0) return newState;
 
-  // Stagger substitutions: 1 per inning early, 2 from inning 6+
-  const subbedThisInning = battingLineup.filter(p => p._allStarSubbed).length;
-  const maxSubs = newState.inning >= 6 ? 2 : 1;
-  if (subbedThisInning >= maxSubs) return newState;
+  // Identify starters to replace: original starters (not bench players who
+  // already entered), not pitchers, and subject to catcher protection.
+  const startersToReplace = [];
+  for (let i = 0; i < battingLineup.length; i++) {
+    const p = battingLineup[i];
+    const pos = p.assignedPos || p.pos;
+    if (['SP', 'RP', 'CL'].includes(pos)) continue; // skip pitchers
+    if (benchNames.has(p.name)) continue; // already replaced by a bench player
+    // Catcher protection: delay C sub to wave 2 so the backup catcher
+    // isn't burned too early.
+    if (pos === 'C' && waveName === 'wave1') continue;
+    startersToReplace.push({ index: i, player: p, pos });
+  }
 
-  // Pick best available bench player (highest contact+power)
-  const replacement = [...availableBench].sort((a, b) => (b.contact + b.power) - (a.contact + a.power))[0];
+  if (startersToReplace.length === 0) return newState;
 
-  // Swap the batter in the lineup
-  const slot = batterIdx % battingLineup.length;
-  const oldBatter = { ...battingLineup[slot] };
-  battingLineup[slot] = {
-    ...replacement,
-    order: oldBatter.order,
-    assignedPos: oldBatter.assignedPos || oldBatter.pos,
-    pos: oldBatter.assignedPos || oldBatter.pos,
-    gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
-    _allStarSubbed: true,
-  };
+  // Determine how many subs to make this wave
+  let subsToMake = Math.min(targetCount, startersToReplace.length);
+  const maxFromBench = availableBench.length - reserveCount;
+  subsToMake = Math.min(subsToMake, Math.max(0, maxFromBench));
+  if (subsToMake <= 0) return newState;
 
-  // Track bench usage
-  const benchKey = battingSide === 'home' ? 'homeBenchUsed' : 'awayBenchUsed';
-  if (!newState[benchKey]) newState[benchKey] = [];
-  newState[benchKey].push(replacement);
+  // Sort: replace catcher last to protect catching depth
+  startersToReplace.sort((a, b) => {
+    if (a.pos === 'C' && b.pos !== 'C') return 1;
+    if (b.pos === 'C' && a.pos !== 'C') return -1;
+    return 0;
+  });
 
-  // Track history (old batter goes to history)
-  const histKey = battingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
-  if (!newState[histKey]) newState[histKey] = [];
-  newState[histKey].push(oldBatter);
+  // Execute substitutions
+  let subsMade = 0;
+  const usedReplacements = new Set();
+  const protectCatchers = waveName === 'wave1';
 
-  newState.log.push({ type: 'info', text: `* ASG: ${replacement.name} enters for ${oldBatter.name}` });
+  for (const starter of startersToReplace) {
+    if (subsMade >= subsToMake) break;
+
+    const replacement = findBenchForPosition(availableBench, starter.pos, usedReplacements, protectCatchers);
+    if (!replacement) continue;
+
+    const slot = starter.index;
+    const oldBatter = { ...battingLineup[slot] };
+    battingLineup[slot] = {
+      ...replacement,
+      order: oldBatter.order,
+      assignedPos: starter.pos,
+      pos: starter.pos,
+      gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
+      _allStarSubbed: true,
+    };
+
+    newState[benchUsedKey] = [...(newState[benchUsedKey] || []), replacement];
+    newState[histKey] = [...(newState[histKey] || []), oldBatter];
+    usedReplacements.add(replacement.name);
+    subsMade++;
+
+    newState.log.push({ type: 'info', text: `* ASG: ${replacement.name} enters for ${oldBatter.name} (${starter.pos})` });
+  }
 
   return newState;
 }
