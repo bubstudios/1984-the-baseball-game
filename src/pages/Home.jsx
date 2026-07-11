@@ -38,6 +38,7 @@ import { rollBallparkEvent, resetBallparkEvents } from '@/lib/ballparkEvents';
 import { trackGrooverSighting } from '@/lib/achievements';
 import useRobotAnnouncer, { unlockRobotAnnouncer } from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
+import SeasonAchievementPopup from '@/components/season/SeasonAchievementPopup';
 import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
 import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement, trackHomeRunDistance, trackGameRecords, trackPlayersUsed, trackTimePlayed } from '@/lib/achievements';
@@ -2477,6 +2478,8 @@ export default function Home() {
           tiredRelievers={gameState._tiredRelievers || {}}
         />
       )}
+
+      <SeasonAchievementPopup />
     </div>
     </ErrorBoundary>
   );

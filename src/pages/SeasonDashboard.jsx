@@ -47,6 +47,9 @@ import DisciplineDebugPanel from '@/components/season/DisciplineDebugPanel';
 import { loadActiveSuspensions, decrementTeamSuspensions, getManagerStatusForTeam } from '@/lib/managerSuspension';
 import { loadActivePlayerSuspensions, buildSuspendedPlayerSet, decrementPlayerSuspensions, recordPlayerSuspension } from '@/lib/playerDiscipline';
 import { forcePitcherHBPEjection, forceBatterArguesStrikes, forceChargingMound, forceBenchClearingBrawl, applyPlayerEjection, applyMultipleEjections, getGameEjections } from '@/lib/playerEjectionEngine';
+import SeasonAchievementPopup from '@/components/season/SeasonAchievementPopup';
+import AchievementsGallery from '@/components/season/AchievementsGallery';
+import { evaluateGameComplete, evaluateSeasonEvent, initAchievementCache } from '@/lib/seasonAchievements/achievementEngine';
 
 const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
@@ -89,6 +92,7 @@ export default function SeasonDashboard() {
   const [activePlayerSuspensions, setActivePlayerSuspensions] = useState([]);
   const [showInjuryReport, setShowInjuryReport] = useState(false);
   const [showDebugDiscipline, setShowDebugDiscipline] = useState(false);
+  const [showAchievements, setShowAchievements] = useState(false);
   const simulatingRef = useRef(false);
   const lastAdvanceDayRef = useRef(null);
   const pendingUserTeam = location.state?.userTeam || null;
@@ -126,6 +130,17 @@ export default function SeasonDashboard() {
       );
       setGameResults(results);
 
+      // Evaluate achievements for recent game results (catches user games after returning from Home.jsx)
+      try {
+        await initAchievementCache();
+        for (const gr of results.slice(0, 10)) {
+          const involvesUser = gr.homeTeam === currentSeason.userTeam || gr.awayTeam === currentSeason.userTeam;
+          if (involvesUser) {
+            await evaluateGameComplete(currentSeason.id, currentSeason.userTeam, gr, null, gr.isUserGame, currentSeason, { silent: !gr.isUserGame });
+          }
+        }
+      } catch (e) { /* non-fatal */ }
+
       const userGame = await getCurrentUserGame(currentSeason);
       setCurrentUserGame(userGame);
 
@@ -150,9 +165,32 @@ export default function SeasonDashboard() {
         setUserGameNumber(Math.min(162, userGamesPlayed + 1));
       } catch (e) { /* non-fatal */ }
 
+      let seasonStandings = null;
       try {
         const allResults = await base44.entities.GameResult.filter({ seasonId: currentSeason.id }, 'gameDay', 2106);
-        setStandingsData(deriveStandings(allResults));
+        seasonStandings = deriveStandings(allResults);
+        setStandingsData(seasonStandings);
+      } catch (e) { /* non-fatal */ }
+
+      // Evaluate season milestone achievements (progress, team record, allstar, trade, awards, postseason, season_complete)
+      try {
+        const userLeague = getLeague(currentSeason.userTeam);
+        if (currentSeason.allStarBreakPhase) {
+          await evaluateSeasonEvent(currentSeason.id, currentSeason.userTeam, currentSeason, 'allstar', { userLeague });
+        }
+        if (currentSeason.tradeDeadlinePhase) {
+          await evaluateSeasonEvent(currentSeason.id, currentSeason.userTeam, currentSeason, 'trade', {});
+        }
+        if (currentSeason.seasonPhase === 'REGULAR_SEASON_COMPLETE' || currentSeason.seasonPhase === 'AWARDS_REVEALED') {
+          await evaluateSeasonEvent(currentSeason.id, currentSeason.userTeam, currentSeason, 'awards', { standings: seasonStandings });
+        }
+        if (currentSeason.seasonPhase && !['REGULAR_SEASON', 'REGULAR_SEASON_COMPLETE', 'AWARDS_REVEALED'].includes(currentSeason.seasonPhase)) {
+          await evaluateSeasonEvent(currentSeason.id, currentSeason.userTeam, currentSeason, 'postseason', {});
+        }
+        if (currentSeason.seasonPhase === 'SEASON_COMPLETE') {
+          await evaluateSeasonEvent(currentSeason.id, currentSeason.userTeam, currentSeason, 'season_complete', { standings: seasonStandings });
+        }
+        await evaluateSeasonEvent(currentSeason.id, currentSeason.userTeam, currentSeason, 'milestone', { standings: seasonStandings, userLeague });
       } catch (e) { /* non-fatal */ }
 
       // Load active injuries for the season (persistent injury layer)
@@ -1587,6 +1625,9 @@ export default function SeasonDashboard() {
             <Button onClick={() => setShowInjuryReport(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating || activeInjuries.length === 0}>
               <HeartPulse className="w-3 h-3" /> DL
             </Button>
+            <Button onClick={() => setShowAchievements(true)} variant="outline" size="sm" className="gap-1 text-[10px]" disabled={simulating}>
+              <Trophy className="w-3 h-3" /> Awards
+            </Button>
             {isDebug && (
               <Button onClick={() => setShowDebugDiscipline(true)} variant="outline" size="sm" className="gap-1 text-[10px] text-amber-400" disabled={simulating}>
                 <Zap className="w-3 h-3" /> Discipline
@@ -1913,6 +1954,12 @@ export default function SeasonDashboard() {
           activePlayerSuspensions={activePlayerSuspensions}
           onClose={() => setShowDebugDiscipline(false)}
         />
+      )}
+
+      <SeasonAchievementPopup />
+
+      {showAchievements && (
+        <AchievementsGallery onClose={() => setShowAchievements(false)} />
       )}
     </div>
   );

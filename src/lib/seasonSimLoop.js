@@ -12,6 +12,7 @@ import {
 import { loadActiveInjuries, buildInjuredRoster, runDailyRecovery, resolveStarterSkippingInjuries, getInjuredPitcherNames, recordInjury } from './injuryPersistence';
 import { decrementTeamSuspensions } from './managerSuspension';
 import { loadActivePlayerSuspensions, buildSuspendedPlayerSet, decrementPlayerSuspensions } from './playerDiscipline';
+import { evaluateGameComplete } from './seasonAchievements/achievementEngine';
 
 /**
  * Simulate all non-final games from the current day up to (but not including) targetGameDay.
@@ -135,10 +136,18 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
         stadium: TEAMS[homeTeam]?.stadium || null,
         innings: result.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],
       });
-      await new Promise(r => setTimeout(r, 0));
-    }
 
-    await commitPlayerStats(seasonObj.id, allBatting, allPitching);
+      // Evaluate achievements for games involving the user's team (silent during batch sim)
+      if (homeTeam === seasonObj.userTeam || awayTeam === seasonObj.userTeam) {
+        try {
+          await evaluateGameComplete(seasonObj.id, seasonObj.userTeam, result, finalState, g.isUserGame, seasonObj, { silent: true });
+        } catch (e) { /* non-fatal — never break sim */ }
+      }
+
+      await new Promise(r => setTimeout(r, 0));
+      }
+
+      await commitPlayerStats(seasonObj.id, allBatting, allPitching);
     await persistRotationState(seasonObj.id, rotState);
 
     if (resultRows.length > 0) {

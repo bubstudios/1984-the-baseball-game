@@ -1,0 +1,61 @@
+{
+  "name": "SeasonAchievement",
+  "type": "object",
+  "properties": {
+    "seasonId": {
+      "type": "string",
+      "description": "Reference to Season entity"
+    },
+    "achievementId": {
+      "type": "string",
+      "description": "Unique achievement identifier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Achievement title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Achievement description"
+    },
+    "category": {
+      "type": "string",
+      "description": "Achievement category (progress, team, hitting, pitching, defense, drama, discipline, allstar, trade, awards, postseason, mets, hidden)"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "Common",
+        "Uncommon",
+        "Rare",
+        "Epic",
+        "Legendary"
+      ],
+      "default": "Common",
+      "description": "Achievement rarity tier"
+    },
+    "unlockedAtDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the achievement was unlocked"
+    },
+    "teamKey": {
+      "type": "string",
+      "description": "Team key the user was managing when unlocked"
+    },
+    "playerName": {
+      "type": "string",
+      "description": "Player involved (optional)"
+    },
+    "gameId": {
+      "type": "string",
+      "description": "GameResult ID if unlocked during a game (optional)"
+    }
+  },
+  "required": [
+    "seasonId",
+    "achievementId",
+    "title",
+    "category"
+  ]
+}
