@@ -169,6 +169,46 @@ export function validateGameBoxScore(state, boxResult) {
     }
   }
 
+  // 13. BOX_SCORE_RHE_MISSING: top-line R/H/E must be present and consistent
+  const homeBattingR = (boxResult.batting || [])
+    .filter(b => b.teamKey === state.homeTeam)
+    .reduce((s, b) => s + (b.r || 0), 0);
+  const awayBattingR = (boxResult.batting || [])
+    .filter(b => b.teamKey === state.awayTeam)
+    .reduce((s, b) => s + (b.r || 0), 0);
+  if (homeBattingR !== state.score.home) {
+    errors.push(`[VALIDATOR] BOX_SCORE_RHE_MISSING: home R=${state.score.home} but batting R total=${homeBattingR}`);
+  }
+  if (awayBattingR !== state.score.away) {
+    errors.push(`[VALIDATOR] BOX_SCORE_RHE_MISSING: away R=${state.score.away} but batting R total=${awayBattingR}`);
+  }
+
+  // 14. MISSING_PITCHER_APPEARANCE: any pitcher with activity must be in the box score
+  for (const side of ['home', 'away']) {
+    const teamKey = side === 'home' ? state.homeTeam : state.awayTeam;
+    for (const p of getValidatorPitcherList(state, side)) {
+      const gs = p.gameStats || {};
+      const hasActivity = (gs.pitches || 0) > 0 || (gs.outs || 0) > 0 || (gs.so || 0) > 0;
+      if (hasActivity) {
+        const inBox = (boxResult.pitching || []).some(bp => bp.name === p.name && bp.teamKey === teamKey);
+        if (!inBox) {
+          errors.push(`[VALIDATOR] MISSING_PITCHER_APPEARANCE: ${p.name} (${teamKey}) has activity (outs=${gs.outs||0}, pitches=${gs.pitches||0}, K=${gs.so||0}) but is missing from the pitching box score`);
+        }
+      }
+    }
+  }
+
+  // 15. WLS_TBD_AFTER_FINAL: W/L must not be null/TBD after game final
+  if (state.gameOver) {
+    const decisions = boxResult.decisions || {};
+    if (!decisions.winner) {
+      errors.push(`[VALIDATOR] WLS_TBD_AFTER_FINAL: winning pitcher is null/TBD after game final`);
+    }
+    if (!decisions.loser) {
+      errors.push(`[VALIDATOR] WLS_TBD_AFTER_FINAL: losing pitcher is null/TBD after game final`);
+    }
+  }
+
   if (errors.length > 0) {
     console.error('[BoxScoreValidator] VALIDATION FAILED:');
     errors.forEach(e => console.error(e));
@@ -218,4 +258,36 @@ export function validateGameBlocking(state, boxResult) {
   if (!result.valid) {
     throw new Error(`Game validation failed: ${result.errors.join('; ')}`);
   }
+}
+
+// Validator's pitcher list: any player from history or current with pitching activity.
+// Mirrors the fixed getPitcherList in seasonEngine.js - includes pitchers by
+// activity, not just by pos tag, to catch missing appearances.
+function getValidatorPitcherList(state, side) {
+  const current = side === 'home' ? state.homePitcher : state.awayPitcher;
+  const history = side === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
+  const all = [...history];
+  if (current && !all.find(p => p.name === current.name)) {
+    all.push(current);
+  }
+  // Deduplicate by name, merging pitching activity stats
+  const seen = new Map();
+  const deduped = [];
+  for (const p of all) {
+    if (!p || !p.name) continue;
+    if (seen.has(p.name)) {
+      const existing = seen.get(p.name);
+      const eg = existing.gameStats || {}, pg = p.gameStats || {};
+      existing.gameStats = {
+        ...eg,
+        outs: (eg.outs || 0) + (pg.outs || 0),
+        pitches: (eg.pitches || 0) + (pg.pitches || 0),
+        so: (eg.so || 0) + (pg.so || 0),
+      };
+    } else {
+      seen.set(p.name, p);
+      deduped.push(p);
+    }
+  }
+  return deduped;
 }

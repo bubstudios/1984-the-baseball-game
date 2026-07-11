@@ -561,7 +561,7 @@ export function resolveSwing(state, swingType, pitch) {
     const isGrounder = !isFlyBall;
     if (isGrounder) {
       const fielder = defenders[out.pos];
-      if (fielder) { const adjF = getAdjustedPlayer(fielder); if (Math.random() < getErrorChance(fielder.name) * adjF.errorMult * errorWx) { batter.gameStats.ab++; advanceRunners(state, 1, batter, false); const errText = `${fielder.name} ${pickLine(ERROR_LINES)} ${batter.name} reaches on an error!`; state.log.push({ type: 'error', text: errText }); state.lastPlay = { type: 'error', text: errText }; state.balls = 0; state.strikes = 0; advanceBatter(state); return; } }
+      if (fielder) { const adjF = getAdjustedPlayer(fielder); if (Math.random() < getErrorChance(fielder.name) * adjF.errorMult * errorWx) { batter.gameStats.ab++; advanceRunners(state, 1, batter, false); const errText = `${fielder.name} ${pickLine(ERROR_LINES)} ${batter.name} reaches on an error!`; state.log.push({ type: 'error', text: errText }); state.lastPlay = { type: 'error', text: errText }; if (state.halfInning === 'top') state.homeErrors = (state.homeErrors || 0) + 1; else state.awayErrors = (state.awayErrors || 0) + 1; state.balls = 0; state.strikes = 0; advanceBatter(state); return; } }
     }
     if (isGrounder) {
       const alignmentMod = apply_alignment_modifiers(state._defensiveAlignment, { type: 'grounder', location: out.pos, play_at_plate_available: !!state.bases[2] }, {});

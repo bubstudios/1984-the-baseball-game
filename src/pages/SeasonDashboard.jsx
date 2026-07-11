@@ -184,6 +184,16 @@ export default function SeasonDashboard() {
       const resultRows = [];
       const allBatting = [];
       const allPitching = [];
+      // Season totals accumulator: load once, apply per-game deltas so each
+      // game's boxScore.seasonTotals reflects the snapshot AFTER that game.
+      const existingStats = await base44.entities.PlayerStats.filter({ seasonId: season.id }, null, 1500);
+      const statsAccum = {};
+      for (const s of existingStats) {
+        statsAccum[`${s.team}|${s.playerName}`] = {
+          hr: s.homeRuns || 0, doubles: s.doubles || 0,
+          triples: s.triples || 0, rbi: s.rbi || 0,
+        };
+      }
       // Session 23: SINGLE finalization path. No score-only fallback exists.
       // Every Season game builds a full record (box score + W/L). A hard failure
       // in any game throws and stops the entire day from committing.
@@ -251,11 +261,29 @@ export default function SeasonDashboard() {
         const homeHits = result.batting.filter(b => b.teamKey === homeTeam).reduce((s, b) => s + b.h, 0);
         const awayHits = result.batting.filter(b => b.teamKey === awayTeam).reduce((s, b) => s + b.h, 0);
 
+        // Build season totals snapshot for players with HR/2B/3B/RBI in this game.
+        // Apply this game's deltas to the accumulator FIRST, then snapshot, so
+        // the parenthetical number reflects the updated season total after this game.
+        const gameSeasonTotals = {};
+        for (const b of result.batting) {
+          const key = `${b.teamKey}|${b.name}`;
+          if (!statsAccum[key]) statsAccum[key] = { hr: 0, doubles: 0, triples: 0, rbi: 0 };
+          statsAccum[key].hr += b.hr || 0;
+          statsAccum[key].doubles += b.doubles || 0;
+          statsAccum[key].triples += b.triples || 0;
+          statsAccum[key].rbi += b.rbi || 0;
+          if ((b.hr || 0) > 0 || (b.doubles || 0) > 0 || (b.triples || 0) > 0 || (b.rbi || 0) > 0) {
+            gameSeasonTotals[b.playerId] = { ...statsAccum[key] };
+          }
+        }
+        result.seasonTotals = gameSeasonTotals;
+
         resultRows.push({
           seasonId: season.id, gameDay, gameDate: g.gameDate, boxScore: result,
           homeTeam, awayTeam,
           homeScore: result.homeScore, awayScore: result.awayScore, winner: result.winner,
           isUserGame: false, homeHits, awayHits, homeHRs, awayHRs,
+          homeErrors: result.homeErrors || 0, awayErrors: result.awayErrors || 0,
           winningPitcher: winnerName, losingPitcher: loserName, savePitcher: saveName,
           stadium: TEAMS[homeTeam]?.stadium || null,
           innings: result.innings?.map(inn => ({ home: inn.home || 0, away: inn.away || 0 })) || [],

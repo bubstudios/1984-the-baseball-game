@@ -101,6 +101,7 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     useDH: !!useDH,
     homePlayerHistory: [], awayPlayerHistory: [],
     runLog: [],
+    homeErrors: 0, awayErrors: 0,
   };
 }
 

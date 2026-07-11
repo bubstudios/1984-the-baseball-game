@@ -332,6 +332,8 @@ export function buildGameResultFromState(state, options = {}) {
     batting,
     pitching,
     homeRuns,
+    homeErrors: state.homeErrors || 0,
+    awayErrors: state.awayErrors || 0,
   };
 }
 
@@ -404,7 +406,11 @@ function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTrackin
     // so a used pitcher never disappears from the saved box score.
     const hasTrackedBF = Object.keys(bfTracking).length > 0;
     const hasActivity = pitches > 0 || outs > 0 || (gs.so || 0) > 0 || (gs.bb || 0) > 0 || (gs.h || 0) > 0;
-    if (hasTrackedBF && bf === 0) continue;
+    // A pitcher with REAL game activity must always appear in the box score.
+    // The bf===0 filter was too aggressive: relievers who pitched but had a
+    // bfTracking miss (timing edge case with mid-at-bat substitutions) were
+    // silently dropped, causing incomplete pitching tables and broken ERA/WHIP.
+    if (hasTrackedBF && bf === 0 && !hasActivity) continue;
     if (!hasTrackedBF && !hasActivity) continue;
     const effectiveBF = hasTrackedBF ? bf : (outs + (gs.pitcherH ?? gs.h ?? 0) + (gs.pitcherBB ?? gs.bb ?? 0));
     // Merged history entries store pitcherSo/pitcherBB (prefixed); pitcher-only entries use so/bb
@@ -433,9 +439,16 @@ function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTrackin
 function getPitcherList(state, side) {
   const current = side === 'home' ? state.homePitcher : state.awayPitcher;
   const history = side === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
-  const pastPitchers = history.filter(p =>
-    ['SP', 'RP', 'CL'].includes(p.pos) || ['SP', 'RP', 'CL'].includes(p.assignedPos)
-  );
+  // Include ANY player with pitching activity OR a pitcher position tag.
+  // The old pos-only filter excluded relievers whose pos/assignedPos wasn't
+  // preserved during double-switches or lineup shuffles, causing them to
+  // vanish from the box score even though they pitched real outs.
+  const pastPitchers = history.filter(p => {
+    const gs = p.gameStats || {};
+    const hasPitchingActivity = (gs.outs || 0) > 0 || (gs.pitches || 0) > 0 || (gs.ip || 0) > 0;
+    const isPitcherPos = ['SP', 'RP', 'CL'].includes(p.pos) || ['SP', 'RP', 'CL'].includes(p.assignedPos);
+    return hasPitchingActivity || isPitcherPos;
+  });
   const all = [...pastPitchers];
   if (current && !all.find(p => p.name === current.name)) {
     all.push(current);
