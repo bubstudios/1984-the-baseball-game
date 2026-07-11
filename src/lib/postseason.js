@@ -128,17 +128,17 @@ export function generatePostseason(standingsData) {
   };
 }
 
-// Resolve World Series home field once both LCS winners are known
-export function resolveWorldSeriesHomeField(postseason, nlChamp, alChamp) {
+// Resolve World Series home field once both LCS winners are known.
+// asgWinnerLeague ('AL' or 'NL') determines which champion hosts Games 1,2,6,7.
+export function resolveWorldSeriesHomeField(postseason, nlChamp, alChamp, asgWinnerLeague) {
   if (!nlChamp || !alChamp) return postseason;
-  const hf = getWorldSeriesHomeField(nlChamp, alChamp);
+  const hf = getWorldSeriesHomeField(nlChamp, alChamp, asgWinnerLeague);
   const ws = { ...postseason.worldSeries };
   ws.nlChamp = nlChamp;
   ws.alChamp = alChamp;
   ws.topHost = hf.topHost;
   ws.midHost = hf.midHost;
-  ws.cubsException = hf.cubsException;
-  ws.nlHasHomeField = hf.nlHasHomeField;
+  ws.asgWinnerLeague = hf.asgWinnerLeague;
   ws.games = generateWsGames(hf.topHost, hf.midHost, '1984-10-09');
   ws.status = 'scheduled';
   return { ...postseason, worldSeries: ws };

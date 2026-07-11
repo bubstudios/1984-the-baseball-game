@@ -34,6 +34,8 @@ import PostseasonBracket from '@/components/season/PostseasonBracket';
 import { calculateSeasonAwards } from '@/lib/seasonAwards';
 import { generatePostseason } from '@/lib/postseason';
 import { simGamesToDay } from '@/lib/seasonSimLoop';
+import { simPostseasonStep } from '@/lib/postseasonSim';
+import ChampionScreen from '@/components/season/ChampionScreen';
 
 const DIV_LABELS = { AL_East: 'AL East', AL_West: 'AL West', NL_East: 'NL East', NL_West: 'NL West' };
 
@@ -68,6 +70,7 @@ export default function SeasonDashboard() {
   const [endOfSeasonStandings, setEndOfSeasonStandings] = useState(null);
   const [postseasonVisible, setPostseasonVisible] = useState(false);
   const [postseasonData, setPostseasonData] = useState(null);
+  const [championTeam, setChampionTeam] = useState(null);
   const simulatingRef = useRef(false);
   const lastAdvanceDayRef = useRef(null);
   const pendingUserTeam = location.state?.userTeam || null;
@@ -173,9 +176,13 @@ export default function SeasonDashboard() {
       if (currentSeason.postseason && currentSeason.seasonPhase !== 'REGULAR_SEASON' && currentSeason.seasonPhase !== 'REGULAR_SEASON_COMPLETE') {
         setPostseasonData(currentSeason.postseason);
         setPostseasonVisible(true);
+        if (currentSeason.seasonPhase === 'SEASON_COMPLETE' && currentSeason.champion) {
+          setChampionTeam(currentSeason.champion);
+        }
       } else {
         setPostseasonVisible(false);
         setPostseasonData(null);
+        setChampionTeam(null);
       }
 
     } catch (error) {
@@ -342,14 +349,12 @@ export default function SeasonDashboard() {
         stadium,
       };
 
-      // 1984 rule: the All-Star Game result does NOT decide World Series home
-      // field. The ASG is saved as a historical note only. WS home field is fixed
-      // by the 1984 postseason rotation (NL hosts Games 1,2,6,7) - see
-      // postseasonHomeField.js. We no longer write worldSeriesHomeFieldLeague here.
+      // The All-Star Game winner earns World Series home-field advantage.
       await base44.entities.Season.update(season.id, {
         allStarBreakPhase: 'game_played',
         allStarGameResult: result,
         allStarMvp: mvp,
+        worldSeriesHomeFieldLeague: winningLeague,
       });
 
       setSeason(prev => prev ? {
@@ -357,6 +362,7 @@ export default function SeasonDashboard() {
         allStarBreakPhase: 'game_played',
         allStarGameResult: result,
         allStarMvp: mvp,
+        worldSeriesHomeFieldLeague: winningLeague,
       } : prev);
       setAllStarBreakVisible(true);
     } catch (e) {
@@ -1260,6 +1266,41 @@ export default function SeasonDashboard() {
     }
   };
 
+  // ── Postseason simulation: sim one game per click ──
+  const handleSimPostseason = async () => {
+    if (!season?.postseason) return;
+    try {
+      setSimulating(true);
+      const asgWinnerLeague = season.worldSeriesHomeFieldLeague || season.allStarGameResult?.winningLeague || 'NL';
+      const { postseason: updated, event } = simPostseasonStep(season.postseason, asgWinnerLeague);
+
+      const update = { postseason: updated };
+
+      if (event.type === 'ws_created') {
+        update.seasonPhase = 'WORLD_SERIES';
+      } else if (event.type === 'champion') {
+        update.seasonPhase = 'SEASON_COMPLETE';
+        update.champion = event.champion;
+      } else if (season.seasonPhase === 'POSTSEASON_READY' &&
+                 (updated.alcs?.status === 'complete' || updated.nlcs?.status === 'complete')) {
+        update.seasonPhase = 'ALCS_NLCS';
+      }
+
+      await base44.entities.Season.update(season.id, update);
+      setSeason(prev => ({ ...prev, ...update }));
+      setPostseasonData(updated);
+
+      if (event.type === 'champion') {
+        setChampionTeam(event.champion);
+      }
+    } catch (e) {
+      console.error('Postseason sim failed:', e);
+      alert('Postseason simulation failed: ' + e.message);
+    } finally {
+      setSimulating(false);
+    }
+  };
+
   const isDebug = new URLSearchParams(window.location.search).has('debug');
 
   const handleReadNewspaper = async () => {
@@ -1597,10 +1638,15 @@ export default function SeasonDashboard() {
         <PostseasonBracket
           season={season}
           postseason={postseasonData}
+          simulating={simulating}
           onPlayGame={() => { /* Postseason game play - deferred */ }}
-          onSimPostseason={() => { /* Postseason sim - deferred */ }}
+          onSimPostseason={handleSimPostseason}
           onContinue={() => setPostseasonVisible(false)}
         />
+      )}
+
+      {championTeam && (
+        <ChampionScreen champion={championTeam} onClose={() => setChampionTeam(null)} />
       )}
 
       {simToFinaleProgress && (

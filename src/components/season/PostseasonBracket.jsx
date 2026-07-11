@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Trophy, Play, ChevronRight, Calendar, MapPin } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
+import { getSeriesWins } from '@/lib/postseasonSim';
 
 function teamFullName(teamKey) {
   const t = TEAMS[teamKey];
@@ -12,60 +13,99 @@ function teamAbbr(teamKey) {
   return TEAMS[teamKey]?.abbr || teamKey;
 }
 
-function SeriesCard({ title, series, statusLabel }) {
+function SeriesCard({ title, series }) {
   if (!series) return null;
   const isPending = series.status === 'pending';
+  const isComplete = series.status === 'complete';
+  const wins = getSeriesWins(series);
+
+  const isWS = title === 'World Series';
+  const teamA = isWS ? series.topHost : series.earlyHost;
+  const teamB = isWS ? series.midHost : series.lateHost;
+  const hostLabelA = isWS ? 'Hosts G1,2,6,7' : 'Hosts G1-2';
+  const hostLabelB = isWS ? 'Hosts G3,4,5' : 'Hosts G3-5';
 
   return (
-    <div className="bg-card border border-border rounded-lg p-3 mb-3">
+    <div className={`bg-card border rounded-lg p-3 mb-3 ${isComplete ? 'border-primary/40' : 'border-border'}`}>
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-heading text-sm font-bold text-primary uppercase tracking-wide">{title}</h3>
         <span className="text-[9px] font-heading text-muted-foreground">
-          {isPending ? 'PENDING LCS' : `BEST OF ${series.bestOf}`}
+          {isPending ? 'PENDING' : `BEST OF ${series.bestOf}`}
         </span>
       </div>
 
       {isPending ? (
         <div className="text-center py-4">
           <p className="text-[10px] text-muted-foreground">
-            World Series matchup TBD - awaiting LCS winners.
+            {isWS ? 'Awaiting LCS winners.' : 'TBD'}
           </p>
         </div>
       ) : (
         <>
-          {/* Matchup */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-center flex-1">
-              <div className="font-heading text-sm font-bold text-foreground">{teamAbbr(series.earlyHost)}</div>
-              <div className="text-[9px] text-muted-foreground">Hosts G1-2</div>
+          {/* Series score */}
+          <div className="flex items-center justify-between mb-2 pb-2 border-b border-border/30">
+            <div className="flex-1 text-center">
+              <div className={`font-heading text-sm font-bold ${series.winner === teamA ? 'text-primary' : 'text-foreground'}`}>
+                {teamAbbr(teamA)}
+              </div>
+              <div className="text-[8px] text-muted-foreground">{hostLabelA}</div>
+              <div className="text-lg font-heading font-bold text-foreground mt-0.5">{wins[teamA] || 0}</div>
             </div>
-            <div className="text-muted-foreground text-[10px] font-heading px-2">vs</div>
-            <div className="text-center flex-1">
-              <div className="font-heading text-sm font-bold text-foreground">{teamAbbr(series.lateHost)}</div>
-              <div className="text-[9px] text-muted-foreground">Hosts G3-5</div>
+            <div className="text-muted-foreground text-[10px] font-heading px-2 self-center">
+              {isComplete ? `${teamAbbr(series.winner)} WINS` : 'vs'}
+            </div>
+            <div className="flex-1 text-center">
+              <div className={`font-heading text-sm font-bold ${series.winner === teamB ? 'text-primary' : 'text-foreground'}`}>
+                {teamAbbr(teamB)}
+              </div>
+              <div className="text-[8px] text-muted-foreground">{hostLabelB}</div>
+              <div className="text-lg font-heading font-bold text-foreground mt-0.5">{wins[teamB] || 0}</div>
             </div>
           </div>
 
-          {/* Games schedule */}
+          {/* Games */}
           <div className="space-y-0.5">
             {series.games.map((g, i) => (
               <div key={i} className="flex items-center gap-2 text-[9px] py-0.5">
                 <span className="text-muted-foreground w-6">G{g.gameNumber}</span>
-                <span className="text-muted-foreground flex items-center gap-0.5">
-                  <Calendar className="w-2.5 h-2.5" /> {g.date}
-                </span>
-                <span className="text-foreground font-medium ml-auto">
-                  {teamAbbr(g.awayTeam)} @ {teamAbbr(g.homeTeam)}
-                </span>
+                {g.status === 'complete' ? (
+                  <>
+                    <span className="text-muted-foreground flex items-center gap-0.5">
+                      <Calendar className="w-2.5 h-2.5" /> {g.date}
+                    </span>
+                    <span className={`font-medium ml-auto ${g.winner === g.homeTeam ? 'text-foreground font-bold' : 'text-muted-foreground'}`}>
+                      {teamAbbr(g.awayTeam)} {g.awayScore}-{g.homeScore} {teamAbbr(g.homeTeam)}
+                    </span>
+                  </>
+                ) : g.status === 'not_needed' ? (
+                  <span className="text-muted-foreground/40 ml-auto">not needed</span>
+                ) : (
+                  <>
+                    <span className="text-muted-foreground flex items-center gap-0.5">
+                      <Calendar className="w-2.5 h-2.5" /> {g.date}
+                    </span>
+                    <span className="text-muted-foreground ml-auto">
+                      {teamAbbr(g.awayTeam)} @ {teamAbbr(g.homeTeam)}
+                    </span>
+                  </>
+                )}
               </div>
             ))}
           </div>
 
           {/* Stadium */}
-          <div className="mt-2 pt-2 border-t border-border/30 flex items-center gap-1 text-[9px] text-muted-foreground">
-            <MapPin className="w-2.5 h-2.5" />
-            {TEAMS[series.earlyHost]?.stadium} / {TEAMS[series.lateHost]?.stadium}
-          </div>
+          {!isWS && (
+            <div className="mt-2 pt-2 border-t border-border/30 flex items-center gap-1 text-[9px] text-muted-foreground">
+              <MapPin className="w-2.5 h-2.5" />
+              {TEAMS[series.earlyHost]?.stadium} / {TEAMS[series.lateHost]?.stadium}
+            </div>
+          )}
+          {isWS && teamA && teamB && (
+            <div className="mt-2 pt-2 border-t border-border/30 flex items-center gap-1 text-[9px] text-muted-foreground">
+              <MapPin className="w-2.5 h-2.5" />
+              {TEAMS[teamA]?.stadium} / {TEAMS[teamB]?.stadium}
+            </div>
+          )}
         </>
       )}
     </div>
@@ -75,6 +115,7 @@ function SeriesCard({ title, series, statusLabel }) {
 export default function PostseasonBracket({
   season,
   postseason,
+  simulating,
   onPlayGame,
   onSimPostseason,
   onContinue,
@@ -82,6 +123,8 @@ export default function PostseasonBracket({
   const userTeam = season?.userTeam;
   const userInPostseason = postseason?.divisionWinners &&
     Object.values(postseason.divisionWinners).includes(userTeam);
+  const wsComplete = postseason?.worldSeries?.status === 'complete';
+  const champion = wsComplete ? postseason.worldSeries.winner : null;
 
   return (
     <div className="fixed inset-0 z-50 bg-background flex flex-col">
@@ -94,7 +137,7 @@ export default function PostseasonBracket({
               1984 Postseason
             </h1>
             <p className="text-[10px] text-muted-foreground font-heading">
-              League Championship Series
+              {wsComplete ? 'World Series Complete' : 'League Championship Series'}
             </p>
           </div>
         </div>
@@ -124,26 +167,42 @@ export default function PostseasonBracket({
         {/* World Series */}
         <SeriesCard title="World Series" series={postseason?.worldSeries} />
 
+        {/* Champion banner */}
+        {champion && (
+          <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 mb-3 text-center">
+            <Trophy className="w-8 h-8 text-primary mx-auto mb-1" />
+            <div className="text-[9px] font-heading uppercase tracking-widest text-primary">World Series Champion</div>
+            <div className="font-heading text-lg font-bold text-foreground">{teamFullName(champion)}</div>
+          </div>
+        )}
+
+        {/* Non-qualifier message */}
+        {!userInPostseason && !wsComplete && (
+          <p className="text-[10px] text-muted-foreground text-center mb-2">
+            Your team did not qualify for the postseason.
+          </p>
+        )}
+
         {/* Action buttons */}
-        {userInPostseason ? (
-          <Button onClick={onPlayGame} className="w-full gap-2 mb-2" size="lg">
-            <Play className="w-5 h-5" /> Play Game 1
+        {!wsComplete && (
+          <Button
+            onClick={onSimPostseason}
+            disabled={simulating}
+            className="w-full gap-2 mb-2"
+            size="lg"
+          >
+            {simulating ? (
+              <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Play className="w-5 h-5" />
+            )}
+            Sim Next Game
           </Button>
-        ) : (
-          <>
-            <Button onClick={onSimPostseason} className="w-full gap-2 mb-2" size="lg">
-              <Play className="w-5 h-5" /> Sim Postseason
-            </Button>
-            <p className="text-[10px] text-muted-foreground text-center mb-2">
-              Your team did not qualify for the postseason.
-            </p>
-          </>
         )}
 
         {/* Home field note */}
         <div className="text-center text-[9px] text-muted-foreground/60 mt-2">
-          1984 Rules: NL has World Series home-field advantage.
-          All-Star Game result does not affect home field.
+          World Series home field awarded to the league that won the All-Star Game.
         </div>
       </div>
     </div>
