@@ -1147,9 +1147,9 @@ export default function SeasonDashboard() {
                 {TEAMS[currentUserGame.homeTeam]?.stadium}
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {todaysUserGame ? (
-                <Button onClick={playUserGame} className="gap-1 flex-1" size="sm">
+                <Button onClick={playUserGame} className="gap-1 flex-1 min-w-[120px]" size="sm">
                   <Play className="w-4 h-4" /> Play My Game
                 </Button>
               ) : (
