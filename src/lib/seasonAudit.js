@@ -529,17 +529,23 @@ function analyzeBullpen(games, rotationState, flags) {
           return t.includes('EMERGENCY') && t.includes('UNAVAILABLE') && t.includes(pitcherName);
         });
         const pt3 = game3?.pregameAvailability?.[side3]?.pitcherTiers?.[pitcherName] || {};
-        const tc3 = game3?.pregameAvailability?.[side3]?.tierCounts || {};
-        // Raw workload entries from the pregame snapshot's team workload
         const teamKey3 = side3 === 'home' ? game3?.homeTeam : game3?.awayTeam;
-        // Find the game on the 2nd consecutive day to see what was recorded
-        const game2Date = sorted[i - 1];
-        const game2 = games.find(g => g.gameDate === game2Date && (g.homeTeam === teamKey3 || g.awayTeam === teamKey3));
-        const side2 = game2?.homeTeam === teamKey3 ? 'home' : 'away';
-        const game2PostWorkload = game2?.postGameWorkload?.[side2]?.[pitcherName] || 'NOT FOUND';
-        const game2PitchingLine = (side2 === 'home' ? game2?.pitchingLineDebug?.home : game2?.pitchingLineDebug?.away) || [];
-        const pitcherInLine2 = game2PitchingLine.find(p => p.name === pitcherName);
-        const tierDetail = `Pregame tier: ${pt3.tier || '?'} | Consecutive (from ledger): ${pt3.consecutiveDays ?? '?'} | Pitches yesterday: ${pt3.pitchesYesterday ?? '?'} | Day2 in pitchingLine: ${pitcherInLine2 ? `bf=${pitcherInLine2.bf} outs=${pitcherInLine2.outs} pitches=${pitcherInLine2.pitches}` : 'NOT IN LINE'} | Day2 in ledger: ${Array.isArray(game2PostWorkload) ? `YES (${game2PostWorkload.length} entries)` : 'NO'}`;
+        // Build per-day diagnostic: was the pitcher in the pitchingLine, in recordingFailures,
+        // and in the post-game workload ledger for each of the 3 consecutive days?
+        const dayDiags = [];
+        for (let di = 0; di < 3; di++) {
+          const dayDate = sorted[i - 2 + di];
+          const dayGame = games.find(g => g.gameDate === dayDate && (g.homeTeam === teamKey3 || g.awayTeam === teamKey3));
+          if (!dayGame) { dayDiags.push(`Day${di+1}(${dayDate}): GAME NOT FOUND`); continue; }
+          const daySide = dayGame.homeTeam === teamKey3 ? 'home' : 'away';
+          const dayLine = (daySide === 'home' ? dayGame.pitchingLineDebug?.home : dayGame.pitchingLineDebug?.away) || [];
+          const inLine = dayLine.find(p => p.name === pitcherName);
+          const dayPostWL = dayGame.postGameWorkload?.[daySide]?.[pitcherName];
+          const inLedger = Array.isArray(dayPostWL) && dayPostWL.some(e => e.date === dayDate);
+          const recFail = (dayGame.recordingFailures || []).find(f => f.name === pitcherName);
+          dayDiags.push(`Day${di+1}(${dayDate}): ${inLine ? `bf=${inLine.bf},outs=${inLine.outs},pitches=${inLine.pitches}` : 'NOT IN LINE'} | ledger=${inLedger ? 'YES' : 'NO'} | recFail=${recFail ? 'YES' : 'no'}`);
+        }
+        const tierDetail = `Pregame: ${pt3.tier || '?'} (consec=${pt3.consecutiveDays ?? '?'}, py=${pt3.pitchesYesterday ?? '?'}) | ${dayDiags.join(' | ')}`;
         if (wasExtra || hasEmergencyLog) {
           legalEmergencyCount++;
           flags.push({
