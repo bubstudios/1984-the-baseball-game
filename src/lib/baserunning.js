@@ -62,7 +62,7 @@ export function cpuDecideSteal(state) {
     // Moderate attempt chance — target 0.50-0.75 attempts/team/game.
     // Structural gates (per-game cap, power-hitter block, blowout margin)
     // prevent a return to the high-steal version.
-    let attemptChance = Math.max(0.07, 0.17 + (r.speed / 10) * 0.44 - armF - pitchF);
+    let attemptChance = Math.max(0.09, 0.22 + (r.speed / 10) * 0.52 - armF - pitchF);
     // Third attempt of the game only for elite runners
     if (attemptsThisGame >= 2 && r.speed < 9) continue;
     if (r._heldClose) {
@@ -94,7 +94,7 @@ export function attemptSteal(state, baseIndex) {
   // Offensive tuning: elite runners get a slightly higher success ceiling.
   // Speed 9 can now reach 0.83; speed 7 stays similar. Slow runners unchanged.
   // Offensive tuning: success rate boosted for qualifying speed-7+ runners.
-  let sc = 0.39 + speedFactor * 0.68 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - (pSpeed / 10) * 0.13;
+  let sc = 0.43 + speedFactor * 0.72 - (catcherArm / 10) * 0.12 - (pCtrl / 10) * 0.03 - (pSpeed / 10) * 0.13;
   if (runner._heldClose) {
     sc -= HOLDING_GAME_RATES.stealSuccessPenalty;
     delete runner._heldClose;
