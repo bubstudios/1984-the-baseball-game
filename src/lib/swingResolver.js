@@ -425,7 +425,7 @@ export function resolveSwing(state, swingType, pitch) {
   const hitDirection = getHitDirection(adjBatter.bats);
   const powerRating = (adjBatter.basePower || adjBatter.power) / 10;
   const isPitcherBatting2 = batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP','RP','CL'].includes(batter.assignedPos));
-  let hitChance = 0.13 + (contactRating + contactWx / 10) * 0.19;
+  let hitChance = 0.15 + (contactRating + contactWx / 10) * 0.21;
   if (isPitcherBatting2) hitChance *= 0.45;
   if (isPower) hitChance -= 0.04; if (isContact) hitChance += 0.06;
   const effP3 = getEffectivePitcher(state) || pitcher;
@@ -440,7 +440,7 @@ export function resolveSwing(state, swingType, pitch) {
     pitcher.gameStats.h++; batter.gameStats.hits++;
     let powerMod = isPower ? 1.50 : (isContact ? 0.5 : 1.0);
     const pwrMult = Math.max(0.85, Math.min(1.15, adjBatter.powerMult || 1)); const effPwr = powerRating * powerMod * pwrMult, sf2 = adjBatter.speed / 10, hr2 = Math.random();
-    if (hr2 < effPwr * 0.17 * hrMod * ballparkHRMod) {
+    if (hr2 < effPwr * 0.19 * hrMod * ballparkHRMod) {
       const isRobable = isWallRobable(stadiumName, hitDirection);
       const isRobbed = isRobable && rollHRRobbery();
       if (isRobbed) {
