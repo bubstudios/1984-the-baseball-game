@@ -10,6 +10,7 @@
 import { base44 } from '@/api/base44Client';
 import { TEAMS } from './gameData';
 import { rollInjurySeverity, getInjuryTypeName, calculateInjuryDuration } from './injuryConfig';
+import { recordInjuryTxn, recordReturnFromInjuryTxn } from './transactionLog';
 
 // ── In-memory cache of active injuries per season ──
 // Avoids re-fetching the Injury entity on every game within the same day.
@@ -95,6 +96,7 @@ export async function recordInjury(seasonId, teamKey, playerName, playerPos, sou
   try {
     await base44.entities.Injury.create(injury);
     clearInjuryCache();
+    await recordInjuryTxn(seasonId, injury);
     return { ...injury, persisted: true };
   } catch (e) {
     console.error('[injuries] Failed to record injury:', e);
@@ -192,6 +194,7 @@ export async function runDailyRecovery(seasonId, currentDate) {
           teamKey: injury.teamKey,
           injuryType: injury.injuryType,
         });
+        await recordReturnFromInjuryTxn(seasonId, { ...injury, recoveredOnDate: currentDate });
       } else {
         await base44.entities.Injury.update(injury.id, { daysRemaining: newDaysRemaining });
         updatedCount++;

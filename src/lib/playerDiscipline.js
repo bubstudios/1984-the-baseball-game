@@ -9,6 +9,7 @@
 
 import { base44 } from '@/api/base44Client';
 import { TEAMS } from './gameData';
+import { recordSuspensionTxn, recordReturnFromSuspensionTxn } from './transactionLog';
 
 // ── In-memory cache ──
 let _cache = null;
@@ -121,6 +122,7 @@ export async function recordPlayerSuspension(seasonId, teamKey, playerName, play
   try {
     await base44.entities.PlayerDiscipline.create(record);
     clearPlayerDisciplineCache();
+    await recordSuspensionTxn(seasonId, record);
     return { suspended: true, games: roll.games, reason: roll.reason };
   } catch (e) {
     console.error('[playerDiscipline] Failed to record suspension:', e);
@@ -149,6 +151,7 @@ export async function decrementPlayerSuspensions(seasonId, teamKeysPlayed, curre
           gamesRemaining: 0,
           resolvedOnDate: currentDate,
         });
+        await recordReturnFromSuspensionTxn(seasonId, suspension, currentDate);
         resolved.push({
           teamKey: suspension.teamKey,
           playerName: suspension.playerName,

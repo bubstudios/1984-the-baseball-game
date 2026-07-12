@@ -13,7 +13,6 @@ import { loadActiveInjuries, buildInjuredRoster, runDailyRecovery, resolveStarte
 import { decrementTeamSuspensions } from './managerSuspension';
 import { loadActivePlayerSuspensions, buildSuspendedPlayerSet, decrementPlayerSuspensions } from './playerDiscipline';
 import { evaluateGameComplete } from './seasonAchievements/achievementEngine';
-import { recordInjuryTxn } from './transactionLog';
 
 /**
  * Simulate all non-final games from the current day up to (but not including) targetGameDay.
@@ -187,14 +186,6 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
     // Persist injuries that occurred during headless sim + run daily recovery
     for (const inj of simInjuries) {
       await recordInjury(seasonObj.id, inj.teamKey, inj.playerName, inj.playerPos, inj.source, inj.gameDate, currentDay);
-      // Record transaction for user team injuries
-      if (inj.teamKey === seasonObj.userTeam) {
-        await recordInjuryTxn(seasonObj.id, {
-          teamKey: inj.teamKey, playerName: inj.playerName,
-          injuryType: inj.injuryType || 'Injury', severity: inj.severity || 'day_to_day',
-          gamesRemaining: inj.gamesRemaining || 0, gameDate: inj.gameDate, startedOnGameDay: currentDay,
-        });
-      }
     }
     simInjuries.length = 0;
     const todayDate = daySchedule[0]?.gameDate || seasonObj.currentDate;

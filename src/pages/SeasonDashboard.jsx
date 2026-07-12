@@ -405,6 +405,21 @@ export default function SeasonDashboard() {
         allStarBreakPhase: 'break',
       });
 
+      // Record All-Star selections as transactions for ALL players
+      for (const asLeague of ['AL', 'NL']) {
+        const leagueRoster = rosters[asLeague];
+        if (!leagueRoster) continue;
+        const asPlayers = [
+          ...(leagueRoster.battingOrder || []),
+          ...(leagueRoster.bench || []),
+          ...(leagueRoster.pitchers?.starters || []),
+          ...(leagueRoster.pitchers?.relievers || []),
+        ];
+        for (const p of asPlayers) {
+          await recordAllStarSelectionTxn(s.id, p.teamKey, p.name, asLeague, '1984-07-10');
+        }
+      }
+
       setAllStarRosters(rosters);
       setAllStarBreakVisible(true);
       setSeason(prev => prev ? { ...prev, allStarRosters: rosters, allStarBreakPhase: 'break' } : prev);
@@ -471,25 +486,6 @@ export default function SeasonDashboard() {
         allStarMvp: mvp,
         worldSeriesHomeFieldLeague: winningLeague,
       });
-
-      // Record All-Star selections as transactions for user team players
-      try {
-        const userLeague = getLeague(season.userTeam);
-        const roster = allStarRosters[userLeague];
-        if (roster) {
-          const allPlayers = [
-            ...(roster.battingOrder || []),
-            ...(roster.bench || []),
-            ...(roster.pitchers?.starters || []),
-            ...(roster.pitchers?.relievers || []),
-          ];
-          for (const p of allPlayers) {
-            if (p.teamKey === season.userTeam) {
-              await recordAllStarSelectionTxn(season.id, p.teamKey, p.name, userLeague, '1984-07-10');
-            }
-          }
-        }
-      } catch (e) { /* non-fatal */ }
 
       setSeason(prev => prev ? {
         ...prev,
@@ -626,9 +622,9 @@ export default function SeasonDashboard() {
 
       setTradeDeadlineTrades(updatedTrades);
 
-      // Record trade transactions for user team
+      // Record trade transactions for all teams
       for (const t of updatedTrades) {
-        if (t.status === 'applied' && (t.teamA === season.userTeam || t.teamB === season.userTeam)) {
+        if (t.status === 'applied') {
           await recordTradeTxn(season.id, t, '1984-08-30');
         }
       }
@@ -1096,6 +1092,13 @@ export default function SeasonDashboard() {
                     team: award.teamKey,
                     weekNumber: award.weekNumber,
                     stats: { statLine: award.statLine, blurb: award.blurb, score: award.score },
+                    awardDate: daySchedule[0]?.gameDate || season.currentDate,
+                  });
+                  await recordAwardTxn(season.id, {
+                    awardType: award.type,
+                    winner: award.playerName,
+                    team: award.teamKey,
+                    statLine: award.statLine,
                     awardDate: daySchedule[0]?.gameDate || season.currentDate,
                   });
                 } catch (e) { /* non-fatal */ }

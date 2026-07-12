@@ -75,6 +75,7 @@ import { checkArgumentLogic } from '@/lib/argumentLogic';
 import { checkHBPEjection, checkChargingMound, checkBatterArguesStrikes, applyPlayerEjection, applyMultipleEjections, checkBenchClearingBrawl, getGameEjections, findPlayerInGame, getPreviousBatter } from '@/lib/playerEjectionEngine';
 import DisciplineIncidentBanner from '@/components/game/DisciplineIncidentBanner';
 import { recordPlayerSuspension, loadActivePlayerSuspensions, buildSuspendedPlayerSet } from '@/lib/playerDiscipline';
+import { recordEjectionTxn } from '@/lib/transactionLog';
 import AtmosphereDebugPanel from '@/components/game/AtmosphereDebugPanel';
 import { inc as incAtmo, resetCounters as resetAtmoCounters, forceBallparkEvent, forceCelebrationText, forceBenchChirp, forceRobbedHRText } from '@/lib/atmosphereDebug';
 
@@ -705,6 +706,11 @@ export default function Home() {
       if (isUserTeam) {
         // User must pick a replacement pitcher
         let bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
+        // Filter out the ejected pitcher so they can't re-enter the game
+        const ejectedPitcherName = gameState._beanball?.autoEjectionPitcher;
+        if (ejectedPitcherName) {
+          bullpen = bullpen.filter(p => p.name !== ejectedPitcherName);
+        }
         // Emergency fallback: if the bullpen is exhausted, offer any available
         // roster pitcher (starter/reliever) not already in the game or removed.
         if (!bullpen || bullpen.length === 0) {
@@ -1102,6 +1108,25 @@ export default function Home() {
           for (const ej of playerEjections) {
             const playerPos = ej.playerPos || '?';
             await recordPlayerSuspension(ctx.seasonId, ej.teamKey, ej.playerName, playerPos, ej.reason, ctx.gameDate, ctx.gameDay, ej.inning);
+          }
+          // Record ejection transactions for the wire
+          if (state._seasonEjection) {
+            await recordEjectionTxn(ctx.seasonId, {
+              gameDate: ctx.gameDate,
+              teamKey: state._seasonEjection.teamKey,
+              playerName: MANAGERS[state._seasonEjection.teamKey]?.name || 'Manager',
+              playerPos: 'MGR',
+              ejectionReason: state._seasonEjection.reason,
+            });
+          }
+          for (const ej of playerEjections) {
+            await recordEjectionTxn(ctx.seasonId, {
+              gameDate: ctx.gameDate,
+              teamKey: ej.teamKey,
+              playerName: ej.playerName,
+              playerPos: ej.playerPos || '?',
+              ejectionReason: ej.reason,
+            });
           }
           if (ctx.seasonId) await maybeAdvanceDay({ id: ctx.seasonId, currentGameDay: ctx.gameDay });
         } catch (e) {
@@ -1532,6 +1557,16 @@ export default function Home() {
   const handleEjectionReplacement = (chosenPitcher) => {
     if (!gameState || !ejectionResult) return;
     const newState = changePitcher(gameState, chosenPitcher, ejectionResult.ejectedSide);
+    // Remove the ejected pitcher from the bullpen so they can't re-enter
+    const ejectedPitcherName = gameState._beanball?.autoEjectionPitcher;
+    if (ejectedPitcherName) {
+      const bpKey = ejectionResult.ejectedSide === 'home' ? 'homeBullpen' : 'awayBullpen';
+      newState[bpKey] = (newState[bpKey] || []).filter(p => p.name !== ejectedPitcherName);
+      if (!newState.removedPlayers) newState.removedPlayers = [];
+      if (!newState.removedPlayers.includes(ejectedPitcherName)) {
+        newState.removedPlayers.push(ejectedPitcherName);
+      }
+    }
     // Clear the ejection flags so the modal doesn't re-trigger after dismissal
     delete newState._pendingEjectionReplacement;
     if (newState._beanball) {
