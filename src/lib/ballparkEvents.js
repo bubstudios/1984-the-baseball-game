@@ -1,6 +1,9 @@
 // Ballpark Events - 1984 flavor: uncommon, colorful, rarely affecting gameplay
 // 20-30% chance per game of at least one event; most are just atmosphere
 
+import { TEAMS } from './gameData';
+import { BALLPARKS, DOMED_STADIUMS } from './ballparks';
+
 const RARITY = {
   common: 0,    // ~40% of triggered events
   uncommon: 1,  // ~35%
@@ -190,6 +193,126 @@ export const BALLPARK_EVENTS = [
     rarity: "legendary",
     weight: 0.15, // only 15% of legendary-pool picks become this event
   },
+
+  // ════════════════════════════════════════════════════════════════
+  // SEASON-EXPANSION BATCH - mostly flavor-only 1984 atmosphere
+  // Tags: outdoorOnly (no domes), surfaceTags: ['turf'|'grass'], team
+  // ════════════════════════════════════════════════════════════════
+
+  // ── GENERAL BALLPARK FLAVOR ──
+  { id: "organist_clap", category: "stadium", text: "The organist gets the crowd clapping between pitches.", delay: 0, rarity: "common" },
+  { id: "slow_chant", category: "fans", text: "The crowd starts a slow chant from the upper deck.", delay: 0, rarity: "uncommon" },
+  { id: "vendors_bark", category: "stadium", text: "Vendors bark through the seats - 'Hot dogs! Peanuts! Ice cold soda!'", delay: 0, rarity: "common" },
+  { id: "pa_keep_off_field", category: "stadium", text: "The PA announcer reminds fans to keep off the field.", delay: 0, rarity: "common" },
+  { id: "kid_homemade_sign", category: "fans", text: "A kid behind the dugout waves a homemade sign.", delay: 0, rarity: "common" },
+  { id: "scoreboard_animation", category: "stadium", text: "The scoreboard operator flashes a cheesy animation.", delay: 0, rarity: "common" },
+  { id: "radio_crackle", category: "fans", text: "A transistor radio crackles somewhere in the crowd.", delay: 0, rarity: "common" },
+  { id: "dugout_rail_jawing", category: "player", text: "The dugout rail is full of players jawing at the field.", delay: 0, rarity: "common" },
+  { id: "paper_airplane", category: "fans", text: "A paper airplane floats down from the upper deck.", delay: 0, rarity: "common" },
+  { id: "crowd_groans_call", category: "fans", text: "The crowd groans after another borderline call.", delay: 0, rarity: "common" },
+  { id: "fan_yells_advice", category: "fans", text: "A fan in the front row yells advice nobody asked for.", delay: 0, rarity: "common" },
+  { id: "batboy_loose_bat", category: "player", text: "The bat boy hustles out to collect a loose bat.", delay: 5, rarity: "common" },
+  { id: "grounds_crew_sky", category: "grounds", text: "The grounds crew watches the sky from the tunnel.", delay: 0, rarity: "uncommon", outdoorOnly: true },
+  { id: "ballboy_slick_grab", category: "grounds", text: "A ball boy makes a slick grab down the line.", delay: 0, rarity: "common" },
+  { id: "scoreboard_bulb_flicker", category: "stadium", text: "The scoreboard bulb flickers for a second.", delay: 0, rarity: "common" },
+  { id: "crowd_umpire_mind", category: "umpire", text: "The crowd gives the umpire a piece of its mind.", delay: 0, rarity: "common" },
+  { id: "vendor_drops_programs", category: "fans", text: "A vendor drops a stack of programs in the aisle.", delay: 0, rarity: "common" },
+  { id: "home_dugout_banging", category: "fans", text: "The home dugout starts banging on the rail.", delay: 0, rarity: "common" },
+  { id: "visiting_bench_chirp", category: "fans", text: "The visiting bench is chirping after that last pitch.", delay: 0, rarity: "uncommon" },
+
+  // ── CROWD ATMOSPHERE ──
+  { id: "crowd_rises_two_strikes", category: "fans", text: "The crowd rises with two strikes.", delay: 0, rarity: "uncommon" },
+  { id: "fans_restless_long_inning", category: "fans", text: "The fans are restless after that long inning.", delay: 0, rarity: "common" },
+  { id: "boos_cheap_seats", category: "fans", text: "Boos rain down from the cheap seats.", delay: 0, rarity: "common" },
+  { id: "standing_ovation", category: "fans", text: "A standing ovation rolls through the ballpark.", delay: 0, rarity: "uncommon" },
+  { id: "crowd_buzzes_tying_run", category: "fans", text: "The crowd buzzes as the tying run comes to the plate.", delay: 0, rarity: "uncommon" },
+  { id: "rhythmic_clap", category: "fans", text: "A group of fans starts a rhythmic clap.", delay: 0, rarity: "common" },
+  { id: "stadium_quiet_pitch", category: "fans", text: "The stadium gets quiet before the pitch.", delay: 0, rarity: "uncommon" },
+  { id: "loud_heckler", category: "fans", text: "A loud heckler has the dugout laughing.", delay: 0, rarity: "uncommon" },
+  { id: "crowd_on_pitcher", category: "fans", text: "The crowd is starting to get on the pitcher.", delay: 0, rarity: "common" },
+  { id: "home_fans_smell_rally", category: "fans", text: "The home fans smell a rally.", delay: 0, rarity: "common" },
+
+  // ── WEATHER / OUTDOOR ──
+  { id: "wind_gust_left", category: "weather", text: "A gust of wind kicks up toward left field.", delay: 0, rarity: "uncommon", outdoorOnly: true },
+  { id: "wind_dies_down", category: "weather", text: "The wind dies down for a moment.", delay: 0, rarity: "common", outdoorOnly: true },
+  { id: "dust_swirl_infield", category: "weather", text: "A swirl of dust crosses the infield.", delay: 0, rarity: "common", outdoorOnly: true },
+  { id: "flags_snapping", category: "weather", text: "The flags in center are snapping hard.", delay: 0, rarity: "common", outdoorOnly: true },
+  { id: "light_drizzle_starts", category: "weather", text: "A light drizzle starts to fall.", delay: 0, rarity: "uncommon", outdoorOnly: true },
+  { id: "rain_lets_up", category: "weather", text: "The rain lets up as quickly as it started.", delay: 0, rarity: "uncommon", outdoorOnly: true },
+  { id: "sun_drops_low", category: "weather", text: "The sun drops low behind the grandstand.", delay: 0, rarity: "uncommon", outdoorOnly: true },
+  { id: "shadows_home_plate", category: "weather", text: "The shadows creep across home plate.", delay: 0, rarity: "rare", outdoorOnly: true },
+  { id: "cool_breeze", category: "weather", text: "A cool breeze rolls through the park.", delay: 0, rarity: "common", outdoorOnly: true },
+  { id: "infield_slick", category: "weather", text: "The infield dirt looks a little slick.", delay: 0, rarity: "uncommon", outdoorOnly: true },
+
+  // ── FIELD CONDITION ──
+  { id: "grounds_smooth_mound", category: "grounds", text: "The grounds crew smooths out the mound between innings.", delay: 0, rarity: "common" },
+  { id: "pitcher_rosin_bag", category: "grounds", text: "The pitcher asks for the rosin bag.", delay: 0, rarity: "common" },
+  { id: "catcher_soft_spot", category: "grounds", text: "The catcher points out a soft spot near the plate.", delay: 0, rarity: "uncommon" },
+  { id: "strange_turf_hop", category: "grounds", text: "A strange hop off the turf has everyone muttering.", delay: 0, rarity: "uncommon", surfaceTags: ["turf"] },
+  { id: "turf_skids_faster", category: "grounds", text: "The ball skips faster than expected on the artificial turf.", delay: 0, rarity: "uncommon", surfaceTags: ["turf"] },
+  { id: "grass_slows_roller", category: "grounds", text: "The grass slows that roller just enough.", delay: 0, rarity: "common", surfaceTags: ["grass"] },
+  { id: "coach_kicks_rough", category: "grounds", text: "The third-base coach kicks at a rough patch in the dirt.", delay: 0, rarity: "common" },
+  { id: "mound_visit_trail", category: "grounds", text: "The mound visit leaves a fresh trail in the dirt.", delay: 0, rarity: "common" },
+  { id: "chalk_line_fading", category: "grounds", text: "The chalk line is starting to fade near first.", delay: 0, rarity: "common" },
+  { id: "funny_carom_wall", category: "grounds", text: "The ball takes a funny carom near the wall.", delay: 0, rarity: "rare" },
+
+  // ── STADIUM / SCOREBOARD ──
+  { id: "scoreboard_slow_outoftown", category: "stadium", text: "The scoreboard is slow updating the out-of-town scores.", delay: 0, rarity: "common" },
+  { id: "pa_squeal", category: "stadium", text: "The PA system squeals before the next announcement.", delay: 0, rarity: "common" },
+  { id: "lights_hum", category: "stadium", text: "The stadium lights hum overhead.", delay: 0, rarity: "common" },
+  { id: "one_bank_flickers", category: "stadium", text: "One bank of lights flickers, but play continues.", delay: 0, rarity: "rare" },
+  { id: "outoftown_cheers", category: "stadium", text: "The out-of-town scoreboard draws a few cheers.", delay: 0, rarity: "common" },
+  { id: "radar_gun_reaction", category: "stadium", text: "The radar gun reading gets a reaction from the crowd.", delay: 0, rarity: "common" },
+  { id: "scoreboard_make_noise", category: "stadium", text: "The scoreboard flashes MAKE SOME NOISE.", delay: 0, rarity: "common" },
+  { id: "organist_tv_theme", category: "stadium", text: "The organist sneaks in a familiar TV theme.", delay: 0, rarity: "uncommon" },
+  { id: "pa_mispronounces", category: "stadium", text: "The PA announcer mispronounces a visiting player's name.", delay: 0, rarity: "uncommon" },
+  { id: "message_board_birthday", category: "stadium", text: "The message board wishes a fan happy birthday.", delay: 0, rarity: "common" },
+
+  // ── DUGOUT / PLAYER ATMOSPHERE ──
+  { id: "pitcher_glares_sign", category: "player", text: "The pitcher glares in for the sign.", delay: 0, rarity: "common" },
+  { id: "batter_adjusts_gloves", category: "player", text: "The batter steps out and adjusts both gloves.", delay: 0, rarity: "common" },
+  { id: "catcher_points_runner", category: "player", text: "The catcher walks halfway to the mound and points at the runner.", delay: 0, rarity: "uncommon" },
+  { id: "firstbaseman_chats_runner", category: "player", text: "The first baseman chats up the runner.", delay: 0, rarity: "common" },
+  { id: "ondeck_mighty_cut", category: "player", text: "The on-deck hitter takes a mighty cut.", delay: 0, rarity: "common" },
+  { id: "bench_alive_swing", category: "player", text: "The bench is alive after that last swing.", delay: 0, rarity: "common" },
+  { id: "thirdbase_long_signs", category: "player", text: "The third-base coach flashes a long set of signs.", delay: 0, rarity: "uncommon" },
+  { id: "pitcher_walk_behind_mound", category: "player", text: "The pitcher takes a long walk behind the mound.", delay: 0, rarity: "common" },
+  { id: "batter_hears_dugout", category: "player", text: "The batter doesn't like something he heard from the dugout.", delay: 0, rarity: "uncommon" },
+  { id: "catcher_pounds_mitt", category: "player", text: "The catcher pounds his mitt and sets up outside.", delay: 0, rarity: "common" },
+
+  // ── WEIRD / RARE MOMENTS ──
+  { id: "fan_reaches_railing", category: "fans", text: "A fan reaches over the railing, but the ball stays in play.", delay: 0, rarity: "rare" },
+  { id: "security_chases_rail", category: "fans", text: "Security has to chase someone away from the field-level rail.", delay: 10, rarity: "uncommon" },
+  { id: "bugs_near_lights", category: "animals", text: "A swarm of bugs gathers near the lights.", delay: 0, rarity: "uncommon" },
+  { id: "pigeon_shallow_right", category: "animals", text: "A pigeon lands in shallow right and refuses to move.", delay: 0, rarity: "uncommon" },
+  { id: "debris_cleared_warning", category: "grounds", text: "The game pauses while debris is cleared near the warning track.", delay: 20, rarity: "uncommon" },
+  { id: "foul_knocks_drink", category: "fans", text: "A foul ball knocks over a drink in the front row.", delay: 0, rarity: "uncommon" },
+  { id: "bat_helicopter_spin", category: "equipment", text: "A bat slips loose and helicopter-spins toward the dugout.", delay: 0, rarity: "uncommon" },
+  { id: "ump_replaces_scuffed_ball", category: "umpire", text: "The umpire stops play to replace a scuffed baseball.", delay: 5, rarity: "common" },
+  { id: "catcher_mask_repair", category: "equipment", text: "The catcher's mask needs a quick repair.", delay: 20, rarity: "uncommon" },
+  { id: "player_loses_cap", category: "player", text: "A player loses his cap chasing a foul pop.", delay: 0, rarity: "uncommon" },
+
+  // ── STADIUM-SPECIFIC ──
+  { id: "wrigley_wind_tricks", category: "stadium", text: "The wind is playing tricks at Wrigley today.", delay: 0, rarity: "uncommon", team: "cubs" },
+  { id: "wrigley_ivy_swallows", category: "stadium", text: "The ivy swallows up the ball for a moment.", delay: 10, rarity: "rare", team: "cubs" },
+  { id: "wrigley_bleacher_bums", category: "fans", text: "The bleacher bums are letting the outfielder hear it.", delay: 0, rarity: "common", team: "cubs" },
+  { id: "shea_jet_roars", category: "stadium", text: "A jet roars overhead and the crowd barely notices.", delay: 0, rarity: "common", team: "mets" },
+  { id: "shea_queens_roar", category: "fans", text: "The Shea crowd comes alive with a Queens roar.", delay: 0, rarity: "uncommon", team: "mets" },
+  { id: "fenway_monster_adventure", category: "stadium", text: "The Green Monster turns a fly ball into an adventure.", delay: 0, rarity: "rare", team: "redsox" },
+  { id: "fenway_pesky_groans", category: "fans", text: "The crowd down the line groans at the Pesky Pole angle.", delay: 0, rarity: "common", team: "redsox" },
+  { id: "yankee_monuments_loom", category: "stadium", text: "The monuments loom beyond center field.", delay: 0, rarity: "common", team: "yankees" },
+  { id: "yankee_bronx_cheer", category: "fans", text: "A deep Bronx cheer rolls through the stadium.", delay: 0, rarity: "uncommon", team: "yankees" },
+  { id: "dodger_carries_warm_air", category: "stadium", text: "The ball carries in the warm Los Angeles air.", delay: 0, rarity: "uncommon", team: "dodgers" },
+  { id: "dodger_late_arriving", category: "fans", text: "The late-arriving crowd is finally filling in.", delay: 0, rarity: "common", team: "dodgers" },
+  { id: "kingdome_echo_roof", category: "stadium", text: "The ball echoes off the Kingdome roof.", delay: 0, rarity: "common", team: "mariners" },
+  { id: "kingdome_popup_lights", category: "stadium", text: "A high pop-up disappears into the roof lights.", delay: 0, rarity: "rare", team: "mariners" },
+  { id: "astrodome_popup_guess", category: "stadium", text: "The Astrodome roof turns that pop-up into a guessing game.", delay: 0, rarity: "rare", team: "astros" },
+  { id: "astrodome_turf_skids", category: "grounds", text: "The artificial turf sends a grounder skidding.", delay: 0, rarity: "common", team: "astros" },
+  { id: "busch_turf_fast", category: "grounds", text: "The turf plays fast in St. Louis.", delay: 0, rarity: "common", team: "cardinals" },
+  { id: "busch_cardinals_threaten", category: "fans", text: "The crowd stirs as the Cardinals threaten to run.", delay: 0, rarity: "uncommon", team: "cardinals" },
+  { id: "tiger_upper_deck", category: "fans", text: "The upper deck feels right on top of the field.", delay: 0, rarity: "common", team: "tigers" },
+  { id: "tiger_corner_carom", category: "stadium", text: "A deep drive bangs around the outfield corner.", delay: 0, rarity: "rare", team: "tigers" },
+  { id: "cookiecutter_wicked_hop", category: "grounds", text: "The cookie-cutter turf gives that ball a wicked hop.", delay: 0, rarity: "uncommon", surfaceTags: ["turf"] },
 ];
 
 // ── Roll for events ──
@@ -229,9 +352,16 @@ export function rollBallparkEvent(gameState) {
     pool = pool.filter(e => !e.requiresContact);
   }
 
-  // Filter team-specific events - only include when the right team is playing
+  // Derive stadium surface + indoor/outdoor for tag filtering
   const homeTeam = gameState.homeTeam;
   const awayTeam = gameState.awayTeam;
+  const stadiumName = homeTeam ? TEAMS[homeTeam]?.stadium : null;
+  const isDomed = stadiumName ? DOMED_STADIUMS.has(stadiumName) : false;
+  const isOutdoor = !isDomed;
+  const ballpark = stadiumName ? BALLPARKS[stadiumName] : null;
+  const isTurf = ballpark ? ballpark.quirks.includes('artificialTurf') : false;
+
+  // Filter team-specific events - only include when the right team is playing
   const poolBeforeTeam = [...pool];
   pool = pool.filter(e => {
     if (!e.team) return true; // not team-specific - always include
@@ -239,6 +369,15 @@ export function rollBallparkEvent(gameState) {
   });
   // If the team filter eliminated everything, fall back to the original pool without team filtering
   if (pool.length === 0) pool = poolBeforeTeam.filter(e => !e.team);
+
+  // Filter outdoor-only and surface-tagged events to the right venue
+  pool = pool.filter(e => {
+    if (e.outdoorOnly && !isOutdoor) return false;
+    if (e.surfaceTags && e.surfaceTags.length > 0) {
+      if (!e.surfaceTags.includes(isTurf ? 'turf' : 'grass')) return false;
+    }
+    return true;
+  });
 
   if (pool.length === 0) pool = BALLPARK_EVENTS.filter(e => hadContact || !e.requiresContact);
   if (pool.length === 0) return null;
