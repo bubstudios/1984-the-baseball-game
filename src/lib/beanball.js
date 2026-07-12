@@ -18,12 +18,15 @@ export function getBeanballContext(state) {
       collisions: 0,
       hardSlides: 0,
       beanballHits: 0,
+      hbpByTeam: { home: 0, away: 0 },
       brawlTriggered: false,
       batFlips: [],
       fistPumps: [],
       recentEvents: [], // last 5 events for context
     };
   }
+  // Ensure hbpByTeam exists on legacy contexts
+  if (!state._beanball.hbpByTeam) state._beanball.hbpByTeam = { home: 0, away: 0 };
   return state._beanball;
 }
 
@@ -143,6 +146,7 @@ export function registerHBP(state, pitcher, batter, reason) {
   ctx.lastHBPPitcher = pitcher.name;
   ctx.lastHBPInning = state.inning;
   ctx.beanballHits++;
+  ctx.hbpByTeam[pitchingSide] = (ctx.hbpByTeam[pitchingSide] || 0) + 1;
   if (reason && reason !== HBP_REASONS.random) {
     ctx.retaliations++;
   }
@@ -176,19 +180,85 @@ export function registerBigStrikeout(state, pitcher, batter) {
 }
 
 // ── Umpire Warnings ──
+// HBP-count-driven with umpire personality and context modifiers.
+// By the 4th HBP, warnings should almost always be issued.
 export function checkForWarning(state) {
   const ctx = getBeanballContext(state);
   if (ctx.warningIssued) return false;
-  
-  // Issue warnings when tension crosses thresholds or after retaliatory HBP
-  const shouldWarn = ctx.tension >= 50 || (ctx.retaliations >= 1 && ctx.tension >= 30);
-  
-  if (shouldWarn && ctx.beanballHits >= 1) {
+
+  const totalHBP = ctx.beanballHits;
+  if (totalHBP === 0) return false;
+
+  const pitchingSide = state.halfInning === 'top' ? 'home' : 'away';
+  const hbpByThisTeam = ctx.hbpByTeam[pitchingSide] || 0;
+
+  // Umpire personality: warningChance ranges 0.35 (lenient) to 0.80 (strict)
+  const umpire = state.umpire || {};
+  const umpireWarnBase = umpire.temperament?.warningChance ?? 0.50;
+  // Map 0.35-0.80 to a 0.7x-1.3x multiplier on the base warning chance
+  const umpireMod = 0.7 + ((umpireWarnBase - 0.35) / 0.45) * 0.6;
+
+  // ── Base warning chance by HBP count ──
+  let warnChance;
+  if (totalHBP === 1) {
+    // 1st HBP: usually no warning, unless suspicious context
+    warnChance = 0.08;
+    // After HR / bat flip / high tension → much more likely
+    if (ctx.lastHRBatter && ctx.lastHRPitcher === ctx.lastHBPPitcher) warnChance = 0.30;
+    else if (ctx.batFlips?.some(f => f.inning === state.inning)) warnChance = 0.25;
+    else if (ctx.tension >= 40) warnChance = 0.20;
+  } else if (totalHBP === 2) {
+    // 2nd HBP: moderate warning chance
+    warnChance = 0.25;
+    // Same team hit both batters → much more likely
+    if (hbpByThisTeam >= 2) warnChance = 0.55;
+  } else if (totalHBP === 3) {
+    // 3rd HBP: warnings likely
+    warnChance = 0.70;
+    // Same team responsible for 2+ → very likely
+    if (Object.values(ctx.hbpByTeam).some(v => v >= 2)) warnChance = 0.90;
+  } else {
+    // 4+ HBP: warnings almost guaranteed
+    warnChance = 0.95;
+  }
+
+  // ── Context modifiers ──
+  // Retaliation flag increases warning chance
+  if (ctx.retaliations >= 1) warnChance = Math.min(0.99, warnChance + 0.20);
+  // High tension increases warning chance
+  if (ctx.tension >= 50) warnChance = Math.min(0.99, warnChance + 0.15);
+  if (ctx.tension >= 70) warnChance = Math.min(0.99, warnChance + 0.10);
+  // Blowout - HBP in blowout is more suspicious
+  const scoreDiff = Math.abs(state.score.home - state.score.away);
+  if (scoreDiff >= 5) warnChance = Math.min(0.99, warnChance + 0.10);
+
+  // ── Umpire personality modifier ──
+  warnChance = Math.min(0.99, warnChance * umpireMod);
+
+  if (Math.random() < warnChance) {
     ctx.warningIssued = true;
     ctx.warningInning = state.inning;
     return true;
   }
   return false;
+}
+
+// ── No-warning explanation (so the incident popup is never empty) ──
+export function getNoWarningExplanation(state) {
+  const ctx = getBeanballContext(state);
+  const lines = [
+    "Tempers flare, but the umpire decides it got away from him.",
+    "The umpire talks to both benches but stops short of warnings.",
+    "The dugouts are barking, but no official warning yet.",
+    "The umpire lets them play - no warnings issued.",
+    "Words are exchanged, but the umpire keeps the game moving.",
+    "The batter stares out at the mound, but the umpire steps in.",
+  ];
+  // Context-specific lines
+  if (ctx.beanballHits >= 3) {
+    return "The umpire warns both dugouts to settle down, but holds off on official warnings... for now.";
+  }
+  return lines[Math.floor(Math.random() * lines.length)];
 }
 
 // ── Collision System ──

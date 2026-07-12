@@ -31,6 +31,7 @@ import PregameIllnessModal from '@/components/game/PregameIllnessModal';
 import InjuryAlertModal from '@/components/game/InjuryAlertModal';
 
 import { getHBPCall, getWarningCall, getEjectionCall, getBatFlipCall, getCollisionCall, getBrawlCall } from '@/lib/beanballCommentary';
+import { getNoWarningExplanation } from '@/lib/beanball';
 import ErrorBoundary from '@/components/game/ErrorBoundary';
 import { getArgumentSeverity, resolveArgument, getEjectionCommentary, maybeDugoutChirp } from '@/lib/umpireArguments';
 import { pickUmpire, getManagerUmpireRelation } from '@/lib/umpires';
@@ -1298,8 +1299,16 @@ export default function Home() {
          // HBP ejection + mound charge
          if (isHBP && pitcher && batter) {
            incidentSteps.push({ text: `${batter.name.split(' ').pop()} is hit by the pitch!`, type: 'hbp' });
-           if (ctx?.warningIssued) {
+           if (afterSubs._beanballWarning) {
+             // Warning was just issued on this HBP
+             incidentSteps.push({ text: 'Both benches have been warned!', type: 'warning' });
+           } else if (ctx?.warningIssued) {
+             // Warnings were already active before this HBP
              incidentSteps.push({ text: 'Warnings were already issued!', type: 'warning' });
+           } else {
+             // No warning - add explanation so the popup isn't empty
+             const explanation = getNoWarningExplanation(afterSubs);
+             incidentSteps.push({ text: explanation, type: 'info' });
            }
            const hbpEjection = checkHBPEjection(afterSubs, pitcher, batter);
            if (hbpEjection) {
