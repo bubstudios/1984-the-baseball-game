@@ -24,6 +24,7 @@ import {
   handleHitAndRunCaught, handleHitAndRunMiss,
 } from './swingResolver';
 import { attemptSteal, attemptDoubleSteal } from './baserunning';
+import { maybeAttemptPickoff } from './pickoffSystem';
 
 // ── Re-exports for backward compatibility ──
 export { getEffectivePitcher, getPitcherFatigue } from './pitcherFatigue';
@@ -221,6 +222,12 @@ export function processAtBat(state, pitchType, swingType) {
     }
     return newState;
   }
+
+  // ── AUTOMATIC PICKOFF ATTEMPT ──
+  // Rare pre-pitch event: pitcher checks runner. Does not coincide with
+  // pitch delivery or steals. Uses the middle banner for display.
+  maybeAttemptPickoff(newState);
+  if (newState.gameOver) return newState;
 
   // Offensive tuning: wildness check generates direct walks before pitch count.
   // Bumped to 0.0095 to push walks toward 2.5-2.7/team/game without raising hits.

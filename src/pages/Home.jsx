@@ -847,9 +847,9 @@ export default function Home() {
         prevCelebrationBubble.current = key;
         // Steal/caught-stealing events are already handled by lastPlay detection - use correct type
         const lpType = gameState.lastPlay?.type;
-        const eventType = lpType === 'steal' ? 'steal' : lpType === 'caughtstealing' ? 'caughtstealing' : 'celebration';
+        const eventType = lpType === 'steal' ? 'steal' : lpType === 'caughtstealing' ? 'caughtstealing' : lpType === 'pickoff' ? 'pickoff' : 'celebration';
         setInlineGameEvent({ type: eventType, event: gameState._celebrationBubble });
-        setTimeout(() => setInlineGameEvent(null), lpType === 'steal' || lpType === 'caughtstealing' ? 5000 : 7500);
+        setTimeout(() => setInlineGameEvent(null), lpType === 'pickoff' ? 4000 : lpType === 'steal' || lpType === 'caughtstealing' ? 5000 : 7500);
       }
     }
   }, [gameState]);

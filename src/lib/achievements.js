@@ -327,6 +327,11 @@ export const ACHIEVEMENTS = [
 
   // ── ARGUMENTS & EJECTIONS ──
   { id: 'first_argument', name: 'Have a Word', desc: 'First manager argument', icon: '🗣️', category: 'ejection' },
+
+  // ── PICKOFFS ──
+  { id: 'caught_napping', name: 'Caught Napping', desc: 'Pick off a runner', icon: '😴', category: 'pitching' },
+  { id: 'sleeping_on_first', name: 'Sleeping On First', desc: 'Have your runner picked off', icon: '💤', category: 'funny' },
+  { id: 'cannon_move', name: 'Cannon Move', desc: 'Pick off an elite steal threat (speed 9+)', icon: '🎯', category: 'pitching' },
   { id: 'youre_gone', name: "You're Gone!", desc: 'First manager ejection', icon: '👋', category: 'ejection' },
   { id: 'frequent_flyer', name: 'Frequent Flyer', desc: '10 manager ejections', icon: '✈️', category: 'ejection', threshold: 10 },
   { id: 'billy_martin', name: 'Billy Martin Award', desc: '25 manager ejections', icon: '😤', category: 'ejection', threshold: 25 },
@@ -1171,6 +1176,21 @@ export function checkGameAchievements(gameState, userTeam) {
 
   if (allUserPlayers.some(p => (p.gameStats?.hr || 0) > 0 && (p.gameStats?.rbi || 0) >= 4) || log.filter(l => l.type === 'homerun' && l.text && l.text.includes('GRAND SLAM') && userNames.some(n => l.text.includes(n))).length > 0) u('grand_salami');
   if (userWon && logText.includes('Walk-off')) u('walk_off_hero');
+
+  // ── PICKOFFS ──
+  const userPickoff = gameState._pickoffEvent;
+  if (userPickoff) {
+    if (userPickoff.result === 'picked_off') {
+      // User's pitcher picked off a runner
+      u('caught_napping');
+      if (userPickoff.elite) u('cannon_move');
+    }
+    // Check if user's runner was picked off (fielding team picked off user's runner)
+    const pickedRunner = userPickoff.runner;
+    if (allUserPlayers.some(p => p.name === pickedRunner) && userPickoff.result === 'picked_off') {
+      u('sleeping_on_first');
+    }
+  }
 
   // ── PITCHING ──
   const totalUserSO = userPitchers.reduce((sum, p) => sum + (p.gameStats?.so || 0), 0);
