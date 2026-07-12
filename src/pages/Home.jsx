@@ -1250,8 +1250,6 @@ export default function Home() {
          const ctx = afterSubs._beanball;
          const isHBP = afterSubs.lastPlay?.type === 'walk' && (afterSubs.lastPlay?.text?.includes('hit by the pitch') || afterSubs.lastPlay?.text?.includes('HBP'));
 
-         // Use the ACTUAL hit batter and pitcher from the beanball context.
-         // getSituationalBatter returns the NEXT batter (advanceBatter already ran).
          let batter = null, pitcher = null;
          if (isHBP && ctx) {
            const battingSide = afterSubs.halfInning === 'top' ? 'away' : 'home';
@@ -1268,17 +1266,13 @@ export default function Home() {
          const incidentSteps = [];
          let totalEjections = 0;
 
-         // HBP ejection + mound charge
          if (isHBP && pitcher && batter) {
            incidentSteps.push({ text: `${batter.name.split(' ').pop()} is hit by the pitch!`, type: 'hbp' });
            if (afterSubs._beanballWarning) {
-             // Warning was just issued on this HBP
              incidentSteps.push({ text: 'Both benches have been warned!', type: 'warning' });
            } else if (ctx?.warningIssued) {
-             // Warnings were already active before this HBP
              incidentSteps.push({ text: 'Warnings were already issued!', type: 'warning' });
            } else {
-             // No warning - add explanation so the popup isn't empty
              const explanation = getNoWarningExplanation(afterSubs);
              incidentSteps.push({ text: explanation, type: 'info' });
            }
@@ -1288,7 +1282,6 @@ export default function Home() {
              totalEjections++;
              incidentSteps.push({ text: hbpEjection.commentary, type: 'ejection' });
            }
-           // Charging the mound - uses the ACTUAL hit batter (the core fix)
            const chargeResult = checkChargingMound(afterSubs, pitcher, batter);
            if (chargeResult) {
              applyMultipleEjections(afterSubs, chargeResult.ejections);
@@ -1299,8 +1292,6 @@ export default function Home() {
              }
            }
          }
-         // Called strikeout argument check - use the batter who actually struck out
-         // (getSituationalBatter returns the NEXT batter since advanceBatter already ran)
          if (afterSubs.lastPlay?.type === 'strikeout') {
            const prevBatter = getPreviousBatter(afterSubs) || batter;
            if (prevBatter) {
@@ -1312,10 +1303,7 @@ export default function Home() {
              }
            }
          }
-         // Bench-clearing brawl check - ONLY after an actual HBP, not on every
-         // pitch. Running it unconditionally caused phantom ejections: tension
-         // from a prior HBP could trigger a brawl on a routine groundout,
-         // ejecting random players who were never involved in any incident.
+         // Bench-clearing brawl - ONLY after actual HBP
          if (isHBP && pitcher && batter) {
            const brawlResult = checkBenchClearingBrawl(afterSubs);
            if (brawlResult) {
@@ -1329,6 +1317,7 @@ export default function Home() {
          }
 
          if (incidentSteps.length > 0) {
+           delete afterSubs._beanballWarning;
            setGameState({ ...afterSubs });
            setDisciplineIncident({ steps: incidentSteps, totalEjections });
            setEjectionCount(prev => prev + totalEjections);
@@ -1395,9 +1384,6 @@ export default function Home() {
       checkFielderInjury(gameState, afterSubs);
 
       // ── Player ejection checks (Season Mode only) ──
-      // Mirrors handlePitch: uses the ACTUAL hit batter from beanball context
-      // (not getSituationalBatter which returns the next batter), and gates
-      // brawl checks behind a real HBP to prevent phantom ejections.
       if (gameModeRef.current === 'season') {
         const ctx = afterSubs._beanball;
         const isHBP = afterSubs.lastPlay?.type === 'walk' && (afterSubs.lastPlay?.text?.includes('hit by the pitch') || afterSubs.lastPlay?.text?.includes('HBP'));
@@ -1420,6 +1406,14 @@ export default function Home() {
 
         if (isHBP && pitcher && batter) {
           incidentSteps.push({ text: `${batter.name.split(' ').pop()} is hit by the pitch!`, type: 'hbp' });
+          if (afterSubs._beanballWarning) {
+            incidentSteps.push({ text: 'Both benches have been warned!', type: 'warning' });
+          } else if (ctx?.warningIssued) {
+            incidentSteps.push({ text: 'Warnings were already issued!', type: 'warning' });
+          } else {
+            const explanation = getNoWarningExplanation(afterSubs);
+            incidentSteps.push({ text: explanation, type: 'info' });
+          }
           const hbpEjection = checkHBPEjection(afterSubs, pitcher, batter);
           if (hbpEjection) {
             applyPlayerEjection(afterSubs, hbpEjection);
@@ -1458,6 +1452,7 @@ export default function Home() {
         }
 
         if (incidentSteps.length > 0) {
+          delete afterSubs._beanballWarning;
           setGameState({ ...afterSubs }); setDisciplineIncident({ steps: incidentSteps, totalEjections }); setEjectionCount(prev => prev + totalEjections);
         }
       }

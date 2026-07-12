@@ -99,6 +99,11 @@ export function checkHBPEjection(state, pitcher, batter) {
   const ctx = state._beanball;
   if (!ctx) return null;
 
+  // CRITICAL: If warnings were JUST issued on this HBP (not before the pitch),
+  // this HBP cannot count as "after warnings" - no ejection for this pitch.
+  // The warning was a consequence of this HBP, not a pre-existing condition.
+  if (state._beanballWarning) return null;
+
   // No warnings issued yet - no automatic ejection
   if (!ctx.warningIssued) {
     // Rare immediate ejection for obvious retaliation / dangerous pitch
@@ -253,10 +258,38 @@ export function checkBatterArguesStrikes(state, batter) {
   const battingTeam = battingSide === 'home' ? state.homeTeam : state.awayTeam;
   const temper = batter.temper || 5;
 
-  // Base: 1.5%, up to +3% for high-temper batters
-  const argChance = 0.015 + (temper / 10) * 0.03;
+  // Hard cap: max 1 arguing-strikes ejection per team per game
+  const priorArgEjections = (state._playerEjections || []).filter(
+    e => e.teamKey === battingTeam && e.reason === EJECTION_REASONS.ARGUING_STRIKES
+  ).length;
+  if (priorArgEjections >= 1) return null;
 
-  if (Math.random() < argChance) {
+  // Target: 0.5% base, up to +1% for high-temper batters
+  let ejectChance = 0.005 + (temper / 10) * 0.01;
+
+  // Context modifiers (multiply chance)
+  const umpire = state.umpire || {};
+  const umpWarnBase = umpire.temperament?.warningChance ?? 0.50;
+  // Strict umpires eject more, lenient ones less
+  const umpireMod = 0.7 + ((umpWarnBase - 0.35) / 0.45) * 0.6;
+  ejectChance *= umpireMod;
+
+  // Late innings increase chance
+  if (state.inning >= 7) ejectChance *= 1.5;
+  // High leverage (close game, late)
+  const scoreDiff = Math.abs(state.score.home - state.score.away);
+  if (state.inning >= 7 && scoreDiff <= 2) ejectChance *= 1.3;
+  // Same team already angry (prior ejection or warning)
+  const teamEjectedKey = battingSide === 'home' ? '_homeEjectedPlayers' : '_awayEjectedPlayers';
+  const teamEjected = state[teamEjectedKey] || [];
+  if (teamEjected.length > 0 || state._beanball?.warningIssued) ejectChance *= 1.5;
+  // Rivalry / bad blood (tension high)
+  if (state._beanball?.tension >= 50) ejectChance *= 1.4;
+
+  // Hard cap at 2% under any circumstances
+  ejectChance = Math.min(ejectChance, 0.02);
+
+  if (Math.random() < ejectChance) {
     return {
       playerName: batter.name,
       playerPos: getPlayerPos(batter),
@@ -329,66 +362,70 @@ export function applyPlayerEjection(state, ejection) {
       state[historyKey].push({ ...pitcherObj, ejected: true });
     }
   } else {
-    // Position player ejection: replace in lineup AND on bases with a bench player
-    const lineup = isHome ? state.homeLineup : state.awayLineup;
-    const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
-    const benchUsedKey = isHome ? 'homeBenchUsed' : 'awayBenchUsed';
+    // Position player ejection
+    const isUserTeam = ejection.teamKey === state.userTeam;
 
-    const slotIdx = lineup.findIndex(p => p.name === ejection.playerName);
-    const oldPlayer = slotIdx >= 0 ? lineup[slotIdx] : null;
-
-    // Move ejected player to history
-    if (oldPlayer) {
-      if (!state[historyKey]) state[historyKey] = [];
-      if (!state[historyKey].find(p => p.name === ejection.playerName)) {
-        state[historyKey].push({ ...oldPlayer, ejected: true });
-      }
-    }
-
-    // Find a replacement from the bench
-    const replacement = getAvailableBenchPlayer(state, ejection.teamKey);
-    if (replacement && oldPlayer) {
-      // Replace in lineup
-      lineup[slotIdx] = {
-        ...replacement,
-        order: oldPlayer.order,
-        assignedPos: oldPlayer.assignedPos || replacement.pos,
-        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
-      };
-
-      // Mark bench player as used
-      if (!state[benchUsedKey]) state[benchUsedKey] = [];
-      if (!state[benchUsedKey].find(p => p.name === replacement.name)) {
-        state[benchUsedKey].push({ ...replacement });
-      }
-
-      // Log the substitution
-      const subText = `🔄 ${replacement.name} replaces ejected ${oldPlayer.name}`;
-      if (!state.log.some(e => e.text === subText)) {
-        state.log.push({ type: 'info', text: subText });
-      }
-    } else if (oldPlayer) {
-      state.log.push({ type: 'info', text: `⚠️ No bench available - ${oldPlayer.name}'s spot is an automatic out.` });
-      // Flag for forced replacement — pre-pitch validation will catch this
-      // and force the substitution screen (user team) or auto-pick (CPU team).
+    if (isUserTeam) {
+      // USER TEAM: Do NOT auto-substitute. The player is already marked as
+      // ejected (ejectedCurrentGame flag set above). Leave them in the lineup
+      // and on bases with the flag. The pre-pitch validation
+      // (validateNoEjectedPlayersActive) will catch them and force the
+      // substitution screen. The user chooses the replacement via pinchHit/
+      // pinchRun, which properly moves the ejected player to history.
       if (!state._pendingPositionPlayerReplacement) state._pendingPositionPlayerReplacement = [];
-      state._pendingPositionPlayerReplacement.push({ playerName: ejection.playerName, teamKey: ejection.teamKey, slotIdx, side: isHome ? 'home' : 'away' });
-    }
+      state._pendingPositionPlayerReplacement.push({ playerName: ejection.playerName, teamKey: ejection.teamKey, side: isHome ? 'home' : 'away' });
+    } else {
+      // CPU team: auto-replace with bench player (existing behavior)
+      const lineup = isHome ? state.homeLineup : state.awayLineup;
+      const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
+      const benchUsedKey = isHome ? 'homeBenchUsed' : 'awayBenchUsed';
+      const slotIdx = lineup.findIndex(p => p.name === ejection.playerName);
+      const oldPlayer = slotIdx >= 0 ? lineup[slotIdx] : null;
 
-    // CRITICAL: Remove ejected player from bases (HBP → charges mound → ejected)
-    // The ejected player must NOT remain on base. Replace with the same bench
-    // player (who is now in the lineup), or clear the base if no bench available.
-    if (state.bases) {
-      for (let i = 0; i < state.bases.length; i++) {
-        if (state.bases[i] && state.bases[i].name === ejection.playerName) {
-          if (replacement && oldPlayer) {
-            state.bases[i] = { ...replacement, order: oldPlayer.order, assignedPos: oldPlayer.assignedPos || replacement.pos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
-            const runSubText = `🔄 ${replacement.name} runs for ejected ${oldPlayer.name}`;
-            if (!state.log.some(e => e.text === runSubText)) {
-              state.log.push({ type: 'info', text: runSubText });
+      // Move ejected player to history
+      if (oldPlayer) {
+        if (!state[historyKey]) state[historyKey] = [];
+        if (!state[historyKey].find(p => p.name === ejection.playerName)) {
+          state[historyKey].push({ ...oldPlayer, ejected: true });
+        }
+      }
+
+      // Find a replacement from the bench
+      const replacement = getAvailableBenchPlayer(state, ejection.teamKey);
+      if (replacement && oldPlayer) {
+        lineup[slotIdx] = {
+          ...replacement,
+          order: oldPlayer.order,
+          assignedPos: oldPlayer.assignedPos || replacement.pos,
+          gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
+        };
+        if (!state[benchUsedKey]) state[benchUsedKey] = [];
+        if (!state[benchUsedKey].find(p => p.name === replacement.name)) {
+          state[benchUsedKey].push({ ...replacement });
+        }
+        const subText = `🔄 ${replacement.name} replaces ejected ${oldPlayer.name}`;
+        if (!state.log.some(e => e.text === subText)) {
+          state.log.push({ type: 'info', text: subText });
+        }
+      } else if (oldPlayer) {
+        state.log.push({ type: 'info', text: `⚠️ No bench available - ${oldPlayer.name}'s spot is an automatic out.` });
+        if (!state._pendingPositionPlayerReplacement) state._pendingPositionPlayerReplacement = [];
+        state._pendingPositionPlayerReplacement.push({ playerName: ejection.playerName, teamKey: ejection.teamKey, slotIdx, side: isHome ? 'home' : 'away' });
+      }
+
+      // Remove ejected player from bases (CPU team)
+      if (state.bases) {
+        for (let i = 0; i < state.bases.length; i++) {
+          if (state.bases[i] && state.bases[i].name === ejection.playerName) {
+            if (replacement && oldPlayer) {
+              state.bases[i] = { ...replacement, order: oldPlayer.order, assignedPos: oldPlayer.assignedPos || replacement.pos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
+              const runSubText = `🔄 ${replacement.name} runs for ejected ${oldPlayer.name}`;
+              if (!state.log.some(e => e.text === runSubText)) {
+                state.log.push({ type: 'info', text: runSubText });
+              }
+            } else {
+              state.bases[i] = null;
             }
-          } else {
-            state.bases[i] = null;
           }
         }
       }
