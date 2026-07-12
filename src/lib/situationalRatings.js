@@ -20,9 +20,10 @@ function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
  */
 function getPlatoonMod(batter, pitcherHand) {
   if (!batter || !batter.splits || !pitcherHand) return 0;
-  const split = pitcherHand === 'L' ? batter.splits.vsLHP : batter.splits.vsRHP;
-  if (!split || split.ab < 20) return 0;
   const vl = batter.splits.vsLHP, vr = batter.splits.vsRHP;
+  if (!vl || !vr) return 0;
+  const split = pitcherHand === 'L' ? vl : vr;
+  if (split.ab < 20) return 0;
   const totalAB = vl.ab + vr.ab;
   if (totalAB === 0) return 0;
   const overallBA = (vl.ba * vl.ab + vr.ba * vr.ab) / totalAB;
