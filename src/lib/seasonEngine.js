@@ -10,6 +10,7 @@ import {
 import { playerId, isPitcherAvailable, getStarterFatigueStatus } from './seasonStore';
 import { validateGameBoxScore } from './boxScoreValidators';
 import { rollBatterInjury, rollHBPIfBatter } from './batterInjuries';
+import { patchLineupForAvailability } from './playerAvailability';
 
 /**
  * Simulate a complete game headlessly (CPU vs CPU).
@@ -20,7 +21,7 @@ import { rollBatterInjury, rollHBPIfBatter } from './batterInjuries';
 export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
   const { useDH = false, weather = null, umpire = null, homeLineup = null, awayLineup = null, homeSP = null, awaySP = null, unavailableRelievers = null, scratchedPlayers = null } = options;
 
-  let state = createGameState(homeTeam, awayTeam, homeLineup, awayLineup, useDH, weather, umpire, homeSP, awaySP);
+  let state = createGameState(homeTeam, awayTeam, homeLineup, awayLineup, useDH, weather, umpire, homeSP, awaySP, scratchedPlayers);
   state._headlessMode = true;
   state.homeStartingPitcherName = homeSP?.name || null;
   state.awayStartingPitcherName = awaySP?.name || null;
@@ -33,6 +34,11 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     state.scratchedPlayers = [...scratchedPlayers];
     state.homeBullpen = state.homeBullpen.filter(p => !scratchedPlayers.includes(p.name));
     state.awayBullpen = state.awayBullpen.filter(p => !scratchedPlayers.includes(p.name));
+    // PREGAME VALIDATION: replace any scratched/suspended players in the
+    // starting lineup with available bench players. This is the final gate
+    // that guarantees no unavailable player can appear in a game.
+    state.homeLineup = patchLineupForAvailability(state.homeLineup, TEAMS[homeTeam].bench, scratchedPlayers);
+    state.awayLineup = patchLineupForAvailability(state.awayLineup, TEAMS[awayTeam].bench, scratchedPlayers);
   }
 
   // Annotate ALL bullpen arms with season availability + tier + fatigue penalty.

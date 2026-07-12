@@ -432,7 +432,7 @@ export default function Home() {
       homeSP = opponentStartingPitcher;
       awaySP = startingPitcher;
     }
-    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire, homeSP, awaySP);
+    const state = createGameState(home, away, customHomeLineup, customAwayLineup, useDHFlag, weather, umpire, homeSP, awaySP, scratchedPlayers);
     state.userTeam = effectiveUserTeam; // CRITICAL: gates in getControllingTeam() read state.userTeam to distinguish CPU from user
     state.homeStartingPitcherName = homeSP?.name || null;
     state.awayStartingPitcherName = awaySP?.name || null;

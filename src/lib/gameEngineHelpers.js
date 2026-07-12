@@ -12,10 +12,11 @@ import { getEffectivePitcher } from './pitcherFatigue';
 import { chargeRun, tagRunnerResponsiblePitcher } from './runScoring';
 import { END_INNING_LINES, WALK_LINES, INTENTIONAL_WALK_LINES, pickLine } from './commentaryLines';
 import { decayTension } from './beanball';
+import { patchLineupForAvailability } from './playerAvailability';
 
 export { TEAM_IDS } from './gameData';
 
-export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null, umpire = null, startingPitcher = null, opponentStartingPitcher = null) {
+export function createGameState(homeTeam, awayTeam, customHomeLineup, customAwayLineup, useDH = false, weather = null, umpire = null, startingPitcher = null, opponentStartingPitcher = null, scratchedPlayers = null) {
   const home = TEAMS[homeTeam];
   const away = TEAMS[awayTeam];
   const buildLineup = (lineupData, defaultLineup, teamData, spName) => {
@@ -85,13 +86,22 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
   }
   const homeSP = homeLineup.find(p => p.assignedPos === 'SP') || (useDH && startingPitcher ? startingPitcher : home.rotation[0]);
   const awaySP = awayLineup.find(p => p.assignedPos === 'SP') || awaySPOverride || away.rotation[0];
+  // PREGAME VALIDATION: replace any scratched/suspended players in the
+  // starting lineup with available bench players, and filter them from
+  // bullpens. This is the final gate - no unavailable player can appear
+  // in a game lineup, regardless of how the lineup was built.
+  const hasScratched = scratchedPlayers && scratchedPlayers.length > 0;
+  const finalHomeLineup = hasScratched ? patchLineupForAvailability(homeLineup, home.bench, scratchedPlayers) : homeLineup;
+  const finalAwayLineup = hasScratched ? patchLineupForAvailability(awayLineup, away.bench, scratchedPlayers) : awayLineup;
+  const finalHomeBullpen = hasScratched ? home.bullpen.map(p => ({ ...p })).filter(p => !scratchedPlayers.includes(p.name)) : home.bullpen.map(p => ({ ...p }));
+  const finalAwayBullpen = hasScratched ? away.bullpen.map(p => ({ ...p })).filter(p => !scratchedPlayers.includes(p.name)) : away.bullpen.map(p => ({ ...p }));
   return {
     homeTeam, awayTeam, inning: 1, halfInning: 'top', outs: 0, balls: 0, strikes: 0,
     bases: [null, null, null], score: { home: 0, away: 0 },
     innings: Array(9).fill(null).map(() => ({ home: null, away: null })),
-    homeLineup, awayLineup,
+    homeLineup: finalHomeLineup, awayLineup: finalAwayLineup,
     homeRotation: [...home.rotation], awayRotation: [...away.rotation],
-    homeBullpen: home.bullpen.map(p => ({ ...p })), awayBullpen: away.bullpen.map(p => ({ ...p })),
+    homeBullpen: finalHomeBullpen, awayBullpen: finalAwayBullpen,
     homeBenchUsed: [], awayBenchUsed: [],
     homePitcher: createPitcherState(homeSP), awayPitcher: createPitcherState(awaySP),
     homeBatterIndex: 0, awayBatterIndex: 0, log: [],
