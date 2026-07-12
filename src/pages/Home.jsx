@@ -72,7 +72,8 @@ import { checkBatterInjury as checkBatterInjuryExternal } from '@/lib/batterInju
 import { loadActiveInjuries, recordInjury, resolveStarterSkippingInjuries } from '@/lib/injuryPersistence';
 import { loadActiveSuspensions, recordSuspension } from '@/lib/managerSuspension';
 import { checkArgumentLogic } from '@/lib/argumentLogic';
-import { checkHBPEjection, checkChargingMound, checkBatterArguesStrikes, applyPlayerEjection, applyMultipleEjections, checkBenchClearingBrawl, getGameEjections } from '@/lib/playerEjectionEngine';
+import { checkHBPEjection, checkChargingMound, checkBatterArguesStrikes, applyPlayerEjection, applyMultipleEjections, checkBenchClearingBrawl, getGameEjections, findPlayerInGame } from '@/lib/playerEjectionEngine';
+import DisciplineIncidentBanner from '@/components/game/DisciplineIncidentBanner';
 import { recordPlayerSuspension, loadActivePlayerSuspensions, buildSuspendedPlayerSet } from '@/lib/playerDiscipline';
 
 
@@ -140,6 +141,7 @@ export default function Home() {
   const [inlineGameEvent, setInlineGameEvent] = useState(null); // { type: 'celebration'|'caughtstealing'|'ballpark', event: data }
   const [gameOverPopup, setGameOverPopup] = useState(null); // { winner, score, finalPlay }
   const [seasonCommitting, setSeasonCommitting] = useState(false);
+  const [disciplineIncident, setDisciplineIncident] = useState(null);
   const seasonCommitPromiseRef = useRef(null);
   const prevCelebrationBubble = useRef(null);
   const seasonInjuriesRef = useRef([]);
@@ -1200,21 +1202,47 @@ export default function Home() {
 
        // ── Player ejection checks (Season Mode only) ──
        if (gameModeRef.current === 'season') {
-         const pitcher = getEffectivePitcher(afterSubs) || getCurrentPitcher(afterSubs);
-         const batter = getSituationalBatter(afterSubs);
-         // HBP ejection check
-         if (afterSubs.lastPlay?.type === 'walk' && (afterSubs.lastPlay?.text?.includes('hit by the pitch') || afterSubs.lastPlay?.text?.includes('HBP'))) {
-           if (pitcher && batter) {
-             const hbpEjection = checkHBPEjection(afterSubs, pitcher, batter);
-             if (hbpEjection) {
-               applyPlayerEjection(afterSubs, hbpEjection);
-               setArgumentResult({ ejected: true, managerName: hbpEjection.commentary, homeTeamKey: hbpEjection.teamKey });
-             }
-             // Charging the mound check
-             const chargeResult = checkChargingMound(afterSubs, pitcher, batter);
-             if (chargeResult) {
-               applyMultipleEjections(afterSubs, chargeResult.ejections);
-               setArgumentResult({ ejected: true, managerName: chargeResult.commentary, homeTeamKey: batter.teamKey || afterSubs.homeTeam });
+         const ctx = afterSubs._beanball;
+         const isHBP = afterSubs.lastPlay?.type === 'walk' && (afterSubs.lastPlay?.text?.includes('hit by the pitch') || afterSubs.lastPlay?.text?.includes('HBP'));
+
+         // Use the ACTUAL hit batter and pitcher from the beanball context.
+         // getSituationalBatter returns the NEXT batter (advanceBatter already ran).
+         let batter = null, pitcher = null;
+         if (isHBP && ctx) {
+           const battingSide = afterSubs.halfInning === 'top' ? 'away' : 'home';
+           const battingTeamKey = battingSide === 'home' ? afterSubs.homeTeam : afterSubs.awayTeam;
+           const pitchingTeamKey = battingSide === 'home' ? afterSubs.awayTeam : afterSubs.homeTeam;
+           batter = ctx.lastHBPBatter ? findPlayerInGame(afterSubs, ctx.lastHBPBatter, battingTeamKey) : null;
+           pitcher = ctx.lastHBPPitcher ? findPlayerInGame(afterSubs, ctx.lastHBPPitcher, pitchingTeamKey) : null;
+           if (!pitcher) pitcher = getEffectivePitcher(afterSubs) || getCurrentPitcher(afterSubs);
+         } else {
+           batter = getSituationalBatter(afterSubs);
+           pitcher = getEffectivePitcher(afterSubs) || getCurrentPitcher(afterSubs);
+         }
+
+         const incidentSteps = [];
+         let totalEjections = 0;
+
+         // HBP ejection + mound charge
+         if (isHBP && pitcher && batter) {
+           incidentSteps.push({ text: `${batter.name.split(' ').pop()} is hit by the pitch!`, type: 'hbp' });
+           if (ctx?.warningIssued) {
+             incidentSteps.push({ text: 'Warnings were already issued!', type: 'warning' });
+           }
+           const hbpEjection = checkHBPEjection(afterSubs, pitcher, batter);
+           if (hbpEjection) {
+             applyPlayerEjection(afterSubs, hbpEjection);
+             totalEjections++;
+             incidentSteps.push({ text: hbpEjection.commentary, type: 'ejection' });
+           }
+           // Charging the mound - uses the ACTUAL hit batter (the core fix)
+           const chargeResult = checkChargingMound(afterSubs, pitcher, batter);
+           if (chargeResult) {
+             applyMultipleEjections(afterSubs, chargeResult.ejections);
+             totalEjections += chargeResult.ejections.length;
+             incidentSteps.push({ text: chargeResult.commentary, type: chargeResult.type === 'bench_clearing' ? 'brawl' : 'mound_charge' });
+             for (const ej of chargeResult.ejections) {
+               incidentSteps.push({ text: ej.commentary, type: 'ejection' });
              }
            }
          }
@@ -1223,14 +1251,25 @@ export default function Home() {
            const strikeArg = checkBatterArguesStrikes(afterSubs, batter);
            if (strikeArg) {
              applyPlayerEjection(afterSubs, strikeArg);
-             setArgumentResult({ ejected: true, managerName: strikeArg.commentary, homeTeamKey: strikeArg.teamKey });
+             totalEjections++;
+             incidentSteps.push({ text: strikeArg.commentary, type: 'ejection' });
            }
          }
          // Bench-clearing brawl check (high tension)
          const brawlResult = checkBenchClearingBrawl(afterSubs);
          if (brawlResult) {
            applyMultipleEjections(afterSubs, brawlResult.ejections);
-           setArgumentResult({ ejected: true, managerName: brawlResult.commentary, homeTeamKey: afterSubs.homeTeam });
+           totalEjections += brawlResult.ejections.length;
+           incidentSteps.push({ text: brawlResult.commentary, type: 'brawl' });
+           for (const ej of brawlResult.ejections) {
+             incidentSteps.push({ text: ej.commentary, type: 'ejection' });
+           }
+         }
+
+         // Show incident on main screen if any events occurred
+         if (incidentSteps.length > 0) {
+           setDisciplineIncident({ steps: incidentSteps, totalEjections });
+           setEjectionCount(prev => prev + totalEjections);
          }
        }
 
@@ -2129,6 +2168,14 @@ export default function Home() {
         <ArgumentsBanner
           result={argumentResult}
           onDismiss={() => setArgumentResult(null)}
+        />
+      )}
+
+      {/* Discipline Incident Banner */}
+      {disciplineIncident && (
+        <DisciplineIncidentBanner
+          incident={disciplineIncident}
+          onDismiss={() => setDisciplineIncident(null)}
         />
       )}
 

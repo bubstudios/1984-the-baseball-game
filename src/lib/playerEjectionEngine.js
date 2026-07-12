@@ -29,11 +29,48 @@ export const EJECTION_REASONS = {
   BENCH_CLEARING_MAJOR: 'bench_clearing_major',
 };
 
-// ── Check HBP after warning: should the pitcher be ejected? ──
-// Called when a batter is hit by pitch. Returns an ejection descriptor or null.
-function getPlayerPos(player) {
+// ── Ejection reason labels ──
+export function getPlayerPos(player) {
   if (!player) return '?';
   return player.pos || player.assignedPos || '?';
+}
+
+// ── Find a player object by name from lineup + history ──
+// Returns the live player object from the lineup (not a copy), or null.
+export function findPlayerInGame(state, name, teamKey) {
+  if (!name) return null;
+  const isHome = teamKey === state.homeTeam;
+  const lineup = isHome ? state.homeLineup : state.awayLineup;
+  const history = isHome ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
+
+  // Check current lineup first (this is the LIVE object we want to mutate)
+  const inLineup = lineup.find(p => p.name === name);
+  if (inLineup) return inLineup;
+
+  // Check history (already removed from game)
+  const inHistory = history.find(p => p.name === name);
+  if (inHistory) return inHistory;
+
+  return null;
+}
+
+// ── Find an available bench player for substitution ──
+function getAvailableBenchPlayer(state, teamKey) {
+  const isHome = teamKey === state.homeTeam;
+  const fullBench = TEAMS[teamKey]?.bench || [];
+  const lineup = isHome ? state.homeLineup : state.awayLineup;
+  const benchUsed = isHome ? (state.homeBenchUsed || []) : (state.awayBenchUsed || []);
+  const history = isHome ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
+  const removed = state.removedPlayers || [];
+  const scratched = state.scratchedPlayers || [];
+
+  const usedNames = new Set();
+  [...lineup, ...benchUsed, ...history, ...removed, ...scratched].forEach(p => {
+    if (typeof p === 'string') usedNames.add(p);
+    else if (p?.name) usedNames.add(p.name);
+  });
+
+  return fullBench.find(p => !usedNames.has(p.name)) || null;
 }
 
 export function checkHBPEjection(state, pitcher, batter) {
@@ -97,6 +134,8 @@ export function checkHBPEjection(state, pitcher, batter) {
 
 // ── Check if batter charges the mound after HBP ──
 // Called when a batter is hit. Returns an ejection descriptor or null.
+// The `batter` parameter MUST be the actual hit batter, not the next batter
+// (the caller is responsible for passing the correct player).
 export function checkChargingMound(state, pitcher, batter) {
   const ctx = state._beanball;
   if (!ctx) return null;
@@ -123,6 +162,7 @@ export function checkChargingMound(state, pitcher, batter) {
     // Batter charges - bench may clear
     const benchesClear = ctx.tension >= 60 && Math.random() < 0.40;
 
+    // The HIT BATTER is the default charging player - this is the core fix.
     const ejections = [{
       playerName: batter.name,
       playerPos: getPlayerPos(batter),
@@ -203,18 +243,107 @@ export function checkBatterArguesStrikes(state, batter) {
 }
 
 // ── Apply player ejection to game state ──
-// Marks the player as ejected and records it for post-game suspension rolling.
-// The actual lineup/bullpen replacement is handled by the existing substitution system.
+// Marks the player as ejected, records it for post-game suspension rolling,
+// removes the player from the active lineup/bullpen, and forces a replacement.
 export function applyPlayerEjection(state, ejection) {
   if (!state || !ejection) return state;
 
   if (!state._playerEjections) state._playerEjections = [];
   state._playerEjections.push(ejection);
 
-  // Mark the player as ejected in game state so substitution systems know
+  // Track ejected player names per team
   const ejectedKey = ejection.teamKey === state.homeTeam ? '_homeEjectedPlayers' : '_awayEjectedPlayers';
   if (!state[ejectedKey]) state[ejectedKey] = [];
-  state[ejectedKey].push(ejection.playerName);
+  if (!state[ejectedKey].includes(ejection.playerName)) {
+    state[ejectedKey].push(ejection.playerName);
+  }
+
+  // Global ejected players array
+  if (!state.ejectedPlayers) state.ejectedPlayers = [];
+  state.ejectedPlayers.push({
+    name: ejection.playerName,
+    teamKey: ejection.teamKey,
+    reason: ejection.reason,
+    inning: ejection.inning,
+    pos: ejection.playerPos,
+  });
+
+  // Add to removedPlayers so they can never re-enter
+  if (!state.removedPlayers) state.removedPlayers = [];
+  if (!state.removedPlayers.includes(ejection.playerName)) {
+    state.removedPlayers.push(ejection.playerName);
+  }
+
+  // Mark the player object as ejected in the game state
+  const player = findPlayerInGame(state, ejection.playerName, ejection.teamKey);
+  if (player) {
+    player.ejectedCurrentGame = true;
+  }
+
+  // Determine if this is a pitcher or position player
+  const isHome = ejection.teamKey === state.homeTeam;
+  const pitcherObj = isHome ? state.homePitcher : state.awayPitcher;
+  const isCurrentPitcher = pitcherObj && pitcherObj.name === ejection.playerName;
+
+  if (isCurrentPitcher) {
+    // Pitcher ejection: set the pending replacement flag so the existing
+    // substitution system (cpuDecideSubstitutions or UI prompt) handles it.
+    if (!state._beanball) state._beanball = {};
+    state._beanball.autoEjectionPitcher = ejection.playerName;
+    state._beanball.autoEjectionSide = isHome ? 'home' : 'away';
+    state._pendingEjectionReplacement = true;
+
+    // Move ejected pitcher to history with ejected flag
+    const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
+    if (!state[historyKey]) state[historyKey] = [];
+    if (!state[historyKey].find(p => p.name === ejection.playerName)) {
+      state[historyKey].push({ ...pitcherObj, ejected: true });
+    }
+  } else {
+    // Position player ejection: replace in lineup with a bench player
+    const lineup = isHome ? state.homeLineup : state.awayLineup;
+    const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
+    const benchUsedKey = isHome ? 'homeBenchUsed' : 'awayBenchUsed';
+
+    const slotIdx = lineup.findIndex(p => p.name === ejection.playerName);
+    if (slotIdx >= 0) {
+      const oldPlayer = lineup[slotIdx];
+
+      // Move ejected player to history
+      if (!state[historyKey]) state[historyKey] = [];
+      if (!state[historyKey].find(p => p.name === ejection.playerName)) {
+        state[historyKey].push({ ...oldPlayer, ejected: true });
+      }
+
+      // Find a replacement from the bench
+      const replacement = getAvailableBenchPlayer(state, ejection.teamKey);
+      if (replacement) {
+        lineup[slotIdx] = {
+          ...replacement,
+          order: oldPlayer.order,
+          assignedPos: oldPlayer.assignedPos || replacement.pos,
+          gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
+        };
+
+        // Mark bench player as used
+        if (!state[benchUsedKey]) state[benchUsedKey] = [];
+        if (!state[benchUsedKey].find(p => p.name === replacement.name)) {
+          state[benchUsedKey].push({ ...replacement });
+        }
+
+        // Log the substitution
+        const subText = `🔄 ${replacement.name} replaces ejected ${oldPlayer.name}`;
+        if (!state.log.some(e => e.text === subText)) {
+          state.log.push({ type: 'info', text: subText });
+        }
+      } else {
+        // No bench available - this is an emergency. Leave the slot but mark
+        // the player as ejected so they can't bat (an out will be recorded
+        // if their slot comes up, per baseball rules).
+        state.log.push({ type: 'info', text: `⚠️ No bench available - ${oldPlayer.name}'s spot is an automatic out.` });
+      }
+    }
+  }
 
   // Log the ejection
   state.log.push({ type: 'ejection', text: `🟥 ${ejection.commentary}` });
