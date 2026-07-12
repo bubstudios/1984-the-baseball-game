@@ -63,7 +63,7 @@ export function calculateInjuryDuration(severity, startDateStr) {
     case 'day_to_day': {
       const days = 1 + Math.floor(Math.random() * 6); // 1-6 calendar days
       return {
-        eligibleReturnDate: addDays(startDate, days - 1),
+        eligibleReturnDate: addDays(startDate, days),
         gamesRemaining: Math.max(1, Math.ceil(days / 1.1)),
         daysRemaining: days,
       };
@@ -72,7 +72,7 @@ export function calculateInjuryDuration(severity, startDateStr) {
     case '15_day': {
       const days = 15;
       return {
-        eligibleReturnDate: addDays(startDate, days - 1),
+        eligibleReturnDate: addDays(startDate, days),
         gamesRemaining: 15,
         daysRemaining: days,
       };
@@ -81,7 +81,7 @@ export function calculateInjuryDuration(severity, startDateStr) {
     case '60_day': {
       const days = 60;
       return {
-        eligibleReturnDate: addDays(startDate, days - 1),
+        eligibleReturnDate: addDays(startDate, days),
         gamesRemaining: 60,
         daysRemaining: days,
       };
@@ -97,7 +97,7 @@ export function calculateInjuryDuration(severity, startDateStr) {
     case 'pregame_scratch': {
       // Clears after the current game - available next day
       return {
-        eligibleReturnDate: addDays(startDate, 0),
+        eligibleReturnDate: addDays(startDate, 1),
         gamesRemaining: 1,
         daysRemaining: 1,
       };

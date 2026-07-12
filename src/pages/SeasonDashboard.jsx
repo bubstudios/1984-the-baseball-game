@@ -1026,8 +1026,14 @@ export default function SeasonDashboard() {
         await decrementTeamSuspensions(season.id, teamsPlayed, todayDate);
         const updatedSuspensions = await loadActiveSuspensions(season.id);
         setActiveSuspensions(updatedSuspensions);
-        // Decrement player suspensions too
-        await decrementPlayerSuspensions(season.id, teamsPlayed, todayDate);
+      }
+      // Decrement player suspensions — only for simmed games (toSim teams).
+      // User-played games are handled by processGameOver in Home.jsx, so
+      // including them here would double-decrement.
+      const simTeamsPlayed = new Set();
+      for (const g of toSim) { simTeamsPlayed.add(g.homeTeam); simTeamsPlayed.add(g.awayTeam); }
+      if (simTeamsPlayed.size > 0) {
+        await decrementPlayerSuspensions(season.id, simTeamsPlayed, todayDate);
         const updatedPlayerSusp = await loadActivePlayerSuspensions(season.id);
         setActivePlayerSuspensions(updatedPlayerSusp);
       }

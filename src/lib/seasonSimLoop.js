@@ -161,17 +161,14 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
       try { await base44.entities.Schedule.update(g.id, { status: 'final' }); } catch (e) { /* non-fatal */ }
     }
 
-    // Decrement player suspensions for teams that played today
+    // Decrement player suspensions for teams that played today.
+    // Only count games simmed in THIS run — user-played games (already final)
+    // are handled by processGameOver in Home.jsx, so including them here
+    // would double-decrement.
     const playerTeamsPlayed = new Set();
     for (const g of toSim) {
       playerTeamsPlayed.add(g.homeTeam);
       playerTeamsPlayed.add(g.awayTeam);
-    }
-    for (const g of daySchedule) {
-      if (g.status === 'final') {
-        playerTeamsPlayed.add(g.homeTeam);
-        playerTeamsPlayed.add(g.awayTeam);
-      }
     }
     const todayDate = daySchedule[0]?.gameDate || seasonObj.currentDate;
 

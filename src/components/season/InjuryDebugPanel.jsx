@@ -3,6 +3,7 @@ import { HeartPulse, CheckCircle2, XCircle } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import { getSeverityLabel } from '@/lib/injuryConfig';
 import { formatGameDate } from '@/lib/seasonSchedule';
+import { computeDaysRemaining } from '@/lib/injuryPersistence';
 
 function teamAbbr(teamKey) {
   return TEAMS[teamKey]?.abbr || teamKey;
@@ -52,7 +53,7 @@ export default function InjuryDebugPanel({ injuries, season }) {
                 <span>Source: <span className="text-foreground">{injury.source}</span></span>
                 <span>Started: <span className="text-foreground">{formatGameDate(injury.startedOnDate)}</span></span>
                 <span>Return: <span className="text-foreground">{formatGameDate(injury.eligibleReturnDate)}</span></span>
-                <span>Days Left: <span className="text-foreground">{injury.daysRemaining}</span></span>
+                <span>Days Left: <span className="text-foreground">{computeDaysRemaining(injury.eligibleReturnDate, season?.currentDate)}</span></span>
               </div>
               <div className="flex items-center gap-2 mt-1 pt-1 border-t border-border/30">
                 <span className="flex items-center gap-1">

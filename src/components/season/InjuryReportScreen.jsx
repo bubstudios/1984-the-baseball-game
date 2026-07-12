@@ -4,6 +4,7 @@ import { X, HeartPulse, Calendar, ArrowLeft } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
 import { getSeverityLabel } from '@/lib/injuryConfig';
 import { formatGameDate } from '@/lib/seasonSchedule';
+import { computeDaysRemaining } from '@/lib/injuryPersistence';
 
 function teamAbbr(teamKey) {
   return TEAMS[teamKey]?.abbr || teamKey;
@@ -68,7 +69,7 @@ export default function InjuryReportScreen({ season, injuries, onClose }) {
                   </p>
                 </div>
                 {userInjuries.map((injury, i) => (
-                  <InjuryCard key={i} injury={injury} />
+                  <InjuryCard key={i} injury={injury} currentDate={season?.currentDate} />
                 ))}
               </div>
             )}
@@ -80,7 +81,7 @@ export default function InjuryReportScreen({ season, injuries, onClose }) {
                   Around the League
                 </div>
                 {otherInjuries.map((injury, i) => (
-                  <InjuryCard key={i} injury={injury} />
+                  <InjuryCard key={i} injury={injury} currentDate={season?.currentDate} />
                 ))}
               </div>
             )}
@@ -91,7 +92,7 @@ export default function InjuryReportScreen({ season, injuries, onClose }) {
   );
 }
 
-function InjuryCard({ injury }) {
+function InjuryCard({ injury, currentDate }) {
   const [expanded, setExpanded] = useState(false);
   const severityColor = {
     day_to_day: 'text-amber-400',
@@ -124,7 +125,7 @@ function InjuryCard({ injury }) {
         <div className="text-[10px] text-muted-foreground/70 mt-1 flex items-center gap-1">
           <Calendar className="w-2.5 h-2.5" />
           Eligible: {formatGameDate(injury.eligibleReturnDate)}
-          {injury.daysRemaining > 0 && ` (${injury.daysRemaining}d left)`}
+          {(() => { const dr = computeDaysRemaining(injury.eligibleReturnDate, currentDate); return dr > 0 ? ` (${dr}d left)` : ''; })()}
         </div>
       )}
     </div>

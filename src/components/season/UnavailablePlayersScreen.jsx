@@ -1,8 +1,7 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { X, HeartPulse, Ban, UserX, Calendar, Clock } from 'lucide-react';
+import { X, HeartPulse, Ban, UserX } from 'lucide-react';
 import { TEAMS } from '@/lib/gameData';
-import { getSeverityLabel } from '@/lib/injuryConfig';
+import { computeDaysRemaining } from '@/lib/injuryPersistence';
 
 function teamName(teamKey) {
   return TEAMS[teamKey]?.name || teamKey;
@@ -16,12 +15,42 @@ function formatDate(dateStr) {
   } catch (e) { return dateStr; }
 }
 
-function InjuryRow({ injury }) {
+function getILLabel(severity) {
+  const map = {
+    minor: 'DTD',
+    day_to_day: 'DTD',
+    '15_day': '15-day IL',
+    '60_day': '60-day IL',
+    season_ending: 'Out for Season',
+    pregame_scratch: 'Scratched',
+  };
+  return map[severity] || 'IL';
+}
+
+function InjuryRow({ injury, currentDate }) {
+  const label = getILLabel(injury.severity);
+  const isSeasonEnding = injury.severity === 'season_ending';
+  const isScratch = injury.severity === 'pregame_scratch';
+  const daysLeft = isSeasonEnding || isScratch ? 0 : computeDaysRemaining(injury.eligibleReturnDate, currentDate);
+
+  let countdownText;
+  if (isSeasonEnding) {
+    countdownText = null;
+  } else if (daysLeft <= 0) {
+    countdownText = 'Eligible';
+  } else {
+    countdownText = `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`;
+  }
+
+  const eligibleText = injury.eligibleReturnDate && !isSeasonEnding
+    ? `eligible ${formatDate(injury.eligibleReturnDate)}`
+    : null;
+
   return (
-    <div className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-muted/30">
+    <div className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-muted/30 opacity-60">
       <HeartPulse className="w-3.5 h-3.5 text-red-400 shrink-0" />
       <div className="flex-1 min-w-0">
-        <div className="font-heading text-xs text-foreground font-medium truncate">
+        <div className="font-heading text-xs text-foreground font-medium truncate line-through">
           {injury.playerName}
         </div>
         <div className="text-[10px] text-muted-foreground truncate">
@@ -30,11 +59,14 @@ function InjuryRow({ injury }) {
       </div>
       <div className="text-right shrink-0">
         <div className="text-[10px] font-heading font-bold text-red-400">
-          {getSeverityLabel(injury.severity)}
+          {label}
         </div>
-        <div className="text-[9px] text-muted-foreground">
-          {injury.gamesRemaining > 0 ? `~${injury.gamesRemaining}G left` : 'Eligible'}
-        </div>
+        {countdownText && (
+          <div className="text-[9px] text-muted-foreground">{countdownText}</div>
+        )}
+        {eligibleText && (
+          <div className="text-[9px] text-muted-foreground/70">{eligibleText}</div>
+        )}
       </div>
     </div>
   );
@@ -43,11 +75,21 @@ function InjuryRow({ injury }) {
 function SuspensionRow({ suspension, isManager }) {
   const name = suspension.playerName || suspension.managerName;
   const icon = isManager ? <UserX className="w-3.5 h-3.5 text-amber-400 shrink-0" /> : <Ban className="w-3.5 h-3.5 text-orange-400 shrink-0" />;
+  const gamesLeft = suspension.gamesRemaining || 0;
+  const label = isManager ? 'MGR SUS' : 'SUS';
+
+  let countdownText;
+  if (gamesLeft <= 0) {
+    countdownText = 'Reinstated';
+  } else {
+    countdownText = `${gamesLeft} game${gamesLeft !== 1 ? 's' : ''} remaining`;
+  }
+
   return (
-    <div className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-muted/30">
+    <div className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-muted/30 opacity-60">
       {icon}
       <div className="flex-1 min-w-0">
-        <div className="font-heading text-xs text-foreground font-medium truncate">
+        <div className="font-heading text-xs text-foreground font-medium truncate line-through">
           {name}
         </div>
         <div className="text-[10px] text-muted-foreground truncate">
@@ -56,11 +98,9 @@ function SuspensionRow({ suspension, isManager }) {
       </div>
       <div className="text-right shrink-0">
         <div className="text-[10px] font-heading font-bold text-amber-400">
-          {isManager ? 'MGR SUSP' : 'SUSP'}
+          {label}
         </div>
-        <div className="text-[9px] text-muted-foreground">
-          {suspension.gamesRemaining > 0 ? `${suspension.gamesRemaining}G left` : 'Served'}
-        </div>
+        <div className="text-[9px] text-muted-foreground">{countdownText}</div>
       </div>
     </div>
   );
@@ -68,9 +108,10 @@ function SuspensionRow({ suspension, isManager }) {
 
 export default function UnavailablePlayersScreen({ season, injuries, playerSuspensions, managerSuspensions, onClose }) {
   const userTeam = season?.userTeam;
-  const userInjuries = (injuries || []).filter(i => i.teamKey === userTeam);
-  const userPlayerSusp = (playerSuspensions || []).filter(s => s.teamKey === userTeam);
-  const userManagerSusp = (managerSuspensions || []).filter(s => s.teamKey === userTeam);
+  const currentDate = season?.currentDate;
+  const userInjuries = (injuries || []).filter(i => i.teamKey === userTeam && i.active);
+  const userPlayerSusp = (playerSuspensions || []).filter(s => s.teamKey === userTeam && s.active);
+  const userManagerSusp = (managerSuspensions || []).filter(s => s.teamKey === userTeam && s.active);
 
   const totalCount = userInjuries.length + userPlayerSusp.length + userManagerSusp.length;
 
@@ -119,7 +160,7 @@ export default function UnavailablePlayersScreen({ season, injuries, playerSuspe
                 </div>
                 <div className="bg-card border border-border rounded-lg divide-y divide-border/30">
                   {userInjuries.map((inj, i) => (
-                    <InjuryRow key={inj.id || i} injury={inj} />
+                    <InjuryRow key={inj.id || i} injury={inj} currentDate={currentDate} />
                   ))}
                 </div>
               </div>

@@ -71,12 +71,12 @@ import { injectAllStarTeams, removeAllStarTeams } from '@/lib/allStarTeams';
 import { calculateAllStarMvp } from '@/lib/allStarMvp';
 import { hasReachedAllStarPitchLimit } from '@/lib/allStarRules';
 import { checkBatterInjury as checkBatterInjuryExternal } from '@/lib/batterInjuryCheck';
-import { loadActiveInjuries, recordInjury, resolveStarterSkippingInjuries } from '@/lib/injuryPersistence';
+import { loadActiveInjuries, recordInjury, resolveStarterSkippingInjuries, runDailyRecovery, computeDaysRemaining, annotateInjuriesForDisplay } from '@/lib/injuryPersistence';
 import { loadActiveSuspensions, recordSuspension } from '@/lib/managerSuspension';
 import { checkArgumentLogic } from '@/lib/argumentLogic';
 import { checkHBPEjection, checkChargingMound, checkBatterArguesStrikes, applyPlayerEjection, applyMultipleEjections, checkBenchClearingBrawl, getGameEjections, findPlayerInGame, getPreviousBatter } from '@/lib/playerEjectionEngine';
 import DisciplineIncidentBanner from '@/components/game/DisciplineIncidentBanner';
-import { recordPlayerSuspension, loadActivePlayerSuspensions, buildSuspendedPlayerSet } from '@/lib/playerDiscipline';
+import { recordPlayerSuspension, loadActivePlayerSuspensions, buildSuspendedPlayerSet, decrementPlayerSuspensions } from '@/lib/playerDiscipline';
 import { recordEjectionTxn } from '@/lib/transactionLog';
 import AtmosphereDebugPanel from '@/components/game/AtmosphereDebugPanel';
 import { inc as incAtmo, resetCounters as resetAtmoCounters, forceBallparkEvent, forceCelebrationText, forceBenchChirp, forceRobbedHRText } from '@/lib/atmosphereDebug';
@@ -1103,7 +1103,7 @@ export default function Home() {
               ejectionReason: ej.reason,
             });
           }
-          if (ctx.seasonId) await maybeAdvanceDay({ id: ctx.seasonId, currentGameDay: ctx.gameDay });
+          if (ctx.seasonId) { await maybeAdvanceDay({ id: ctx.seasonId, currentGameDay: ctx.gameDay }); await decrementPlayerSuspensions(ctx.seasonId, new Set([ctx.homeTeam, ctx.awayTeam]), ctx.gameDate); await runDailyRecovery(ctx.seasonId, ctx.gameDate); }
         } catch (e) {
           console.error('Season result save failed:', e);
         } finally {

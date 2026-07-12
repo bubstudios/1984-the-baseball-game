@@ -166,21 +166,41 @@ export function buildInjuredRoster(teamKey, injuries) {
   };
 }
 
-// ── Daily recovery: decrement daysRemaining, clear eligible returns ──
-// Called after all games for a calendar day are completed.
+// ── Compute days remaining from eligibleReturnDate ──
+// Idempotent: always derived from dates, never decremented.
+// This makes it safe to call runDailyRecovery multiple times for the same day.
+export function computeDaysRemaining(eligibleReturnDate, currentDate) {
+  if (!eligibleReturnDate || !currentDate) return 0;
+  const eligible = new Date(eligibleReturnDate + 'T00:00:00');
+  const current = new Date(currentDate + 'T00:00:00');
+  const diffMs = eligible.getTime() - current.getTime();
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  return Math.max(0, diffDays);
+}
+
+// Annotate injury objects with computed daysRemaining for display.
+// Call this before passing injuries to UI components.
+export function annotateInjuriesForDisplay(injuries, currentDate) {
+  if (!injuries || !currentDate) return injuries || [];
+  return injuries.map(i => ({
+    ...i,
+    daysRemaining: computeDaysRemaining(i.eligibleReturnDate, currentDate),
+  }));
+}
+
+// ── Daily recovery: clear eligible returns ──
+// Idempotent: only checks eligibleReturnDate, does NOT decrement daysRemaining
+// (daysRemaining is computed on the fly from dates — see computeDaysRemaining).
+// Safe to call multiple times for the same day without double-decrementing.
 export async function runDailyRecovery(seasonId, currentDate) {
   if (!seasonId) return { recovered: [], updated: 0 };
 
   try {
     const injuries = await base44.entities.Injury.filter({ seasonId, active: true });
     const recovered = [];
-    let updatedCount = 0;
 
     for (const injury of injuries) {
-      const newDaysRemaining = Math.max(0, (injury.daysRemaining || 0) - 1);
-
-      // Primary check: eligibleReturnDate has passed (the last unavailable day).
-      // The player becomes available for the NEXT game after this date's games.
+      // Player is eligible when currentDate reaches eligibleReturnDate.
       const eligibleToReturn = !injury.eligibleReturnDate || currentDate >= injury.eligibleReturnDate;
 
       if (eligibleToReturn) {
@@ -195,14 +215,11 @@ export async function runDailyRecovery(seasonId, currentDate) {
           injuryType: injury.injuryType,
         });
         await recordReturnFromInjuryTxn(seasonId, { ...injury, recoveredOnDate: currentDate });
-      } else {
-        await base44.entities.Injury.update(injury.id, { daysRemaining: newDaysRemaining });
-        updatedCount++;
       }
     }
 
     clearInjuryCache();
-    return { recovered, updated: updatedCount };
+    return { recovered, updated: 0 };
   } catch (e) {
     console.error('[injuries] Daily recovery failed:', e);
     return { recovered: [], updated: 0 };
