@@ -54,7 +54,7 @@ export function patchLineupForAvailability(lineup, bench, unavailableNames) {
         !usedReplacementNames.has(b.name) && !patchedLineup.find(lp => lp.name === b.name)
       );
       if (replacement) {
-        patchedLineup.push({ ...replacement, order: p.order, assignedPos: p.assignedPos || p.pos });
+        patchedLineup.push({ ...replacement, order: p.order, assignedPos: p.assignedPos || p.pos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } });
         usedReplacementNames.add(replacement.name);
       } else {
         // Emergency fallback - no legal replacement exists.
