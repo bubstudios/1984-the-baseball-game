@@ -72,7 +72,7 @@ import { checkBatterInjury as checkBatterInjuryExternal } from '@/lib/batterInju
 import { loadActiveInjuries, recordInjury, resolveStarterSkippingInjuries } from '@/lib/injuryPersistence';
 import { loadActiveSuspensions, recordSuspension } from '@/lib/managerSuspension';
 import { checkArgumentLogic } from '@/lib/argumentLogic';
-import { checkHBPEjection, checkChargingMound, checkBatterArguesStrikes, applyPlayerEjection, applyMultipleEjections, checkBenchClearingBrawl, getGameEjections, findPlayerInGame } from '@/lib/playerEjectionEngine';
+import { checkHBPEjection, checkChargingMound, checkBatterArguesStrikes, applyPlayerEjection, applyMultipleEjections, checkBenchClearingBrawl, getGameEjections, findPlayerInGame, getPreviousBatter } from '@/lib/playerEjectionEngine';
 import DisciplineIncidentBanner from '@/components/game/DisciplineIncidentBanner';
 import { recordPlayerSuspension, loadActivePlayerSuspensions, buildSuspendedPlayerSet } from '@/lib/playerDiscipline';
 
@@ -1246,13 +1246,17 @@ export default function Home() {
              }
            }
          }
-         // Called strikeout argument check
-         if (afterSubs.lastPlay?.type === 'strikeout' && batter) {
-           const strikeArg = checkBatterArguesStrikes(afterSubs, batter);
-           if (strikeArg) {
-             applyPlayerEjection(afterSubs, strikeArg);
-             totalEjections++;
-             incidentSteps.push({ text: strikeArg.commentary, type: 'ejection' });
+         // Called strikeout argument check - use the batter who actually struck out
+         // (getSituationalBatter returns the NEXT batter since advanceBatter already ran)
+         if (afterSubs.lastPlay?.type === 'strikeout') {
+           const prevBatter = getPreviousBatter(afterSubs) || batter;
+           if (prevBatter) {
+             const strikeArg = checkBatterArguesStrikes(afterSubs, prevBatter);
+             if (strikeArg) {
+               applyPlayerEjection(afterSubs, strikeArg);
+               totalEjections++;
+               incidentSteps.push({ text: strikeArg.commentary, type: 'ejection' });
+             }
            }
          }
          // Bench-clearing brawl check (high tension)

@@ -35,6 +35,28 @@ export function getPlayerPos(player) {
   return player.pos || player.assignedPos || '?';
 }
 
+// ── Resolve the batter who just completed their at-bat ──
+// After processAtBat, advanceBatter has already run, so getCurrentBatter
+// returns the NEXT batter. This function finds the actual batter from the
+// lastPlay text (which starts with the batter's name) by matching against
+// all players in both lineups and history.
+export function getPreviousBatter(state) {
+  if (!state.lastPlay || !state.lastPlay.text) return null;
+  const text = state.lastPlay.text;
+  const allPlayers = [
+    ...state.homeLineup.map(p => ({ ...p, teamKey: state.homeTeam })),
+    ...state.awayLineup.map(p => ({ ...p, teamKey: state.awayTeam })),
+    ...(state.homePlayerHistory || []).map(p => ({ ...p, teamKey: state.homeTeam })),
+    ...(state.awayPlayerHistory || []).map(p => ({ ...p, teamKey: state.awayTeam })),
+  ];
+  // Sort by name length descending so "Paul Mirabella" matches before "Paul"
+  const sorted = [...allPlayers].sort((a, b) => b.name.length - a.name.length);
+  for (const p of sorted) {
+    if (text.startsWith(p.name + ' ')) return p;
+  }
+  return null;
+}
+
 // ── Find a player object by name from lineup + history ──
 // Returns the live player object from the lineup (not a copy), or null.
 export function findPlayerInGame(state, name, teamKey) {
