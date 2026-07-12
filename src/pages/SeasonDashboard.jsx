@@ -1827,20 +1827,7 @@ export default function SeasonDashboard() {
                 {simulating ? <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" /> : <TrendingUp className="w-4 h-4" />}
                 Simulate Day
               </Button>
-              <div className="grid grid-cols-2 gap-1.5">
-                <Button onClick={() => simToMonthFinale(4)} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-amber-400">
-                  <FastForward className="w-3 h-3" /> April Finale
-                </Button>
-                <Button onClick={simToJuly8} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-cyan-400">
-                  <FastForward className="w-3 h-3" /> July 8 (ASG)
-                </Button>
-                <Button onClick={simToAugust30} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-amber-400">
-                  <FastForward className="w-3 h-3" /> Aug 30 (Trade)
-                </Button>
-                <Button onClick={simToUserFinalGame} disabled={simulating} variant="ghost" size="sm" className="gap-1 text-[10px] text-emerald-400">
-                  <FastForward className="w-3 h-3" /> Final Game
-                </Button>
-              </div>
+
             </div>
           </div>
         ) : (
