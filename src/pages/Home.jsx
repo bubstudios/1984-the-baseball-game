@@ -81,7 +81,6 @@ import { recordEjectionTxn } from '@/lib/transactionLog';
 import AtmosphereDebugPanel from '@/components/game/AtmosphereDebugPanel';
 import { inc as incAtmo, resetCounters as resetAtmoCounters, forceBallparkEvent, forceCelebrationText, forceBenchChirp, forceRobbedHRText } from '@/lib/atmosphereDebug';
 
-
 export default function Home() {
   const [gameMode, setGameMode] = useState(null); // 'exhibition' | 'season'
   const [gameState, setGameState] = useState(null);
@@ -1192,6 +1191,7 @@ export default function Home() {
 
   const handlePitch = useCallback((pitchName) => {
     if (!gameState || gameState.gameOver) return;
+    if (validateNoEjectedPlayersActive(gameState).length > 0) { setSubsTab('pinchhit'); setShowSubs(true); return; }
     setProcessing(true);
     const prePitchSnapshot = JSON.parse(JSON.stringify(gameState));
     let endingState = null;
@@ -1350,6 +1350,7 @@ export default function Home() {
 
   const handleSwing = useCallback((swingIndex) => {
     if (!gameState || gameState.gameOver) return;
+    if (validateNoEjectedPlayersActive(gameState).length > 0) { setSubsTab('pinchhit'); setShowSubs(true); return; }
     setProcessing(true);
     const prePitchSnapshot = JSON.parse(JSON.stringify(gameState));
     let endingState = null;
@@ -2262,13 +2263,9 @@ export default function Home() {
         <AtmosphereDebugPanel onForce={handleForceAtmoEvent} />
       )}
 
-
-
       {/* Fireworks */}
       <Fireworks trigger={hrTrigger} type="hr" />
       <Fireworks trigger={winTrigger} type="win" />
-
-
 
       {/* Beanball Banner - HBP, warnings, bat flips, collisions, brawls */}
       {beanballEvent && (
@@ -2319,8 +2316,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
-
 
       {/* Injury Alert Modal - shows injury details before replacement */}
       {injuryAlert && (
