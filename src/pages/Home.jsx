@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS, PITCH_TYPES, SWING_TYPES, MANAGERS } from '@/lib/gameData';
 import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk, cpuCheckPinchHit, pickCpuReliever } from '@/lib/gameEngine';
+import { resolveEjectionReplacement } from '@/lib/ejectionReplacement';
 import { applyWeatherEffects, generateWeather, generateIndoorWeather } from '@/lib/weather';
 import { STADIUM_WEATHER_CITIES, DOMED_STADIUMS } from '@/lib/ballparks';
 import ModeSelect from '@/components/game/ModeSelect';
@@ -700,46 +701,19 @@ export default function Home() {
       setGameState(prev => prev ? { ...prev, _beanballWarning: false } : prev);
     }
 
-    // Check for pitcher ejections - prompt user for replacement
+    // Check for pitcher ejections - prompt user for replacement.
+    // GATED by !disciplineIncident: the On-Field Incident window must be seen
+    // and dismissed BEFORE the replacement is forced. When the incident is
+    // showing, we pause here; the dismissal handler calls
+    // resolveEjectionReplacement() to resume.
     if (gameState._pendingEjectionReplacement && !ejectionResult) {
-      const ejectedSide = gameState._beanball?.autoEjectionSide;
-      const isUserTeam = ejectedSide === 'home' && userTeam === gameState.homeTeam || ejectedSide === 'away' && userTeam === gameState.awayTeam;
-      if (isUserTeam) {
-        // User must pick a replacement pitcher
-        let bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
-        // Filter out the ejected pitcher so they can't re-enter the game
-        const ejectedPitcherName = gameState._beanball?.autoEjectionPitcher;
-        if (ejectedPitcherName) {
-          bullpen = bullpen.filter(p => p.name !== ejectedPitcherName);
-        }
-        // Emergency fallback: if the bullpen is exhausted, offer any available
-        // roster pitcher (starter/reliever) not already in the game or removed.
-        if (!bullpen || bullpen.length === 0) {
-          const teamKey = ejectedSide === 'home' ? gameState.homeTeam : gameState.awayTeam;
-          const rosterPitchers = TEAMS[teamKey]?.bullpen || [];
-          const inGame = new Set();
-          (ejectedSide === 'home' ? gameState.homeLineup : gameState.awayLineup).forEach(p => inGame.add(p.name));
-          (ejectedSide === 'home' ? (gameState.homePlayerHistory || []) : (gameState.awayPlayerHistory || [])).forEach(p => inGame.add(p.name));
-          (gameState.removedPlayers || []).forEach(n => inGame.add(n));
-          bullpen = rosterPitchers.filter(p => !inGame.has(p.name) && !(gameState.scratchedPlayers || []).includes(p.name));
-        }
-        setEjectionResult({ ejectedSide, bullpen });
-      } else {
-        // CPU team ejection - auto-select reliever (Session 8 policy)
-        const bullpen = ejectedSide === 'home' ? gameState.homeBullpen : gameState.awayBullpen;
-        const newReliever = pickCpuReliever(bullpen, gameState.inning, {
-          cpuScore: gameState.score[ejectedSide],
-          oppScore: gameState.score[ejectedSide === 'home' ? 'away' : 'home'],
-        });
-        if (newReliever) {
-          const newState = changePitcher(gameState, newReliever, ejectedSide);
-          setGameState(newState);
-        }
+      if (!disciplineIncident) {
+        const r = resolveEjectionReplacement(gameState, userTeam);
+        if (r.action === 'show_modal') setEjectionResult({ ejectedSide: r.ejectedSide, bullpen: r.bullpen });
+        else if (r.action === 'cpu_replaced') setGameState(r.newState);
       }
       return;
     }
-
-
 
     // Pitcher injury - alert first, then modal/auto-replace on dismiss
     if (gameState._pendingPitcherInjury && !injuryAlert && !pitcherInjury) {
@@ -2283,7 +2257,16 @@ export default function Home() {
       {disciplineIncident && (
         <DisciplineIncidentBanner
           incident={disciplineIncident}
-          onDismiss={() => setDisciplineIncident(null)}
+          onDismiss={() => {
+            setDisciplineIncident(null);
+            // After the user has seen the incident story, trigger the pending
+            // pitching replacement (it was blocked while the incident was showing).
+            if (gameState?._pendingEjectionReplacement && !ejectionResult) {
+              const r = resolveEjectionReplacement(gameState, userTeam);
+              if (r.action === 'show_modal') setEjectionResult({ ejectedSide: r.ejectedSide, bullpen: r.bullpen });
+              else if (r.action === 'cpu_replaced') setGameState(r.newState);
+            }
+          }}
         />
       )}
 
