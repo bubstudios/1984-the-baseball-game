@@ -1958,16 +1958,12 @@ export default function Home() {
     const batterTeamKey = battingSide === 'home' ? homeTeam : awayTeam;
     const gameGS = situationalBatter.gameStats || {};
     if (gameMode === 'season') {
-      const ss = seasonBatterStatsMap[`${batterTeamKey}|${situationalBatter.name}`];
-      if (ss) {
-        const totalAB = ss.ab + (gameGS.ab || 0);
-        const totalH = ss.h + (gameGS.hits || 0);
-        batterStats = {
-          avg: totalAB > 0 ? totalH / totalAB : 0,
-          hr: ss.hr + (gameGS.hr || 0),
-          rbi: ss.rbi + (gameGS.rbi || 0),
-        };
-      }
+      // Default to zeros when no stats record exists yet (new season). Banner
+      // always shows in Season Mode — not gated behind a save flag.
+      const ss = seasonBatterStatsMap[`${batterTeamKey}|${situationalBatter.name}`] || { ab: 0, h: 0, hr: 0, rbi: 0 };
+      const totalAB = ss.ab + (gameGS.ab || 0);
+      const totalH = ss.h + (gameGS.hits || 0);
+      batterStats = { avg: totalAB > 0 ? totalH / totalAB : 0, hr: ss.hr + (gameGS.hr || 0), rbi: ss.rbi + (gameGS.rbi || 0) };
     } else {
       const sp = situationalBatter.splits;
       if (sp) {
