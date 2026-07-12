@@ -1,5 +1,6 @@
 import React from 'react';
 import { TEAMS } from '@/lib/gameData';
+import { formatRating } from '@/lib/ratingFormat';
 import { AlertTriangle } from 'lucide-react';
 
 export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInning, homeTeam, awayTeam }) {
@@ -35,7 +36,7 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
             {isOutOfPosition && <AlertTriangle className="w-3 h-3" />}
           </span>
           <span className="text-[10px] font-semibold text-primary">
-            CON {displayBatter.contact}
+            CON {formatRating(displayBatter.contact)}
             {isCountAdjusted && displayBatter.contact !== displayBatter.baseContact ? (
               <span className={`text-[9px] ml-0.5 ${displayBatter.contact > displayBatter.baseContact ? 'text-green-400' : 'text-red-400'}`}>
                 {displayBatter.contact > displayBatter.baseContact ? '▲' : '▼'}
@@ -47,7 +48,7 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
             )}
           </span>
           <span className="text-[10px] font-semibold text-amber-400">
-            PWR {displayBatter.power}
+            PWR {formatRating(displayBatter.power)}
             {isCountAdjusted && displayBatter.power !== displayBatter.basePower ? (
               <span className={`text-[9px] ml-0.5 ${displayBatter.power > displayBatter.basePower ? 'text-green-400' : 'text-red-400'}`}>
                 {displayBatter.power > displayBatter.basePower ? '▲' : '▼'}
@@ -58,8 +59,8 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
               </span>
             )}
           </span>
-          <span className="text-[10px] text-cyan-400 font-semibold">SPD {displayBatter.speed}</span>
-          <span className={`text-[10px] ${isOutOfPosition ? 'text-orange-400' : 'text-muted-foreground'}`}>DEF {displayBatter.defense}</span>
+          <span className="text-[10px] text-cyan-400 font-semibold">SPD {formatRating(displayBatter.speed)}</span>
+          <span className={`text-[10px] ${isOutOfPosition ? 'text-orange-400' : 'text-muted-foreground'}`}>DEF {formatRating(displayBatter.defense)}</span>
         </div>
         {batter.gameStats && (
           <div className="flex gap-2 mt-1 text-[10px] text-muted-foreground/70">
@@ -102,12 +103,12 @@ export default function MatchupCard({ batter, adjustedBatter, pitcher, halfInnin
         <div className="flex items-center gap-3 mt-1.5">
           <span className="text-[10px] text-muted-foreground">{pitcher.assignedPos || pitcher.pos}</span>
           <span className={`text-[10px] font-semibold ${pitcher.fatigueSpeedPen ? 'text-orange-400' : 'text-emerald-400'}`}>
-            SPD {pitcher.effectivePitchSpeed || pitcher.pitchSpeed}
+            SPD {formatRating(pitcher.effectivePitchSpeed || pitcher.pitchSpeed)}
             {pitcher.fatigueSpeedPen > 0 && <span className="text-[9px] text-red-400 ml-0.5">-{pitcher.fatigueSpeedPen}</span>}
           </span>
-          <span className="text-[10px] text-purple-400 font-semibold">OFF {pitcher.offSpeed}</span>
+          <span className="text-[10px] text-purple-400 font-semibold">OFF {formatRating(pitcher.offSpeed)}</span>
           <span className={`text-[10px] font-semibold ${pitcher.fatigueControlPen ? 'text-orange-400' : 'text-blue-400'}`}>
-            CTL {pitcher.effectiveControl || pitcher.control}
+            CTL {formatRating(pitcher.effectiveControl || pitcher.control)}
             {pitcher.fatigueControlPen > 0 && <span className="text-[9px] text-red-400 ml-0.5">-{pitcher.fatigueControlPen}</span>}
           </span>
           {pitcher._composure && (

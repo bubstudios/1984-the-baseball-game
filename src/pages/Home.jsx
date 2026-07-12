@@ -2241,8 +2241,8 @@ export default function Home() {
         />
       )}
 
-      {/* Atmosphere Debug Panel - temporary diagnostic tool */}
-      {gameState && !gameState.gameOver && (
+      {/* Atmosphere Debug Panel - hidden in normal play; add ?atmo to URL to view */}
+      {gameState && !gameState.gameOver && typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('atmo') && (
         <AtmosphereDebugPanel onForce={handleForceAtmoEvent} />
       )}
 

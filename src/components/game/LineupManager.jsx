@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { TEAMS } from '@/lib/gameData';
 import { ArrowUp, ArrowDown, X, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
 import { calculateSituationalRatings, getRatingBadgeClass } from '@/lib/situationalRatings';
+import { formatRating } from '@/lib/ratingFormat';
 import { getRestDays, getUnavailableRelievers } from '@/lib/seasonStore';
 
 const ALL_POSITIONS = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
@@ -100,14 +101,14 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
             <div className="flex flex-col items-center gap-0.5">
               <span className="text-[8px] text-muted-foreground leading-none">C</span>
               <div className="flex items-center gap-0.5">
-                <span className={`text-xs font-bold leading-none ${getRatingBadgeClass(situational.contact)}`}>{situational.contact}</span>
+                <span className={`text-xs font-bold leading-none ${getRatingBadgeClass(situational.contact)}`}>{formatRating(situational.contact)}</span>
                 {cDelta !== 0 && <span className={`text-[8px] ${cColor}`}>{cArrow}{Math.abs(cDelta) >= 2 ? Math.abs(cDelta) : ''}</span>}
               </div>
             </div>
             <div className="flex flex-col items-center gap-0.5">
               <span className="text-[8px] text-muted-foreground leading-none">P</span>
               <div className="flex items-center gap-0.5">
-                <span className={`text-xs font-bold leading-none ${getRatingBadgeClass(situational.power)}`}>{situational.power}</span>
+                <span className={`text-xs font-bold leading-none ${getRatingBadgeClass(situational.power)}`}>{formatRating(situational.power)}</span>
                 {pDelta !== 0 && <span className={`text-[8px] ${pColor}`}>{pArrow}{Math.abs(pDelta) >= 2 ? Math.abs(pDelta) : ''}</span>}
               </div>
             </div>
@@ -120,11 +121,11 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <div className="flex flex-col items-center gap-0.5">
             <span className="text-[8px] text-muted-foreground leading-none">S</span>
-            <span className="text-xs font-bold leading-none text-foreground">{playerData.speed || 0}</span>
+            <span className="text-xs font-bold leading-none text-foreground">{formatRating(playerData.speed || 0)}</span>
           </div>
           <div className="flex flex-col items-center gap-0.5">
             <span className="text-[8px] text-muted-foreground leading-none">D</span>
-            <span className={`text-xs font-bold leading-none ${(penalty?.defenseMod || 0) < 0 ? 'text-amber-400' : 'text-foreground'}`}>{Math.max(0, (playerData.defense || 0) + (penalty?.defenseMod || 0))}</span>
+            <span className={`text-xs font-bold leading-none ${(penalty?.defenseMod || 0) < 0 ? 'text-amber-400' : 'text-foreground'}`}>{formatRating(Math.max(0, (playerData.defense || 0) + (penalty?.defenseMod || 0)))}</span>
           </div>
         </div>
       )}
@@ -516,10 +517,10 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
                       <span className="text-foreground font-bold">{p.name}</span>
                       <span className="text-muted-foreground">({p.pos}, {p.bats}B)</span>
                       <div className="flex items-center gap-2 ml-auto">
-                        <span className="text-[10px] text-muted-foreground">C:<span className={`${adjContact >= 7 ? 'text-emerald-400' : adjContact <= 4 ? 'text-red-400' : 'text-foreground'}`}>{adjContact}</span>{cDelta !== 0 && <span className={`text-[8px] ${cDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>{cArrow}{Math.abs(cDelta) >= 2 ? Math.abs(cDelta) : ''}</span>}</span>
-                        <span className="text-[10px] text-muted-foreground">P:<span className={`${adjPower >= 7 ? 'text-emerald-400' : adjPower <= 4 ? 'text-red-400' : 'text-foreground'}`}>{adjPower}</span>{pDelta !== 0 && <span className={`text-[8px] ${pDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>{pArrow}{Math.abs(pDelta) >= 2 ? Math.abs(pDelta) : ''}</span>}</span>
-                        <span className="text-[10px] text-muted-foreground">S:<span className="text-foreground font-bold">{p.speed || 0}</span></span>
-                        <span className="text-[10px] text-muted-foreground">D:<span className="text-foreground font-bold">{p.defense || 0}</span></span>
+                        <span className="text-[10px] text-muted-foreground">C:<span className={`${adjContact >= 7 ? 'text-emerald-400' : adjContact <= 4 ? 'text-red-400' : 'text-foreground'}`}>{formatRating(adjContact)}</span>{cDelta !== 0 && <span className={`text-[8px] ${cDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>{cArrow}{Math.abs(cDelta) >= 2 ? Math.abs(cDelta) : ''}</span>}</span>
+                        <span className="text-[10px] text-muted-foreground">P:<span className={`${adjPower >= 7 ? 'text-emerald-400' : adjPower <= 4 ? 'text-red-400' : 'text-foreground'}`}>{formatRating(adjPower)}</span>{pDelta !== 0 && <span className={`text-[8px] ${pDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>{pArrow}{Math.abs(pDelta) >= 2 ? Math.abs(pDelta) : ''}</span>}</span>
+                        <span className="text-[10px] text-muted-foreground">S:<span className="text-foreground font-bold">{formatRating(p.speed || 0)}</span></span>
+                        <span className="text-[10px] text-muted-foreground">D:<span className="text-foreground font-bold">{formatRating(p.defense || 0)}</span></span>
                       </div>
                     </div>
                   );

@@ -750,7 +750,34 @@ export function resolveSwing(state, swingType, pitch) {
     }
     const isOutfieldFly = isFlyBall && out.type !== 'popout' && out.type !== 'lineout' && out.depth !== 'shallow';
     if (isOutfieldFly && state.bases[2] && state.outs < 2) { const r = state.bases[2]; const d2 = out.depth === 'deep'; const db = d2 ? 0.30 : 0.05; const sfc = 0.43 + db + (r.speed / 10) * 0.48 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.10, Math.min(sfc, 0.90))) { chargeRun(state, r); state.bases[2] = null; batter.gameStats.rbi++; const sfText = `${batter.name} ${pickLine(SAC_FLY_LINES)} ${r.name} tags and scores!`; state.log.push({ type: 'sacfly', text: sfText }); state.lastPlay = { type: 'sacfly', text: sfText }; state._celebrationBubble = sfText; batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } }
-    if (isOutfieldFly) { const r3 = state.bases[2], r2 = state.bases[1], r1 = state.bases[0]; const isDeep = out.depth === 'deep'; if (r3 && state.outs < 2) { const db2 = isDeep ? 0.42 : 0.12; const htc = db2 + (r3.speed / 10) * 0.40 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.05, Math.min(htc, 0.65))) { chargeRun(state, r3); batter.gameStats.rbi++; state.bases[2] = null; const sfText = `${r3.name} tags up and scores!`; state.log.push({ type: 'sacfly', text: sfText }); state.lastPlay = { type: 'sacfly', text: sfText }; state._celebrationBubble = sfText; if (r2 && state.outs < 2) { const tc2 = isDeep ? (0.15 + (r2.speed / 10) * 0.40 - (getOutfieldArm(defenders) / 10) * 0.10) : (0.05 + (r2.speed / 10) * 0.25 - (getOutfieldArm(defenders) / 10) * 0.08); if (Math.random() < Math.max(0.03, Math.min(tc2, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); state._celebrationBubble = `🏃 ${r2.name} tags up and advances to third!`; } } batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } } if (r1 && isDeep && !state.bases[1] && state.outs < 2) { const r1Tag = state.bases[0]; if (r1Tag) { const tc1 = 0.15 + (r1Tag.speed / 10) * 0.45 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.06, Math.min(tc1, 0.55))) { state.bases[1] = r1Tag; state.bases[0] = null; state.log.push({ type: 'info', text: `${r1Tag.name} tags up and advances to second!` }); state._celebrationBubble = `🏃 ${r1Tag.name} tags up and advances to second!`; } } } if (r2 && state.outs < 2 && !state.bases[2]) { const depthBonus2 = isDeep ? 0.25 : 0; const tc3 = 0.10 + (r2.speed / 10) * 0.35 - (getOutfieldArm(defenders) / 10) * 0.10 + depthBonus2; const cap2 = isDeep ? 0.85 : 0.35; if (Math.random() < Math.max(0.04, Math.min(tc3, cap2))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); state._celebrationBubble = `🏃 ${r2.name} tags up and advances to third!`; } } }
+    if (isOutfieldFly) { const r3 = state.bases[2], r2 = state.bases[1], r1 = state.bases[0]; const isDeep = out.depth === 'deep'; if (r3 && state.outs < 2) { const db2 = isDeep ? 0.42 : 0.12; const htc = db2 + (r3.speed / 10) * 0.40 - (getOutfieldArm(defenders) / 10) * 0.08; if (Math.random() < Math.max(0.05, Math.min(htc, 0.65))) { chargeRun(state, r3); batter.gameStats.rbi++; state.bases[2] = null; const sfText = `${r3.name} tags up and scores!`; state.log.push({ type: 'sacfly', text: sfText }); state.lastPlay = { type: 'sacfly', text: sfText }; state._celebrationBubble = sfText; if (r2 && state.outs < 2) { const tc2 = isDeep ? (0.15 + (r2.speed / 10) * 0.40 - (getOutfieldArm(defenders) / 10) * 0.10) : (0.05 + (r2.speed / 10) * 0.25 - (getOutfieldArm(defenders) / 10) * 0.08); if (Math.random() < Math.max(0.03, Math.min(tc2, 0.35))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); state._celebrationBubble = `🏃 ${r2.name} tags up and advances to third!`; } } batter.gameStats.ab--; state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return; } } if (r1 && isDeep && !state.bases[1] && state.outs < 2) {
+        const r1Tag = state.bases[0];
+        if (r1Tag && r1Tag.speed >= 6 && ['RF','CF','LF'].includes(out.pos)) {
+          const ofArmVal = getOutfieldArm(defenders);
+          if (ofArmVal < 8) {
+            const successChance = 0.72 + (r1Tag.speed / 10) * 0.15 - (ofArmVal / 10) * 0.05;
+            if (successChance >= 0.70) {
+              const speedBonus = r1Tag.speed >= 7 ? 0.003 : 0;
+              const armBonus = ofArmVal <= 5 ? 0.003 : 0;
+              const attemptChance = Math.max(0.003, Math.min(0.005 + speedBonus + armBonus, 0.015));
+              if (Math.random() < attemptChance) {
+                if (Math.random() < Math.min(successChance, 0.92)) {
+                  state.bases[1] = r1Tag; state.bases[0] = null;
+                  const tagText = `${r1Tag.name} tags from first and catches them sleeping - into second!`;
+                  state.log.push({ type: 'info', text: tagText });
+                  state._celebrationBubble = `🏃 ${tagText}`;
+                } else {
+                  r1Tag.gameStats.cs = (r1Tag.gameStats.cs || 0) + 1;
+                  state.bases[0] = null; batter.gameStats.ab--;
+                  const outText = `${r1Tag.name} gambles on tagging from first but is gunned down at second!`;
+                  state.log.push({ type: 'info', text: outText }); state.lastPlay = { type: 'info', text: outText };
+                  state.balls = 0; state.strikes = 0; advanceBatter(state); recordOut(state); return;
+                }
+              }
+            }
+          }
+        }
+      } if (r2 && state.outs < 2 && !state.bases[2]) { const depthBonus2 = isDeep ? 0.25 : 0; const tc3 = 0.10 + (r2.speed / 10) * 0.35 - (getOutfieldArm(defenders) / 10) * 0.10 + depthBonus2; const cap2 = isDeep ? 0.85 : 0.35; if (Math.random() < Math.max(0.04, Math.min(tc3, cap2))) { state.bases[2] = r2; state.bases[1] = null; state.log.push({ type: 'info', text: `${r2.name} tags up and advances to third!` }); state._celebrationBubble = `🏃 ${r2.name} tags up and advances to third!`; } } }
     const isDefFly = out.type === 'flyout';
     if (isDefFly) {
       if (rollRareCatchEvent()) {

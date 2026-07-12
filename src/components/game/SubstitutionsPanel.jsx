@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { X, AlertTriangle, Users } from 'lucide-react';
+import { formatRating } from '@/lib/ratingFormat';
 
 const ALL_POSITIONS = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
 
@@ -114,9 +115,9 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                 <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-1">Current Batter</div>
                 <div className="font-heading font-bold text-sm text-foreground">{batter?.name}</div>
                 <div className="flex gap-3 mt-1 text-[10px] text-muted-foreground">
-                  <span>CON {batter?.contact}</span>
-                  <span>PWR {batter?.power}</span>
-                  <span>SPD {batter?.speed}</span>
+                  <span>CON {formatRating(batter?.contact || 0)}</span>
+                  <span>PWR {formatRating(batter?.power || 0)}</span>
+                  <span>SPD {formatRating(batter?.speed || 0)}</span>
                 </div>
               </div>
 
@@ -155,7 +156,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                       </div>
                       <div className="flex gap-3 mt-1 text-[10px] items-center">
                         <span className="text-primary">
-                          CON {p.contact}
+                          CON {formatRating(p.contact)}
                           {conDelta !== 0 && (
                             <span className={conDelta > 0 ? 'text-green-400 ml-0.5' : 'text-red-400/60 ml-0.5'}>
                               {conDelta > 0 ? '↑' : '↓'}{Math.abs(conDelta)}
@@ -163,14 +164,14 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                           )}
                         </span>
                         <span className="text-amber-400">
-                          PWR {p.power}
+                          PWR {formatRating(p.power)}
                           {pwrDelta !== 0 && (
                             <span className={pwrDelta > 0 ? 'text-green-400 ml-0.5' : 'text-red-400/60 ml-0.5'}>
                               {pwrDelta > 0 ? '↑' : '↓'}{Math.abs(pwrDelta)}
                             </span>
                           )}
                         </span>
-                        <span className="text-cyan-400">SPD {p.speed}</span>
+                        <span className="text-cyan-400">SPD {formatRating(p.speed)}</span>
                         {!used && (
                           <span className={`ml-auto text-[9px] ${vsSameHand ? 'text-red-400/60' : 'text-green-400/70'}`}>
                             {matchNote}
@@ -194,7 +195,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                 <div key={runner.baseIndex} className="bg-muted/50 rounded-lg p-3">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-heading font-bold text-sm text-foreground">{runner.name}</span>
-                    <span className="text-[10px] text-cyan-400 font-semibold">SPD {runner.speed}</span>
+                    <span className="text-[10px] text-cyan-400 font-semibold">SPD {formatRating(runner.speed)}</span>
                   </div>
 
                   <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-1">Replace with</div>
@@ -228,7 +229,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                                 {p.speed > runner.speed && (
                                   <span className="text-[9px] text-cyan-400">↑{p.speed - runner.speed} SPD</span>
                                 )}
-                                <span className="text-[10px] text-cyan-400 font-semibold">SPD {p.speed}</span>
+                                <span className="text-[10px] text-cyan-400 font-semibold">SPD {formatRating(p.speed)}</span>
                               </>
                             )}
                           </div>
@@ -324,9 +325,9 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                 <div className="font-heading font-bold text-sm text-foreground">{currentPitcher?.name}</div>
                 <div className="flex gap-3 mt-1 text-[10px]">
                   <span className="text-muted-foreground">{currentPitcher?.gameStats?.pitches || 0} P</span>
-                  <span className="text-emerald-400">SPD {currentPitcher?.pitchSpeed}</span>
-                  <span className="text-purple-400">OFF {currentPitcher?.offSpeed}</span>
-                  <span className="text-blue-400">CTL {currentPitcher?.control}</span>
+                  <span className="text-emerald-400">SPD {formatRating(currentPitcher?.pitchSpeed || 0)}</span>
+                  <span className="text-purple-400">OFF {formatRating(currentPitcher?.offSpeed || 0)}</span>
+                  <span className="text-blue-400">CTL {formatRating(currentPitcher?.control || 0)}</span>
                 </div>
               </div>
 
@@ -361,10 +362,10 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                         <span className="text-[10px] text-muted-foreground">{unavailable ? 'UNAVAILABLE' : tired ? 'TIRED' : `${p.pos} (${p.throws}HP)`}</span>
                       </div>
                       <div className="flex gap-3 mt-1 text-[10px]">
-                        <span className="text-emerald-400">SPD {p.pitchSpeed}</span>
-                        <span className="text-purple-400">OFF {p.offSpeed}</span>
-                        <span className="text-blue-400">CTL {p.control}</span>
-                        <span className="text-muted-foreground">STA {p.stamina}</span>
+                        <span className="text-emerald-400">SPD {formatRating(p.pitchSpeed)}</span>
+                        <span className="text-purple-400">OFF {formatRating(p.offSpeed)}</span>
+                        <span className="text-blue-400">CTL {formatRating(p.control)}</span>
+                        <span className="text-muted-foreground">STA {formatRating(p.stamina)}</span>
                       </div>
                       {unavailable && <div className="text-[9px] text-amber-400 mt-1">⚠ {unavailableReason}</div>}
                       {tired && <div className="text-[9px] text-yellow-500/80 mt-1">Tired: {tiredReason}</div>}
