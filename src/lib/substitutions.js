@@ -176,11 +176,19 @@ export function changePitcher(state, newPitcher, side) {
   // Swap the new pitcher into the fielding lineup (only if DH is not in effect)
   const lineup = isHome ? newState.homeLineup : newState.awayLineup;
   const usesDH = newState.useDH;
+  let capturedBattingStats = null;
   if (!usesDH) {
     let slotIdx = lineup.findIndex(p => p.name === oldPitcher.name);
     if (slotIdx < 0 && oldPitcher.order) slotIdx = lineup.findIndex(p => p.order === oldPitcher.order);
     if (slotIdx < 0) slotIdx = lineup.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
     if (slotIdx >= 0) {
+      // Capture batting stats BEFORE overwriting the lineup entry. The lineup
+      // entry holds the pitcher's batting line (ab/hits/rbi/etc.), which is a
+      // SEPARATE object from the pitcher state's pitching-only gameStats.
+      // Without this, a starting pitcher who batted (NL rules) disappears from
+      // the box score batting table when the pitching change overwrites their
+      // lineup slot and pushes the pitching-only state to history.
+      capturedBattingStats = lineup[slotIdx].gameStats ? { ...lineup[slotIdx].gameStats } : null;
       const lineupEntry = { ...newPitcher, order: lineup[slotIdx].order, assignedPos: pitcherRole, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
       lineup[slotIdx] = lineupEntry;
       // Persist order + assignedPos on the pitcher state so future lookups can find their slot
@@ -206,7 +214,24 @@ export function changePitcher(state, newPitcher, side) {
       pitcherER: oldPitcher.gameStats.er,
     };
   } else {
-    newState[historyKey].push({ ...oldPitcher });
+    // Merge batting stats (captured from the lineup entry) with pitching stats
+    // (from the pitcher state). Without the batting stats, the history entry has
+    // ip but no ab, causing the box score filter to remove the starting pitcher
+    // from the batting table even though they had plate appearances.
+    newState[historyKey].push({
+      ...oldPitcher,
+      gameStats: {
+        ...(capturedBattingStats || {}),
+        ip: oldPitcher.gameStats.ip,
+        outs: oldPitcher.gameStats.outs || Math.round((oldPitcher.gameStats.ip || 0) * 3),
+        pitches: oldPitcher.gameStats.pitches,
+        pitcherSo: oldPitcher.gameStats.so,
+        pitcherBB: oldPitcher.gameStats.bb,
+        pitcherH: oldPitcher.gameStats.h,
+        pitcherR: oldPitcher.gameStats.r,
+        pitcherER: oldPitcher.gameStats.er,
+      },
+    });
   }
 
   newState.log.push({ type: 'info', text: `🔄 ${newPitcher.name} replaces ${oldPitcher.name} on the mound` });

@@ -83,7 +83,12 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
   const allBatters = [...lineup, ...historical].filter(p => {
     const gs = p.gameStats || {};
     // Skip pure pitcher entries (pitcher state with ip but no ab — their bb/so are pitching stats)
-    return !(gs.ip !== undefined && gs.ab === undefined);
+    if (gs.ip !== undefined && gs.ab === undefined) return false;
+    // Skip relievers who were in the lineup but never batted (all batting stats zero)
+    return (gs.ab || 0) > 0 || (gs.bb || 0) > 0 || (gs.so || 0) > 0 ||
+           (gs.hits || 0) > 0 || (gs.runs || 0) > 0 || (gs.rbi || 0) > 0 ||
+           (gs.hr || 0) > 0 || (gs.sb || 0) > 0 || (gs.cs || 0) > 0 ||
+           (gs.doubles || 0) > 0 || (gs.triples || 0) > 0;
   });
   const footnotes = buildFootnotes(allBatters);
 
