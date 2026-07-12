@@ -3,19 +3,22 @@ import { pickFanYell } from '@/lib/fanChatter';
 
 // Fires a fan chirp toast from the stands on ~20% of pitches
 // Distinct from bench chirps: teal/cyan color, upper-right screen position
-export default function FanChirpToast({ trigger, homeTeamKey }) {
+export default function FanChirpToast({ trigger, homeTeamKey, forceTrigger, onCheck, onFire }) {
   const [chirp, setChirp] = useState(null);
   const [visible, setVisible] = useState(false);
   const timerRef = useRef(null);
   const prevTrigger = useRef(0);
+  const prevForceTrigger = useRef(0);
 
   useEffect(() => {
     if (!trigger || trigger === prevTrigger.current) return;
     prevTrigger.current = trigger;
+    onCheck?.();
 
     // ~22% chance
     if (Math.random() > 0.22) return;
 
+    onFire?.();
     const text = pickFanYell(homeTeamKey);
 
     // Clear any existing timers immediately
@@ -30,6 +33,20 @@ export default function FanChirpToast({ trigger, homeTeamKey }) {
       setTimeout(() => setChirp(null), 400);
     }, 3500);
   }, [trigger]);
+
+  // Force trigger - bypasses probability check
+  useEffect(() => {
+    if (!forceTrigger || forceTrigger === prevForceTrigger.current) return;
+    prevForceTrigger.current = forceTrigger;
+    const text = pickFanYell(homeTeamKey);
+    clearTimeout(timerRef.current);
+    setChirp(text);
+    setVisible(true);
+    timerRef.current = setTimeout(() => {
+      setVisible(false);
+      setTimeout(() => setChirp(null), 400);
+    }, 3500);
+  }, [forceTrigger]);
 
   // Cleanup on unmount
   useEffect(() => () => clearTimeout(timerRef.current), []);

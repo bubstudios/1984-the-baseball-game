@@ -75,6 +75,8 @@ import { checkArgumentLogic } from '@/lib/argumentLogic';
 import { checkHBPEjection, checkChargingMound, checkBatterArguesStrikes, applyPlayerEjection, applyMultipleEjections, checkBenchClearingBrawl, getGameEjections, findPlayerInGame, getPreviousBatter } from '@/lib/playerEjectionEngine';
 import DisciplineIncidentBanner from '@/components/game/DisciplineIncidentBanner';
 import { recordPlayerSuspension, loadActivePlayerSuspensions, buildSuspendedPlayerSet } from '@/lib/playerDiscipline';
+import AtmosphereDebugPanel from '@/components/game/AtmosphereDebugPanel';
+import { inc as incAtmo, resetCounters as resetAtmoCounters, forceBallparkEvent, forceCelebrationText, forceBenchChirp, forceRobbedHRText } from '@/lib/atmosphereDebug';
 
 
 export default function Home() {
@@ -149,6 +151,7 @@ export default function Home() {
   const seasonSuspendedPlayerNamesRef = useRef(new Set());
   const [seasonBatterStatsMap, setSeasonBatterStatsMap] = useState({});
   const seasonStatsLoadedRef = useRef(false);
+  const [forceFanChirpTrigger, setForceFanChirpTrigger] = useState(0);
 
   // Keep gameModeRef in sync so startGame (empty-deps useCallback) always reads the latest mode.
   // Without this, a season game launch would see gameMode=null in startGame's closure and skip
@@ -807,14 +810,16 @@ export default function Home() {
         }
         // Surface hitting celebrations as the celebration bubble (bat flips, admires, staredowns, etc.)
          if ((entry.type === 'info' || entry.type === 'homerun') && entry.text) {
+           incAtmo('celeb_checked');
            // Detect hitting celebrations: bat flips, home run admiration, hitting celebrations, triple hustle, staredowns
-           const isBatFlip = entry.text.includes('flips the bat') || entry.text.includes('flips his bat') || entry.text.includes('tosses the bat');
-           const isHRAdmire = entry.text.includes('watches it go') || entry.text.includes('flips the bat and takes');
-           const isHitCeleb = entry.text.includes('slaps hands') || entry.text.includes('standing ovation') || entry.text.includes('dugout erupts') || entry.text.includes('points back to the dugout');
+           const isBatFlip = entry.text.includes('flips the bat') || entry.text.includes('flips his bat') || entry.text.includes('tosses the bat') || entry.text.includes('flings the bat');
+           const isHRAdmire = entry.text.includes('watches it go') || entry.text.includes('flips the bat and takes') || entry.text.includes('punches the air') || entry.text.includes('stands in the box a beat');
+           const isHitCeleb = entry.text.includes('slaps hands') || entry.text.includes('standing ovation') || entry.text.includes('dugout erupts') || entry.text.includes('points back to the dugout') || entry.text.includes('points to the dugout');
            const isTripleHustle = entry.text.includes('slides into third') || entry.text.includes('pulls into third') || entry.text.includes('stands on third clapping');
-           const isStaredown = entry.text.includes('watched the batter') || entry.text.includes('lingers on the mound') || entry.text.includes('stares in');
+           const isStaredown = entry.text.includes('watches the batter') || entry.text.includes('watched the batter') || entry.text.includes('lingers on the mound') || entry.text.includes('stares in') || entry.text.includes('stares in -');
            
            if (isBatFlip || isHRAdmire || isHitCeleb || isTripleHustle || isStaredown) {
+             incAtmo('celeb_fired');
              setInlineGameEvent({ type: 'celebration', event: entry.text });
              setTimeout(() => setInlineGameEvent(null), 7500);
            }
@@ -847,6 +852,7 @@ export default function Home() {
         : gameState._celebrationBubble;
       if (key !== prevCelebrationBubble.current) {
         prevCelebrationBubble.current = key;
+        incAtmo('bubble_fired');
         // Steal/caught-stealing events are already handled by lastPlay detection - use correct type
         const lpType = gameState.lastPlay?.type;
         const eventType = lpType === 'steal' ? 'steal' : lpType === 'caughtstealing' ? 'caughtstealing' : lpType === 'pickoff' ? 'pickoff' : 'celebration';
@@ -889,6 +895,7 @@ export default function Home() {
     if (gameState.lastPlay === prevArgPlay.current) return;
     prevArgPlay.current = gameState.lastPlay;
 
+    incAtmo('bench_checked');
     checkForArgumentLogic(gameState);
   }, [gameState, homeTeam, awayTeam]);
 
@@ -901,8 +908,10 @@ export default function Home() {
     // Trigger between at-bats (count reset for new batter)
     const isBetweenAtBats = gameState.balls === 0 && gameState.strikes === 0;
     if (isBetweenAtBats) {
+      incAtmo('bp_checked');
       const bpEvent = rollBallparkEvent(gameState);
       if (bpEvent) {
+        incAtmo('bp_fired');
         setInlineGameEvent({ type: 'ballpark', event: bpEvent });
         setTimeout(() => setInlineGameEvent(null), 10000);
         if (bpEvent.id === 'rainbow_horse' || bpEvent.id === 'reds_streaker' || bpEvent.id === 'clark_bub_sign') {
@@ -915,6 +924,44 @@ export default function Home() {
   const checkForArgumentLogic = useCallback((state) => {
     return checkArgumentLogic(state, { homeTeam, awayTeam, setArgumentResult, setEjectionCount });
   }, [homeTeam, awayTeam]);
+
+  // ── Atmosphere debug: force event handlers ──
+  const handleForceAtmoEvent = useCallback((eventId) => {
+    if (!gameState) return;
+    if (eventId === 'ballpark') {
+      const event = forceBallparkEvent(gameState);
+      if (event) { setInlineGameEvent({ type: 'ballpark', event }); incAtmo('bp_fired'); }
+    } else if (eventId === 'celebration') {
+      const batter = getCurrentBatter(gameState);
+      const pitcher = getEffectivePitcher(gameState) || getCurrentPitcher(gameState);
+      const text = forceCelebrationText(batter, pitcher);
+      if (text) { setInlineGameEvent({ type: 'celebration', event: text }); incAtmo('celeb_fired'); }
+    } else if (eventId === 'fanchirp') {
+      setForceFanChirpTrigger(t => t + 1);
+      incAtmo('fan_fired');
+    } else if (eventId === 'benchchirp') {
+      const chirp = forceBenchChirp();
+      setArgumentResult({ ...chirp, ejected: false, homeTeamKey: homeTeam || awayTeam, managerName: MANAGERS[homeTeam]?.name || 'The Manager' });
+      incAtmo('bench_fired');
+    } else if (eventId === 'ejection') {
+      setArgumentResult({
+        ejected: true,
+        managerName: MANAGERS[homeTeam]?.name || 'The Manager',
+        escaLevel: 3,
+        callType: 'forced ejection test',
+        whoArgues: 'manager',
+        homeTeamKey: homeTeam || awayTeam,
+        hatThrow: true,
+        dirtKick: true,
+      });
+      incAtmo('bench_fired');
+    } else if (eventId === 'robbedhr') {
+      const batter = getCurrentBatter(gameState);
+      const text = forceRobbedHRText(batter?.name, 'The outfielder');
+      setInlineGameEvent({ type: 'celebration', event: text });
+      incAtmo('celeb_fired');
+    }
+  }, [gameState, homeTeam, awayTeam]);
 
 
 
@@ -1712,6 +1759,8 @@ export default function Home() {
     seasonCommitPromiseRef.current = null;
     seasonStatsLoadedRef.current = false;
     setSeasonBatterStatsMap({});
+    setForceFanChirpTrigger(0);
+    resetAtmoCounters();
   };
 
   if (ballparkPhase) {
@@ -2148,7 +2197,18 @@ export default function Home() {
 
       {/* Fan Chirp Toast - teal bubble from the stands */}
       {gameState && !gameState.gameOver && (
-        <FanChirpToast trigger={gameState.log.length} homeTeamKey={homeTeam} />
+        <FanChirpToast
+          trigger={gameState.log.length}
+          homeTeamKey={homeTeam}
+          forceTrigger={forceFanChirpTrigger}
+          onCheck={() => incAtmo('fan_checked')}
+          onFire={() => incAtmo('fan_fired')}
+        />
+      )}
+
+      {/* Atmosphere Debug Panel - temporary diagnostic tool */}
+      {gameState && !gameState.gameOver && (
+        <AtmosphereDebugPanel onForce={handleForceAtmoEvent} />
       )}
 
 
