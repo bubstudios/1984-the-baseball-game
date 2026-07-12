@@ -157,11 +157,11 @@ export function processAtBat(state, pitchType, swingType) {
   const isReachBack = pitchType && (pitchType.name === '__reachback__' || pitchType === '__reachback__');
   if (isReachBack) {
     const pitcher = getCurrentPitcher(newState);
-    if (newState._reachBackPitcher !== pitcher.name) {
-      newState._reachBackUses = 0;
-      newState._reachBackPitcher = pitcher.name;
-    }
-    newState._reachBackUses = (newState._reachBackUses || 0) + 1;
+    // Per-pitcher special pitch tracking. Uses are owned by each pitcher, not
+    // shared across the team or game state, so Sutcliffe draining his Rear Back
+    // cannot affect Lee Smith's High Heat inventory.
+    if (!newState._pitcherSpecialUses) newState._pitcherSpecialUses = {};
+    newState._pitcherSpecialUses[pitcher.name] = (newState._pitcherSpecialUses[pitcher.name] || 0) + 1;
     newState._wasReachBack = true;
     pitcher.gameStats.pitches++;
     const batter = getCurrentBatter(newState);

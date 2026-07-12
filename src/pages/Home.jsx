@@ -1938,7 +1938,7 @@ export default function Home() {
 
   // Reach Back - specialty pitch for iconic pitchers
   const pitcherSpecialty = pitcher?.specialty || null;
-  const reachBackUses = gameState._reachBackUses || 0;
+  const reachBackUses = gameState._pitcherSpecialUses?.[pitcher?.name] || 0;
   const isStarter = pitcher?.pos === 'SP' || pitcher?.assignedPos === 'SP';
   const reachBackMax = isStarter ? 3 : 1;
 
