@@ -101,12 +101,48 @@ export function determineSqueezeType(batter) {
   return Math.random() < suicideChance ? 'suicide' : 'safety';
 }
 
+// ── Run labeling ──
+// Computes the correct label for a run that's about to score (the squeeze runner from 3rd),
+// based on PRE-PLAY score. A run is only "winning" if it actually ends the game
+// (home team takes the lead in the bottom of the 9th or later).
+export function getRunLabel(state) {
+  const battingSide = state.halfInning === 'top' ? 'away' : 'home';
+  const fieldingSide = battingSide === 'home' ? 'away' : 'home';
+  const battingScore = state.score[battingSide] || 0;
+  const fieldingScore = state.score[fieldingSide] || 0;
+  const newBattingScore = battingScore + 1;
+
+  // 1. Ties the game
+  if (newBattingScore === fieldingScore) return 'tying';
+  // 2/3. Takes the lead (was tied or trailing, now ahead)
+  if (newBattingScore > fieldingScore && battingScore <= fieldingScore) {
+    // 3. Home team takes the lead in bottom 9+ = walk-off winner
+    if (battingSide === 'home' && state.inning >= 9) return 'winning';
+    return 'go-ahead';
+  }
+  // 4. Extends an existing lead
+  return 'insurance';
+}
+
+// Maps a run label to a descriptor phrase used in squeeze commentary.
+function runPhrase(runLabel) {
+  switch (runLabel) {
+    case 'tying': return 'races home with the tying run';
+    case 'winning': return 'races home with the winning run';
+    case 'go-ahead': return 'races home to take the lead';
+    case 'insurance': return 'races home for an insurance run';
+    default: return 'races home';
+  }
+}
+
 // ── Resolution ──
-// Returns { type, text, logType, batterOut, runnerScores, runnerOut, missedBunt, squeezeType, composureDelta }
+// Returns { type, text, logType, batterOut, runnerScores, runnerOut, missedBunt, squeezeType, composureDelta, walkOff }
 export function resolveSqueeze(batter, state, squeezeType) {
   const runnerOn3rd = state.bases[2];
   const runnerName = runnerOn3rd?.name?.split(' ').pop() || 'the runner';
   const batterLast = batter.name?.split(' ').pop() || 'the batter';
+  const runLabel = getRunLabel(state);
+  const walkOff = runLabel === 'winning';
 
   const conRating = (batter.contact || 3) / 10;
   const buntSkill = (batter.bunting || 3) / 10;
@@ -126,7 +162,7 @@ export function resolveSqueeze(batter, state, squeezeType) {
     if (roll < successChance * 0.18) {
       return {
         type: 'squeeze_bunt_single',
-        text: pickSqueezeLine('bunt_single', batterLast, runnerName, squeezeType),
+        text: pickSqueezeLine('bunt_single', batterLast, runnerName, squeezeType, runLabel),
         logType: 'single',
         batterOut: false,
         runnerScores: true,
@@ -134,11 +170,12 @@ export function resolveSqueeze(batter, state, squeezeType) {
         missedBunt: false,
         squeezeType,
         composureDelta: -12,
+        walkOff,
       };
     }
     return {
       type: 'squeeze_success',
-      text: pickSqueezeLine('success', batterLast, runnerName, squeezeType),
+      text: pickSqueezeLine('success', batterLast, runnerName, squeezeType, runLabel),
       logType: 'groundout',
       batterOut: true,
       runnerScores: true,
@@ -146,6 +183,7 @@ export function resolveSqueeze(batter, state, squeezeType) {
       missedBunt: false,
       squeezeType,
       composureDelta: -8,
+      walkOff,
     };
   } else if (roll < successChance + 0.10) {
     // FAILED - bunt too firm, pitcher comes home, runner out at plate
@@ -191,24 +229,27 @@ export function resolveSqueeze(batter, state, squeezeType) {
 
 // ── Commentary ──
 // Uses standard hyphens (-) per project convention.
-function pickSqueezeLine(category, batterLast, runnerName, squeezeType) {
+// runLabel ('tying'|'winning'|'go-ahead'|'insurance') makes every scoring description
+// score-context-correct - a run is only called "winning" if it ends the game.
+function pickSqueezeLine(category, batterLast, runnerName, squeezeType, runLabel) {
+  const phrase = runPhrase(runLabel);
   const pools = {
     success: squeezeType === 'suicide' ? [
-      `${batterLast} squares early - the squeeze is on! The bunt is down, and ${runnerName} scores easily. Perfect suicide squeeze.`,
-      `The suicide squeeze is on! ${batterLast} gets it down, and ${runnerName} races home with the winning run.`,
-      `${batterLast} bunts it down the first-base line - ${runnerName} breaks early and scores without a throw. Brilliant suicide squeeze.`,
-      `Suicide squeeze! ${batterLast} lays it down perfectly, and ${runnerName} slides across the plate.`,
+      `The suicide squeeze is on! ${batterLast} gets it down, and ${runnerName} ${phrase}.`,
+      `${batterLast} squares early - the squeeze is on! The bunt is down, and ${runnerName} ${phrase}. Perfect suicide squeeze.`,
+      `Suicide squeeze! ${batterLast} lays it down perfectly, and ${runnerName} ${phrase}.`,
+      `${batterLast} bunts it down the first-base line - ${runnerName} breaks early and ${phrase}! Brilliant suicide squeeze.`,
     ] : [
-      `${batterLast} drops the bunt - here comes ${runnerName} from third! The throw goes to first, and the run scores. Perfect safety squeeze.`,
-      `${batterLast} deadens it in front of the plate - ${runnerName} breaks for home! The only play is at first, and they steal a run.`,
-      `Safety squeeze! ${batterLast} gets it down, and ${runnerName} scores as the batter is retired at first.`,
-      `${batterLast} lays down a beauty - ${runnerName} crosses the plate! The defense had no chance.`,
-      `The bunt is down and ${runnerName} scores! ${batterLast} is thrown out at first, but the squeeze works.`,
+      `${batterLast} drops the bunt - here comes ${runnerName} from third! The throw goes to first, and ${runnerName} ${phrase}. Perfect safety squeeze.`,
+      `Safety squeeze! ${batterLast} gets it down, and ${runnerName} ${phrase} as the batter is retired at first.`,
+      `${batterLast} lays down a beauty - ${runnerName} ${phrase}! The defense had no chance.`,
+      `The bunt is down and ${runnerName} ${phrase}! ${batterLast} is thrown out at first, but the squeeze works.`,
+      `${batterLast} deadens it in front of the plate - ${runnerName} breaks for home! The only play is at first, and ${runnerName} ${phrase}.`,
     ],
     bunt_single: [
-      `${batterLast} drops a perfect bunt up the first-base line - no play anywhere! ${runnerName} scores, and ${batterLast} reaches with a bunt single.`,
-      `A beautiful bunt by ${batterLast} - nobody can make a play! ${runnerName} crosses the plate, and ${batterLast} is safe at first.`,
-      `${batterLast} bunts it where nobody can get it - ${runnerName} scores and ${batterLast} has himself a squeeze bunt single!`,
+      `${batterLast} drops a perfect bunt up the first-base line - no play anywhere! ${runnerName} ${phrase}, and ${batterLast} reaches with a bunt single.`,
+      `A beautiful bunt by ${batterLast} - nobody can make a play! ${runnerName} ${phrase}, and ${batterLast} is safe at first.`,
+      `${batterLast} bunts it where nobody can get it - ${runnerName} ${phrase} and ${batterLast} has himself a squeeze bunt single!`,
     ],
     failed_runner_out: [
       `The squeeze is on, but ${batterLast} bunts it too firm - the pitcher comes home with it, and ${runnerName} is tagged out at the plate!`,

@@ -453,6 +453,16 @@ export function processAtBat(state, pitchType, swingType) {
         advanceBatter(newState);
       }
 
+      // Walk-off validation: a squeeze that scores the winning run (home team takes
+      // the lead in the bottom of the 9th or later) ends the game immediately.
+      // A run that only TIES the score continues play (no gameOver, no "winning run").
+      if (buntResult.walkOff && newState.halfInning === 'bottom' && newState.inning >= 9 &&
+          newState.score.home > newState.score.away && !newState.gameOver) {
+        newState.gameOver = true;
+        newState.waitingForInput = false;
+        newState.log.push({ type: 'info', text: `🎉 Walk-off squeeze! ${home.name} win ${newState.score.home}-${newState.score.away}!` });
+      }
+
       if (newState.outs >= 3) {
         endHalfInning(newState);
       }
