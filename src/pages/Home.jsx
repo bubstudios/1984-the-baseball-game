@@ -74,7 +74,7 @@ import { checkBatterInjury as checkBatterInjuryExternal } from '@/lib/batterInju
 import { loadActiveInjuries, recordInjury, resolveStarterSkippingInjuries, runDailyRecovery, computeDaysRemaining, annotateInjuriesForDisplay } from '@/lib/injuryPersistence';
 import { loadActiveSuspensions, recordSuspension } from '@/lib/managerSuspension';
 import { checkArgumentLogic } from '@/lib/argumentLogic';
-import { checkHBPEjection, checkChargingMound, checkBatterArguesStrikes, applyPlayerEjection, applyMultipleEjections, checkBenchClearingBrawl, getGameEjections, findPlayerInGame, getPreviousBatter } from '@/lib/playerEjectionEngine';
+import { checkHBPEjection, checkChargingMound, checkBatterArguesStrikes, applyPlayerEjection, applyMultipleEjections, checkBenchClearingBrawl, getGameEjections, findPlayerInGame, getPreviousBatter, validateNoEjectedPlayersActive } from '@/lib/playerEjectionEngine';
 import DisciplineIncidentBanner from '@/components/game/DisciplineIncidentBanner';
 import { recordPlayerSuspension, loadActivePlayerSuspensions, buildSuspendedPlayerSet, decrementPlayerSuspensions } from '@/lib/playerDiscipline';
 import { recordEjectionTxn } from '@/lib/transactionLog';
@@ -944,8 +944,6 @@ export default function Home() {
     }
   }, [gameState, homeTeam, awayTeam]);
 
-
-
   // ── Game-over achievement processing (called from effect AND play handlers) ──
   const processGameOver = useCallback((state) => {
     if (!state || !state.gameOver) return;
@@ -1330,15 +1328,15 @@ export default function Home() {
            }
          }
 
-         // Show incident on main screen if any events occurred
          if (incidentSteps.length > 0) {
+           setGameState({ ...afterSubs });
            setDisciplineIncident({ steps: incidentSteps, totalEjections });
            setEjectionCount(prev => prev + totalEjections);
          }
-       }
+         }
 
-       } catch (e) {
-       console.error('handlePitch error:', e);
+         } catch (e) {
+         console.error('handlePitch error:', e);
       console.error('Stack:', e.stack);
       setGameState(prePitchSnapshot);
       alert(`Pitch error: ${e.message}`);
@@ -1459,8 +1457,7 @@ export default function Home() {
         }
 
         if (incidentSteps.length > 0) {
-          setDisciplineIncident({ steps: incidentSteps, totalEjections });
-          setEjectionCount(prev => prev + totalEjections);
+          setGameState({ ...afterSubs }); setDisciplineIncident({ steps: incidentSteps, totalEjections }); setEjectionCount(prev => prev + totalEjections);
         }
       }
       } catch (e) {
@@ -2242,8 +2239,6 @@ export default function Home() {
         </div>
       )}
 
-
-
       {bannerPopup && (
         <BannerPopup
           banner={bannerPopup}
@@ -2297,20 +2292,16 @@ export default function Home() {
           incident={disciplineIncident}
           onDismiss={() => {
             setDisciplineIncident(null);
-            // After the user has seen the incident story, trigger the pending
-            // pitching replacement (it was blocked while the incident was showing).
             if (gameState?._pendingEjectionReplacement && !ejectionResult) {
               const r = resolveEjectionReplacement(gameState, userTeam);
               if (r.action === 'show_modal') setEjectionResult({ ejectedSide: r.ejectedSide, bullpen: r.bullpen });
               else if (r.action === 'cpu_replaced') setGameState(r.newState);
             }
+            const ejIssues = validateNoEjectedPlayersActive(gameState);
+            if (ejIssues.length > 0) { setSubsTab('pinchhit'); setShowSubs(true); }
           }}
         />
       )}
-
-
-
-
 
       {/* Collision Popup */}
       {collisionPopup && (

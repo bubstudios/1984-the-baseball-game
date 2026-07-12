@@ -306,6 +306,7 @@ export function applyPlayerEjection(state, ejection) {
   const player = findPlayerInGame(state, ejection.playerName, ejection.teamKey);
   if (player) {
     player.ejectedCurrentGame = true;
+    player.gameStatus = { ejected: true, availableThisGame: false };
   }
 
   // Determine if this is a pitcher or position player
@@ -368,6 +369,10 @@ export function applyPlayerEjection(state, ejection) {
       }
     } else if (oldPlayer) {
       state.log.push({ type: 'info', text: `⚠️ No bench available - ${oldPlayer.name}'s spot is an automatic out.` });
+      // Flag for forced replacement — pre-pitch validation will catch this
+      // and force the substitution screen (user team) or auto-pick (CPU team).
+      if (!state._pendingPositionPlayerReplacement) state._pendingPositionPlayerReplacement = [];
+      state._pendingPositionPlayerReplacement.push({ playerName: ejection.playerName, teamKey: ejection.teamKey, slotIdx, side: isHome ? 'home' : 'away' });
     }
 
     // CRITICAL: Remove ejected player from bases (HBP → charges mound → ejected)
@@ -455,6 +460,35 @@ export function checkBenchClearingBrawl(state) {
 // ── Get all player ejections from the game for post-game processing ──
 export function getGameEjections(state) {
   return state._playerEjections || [];
+}
+
+// ── Validate no ejected player is still active in the game state ──
+// Returns a list of issues: { name, teamKey, location }
+// If any issues are found, the game must pause and force a replacement.
+export function validateNoEjectedPlayersActive(state) {
+  if (!state) return [];
+  const issues = [];
+
+  const isEjected = (p) => p && (p.ejectedCurrentGame || p.gameStatus?.ejected);
+
+  // Check home lineup
+  for (const p of (state.homeLineup || [])) {
+    if (isEjected(p)) issues.push({ name: p.name, teamKey: state.homeTeam, location: 'home lineup', side: 'home' });
+  }
+  // Check away lineup
+  for (const p of (state.awayLineup || [])) {
+    if (isEjected(p)) issues.push({ name: p.name, teamKey: state.awayTeam, location: 'away lineup', side: 'away' });
+  }
+  // Check baserunners
+  for (let i = 0; i < (state.bases || []).length; i++) {
+    const runner = state.bases[i];
+    if (isEjected(runner)) issues.push({ name: runner.name, teamKey: '?', location: `base ${i + 1}`, side: 'bases' });
+  }
+  // Check pitchers
+  if (isEjected(state.homePitcher)) issues.push({ name: state.homePitcher.name, teamKey: state.homeTeam, location: 'home pitcher', side: 'home' });
+  if (isEjected(state.awayPitcher)) issues.push({ name: state.awayPitcher.name, teamKey: state.awayTeam, location: 'away pitcher', side: 'away' });
+
+  return issues;
 }
 
 // ── Check if a player was ejected this game ──
