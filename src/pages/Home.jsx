@@ -48,6 +48,8 @@ import LeaderProgressPopup from '@/components/game/LeaderProgressPopup';
 import { RotateCcw, Trophy, Users, Volume2, VolumeX, HelpCircle, Radio } from 'lucide-react';
 import InlineSponsorBanner from '@/components/game/InlineSponsorBanner';
 import BannerPopup from '@/components/game/BannerPopup';
+import BatterStatBanner from '@/components/game/BatterStatBanner';
+import { checkRunnerInjury as checkRunnerInjuryBase, checkSlidingInjury as checkSlidingInjuryBase, checkFielderInjury as checkFielderInjuryBase } from '@/lib/injuryChecks';
 import { TEAM_BANNERS, getBannersForTeam } from '@/lib/teamBannerData';
 
 import WinCelebration from '@/components/game/WinCelebration';
@@ -144,11 +146,34 @@ export default function Home() {
   const seasonInjuriesRef = useRef([]);
   const seasonSuspendedTeamsRef = useRef(new Set());
   const seasonSuspendedPlayerNamesRef = useRef(new Set());
+  const [seasonBatterStatsMap, setSeasonBatterStatsMap] = useState({});
+  const seasonStatsLoadedRef = useRef(false);
 
   // Keep gameModeRef in sync so startGame (empty-deps useCallback) always reads the latest mode.
   // Without this, a season game launch would see gameMode=null in startGame's closure and skip
   // the CPU bullpen filtering + unavailable-reliever tracking for the user's team.
   useEffect(() => { gameModeRef.current = gameMode; }, [gameMode]);
+
+  // Load season batter stats once when a season game starts (for the scoreboard banner)
+  useEffect(() => {
+    if (!gameState || gameMode !== 'season' || seasonStatsLoadedRef.current) return;
+    const ctx = seasonContextRef.current;
+    if (!ctx?.seasonId) return;
+    seasonStatsLoadedRef.current = true;
+    (async () => {
+      try {
+        const stats = await base44.entities.PlayerStats.filter({ seasonId: ctx.seasonId }, null, 1500);
+        const map = {};
+        for (const s of stats) {
+          map[`${s.team}|${s.playerName}`] = {
+            ab: s.atBats || 0, h: s.hits || 0,
+            hr: s.homeRuns || 0, rbi: s.rbi || 0,
+          };
+        }
+        setSeasonBatterStatsMap(map);
+      } catch (e) { console.error('Batter stats load failed:', e); }
+    })();
+  }, [gameState, gameMode]);
 
   // Auto-show tutorial on first visit & init stats
   useEffect(() => {
@@ -1455,73 +1480,7 @@ export default function Home() {
     setBatterInjury(null);
   };
 
-  const checkRunnerInjury = (prevState, newState) => {
-    // Skip if half-inning changed (inning ended, bases cleared)
-    if (prevState.halfInning !== newState.halfInning) return newState;
-    // Skip walks (no running involved)
-    if (newState.lastPlay?.type === 'walk') return newState;
-
-    const battingSide = prevState.halfInning === 'top' ? 'away' : 'home';
-    const pendingBatterName = newState._pendingBatterInjury?.batterName;
-
-    const movedRunners = [];
-
-    // Check existing runners who advanced or scored/were put out
-    for (let i = 0; i < 3; i++) {
-      const prevRunner = prevState.bases[i];
-      if (!prevRunner || prevRunner.name === pendingBatterName) continue;
-      let found = false;
-      for (let j = 0; j < 3; j++) {
-        if (newState.bases[j]?.name === prevRunner.name) {
-          if (j !== i) movedRunners.push({ name: prevRunner.name, baseIndex: j });
-          found = true;
-          break;
-        }
-      }
-      if (!found) movedRunners.push({ name: prevRunner.name, baseIndex: -1 });
-    }
-
-    // Check batter who ran on a ball in play
-    const BALL_IN_PLAY_TYPES = ['single', 'double', 'triple', 'homerun', 'groundout', 'flyout', 'lineout', 'popout', 'error', 'fc', 'doubleplay', 'sacfly'];
-    const prevLineup = battingSide === 'home' ? prevState.homeLineup : prevState.awayLineup;
-    const prevBatterIdx = battingSide === 'home' ? prevState.homeBatterIndex : prevState.awayBatterIndex;
-    const batter = prevLineup[prevBatterIdx % prevLineup.length];
-    if (batter && batter.name !== pendingBatterName && BALL_IN_PLAY_TYPES.includes(newState.lastPlay?.type)) {
-      if (!movedRunners.find(r => r.name === batter.name)) {
-        const baseIdx = newState.bases.findIndex(b => b?.name === batter.name);
-        movedRunners.push({ name: batter.name, baseIndex: baseIdx >= 0 ? baseIdx : -1 });
-      }
-    }
-
-    // Roll 2% for each moved runner - first injury only
-    for (const runner of movedRunners) {
-      const injury = rollRunnerInjury(isExhibition);
-      if (injury) {
-        const teamKey = battingSide === 'home' ? newState.homeTeam : newState.awayTeam;
-        const fullBench = TEAMS[teamKey]?.bench || [];
-        const benchUsed = battingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || []);
-        const playerHistory = battingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || []);
-        const currentLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
-        const usedNames = new Set();
-        [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
-        const availableBench = fullBench.filter(p => !usedNames.has(p.name) && !(newState.scratchedPlayers || []).includes(p.name));
-
-        newState._pendingRunnerInjury = {
-          ...injury,
-          side: battingSide,
-          runnerName: runner.name,
-          batterName: runner.name,
-          baseIndex: runner.baseIndex,
-          bench: availableBench,
-        };
-
-        newState.log.push({ type: 'injury', text: `🚑 ${runner.name} is done - ${injury.name}!` });
-        break;
-      }
-    }
-
-    return newState;
-  };
+  const checkRunnerInjury = (prevState, newState) => checkRunnerInjuryBase(prevState, newState, isExhibition);
 
   const handleRunnerInjuryReplacement = (chosenPlayer) => {
     if (!gameState || !runnerInjury) return;
@@ -1538,83 +1497,7 @@ export default function Home() {
     setRunnerInjury(null);
   };
 
-  const checkSlidingInjury = (prevState, newState) => {
-    // Skip if half-inning changed (inning ended, bases cleared)
-    if (prevState.halfInning !== newState.halfInning) return newState;
-    // Skip walks (no sliding)
-    if (newState.lastPlay?.type === 'walk') return newState;
-
-    const battingSide = prevState.halfInning === 'top' ? 'away' : 'home';
-    const pendingInjuryName = newState._pendingBatterInjury?.batterName ||
-      newState._pendingRunnerInjury?.runnerName;
-
-    // Determine if contact was made during this play (collision, takeout slide)
-    const hasContact = newState.lastPlay?.collision === true ||
-      /takeout|broken up|bowls over/i.test(newState.lastPlay?.text || '');
-
-    const movedRunners = [];
-
-    // Check existing runners who advanced or scored/were put out
-    for (let i = 0; i < 3; i++) {
-      const prevRunner = prevState.bases[i];
-      if (!prevRunner || prevRunner.name === pendingInjuryName) continue;
-      let destBase = -1;
-      for (let j = 0; j < 3; j++) {
-        if (newState.bases[j]?.name === prevRunner.name) {
-          destBase = j;
-          break;
-        }
-      }
-      if (destBase !== i) movedRunners.push({ name: prevRunner.name, destBase });
-    }
-
-    // Check batter who ran on a ball in play
-    const BALL_IN_PLAY_TYPES = ['single', 'double', 'triple', 'homerun', 'groundout', 'flyout', 'lineout', 'popout', 'error', 'fc', 'doubleplay', 'sacfly'];
-    const prevLineup = battingSide === 'home' ? prevState.homeLineup : prevState.awayLineup;
-    const prevBatterIdx = battingSide === 'home' ? prevState.homeBatterIndex : prevState.awayBatterIndex;
-    const batter = prevLineup[prevBatterIdx % prevLineup.length];
-    if (batter && batter.name !== pendingInjuryName && BALL_IN_PLAY_TYPES.includes(newState.lastPlay?.type)) {
-      if (!movedRunners.find(r => r.name === batter.name)) {
-        const baseIdx = newState.bases.findIndex(b => b?.name === batter.name);
-        movedRunners.push({ name: batter.name, destBase: baseIdx >= 0 ? baseIdx : -1 });
-      }
-    }
-
-    // For each moved runner, determine if they slid → roll sliding injury
-    for (const runner of movedRunners) {
-      const slideChance = getSlideChance(runner.destBase);
-      const didSlide = Math.random() < slideChance;
-      if (!didSlide) continue;
-
-      // Runner slid - roll sliding injury (7% base, 14% with contact)
-      const injury = rollSlidingInjury(hasContact, isExhibition);
-      if (injury) {
-        const teamKey = battingSide === 'home' ? newState.homeTeam : newState.awayTeam;
-        const fullBench = TEAMS[teamKey]?.bench || [];
-        const benchUsed = battingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || []);
-        const playerHistory = battingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || []);
-        const currentLineup = battingSide === 'home' ? newState.homeLineup : newState.awayLineup;
-        const usedNames = new Set();
-        [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
-        const availableBench = fullBench.filter(p => !usedNames.has(p.name) && !(newState.scratchedPlayers || []).includes(p.name));
-
-        newState._pendingSlidingInjury = {
-          ...injury,
-          side: battingSide,
-          runnerName: runner.name,
-          batterName: runner.name,
-          baseIndex: runner.destBase,
-          bench: availableBench,
-          contact: hasContact,
-        };
-
-        newState.log.push({ type: 'injury', text: `🚑 ${runner.name} is done - ${injury.name} on the slide!` });
-        break;
-      }
-    }
-
-    return newState;
-  };
+  const checkSlidingInjury = (prevState, newState) => checkSlidingInjuryBase(prevState, newState, isExhibition);
 
   const handleSlidingInjuryReplacement = (chosenPlayer) => {
     if (!gameState || !slidingInjury) return;
@@ -1629,78 +1512,7 @@ export default function Home() {
     setSlidingInjury(null);
   };
 
-  const checkFielderInjury = (prevState, newState) => {
-    const lastPlay = newState.lastPlay;
-    if (!lastPlay) return newState;
-
-    // Determine trigger type and fielder name from lastPlay flags
-    let fielderName = null;
-    let triggerType = null;
-
-    if (lastPlay.collision && lastPlay.collisionFielder) {
-      fielderName = lastPlay.collisionFielder;
-      triggerType = 'collision';
-    } else if (lastPlay.divingCatch && lastPlay.divingCatchFielder) {
-      fielderName = lastPlay.divingCatchFielder;
-      triggerType = 'divingCatch';
-    } else if (lastPlay.divingStop && lastPlay.divingStopFielder) {
-      fielderName = lastPlay.divingStopFielder;
-      triggerType = 'divingStop';
-    }
-
-    if (!fielderName || !triggerType) return newState;
-
-    // Skip if another injury is already pending for this player
-    const pendingNames = [
-      newState._pendingBatterInjury?.batterName,
-      newState._pendingRunnerInjury?.runnerName,
-      newState._pendingSlidingInjury?.runnerName,
-    ].filter(Boolean);
-    if (pendingNames.includes(fielderName)) return newState;
-
-    // Find the fielder in either lineup
-    let fieldingSide = null;
-    let fielder = null;
-    if (newState.homeLineup.find(p => p.name === fielderName)) {
-      fieldingSide = 'home';
-      fielder = newState.homeLineup.find(p => p.name === fielderName);
-    } else if (newState.awayLineup.find(p => p.name === fielderName)) {
-      fieldingSide = 'away';
-      fielder = newState.awayLineup.find(p => p.name === fielderName);
-    }
-    if (!fielder) return newState;
-
-    // Skip pitcher - has its own injury system
-    const fielderPos = fielder.assignedPos || fielder.pos;
-    if (['SP', 'RP', 'CL'].includes(fielderPos)) return newState;
-
-    // Roll fielder injury
-    const injury = rollFielderInjury(triggerType, isExhibition);
-    if (!injury) return newState;
-
-    // Find available bench
-    const teamKey = fieldingSide === 'home' ? newState.homeTeam : newState.awayTeam;
-    const fullBench = TEAMS[teamKey]?.bench || [];
-    const benchUsed = fieldingSide === 'home' ? (newState.homeBenchUsed || []) : (newState.awayBenchUsed || []);
-    const playerHistory = fieldingSide === 'home' ? (newState.homePlayerHistory || []) : (newState.awayPlayerHistory || []);
-    const currentLineup = fieldingSide === 'home' ? newState.homeLineup : newState.awayLineup;
-    const usedNames = new Set();
-    [...benchUsed, ...playerHistory, ...currentLineup].forEach(p => usedNames.add(p.name));
-    const availableBench = fullBench.filter(p => !usedNames.has(p.name) && !(newState.scratchedPlayers || []).includes(p.name));
-
-    newState._pendingFielderInjury = {
-      ...injury,
-      side: fieldingSide,
-      fielderName: fielderName,
-      batterName: fielderName,
-      pos: fielderPos,
-      trigger: triggerType,
-      bench: availableBench,
-    };
-
-    newState.log.push({ type: 'injury', text: `🚑 ${fielderName} is done - ${injury.name}!` });
-    return newState;
-  };
+  const checkFielderInjury = (prevState, newState) => checkFielderInjuryBase(prevState, newState, isExhibition);
 
   const handleFielderInjuryReplacement = (chosenPlayer) => {
     if (!gameState || !fielderInjury) return;
@@ -1856,6 +1668,8 @@ export default function Home() {
     achievementsQueuedRef.current = false;
     setSeasonCommitting(false);
     seasonCommitPromiseRef.current = null;
+    seasonStatsLoadedRef.current = false;
+    setSeasonBatterStatsMap({});
   };
 
   if (ballparkPhase) {
@@ -1984,6 +1798,44 @@ export default function Home() {
   const home = TEAMS[homeTeam];
   const away = TEAMS[awayTeam];
 
+  // Compute batter stats for the 1984 scoreboard banner
+  // Season: pre-game totals from PlayerStats + in-game deltas from gameStats
+  // Exhibition: 1984 splits + in-game deltas
+  let batterStats = null;
+  if (situationalBatter && !gameState.gameOver) {
+    const battingSide = getBattingTeam(gameState);
+    const batterTeamKey = battingSide === 'home' ? homeTeam : awayTeam;
+    const gameGS = situationalBatter.gameStats || {};
+    if (gameMode === 'season') {
+      const ss = seasonBatterStatsMap[`${batterTeamKey}|${situationalBatter.name}`];
+      if (ss) {
+        const totalAB = ss.ab + (gameGS.ab || 0);
+        const totalH = ss.h + (gameGS.hits || 0);
+        batterStats = {
+          avg: totalAB > 0 ? totalH / totalAB : 0,
+          hr: ss.hr + (gameGS.hr || 0),
+          rbi: ss.rbi + (gameGS.rbi || 0),
+        };
+      }
+    } else {
+      const sp = situationalBatter.splits;
+      if (sp) {
+        const vsL = sp.vsLHP || {};
+        const vsR = sp.vsRHP || {};
+        const exAB = (vsL.ab || 0) + (vsR.ab || 0);
+        const exH = Math.round((vsL.ab || 0) * (vsL.ba || 0) + (vsR.ab || 0) * (vsR.ba || 0));
+        const exHR = (vsL.hr || 0) + (vsR.hr || 0);
+        const totalAB = exAB + (gameGS.ab || 0);
+        const totalH = exH + (gameGS.hits || 0);
+        batterStats = {
+          avg: totalAB > 0 ? totalH / totalAB : 0,
+          hr: exHR + (gameGS.hr || 0),
+          rbi: '—',
+        };
+      }
+    }
+  }
+
   return (
     <ErrorBoundary>
     <div className="h-[100dvh] bg-background text-foreground flex flex-col overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
@@ -2096,12 +1948,16 @@ export default function Home() {
 
                 {/* RIGHT column: Banner + Commentary + Matchup + Controls */}
                 <div className="space-y-2">
-                {/* Game Event Banner (celebrations, caught stealing, ballpark events) */}
-                <GameEventBanner
-                  event={inlineGameEvent?.event}
-                  type={inlineGameEvent?.type}
-                  onClose={() => setInlineGameEvent(null)}
-                />
+                {/* Middle Banner: special events override the default batter stat line */}
+                {inlineGameEvent ? (
+                  <GameEventBanner
+                    event={inlineGameEvent.event}
+                    type={inlineGameEvent.type}
+                    onClose={() => setInlineGameEvent(null)}
+                  />
+                ) : (
+                  batterStats && <BatterStatBanner batter={situationalBatter} stats={batterStats} />
+                )}
 
                 {/* Commentary */}
                 <CommentaryBanner batter={situationalBatter} pitcher={pitcher} gameState={gameState} lastPlay={gameState.lastPlay} stadium={gameStadium} homeTeamKey={homeTeam} />
