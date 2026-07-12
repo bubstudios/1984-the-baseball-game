@@ -322,47 +322,64 @@ export function applyPlayerEjection(state, ejection) {
       state[historyKey].push({ ...pitcherObj, ejected: true });
     }
   } else {
-    // Position player ejection: replace in lineup with a bench player
+    // Position player ejection: replace in lineup AND on bases with a bench player
     const lineup = isHome ? state.homeLineup : state.awayLineup;
     const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
     const benchUsedKey = isHome ? 'homeBenchUsed' : 'awayBenchUsed';
 
     const slotIdx = lineup.findIndex(p => p.name === ejection.playerName);
-    if (slotIdx >= 0) {
-      const oldPlayer = lineup[slotIdx];
+    const oldPlayer = slotIdx >= 0 ? lineup[slotIdx] : null;
 
-      // Move ejected player to history
+    // Move ejected player to history
+    if (oldPlayer) {
       if (!state[historyKey]) state[historyKey] = [];
       if (!state[historyKey].find(p => p.name === ejection.playerName)) {
         state[historyKey].push({ ...oldPlayer, ejected: true });
       }
+    }
 
-      // Find a replacement from the bench
-      const replacement = getAvailableBenchPlayer(state, ejection.teamKey);
-      if (replacement) {
-        lineup[slotIdx] = {
-          ...replacement,
-          order: oldPlayer.order,
-          assignedPos: oldPlayer.assignedPos || replacement.pos,
-          gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
-        };
+    // Find a replacement from the bench
+    const replacement = getAvailableBenchPlayer(state, ejection.teamKey);
+    if (replacement && oldPlayer) {
+      // Replace in lineup
+      lineup[slotIdx] = {
+        ...replacement,
+        order: oldPlayer.order,
+        assignedPos: oldPlayer.assignedPos || replacement.pos,
+        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
+      };
 
-        // Mark bench player as used
-        if (!state[benchUsedKey]) state[benchUsedKey] = [];
-        if (!state[benchUsedKey].find(p => p.name === replacement.name)) {
-          state[benchUsedKey].push({ ...replacement });
+      // Mark bench player as used
+      if (!state[benchUsedKey]) state[benchUsedKey] = [];
+      if (!state[benchUsedKey].find(p => p.name === replacement.name)) {
+        state[benchUsedKey].push({ ...replacement });
+      }
+
+      // Log the substitution
+      const subText = `🔄 ${replacement.name} replaces ejected ${oldPlayer.name}`;
+      if (!state.log.some(e => e.text === subText)) {
+        state.log.push({ type: 'info', text: subText });
+      }
+    } else if (oldPlayer) {
+      state.log.push({ type: 'info', text: `⚠️ No bench available - ${oldPlayer.name}'s spot is an automatic out.` });
+    }
+
+    // CRITICAL: Remove ejected player from bases (HBP → charges mound → ejected)
+    // The ejected player must NOT remain on base. Replace with the same bench
+    // player (who is now in the lineup), or clear the base if no bench available.
+    if (state.bases) {
+      for (let i = 0; i < state.bases.length; i++) {
+        if (state.bases[i] && state.bases[i].name === ejection.playerName) {
+          if (replacement && oldPlayer) {
+            state.bases[i] = { ...replacement, order: oldPlayer.order, assignedPos: oldPlayer.assignedPos || replacement.pos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
+            const runSubText = `🔄 ${replacement.name} runs for ejected ${oldPlayer.name}`;
+            if (!state.log.some(e => e.text === runSubText)) {
+              state.log.push({ type: 'info', text: runSubText });
+            }
+          } else {
+            state.bases[i] = null;
+          }
         }
-
-        // Log the substitution
-        const subText = `🔄 ${replacement.name} replaces ejected ${oldPlayer.name}`;
-        if (!state.log.some(e => e.text === subText)) {
-          state.log.push({ type: 'info', text: subText });
-        }
-      } else {
-        // No bench available - this is an emergency. Leave the slot but mark
-        // the player as ejected so they can't bat (an out will be recorded
-        // if their slot comes up, per baseball rules).
-        state.log.push({ type: 'info', text: `⚠️ No bench available - ${oldPlayer.name}'s spot is an automatic out.` });
       }
     }
   }
