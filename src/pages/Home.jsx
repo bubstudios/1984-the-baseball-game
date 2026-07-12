@@ -1082,7 +1082,7 @@ export default function Home() {
           const playerEjections = getGameEjections(state);
           for (const ej of playerEjections) {
             const playerPos = ej.playerPos || '?';
-            await recordPlayerSuspension(ctx.seasonId, ej.teamKey, ej.playerName, playerPos, ej.reason, ctx.gameDate, ctx.gameDay, ej.inning);
+            await recordPlayerSuspension(ctx.seasonId, ej.teamKey, ej.playerName, playerPos, ej.reason, ctx.gameDate, ctx.gameDay, ej.inning, ej.hbpIntent);
           }
           // Record ejection transactions for the wire
           if (state._seasonEjection) {

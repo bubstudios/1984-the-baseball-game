@@ -22,8 +22,9 @@ export function clearPlayerDisciplineCache() {
 
 // ── Suspension odds tables per ejection reason ──
 // Returns { games, reason } or { games: 0, reason: null } if no suspension.
-export function rollPlayerSuspension(ejectionReason) {
+export function rollPlayerSuspension(ejectionReason, context = {}) {
   const r = Math.random();
+  const hbpIntent = context.hbpIntent || null;
 
   switch (ejectionReason) {
     case 'hbp_after_warning':
@@ -47,9 +48,18 @@ export function rollPlayerSuspension(ejectionReason) {
       return { games: 1, reason: 'arguing a call' };
 
     case 'charging_mound': {
-      if (r < 0.40) return { games: 2, reason: 'charging the mound' };
-      if (r < 0.80) return { games: 3, reason: 'charging the mound' };
-      return { games: 4 + Math.floor(Math.random() * 3), reason: 'charging the mound, fight' }; // 4-6
+      // Context-aware: charging after an accidental HBP is punished harder
+      // (the batter escalated without provocation) than after an intentional one.
+      if (hbpIntent === 'accidental') {
+        if (r < 0.45) return { games: 2, reason: 'charged mound after unintentional HBP' };
+        if (r < 0.85) return { games: 3, reason: 'charged mound after unintentional HBP' };
+        return { games: 4 + Math.floor(Math.random() * 2), reason: 'charged mound after unintentional HBP' }; // 4-5
+      }
+      // Intentional/retaliation HBP — 10% escape, slightly lighter top end
+      if (r < 0.10) return { games: 0, reason: null };
+      if (r < 0.50) return { games: 2, reason: 'charged mound after intentional HBP' };
+      if (r < 0.85) return { games: 3, reason: 'charged mound after intentional HBP' };
+      return { games: 4 + Math.floor(Math.random() * 3), reason: 'charged mound, fight after intentional HBP' }; // 4-6
     }
 
     case 'fight_participant': {
@@ -98,9 +108,9 @@ export function isPlayerSuspended(suspensions, teamKey, playerName) {
 }
 
 // ── Record a suspension after a player ejection ──
-export async function recordPlayerSuspension(seasonId, teamKey, playerName, playerPos, ejectionReason, gameDate, gameDay, inning) {
+export async function recordPlayerSuspension(seasonId, teamKey, playerName, playerPos, ejectionReason, gameDate, gameDay, inning, hbpIntent) {
   if (!seasonId || !teamKey || !playerName) return null;
-  const roll = rollPlayerSuspension(ejectionReason);
+  const roll = rollPlayerSuspension(ejectionReason, { hbpIntent });
   if (roll.games === 0) return { suspended: false, games: 0 };
 
   const record = {

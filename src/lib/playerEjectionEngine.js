@@ -184,12 +184,18 @@ export function checkChargingMound(state, pitcher, batter) {
     // Batter charges - bench may clear
     const benchesClear = ctx.tension >= 60 && Math.random() < 0.40;
 
+    // HBP intent context for discipline: warnings active or prior retaliation
+    // means the pitch was likely intentional; otherwise the umpire ruled it
+    // accidental (got away from the pitcher). This drives suspension severity.
+    const hbpIntent = (ctx.warningIssued || ctx.retaliations >= 1) ? 'intentional' : 'accidental';
+
     // The HIT BATTER is the default charging player - this is the core fix.
     const ejections = [{
       playerName: batter.name,
       playerPos: getPlayerPos(batter),
       teamKey: battingTeam,
       reason: EJECTION_REASONS.CHARGING_MOUND,
+      hbpIntent,
       inning: state.inning,
       commentary: `${batter.name.split(' ').pop()} charges the mound! He's been tossed!`,
     }];
