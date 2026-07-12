@@ -49,23 +49,28 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
   // Show ALL bench players - used ones will be grayed out
   const myBench = useMemo(() => {
     if (!myTeam) return [];
-    // DERIVED bench: full position-player roster minus anyone currently in the
-    // game or already removed by an in-game substitution.  This ensures displaced
-    // starters (pre-game lineup swaps) are available and starting players are not
-    // listed.  Pre-game swaps never set a "used" flag.
+    // Include scratched (injured/suspended) players so they stay visible but
+    // grayed out, rather than vanishing from the bench entirely.
     const fullRoster = [...(myTeam.lineup || []), ...(myTeam.bench || [])];
-    return fullRoster.filter(p => !usedNames.has(p.name) && !(gameState.scratchedPlayers || []).includes(p.name));
+    return fullRoster.filter(p => !usedNames.has(p.name));
   }, [myTeam, usedNames]);
 
   const isBenchUsed = (player) => usedNames.has(player.name);
+  const isScratched = (player) => (gameState.scratchedPlayers || []).includes(player.name);
 
   // Use in-game bullpen (relievers are removed as they're used).
   // HARD GUARD: the current pitcher must NEVER appear in his own bullpen options,
   // and removed players (illegal re-entry) must never be listed.
   const currentPitcher = userIsHome ? gameState.homePitcher : gameState.awayPitcher;
   const removedPlayers = gameState.removedPlayers || [];
+  const scratchedSet = new Set(gameState.scratchedPlayers || []);
   const bullpen = (userIsHome ? (gameState.homeBullpen || []) : (gameState.awayBullpen || []))
-    .filter(p => p.name !== currentPitcher?.name && !removedPlayers.includes(p.name) && !(gameState.scratchedPlayers || []).includes(p.name));
+    .filter(p => p.name !== currentPitcher?.name && !removedPlayers.includes(p.name));
+  // Scratched relievers were filtered from the game-state bullpen by
+  // createGameState. Re-add them from the full team roster so they show
+  // up grayed out rather than vanishing entirely.
+  const fullBullpen = myTeam?.bullpen || [];
+  const scratchedRelievers = fullBullpen.filter(p => scratchedSet.has(p.name) && p.name !== currentPitcher?.name && !removedPlayers.includes(p.name));
 
   const tabs = [
     { id: 'pinchhit', label: 'Pinch Hit' },
@@ -136,22 +141,23 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                     const conDelta = p.contact - (batter?.contact || 0);
                     const pwrDelta = p.power - (batter?.power || 0);
                     const used = isBenchUsed(p);
+                    const scratched = isScratched(p);
 
                     return (
                     <button
                       key={i}
-                      onClick={() => !used && onPinchHit(p)}
-                      disabled={used}
+                      onClick={() => !used && !scratched && onPinchHit(p)}
+                      disabled={used || scratched}
                       className={`w-full text-left p-3 rounded-lg border transition-all ${
-                        used
+                        used || scratched
                           ? 'border-border/40 opacity-40 cursor-not-allowed'
                           : 'border-border hover:border-primary hover:bg-primary/5'
                       }`}
                     >
                       <div className="flex justify-between items-center">
-                        <span className={`font-heading font-bold text-sm ${used ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{p.name}</span>
+                        <span className={`font-heading font-bold text-sm ${used || scratched ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{p.name}</span>
                         <span className="text-[10px] text-muted-foreground">
-                          {used ? 'USED' : `${p.pos} (${p.bats})`}
+                          {used ? 'USED' : scratched ? 'OUT' : `${p.pos} (${p.bats})`}
                         </span>
                       </div>
                       <div className="flex gap-3 mt-1 text-[10px] items-center">
@@ -206,13 +212,14 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                     {/* Show faster bench players first */}
                     {[...myBench].sort((a, b) => b.speed - a.speed).map((p, i) => {
                       const used = isBenchUsed(p);
+                      const scratched = isScratched(p);
                       return (
                       <button
                         key={i}
-                        onClick={() => !used && p.speed > runner.speed && onPinchRun(runner.baseIndex, p)}
-                        disabled={used || p.speed <= runner.speed}
+                        onClick={() => !used && !scratched && p.speed > runner.speed && onPinchRun(runner.baseIndex, p)}
+                        disabled={used || scratched || p.speed <= runner.speed}
                         className={`w-full text-left p-2 rounded-lg border transition-all ${
-                          used
+                          used || scratched
                             ? 'border-border/40 opacity-40 cursor-not-allowed'
                             : p.speed > runner.speed
                               ? 'border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/10'
@@ -220,10 +227,12 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                         }`}
                       >
                         <div className="flex justify-between items-center">
-                          <span className={`font-heading font-bold text-xs ${used ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{p.name}</span>
+                          <span className={`font-heading font-bold text-xs ${used || scratched ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{p.name}</span>
                           <div className="flex items-center gap-2">
                             {used ? (
                               <span className="text-[9px] text-muted-foreground">USED</span>
+                            ) : scratched ? (
+                              <span className="text-[9px] text-muted-foreground">OUT</span>
                             ) : (
                               <>
                                 {p.speed > runner.speed && (
@@ -287,18 +296,19 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                         <div className="flex flex-wrap gap-1">
                           {myBench.map((benchPlayer, bi) => {
                             const used = isBenchUsed(benchPlayer);
+                            const benchScratched = isScratched(benchPlayer);
                             return (
                               <button
                                 key={bi}
-                                onClick={() => !used && onDefensiveSwitch(actualIdx, normalizePos(benchPlayer.pos), benchPlayer)}
-                                disabled={used}
+                                onClick={() => !used && !benchScratched && onDefensiveSwitch(actualIdx, normalizePos(benchPlayer.pos), benchPlayer)}
+                                disabled={used || benchScratched}
                                 className={`text-[9px] px-2 py-1 rounded border transition-all ${
-                                  used
+                                  used || benchScratched
                                     ? 'border-border/40 opacity-40 cursor-not-allowed text-muted-foreground'
                                     : 'border-border hover:border-primary hover:bg-primary/10 text-foreground'
                                 }`}
                               >
-                                {benchPlayer.name.split(' ').pop()} ({normalizePos(benchPlayer.pos)})
+                                {benchPlayer.name.split(' ').pop()} ({normalizePos(benchPlayer.pos)}){benchScratched ? ' OUT' : ''}
                               </button>
                             );
                           })}
@@ -335,7 +345,7 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                 Bullpen ({bullpen.length})
               </div>
 
-              {bullpen.length === 0 ? (
+              {bullpen.length === 0 && scratchedRelievers.length === 0 ? (
                 <p className="text-xs text-muted-foreground italic">No relievers available</p>
               ) : (
                 <div className="space-y-1.5">
@@ -372,6 +382,15 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                     </button>
                     );
                   })}
+                  {scratchedRelievers.map((p, i) => (
+                    <div key={`scr-${i}`} className="w-full text-left p-3 rounded-lg border border-border/40 opacity-40 cursor-not-allowed">
+                      <div className="flex justify-between items-center">
+                        <span className="font-heading font-bold text-sm text-muted-foreground line-through">{p.name}</span>
+                        <span className="text-[10px] text-muted-foreground">OUT</span>
+                      </div>
+                      <div className="text-[9px] text-amber-400 mt-1">Unavailable - injured/suspended</div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

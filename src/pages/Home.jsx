@@ -1861,8 +1861,8 @@ export default function Home() {
         weather={lineupPhase.weather}
         onConfirm={handleLineupConfirm}
         onBack={() => { setLineupPhase(null); setBallparkPhase({ home: lineupPhase.home, away: lineupPhase.away }); }}
-        illPlayerNames={(lineupPhase.illPlayers?.[userIsHome ? 'home' : 'away'] || []).map(p => p.name)}
-        opponentIllPlayerNames={(lineupPhase.illPlayers?.[userIsHome ? 'away' : 'home'] || []).map(p => p.name)}
+        illPlayerNames={[...(lineupPhase.illPlayers?.[userIsHome ? 'home' : 'away'] || []).map(p => p.name), ...(lineupPhase.injuredPlayerNames || []), ...(lineupPhase.suspendedPlayerNames || [])]}
+        opponentIllPlayerNames={[...(lineupPhase.illPlayers?.[userIsHome ? 'away' : 'home'] || []).map(p => p.name), ...(lineupPhase.injuredPlayerNames || []), ...(lineupPhase.suspendedPlayerNames || [])]}
         seasonMode={gameMode === 'season'}
         forcedOpponentSP={forcedStarters?.cpu || null}
         forcedUserSP={forcedStarters?.user || null}

@@ -55,7 +55,7 @@ function getPlatoonAdvantage(batter, opposingPitcher) {
   return { type: 'advantage', label: 'Switch hitter - Platoon advantage' };
 }
 
-function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePositions, opposingPitcher, gameConditions, onPlayerChange, onPositionChange, onMoveUp, onMoveDown, onRemove }) {
+function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePositions, opposingPitcher, gameConditions, onPlayerChange, onPositionChange, onMoveUp, onMoveDown, onRemove, unavailableNames }) {
   const penalty = getPositionPenalty(slot.naturalPos, slot.assignedPos);
   const availablePlayers = allPlayers.filter(p => !usedIds.has(p.name) || p.name === slot.name);
   const playerData = availablePlayers.find(p => p.name === slot.name);
@@ -72,9 +72,14 @@ function PlayerSlot({ slot, index, total, allPlayers, usedIds, availablePosition
         onChange={(e) => onPlayerChange(index, e.target.value)}
         className="flex-1 bg-input border border-border rounded-md px-2 py-1.5 text-xs font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
       >
-        {availablePlayers.map(p => (
-          <option key={p.name} value={p.name}>{p.name} ({p.pos})</option>
-        ))}
+        {availablePlayers.map(p => {
+          const isOut = unavailableNames?.has(p.name);
+          return (
+          <option key={p.name} value={p.name} disabled={isOut}>
+            {p.name} ({p.pos}){isOut ? ' - OUT' : ''}
+          </option>
+          );
+        })}
       </select>
 
       {/* Position select */}
@@ -219,9 +224,11 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
   }, [opponentRotation, forcedOpponentSP]);
 
   const allPositionPlayers = useMemo(() => {
-    const players = [...teamData.lineup, ...(teamData.bench || [])].filter(p => !illSet.has(p.name));
+    // Include ALL players (even unavailable ones) so they appear in the
+    // dropdown visibly grayed out, rather than vanishing entirely.
+    const players = [...teamData.lineup, ...(teamData.bench || [])];
     if (!useDH) {
-      const allPitchers = [...teamData.rotation, ...teamData.bullpen].filter(p => !illSet.has(p.name));
+      const allPitchers = [...teamData.rotation, ...teamData.bullpen];
       allPitchers.forEach(p => {
         players.push({
           ...p,
@@ -232,7 +239,7 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
       });
     }
     return players;
-  }, [teamData, useDH, illSet]);
+  }, [teamData, useDH]);
 
   const availablePositions = useMemo(() => {
     return useDH ? ALL_POSITIONS : [...ALL_POSITIONS.filter(p => p !== 'DH'), 'SP'];
@@ -408,6 +415,24 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
           </span>
         </div>
 
+        {/* Unavailable players notice */}
+        {illSet.size > 0 && (
+          <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-3 mb-4">
+            <div className="text-[10px] font-heading uppercase tracking-widest text-red-400 mb-1.5">Unavailable Players</div>
+            <div className="space-y-1">
+              {[...teamData.lineup, ...(teamData.bench || []), ...(teamData.rotation || []), ...(teamData.bullpen || [])]
+                .filter(p => illSet.has(p.name))
+                .map((p, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs font-body">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                    <span className="text-muted-foreground line-through">{p.name}</span>
+                    <span className="text-red-400 font-heading text-[10px]">OUT</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
         {/* Legends */}
         <div className="bg-card border border-border rounded-xl p-3 mb-4 space-y-1.5">
           <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-1">Lineup Guide</div>
@@ -477,6 +502,7 @@ export default function LineupManager({ teamKey, teamData, opponentTeamData, use
                 usedIds={usedPlayerIds}
                 availablePositions={availablePositions}
                 opposingPitcher={opponentSPData}
+                unavailableNames={illSet}
                 gameConditions={{
                   isNight: weather ? !weather.isDay : true,
                   isHome: parkTeam === teamKey,
