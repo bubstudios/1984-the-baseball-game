@@ -38,7 +38,6 @@ import { rollBallparkEvent, resetBallparkEvents } from '@/lib/ballparkEvents';
 import { trackGrooverSighting } from '@/lib/achievements';
 import useRobotAnnouncer, { unlockRobotAnnouncer } from '@/hooks/useRobotAnnouncer';
 import TutorialModal, { hasSeenTutorial } from '@/components/game/TutorialModal';
-import SeasonAchievementPopup from '@/components/season/SeasonAchievementPopup';
 import RetroLoading from '@/components/game/RetroLoading';
 import useRetroAudio, { unlockAudio } from '@/hooks/useRetroAudio';
 import { checkGameAchievements, ACHIEVEMENTS, getUnlockedCount, ensureStatsInit, trackSessionStart, trackGameCompleted, trackGameEndTime, checkTeamAchievements, unlockAchievement, trackHomeRunDistance, trackGameRecords, trackPlayersUsed, trackTimePlayed } from '@/lib/achievements';
@@ -2001,13 +2000,7 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Achievement popup - flashy overlay */}
-                {showAchievementPopup && newAchievements.length > 0 && (
-                  <AchievementPopup
-                    achievementIds={newAchievements}
-                    onDismiss={() => setShowAchievementPopup(false)}
-                  />
-                )}
+                {/* Achievement popup moved to end of component (unified Exhibition + Season) */}
 
                 {/* Leader Challenge Progress popup */}
                 {leaderProgress && (
@@ -2335,7 +2328,10 @@ export default function Home() {
         />
       )}
 
-      <SeasonAchievementPopup />
+      <AchievementPopup
+        achievementIds={showAchievementPopup ? newAchievements : []}
+        onDismiss={() => setShowAchievementPopup(false)}
+      />
     </div>
     </ErrorBoundary>
   );

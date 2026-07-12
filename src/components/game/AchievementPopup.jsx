@@ -1,22 +1,85 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Trophy, X } from 'lucide-react';
 import { ACHIEVEMENTS } from '@/lib/achievements';
+import { subscribeToPopupQueue, shiftPopupQueue } from '@/lib/seasonAchievements/achievementEngine';
 
-const FLASH_DURATION = 4000; // total flash display before auto-dim (user can still tap to dismiss)
-const FLASH_INTERVAL = 150;   // strobe speed
+const FLASH_INTERVAL = 150;
+
+// Season achievement categories mapped to emoji icons
+const CATEGORY_ICONS = {
+  progress: '📅', team: '🏆', hitting: '⚾', pitching: '🎯', defense: '🧤',
+  drama: '🔥', discipline: '⚠️', allstar: '⭐', trade: '🔄', awards: '🏅',
+  postseason: '👑', mets: '🐴', hidden: '👁️',
+};
+
+function getModeLabel(item) {
+  if (item.mode === 'exhibition') return 'Achievement Unlocked';
+  if (item.category === 'postseason') return 'Postseason Achievement';
+  if (item.category === 'hidden') return 'Hidden Achievement';
+  if (item.category === 'team') return 'Team Achievement';
+  return 'Season Achievement';
+}
 
 export default function AchievementPopup({ achievementIds, onDismiss }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [phase, setPhase] = useState('flash'); // 'flash' | 'display'
+  const [seasonQueue, setSeasonQueue] = useState([]);
+  const [exhIndex, setExhIndex] = useState(0);
+  const [phase, setPhase] = useState('flash');
   const [flashCount, setFlashCount] = useState(0);
   const flashTimer = useRef(null);
   const audioCtx = useRef(null);
 
-  const current = ACHIEVEMENTS.find(a => a.id === achievementIds[currentIndex]);
-  const total = achievementIds.length;
+  // Subscribe to Season popup queue
+  useEffect(() => {
+    return subscribeToPopupQueue((q) => setSeasonQueue([...q]));
+  }, []);
+
+  // Exhibition first, then Season
+  const hasExhibition = achievementIds && achievementIds.length > 0;
+  const activeMode = hasExhibition ? 'exhibition' : 'season';
+
+  const exhibitionItems = hasExhibition
+    ? achievementIds.map(id => {
+        const ach = ACHIEVEMENTS.find(a => a.id === id);
+        if (!ach) return null;
+        return { id, name: ach.name, desc: ach.desc, icon: ach.icon, mode: 'exhibition' };
+      }).filter(Boolean)
+    : [];
+
+  const seasonItems = seasonQueue.map(item => ({
+    id: item.id,
+    name: item.title,
+    desc: item.description,
+    icon: CATEGORY_ICONS[item.category] || '🏆',
+    mode: 'season',
+    rarity: item.rarity,
+    category: item.category,
+  }));
+
+  const activeList = activeMode === 'exhibition' ? exhibitionItems : seasonItems;
+  const activeIndex = activeMode === 'exhibition' ? exhIndex : 0;
+  const current = activeList[activeIndex];
+  const total = activeList.length;
+
+  // Reset exhibition index when the ID list changes
+  useEffect(() => {
+    if (activeMode === 'exhibition') {
+      setExhIndex(0);
+      setPhase('flash');
+      setFlashCount(0);
+    }
+  }, [achievementIds?.join(',')]);
+
+  // Reset phase when Season queue front item changes
+  useEffect(() => {
+    if (activeMode === 'season' && seasonQueue.length > 0) {
+      setPhase('flash');
+      setFlashCount(0);
+    }
+  }, [seasonQueue[0]?.id]);
 
   // Play "DING DING DING" using Web Audio oscillators
   useEffect(() => {
+    if (!current) return;
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       audioCtx.current = ctx;
@@ -35,10 +98,10 @@ export default function AchievementPopup({ achievementIds, onDismiss }) {
         }, delay);
       };
       playDing(1174, 0);     // D6
-      playDing(1397, 180);   // F6  
+      playDing(1397, 180);   // F6
       playDing(1568, 360);   // G6
     } catch (e) { /* Audio not available */ }
-  }, [achievementIds.join(',')]);
+  }, [current?.id]);
 
   // Flash strobe effect for ~1.5 seconds then settle
   useEffect(() => {
@@ -59,15 +122,38 @@ export default function AchievementPopup({ achievementIds, onDismiss }) {
 
   // Auto-advance through multiple achievements
   useEffect(() => {
-    if (phase === 'display' && total > 1 && currentIndex < total - 1) {
-      const t = setTimeout(() => {
-        setCurrentIndex(i => i + 1);
+    if (phase !== 'display') return;
+    const hasMore = activeMode === 'exhibition'
+      ? exhIndex < exhibitionItems.length - 1
+      : seasonQueue.length > 1;
+    if (!hasMore) return;
+    const t = setTimeout(() => {
+      if (activeMode === 'exhibition') setExhIndex(i => i + 1);
+      else shiftPopupQueue();
+      setPhase('flash');
+      setFlashCount(0);
+    }, 2500);
+    return () => clearTimeout(t);
+  }, [phase, exhIndex, activeMode, seasonQueue.length, exhibitionItems.length]);
+
+  const handleDismiss = () => {
+    if (activeMode === 'exhibition') {
+      if (exhIndex < exhibitionItems.length - 1) {
+        setExhIndex(i => i + 1);
         setPhase('flash');
         setFlashCount(0);
-      }, 2500);
-      return () => clearTimeout(t);
+      } else {
+        setExhIndex(0);
+        setPhase('flash');
+        setFlashCount(0);
+        if (onDismiss) onDismiss();
+      }
+    } else {
+      shiftPopupQueue();
+      setPhase('flash');
+      setFlashCount(0);
     }
-  }, [phase, currentIndex, total]);
+  };
 
   const isStrobe = phase === 'flash' && flashCount % 2 === 0;
   const bgClass = isStrobe ? 'bg-amber-500/30' : 'bg-background/95';
@@ -78,7 +164,7 @@ export default function AchievementPopup({ achievementIds, onDismiss }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center cursor-pointer"
-      onClick={onDismiss}
+      onClick={handleDismiss}
     >
       {/* Full-screen flash overlay */}
       <div className={`absolute inset-0 transition-colors ${bgClass} ${isStrobe ? 'duration-75' : 'duration-300'}`} />
@@ -87,7 +173,7 @@ export default function AchievementPopup({ achievementIds, onDismiss }) {
       <div className={`relative bg-card/95 border-2 border-primary/60 rounded-2xl p-6 max-w-sm w-[90%] text-center shadow-2xl shadow-primary/20 ${shakeClass}`}>
         {/* Close hint */}
         <button
-          onClick={(e) => { e.stopPropagation(); onDismiss(); }}
+          onClick={(e) => { e.stopPropagation(); handleDismiss(); }}
           className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
         >
           <X className="w-3.5 h-3.5" />
@@ -109,19 +195,26 @@ export default function AchievementPopup({ achievementIds, onDismiss }) {
         {/* Icon */}
         <div className="text-3xl my-2">{current.icon}</div>
 
+        {/* Rarity badge (Season achievements) */}
+        {current.rarity && current.rarity !== 'Common' && (
+          <div className="inline-block text-[9px] font-heading font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/20 text-primary mb-1">
+            {current.rarity}
+          </div>
+        )}
+
         {/* Category badge */}
         <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground/60">
-          Achievement Unlocked
+          {getModeLabel(current)}
         </div>
 
         {/* Multiple indicator */}
         {total > 1 && (
           <div className="mt-3 flex items-center justify-center gap-1.5">
-            {achievementIds.map((id, i) => (
+            {activeList.map((item, i) => (
               <div
-                key={id}
+                key={item.id}
                 className={`w-1.5 h-1.5 rounded-full transition-all ${
-                  i <= currentIndex ? 'bg-primary' : 'bg-muted/40'
+                  i <= activeIndex ? 'bg-primary' : 'bg-muted/40'
                 }`}
               />
             ))}

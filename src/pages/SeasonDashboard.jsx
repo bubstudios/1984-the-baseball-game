@@ -47,7 +47,7 @@ import DisciplineDebugPanel from '@/components/season/DisciplineDebugPanel';
 import { loadActiveSuspensions, decrementTeamSuspensions, getManagerStatusForTeam } from '@/lib/managerSuspension';
 import { loadActivePlayerSuspensions, buildSuspendedPlayerSet, decrementPlayerSuspensions, recordPlayerSuspension } from '@/lib/playerDiscipline';
 import { forcePitcherHBPEjection, forceBatterArguesStrikes, forceChargingMound, forceBenchClearingBrawl, applyPlayerEjection, applyMultipleEjections, getGameEjections } from '@/lib/playerEjectionEngine';
-import SeasonAchievementPopup from '@/components/season/SeasonAchievementPopup';
+import AchievementPopup from '@/components/game/AchievementPopup';
 import AchievementsGallery from '@/components/season/AchievementsGallery';
 import { evaluateGameComplete, evaluateSeasonEvent, initAchievementCache } from '@/lib/seasonAchievements/achievementEngine';
 import UnavailablePlayersScreen from '@/components/season/UnavailablePlayersScreen';
@@ -2040,7 +2040,7 @@ export default function SeasonDashboard() {
         />
       )}
 
-      <SeasonAchievementPopup />
+      <AchievementPopup />
 
       {showAchievements && (
         <AchievementsGallery onClose={() => setShowAchievements(false)} />
