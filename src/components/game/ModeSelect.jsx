@@ -67,7 +67,7 @@ export default function ModeSelect({ onSelectMode, onBack }) {
                 <div className="flex-1">
                   <h3 className="font-heading text-lg font-bold text-foreground mb-1">Season Mode</h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Manage your team through a full 162-game season. Track stats, make trades, and chase the pennant.
+                    Manage your team through a full 162-game season. Track stats and chase the pennant.
                   </p>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-heading text-primary bg-primary/10 px-2 py-1 rounded">PLAYABLE</span>
