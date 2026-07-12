@@ -621,7 +621,11 @@ export function resolveSwing(state, swingType, pitch) {
       }
     }
     if (isGrounder) {
-      const r1 = state.bases[0], r2 = state.bases[1];
+      // Freeze pre-play base state so runner advancement can't be double-processed.
+      // A runner who advances to 3rd on this groundout must NOT then be scored
+      // by the productive-out check below — only a runner already on 3rd before
+      // the play can score on a productive groundout.
+      const r1 = state.bases[0], r2 = state.bases[1], r3pre = state.bases[2];
       if (r1 && state.outs < 2) {
         if (state.outs >= 2 && r2 && isGrounder) {
           const r3 = state.bases[2];
@@ -736,15 +740,25 @@ export function resolveSwing(state, swingType, pitch) {
       if (!r1 && state.bases[1] && !state.bases[2] && state.outs < 2 && isGrounder) { const runner = state.bases[1]; const isRS = ['1B','2B'].includes(out.pos); const ac = isRS ? 0.55 + (runner.speed / 10) * 0.35 : 0.05 + (runner.speed / 10) * 0.20; if (Math.random() < Math.max(0.05, ac)) { state.bases[2] = runner; state.bases[1] = null; out.text = `${out.text} - ${runner.name.split(' ').pop()} advances to third`; } }
       // Productive groundout: runner on 3rd scores on grounder with < 2 outs
       // (non-critical situation, infield playing back). Right-side grounders
-      // score more often. This was entirely missing - runners on 3rd never
-      // scored on routine groundouts outside DP/FC/critical paths.
-      if (state.bases[2] && state.outs < 2) {
-        const r3p = state.bases[2];
+      // score more often.
+      // CRITICAL FIX: Only score a runner who was on 3rd BEFORE the play (r3pre).
+      // The state.bases[2] === r3pre check ensures a runner who just advanced
+      // from 2nd to 3rd on this same groundout is NOT scored here — that would
+      // be double-processing (advance then score on same routine play).
+      if (r3pre && state.bases[2] === r3pre && state.outs < 2) {
+        const r3p = r3pre;
         const isRS2 = ['1B', '2B'].includes(out.pos);
         const prodC = isRS2 ? 0.58 + (r3p.speed / 10) * 0.30 : 0.28 + (r3p.speed / 10) * 0.20;
         if (Math.random() < Math.max(0.08, Math.min(prodC, 0.80))) {
           chargeRun(state, r3p); batter.gameStats.rbi++; state.bases[2] = null;
           out.text = `${out.text} - ${r3p.name.split(' ').pop()} scores on the productive out!`;
+          // Walk-off guard: if the productive out scores the winning run in
+          // the bottom of the 9th or later, end the game immediately.
+          if (isWalkOff(state)) {
+            state.gameOver = true; state.waitingForInput = false;
+            const homeName = TEAMS[state.homeTeam]?.name || 'Home';
+            state.log.push({ type: 'info', text: `🎉 Walk-off productive out! ${homeName} win ${state.score.home}-${state.score.away}!` });
+          }
         }
       }
     }
