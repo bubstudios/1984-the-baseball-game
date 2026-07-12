@@ -1314,14 +1314,19 @@ export default function Home() {
              }
            }
          }
-         // Bench-clearing brawl check (high tension)
-         const brawlResult = checkBenchClearingBrawl(afterSubs);
-         if (brawlResult) {
-           applyMultipleEjections(afterSubs, brawlResult.ejections);
-           totalEjections += brawlResult.ejections.length;
-           incidentSteps.push({ text: brawlResult.commentary, type: 'brawl' });
-           for (const ej of brawlResult.ejections) {
-             incidentSteps.push({ text: ej.commentary, type: 'ejection' });
+         // Bench-clearing brawl check - ONLY after an actual HBP, not on every
+         // pitch. Running it unconditionally caused phantom ejections: tension
+         // from a prior HBP could trigger a brawl on a routine groundout,
+         // ejecting random players who were never involved in any incident.
+         if (isHBP && pitcher && batter) {
+           const brawlResult = checkBenchClearingBrawl(afterSubs);
+           if (brawlResult) {
+             applyMultipleEjections(afterSubs, brawlResult.ejections);
+             totalEjections += brawlResult.ejections.length;
+             incidentSteps.push({ text: brawlResult.commentary, type: 'brawl' });
+             for (const ej of brawlResult.ejections) {
+               incidentSteps.push({ text: ej.commentary, type: 'ejection' });
+             }
            }
          }
 
@@ -1391,34 +1396,71 @@ export default function Home() {
       checkFielderInjury(gameState, afterSubs);
 
       // ── Player ejection checks (Season Mode only) ──
+      // Mirrors handlePitch: uses the ACTUAL hit batter from beanball context
+      // (not getSituationalBatter which returns the next batter), and gates
+      // brawl checks behind a real HBP to prevent phantom ejections.
       if (gameModeRef.current === 'season') {
-        const pitcher = getEffectivePitcher(afterSubs) || getCurrentPitcher(afterSubs);
-        const batter = getSituationalBatter(afterSubs);
-        if (afterSubs.lastPlay?.type === 'walk' && (afterSubs.lastPlay?.text?.includes('hit by the pitch') || afterSubs.lastPlay?.text?.includes('HBP'))) {
-          if (pitcher && batter) {
-            const hbpEjection = checkHBPEjection(afterSubs, pitcher, batter);
-            if (hbpEjection) {
-              applyPlayerEjection(afterSubs, hbpEjection);
-              setArgumentResult({ ejected: true, managerName: hbpEjection.commentary, homeTeamKey: hbpEjection.teamKey });
+        const ctx = afterSubs._beanball;
+        const isHBP = afterSubs.lastPlay?.type === 'walk' && (afterSubs.lastPlay?.text?.includes('hit by the pitch') || afterSubs.lastPlay?.text?.includes('HBP'));
+
+        let batter = null, pitcher = null;
+        if (isHBP && ctx) {
+          const battingSide = afterSubs.halfInning === 'top' ? 'away' : 'home';
+          const battingTeamKey = battingSide === 'home' ? afterSubs.homeTeam : afterSubs.awayTeam;
+          const pitchingTeamKey = battingSide === 'home' ? afterSubs.awayTeam : afterSubs.homeTeam;
+          batter = ctx.lastHBPBatter ? findPlayerInGame(afterSubs, ctx.lastHBPBatter, battingTeamKey) : null;
+          pitcher = ctx.lastHBPPitcher ? findPlayerInGame(afterSubs, ctx.lastHBPPitcher, pitchingTeamKey) : null;
+          if (!pitcher) pitcher = getEffectivePitcher(afterSubs) || getCurrentPitcher(afterSubs);
+        } else {
+          batter = getSituationalBatter(afterSubs);
+          pitcher = getEffectivePitcher(afterSubs) || getCurrentPitcher(afterSubs);
+        }
+
+        const incidentSteps = [];
+        let totalEjections = 0;
+
+        if (isHBP && pitcher && batter) {
+          incidentSteps.push({ text: `${batter.name.split(' ').pop()} is hit by the pitch!`, type: 'hbp' });
+          const hbpEjection = checkHBPEjection(afterSubs, pitcher, batter);
+          if (hbpEjection) {
+            applyPlayerEjection(afterSubs, hbpEjection);
+            totalEjections++;
+            incidentSteps.push({ text: hbpEjection.commentary, type: 'ejection' });
+          }
+          const chargeResult = checkChargingMound(afterSubs, pitcher, batter);
+          if (chargeResult) {
+            applyMultipleEjections(afterSubs, chargeResult.ejections);
+            totalEjections += chargeResult.ejections.length;
+            incidentSteps.push({ text: chargeResult.commentary, type: chargeResult.type === 'bench_clearing' ? 'brawl' : 'mound_charge' });
+            for (const ej of chargeResult.ejections) {
+              incidentSteps.push({ text: ej.commentary, type: 'ejection' });
             }
-            const chargeResult = checkChargingMound(afterSubs, pitcher, batter);
-            if (chargeResult) {
-              applyMultipleEjections(afterSubs, chargeResult.ejections);
-              setArgumentResult({ ejected: true, managerName: chargeResult.commentary, homeTeamKey: batter.teamKey || afterSubs.homeTeam });
+          }
+          const brawlResult = checkBenchClearingBrawl(afterSubs);
+          if (brawlResult) {
+            applyMultipleEjections(afterSubs, brawlResult.ejections);
+            totalEjections += brawlResult.ejections.length;
+            incidentSteps.push({ text: brawlResult.commentary, type: 'brawl' });
+            for (const ej of brawlResult.ejections) {
+              incidentSteps.push({ text: ej.commentary, type: 'ejection' });
             }
           }
         }
-        if (afterSubs.lastPlay?.type === 'strikeout' && batter) {
-          const strikeArg = checkBatterArguesStrikes(afterSubs, batter);
-          if (strikeArg) {
-            applyPlayerEjection(afterSubs, strikeArg);
-            setArgumentResult({ ejected: true, managerName: strikeArg.commentary, homeTeamKey: strikeArg.teamKey });
+        if (afterSubs.lastPlay?.type === 'strikeout') {
+          const prevBatter = getPreviousBatter(afterSubs) || batter;
+          if (prevBatter) {
+            const strikeArg = checkBatterArguesStrikes(afterSubs, prevBatter);
+            if (strikeArg) {
+              applyPlayerEjection(afterSubs, strikeArg);
+              totalEjections++;
+              incidentSteps.push({ text: strikeArg.commentary, type: 'ejection' });
+            }
           }
         }
-        const brawlResult = checkBenchClearingBrawl(afterSubs);
-        if (brawlResult) {
-          applyMultipleEjections(afterSubs, brawlResult.ejections);
-          setArgumentResult({ ejected: true, managerName: brawlResult.commentary, homeTeamKey: afterSubs.homeTeam });
+
+        if (incidentSteps.length > 0) {
+          setDisciplineIncident({ steps: incidentSteps, totalEjections });
+          setEjectionCount(prev => prev + totalEjections);
         }
       }
       } catch (e) {

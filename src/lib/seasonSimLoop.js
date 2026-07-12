@@ -173,6 +173,8 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
         playerTeamsPlayed.add(g.awayTeam);
       }
     }
+    const todayDate = daySchedule[0]?.gameDate || seasonObj.currentDate;
+
     if (playerTeamsPlayed.size > 0) {
       await decrementPlayerSuspensions(seasonObj.id, playerTeamsPlayed, todayDate);
       dayPlayerSuspensions = await loadActivePlayerSuspensions(seasonObj.id);
@@ -188,7 +190,6 @@ export async function simGamesToDay(targetGameDay, seasonObj, onProgress) {
       await recordInjury(seasonObj.id, inj.teamKey, inj.playerName, inj.playerPos, inj.source, inj.gameDate, currentDay);
     }
     simInjuries.length = 0;
-    const todayDate = daySchedule[0]?.gameDate || seasonObj.currentDate;
     await runDailyRecovery(seasonObj.id, todayDate);
     dayInjuries = await loadActiveInjuries(seasonObj.id);
 
