@@ -7,21 +7,24 @@
  */
 
 /**
- * Log a run with pitcher attribution. Called from scoreRun() in the game engine.
+ * Log a run with pitcher attribution. Called from chargeRun() in runScoring.js.
  * Must be called AFTER state.score has been incremented.
+ * @param {object} state - Game state (score already incremented)
+ * @param {string} allowedPitcherName - Name of the RESPONSIBLE pitcher (the one
+ *   who put the runner on base), NOT the current mound pitcher. This ensures
+ *   inherited runs don't misattribute the loss to the reliever who gave up the
+ *   hit but didn't put the runner on base.
  */
-export function logRun(state) {
+export function logRun(state, allowedPitcherName) {
   if (!state.runLog) state.runLog = [];
 
-  // When the away team bats (top of inning), the HOME team is pitching
-  // The batting team's pitcher of record is their own current pitcher
   const battingTeam = state.halfInning === 'top' ? 'away' : 'home';
   const battingTeamPitcher = battingTeam === 'home' ? state.homePitcher : state.awayPitcher;
   const fieldingPitcher = state.halfInning === 'top' ? state.homePitcher : state.awayPitcher;
 
   state.runLog.push({
     battingTeam,
-    pitcherAllowed: fieldingPitcher?.name || 'Unknown',
+    pitcherAllowed: allowedPitcherName || fieldingPitcher?.name || 'Unknown',
     pitcherOfRecord: battingTeamPitcher?.name || 'Unknown',
     inning: state.inning,
     scoreAfter: { home: state.score.home, away: state.score.away },

@@ -132,6 +132,12 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
       const stealBase = cpuDecideSteal(state);
       if (stealBase >= 0) state.pendingSteal = stealBase;
     }
+    // Track _runCharges length before the at-bat so we can identify which
+    // runs were scored during this at-bat and attribute them to the correct
+    // responsible pitcher (the one who put the runner on base), not the
+    // current mound pitcher. This fixes inherited-runner W/L misattribution.
+    const prevRunChargesLen = state._runCharges?.length || 0;
+
     // Process at-bat
     state = processAtBat(state, cpuSelectPitch(state), cpuSelectSwing(state));
 
@@ -173,17 +179,35 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     state = cpuDecideSubstitutions(state, state.awayTeam);  // evaluates HOME pitcher
     state = cpuDecideSubstitutions(state, state.homeTeam);  // evaluates AWAY pitcher
 
-    // Track scoring
+    // Track scoring — use _runCharges (populated by chargeRun) to attribute
+    // each run to the RESPONSIBLE pitcher, not the current mound pitcher.
+    // If _runCharges isn't available (edge case), fall back to currentPitcher.
     const runsScored = state.score[battingSide] - prevBattingScore;
     if (runsScored > 0) {
-      scoringEvents.push({
-        inning: state.inning,
-        battingSide,
-        pitchingSide,
-        pitcherName: currentPitcher.name,
-        runs: runsScored,
-        scoreAfter: { ...state.score },
-      });
+      const newCharges = (state._runCharges || []).slice(prevRunChargesLen);
+      if (newCharges.length === runsScored) {
+        // One event per run — each with its own responsible pitcher
+        for (const charge of newCharges) {
+          scoringEvents.push({
+            inning: charge.inning,
+            battingSide: charge.battingSide,
+            pitchingSide: charge.battingSide === 'home' ? 'away' : 'home',
+            pitcherName: charge.pitcherName,
+            runs: 1,
+            scoreAfter: { ...state.score },
+          });
+        }
+      } else {
+        // Fallback: at-bat-level event with current pitcher
+        scoringEvents.push({
+          inning: state.inning,
+          battingSide,
+          pitchingSide,
+          pitcherName: currentPitcher.name,
+          runs: runsScored,
+          scoreAfter: { ...state.score },
+        });
+      }
     }
 
     // Track hit types (doubles/triples not in engine gameStats)
