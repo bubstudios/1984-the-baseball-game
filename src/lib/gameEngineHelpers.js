@@ -112,6 +112,10 @@ export function createGameState(homeTeam, awayTeam, customHomeLineup, customAway
     homePlayerHistory: [], awayPlayerHistory: [],
     runLog: [],
     homeErrors: 0, awayErrors: 0,
+    pitchingByTeam: {
+      home: [{ name: homeSP?.name || startingPitcher?.name || 'Unknown', pos: homeSP?.pos || 'SP' }],
+      away: [{ name: awaySP?.name || opponentStartingPitcher?.name || 'Unknown', pos: awaySP?.pos || 'SP' }],
+    },
   };
 }
 

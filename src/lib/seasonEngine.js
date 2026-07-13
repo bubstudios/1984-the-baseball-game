@@ -479,8 +479,77 @@ function collectBatting(state, side, teamKey, out, hitTracking) {
   }
 }
 
-// ── Collect pitching stats from history + current pitcher ──
+// ── Collect pitching stats from the pitchingByTeam manifest ──
+// The manifest is the source of truth: every pitcher who entered the game is
+// listed. This guarantees no pitcher is missing from the box score, even if
+// their line is 0-0-0-0-0-0 or the history entry was lost/filtered. Stats are
+// looked up from history + current pitcher by name.
 function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTracking) {
+  const manifest = state.pitchingByTeam?.[side];
+
+  if (manifest && manifest.length > 0) {
+    // Build a merged lookup: for each pitcher name, accumulate pitching stats
+    // from all history entries + the current pitcher. This handles cases where
+    // a pitcher's stats are split across multiple history entries (e.g., pushed
+    // by pinchHit with batting stats, then merged by savePitcherToHistory with
+    // pitching stats).
+    const history = side === 'home' ? (state.homePlayerHistory || []) : (state.awayPlayerHistory || []);
+    const current = side === 'home' ? state.homePitcher : state.awayPitcher;
+    const playerMap = new Map();
+    for (const p of [...history, ...(current ? [current] : [])]) {
+      if (!p || !p.name) continue;
+      if (!playerMap.has(p.name)) {
+        playerMap.set(p.name, { gameStats: {} });
+      }
+      const entry = playerMap.get(p.name);
+      const eg = entry.gameStats;
+      const pg = p.gameStats || {};
+      // Accumulate PITCHING stats only. Use the pitcher-prefixed fields when
+      // available (set by changePitcher / savePitcherToHistory); fall back to
+      // the raw fields (set by savePitcherToHistory's else branch / current
+      // pitcher state). Never use raw so/bb/h from a batting lineup entry.
+      entry.gameStats = {
+        outs: (eg.outs || 0) + (pg.outs || 0),
+        ip: (eg.ip || 0) + (pg.ip || 0),
+        pitches: (eg.pitches || 0) + (pg.pitches || 0),
+        pitcherH: (eg.pitcherH ?? eg.h ?? 0) + (pg.pitcherH ?? pg.h ?? 0),
+        pitcherR: (eg.pitcherR ?? eg.r ?? 0) + (pg.pitcherR ?? pg.r ?? 0),
+        pitcherER: (eg.pitcherER ?? eg.er ?? 0) + (pg.pitcherER ?? pg.er ?? 0),
+        pitcherBB: (eg.pitcherBB ?? eg.bb ?? 0) + (pg.pitcherBB ?? pg.bb ?? 0),
+        pitcherSo: (eg.pitcherSo ?? eg.so ?? 0) + (pg.pitcherSo ?? pg.so ?? 0),
+      };
+    }
+
+    for (let i = 0; i < manifest.length; i++) {
+      const m = manifest[i];
+      const data = playerMap.get(m.name);
+      const gs = data?.gameStats || {};
+      const pid = playerId(teamKey, m.name);
+      const bf = bfTracking[pid] || 0;
+      const pitches = gs.pitches || 0;
+      const outs = gs.outs || Math.round((gs.ip || 0) * 3);
+      const hasTrackedBF = Object.keys(bfTracking).length > 0;
+      const effectiveBF = hasTrackedBF ? bf : (outs + (gs.pitcherH ?? 0) + (gs.pitcherBB ?? 0));
+      out.push({
+        playerId: pid,
+        teamKey,
+        name: m.name,
+        gs: i === 0 ? 1 : 0,
+        outs,
+        h: gs.pitcherH ?? 0,
+        r: gs.pitcherR ?? 0,
+        er: gs.pitcherER ?? 0,
+        bb: gs.pitcherBB ?? 0,
+        so: gs.pitcherSo ?? 0,
+        hr: hrAllowedTracking[pid] || 0,
+        bf: effectiveBF,
+        pitches,
+      });
+    }
+    return;
+  }
+
+  // Fallback: history-based collection (for games without pitchingByTeam)
   const pitchers = getPitcherList(state, side);
   let realPitcherIdx = 0;
   for (let i = 0; i < pitchers.length; i++) {
@@ -491,19 +560,12 @@ function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTrackin
     const pitches = gs.pitches || 0;
     const outs = gs.outs || Math.round((gs.ip || 0) * 3);
     const hasTrackedBF = Object.keys(bfTracking).length > 0;
-    // Check the CORRECT pitching stat fields. History entries from changePitcher
-    // store pitching stats with the pitcher prefix (pitcherSo, pitcherBB, etc.),
-    // while raw so/bb/h are BATTING stats from capturedBattingStats. The old
-    // check used the batting fields, which could exclude a reliever who pitched
-    // a clean inning (0 H, 0 R, 0 BB, 0 K) if their pitches/outs were somehow 0.
     const hasActivity = pitches > 0 || outs > 0 ||
       (gs.pitcherSo ?? gs.so ?? 0) > 0 ||
       (gs.pitcherBB ?? gs.bb ?? 0) > 0 ||
       (gs.pitcherH ?? gs.h ?? 0) > 0 ||
       (gs.pitcherR ?? gs.r ?? 0) > 0 ||
       (gs.pitcherER ?? gs.er ?? 0) > 0;
-    // A pitcher who was officially entered into the game (has a pitcher position
-    // tag) must always appear, even with a 0-0-0-0-0-0 line.
     const isPitcherPos = ['SP', 'RP', 'CL'].includes(pitcher.pos) || ['SP', 'RP', 'CL'].includes(pitcher.assignedPos);
     if (hasTrackedBF && bf === 0 && !hasActivity && !isPitcherPos) continue;
     if (!hasTrackedBF && !hasActivity && !isPitcherPos) continue;

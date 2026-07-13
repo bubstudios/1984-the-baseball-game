@@ -168,6 +168,16 @@ export function changePitcher(state, newPitcher, side) {
     newState.awayPitcher = newP;
   }
 
+  // Track the new pitcher in the pitchingByTeam manifest — guarantees every
+  // pitcher who entered the game appears in the box score, even with a
+  // 0-0-0-0-0-0 line. The old pitcher was already tracked when they entered.
+  if (!newState.pitchingByTeam) newState.pitchingByTeam = { home: [], away: [] };
+  const pbSide = isHome ? 'home' : 'away';
+  if (!newState.pitchingByTeam[pbSide]) newState.pitchingByTeam[pbSide] = [];
+  if (!newState.pitchingByTeam[pbSide].find(p => p.name === newPitcher.name)) {
+    newState.pitchingByTeam[pbSide].push({ name: newPitcher.name, pos: pitcherRole });
+  }
+
   // Remove reliever from the bullpen
   const bullpen = isHome ? newState.homeBullpen : newState.awayBullpen;
   const bpIdx = bullpen.findIndex(p => p.name === newPitcher.name);

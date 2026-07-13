@@ -76,7 +76,7 @@ function BatterRow({ p, allNames }) {
   );
 }
 
-function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
+function TeamBox({ team, lineup, pitcher, playerHistory, label, pitchingManifest }) {
   // Merge active lineup + player history (deduplicate by name)
   const activeNames = new Set(lineup.map(p => p.name));
   const historical = (playerHistory || []).filter(p => !activeNames.has(p.name));
@@ -92,27 +92,44 @@ function TeamBox({ team, lineup, pitcher, playerHistory, label }) {
   });
   const footnotes = buildFootnotes(allBatters);
 
-  // Collect all pitchers: current pitcher + history + lineup pitchers who pitched
+  // Collect all pitchers: use the pitchingByTeam manifest when available
+  // (guarantees every pitcher who entered the game appears), otherwise fall
+  // back to the history + lineup scan.
   const pitcherNames = new Set();
   let allPitchers = [];
-  if (pitcher) {
-    pitcherNames.add(pitcher.name);
-    allPitchers.push(pitcher);
+  const allPlayers = [...(playerHistory || []), ...(pitcher ? [pitcher] : []), ...lineup];
+  if (pitchingManifest && pitchingManifest.length > 0) {
+    for (const entry of pitchingManifest) {
+      const player = allPlayers.find(p => p.name === entry.name);
+      if (player) {
+        if (!pitcherNames.has(player.name)) {
+          pitcherNames.add(player.name);
+          allPitchers.push(player);
+        }
+      } else {
+        // Pitcher not found in any roster - create a 0-stats placeholder
+        allPitchers.push({ name: entry.name, pos: entry.pos, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 } });
+      }
+    }
+  } else {
+    if (pitcher) {
+      pitcherNames.add(pitcher.name);
+      allPitchers.push(pitcher);
+    }
+    (playerHistory || []).forEach(p => {
+      if ((p.gameStats?.pitches > 0 || p.gameStats?.ip > 0 || p.gameStats?.outs > 0) && !pitcherNames.has(p.name)) {
+        pitcherNames.add(p.name);
+        allPitchers.push(p);
+      }
+    });
+    lineup.forEach(p => {
+      const isPitcherSlot = ['SP','RP','CL'].includes(p.assignedPos || p.pos);
+      if (isPitcherSlot && (p.gameStats?.pitches > 0 || p.gameStats?.ip > 0 || p.gameStats?.outs > 0) && !pitcherNames.has(p.name)) {
+        pitcherNames.add(p.name);
+        allPitchers.push(p);
+      }
+    });
   }
-  (playerHistory || []).forEach(p => {
-    if ((p.gameStats?.pitches > 0 || p.gameStats?.ip > 0 || p.gameStats?.outs > 0) && !pitcherNames.has(p.name)) {
-      pitcherNames.add(p.name);
-      allPitchers.push(p);
-    }
-  });
-  // Also check the lineup for pitchers who have accumulated stats but aren't the active pitcher
-  lineup.forEach(p => {
-    const isPitcherSlot = ['SP','RP','CL'].includes(p.assignedPos || p.pos);
-    if (isPitcherSlot && (p.gameStats?.pitches > 0 || p.gameStats?.ip > 0 || p.gameStats?.outs > 0) && !pitcherNames.has(p.name)) {
-      pitcherNames.add(p.name);
-      allPitchers.push(p);
-    }
-  });
 
   // Session 19 2B: Deduplicate by name (merge stats if same pitcher appears twice)
   const seenP = new Map();
@@ -211,8 +228,8 @@ export default function BoxScore({ state }) {
   return (
     <ScrollArea className="h-[400px]">
       <div className="space-y-6 p-1">
-        <TeamBox team={away} lineup={state.awayLineup} pitcher={state.awayPitcher} playerHistory={state.awayPlayerHistory} label="Away" />
-        <TeamBox team={home} lineup={state.homeLineup} pitcher={state.homePitcher} playerHistory={state.homePlayerHistory} label="Home" />
+        <TeamBox team={away} lineup={state.awayLineup} pitcher={state.awayPitcher} playerHistory={state.awayPlayerHistory} label="Away" pitchingManifest={state.pitchingByTeam?.away} />
+        <TeamBox team={home} lineup={state.homeLineup} pitcher={state.homePitcher} playerHistory={state.homePlayerHistory} label="Home" pitchingManifest={state.pitchingByTeam?.home} />
         {decisions && (
           <div className="border-t border-border pt-3 space-y-1">
             <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-1">Decisions</div>

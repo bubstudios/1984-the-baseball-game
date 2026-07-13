@@ -47,10 +47,18 @@ export function validateGameBoxScore(state, boxResult) {
     }
   }
 
-  // 3. No phantom pitchers (0 BF) - Session 19 2B: never render if BF === 0
+  // 3. No phantom pitchers (0 BF) - unless officially entered (in pitchingByTeam manifest)
+  // A pitcher who was entered into the game but didn't face a batter (e.g., game
+  // ended, inning ended on a defensive play) must still appear per spec.
   for (const p of (boxResult.pitching || [])) {
     if ((p.bf || 0) === 0) {
-      errors.push(`[VALIDATOR] ${p.name} appears in pitching with 0 BF (phantom - should have been filtered)`);
+      const inManifest = ['home', 'away'].some(side => {
+        const manifest = state.pitchingByTeam?.[side] || [];
+        return manifest.some(m => m.name === p.name);
+      });
+      if (!inManifest) {
+        errors.push(`[VALIDATOR] ${p.name} appears in pitching with 0 BF (phantom - should have been filtered)`);
+      }
     }
   }
 
@@ -198,7 +206,21 @@ export function validateGameBoxScore(state, boxResult) {
     }
   }
 
-  // 15. WLS_TBD_AFTER_FINAL: W/L must not be null/TBD after game final
+  // 15. MANIFEST_COMPLETENESS: every pitcher in the pitchingByTeam manifest
+  // must appear in the box score - the manifest is the source of truth for
+  // who entered the game. No pitcher should be missing, even with 0 stats.
+  for (const side of ['home', 'away']) {
+    const teamKey = side === 'home' ? state.homeTeam : state.awayTeam;
+    const manifest = state.pitchingByTeam?.[side] || [];
+    for (const m of manifest) {
+      const inBox = (boxResult.pitching || []).some(bp => bp.name === m.name && bp.teamKey === teamKey);
+      if (!inBox) {
+        errors.push(`[VALIDATOR] MANIFEST_COMPLETENESS: ${m.name} (${teamKey}) is in the pitchingByTeam manifest but missing from the box score`);
+      }
+    }
+  }
+
+  // 16. WLS_TBD_AFTER_FINAL: W/L must not be null/TBD after game final
   if (state.gameOver) {
     const decisions = boxResult.decisions || {};
     if (!decisions.winner) {

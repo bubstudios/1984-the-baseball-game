@@ -313,6 +313,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     if (newPitcher) {
       const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
       if (ejectedSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
+      if (!newState.pitchingByTeam) newState.pitchingByTeam = { home: [], away: [] };
+      if (!newState.pitchingByTeam[ejectedSide]) newState.pitchingByTeam[ejectedSide] = [];
+      if (!newState.pitchingByTeam[ejectedSide].find(p => p.name === newPitcher.name)) {
+        newState.pitchingByTeam[ejectedSide].push({ name: newPitcher.name, pos: newPitcher.pos || 'SP' });
+      }
       const bpi = bp.findIndex(p => p.name === newPitcher.name);
       if (bpi >= 0) bp.splice(bpi, 1);
       // DH-less: swap the ejected pitcher's batting slot to the new arm
@@ -395,6 +400,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       if (!newPitcher) return newState;
       const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
       if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
+      if (!newState.pitchingByTeam) newState.pitchingByTeam = { home: [], away: [] };
+      if (!newState.pitchingByTeam[cpuPitchingSide]) newState.pitchingByTeam[cpuPitchingSide] = [];
+      if (!newState.pitchingByTeam[cpuPitchingSide].find(p => p.name === newPitcher.name)) {
+        newState.pitchingByTeam[cpuPitchingSide].push({ name: newPitcher.name, pos: newPitcher.pos || 'SP' });
+      }
       const bpi2 = cpuBullpen.findIndex(p => p.name === newPitcher.name); if (bpi2 >= 0) cpuBullpen.splice(bpi2, 1);
       savePitcherToHistory(newState[hk2], oldP);
       let si2 = cpuLineupField.findIndex(p => p.order === oldP.order);
@@ -523,6 +533,11 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
     const newP = { ...newPitcher, pitchCount: 0, pitches: newPitcher.pitches || DEFAULT_PITCHES, gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 }, _composure: initializePitcherComposure(newPitcher, newPitcher.temperament || 'PROFESSIONAL') };
     const oldPitcher = cpuPitchingSide === 'home' ? newState.homePitcher : newState.awayPitcher;
     if (cpuPitchingSide === 'home') newState.homePitcher = newP; else newState.awayPitcher = newP;
+    if (!newState.pitchingByTeam) newState.pitchingByTeam = { home: [], away: [] };
+    if (!newState.pitchingByTeam[cpuPitchingSide]) newState.pitchingByTeam[cpuPitchingSide] = [];
+    if (!newState.pitchingByTeam[cpuPitchingSide].find(p => p.name === newPitcher.name)) {
+      newState.pitchingByTeam[cpuPitchingSide].push({ name: newPitcher.name, pos: newPitcher.pos || 'SP' });
+    }
     const bpi = cpuBullpen.findIndex(p => p.name === newPitcher.name); if (bpi >= 0) cpuBullpen.splice(bpi, 1);
     const hk = cpuPitchingSide === 'home' ? 'homePlayerHistory' : 'awayPlayerHistory';
     savePitcherToHistory(newState[hk], oldPitcher);
