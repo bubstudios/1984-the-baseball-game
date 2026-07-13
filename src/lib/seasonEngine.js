@@ -386,6 +386,22 @@ export function buildGameResultFromState(state, options = {}) {
     }
   }
 
+  // Pitching outs validation: each team's pitching outs must match the
+  // number of outs the opponent batted. A mismatch means a pitcher who
+  // appeared is missing from the box score.
+  const inningsBatting = state.innings || [];
+  const homePitchingOuts = pitching.filter(p => p.teamKey === state.homeTeam).reduce((s, p) => s + (p.outs || 0), 0);
+  const awayPitchingOuts = pitching.filter(p => p.teamKey === state.awayTeam).reduce((s, p) => s + (p.outs || 0), 0);
+  // Home pitchers face away batters. Count away batting innings (non-null = batted).
+  const awayBatInnings = inningsBatting.filter(inn => inn && inn.away !== null && inn.away !== undefined).length;
+  const homeBatInnings = inningsBatting.filter(inn => inn && inn.home !== null && inn.home !== undefined).length;
+  if (awayBatInnings > 0 && homePitchingOuts < awayBatInnings * 3) {
+    console.warn(`[box-score-validation] CRITICAL: Missing pitcher innings for ${state.homeTeam}. Expected ${awayBatInnings * 3} outs, displayed ${homePitchingOuts} outs, missing ${awayBatInnings * 3 - homePitchingOuts} outs.`);
+  }
+  if (homeBatInnings > 0 && awayPitchingOuts < homeBatInnings * 3) {
+    console.warn(`[box-score-validation] CRITICAL: Missing pitcher innings for ${state.awayTeam}. Expected ${homeBatInnings * 3} outs, displayed ${awayPitchingOuts} outs, missing ${homeBatInnings * 3 - awayPitchingOuts} outs.`);
+  }
+
   // Build homeRuns list
   const homeRuns = hrTracking.map(hr => ({
     playerId: playerId(hr.teamKey, hr.name),
@@ -474,17 +490,23 @@ function collectPitching(state, side, teamKey, out, bfTracking, hrAllowedTrackin
     const bf = bfTracking[pid] || 0;
     const pitches = gs.pitches || 0;
     const outs = gs.outs || Math.round((gs.ip || 0) * 3);
-    // Session 23: suppress 0-BF phantoms only when bfTracking is populated (headless path).
-    // In the UI path (no bfTracking), include any pitcher with actual game activity
-    // so a used pitcher never disappears from the saved box score.
     const hasTrackedBF = Object.keys(bfTracking).length > 0;
-    const hasActivity = pitches > 0 || outs > 0 || (gs.so || 0) > 0 || (gs.bb || 0) > 0 || (gs.h || 0) > 0;
-    // A pitcher with REAL game activity must always appear in the box score.
-    // The bf===0 filter was too aggressive: relievers who pitched but had a
-    // bfTracking miss (timing edge case with mid-at-bat substitutions) were
-    // silently dropped, causing incomplete pitching tables and broken ERA/WHIP.
-    if (hasTrackedBF && bf === 0 && !hasActivity) continue;
-    if (!hasTrackedBF && !hasActivity) continue;
+    // Check the CORRECT pitching stat fields. History entries from changePitcher
+    // store pitching stats with the pitcher prefix (pitcherSo, pitcherBB, etc.),
+    // while raw so/bb/h are BATTING stats from capturedBattingStats. The old
+    // check used the batting fields, which could exclude a reliever who pitched
+    // a clean inning (0 H, 0 R, 0 BB, 0 K) if their pitches/outs were somehow 0.
+    const hasActivity = pitches > 0 || outs > 0 ||
+      (gs.pitcherSo ?? gs.so ?? 0) > 0 ||
+      (gs.pitcherBB ?? gs.bb ?? 0) > 0 ||
+      (gs.pitcherH ?? gs.h ?? 0) > 0 ||
+      (gs.pitcherR ?? gs.r ?? 0) > 0 ||
+      (gs.pitcherER ?? gs.er ?? 0) > 0;
+    // A pitcher who was officially entered into the game (has a pitcher position
+    // tag) must always appear, even with a 0-0-0-0-0-0 line.
+    const isPitcherPos = ['SP', 'RP', 'CL'].includes(pitcher.pos) || ['SP', 'RP', 'CL'].includes(pitcher.assignedPos);
+    if (hasTrackedBF && bf === 0 && !hasActivity && !isPitcherPos) continue;
+    if (!hasTrackedBF && !hasActivity && !isPitcherPos) continue;
     const effectiveBF = hasTrackedBF ? bf : (outs + (gs.pitcherH ?? gs.h ?? 0) + (gs.pitcherBB ?? gs.bb ?? 0));
     // Merged history entries store pitcherSo/pitcherBB (prefixed); pitcher-only entries use so/bb
     out.push({
