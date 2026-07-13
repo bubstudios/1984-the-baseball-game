@@ -324,6 +324,9 @@ export function processAtBat(state, pitchType, swingType) {
     if (shouldAttemptSqueeze(newState, bjb) && Math.random() < 0.05) {
       buntDecision = 'squeeze';
     } else {
+      const _buntBattingSide = getBattingTeam(newState) === 'home' ? 'home' : 'away';
+      const _buntTeamKey = _buntBattingSide === 'home' ? newState.homeTeam : newState.awayTeam;
+      const _originalLineupNames = new Set((TEAMS[_buntTeamKey]?.lineup || []).map(p => p.name));
       buntDecision = shouldBunt(bjb, {
         runner_on_1st: !!newState.bases[0],
         runner_on_2nd: !!newState.bases[1],
@@ -333,6 +336,8 @@ export function processAtBat(state, pitchType, swingType) {
         score_margin: newState.score[getBattingTeam(newState)] - newState.score[getBattingTeam(newState) === 'home' ? 'away' : 'home'],
         bases_empty: !newState.bases.some(b => b !== null),
         third_baseman_playing_back: newState._third_baseman_playing_back || false,
+        buntTracking: newState._squeezeTracking?.[_buntBattingSide] || {},
+        isPinchHitter: !_originalLineupNames.has(bjb.name) && !isPitcherBatting,
       });
     }
   }

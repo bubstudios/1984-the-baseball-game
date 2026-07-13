@@ -18,7 +18,12 @@ export function getTeamSqueezeTracking(state, side) {
       lastInning: null,
       lastPA: null,
       lastBuntInning: null,
+      totalBunts: 0,
     };
+  }
+  // Backward compat: ensure totalBunts exists on legacy tracking objects
+  if (state._squeezeTracking[side].totalBunts === undefined) {
+    state._squeezeTracking[side].totalBunts = 0;
   }
   return state._squeezeTracking[side];
 }
@@ -36,6 +41,7 @@ export function recordBuntAttempt(state) {
   const side = state.halfInning === 'top' ? 'away' : 'home';
   const tracking = getTeamSqueezeTracking(state, side);
   tracking.lastBuntInning = state.inning;
+  tracking.totalBunts = (tracking.totalBunts || 0) + 1;
 }
 
 // ── Full squeeze eligibility check ──

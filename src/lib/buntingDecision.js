@@ -11,34 +11,59 @@
 
 import { determineSqueezeType, resolveSqueeze } from './squeezePlay';
 
-const SAC_THRESHOLD = 38; // Lowered - nudge sac bunts toward 0.18-0.25/team/game
-const HIT_THRESHOLD = 70; // Raised from 45 - bunt-for-hit must be a strong fit
-const SQUEEZE_THRESHOLD = 55; // Runner on 3rd + late/close + weak hitter
+const SAC_THRESHOLD = 50; // Raised from 38 - sac bunts must be strongly warranted
+const HIT_THRESHOLD = 78; // Raised from 70 - bunt-for-hit must be a very strong fit
+
+// A true bunt/speed/small-ball specialist: high bunting, high speed, low power.
+// Only these players may bunt as pinch hitters.
+function isBuntSpecialist(batter) {
+  const bunting = batter.bunting || 3;
+  const speed = batter.speed || 5;
+  const power = batter.power || 5;
+  return bunting >= 6 && speed >= 7 && power <= 4;
+}
 
 export function shouldBunt(batter, game) {
   if (!batter || !game) return null;
 
   const isPitcher = batter.is_pitcher || batter.pos === 'SP' || batter.pos === 'RP' || batter.pos === 'CL' || (batter.assignedPos && ['SP', 'RP', 'CL'].includes(batter.assignedPos));
 
+  // ── HARD GATE: bunt caps and anti-spam rules ──
+  const tracking = game.buntTracking || {};
+  const totalBunts = tracking.totalBunts || 0;
+  const buntedThisInning = tracking.lastBuntInning === game.inning;
+  const isExtraInnings = game.inning >= 10;
+
+  // Rule: No more than 1 sacrifice bunt attempt per inning.
+  if (buntedThisInning) return null;
+
+  // Rule: No more than 2 total bunt attempts per team per game (unless extra innings).
+  if (totalBunts >= 2 && !isExtraInnings) return null;
+
+  // Rule: Pinch hitters must swing unless they are a true bunt/speed specialist.
+  if (game.isPinchHitter && !isBuntSpecialist(batter)) return null;
+
+  // Rule: Power hitters (6+) never bunt (non-pitchers).
+  if ((batter.power || 0) >= 6 && !isPitcher) return null;
+
   // — SACRIFICE BUNT —
   const sacScore = sac_bunt_score(batter, game, isPitcher);
   if (sacScore >= SAC_THRESHOLD) {
-    // Even when it qualifies, don't ALWAYS bunt - add a probability gate so it's not robotic.
-    // Pitchers bunt nearly always in a sac spot; position players much less often.
-    // Offensive tuning: position players sac bunt slightly more often in
-    // correct 1984 spots (runner on 1st, 0 outs, close game, late innings).
-    // Pitcher sac rate unchanged. Squeeze NOT touched.
-    const sacChance = isPitcher ? 0.92 : 0.75;
+    // Even when it qualifies, don't ALWAYS bunt - add a probability gate.
+    // Pitchers bunt often in true sac spots; position players rarely.
+    const sacChance = isPitcher ? 0.85 : 0.35;
     if (Math.random() < sacChance) return 'sacrifice';
   }
 
-  // NOTE: Squeeze is now a separate decision handled by shouldAttemptSqueeze()
+  // NOTE: Squeeze is a separate decision handled by shouldAttemptSqueeze()
   // in gameEngine.js, not by shouldBunt(). This prevents over-triggering.
 
   // — BUNT-FOR-HIT (rare surprise)
-  const hitScore = hitBuntScore(batter, game);
-  if (hitScore >= HIT_THRESHOLD && Math.random() < 0.12) { // was 0.40 - now a true rarity
-    return 'bunt_for_hit';
+  if (!buntedThisInning && totalBunts < 2) {
+    const hitScore = hitBuntScore(batter, game);
+    if (hitScore >= HIT_THRESHOLD && Math.random() < 0.08) {
+      return 'bunt_for_hit';
+    }
   }
 
   return null;
@@ -126,10 +151,12 @@ function sac_bunt_score(batter, game, isPitcher) {
     s += 12; // tie, very late
   }
 
-  // Only play for one run when TIED or DOWN by 1 late - never sacrifice when trailing big or leading big
-  if (game.score_margin <= -2 || game.score_margin >= 2) {
-    s -= 25; // don't sac when up/down by multiple runs
-  }
+  // HARD BLOCK: don't sacrifice when trailing by 2+ (need baserunners, not outs)
+  if (game.score_margin <= -2) return 0;
+  // HARD BLOCK: don't sacrifice when leading by 3+ (already in control)
+  if (game.score_margin >= 3) return 0;
+  // Soft penalty: leading by 2 (still close, but giving up an out is questionable)
+  if (game.score_margin === 2) s -= 15;
 
   // Genuinely weak hitter - bunting costs little
   if (batter.power <= 3) s += 12;
