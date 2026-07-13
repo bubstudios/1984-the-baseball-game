@@ -86,20 +86,25 @@ export default function ArchivedBoxScore({ gameResult, onClose }) {
     const fetchTotals = async () => {
       try {
         setLoadingTotals(true);
-        const playerIds = batting.map(b => b.playerId).filter(Boolean);
+        const battingPids = batting.map(b => b.playerId).filter(Boolean);
+        const pitchingPids = (bs.pitching || []).map(p => p.playerId).filter(Boolean);
+        const allPids = [...new Set([...battingPids, ...pitchingPids])];
         const stats = await base44.entities.PlayerStats.filter({
           seasonId: gameResult.seasonId,
         }, null, 1500);
         const map = {};
         for (const s of stats) {
           const pid = `${s.team}|${s.playerName}`;
-          if (playerIds.includes(pid)) {
+          if (allPids.includes(pid)) {
             map[pid] = {
               hr: s.homeRuns || 0,
               doubles: s.doubles || 0,
               triples: s.triples || 0,
               rbi: s.rbi || 0,
               sb: s.stolenBases || 0,
+              wins: s.wins || 0,
+              losses: s.losses || 0,
+              saves: s.saves || 0,
             };
           }
         }
@@ -122,6 +127,18 @@ export default function ArchivedBoxScore({ gameResult, onClose }) {
   const batting = bs?.batting || [];
   const pitching = bs?.pitching || [];
   const decisions = deriveDecisions(pitching, bs?.decisions);
+
+  // Season records for decision pitchers (W-L for win/loss, saves for save)
+  const findPitchEntry = (name) => pitching.find(p => p.name === name);
+  const winEntry = findPitchEntry(decisions.win);
+  const lossEntry = findPitchEntry(decisions.loss);
+  const saveEntry = findPitchEntry(decisions.save);
+  const winRecord = winEntry && seasonTotals?.[winEntry.playerId]
+    ? ` (${seasonTotals[winEntry.playerId].wins}-${seasonTotals[winEntry.playerId].losses})` : '';
+  const lossRecord = lossEntry && seasonTotals?.[lossEntry.playerId]
+    ? ` (${seasonTotals[lossEntry.playerId].wins}-${seasonTotals[lossEntry.playerId].losses})` : '';
+  const saveRecord = saveEntry && seasonTotals?.[saveEntry.playerId]
+    ? ` (${seasonTotals[saveEntry.playerId].saves})` : '';
 
   const homeBat = batting.filter(b => b.teamKey === gameResult.homeTeam);
   const awayBat = batting.filter(b => b.teamKey === gameResult.awayTeam);
@@ -261,14 +278,12 @@ export default function ArchivedBoxScore({ gameResult, onClose }) {
           {renderPitchingTable(awayPitch, `${away?.city} ${away?.name}`)}
           {renderPitchingTable(homePitch, `${home?.city} ${home?.name}`)}
 
-          {/* W/L/S Decisions - derived from pitching array flags */}
+          {/* W/L/S Decisions - derived from pitching array flags, with season records */}
           <div className="text-[10px] text-muted-foreground space-y-0.5 mb-3 border-t border-border pt-2">
-            <div><span className="text-emerald-400 font-bold">W:</span> {decisions.win || 'TBD'}</div>
-            <div><span className="text-red-400 font-bold">L:</span> {decisions.loss || 'TBD'}</div>
-            {decisions.save ? (
-              <div><span className="text-primary font-bold">S:</span> {decisions.save}</div>
-            ) : (
-              <div><span className="text-muted-foreground font-bold">S:</span> None</div>
+            <div><span className="text-emerald-400 font-bold">W:</span> {decisions.win || 'TBD'}{winRecord}</div>
+            <div><span className="text-red-400 font-bold">L:</span> {decisions.loss || 'TBD'}{lossRecord}</div>
+            {decisions.save && (
+              <div><span className="text-primary font-bold">S:</span> {decisions.save}{saveRecord}</div>
             )}
           </div>
 
