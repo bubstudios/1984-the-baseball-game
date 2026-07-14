@@ -850,6 +850,12 @@ export default function Home() {
     const newState = cpuCheckPinchHit(gameState);
     if (newState) {
       setGameState(newState);
+      // Surface a pinch-hitter alert so the user can prepare a defensive response
+      const phLog = newState.log.slice().reverse().find(e => e.type === 'info' && e.text?.includes('pinch-hits for'));
+      if (phLog) {
+        setInlineGameEvent({ type: 'pinchhit', event: phLog.text });
+        setTimeout(() => setInlineGameEvent(null), 6000);
+      }
     }
   }, [gameState, processing]);
 

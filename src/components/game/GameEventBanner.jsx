@@ -1,5 +1,5 @@
 import React from 'react';
-import { Radio, X, Zap, Trophy, Target, Eye } from 'lucide-react';
+import { Radio, X, Zap, Trophy, Target, Eye, Users } from 'lucide-react';
 
 export default function GameEventBanner({ event, type, onClose }) {
   if (!event) return null;
@@ -9,7 +9,7 @@ export default function GameEventBanner({ event, type, onClose }) {
     if (type === 'caughtstealing') return <Target className="w-4 h-4 text-destructive" />;
     if (type === 'steal') return <Zap className="w-4 h-4 text-cyan-400" />;
     if (type === 'ballpark') return <Zap className="w-4 h-4 text-primary" />;
-    if (type === 'pickoff') return <Eye className="w-4 h-4 text-amber-400" />;
+    if (type === 'pinchhit') return <Users className="w-4 h-4 text-orange-400" />;
     return <Radio className="w-4 h-4 text-primary" />;
   };
 
@@ -18,7 +18,7 @@ export default function GameEventBanner({ event, type, onClose }) {
     if (type === 'caughtstealing') return 'border-destructive/40';
     if (type === 'steal') return 'border-cyan-400/40';
     if (type === 'ballpark') return 'border-primary/40';
-    if (type === 'pickoff') return 'border-amber-400/40';
+    if (type === 'pinchhit') return 'border-orange-400/40';
     return 'border-primary/40';
   };
 
@@ -27,7 +27,7 @@ export default function GameEventBanner({ event, type, onClose }) {
     if (type === 'caughtstealing') return 'Caught Stealing';
     if (type === 'steal') return 'Stolen Base';
     if (type === 'ballpark') return 'Ballpark Event';
-    if (type === 'pickoff') return 'Pickoff';
+    if (type === 'pinchhit') return 'Pinch Hitter';
     return 'Game Event';
   };
 
