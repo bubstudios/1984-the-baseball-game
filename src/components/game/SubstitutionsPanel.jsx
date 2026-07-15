@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { X, AlertTriangle, Users } from 'lucide-react';
+import { X, AlertTriangle, Users, Repeat } from 'lucide-react';
 import { formatRating } from '@/lib/ratingFormat';
+import DoubleSwitchFlow from './DoubleSwitchFlow';
 
 const ALL_POSITIONS = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
 
@@ -11,8 +12,9 @@ function normalizePos(pos) {
   return pos;
 }
 
-export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher, initialTab = 'pinchhit', unavailableRelievers = {}, tiredRelievers = {} }) {
+export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose, onPinchHit, onPinchRun, onDefensiveSwitch, onChangePitcher, onDoubleSwitch, initialTab = 'pinchhit', unavailableRelievers = {}, tiredRelievers = {} }) {
   const [tab, setTab] = useState(initialTab);
+  const [pitchingMode, setPitchingMode] = useState('standard'); // 'standard' | 'double'
 
   // Determine which side the user's team is on
   const userIsHome = userTeam === gameState.homeTeam;
@@ -330,6 +332,45 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
           {/* Pitching Change */}
           {tab === 'pitching' && (
             <div className="space-y-3">
+              {/* NL double-switch toggle */}
+              {!gameState.useDH && onDoubleSwitch && (
+                <div className="flex gap-1 bg-muted/30 rounded-lg p-1">
+                  <button
+                    onClick={() => setPitchingMode('standard')}
+                    className={`flex-1 py-1.5 text-[10px] font-heading uppercase tracking-wider rounded transition-colors ${
+                      pitchingMode === 'standard'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Standard
+                  </button>
+                  <button
+                    onClick={() => setPitchingMode('double')}
+                    className={`flex-1 py-1.5 text-[10px] font-heading uppercase tracking-wider rounded transition-colors flex items-center justify-center gap-1 ${
+                      pitchingMode === 'double'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Repeat className="w-3 h-3" />
+                    Double Switch
+                  </button>
+                </div>
+              )}
+
+              {pitchingMode === 'double' && !gameState.useDH && onDoubleSwitch ? (
+                <DoubleSwitchFlow
+                  gameState={gameState}
+                  teams={teams}
+                  userTeam={userTeam}
+                  unavailableRelievers={unavailableRelievers}
+                  tiredRelievers={tiredRelievers}
+                  onApply={(pitcher, slotIdx, replacement) => onDoubleSwitch(pitcher, slotIdx, replacement)}
+                  onCancel={() => setPitchingMode('standard')}
+                />
+              ) : (
+                <>
               <div className="bg-muted/50 rounded-lg p-3">
                 <div className="text-[10px] font-heading uppercase tracking-wider text-muted-foreground mb-1">Current Pitcher</div>
                 <div className="font-heading font-bold text-sm text-foreground">{currentPitcher?.name}</div>
@@ -392,6 +433,8 @@ export default function SubstitutionsPanel({ gameState, teams, userTeam, onClose
                     </div>
                   ))}
                 </div>
+              )}
+                </>
               )}
             </div>
           )}

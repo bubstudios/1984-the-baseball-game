@@ -248,3 +248,179 @@ export function changePitcher(state, newPitcher, side) {
 
   return newState;
 }
+
+/**
+ * True Double Switch (NL only, no DH).
+ *
+ * The new pitcher enters in a DIFFERENT batting order slot (the outgoing
+ * fielder's slot), while a bench position player takes the pitcher's old
+ * batting slot. This buries the pitcher's spot in the order so the reliever
+ * can pitch multiple innings without batting soon.
+ *
+ * @param {object} state - Current game state
+ * @param {object} newPitcher - Reliever entering the game
+ * @param {number} outgoingFielderSlotIdx - Lineup array index of the position player being removed
+ * @param {object} replacementPlayer - Bench player taking the pitcher's old batting slot
+ * @param {string} side - 'home' or 'away'
+ * @returns {object} New game state
+ */
+export function executeUserDoubleSwitch(state, newPitcher, outgoingFielderSlotIdx, replacementPlayer, side) {
+  if (state.removedPlayers && state.removedPlayers.includes(newPitcher.name)) {
+    throw new Error(`Illegal re-entry: ${newPitcher.name} was already removed from the game`);
+  }
+  if (state.removedPlayers && state.removedPlayers.includes(replacementPlayer.name)) {
+    throw new Error(`Illegal re-entry: ${replacementPlayer.name} was already removed from the game`);
+  }
+  if (state.scratchedPlayers && state.scratchedPlayers.includes(newPitcher.name)) {
+    console.error(`SCRATCHED PLAYER USED: ${newPitcher.name} was scratched pre-game but entered as pitcher`);
+  }
+  if (state.scratchedPlayers && state.scratchedPlayers.includes(replacementPlayer.name)) {
+    console.error(`SCRATCHED PLAYER USED: ${replacementPlayer.name} was scratched pre-game but entered as replacement`);
+  }
+
+  const newState = JSON.parse(JSON.stringify(state));
+  if (!newState.removedPlayers) newState.removedPlayers = [];
+
+  const isHome = side === 'home';
+  const lineup = isHome ? newState.homeLineup : newState.awayLineup;
+  const bullpen = isHome ? newState.homeBullpen : newState.awayBullpen;
+  const oldPitcher = isHome ? newState.homePitcher : newState.awayPitcher;
+  const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
+  const benchKey = isHome ? 'homeBenchUsed' : 'awayBenchUsed';
+
+  // Find the pitcher's batting slot - might contain the pitcher himself OR
+  // a pinch hitter who batted for the pitcher earlier in the game.
+  let pitcherSlotIdx = lineup.findIndex(p => p.name === oldPitcher.name);
+  if (pitcherSlotIdx < 0 && oldPitcher.order) pitcherSlotIdx = lineup.findIndex(p => p.order === oldPitcher.order);
+  if (pitcherSlotIdx < 0) pitcherSlotIdx = lineup.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos) || p._replacedPitcher);
+  if (pitcherSlotIdx < 0) throw new Error('Cannot find pitcher batting slot for double switch');
+
+  if (outgoingFielderSlotIdx === pitcherSlotIdx) {
+    throw new Error('Double switch: select a position player slot, not the pitcher slot');
+  }
+
+  const playerInPitcherSlot = lineup[pitcherSlotIdx];
+  const outgoingFielder = lineup[outgoingFielderSlotIdx];
+  if (!outgoingFielder) throw new Error('Invalid outgoing fielder slot');
+
+  const outgoingFielderPos = outgoingFielder.assignedPos || outgoingFielder.pos;
+  const pitcherOrder = playerInPitcherSlot.order;
+  const fielderOrder = outgoingFielder.order;
+
+  // Track all removed players: old pitcher, outgoing fielder, and pinch hitter
+  // (if the pitcher's slot has a pinch hitter rather than the pitcher himself)
+  if (!newState.removedPlayers.includes(oldPitcher.name)) newState.removedPlayers.push(oldPitcher.name);
+  if (!newState.removedPlayers.includes(outgoingFielder.name)) newState.removedPlayers.push(outgoingFielder.name);
+  if (playerInPitcherSlot.name !== oldPitcher.name && !newState.removedPlayers.includes(playerInPitcherSlot.name)) {
+    newState.removedPlayers.push(playerInPitcherSlot.name);
+  }
+
+  // Create new pitcher state
+  const archetype = newPitcher.temperament || 'PROFESSIONAL';
+  const composureState = initializePitcherComposure(newPitcher, archetype);
+  const pitcherRole = newPitcher.pos || 'SP';
+  const newP = {
+    ...newPitcher,
+    pitchCount: 0,
+    pitches: newPitcher.pitches || DEFAULT_PITCHES,
+    gameStats: { ip: 0, outs: 0, h: 0, r: 0, er: 0, bb: 0, so: 0, pitches: 0 },
+    _composure: composureState,
+    _reachBackUses: 0,
+    _reachBackPitcher: newPitcher.name,
+    order: fielderOrder,
+    assignedPos: pitcherRole,
+  };
+  if (isHome) newState.homePitcher = newP;
+  else newState.awayPitcher = newP;
+
+  // Track in pitchingByTeam manifest
+  if (!newState.pitchingByTeam) newState.pitchingByTeam = { home: [], away: [] };
+  const pbSide = isHome ? 'home' : 'away';
+  if (!newState.pitchingByTeam[pbSide]) newState.pitchingByTeam[pbSide] = [];
+  if (!newState.pitchingByTeam[pbSide].find(p => p.name === newPitcher.name)) {
+    newState.pitchingByTeam[pbSide].push({ name: newPitcher.name, pos: pitcherRole });
+  }
+
+  // Remove reliever from bullpen
+  const bpIdx = bullpen.findIndex(p => p.name === newPitcher.name);
+  if (bpIdx >= 0) bullpen.splice(bpIdx, 1);
+
+  // Capture batting stats from whoever is in the pitcher's slot before overwriting
+  const capturedPitcherSlotBatting = playerInPitcherSlot.gameStats ? { ...playerInPitcherSlot.gameStats } : null;
+
+  // Put new pitcher in the outgoing fielder's batting slot
+  lineup[outgoingFielderSlotIdx] = {
+    ...newPitcher,
+    order: fielderOrder,
+    assignedPos: pitcherRole,
+    gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
+  };
+
+  // Put replacement fielder in the pitcher's old batting slot, playing the
+  // outgoing fielder's defensive position
+  lineup[pitcherSlotIdx] = {
+    ...replacementPlayer,
+    order: pitcherOrder,
+    assignedPos: outgoingFielderPos,
+    gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
+  };
+
+  // Mark replacement as bench used
+  if (!newState[benchKey]) newState[benchKey] = [];
+  if (!newState[benchKey].find(p => p.name === replacementPlayer.name)) {
+    newState[benchKey].push({ ...replacementPlayer });
+  }
+
+  // Save old pitcher to history with merged batting + pitching stats
+  // (same merge logic as changePitcher - the history entry may already exist
+  // from a pinchHit call, in which case we merge pitching stats into it)
+  const existingPitcher = newState[historyKey].find(p => p.name === oldPitcher.name);
+  if (existingPitcher) {
+    existingPitcher.gameStats = {
+      ...existingPitcher.gameStats,
+      pitches: oldPitcher.gameStats.pitches,
+      ip: oldPitcher.gameStats.ip,
+      outs: oldPitcher.gameStats.outs || Math.round((oldPitcher.gameStats.ip || 0) * 3),
+      pitcherSo: oldPitcher.gameStats.so,
+      pitcherBB: oldPitcher.gameStats.bb,
+      pitcherH: oldPitcher.gameStats.h,
+      pitcherR: oldPitcher.gameStats.r,
+      pitcherER: oldPitcher.gameStats.er,
+    };
+  } else {
+    newState[historyKey].push({
+      ...oldPitcher,
+      gameStats: {
+        ...(capturedPitcherSlotBatting || {}),
+        ip: oldPitcher.gameStats.ip,
+        outs: oldPitcher.gameStats.outs || Math.round((oldPitcher.gameStats.ip || 0) * 3),
+        pitches: oldPitcher.gameStats.pitches,
+        pitcherSo: oldPitcher.gameStats.so,
+        pitcherBB: oldPitcher.gameStats.bb,
+        pitcherH: oldPitcher.gameStats.h,
+        pitcherR: oldPitcher.gameStats.r,
+        pitcherER: oldPitcher.gameStats.er,
+      },
+    });
+  }
+
+  // Save outgoing fielder to history (keeps their batting stats in the box score)
+  if (!newState[historyKey].find(p => p.name === outgoingFielder.name)) {
+    newState[historyKey].push({ ...outgoingFielder });
+  }
+
+  // Save pinch hitter (if different from pitcher) to history
+  if (playerInPitcherSlot.name !== oldPitcher.name && !newState[historyKey].find(p => p.name === playerInPitcherSlot.name)) {
+    newState[historyKey].push({ ...playerInPitcherSlot });
+  }
+
+  // Log the double switch clearly
+  const removedNames = [outgoingFielder.name];
+  if (playerInPitcherSlot.name !== oldPitcher.name) removedNames.push(playerInPitcherSlot.name);
+  newState.log.push({
+    type: 'info',
+    text: `🔄 Double switch: ${newPitcher.name} enters pitching, batting ${fielderOrder}. ${replacementPlayer.name} enters at ${outgoingFielderPos}, batting ${pitcherOrder}. ${removedNames.join(' and ')} leave${removedNames.length > 1 ? '' : 's'} the game.`,
+  });
+
+  return newState;
+}

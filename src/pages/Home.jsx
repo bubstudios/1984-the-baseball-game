@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { TEAMS, PITCH_TYPES, SWING_TYPES, MANAGERS } from '@/lib/gameData';
-import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, intentionalWalk, cpuCheckPinchHit, pickCpuReliever } from '@/lib/gameEngine';
+import { createGameState, processAtBat, cpuSelectPitch, cpuSelectSwing, getCurrentBatter, getCurrentPitcher, getEffectivePitcher, getBattingTeam, getSituationalBatter, attemptSteal, setHitAndRun, cpuDecideSteal, cpuDecideSubstitutions, hasRunnersOnBase, pinchHit, pinchRun, defensiveSwitch, changePitcher, executeUserDoubleSwitch, intentionalWalk, cpuCheckPinchHit, pickCpuReliever } from '@/lib/gameEngine';
 import { resolveEjectionReplacement } from '@/lib/ejectionReplacement';
 import { applyWeatherEffects, generateWeather, generateIndoorWeather } from '@/lib/weather';
 import { STADIUM_WEATHER_CITIES, DOMED_STADIUMS } from '@/lib/ballparks';
@@ -1578,6 +1578,20 @@ export default function Home() {
     setShowSubs(false);
   }, [userTeam]);
 
+  const handleDoubleSwitch = useCallback((newPitcher, outgoingFielderSlotIdx, replacementPlayer) => {
+    setGameState(prev => {
+      if (!prev || prev.gameOver) return prev;
+      try {
+        const side = userTeam === prev.homeTeam ? 'home' : 'away';
+        return executeUserDoubleSwitch(prev, newPitcher, outgoingFielderSlotIdx, replacementPlayer, side);
+      } catch (e) {
+        console.error('[doubleSwitch]', e.message);
+        return prev;
+      }
+    });
+    setShowSubs(false);
+  }, [userTeam]);
+
   const handleEjectionReplacement = (chosenPitcher) => {
     if (!gameState || !ejectionResult) return;
     const newState = changePitcher(gameState, chosenPitcher, ejectionResult.ejectedSide);
@@ -2485,6 +2499,7 @@ export default function Home() {
           onPinchRun={handlePinchRun}
           onDefensiveSwitch={handleDefensiveSwitch}
           onChangePitcher={handlePitchingChange}
+          onDoubleSwitch={handleDoubleSwitch}
           initialTab={subsTab}
           unavailableRelievers={gameState._unavailableRelieverReasons || {}}
           tiredRelievers={gameState._tiredRelievers || {}}

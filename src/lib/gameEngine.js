@@ -33,7 +33,7 @@ export { attemptSteal, attemptDoubleSteal, cpuDecideSteal, setHitAndRun, hasRunn
 export { cpuDecideSubstitutions, cpuCheckPinchHit, selectCpuReliever, pickCpuReliever, canPitchToday, selectEmergencyReliever, cpuSelectPitch, cpuSelectSwing } from './cpuManager';
 export { resolvePitch, resolveSwing, advanceRunners, handleHitAndRunCaught, handleHitAndRunMiss, processPostHitBaserunning, processFlyoutTagUps } from './swingResolver';
 export { chargeRun, tagRunnerResponsiblePitcher } from './runScoring';
-export { pinchHit, pinchRun, defensiveSwitch, changePitcher } from './substitutions';
+export { pinchHit, pinchRun, defensiveSwitch, changePitcher, executeUserDoubleSwitch } from './substitutions';
 
 // ── processAtBat: the main at-bat orchestrator ──
 export function processAtBat(state, pitchType, swingType) {
