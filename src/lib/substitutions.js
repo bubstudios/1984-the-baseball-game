@@ -186,19 +186,30 @@ export function changePitcher(state, newPitcher, side) {
   // Swap the new pitcher into the fielding lineup (only if DH is not in effect)
   const lineup = isHome ? newState.homeLineup : newState.awayLineup;
   const usesDH = newState.useDH;
+  const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
   let capturedBattingStats = null;
   if (!usesDH) {
     let slotIdx = lineup.findIndex(p => p.name === oldPitcher.name);
     if (slotIdx < 0 && oldPitcher.order) slotIdx = lineup.findIndex(p => p.order === oldPitcher.order);
     if (slotIdx < 0) slotIdx = lineup.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
     if (slotIdx >= 0) {
-      // Capture batting stats BEFORE overwriting the lineup entry. The lineup
-      // entry holds the pitcher's batting line (ab/hits/rbi/etc.), which is a
-      // SEPARATE object from the pitcher state's pitching-only gameStats.
-      // Without this, a starting pitcher who batted (NL rules) disappears from
-      // the box score batting table when the pitching change overwrites their
-      // lineup slot and pushes the pitching-only state to history.
-      capturedBattingStats = lineup[slotIdx].gameStats ? { ...lineup[slotIdx].gameStats } : null;
+      const slotPlayer = lineup[slotIdx];
+      // If the slot contains a pinch hitter (not the old pitcher himself),
+      // save the pinch hitter to history BEFORE overwriting. Otherwise their
+      // batting stats (e.g. a pinch-hit HR) are lost when the new pitcher
+      // takes the slot, and/or incorrectly merged into the pitcher's history.
+      if (slotPlayer.name !== oldPitcher.name) {
+        if (!newState[historyKey].find(p => p.name === slotPlayer.name)) {
+          newState[historyKey].push({ ...slotPlayer });
+        }
+        // Don't capture the PH's batting stats for the pitcher
+        capturedBattingStats = null;
+      } else {
+        // Capture batting stats BEFORE overwriting the lineup entry. The lineup
+        // entry holds the pitcher's batting line (ab/hits/rbi/etc.), which is a
+        // SEPARATE object from the pitcher state's pitching-only gameStats.
+        capturedBattingStats = slotPlayer.gameStats ? { ...slotPlayer.gameStats } : null;
+      }
       const lineupEntry = { ...newPitcher, order: lineup[slotIdx].order, assignedPos: pitcherRole, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0 } };
       lineup[slotIdx] = lineupEntry;
       // Persist order + assignedPos on the pitcher state so future lookups can find their slot
@@ -209,7 +220,6 @@ export function changePitcher(state, newPitcher, side) {
   }
 
   // Save old pitcher to player history so box score retains their stats
-  const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
   const existing = newState[historyKey].find(p => p.name === oldPitcher.name);
   if (existing) {
     existing.gameStats = {
@@ -388,10 +398,14 @@ export function executeUserDoubleSwitch(state, newPitcher, outgoingFielderSlotId
       pitcherER: oldPitcher.gameStats.er,
     };
   } else {
+    // If the pitcher's slot had a pinch hitter (not the pitcher himself),
+    // don't merge the PH's batting stats into the old pitcher's history entry.
+    // The PH is saved separately above with their own stats.
+    const phInSlot = playerInPitcherSlot.name !== oldPitcher.name;
     newState[historyKey].push({
       ...oldPitcher,
       gameStats: {
-        ...(capturedPitcherSlotBatting || {}),
+        ...(phInSlot ? {} : (capturedPitcherSlotBatting || {})),
         ip: oldPitcher.gameStats.ip,
         outs: oldPitcher.gameStats.outs || Math.round((oldPitcher.gameStats.ip || 0) * 3),
         pitches: oldPitcher.gameStats.pitches,

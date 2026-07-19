@@ -328,6 +328,12 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
         if (si < 0) si = fl.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
         if (si < 0) si = fl.findIndex(p => p._replacedPitcher);
         if (si >= 0) {
+          // Save the pinch hitter in this slot before overwriting — their
+          // batting stats (e.g. a pinch-hit HR) must appear in the box score.
+          const slotPlayer = fl[si];
+          if (slotPlayer && slotPlayer.name !== oldP.name && !newState[hk].find(p => p.name === slotPlayer.name)) {
+            newState[hk].push({ ...slotPlayer });
+          }
           fl[si] = { ...newPitcher, order: fl[si].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
         }
       }
@@ -379,6 +385,12 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       let si2 = cpuLineupField.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
       if (si2 < 0) si2 = cpuLineupField.findIndex(p => p._replacedPitcher);
       if (si2 >= 0) {
+        // Save the pinch hitter in this slot before overwriting — their
+        // batting stats (e.g. a pinch-hit HR) must appear in the box score.
+        const slotPlayer = cpuLineupField[si2];
+        if (slotPlayer && slotPlayer.name !== oldP.name && !newState[hk2].find(p => p.name === slotPlayer.name)) {
+          newState[hk2].push({ ...slotPlayer });
+        }
         cpuLineupField[si2] = { ...oldP, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
       } else {
         const lastIdx = cpuLineupField.length - 1;
@@ -412,6 +424,12 @@ export function cpuDecideSubstitutions(state, userTeam = 'home') {
       if (si2 < 0) si2 = cpuLineupField.findIndex(p => ['SP', 'RP', 'CL'].includes(p.assignedPos));
       if (si2 < 0) si2 = cpuLineupField.findIndex(p => p._replacedPitcher);
       if (si2 >= 0) {
+        // Save the pinch hitter in this slot before overwriting — their
+        // batting stats (e.g. a pinch-hit HR) must appear in the box score.
+        const slotPlayer = cpuLineupField[si2];
+        if (slotPlayer && slotPlayer.name !== oldP.name && !newState[hk2].find(p => p.name === slotPlayer.name)) {
+          newState[hk2].push({ ...slotPlayer });
+        }
         const le2 = { ...newPitcher, order: cpuLineupField[si2].order, assignedPos: 'SP', gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
         cpuLineupField[si2] = le2;
       } else {
