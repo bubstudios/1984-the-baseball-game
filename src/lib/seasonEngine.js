@@ -184,6 +184,11 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
     // If _runCharges isn't available (edge case), fall back to currentPitcher.
     const runsScored = state.score[battingSide] - prevBattingScore;
     if (runsScored > 0) {
+      // Track the batting team's pitcher of record at the moment runs score.
+      // This is the pitcher who gets the WIN if this is the last lead change
+      // (not the pitcher with fewest runs allowed, who may have been pulled
+      // before the go-ahead run — the Sutcliffe bug).
+      const battingTeamPitcherName = (battingSide === 'home' ? state.homePitcher : state.awayPitcher)?.name;
       const newCharges = (state._runCharges || []).slice(prevRunChargesLen);
       if (newCharges.length === runsScored) {
         // One event per run — each with its own responsible pitcher
@@ -193,6 +198,7 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
             battingSide: charge.battingSide,
             pitchingSide: charge.battingSide === 'home' ? 'away' : 'home',
             pitcherName: charge.pitcherName,
+            battingTeamPitcher: battingTeamPitcherName,
             runs: 1,
             scoreAfter: { ...state.score },
           });
@@ -204,6 +210,7 @@ export function simulateGameHeadless(homeTeam, awayTeam, options = {}) {
           battingSide,
           pitchingSide,
           pitcherName: currentPitcher.name,
+          battingTeamPitcher: battingTeamPitcherName,
           runs: runsScored,
           scoreAfter: { ...state.score },
         });
@@ -668,6 +675,7 @@ function determineDecisionsFromEvents(state, scoringEvents, bfTracking) {
   // Find the last lead change - the pitcher who gave up the go-ahead is the loser
   let scoreHome = 0, scoreAway = 0;
   let lastLeadChangePitcher = null;
+  let lastLeadChangeBattingPitcher = null;
   let currentLeader = null;
 
   for (const event of scoringEvents) {
@@ -676,6 +684,7 @@ function determineDecisionsFromEvents(state, scoringEvents, bfTracking) {
     const newLeader = scoreHome > scoreAway ? 'home' : (scoreAway > scoreHome ? 'away' : null);
     if (newLeader && newLeader !== currentLeader) {
       lastLeadChangePitcher = event.pitcherName;
+      lastLeadChangeBattingPitcher = event.battingTeamPitcher;
       currentLeader = newLeader;
     }
   }
@@ -692,14 +701,29 @@ function determineDecisionsFromEvents(state, scoringEvents, bfTracking) {
     state.inning >= 9 &&
     (lastEvent.scoreAfter.home - lastEvent.runs) === lastEvent.scoreAfter.away;
 
-  // Winning pitcher
+  // Winning pitcher: the pitcher of record for the winning team when they
+  // took the lead for the last time. This is the correct baseball rule — not
+  // "reliever with fewest runs allowed" (the old logic credited a pitcher who
+  // was already pulled before the go-ahead run, e.g. Sutcliffe).
   const winningStarter = winningPitchers[0];
   const starterOuts = Math.round((winningStarter?.gameStats?.ip || 0) * 3);
   let winnerPitcher;
   if (isWalkOff) {
     // Walk-off: final pitcher of the winning team gets the W
     winnerPitcher = winningPitchers[winningPitchers.length - 1];
+  } else if (lastLeadChangeBattingPitcher) {
+    // Find the pitcher of record at the last lead change
+    winnerPitcher = winningPitchers.find(p => p.name === lastLeadChangeBattingPitcher);
+    // If the pitcher of record is the starter but didn't go 5 IP, use most
+    // effective reliever (official scorer discretion rule)
+    if (winnerPitcher && winnerPitcher === winningStarter && starterOuts < 15) {
+      winnerPitcher = winningPitchers.slice(1).sort((a, b) =>
+        (a.gameStats?.r || 0) - (b.gameStats?.r || 0)
+      )[0] || winningPitchers[0];
+    }
+    if (!winnerPitcher) winnerPitcher = winningPitchers[0];
   } else if (starterOuts >= 15) {
+    // No lead change (won from start) — starter gets it if 5+ IP
     winnerPitcher = winningStarter;
   } else {
     winnerPitcher = winningPitchers.slice(1).sort((a, b) =>

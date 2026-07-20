@@ -362,70 +362,63 @@ export function applyPlayerEjection(state, ejection) {
       state[historyKey].push({ ...pitcherObj, ejected: true });
     }
   } else {
-    // Position player ejection
-    const isUserTeam = ejection.teamKey === state.userTeam;
+    // Position player ejection — auto-replace for BOTH user and CPU teams.
+    // The previous design left user-team ejected players in the lineup with a
+    // flag, relying on the UI to force a manual substitution. That was broken:
+    // the subs panel opened to the 'pinchhit' tab (wrong if the player wasn't
+    // the current batter), and the panel could be dismissed without replacing.
+    // Auto-replacement guarantees the ejected player is always removed. The
+    // ejection modal still shows so the user knows what happened; they can
+    // adjust the substitution later via the subs panel.
+    const lineup = isHome ? state.homeLineup : state.awayLineup;
+    const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
+    const benchUsedKey = isHome ? 'homeBenchUsed' : 'awayBenchUsed';
+    const slotIdx = lineup.findIndex(p => p.name === ejection.playerName);
+    const oldPlayer = slotIdx >= 0 ? lineup[slotIdx] : null;
 
-    if (isUserTeam) {
-      // USER TEAM: Do NOT auto-substitute. The player is already marked as
-      // ejected (ejectedCurrentGame flag set above). Leave them in the lineup
-      // and on bases with the flag. The pre-pitch validation
-      // (validateNoEjectedPlayersActive) will catch them and force the
-      // substitution screen. The user chooses the replacement via pinchHit/
-      // pinchRun, which properly moves the ejected player to history.
+    // Move ejected player to history
+    if (oldPlayer) {
+      if (!state[historyKey]) state[historyKey] = [];
+      if (!state[historyKey].find(p => p.name === ejection.playerName)) {
+        state[historyKey].push({ ...oldPlayer, ejected: true });
+      }
+    }
+
+    // Find a replacement from the bench
+    const replacement = getAvailableBenchPlayer(state, ejection.teamKey);
+    if (replacement && oldPlayer) {
+      lineup[slotIdx] = {
+        ...replacement,
+        order: oldPlayer.order,
+        assignedPos: oldPlayer.assignedPos || replacement.pos,
+        gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
+      };
+      if (!state[benchUsedKey]) state[benchUsedKey] = [];
+      if (!state[benchUsedKey].find(p => p.name === replacement.name)) {
+        state[benchUsedKey].push({ ...replacement });
+      }
+      const subText = `🔄 ${replacement.name} replaces ejected ${oldPlayer.name}`;
+      if (!state.log.some(e => e.text === subText)) {
+        state.log.push({ type: 'info', text: subText });
+      }
+    } else if (oldPlayer) {
+      state.log.push({ type: 'info', text: `⚠️ No bench available - ${oldPlayer.name}'s spot is an automatic out.` });
       if (!state._pendingPositionPlayerReplacement) state._pendingPositionPlayerReplacement = [];
-      state._pendingPositionPlayerReplacement.push({ playerName: ejection.playerName, teamKey: ejection.teamKey, side: isHome ? 'home' : 'away' });
-    } else {
-      // CPU team: auto-replace with bench player (existing behavior)
-      const lineup = isHome ? state.homeLineup : state.awayLineup;
-      const historyKey = isHome ? 'homePlayerHistory' : 'awayPlayerHistory';
-      const benchUsedKey = isHome ? 'homeBenchUsed' : 'awayBenchUsed';
-      const slotIdx = lineup.findIndex(p => p.name === ejection.playerName);
-      const oldPlayer = slotIdx >= 0 ? lineup[slotIdx] : null;
+      state._pendingPositionPlayerReplacement.push({ playerName: ejection.playerName, teamKey: ejection.teamKey, slotIdx, side: isHome ? 'home' : 'away' });
+    }
 
-      // Move ejected player to history
-      if (oldPlayer) {
-        if (!state[historyKey]) state[historyKey] = [];
-        if (!state[historyKey].find(p => p.name === ejection.playerName)) {
-          state[historyKey].push({ ...oldPlayer, ejected: true });
-        }
-      }
-
-      // Find a replacement from the bench
-      const replacement = getAvailableBenchPlayer(state, ejection.teamKey);
-      if (replacement && oldPlayer) {
-        lineup[slotIdx] = {
-          ...replacement,
-          order: oldPlayer.order,
-          assignedPos: oldPlayer.assignedPos || replacement.pos,
-          gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 },
-        };
-        if (!state[benchUsedKey]) state[benchUsedKey] = [];
-        if (!state[benchUsedKey].find(p => p.name === replacement.name)) {
-          state[benchUsedKey].push({ ...replacement });
-        }
-        const subText = `🔄 ${replacement.name} replaces ejected ${oldPlayer.name}`;
-        if (!state.log.some(e => e.text === subText)) {
-          state.log.push({ type: 'info', text: subText });
-        }
-      } else if (oldPlayer) {
-        state.log.push({ type: 'info', text: `⚠️ No bench available - ${oldPlayer.name}'s spot is an automatic out.` });
-        if (!state._pendingPositionPlayerReplacement) state._pendingPositionPlayerReplacement = [];
-        state._pendingPositionPlayerReplacement.push({ playerName: ejection.playerName, teamKey: ejection.teamKey, slotIdx, side: isHome ? 'home' : 'away' });
-      }
-
-      // Remove ejected player from bases (CPU team)
-      if (state.bases) {
-        for (let i = 0; i < state.bases.length; i++) {
-          if (state.bases[i] && state.bases[i].name === ejection.playerName) {
-            if (replacement && oldPlayer) {
-              state.bases[i] = { ...replacement, order: oldPlayer.order, assignedPos: oldPlayer.assignedPos || replacement.pos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
-              const runSubText = `🔄 ${replacement.name} runs for ejected ${oldPlayer.name}`;
-              if (!state.log.some(e => e.text === runSubText)) {
-                state.log.push({ type: 'info', text: runSubText });
-              }
-            } else {
-              state.bases[i] = null;
+    // Remove ejected player from bases (both user and CPU teams)
+    if (state.bases) {
+      for (let i = 0; i < state.bases.length; i++) {
+        if (state.bases[i] && state.bases[i].name === ejection.playerName) {
+          if (replacement && oldPlayer) {
+            state.bases[i] = { ...replacement, order: oldPlayer.order, assignedPos: oldPlayer.assignedPos || replacement.pos, gameStats: { ab: 0, hits: 0, runs: 0, rbi: 0, bb: 0, so: 0, hr: 0, sb: 0, cs: 0, doubles: 0, triples: 0 } };
+            const runSubText = `🔄 ${replacement.name} runs for ejected ${oldPlayer.name}`;
+            if (!state.log.some(e => e.text === runSubText)) {
+              state.log.push({ type: 'info', text: runSubText });
             }
+          } else {
+            state.bases[i] = null;
           }
         }
       }
