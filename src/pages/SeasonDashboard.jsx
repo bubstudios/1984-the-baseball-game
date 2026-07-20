@@ -153,12 +153,22 @@ export default function SeasonDashboard() {
       const userGame = await getCurrentUserGame(currentSeason);
       setCurrentUserGame(userGame);
 
+      // Load active injuries BEFORE resolving starters so injured pitchers
+      // are skipped — prevents a scratched/injured SP from being displayed
+      // and launched as the game's starter.
+      let seasonInjuries = [];
+      try {
+        clearInjuryCache();
+        seasonInjuries = await loadActiveInjuries(currentSeason.id);
+        setActiveInjuries(seasonInjuries);
+      } catch (e) { /* non-fatal */ }
+
       if (userGame) {
         const rotState = await loadRotationStateForActiveSeason();
         const oppTeam = userGame.homeTeam === currentSeason.userTeam ? userGame.awayTeam : userGame.homeTeam;
         setProbableStarters({
-          userSP: getProbableStarter(rotState, currentSeason.userTeam, userGame.gameDate),
-          oppSP: getProbableStarter(rotState, oppTeam, userGame.gameDate),
+          userSP: resolveStarterSkippingInjuries(getProbableStarter(rotState, currentSeason.userTeam, userGame.gameDate), currentSeason.userTeam, seasonInjuries),
+          oppSP: resolveStarterSkippingInjuries(getProbableStarter(rotState, oppTeam, userGame.gameDate), oppTeam, seasonInjuries),
         });
         setRotationDebug(getRotationDebugInfo(rotState, currentSeason.userTeam, userGame.gameDate));
       } else {
@@ -221,13 +231,7 @@ export default function SeasonDashboard() {
         setSeason(migrated);
       }
 
-      // Load active injuries for the season (persistent injury layer)
-      try {
-        clearInjuryCache();
-        const injuries = await loadActiveInjuries(currentSeason.id);
-        setActiveInjuries(injuries);
-      } catch (e) { /* non-fatal */ }
-
+      // Active injuries were loaded earlier (before starter resolution)
       // Load active manager suspensions for the season
       try {
         const suspensions = await loadActiveSuspensions(currentSeason.id);
@@ -1160,6 +1164,7 @@ export default function SeasonDashboard() {
       }
 
       const rotState = await loadRotationStateForActiveSeason();
+      let dayInjuries = await loadActiveInjuries(season.id);
 
       while (currentDay < targetGame.gameDay) {
         setSimToFinaleProgress(`Simulating day ${currentDay} of ${targetGame.gameDay - 1}...`);
@@ -1170,6 +1175,9 @@ export default function SeasonDashboard() {
 
         const toSim = daySchedule.filter(g => g.status !== 'final');
         if (toSim.length === 0) {
+          const offDate = daySchedule[0]?.gameDate || season.currentDate;
+          await runDailyRecovery(season.id, offDate);
+          dayInjuries = await loadActiveInjuries(season.id);
           currentDay++;
           continue;
         }
@@ -1192,16 +1200,20 @@ export default function SeasonDashboard() {
           const awayTeam = g.awayTeam;
           const useDH = TEAMS[homeTeam]?.league === 'AL';
 
-          const homeSP = getProbableStarter(rotState, homeTeam, g.gameDate);
-          const awaySP = getProbableStarter(rotState, awayTeam, g.gameDate);
+          const homeSP = resolveStarterSkippingInjuries(getProbableStarter(rotState, homeTeam, g.gameDate), homeTeam, dayInjuries);
+          const awaySP = resolveStarterSkippingInjuries(getProbableStarter(rotState, awayTeam, g.gameDate), awayTeam, dayInjuries);
+          const homeRoster = buildInjuredRoster(homeTeam, dayInjuries);
+          const awayRoster = buildInjuredRoster(awayTeam, dayInjuries);
+          const allScratched = [...new Set([...homeRoster.scratchedPlayers, ...awayRoster.scratchedPlayers])];
           const unavailableRelievers = {
-            home: getUnavailableRelievers(rotState, homeTeam, g.gameDate),
-            away: getUnavailableRelievers(rotState, awayTeam, g.gameDate),
+            home: [...getUnavailableRelievers(rotState, homeTeam, g.gameDate), ...getInjuredPitcherNames(dayInjuries, homeTeam)],
+            away: [...getUnavailableRelievers(rotState, awayTeam, g.gameDate), ...getInjuredPitcherNames(dayInjuries, awayTeam)],
           };
 
           const finalState = simulateGameHeadless(homeTeam, awayTeam, {
             useDH, homeSP, awaySP, unavailableRelievers,
             rotationState: rotState, gameDate: g.gameDate,
+            homeLineup: homeRoster.lineup, awayLineup: awayRoster.lineup, scratchedPlayers: allScratched,
           });
 
           if (finalState._validationFailed) {
@@ -1282,6 +1294,11 @@ export default function SeasonDashboard() {
         });
 
         await maybeAdvanceDay({ ...season, currentGameDay: currentDay, id: season.id });
+
+        // Run daily recovery so healed players return for the next simmed day
+        const todayDate = daySchedule[0]?.gameDate || season.currentDate;
+        await runDailyRecovery(season.id, todayDate);
+        dayInjuries = await loadActiveInjuries(season.id);
 
         currentDay++;
       }

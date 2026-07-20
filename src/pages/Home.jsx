@@ -211,10 +211,10 @@ export default function Home() {
           const rotState = await loadRotationStateForActiveSeason();
           seasonRotationStateRef.current = rotState;
           const oppTeamKey = (userTeamParam === homeTeamKey) ? awayTeamKey : homeTeamKey;
-          // Session 23: Starter identity lock. The dashboard resolved the probable
-          // starters and passed their names in the URL. Use those EXACT names
-          // instead of re-resolving — prevents the displayed starter drifting from
-          // the actual game starter (Rijo-shown / Niekro-pitched bug).
+          // Load injuries before resolving starters so injured SPs are skipped.
+          let injuredPlayerNames = [], seasonInjuries = [];
+          if (seasonId) { try { seasonInjuries = await loadActiveInjuries(seasonId); injuredPlayerNames = seasonInjuries.filter(i => i.teamKey === homeTeamKey || i.teamKey === awayTeamKey).map(i => i.playerName); } catch (e) { console.error('[injuries] Load failed:', e); } }
+          // Starter identity lock: use dashboard-resolved URL names, skip injured starters.
           const userStarterName = parts[7] ? decodeURIComponent(parts[7]) : null;
           const oppStarterName = parts[8] ? decodeURIComponent(parts[8]) : null;
           const suspendedPlayerNamesParam = parts[9] ? decodeURIComponent(parts[9]).split('|').filter(n => n) : [];
@@ -224,8 +224,8 @@ export default function Home() {
             const pool = [...(td.rotation || []), ...(td.bullpen || [])];
             return pool.find(p => p.name === name) || null;
           };
-          const userStarter = userStarterName ? findPitcherByName(userTeamParam, userStarterName) : getProbableStarter(rotState, userTeamParam, gameDateStr);
-          const cpuStarter = oppStarterName ? findPitcherByName(oppTeamKey, oppStarterName) : getProbableStarter(rotState, oppTeamKey, gameDateStr);
+          const userStarter = resolveStarterSkippingInjuries(userStarterName ? findPitcherByName(userTeamParam, userStarterName) : getProbableStarter(rotState, userTeamParam, gameDateStr), userTeamParam, seasonInjuries);
+          const cpuStarter = resolveStarterSkippingInjuries(oppStarterName ? findPitcherByName(oppTeamKey, oppStarterName) : getProbableStarter(rotState, oppTeamKey, gameDateStr), oppTeamKey, seasonInjuries);
           if (userStarterName && (!userStarter || userStarter.name !== userStarterName)) {
             console.error(`[season-launch] STARTER LOCK MISMATCH: dashboard said "${userStarterName}" but could not resolve that pitcher for ${userTeamParam}`);
           }
@@ -267,14 +267,7 @@ export default function Home() {
           const awayIll = rollIllnessesForTeam(TEAMS[awayTeamKey], false);
           const illPlayers = { home: homeIll, away: awayIll };
           setPregameIllnesses(homeIll.length > 0 || awayIll.length > 0 ? illPlayers : null);
-          // Load active season injuries - injured players are scratched for this game
-          let injuredPlayerNames = [];
-          if (seasonId) {
-            try {
-              const seasonInjuries = await loadActiveInjuries(seasonId);
-              injuredPlayerNames = seasonInjuries.filter(i => i.teamKey === homeTeamKey || i.teamKey === awayTeamKey).map(i => i.playerName);
-            } catch (e) { console.error('[injuries] Load failed:', e); }
-          }
+          // Injuries already loaded above (before starter resolution)
           // Load active manager suspensions - suspended managers can't argue or be ejected
           let suspendedTeamKeys = new Set();
           if (seasonId) {
