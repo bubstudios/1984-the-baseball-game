@@ -31,7 +31,8 @@ function saveRegisteredUsers(users) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
 
-export default function GateLogin() {
+export default function GateLogin({ onAuthenticated }) {
+  const completeAuth = () => { if (onAuthenticated) { onAuthenticated(); return; } window.location.reload(); };
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -49,7 +50,7 @@ export default function GateLogin() {
     if (username.trim() === VALID_USER && password === VALID_PASS) {
       sessionStorage.setItem(GATE_KEY, 'true');
       sessionStorage.setItem(GATE_USER_KEY, VALID_USER);
-      window.location.reload();
+      completeAuth();
       return;
     }
     // Check registered users
@@ -58,7 +59,7 @@ export default function GateLogin() {
     if (users[key] && users[key].password === password) {
       sessionStorage.setItem(GATE_KEY, 'true');
       sessionStorage.setItem(GATE_USER_KEY, users[key].displayName || key);
-      window.location.reload();
+      completeAuth();
     } else {
       setError('Invalid credentials');
     }
@@ -98,7 +99,7 @@ export default function GateLogin() {
     saveRegisteredUsers(users);
     sessionStorage.setItem(GATE_KEY, 'true');
     sessionStorage.setItem(GATE_USER_KEY, u);
-    window.location.reload();
+    completeAuth();
   };
 
   return (

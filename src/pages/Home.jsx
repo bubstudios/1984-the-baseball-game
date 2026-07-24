@@ -79,6 +79,8 @@ import DisciplineIncidentBanner from '@/components/game/DisciplineIncidentBanner
 import { recordPlayerSuspension, loadActivePlayerSuspensions, buildSuspendedPlayerSet, decrementPlayerSuspensions } from '@/lib/playerDiscipline';
 import { recordEjectionTxn } from '@/lib/transactionLog';
 import AtmosphereDebugPanel from '@/components/game/AtmosphereDebugPanel';
+import { useExhibitionAuth, hasReachedInningLimit } from '@/hooks/useExhibitionAuth'; import AuthGateModal from '@/components/AuthGateModal'; import { isAuthenticated } from '@/components/GateLogin';
+import { useAtmosphereDebugHandlers } from '@/hooks/useAtmosphereDebugHandlers';
 import { inc as incAtmo, resetCounters as resetAtmoCounters, forceBallparkEvent, forceCelebrationText, forceBenchChirp, forceRobbedHRText } from '@/lib/atmosphereDebug';
 
 export default function Home() {
@@ -154,6 +156,7 @@ export default function Home() {
   const [seasonBatterStatsMap, setSeasonBatterStatsMap] = useState({});
   const seasonStatsLoadedRef = useRef(false);
   const [forceFanChirpTrigger, setForceFanChirpTrigger] = useState(0);
+  const auth = useExhibitionAuth(gameState, gameMode);
 
   // Keep gameModeRef in sync so startGame (empty-deps useCallback) always reads the latest mode.
   // Without this, a season game launch would see gameMode=null in startGame's closure and skip
@@ -522,6 +525,7 @@ export default function Home() {
       setGameMode('exhibition');
     }
     if (mode === 'season') {
+      if (!isAuthenticated()) { auth.require(); return; }
       window.location.href = '/season';
     }
   }, []);
@@ -905,42 +909,7 @@ export default function Home() {
   }, [homeTeam, awayTeam]);
 
   // ── Atmosphere debug: force event handlers ──
-  const handleForceAtmoEvent = useCallback((eventId) => {
-    if (!gameState) return;
-    if (eventId === 'ballpark') {
-      const event = forceBallparkEvent(gameState);
-      if (event) { setInlineGameEvent({ type: 'ballpark', event }); incAtmo('bp_fired'); }
-    } else if (eventId === 'celebration') {
-      const batter = getCurrentBatter(gameState);
-      const pitcher = getEffectivePitcher(gameState) || getCurrentPitcher(gameState);
-      const text = forceCelebrationText(batter, pitcher);
-      if (text) { setInlineGameEvent({ type: 'celebration', event: text }); incAtmo('celeb_fired'); }
-    } else if (eventId === 'fanchirp') {
-      setForceFanChirpTrigger(t => t + 1);
-      incAtmo('fan_fired');
-    } else if (eventId === 'benchchirp') {
-      const chirp = forceBenchChirp();
-      setArgumentResult({ ...chirp, ejected: false, homeTeamKey: homeTeam || awayTeam, managerName: MANAGERS[homeTeam]?.name || 'The Manager' });
-      incAtmo('bench_fired');
-    } else if (eventId === 'ejection') {
-      setArgumentResult({
-        ejected: true,
-        managerName: MANAGERS[homeTeam]?.name || 'The Manager',
-        escaLevel: 3,
-        callType: 'forced ejection test',
-        whoArgues: 'manager',
-        homeTeamKey: homeTeam || awayTeam,
-        hatThrow: true,
-        dirtKick: true,
-      });
-      incAtmo('bench_fired');
-    } else if (eventId === 'robbedhr') {
-      const batter = getCurrentBatter(gameState);
-      const text = forceRobbedHRText(batter?.name, 'The outfielder');
-      setInlineGameEvent({ type: 'celebration', event: text });
-      incAtmo('celeb_fired');
-    }
-  }, [gameState, homeTeam, awayTeam]);
+  const handleForceAtmoEvent = useAtmosphereDebugHandlers(gameState, homeTeam, awayTeam, setInlineGameEvent, setForceFanChirpTrigger, setArgumentResult);
 
   // ── Game-over achievement processing (called from effect AND play handlers) ──
   const processGameOver = useCallback((state) => {
@@ -1190,6 +1159,7 @@ export default function Home() {
 
   const handlePitch = useCallback((pitchName) => {
     if (!gameState || gameState.gameOver) return;
+    if (!isAuthenticated() && hasReachedInningLimit()) { auth.require(); return; }
     if (validateNoEjectedPlayersActive(gameState).length > 0) { setSubsTab('pinchhit'); setShowSubs(true); return; }
     setProcessing(true);
     const prePitchSnapshot = JSON.parse(JSON.stringify(gameState));
@@ -1338,6 +1308,7 @@ export default function Home() {
 
   const handleSwing = useCallback((swingIndex) => {
     if (!gameState || gameState.gameOver) return;
+    if (!isAuthenticated() && hasReachedInningLimit()) { auth.require(); return; }
     if (validateNoEjectedPlayersActive(gameState).length > 0) { setSubsTab('pinchhit'); setShowSubs(true); return; }
     setProcessing(true);
     const prePitchSnapshot = JSON.parse(JSON.stringify(gameState));
@@ -2503,6 +2474,7 @@ export default function Home() {
         achievementIds={showAchievementPopup ? newAchievements : []}
         onDismiss={() => setShowAchievementPopup(false)}
       />
+      {auth.showModal && <AuthGateModal onClose={auth.dismiss} />}
     </div>
     </ErrorBoundary>
   );

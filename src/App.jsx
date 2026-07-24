@@ -46,11 +46,9 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // Game gate — single shared login (season routes + season game launch bypass for preview)
+  // Free browsing: home and exhibition are open. Season routes require auth.
   const isSeasonRoute = window.location.pathname.startsWith('/season');
-  const isAuditRoute = window.location.pathname === '/audit' || window.location.pathname === '/full-season-sim';
-  const hasSeasonGameParam = new URLSearchParams(window.location.search).has('seasonGame');
-  if (!gateAuthed && !isSeasonRoute && !isAuditRoute && !hasSeasonGameParam) {
+  if (!gateAuthed && isSeasonRoute) {
     return <GateLogin />;
   }
 
